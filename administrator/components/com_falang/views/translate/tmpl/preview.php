@@ -1,16 +1,14 @@
 <?php
-
 /**
- * @version		3.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
+
 global $mainframe;
 // JURI::base() returns admin path so go up one level
 $live_site = JURI::base()."..";

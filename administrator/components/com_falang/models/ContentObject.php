@@ -1,14 +1,13 @@
 <?php
 /**
- * @version		3.1
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-defined( '_JEXEC' ) or die;
+// No direct access to this file
+defined('_JEXEC') or die;
 
 include_once(dirname(__FILE__).DS."FalangContent.php");
 
@@ -65,7 +64,7 @@ class ContentObject {
 	 * @param	languageID		ID of the associated language
 	 * @param	elementTable	Reference to the ContentElementTable object
 	 */
-	function ContentObject( $languageID,& $contentElement, $id=-1 ) {
+	public function __construct( $languageID,& $contentElement, $id=-1) {
 		$db = JFactory::getDBO();
 
 		if($id>0) $this->id = $id;
@@ -84,6 +83,7 @@ class ContentObject {
 	}
 
 	/** Loads the information based on a certain content ID
+	 *   return true if loaded
 	 */
 	function loadFromContentID( $id=null ) {
 		$db = JFactory::getDBO();
@@ -92,8 +92,14 @@ class ContentObject {
 			$row=null;
 			$row = $db->loadObject(  );
 			$this->id = $id;
-			$this->readFromRow( $row );
+			//fix bug in quickjump when item in joomla is set to a specific language and not all
+			if (isset($row)){
+				$this->readFromRow( $row );
+				return true;
+			}
+			return false;
 		}
+		return false;
 	}
 
 	/** Reads the information from the values of the form
@@ -185,6 +191,8 @@ class ContentObject {
 					}
 				}
                 $originalValue = $formArray[$prefix ."origValue_". $fieldName .$suffix];
+				//v2.8.3 store orginal text is set in param's
+				$originalText = ($storeOriginalText) ? $formArray[$prefix ."origText_". $fieldName .$suffix] : "";
 
 				$registry = new JRegistry();
 				$registry->loadArray($translationValue);
@@ -198,7 +206,7 @@ class ContentObject {
 				$fieldContent->reference_field = $db->escape($fieldName);
 				$fieldContent->value = $translationValue;
 				$fieldContent->original_value = $originalValue;
-				$fieldContent->original_text = "";
+				$fieldContent->original_text = !is_null($originalText)?$originalText:"";
 
 				$fieldContent->modified = JFactory::getDate()->toSql();
 
@@ -323,6 +331,15 @@ class ContentObject {
 
             // Merge in the user supplied request arguments.
             $args = array_merge($args, $data['request']);
+
+	        //2.9.0
+	        //remove args without value (See on CB)
+	        //2.9.6 exept for virtuemart
+	        foreach ($args as $key => $val){
+		        if ($key == 'virtuemart_category_id'){continue;}
+		        if (empty($val)){unset($args[$key]);}
+	        }
+
             $link = 'index.php?' . urldecode(http_build_query($args, '', '&'));
         }
 
@@ -347,7 +364,6 @@ class ContentObject {
 		}
 
 	}
-	
 
 	/**
 	 * Special pre translation handler for content text to combine intro and full text
@@ -377,9 +393,29 @@ class ContentObject {
 			} 
 		}
 
+		//v2.8.3
+		$contentParms = JComponentHelper::getParams('com_content');
+		if ($contentParms->get('show_urls_images_backend',0))
+		{
+			if (array_key_exists("images", $translationFields))
+			{
+				$registry = new JRegistry;
+				$registry->loadString($translationFields['attribs']->value);
+				$registry->loadString($translationFields['images']->value);
+				$translationFields['attribs']->value = $registry->toString();
+			}
+			if (array_key_exists("urls", $translationFields))
+			{
+				$registry = new JRegistry;
+				$registry->loadString($translationFields['attribs']->value);
+				$registry->loadString($translationFields['urls']->value);
+				$translationFields['attribs']->value = $registry->toString();
+			}
+		}
+
 	}
-	
-	
+
+
 	/**
 	 * Special post translation handler for content text to split intro and full text
 	 *
@@ -402,7 +438,59 @@ class ContentObject {
 		}
 		
 	}
-	
+
+	function saveArticleImagesAndUrls(&$introtext, $fields,&$formArray,$prefix,$suffix,$storeOriginalText){
+		//save images in hidden field
+		if (isset($formArray["jform"]['images'])) {
+			$imagesValue = $formArray["jform"]['images'];
+			$registry = new JRegistry();
+			$registry->loadArray($imagesValue);
+			$translationImagesValue = $registry->toString();
+			JRequest::setVar($prefix . "refField_images" . $suffix, $translationImagesValue, "post");
+		}
+
+		//save url's in hidden field
+		if (isset($formArray["jform"]['urls'])) {
+			$urlsValue = $formArray["jform"]['urls'];
+			$registry = new JRegistry();
+			$registry->loadArray($urlsValue);
+			$translationUrlsValue = $registry->toString();
+			JRequest::setVar($prefix . "refField_urls" . $suffix, $translationUrlsValue, "post");
+		}
+		//reset default value of attribs before save (remove image and link)
+		// this allow a the state saved correctly
+		if (isset($formArray["jform"]['attribs']))
+		{
+			//we can't use dta from $formArray["jform"]['attribs'] it's the modified data from falang translation.
+			//use orginal and remvoe images and url if exit to strore the original attribs
+			$attribsData = json_decode($formArray['origText_attribs'],true);
+			if (isset($formArray['origText_images'])){
+				$imagesData = json_decode($formArray['origText_images'],true);
+				foreach ($imagesData as $key => $value){
+					if (array_key_exists($key,$attribsData)){
+						unset($attribsData[$key]);
+					}
+				}
+			}
+			if (isset($formArray['origText_urls'])){
+				$urlsData = json_decode($formArray['origText_urls'],true);
+				foreach ($urlsData as $key => $value){
+					if (array_key_exists($key,$attribsData)){
+						unset($attribsData[$key]);
+					}
+				}
+			}
+			//remove url
+			$registry = new JRegistry;
+			$registry->loadArray($attribsData);
+			if($storeOriginalText)
+			{
+				$formArray['origText_attribs'] = $registry->toString();
+			}
+			$formArray['origValue_attribs'] = md5($registry->toString());
+		}
+	}
+
 	
 	/** Reads the information out of an existing mosDBTable object into the contentObject.
 	 *

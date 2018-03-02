@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<falang type="contentelement">
+  <name>Fields Groups</name>
+  <author>Stéphane Bouey</author>
+  <version>1.0.0</version>
+  <description>Definition for the core Custom Fields values component</description>
+  <copyright>www.faboba.com</copyright>
+  <reference>
+  	<table name="fields_groups">
+  		<field type="referenceid" name="id" translate="0">ID</field>
+  		<field type="titletext" name="title"  length="50" maxlength="250" translate="1">Title</field>
+  	</table>
+  </reference>
+  <translationfilters>
+  	  <keyword>title</keyword>
+  	  <published>published</published>
+  </translationfilters>
+</falang>
+

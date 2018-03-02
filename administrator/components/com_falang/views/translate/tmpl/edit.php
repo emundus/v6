@@ -1,15 +1,14 @@
 <?php
 /**
- * @version		3.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
+
 /**
 	* @return void
 	* @param object $this->actContentObject
@@ -32,12 +31,15 @@ $input = JFactory::getApplication()->input;
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_falang/assets/js/mambojavascript.js');
-
 //use for images type
 Jhtml::_('behavior.modal');
 
 //use for validation
 JHTML::_('behavior.formvalidation');
+
+//use for toggle description
+JHtml::_('jquery.framework');
+$document->addScript('components/com_falang/assets/js/jquery.cookie.js');
 
 
 
@@ -106,9 +108,18 @@ else {
 				}
 				else {
 					srcEl = document.getElementById("text_origText_"+value);
-					srcEl.value = innerHTML;
-					srcEl.select();
-					alert("<?php echo JText::_('CLIPBOARD_COPY');?>");
+					if (srcEl != null) {
+						srcEl.value = innerHTML;
+						srcEl.select();
+						alert("<?php echo JText::_('CLIPBOARD_COPY');?>");
+					} else {
+						srcEl = document.getElementById("refField_"+value);
+						if (srcEl != null) {
+							srcEl.value = innerHTML;
+							srcEl.select();
+							alert("<?php echo JText::_('CLIPBOARD_COPY');?>");
+						}
+					}
 				}
 			}
 		}
@@ -117,9 +128,9 @@ else {
 		}
 	}
     </script>
-    <?php } ?>
+<?php } ?>
 
-	<script language="javascript" type="text/javascript">
+<script language="javascript" type="text/javascript">
 
     //add insert image name for image type
     function jInsertFieldValue(value,id) {
@@ -146,26 +157,6 @@ else {
 		}
 	}
     </script>
-
-
-<script language="javascript" type="text/javascript">
-    Joomla.submitbutton = function(task) {
-        <?php
-        if( isset($editorFields) && is_array($editorFields) ) {
-            foreach ($editorFields as $editor) {
-                // Where editor[0] = your areaname and editor[1] = the field name
-                echo $wysiwygeditor->save( $editor[1]);
-            }
-        }
-        ?>
-        if (task == 'translate.cancel') {
-            Joomla.submitform( task, document.getElementById('<?php echo $idForm;?>') );
-            return;
-        } else {
-            Joomla.submitform( task, document.getElementById('<?php echo $idForm;?>') );
-        }
-    }
-</script>
 
 
 <form action="index.php" method="post" name="adminForm" id="<?php echo $idForm; ?>" class="form-validate">
@@ -197,7 +188,7 @@ else {
 
 					if( strtolower($field->Type)=='hiddentext') {
 							?>
-							<tr><td colspan="3" style="display:none"><td>
+							<tr style="display: none"><td colspan="3">
 							<input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
 							<input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
 							<textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
@@ -215,7 +206,28 @@ else {
 	      	?>
 		    <tr class="<?php echo "row$k"; ?>">
 		      <td align="left" valign="top"><?php echo JText::_('COM_FALANG_ORIGINAL');?></td>
-		      <td align="left" valign="top" id="original_value_<?php echo $field->Name?>" name="original_value_<?php echo $field->Name?>">
+				<?php
+				// Hrvoje -
+				// if text is introtext than remove id from td.
+				// instead copyfunction will use text from collapsible div
+				if ($field->Name =="introtext") : ?>
+				<td align="left" valign="top">
+					<?php
+					// Hrvoje - use original table code
+					else : ?>
+				<td align="left" valign="top" id="original_value_<?php echo $field->Name?>" name="original_value_<?php echo $field->Name ?>">
+					<?php endif; ?>
+
+
+
+
+					<?php
+					// Hrvoje - Text Toggler part 1 Start - adds my code to introtext only
+					if ($field->Name =="introtext") : ?>
+						<div id="ToggleButton" class="btn btn-small">Toggle Text</div>
+						<div id="original_value_<?php echo $field->Name?>">
+					<?php endif;?>
+
 		      <?php
 		      if (preg_match("/<form/i",$field->originalValue)){
 		      	$ovhref = JRoute::_("index.php?option=com_falang&task=translate.originalvalue&field=".$field->Name."&cid=".$this->actContentObject->id."&lang=".$select_language_id);
@@ -225,6 +237,44 @@ else {
 		      	echo $field->originalValue;
 		      }
 		      ?>
+
+		<?php // Hrvoje - Text Toggler - part 2 Start
+		if ($field->Name =="introtext") : ?>
+
+        </div>
+        <script type="text/javascript">
+        jQuery(document).ready(function(){
+            // FOTTState = Falang Original Text Toggle State Cookie
+            // Reads FOTTState cookie
+            var ToggleState = jQuery.cookie('FOTTState');
+
+
+            // if FOTTState cookie exists and if its value is 0 it hides layer
+            // else it shows it. It also shows it by default if FOTTState is not defined yet
+            if(ToggleState == '0'){
+                    jQuery("#original_value_<?php echo $field->Name?>").hide();
+					jQuery("#CopyButton").hide();
+            }
+
+
+			jQuery("#ToggleButton").click(function(){
+
+				jQuery("#original_value_<?php echo $field->Name?>").slideToggle(500);
+				jQuery("#CopyButton").slideToggle(500);
+
+                // click on toggle button also creates FOTTState cookie or updates its value+
+                if(ToggleState == '1' || !ToggleState){
+					jQuery.cookie('FOTTState', '0');
+                } else {
+					jQuery.cookie('FOTTState', '1');
+                }
+                // FOTTState cookie exipres at end of session
+            });
+        });
+        </script>
+
+		<?php endif; // Hrvoje - Text Toggler - part 2 End ?>
+
 		      </td>
 			  <td valign="top" class="button">
 				<input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
@@ -233,25 +283,13 @@ else {
                 if ( strtolower($field->Type)=='readonlytext'){
                     //specific case for menutype link
                     if ($elementTable->Name == 'menu' && $field->Name == 'link') { ?>
-                        <?php if (FALANG_J30) { ?>
                             <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                        <?php } else { ?>
-                            <a class="toolbar" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><span class="icon-32-copy"></span><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                        <?php } ?>
                     <?php } ?>
 
                 <?php } else if( strtolower($field->Type)!='htmltext' ) {?>
-                        <?php if (FALANG_J30) { ?>
             					<a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                        <?php } else { ?>
-                                <a class="toolbar" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><span class="icon-32-copy"></span><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                        <?php } ?>
 				<?php }	else { ?>
-                  <?php if (FALANG_J30) { ?>
                         <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','copy');"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                      <?php } else { ?>
-                        <a class="toolbar" onclick="copyToClipboard('<?php echo $field->Name;?>','copy');" onmouseout="MM_swapImgRestore();"><span class="icon-32-copy"></span><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                      <?php } ?>
 				<?php }?>
 			  </td>
 		    </tr>
@@ -285,25 +323,14 @@ else {
                             $length = ($field->Length>0)?$field->Length:60;
                             $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";
                             ?>
-                            <?php if (FALANG_J30) { ?>
-                                      <div class="input-prepend input-append">
-                                          <input class="input-large" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo $translationContent->value; ?>" "<?php echo $maxLength;?>"/>
-                                          <a class="modal btn" title="<?php echo JText::_("JSELECT")?>"
-                                             href="index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;fieldid=refField_<?php echo $field->Name;?>"<?php echo $field->Name;?>"
-                                          rel="{handler: 'iframe', size: {x: 800, y: 500}}"><?php echo JText::_("JSELECT")?></a>
-                                          <a class="btn hasTooltip" href="#" onclick="jInsertFieldValue('', 'refField_<?php echo $field->Name;?>');return false;" data-original-title="<?php echo JText::_("JDELETE")?>">
-                                              <i class="icon-remove"></i></a>
-                                      </div>
-                                <?php } else {?>
-                                      <input class="fltlft inputbox" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo $translationContent->value; ?>" "<?php echo $maxLength;?>"/>
-                                      <div class="button2-left">
-                                          <div class="blank">
-                                              <a class="modal-button" title="<?php echo JText::_("COM_FALANG_BROWSE_IMAGES")?>"
-                                                 href="index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;fieldid=refField_<?php echo $field->Name;?>"<?php echo $field->Name;?>"
-                                              rel="{handler: 'iframe', size: {x: 800, y: 500}}"><?php echo JText::_("COM_FALANG_BROWSE_IMAGES")?></a>
-                                          </div>
-                                      </div>
-                                <?php }?>
+                              <div class="input-prepend input-append">
+                                  <input class="input-large" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo $translationContent->value; ?>" "<?php echo $maxLength;?>"/>
+                                  <a class="modal btn" title="<?php echo JText::_("JSELECT")?>"
+                                     href="index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;fieldid=refField_<?php echo $field->Name;?>"<?php echo $field->Name;?>"
+                                  rel="{handler: 'iframe', size: {x: 800, y: 500}}"><?php echo JText::_("JSELECT")?></a>
+                                  <a class="btn hasTooltip" href="#" onclick="jInsertFieldValue('', 'refField_<?php echo $field->Name;?>');return false;" data-original-title="<?php echo JText::_("JDELETE")?>">
+                                      <i class="icon-remove"></i></a>
+                              </div>
                            <?php
                         } else if( strtolower($field->Type)=='readonlytext') {
 							$length = ($field->Length>0)?$field->Length:60;
@@ -319,17 +346,9 @@ else {
 					<?php
 					 if ( strtolower($field->Type)=='readonlytext'){
 					} else if( strtolower($field->Type)!='htmltext' ) {?>
-                            <?php if (FALANG_J30) { ?>
-                                <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
-                            <?php } else {?>
-                                <a class="toolbar" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';"><span class="icon-32-delete"></span><?php echo JText::_('Delete'); ?></a>
-                            <?php }?>
+                            <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
 					<?php } else {?>
-                            <?php if (FALANG_J30) { ?>
-                                <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
-                            <?php } else {?>
-                                <a class="toolbar" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');"><span class="icon-32-delete"></span><?php echo JText::_('Delete'); ?></a>
-                            <?php }?>
+                            <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
 					<?php }?>
 				</td>
 		    </tr>
@@ -414,10 +433,32 @@ else {
     <!-- v 1.4 : add content for extra plugins k2 ....-->
     <div id="extras"></div>
 
+	<!-- v 2.8.1 : submit code put at the end to have the editorFields set-->
+	<script language="javascript" type="text/javascript">
+		Joomla.submitbutton = function(task) {
+			<?php
+			if( isset($editorFields) && is_array($editorFields) ) {
+				foreach ($editorFields as $editor) {
+					// Where editor[0] = your areaname and editor[1] = the field name (ex 0:editor_introtext , 1:refField_introtext)
+					echo $wysiwygeditor->save( $editor[1]);
+				}
+			}
+			?>
+
+			if (task == 'translate.cancel') {
+				Joomla.submitform( task, document.getElementById('<?php echo $idForm;?>') );
+				return;
+			} else {
+				Joomla.submitform( task, document.getElementById('<?php echo $idForm;?>') );
+			}
+		}
+	</script>
+
+
+
 	<input type="hidden" name="option" value="com_falang" />
 	<input type="hidden" name="task" value="translate.edit" />
 	<input type="hidden" name="direct" value="<?php echo intval(JRequest::getVar("direct",0));?>" />
 
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
-

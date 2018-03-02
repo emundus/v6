@@ -1,11 +1,9 @@
 <?php
 /**
- * @version		1.2.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012-2013 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
 

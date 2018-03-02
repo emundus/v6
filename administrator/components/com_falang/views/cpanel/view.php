@@ -1,15 +1,13 @@
 <?php
 /**
- * @version		3.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 jimport('joomla.html.pane');
 
@@ -25,6 +23,7 @@ JLoader::import( 'views.default.view',FALANG_ADMINPATH);
  */
 class CPanelViewCpanel extends FalangViewDefault
 {
+    protected $pluginsInfos;
 	/**
 	 * Control Panel display function
 	 *
@@ -32,8 +31,9 @@ class CPanelViewCpanel extends FalangViewDefault
 	 */
 	public function display($tpl = null)
 	{
-		
-		JHTML::stylesheet( 'falang.css', 'administrator/components/com_falang/assets/css/' );
+
+		//update downloadid
+		$this->getModel()->updateDownloadId();
 
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_FALANG_TITLE') . ' :: ' .JText::_('COM_FALANG_CONTROL_PANEL'));
@@ -43,31 +43,24 @@ class CPanelViewCpanel extends FalangViewDefault
 		JToolBarHelper::preferences('com_falang', '580', '750');
 		JToolBarHelper::help( 'screen.cpanel', true);
 
-        if (FALANG_J30) {
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', true);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview');
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', true);
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview');
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
 
-            $this->sidebar = JHtmlSidebar::render();
-        } else {
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', true);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview');
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
-        }
+		$this->sidebar = JHtmlSidebar::render();
 
-		$this->panelStates	= $this->get('PanelStates');
-		$this->contentInfo	= $this->get('ContentInfo');
-		$this->performanceInfo	= $this->get('PerformanceInfo');
+		//$this->panelStates	= $this->get('PanelStates');
+		//$this->contentInfo	= $this->get('ContentInfo');
+		//$this->performanceInfo	= $this->get('PerformanceInfo');
 
-		$this->assignRef('panelStates', $this->panelStates);
-		$this->assignRef('contentInfo', $this->contentInfo);
-		$this->assignRef('performanceInfo', $this->performanceInfo);
+		//$this->assignRef('panelStates', $this->panelStates);
+		//$this->assignRef('contentInfo', $this->contentInfo);
+		//$this->assignRef('performanceInfo', $this->performanceInfo);
 
         //version
+		// no need to force the update exept in dev
         $updateInfo = LiveUpdate::getUpdateInformation();
 
         // Get current version available
@@ -76,17 +69,107 @@ class CPanelViewCpanel extends FalangViewDefault
         //get latest version
         $this->latestVersion = $updateInfo->version;
 
+		$version = new FalangVersion();
+		$this->versionType = $version->getVersionType();
+
         $this->updateInfo = $updateInfo;
 
         $js = "var progress_msg = '".JText::_('COM_FALANG_CPANEL_CHECK_PROGRESS')."';";
         $document->addScriptDeclaration($js);
         $document->addScript('components/com_falang/assets/js/cpanel.js');
 
-        JHTML::_('behavior.tooltip');
+		//load font-awesome
+		$document->addStyleSheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css');
+
+
+		$this->showVersion = false;
+
+		//check site default language in content langauge liste
+		$default_lang = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+		$falangManager = FalangManager::getInstance();
+
+		$languages = $falangManager->getLanguagesIndexedByCode(false);
+
+		if (!array_key_exists($default_lang,$languages)){
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_CPANEL_CONFIGURATION_DEFAULT_LANGUAGE_MISSING'),'error');
+		}
+
+		JHTML::_('behavior.tooltip');
+
+		$this->pluginsInfos = $this->getPluginsInfos();
+
 		parent::display($tpl);
 	}
 
 
+    protected function getPluginsInfos(){
+	    $plugins = array(
+		    'falangContent'     => array(
+			    'folder' => 'search',
+			    'title'  => 'Joomla Content search',
+			    'ars_id' => 41,
+			    'type'   => 'free',
+		    ),
+		    'falangK2'          => array(
+			    'folder' => 'search',
+			    'title'  => 'K2 Content search',
+			    'ars_id' => 42,
+			    'type'   => 'free',
+		    ),
+		    'falangmissing'     => array(
+			    'folder' => 'system',
+			    'title'  => 'Missing Translation',
+			    'ars_id' => 46,
+			    'type'   => 'free',
+		    ),
+		    'falangextraparams' => array(
+			    'folder' => 'system',
+			    'title'  => 'Falang Extra Params',
+			    'ars_id' => 47,
+			    'type'   => 'paid',
+		    ),
+		    'falangk2'          => array(
+			    'folder' => 'system',
+			    'title'  => 'K2 extra field',
+			    'ars_id' => 43,
+			    'type'   => 'paid',
+		    ),
+		    'falangcontent'     => array(
+			    'folder' => 'finder',
+			    'title'  => 'Smart Search - Joomla Content',
+			    'ars_id' => 109,
+			    'type'   => 'paid',
+		    ),
+	    );
+	    $db = JFactory::getDbo();
+        foreach ($plugins as $plugin => $values){
+            //search if installed
+	        $query = $db->getQuery(true)
+                    ->select('enabled,manifest_cache')
+                    ->from($db->qn('#__extensions'))
+                    ->where($db->qn('element').' = '.$db->q($plugin))
+                    ->where($db->qn('folder').' = '.$db->q($values['folder']));
+            $db->setQuery($query);
+            $row = $db->loadObject();
+            if (!isset($row)){
+                $plugins[$plugin]['installed']= 0;
+                continue;
+            } else {
+                $plugins[$plugin]['installed']= 1;
+            }
+            //plugin installed //get other info
+            if ($row->enabled == 0) {
+	            $plugins[$plugin]['enabled'] = 0;
+            } else {
+	            $plugins[$plugin]['enabled'] = 1;
+            }
+	        //get version
+	        $json = json_decode($row->manifest_cache);
+	        $plugins[$plugin]['version_local'] = $json->version;
+
+        }
+        return $plugins;
+    }
     /**
 	  * render News feed from Faboba-Falang portal
 	  */
@@ -221,12 +304,12 @@ class CPanelViewCpanel extends FalangViewDefault
 				<th ><?php echo JText::_("Best Available");?></th>
 			</tr>
 			<tr class="row0">
-				<?php 
+				<?php
 				if ($this->performanceInfo["driver"]["optimal"]){
 					$color="green";
 				}
 				else {
-					$color="red";					
+					$color="red";
 				}
 				echo "<td>".JText::_("mySQL Driver")."</td>\n";
 				echo "<td>".$this->performanceInfo["driver"]["current"]."</td>\n";
@@ -234,12 +317,12 @@ class CPanelViewCpanel extends FalangViewDefault
 				?>
 			</tr>
 			<tr class="row1">
-				<?php 
+				<?php
 				if ($this->performanceInfo["cache"]["optimal"]){
 					$color="green";
 				}
 				else {
-					$color="red";					
+					$color="red";
 				}
 				echo "<td>".JText::_("Translation Caching")."</td>\n";
 				echo "<td>".$this->performanceInfo["cache"]["current"]."</td>\n";
@@ -315,5 +398,16 @@ class CPanelViewCpanel extends FalangViewDefault
 
 		return $text;
 	}
+
+	/**
+	function getPluginVersion($folder,$extension_name){
+		$extension = JTable::getInstance('extension');
+		$id = $extension->find(array('element' => $extension_name, 'type' => 'plugin','folder' => $folder));
+		$extension->load($id);
+		$componentInfo = json_decode($extension->manifest_cache, true);
+		return $componentInfo['version'];
+    }
+     */
+
 		 
 }

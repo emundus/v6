@@ -1,14 +1,18 @@
 <?php
 /**
-*/
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ */
 
-
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 class FalangVersion {
-	var $_version	= '2.2.0';
+	var $_version	= '2.9.6';
     var $_versiontype	= 'basic';
-    var $_date	= '2015/10/15';
+    var $_date	= '2018/02/20';
 	var $_status	= 'Stable';
 	var $_revision	= '';
 	var $_copyyears = '';
@@ -19,7 +23,7 @@ class FalangVersion {
 	 * @return string
 	 */
     function getVersionFull(){
-        return 'V' .$this->_version. ' ('.$this->_versiontype.')';
+        return 'v' .$this->_version. ' ('.$this->_versiontype.')';
     }
 
     /**
@@ -29,6 +33,10 @@ class FalangVersion {
      */
     function getVersionShort() {
         return $this->_version;
+	}
+
+	function getVersionType() {
+		return $this->_versiontype;
 	}
 
 

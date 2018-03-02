@@ -1,15 +1,13 @@
 <?php
 /**
- * @version		3.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-
-defined( '_JEXEC' ) or die;
+// No direct access to this file
+defined('_JEXEC') or die;
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/controller.php';
 
@@ -26,16 +24,7 @@ class CpanelController extends LegacyController  {
         //JLoader::import( 'classes.JCacheStorageJFDB',FALANG_ADMINPATH);
         //FalangControllerHelper::_checkDBCacheStructure();
 		FalangControllerHelper::_checkDBStructure();
-
-        if( !FalangControllerHelper::_testSystemBotState() ) {
-            //todo mettre l'affichage dans la vue
-            $msg = '<div class="alert alert-warning">';
-            $msg .= '<h4>'.JText::_('COM_FALANG_TEST_SYSTEM_WARNING').'</h4>';
-            $msg .= '<p>'.JText::_('COM_FALANG_TEST_SYSTEM_WARNING_MSG').'</p>';
-            $msg .= '</div>';
-
-            echo $msg;
-        }
+		FalangControllerHelper::_checkPlugin();
 
 	}
 
@@ -58,7 +47,7 @@ class CpanelController extends LegacyController  {
         //force information reload
         $updateInfo = LiveUpdate::getUpdateInformation(true);
         //send json response
-        $document =& JFactory::getDocument();
+        $document = JFactory::getDocument();
         $document->setMimeEncoding('application/json');
 
         if ($updateInfo->hasUpdates) {
@@ -70,6 +59,5 @@ class CpanelController extends LegacyController  {
         }
         return true;
     }
-}
 
-?>
+}

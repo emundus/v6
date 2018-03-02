@@ -1,11 +1,19 @@
 <?php
+/**
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ */
+
+// No direct access to this file
+defined('_JEXEC') or die;
 
 require_once( JPATH_SITE.'/components/com_falang/helpers/defines.php' );
 require_once( JPATH_SITE.'/components/com_falang/helpers/falang.class.php' );
 require_once( JPATH_SITE."/administrator/components/com_falang/classes/FalangManager.class.php");
 
-
-include_once(dirname(__FILE__).'/drivers/'.strtolower(JFactory::getDBO()->name)."x.php");
+include_once(dirname(__FILE__) . '/drivers/' . strtolower(JFactory::getDBO()->name) . "x.php");
 
 class JFalangDatabase extends JOverrideDatabase {
 
@@ -23,7 +31,8 @@ class JFalangDatabase extends JOverrideDatabase {
 
 	var $profileData = array();
 
-    public function JFalangDatabase($options)
+
+	public function __construct($options)
     {
             parent::__construct($options);
             $this->_table_prefix = $options['prefix'];
@@ -93,12 +102,9 @@ class JFalangDatabase extends JOverrideDatabase {
      */
     public function execute()
     {
-        if ( version_compare( JVERSION, '2.5.5', '<' ) == 1) {
-            $success = parent::query();
-        } else {
-            $success = parent::execute();
-        }
-        if ($success && !$this->_skipSetRefTables){
+        $success = parent::execute();
+
+	    if ($success && !$this->_skipSetRefTables){
             $this->setRefTables();
         }
         return $this->cursor;
@@ -119,8 +125,6 @@ class JFalangDatabase extends JOverrideDatabase {
 	}
 
 
-
-//sbou falang method
 	/**
 	* Overwritten Database method to loads the first field of the first row returned by the query.
 	*
@@ -142,8 +146,7 @@ class JFalangDatabase extends JOverrideDatabase {
 
 		if( $result != null ) {
 			$fields = get_object_vars( $result );
-			$field = each($fields);
-			$ret = $field[1];
+			$ret = current($fields);
 		}
 
 		$pfunc = $this->_profile($pfunc);
@@ -186,7 +189,9 @@ class JFalangDatabase extends JOverrideDatabase {
                         break;
                     }
                 }
-                $ret[] = $fields[$key];
+				if(isset($key)){
+					$ret[] = $fields[$key];
+				}
             }
         }
 
@@ -267,7 +272,6 @@ class JFalangDatabase extends JOverrideDatabase {
 		//sbou
                 //sbou TODO check r�cursive pb
                 //$jfManager = FalangManager::getInstance();
-
 		if (!$translate) {
 			$this->_skipSetRefTables=true;
 			$result = parent::loadObjectList( $key ,empty($class)?'stdClass':$class);
@@ -276,6 +280,7 @@ class JFalangDatabase extends JOverrideDatabase {
 		}
 
 		$result = parent::loadObjectList( $key, empty($class)?'stdClass':$class);
+
 
 //		if( isset($jfManager)) {
 //			$this->_setLanguage($language);

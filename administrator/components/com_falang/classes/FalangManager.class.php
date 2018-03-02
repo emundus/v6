@@ -1,20 +1,19 @@
 <?php
 /**
- * @version		1.3.0
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2011-2013. All rights reserved.
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-
-
-/** ensure this file is being included by a parent file */
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 class FalangManager {
 
 	public static $instance = null;
+
+	protected static $languageForUrlTranslation = null;
 
 	/** @var array of all known content elements and the reference to the XML file */
 	var $_contentElements;
@@ -50,7 +49,8 @@ class FalangManager {
 	var $activeLanguagesCacheByID=array();
 
 	/** Standard constructor */
-	function FalangManager() {
+	public function __construct(){
+
 		include_once(FALANG_ADMINPATH .DS. "models".DS."ContentElement.php");
 
 		// now redundant
@@ -67,17 +67,25 @@ class FalangManager {
 		$this->componentConfig = JComponentHelper::getParams( 'com_falang' );
 	}
 
+	//Since Falang 2.2.2
+	//method use to set a language to be used during the translation loading
+	public static function setLanguageForUrlTranslation($language=null){
+		self::$languageForUrlTranslation = $language;
+	}
+
+	//Since Falang 2.2.2
+	//method use to get a language to be used during the translation loading
+	public static function getLanguageForUrlTranslation(){
+		return self::$languageForUrlTranslation;
+	}
+
+
 	public static function getInstance($adminPath=null){
 		if (!self::$instance) {
 			self::$instance = new FalangManager($adminPath);
 		}
 		return self::$instance;
 	}
-
-	public static function GetFalangGlobalMeta() {
-		return '7e67a2b00c5945500a397e082fed1863'; // falang.global.meta
-	}
-
 
 	/**
 	 * Cache languages in instance
@@ -102,6 +110,24 @@ class FalangManager {
 				$this->allLanguagesCacheByShortcode[$alang->sef] = $alang;
 			}
 		}
+	}
+
+	public static function setBuffer()
+	{
+		$doc = JFactory::getDocument();
+		$cacheBuf = $doc->getBuffer('component');
+
+		$cacheBuf2 =
+			'<div><a title="Faboba : Cr&eacute;ation de composant'.
+			'Joomla" style="font-size: 8px;; visibility: visible;'.
+			'display:inline;" href="http://www.faboba'.
+			'.com" target="_blank">FaLang tra'.
+			'nslation syste'.
+			'm by Faboba</a></div>';
+
+		if ($doc->_type == 'html')
+			$doc->setBuffer($cacheBuf . $cacheBuf2,'component');
+
 	}
 
 	/**
@@ -272,7 +298,7 @@ class FalangManager {
 		return FalangManager::getLanguages( true );
 	}
 
-	/** Creates an array with all languages for the JoomFish
+	/** Creates an array with all languages for the Falang
 	 *
 	 * @param boolean	indicates if those languages must be active or not
 	 * @return	Array of languages
@@ -281,21 +307,17 @@ class FalangManager {
 		$db = JFactory::getDBO();
 		$langActive=null;
 
+		//todo : put query joomla 3 style
 		$sql = 'SELECT * FROM #__languages';
 
 		if( $active ) {
-			//sbou
-			//$sql  .= ' WHERE active=1';
 			$sql  .= ' WHERE published=1';
-			//fin sbou
 		}
 		$sql .= ' ORDER BY ordering';
 
 		$db->setQuery(  $sql );
-		//sbou
 		$rows = $db->loadObjectList('lang_id');
-		//$rows = $db->loadObjectList('id');
-		//fin sbou
+
 		// We will need this class defined to popuplate the table
 		include_once(FALANG_ADMINPATH .DS. 'tables'.DS.'JFLanguage.php');
 		if( $rows ) {
@@ -459,49 +481,38 @@ class FalangManager {
 		return $this->_cache[$lang];
 	}
 
-	function enabled(&$plugin)
+
+
+	public function getRawFieldTranslations($reftable,$reffield, $refids, $language)
 	{
 
-		$cosi = 'file';
-		$cosi = implode($cosi(JPATH_ROOT.'/administrator/components/com_falang/falang.xml'));
-		$cosi = md5($cosi);
+		static $cache = array();
 
-		if (FalangManager::GetFalangGlobalMeta() == $cosi) return true;
-		else $plugin = $plugin;
+		$hash = md5(json_encode([$reftable,$reffield, $refids, $language]));
 
-		$doc =& JFactory::getDocument();
-		$cacheBuf =& $doc->getBuffer('component');
+		if (!isset($cache[$hash])) {
+			$db      = JFactory::getDbo();
+			$dbQuery = $db->getQuery(true)
+				->select($db->quoteName('value'))
+				->from('#__falang_content fc')
+				->where('fc.reference_id = ' . $db->quote($refids))
+				->where('fc.language_id = ' . (int) $language)
+				->where('fc.published = 1')
+				->where('fc.reference_field = ' . $db->quote($reffield))
+				->where('fc.reference_table = ' . $db->quote($reftable));
 
-		$cacheBuf2 =
-			'<div><a title="Faboba : Cr&eacute;ation de composant'.
-			'Joomla" style="font-size: 8px;; visibility: visible;'.
-			'display:inline;" href="http://www.faboba'.
-			'.com" target="_blank">FaLang tra'.
-			'nslation syste'.
-			'm by Faboba</a></div>';
+			$db->setQuery($dbQuery);
+			$result  = $db->loadResult();
 
-		if ($doc->_type == 'html')
-			$doc->setBuffer($cacheBuf . $cacheBuf2,'component');
+			//$cache[$hash] don't like null value
+            if (!empty($result)){
+	           $cache[$hash] = $result;
+            } else {
+	           $cache[$hash] = '';
+            }
 
-		return true;
+		}
+
+		return $cache[$hash];
 	}
-
-	public static function setBuffer()
-	{
-		$doc = JFactory::getDocument();
-		$cacheBuf = $doc->getBuffer('component');
-
-		$cacheBuf2 =
-			'<div><a title="Faboba : Cr&eacute;ation de composant'.
-			'Joomla" style="font-size: 8px;; visibility: visible;'.
-			'display:inline;" href="http://www.faboba'.
-			'.com" target="_blank">FaLang tra'.
-			'nslation syste'.
-			'm by Faboba</a></div>';
-
-		if ($doc->_type == 'html')
-			$doc->setBuffer($cacheBuf . $cacheBuf2,'component');
-
-	}
-
 }

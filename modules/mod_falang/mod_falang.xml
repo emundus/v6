@@ -2,12 +2,12 @@
 <extension 	type="module" version="2.5"	client="site" method="upgrade">
 	<name>mod_falang</name>
 	<author>Stéphane Bouey</author>
-	<creationDate>October 2012</creationDate>
-	<copyright>2011-2015, Faboba</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<creationDate>20 february 2018</creationDate>
+	<copyright>2011-2018, Faboba</copyright>
+	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>stephane.bouey@faboba.com</authorEmail>
 	<authorUrl>www.faboba.com</authorUrl>
-	<version>2.2.0</version>
+	<version>2.9.6</version>
 	<description>MOD_FALANG_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_falang">mod_falang.php</filename>
@@ -40,23 +40,6 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field
-					name="header_text"
-					type="textarea"
-					filter="safehtml"
-					rows="3"
-					cols="40"
-					label="MOD_FALANG_FIELD_HEADER_LABEL"
-					description="MOD_FALANG_FIELD_HEADER_DESC" />
-				<field
-					name="footer_text"
-					type="textarea"
-					filter="safehtml"
-					rows="3"
-					cols="40"
-					label="MOD_FALANG_FIELD_FOOTER_LABEL"
-					description="MOD_FALANG_FIELD_FOOTER_DESC" />
-
-				<field
 					name="dropdown"
 					type="radio"
                     class="btn-group btn-group-yesno"
@@ -66,19 +49,20 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
-				<field name="spacer1" type="spacer" class="text"
-					label="MOD_FALANG_SPACERDROP_LABEL"
-				/>
 				<field
-					name="image"
-					type="radio"
-                    class="btn-group btn-group-yesno"
-					default="1"
-					label="MOD_FALANG_FIELD_USEIMAGE_LABEL"
-					description="MOD_FALANG_FIELD_USEIMAGE_DESC" >
+						name="advanced_dropdown"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="0"
+						label="MOD_FALANG_FIELD_ADV_DROPDOWN_LABEL"
+						description="MOD_FALANG_FIELD_ADV_DROPDOWN_DESC" >
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
+				<field name="spacer1" type="spacer" class="text"
+					   label="MOD_FALANG_SPACERDROP_LABEL"
+						/>
+
 				<field
 					name="inline"
 					type="radio"
@@ -89,19 +73,42 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
+
+				<field name="spacer2" type="spacer" class="text"
+					   label="MOD_FALANG_COMMON_LABEL"
+						/>
+
 				<field
-					name="show_active"
-					type="radio"
-                    class="btn-group btn-group-yesno"
-					default="1"
-					label="MOD_FALANG_FIELD_ACTIVE_LABEL"
-					description="MOD_FALANG_FIELD_ACTIVE_DESC" >
+						name="show_active"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="1"
+						label="MOD_FALANG_FIELD_ACTIVE_LABEL"
+						description="MOD_FALANG_FIELD_ACTIVE_DESC" >
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
-				<field name="spacer2" type="spacer" class="text"
-					label="MOD_FALANG_SPACERNAME_LABEL"
-				/>
+
+				<field
+						name="image"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="1"
+						label="MOD_FALANG_FIELD_USEIMAGE_LABEL"
+						description="MOD_FALANG_FIELD_USEIMAGE_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+						name="show_name"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="0"
+						label="MOD_FALANG_FIELD_SHOW_NAME_LABEL"
+						description="MOD_FALANG_FIELD_SHOW_NAME_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 				<field
 					name="full_name"
 					type="radio"
@@ -112,6 +119,24 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
+
+				<field
+						name="header_text"
+						type="textarea"
+						filter="safehtml"
+						rows="3"
+						cols="40"
+						label="MOD_FALANG_FIELD_HEADER_LABEL"
+						description="MOD_FALANG_FIELD_HEADER_DESC" />
+				<field
+						name="footer_text"
+						type="textarea"
+						filter="safehtml"
+						rows="3"
+						cols="40"
+						label="MOD_FALANG_FIELD_FOOTER_LABEL"
+						description="MOD_FALANG_FIELD_FOOTER_DESC" />
+
 			</fieldset>
             <fieldset name="options" addfieldpath="/administrator/components/com_falang/models/fields">
                 

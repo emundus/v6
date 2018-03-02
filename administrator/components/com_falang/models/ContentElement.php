@@ -1,15 +1,13 @@
 <?php
 /**
- * @version		1.2.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012-2013 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Don't allow direct linking
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 include_once(dirname(__FILE__).DS."ContentElementTable.php");
 
@@ -43,7 +41,7 @@ class ContentElement {
 	/** Standard constructor, which loads already standard information
 	 * for easy and direct access
 	*/
-	function ContentElement ( $xmlDoc ) {
+	public function __construct($xmlDoc){
 		$this->_xmlFile = $xmlDoc;
 
 		if( isset($this->_xmlFile) ) {
@@ -58,6 +56,7 @@ class ContentElement {
 
 			$valueElement = $this->_xmlFile->getElementsByTagName('description')->item(0);
 			$this->Description = trim($valueElement->textContent);
+
 		}
 	}
 
@@ -84,6 +83,22 @@ class ContentElement {
         }
         return $this->referenceInformation["frontedit"];
     }
+
+	function getQuickjumps(){
+		$allQuickjump = array();
+		if(isset($this->_xmlFile) ) {
+			$node = $this->_xmlFile->getElementsByTagName('quickjumps');
+			if (isset($node) && !empty($node->length)){
+				$quickjumps = $this->_xmlFile->getElementsByTagName('quickjump');
+				foreach ($quickjumps as $quickjump){
+					$allQuickjump[]=trim($quickjump->textContent);
+				}
+
+			}
+		}
+		return $allQuickjump;
+
+	}
 
 	/**
 	 * Public function to return array of filters included in contentelement file

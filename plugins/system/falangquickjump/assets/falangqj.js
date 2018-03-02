@@ -71,7 +71,7 @@ jQuery(function() {
     var td = jQuery('<td class="center"></td>');
 
     var btngroup = jQuery('<div class="btn-group"/>');
-    if (row['link'] != '') {
+    if (row['hide'] != 'true') {
       var i = 0;
       var perrow = 0;
       for (a in row['status']) {

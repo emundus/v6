@@ -22,6 +22,7 @@
   </reference>
     <translationfilters>
   	  <keyword>title</keyword>
+  	 <moduletype>module</moduletype>
   	  <published>published</published>
   	  <module>access</module>
     </translationfilters>

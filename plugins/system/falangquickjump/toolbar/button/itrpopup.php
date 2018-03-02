@@ -1,29 +1,13 @@
 <?php
 /**
- * SYNC WITH ITRLIB
- *
- * @package Falang
- * @link http://joomla.itronic.at
- * @copyright	Copyright (C) 2011 ITronic Harald Leithner. All rights reserved.
- * @license GNU General Public License v3
- *
- * This file is part of Falang.
- *
- * jDiction is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 of the License.
- *
- * jDiction is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with jDiction.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-defined('JPATH_PLATFORM') or die;
+// No direct access to this file
+defined('_JEXEC') or die;
 
 class JToolbarButtonItrPopup extends JToolbarButton {
 	/**
@@ -85,7 +69,8 @@ class JToolbarButtonItrPopup extends JToolbarButton {
 		$params['url']    = $doTask;
 		$params['height'] = $height;
 		$params['width']  = $width;
-        $html .= JHtml::_('bootstrap.renderModal', 'modal-' . $name, $params);
+		$html .= JHtml::_('bootstrap.renderModal', 'modal-' . $name, $params);
+
 
         $html .= "<script>\n";
         $html .="jQuery(\"#toolbar-popup-".$name."\").css('float', 'right');\n";

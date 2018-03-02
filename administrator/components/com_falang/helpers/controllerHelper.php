@@ -1,39 +1,13 @@
 <?php
 /**
- * Joom!Fish - Multi Lingual extention and translation manager for Joomla!
- * Copyright (C) 2003 - 2011, Think Network GmbH, Munich
- *
- * All rights reserved.  The Joom!Fish project is a set of extentions for
- * the content management system Joomla!. It enables Joomla!
- * to manage multi lingual sites especially in all dynamic information
- * which are stored in the database.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,USA.
- *
- * The "GNU General Public License" (GPL) is available at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * -----------------------------------------------------------------------------
- * $Id: controllerHelper.php 1551 2011-03-24 13:03:07Z akede $
- * @package joomfish
- * @subpackage controllerHelper
- *
-*/
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ */
 
-
-defined( '_JEXEC' ) or die( 'Restricted access' );
-
+// No direct access to this file
+defined('_JEXEC') or die;
 
 class  FalangControllerHelper  {
 
@@ -68,27 +42,11 @@ class  FalangControllerHelper  {
 	}
 
 
-	/**
-	 * Testing state of the system bot
-	 *
-	 */
-	public static function _testSystemBotState()
-	{
-		$db = JFactory::getDBO();
-		$botState = false;
-		$db->setQuery( "SELECT * FROM #__extensions WHERE type='plugin' AND element='falangdriver'");
-		$db->query();
-		$plugin = $db->loadObject();
-		if ($plugin != null && $plugin->enabled == "1") {
-			$botState = $plugin->extension_id;
-		}
-		return $botState;
-	}
-
 	public static function _checkDBCacheStructure (){
 
         //TODO : sbou revoir la methode de cache
         return true;
+/*
 		JCacheStorageJfdb::setupDB();
 
 		$db =  JFactory::getDBO();
@@ -102,6 +60,7 @@ class  FalangControllerHelper  {
 
 			JCacheStorageJfdb::setupDB();
 		}
+*/
 	}
 
 	public static function _checkDBStructure (){
@@ -154,19 +113,54 @@ class  FalangControllerHelper  {
             $db->setQuery($sql);
             $db->query();
         }
-
-
-
-
-//		$sql = "ALTER TABLE `#__falang_content` CHANGE COLUMN `value` `value` mediumtext NOT NULL " ;
-//		$db->setQuery($sql);
-//		@$db->query();
-//
-//		$sql = "ALTER TABLE `#__falang_content` CHANGE COLUMN `original_text` `original_text` mediumtext NOT NULL " ;
-//		$db->setQuery($sql);
-//		@$db->query();
-
-		
 	}
+
+	/**
+	 * Check Plugin Order since Joomla 3.6.2, language filter need to be set before FalangDatabaseDriver plgin
+	 *
+	 * @since version 2.7.0
+	 */
+
+	public static function _checkPlugin(){
+		$db     = JFactory::getDbo();
+		$query  = $db->getQuery(true);
+
+		//language filter must be before falang database driver
+		$query->select('extension_id,element,ordering ');
+		$query->from('#__extensions');
+
+		$query->where($query->quoteName('type') . '=' . $query->quote('plugin'));
+		$query->where($query->quoteName('folder') . '=' . $query->quote('system'));
+		$query->where($query->quoteName('element') . 'IN ("languagefilter","falangdriver")');
+		$query->order('ordering ASC');
+
+		$db->setQuery($query);
+		$list = $db->loadObjectList('element');
+
+		if (isset($list['languagefilter']) and isset($list['falangdriver'])){
+			if ((int)$list['languagefilter']->ordering >=  (int)$list['falangdriver']->ordering){
+				//we have to fix the order
+				$pks = array((int)$list['languagefilter']->extension_id,(int)$list['falangdriver']->extension_id);
+				//set order to 1 and 2 - other plugin set to -1 stay at -1
+				$order = array(1,2);
+
+				jimport('joomla.application.component.model');
+				JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_plugins/models');
+				$pluginsModel = JModelLegacy::getInstance( 'Plugin', 'PluginsModel' );
+
+				// Save the ordering
+				$return = $pluginsModel->saveorder($pks, $order);
+
+				$application = JFactory::getApplication();
+				if ($return === false){
+					JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_PLUGINS_SYSTEM_ORDER_FAILED'), 'error');
+				} else {
+					JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_PLUGINS_SYSTEM_ORDER_FIXED'), 'notice');
+				}
+			}
+		}
+
+	}
+
 
 }

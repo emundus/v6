@@ -54,6 +54,10 @@ JHtml::_('behavior.modal');
 		$class = $this->updateInfo->hasUpdates ? 'hasupdates' : 'noupdates';
 		$auth = $this->config->getAuthorization();
 		$auth = empty($auth) ? '' : '?'.$auth;
+		//sbou reset $auth it's already in the url
+		$auth = '';
+		//fin sbou
+
 	?>
 	<?php if($this->needsAuth): ?>
 	<div class="alert alert-info">
