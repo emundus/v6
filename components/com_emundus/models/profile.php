@@ -353,12 +353,12 @@ class EmundusModelProfile extends JModelList
 	* @return  	string The greeting to be displayed to the user
 	*/
 	function getProfileIDByCourse($code = array(), $years = array()) {
-		
+
 		if (!empty($code)>0 && $years[0] != 0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc
 						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") AND esc.year IN ("'.implode("','", $years).'")';
-			
+
 			try
 	        {
 				$this->_db->setQuery( $query );
@@ -374,7 +374,7 @@ class EmundusModelProfile extends JModelList
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc
 						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'")';
-			
+
 			try
 	        {
 				$this->_db->setQuery( $query );
@@ -603,7 +603,7 @@ class EmundusModelProfile extends JModelList
 			$app->redirect("index.php?option=com_fabrik&view=form&formid=".$admissionInfo->form_id."&Itemid=2720&usekey=fnum&rowid=".$campaign['fnum']);
 	}
 
-	
+
 
 	/**
 	 * Returns an object based on supplied user_id that acts as a replacement for the default Joomla user method
@@ -623,8 +623,8 @@ class EmundusModelProfile extends JModelList
 		$emundus_user->firstname  = $profile["firstname"];
 		$emundus_user->lastname   = strtoupper($profile["lastname"]);
 		$emundus_user->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
-		$emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
-		
+		$emundus_user->emProfiles = $this->getUserProfiles($current_user->id);
+
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
