@@ -38,7 +38,7 @@ class EmundusController extends JControllerLegacy {
 
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if (!JRequest::getCmd('view')) {
             if ($this->_user->usertype == "Registered") {
                 $checklist = $this->getView( 'checklist', 'html' );
                 $checklist->setModel( $this->getModel( 'checklist'), true );
@@ -456,7 +456,7 @@ class EmundusController extends JControllerLegacy {
         $aid        = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;
-        
+
         $applicant_profiles = $m_profile->getApplicantsProfilesArray();
         foreach($aid->emProfiles as $emProfile){
             if($emProfile->id === $profile){

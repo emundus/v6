@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: emundus-redirect.php 89 2015-07-01 Benjamin Rivalland
+ * @version 1: emundus-redirect.php 89 2018-03-01 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2016 emundus.fr. All rights reserved.
+ * @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -236,21 +236,27 @@ $db 	= JFactory::getDBO();
 if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$levels = JAccess::getAuthorisedViewLevels($user->id);
 
-	$query = 'SELECT CONCAT(link,"&Itemid=",id) 
-			FROM #__menu 
-			WHERE published=1 AND menutype = "'.$user->menutype.'" AND access IN ('.implode(',', $levels).')
-			AND parent_id != 1
-			AND lft = 2+(
-					SELECT menu.lft 
-					FROM `#__menu` AS menu 
-					WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'" 
-					AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+	try {
+		$query = 'SELECT CONCAT(link,"&Itemid=",id) 
+				FROM #__menu 
+				WHERE published=1 AND menutype = "'.$user->menutype.'" AND access IN ('.implode(',', $levels).')
+				AND parent_id != 1
+				AND lft = 2+(
+						SELECT menu.lft 
+						FROM `#__menu` AS menu 
+						WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'" 
+						AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
 
-	$db->setQuery( $query );
-	$link = $db->loadResult();
+		$db->setQuery( $query );
+		$link = $db->loadResult();
+	} catch (Exception $e){
+		$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+		JLog::add($error, JLog::ERROR, 'com_emundus');
+	}
 
 	if(empty($link)) {
 
+		try{
 		$query = 'SELECT CONCAT(link,"&Itemid=",id) 
 			FROM #__menu 
 			WHERE published=1 AND menutype = "'.$user->menutype.'"  AND access IN ('.implode(',', $levels).')
@@ -263,18 +269,35 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 
 			$db->setQuery( $query );
 			$link = $db->loadResult();
+		} 
+		catch (Exception $e){
+			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+			JLog::add($error, JLog::ERROR, 'com_emundus');
+		}
 		if(empty($link)) {
-			$query = 'SELECT CONCAT(link,"&Itemid=",id) 
-			FROM #__menu 
-			WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
-			$db->setQuery( $query );
-			$link = $db->loadResult();
+			try{
+				$query = 'SELECT CONCAT(link,"&Itemid=",id) 
+				FROM #__menu 
+				WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+				$db->setQuery( $query );
+				$link = $db->loadResult();
+				} 
+			catch (Exception $e){
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
 		}
 	}
 } else { 
-	$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
-	$db->setQuery( $query );
-	$db_table_name = $db->loadResult();
+	try{
+		$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
+		$db->setQuery( $query );
+		$db_table_name = $db->loadResult();
+	} 
+	catch (Exception $e){
+		$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+		JLog::add($error, JLog::ERROR, 'com_emundus');
+	}
 
 	$fnum 		= $jinput->get($db_table_name.'___fnum');
 	$s1 = JRequest::getVar($db_table_name.'___user', null, 'POST'); 
@@ -282,12 +305,17 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$student_id = !empty($s2)?$s2:$s1; 
 
 	$sid = is_array($student_id)?$student_id[0]:$student_id;
-	$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum); 
-	$db->setQuery( $query );
-	$db->execute();
-
+	try{
+		$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum); 
+		$db->setQuery( $query );
+		$db->execute();
+	} 
+	catch (Exception $e){
+		$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+		JLog::add($error, JLog::ERROR, 'com_emundus');
+	}
+	
 	$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum);
-	//$link = "index.php?option=com_emundus&view=application&sid=".$sid.'&fnum='.$fnum;
 }
 			
 header('Location: '.$link);

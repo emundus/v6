@@ -67,21 +67,9 @@ if (is_array($text) && !empty($text)) {
 
 $btn_profile = '<a class="circular ui icon button" href="'.JRoute::_('index.php?option=com_users&view=profile&layout=edit').'"><i class="user icon"></i>'.JText::_('PROFILE').'</a>';
 
-/***** get an applicant campaign *******/
-$m_campaign = new EmundusModelCampaign;
-$campaigns = $m_campaign->getCampaignByApplicant($current_user->id);
-/***** get applicant profiles *******/
-$m_profiles = new EmundusModelProfile;
-$applicant_profiles = $m_profiles->getApplicantsProfilesArray();
-/***************************************/
-
 if (!empty($t__)) {
 
-	/*if($user_menutype == 'mainmenu')
-		$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.lft ASC';
-	else */
-
-	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
+	$query = 'SELECT DISTINCT(m.id), m.menutype, m.title, m.alias, m.link, m.params
 				FROM #__menu m
 				WHERE m.id IN ('.$t__.')
 				ORDER BY m.lft ASC';
@@ -132,6 +120,15 @@ if (!empty($t__)) {
 	}
 
 } elseif (!$current_user->guest) {
+
+	/***** get an applicant campaign *******/
+	$m_campaign = new EmundusModelCampaign;
+	$campaign = $m_campaign->getCampaignByFnum($user->fnum);
+	/***** get applicant profiles *******/
+	$m_profiles = new EmundusModelProfile;
+	$applicant_profiles = $m_profiles->getApplicantsProfilesArray();
+	/***************************************/
+
 	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
               FROM #__menu m
               WHERE published=1
@@ -141,6 +138,7 @@ if (!empty($t__)) {
               ORDER BY m.parent_id DESC, m.lft, m.level, m.menutype, m.id ASC';
 	$db->setQuery($query);
 	$res = $db->loadObjectList();
+
 	if (count($res > 0)) {
 		$tab = array();
 		$tab_temp = array();
@@ -179,38 +177,6 @@ if (!empty($t__)) {
 	}
 
 }
-
-//------switch profile------------------
-
-
-	/*
-		$uid = JFactory::getUser()->id;
-		$db = JFactory::getDbo();
-		$query = 'select  profile
-		from #__emundus_users where user_id = '.$uid;
-		$db->setQuery($query);
-		$uData = $db->loadAssoc();
-
-		$uid = JFactory::getUser()->id;
-		$db = JFactory::getDbo();
-		$query1 = 'select u.username as login, u.email, u.password, eu.firstname, eu.lastname, eu.profile, eu.university_id, up.profile_value as newsletter
-		from #__users as u
-		left join #__emundus_users as eu on eu.user_id = u.id
-		left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profiles.newsletter")
-		where u.id = '.$uid;
-		$db->setQuery($query1);
-		$uData = $db->loadAssoc();
-
-		$query2 = "select esp.id , esp.label, esp.acl_aro_groups, esp.published
-		from #__emundus_setup_profiles as esp
-		left join #__emundus_users_profiles as eup on eup.profile_id = esp.id
-		where eup.user_id = " .$uid;
-		$db->setQuery($query2);
-		$profiles = $db->loadObjectList();
-	 */
-
-
-//----------------------------------------
 
 if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));

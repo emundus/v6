@@ -367,7 +367,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
 
-            $db->setQuery("SELECT * FROM #__dpcalendar_events WHERE id = ".$event_id);
+            $db->setQuery('SELECT * FROM #__dpcalendar_events WHERE id = '.$event_id);
             $event = $db->loadObject();
 
         } catch (Exception $e) {
@@ -376,7 +376,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
 
-            $db->setQuery("SELECT params FROM #__categories WHERE id = ".$event->catid);
+            $db->setQuery('SELECT params FROM #__categories WHERE id = '.$event->catid);
             $params = $db->loadResult();
 
         } catch (Exception $e) {
@@ -389,8 +389,19 @@ class EmundusModelCalendar extends JModelLegacy {
         $offset     = $config->get('offset');
         $event_dt   = new DateTime($event->start_date, new DateTimeZone('GMT'));
         $event_dt->setTimezone(new DateTimeZone($offset));
-        $event_date = $event_dt->format('M j Y');
+        $event_date = $event_dt->format('M j, Y');
         $event_time = $event_dt->format('g:i A');
+
+
+        try {
+
+            $db->setQuery('SELECT label FROM #__emundus_setup_programmes WHERE code LIKE '.$db->Quote($params->program));
+            $label = $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+        }
+
 
         // The first thing to do is that we need to send a mail to the user that just decided to book the event.
 
@@ -401,7 +412,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'EVENT_DATE'    => $event_date,
             'EVENT_TIME'    => $event_time,
             'USER_NAME'     => $user->name,
-            'PROGRAM'       => $params->program
+            'PROGRAM'       => $label
         );
 
         // An array containing the tag names is created.
@@ -484,7 +495,7 @@ class EmundusModelCalendar extends JModelLegacy {
                     'EVENT_TIME'    => $event_time,
                     'USER_NAME'     => $user->name,
                     'RECIPIENT_NAME'=> $recipient->name,
-                    'PROGRAM'       => $params->program
+                    'PROGRAM'       => $label
                 );
 
                 // An array containing the tag names is created.

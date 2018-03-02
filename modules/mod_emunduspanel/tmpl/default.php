@@ -49,23 +49,22 @@ if (isset($user->profile) && $user->profile > 0) {
 
 <div class="ui grid">
 <?php
-if (!isset($campaigns) || empty($campaigns)) {
+
+if (!isset($campaign) || empty($campaign)) {
     if (!in_array($user->profile, $applicant_profiles)) {
         foreach ($tab as $t) {
             echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
         }
     }
 } else {
-    foreach ($campaigns as $campaign) {
-        if ($user->profile == $campaign->profile_id) {
+    if ($user->profile == $campaign->profile_id) {
+        foreach ($tab as $t) {
+            echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+        }
+    } else {
+        if (!in_array($user->profile, $applicant_profiles)){
             foreach ($tab as $t) {
                 echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
-            }
-        } else {
-            if (!in_array($user->profile, $applicant_profiles)){
-                foreach ($tab as $t) {
-                    echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
-                }
             }
         }
     }

@@ -115,7 +115,7 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getResult() {
-		$query = 'SELECT final_grade FROM #__emundus_final_grade WHERE student_id = '.$this->_user->id.' AND campaign_id='.$this->_user->campaign_id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum);
+		$query = 'SELECT final_grade FROM #__emundus_final_grade WHERE student_id = '.$this->_user->id.' AND fnum like '.$this->_db->Quote($this->_user->fnum);
 		$this->_db->setQuery( $query );
 		return $this->_db->loadResult();
 	}
