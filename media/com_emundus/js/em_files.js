@@ -2645,7 +2645,7 @@ $(document).ready(function()
                             '<input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment"/>' +
                             '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags"/>' +
-                            '<label for="em-ex-comment">'+Joomla.JText._('TAGS')+'</label> <br/>' +
+                            '<label for="em-ex-comment">'+Joomla.JText._('JTAG')+'</label> <br/>' +
                             
                             '</div></div></div>');
 
