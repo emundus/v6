@@ -1,0 +1,18 @@
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Go back', 'GO_BACK');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Cancel', 'CANCEL');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Apply', 'APPLY');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Send', 'SEND');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Save', 'SAVE');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Reset', 'RESET');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Réinitialiser', 'RESET');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Remise à zéro', 'RESET');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Envoyer mon dossier de candidature', 'SEND');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Envoyer mon dossier', 'SEND');
+UPDATE `jos_fabrik_forms` SET `params` = replace(`params`, 'Envoyer', 'SEND');
+
+UPDATE `jos_fabrik_forms` SET reset_button_label="RESET" where reset_button_label like "Reset";
+UPDATE `jos_fabrik_forms` SET reset_button_label="RESET" where reset_button_label like "Réinitialiser";
+UPDATE `jos_fabrik_forms` SET reset_button_label="RESET" where reset_button_label like "Remise à zéro";
+UPDATE `jos_fabrik_forms` SET submit_button_label="SEND" where submit_button_label like "Envoyer mon dossier de candidature";
+UPDATE `jos_fabrik_forms` SET submit_button_label="SEND" where submit_button_label like "Envoyer";
+UPDATE `jos_fabrik_forms` SET submit_button_label="SEND" where submit_button_label like "Envoyer mon dossier";
