@@ -1434,6 +1434,44 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    public function getformslist(){
+        $pages = EmundusHelperMenu::buildMenuQuery(9);
+        //var_dump($pages[0]->form_id, $pages[0]->label);
+        $html1 = '';
+        $html2 = '';
+        //var_dump(count($pages));
+        for ($i = 0; $i < count($pages); $i++) {
+            if($i < count($pages)/2){
+                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id.'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id.'" /><label for="'.$pages[$i]->form_id.'">'.JText::_($pages[$i]->label).'</label><br/>';
+            }else{
+                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id.'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id.'" /><label for="'.$pages[$i]->form_id.'">'.JText::_($pages[$i]->label).'</label><br/>';
+            }
+        }
+        
+        $html = '<table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>';
+        
+        echo json_encode((object)(array('status' => true, 'html' => $html)));
+        exit;
+    }
+
+    public function getdoctype(){
+        $docs = EmundusHelperFiles::getAttachmentsTypes();
+        $html1 = '';
+        $html2 = '';
+        //var_dump(count($pages));
+        for ($i = 0; $i < count($docs); $i++) {
+            if($i < count($docs)/2){
+                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id.'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id.'" /><label for="'.$docs[$i]->id.'">'.JText::_($docs[$i]->value).'</label><br/>';
+            }else{
+                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id.'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id.'" /><label for="'.$docs[$i]->id.'">'.JText::_($docs[$i]->value).'</label><br/>';
+            }
+        }
+        
+        $html = '<table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>';
+        
+        echo json_encode((object)(array('status' => true, 'html' => $html)));
+        exit;
+    }
 
     /**
      * Add lines to temp PDF file
@@ -1463,8 +1501,12 @@ class EmundusControllerFiles extends JControllerLegacy
         $decision   = $jinput->getInt('decision', 0);
         $admission  = $jinput->getInt('admission', 0);
         $ids        = $jinput->getVar('ids', null);
-
-
+        $formids    = $jinput->getVar('formids', null);
+        $attachids  = $jinput->getVar('attachids', null);
+    
+        $formids = explode(',', $formids);
+        $attachids = explode(',', $attachids);
+        
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
             if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum))
@@ -1477,24 +1519,28 @@ class EmundusControllerFiles extends JControllerLegacy
         else
             $files_list = array();
 
-
+        
+        //$formids = array("275","256");
         for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
                 if ($forms) {
-                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
+                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $formids);
                 }
 
                 if ($attachment) {
                     $tmpArray = array();
                     $m_application = $this->getModel('application');
-                    $files = $m_application->getAttachmentsByFnum($fnum, $ids);
+                    $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachids);
 
                     EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
 
-                if ($assessment)
+                if ($assessment){
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum);
+                    
+                }
+                    
                 if ($decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum);
                 if ($admission)

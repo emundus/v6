@@ -468,6 +468,14 @@ class EmundusHelperFiles
         return $db->loadObjectList();
     }
 
+    public  function getAttachmentsTypes(){
+        $db = JFactory::getDBO();
+        $query = 'SELECT *
+                FROM #__emundus_setup_attachments ORDER BY value ASC';
+        $db->setQuery( $query );
+        return $db->loadObjectList();
+    }
+
     public  function getEvaluation_doc($result){
         $db = JFactory::getDBO();
         $query = 'SELECT *

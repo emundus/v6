@@ -672,6 +672,8 @@ function generate_pdf(json) {
     var decision    = json.decision;
     var admission   = json.admission;
     var ids         = json.ids;
+    var formids     = json.formschecked;
+    var attachids   = json.attachmentchecked;
 
     $.ajaxQ.abortAll();
 
@@ -691,7 +693,9 @@ function generate_pdf(json) {
                     assessment: assessment,
                     decision: decision,
                     admission: admission,
-                    ids: ids
+                    ids: ids,
+                    formids: formids,
+                    attachids:attachids
                 },
                 success: function (result) {
                     var json = result.json;
@@ -2749,19 +2753,114 @@ $(document).ready(function()
             //export PDF;
             case 8 :
                 $('#em-modal-actions .modal-body').empty();
-                $('#em-modal-actions .modal-body').append('<div class="well">' +
-                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked/>' +
-                '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/>' +
-                '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
-                '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/>' +
-                '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                '<label for="em-ex-assessment">'+Joomla.JText._('ASSESSMENT_PDF')+'</label> <br/>' +
-                '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                '<label for="em-ex-decision">'+Joomla.JText._('DECISION_PDF')+'</label> <br/>' +
-                '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                '<label for="em-ex-admission">'+Joomla.JText._('ADMISSION_PDF')+'</label> <br/>' +
-                '</div>'+
+                $('#em-modal-actions .modal-body').append(
+                        '<div class="panel panel-default pdform">'+
+                            '<div class="panel-heading">'+
+                                '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label>'+
+                            '</div>'+
+                            '<div class="panel-body" id="felts" style="display:none;"></div>'+
+                        '</div>'+
+                        '<div class="panel panel-default pdform">'+
+                            '<div class="panel-heading">'+
+                                '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label>'+
+                            '</div>'+
+                            '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
+                       '</div>'+
+
+                       '<div class="panel panel-default pdform">'+
+                            '<div class="panel-heading">'+
+                                '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
+                                '<label for="em-ex-assessment">'+Joomla.JText._('ASSESSMENT_PDF')+'</label>'+
+                            '</div>'+
+                        '</div>'+
+
+                        '<div class="panel panel-default pdform">'+
+                            '<div class="panel-heading">'+
+                                '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
+                                '<label for="em-ex-decision">'+Joomla.JText._('DECISION_PDF')+'</label>'+ 
+                            '</div>'+
+                        '</div>'+
+
+                        '<div class="panel panel-default pdform">'+
+                            '<div class="panel-heading">'+
+                                '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
+                                '<label for="em-ex-admission">'+Joomla.JText._('ADMISSION_PDF')+'</label>'+
+                            '</div>'+
+                        '</div><br/>'+
+                
+                                /*'<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" />' +
+                                '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/><br/>' +
+                                '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
+                                '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/><br/>' +
+                                '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
+                                '<label for="em-ex-assessment">'+Joomla.JText._('ASSESSMENT_PDF')+'</label> <br/><br/>' +
+                                '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
+                                '<label for="em-ex-decision">'+Joomla.JText._('DECISION_PDF')+'</label> <br/><br/>' +
+                                '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
+                                '<label for="em-ex-admission">'+Joomla.JText._('ADMISSION_PDF')+'</label> <br/>' +*/
+                           
+                
                 '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div></div>');
+                
+
+                $.ajax({
+                    type:'get',
+                    url: 'index.php?option=com_emundus&controller=files&task=getformslist',
+                    dataType:'json',
+
+                    success: function(result) {
+                        if(result.status)
+                            $('#felts').append(result.html);
+                            $('#felts').toggle(400);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+
+                $.ajax({
+                    type:'get',
+                    url: 'index.php?option=com_emundus&controller=files&task=getdoctype',
+                    dataType:'json',
+
+                    success: function(result) {
+                        if(result.status)
+                            $('#aelts').append(result.html);
+                            $('#aelts').toggle(400);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+               
+               
+                    
+                        
+                   
+                   /* if ($('#em-ex-attachment').is(":checked"))
+                        $('#elt').hide();*/
+                  
+                    /*if ($('#em-ex-assessment').is(":checked"))
+                        $('#elts-check').show();
+                    
+                    if ($('#em-ex-decision').is(":checked"))
+                        $('#elts-check').show();
+                    
+                        
+                    if ($('#em-ex-admission').is(":checked"))
+                        $('#elts-check').show();*/
+                   
+                
+                
+                
+                   
+
+                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
+                $('#felts').css({height: "120px"});
+                $('#aelts').css({height: "180px"});
+               
                 $('#em-modal-actions .modal-footer').hide();
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                 $('#em-modal-actions .modal').show();
@@ -3092,10 +3191,24 @@ $(document).ready(function()
         var decision    = 0;
         var admission   = 0;
 
-        if ($('#em-ex-forms').is(":checked"))
+        var form_checked = [];
+        var attach_checked = [];
+
+        $('#felts input:checked').each(function() {
+            form_checked.push($(this).val());
+            forms       = 1;
+        });
+
+        
+        $('#aelts input:checked').each(function() {
+            attach_checked.push($(this).val());
+            attachment       = 1;
+        });
+        
+        /*if ($('#em-ex-forms').is(":checked"))
             forms       = 1;
         if ($('#em-ex-attachment').is(":checked"))
-            attachment  = 1;
+            attachment  = 1;*/
         if ($('#em-ex-assessment').is(":checked"))
             assessment  = 1;
         if ($('#em-ex-decision').is(":checked"))
@@ -3110,6 +3223,7 @@ $(document).ready(function()
         '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
         '</div>');
 
+        //var formids = JSON.stringify({"0":"275","1":"288"});
         //console.log(ids);
         //console.log(fnums);
 
@@ -3138,8 +3252,8 @@ $(document).ready(function()
                                         '</p></div><div id="datasbs"</div>');
 
                                         var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
-                                        '","totalfile":"' + totalfile + '","forms":"' + forms +
-                                        '","attachment":"' + attachment + '","assessment":"' + assessment +
+                                        '","totalfile":"' + totalfile + '","forms":"' + forms + '","formschecked":"' + form_checked +
+                                        '","attachment":"' + attachment + '", "attachmentchecked":"' + attach_checked + '","assessment":"' + assessment +
                                         '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
 
                                         $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');

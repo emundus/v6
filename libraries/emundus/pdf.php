@@ -631,7 +631,7 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $application_form_order = null) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $application_form_order = null) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -639,7 +639,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-
+	
 	$config = JFactory::getConfig();
 	$offset = $config->get('offset');
 
@@ -663,7 +663,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$htmldata = '';
 	$forms ='';
 	if ($form_post)
-		$forms = $m_application->getFormsPDF($user_id, $fnum, $application_form_order);
+		$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order);
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
