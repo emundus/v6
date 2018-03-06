@@ -49,7 +49,7 @@ defined('_JEXEC') or die;
                             <input id="em-timeslots-start-time" type="time">
                         </div>
                         <div class="input-group">
-                            <span class="input-group-addon" for="em-timeslots-end-time"><?php echo JText::_("MOD_EM_TIMESLOTS_SEND_TIME"); ?></span>
+                            <span class="input-group-addon" for="em-timeslots-end-time"><?php echo JText::_("MOD_EM_TIMESLOTS_END_TIME"); ?></span>
                             <input id="em-timeslots-end-time" type="time">
                         </div>
                     </div>
@@ -79,13 +79,13 @@ defined('_JEXEC') or die;
 
     function postTimeslots() {
 
-        var calId       = $$("#em-timeslots-calendar").get('value');
-        var sDate       = $$("#em-timeslots-start-date").get('value');
-        var eDate       = $$("#em-timeslots-end-date").get('value');
-        var sTime       = $$("#em-timeslots-start-time").get('value');
-        var eTime       = $$("#em-timeslots-end-time").get('value');
-        var tsLength    = $$("#em-timeslot-length").get('value');
-        var pLength     = $$("#em-pause-length").get('value');
+        var calId       = $$("#em-timeslots-calendar").get('value'),
+            sDate       = $$("#em-timeslots-start-date").get('value'),
+            eDate       = $$("#em-timeslots-end-date").get('value'),
+            sTime       = $$("#em-timeslots-start-time").get('value'),
+            eTime       = $$("#em-timeslots-end-time").get('value'),
+            tsLength    = $$("#em-timeslot-length").get('value'),
+            pLength     = $$("#em-pause-length").get('value');
 
         let ajax = new Request({
             url: 'index.php?option=com_emundus&controller=calendar&task=createtimeslots&format=raw',
@@ -100,21 +100,21 @@ defined('_JEXEC') or die;
                 pLength: pLength
             },
             onRequest: function(){
-                $$('#btnCal').setStyle('background-color','#4183D7');
-                $$('#btnCal').set('text','Loading... ');
+                $$('#btnTimeslots').setStyle('background-color','#4183D7');
+                $$('#btnTimeslots').set('text','Loading... ');
             },
             onSuccess: function(result){
                 result = JSON.parse(result);
                 if (result.status) {
                     location.reload(true);
                 } else {
-                    $$('#btnCal').setStyle('background-color','#96281B');
-                    $$('#btnCal').set('text', result.error);
+                    $$('#btnTimeslots').setStyle('background-color','#96281B');
+                    $$('#btnTimeslots').set('text', result.error);
                 }
             },
             onFailure: function(){
-                $$('#btnCal').setStyle('background-color','#96281B');
-                $$('#btnCal').set('text','Error!');
+                $$('#btnTimeslots').setStyle('background-color','#96281B');
+                $$('#btnTimeslots').set('text','Error!');
             }
         });
 
