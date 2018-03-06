@@ -51,7 +51,7 @@ if (isset($user->profile) && $user->profile > 0) {
 <?php
 
 if (!isset($campaign) || empty($campaign)) {
-    if (!in_array($user->profile, $applicant_profiles)) {
+    if (isset($user->profile) && isset($applicant_profiles) && !in_array($user->profile, $applicant_profiles)) {
         foreach ($tab as $t) {
             echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
         }
