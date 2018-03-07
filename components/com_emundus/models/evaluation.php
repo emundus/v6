@@ -973,7 +973,7 @@ class EmundusModelEvaluation extends JModelList
 								$query['q'] .= ' ';
 							else
 							{
-								//$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
 							}
 						}
 						break;
