@@ -561,6 +561,60 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
+    public function createTimeslots($calendar_id = null, $start_dates = array(), $end_dates = array()) {
+
+        $db = JFactory::getDbo();
+        $user = JFactory::getUser();
+
+        // Make sure variables aren't empty and the start and end dates have the same number of elements.
+        if ($calendar_id == null || count($start_dates) == 0 || count($end_dates) == 0 || count($start_dates) != count($end_dates))
+            return false;
+
+        // Get calendar information to use for the events.
+        $query = 'SELECT extension FROM #__categories WHERE id = '.$calendar_id;
+
+        try {
+
+            $db->setQuery($query);
+            $extension = $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting calendar from id in model/calendar at query: '.$query, JLog::ERROR, 'com_emundus');
+        }
+
+        // Check that the calendar id actually corresponds to a calendar.
+        if ($extension != 'com_dpcalendar')
+            return false;
+
+        $query = 'INSERT INTO #__dpcalendar_events
+                    (catid, uid, original_id,title, alias, start_date, end_date, images, url, language, created, created_by, created_by_alias) VALUES ';
+
+        $index = 0;
+        foreach ($start_dates as $start_date) {
+
+            $start_date = $start_date->format('Y-m-d G:i:s');
+            $end_date = $end_dates[$index]->format('Y-m-d G:i:s');
+
+            $query .= ' ('.$db->Quote($calendar_id).', '.$db->Quote(md5(str_shuffle(date('Y-m-d G:i:s')))).',0 , '.$db->Quote($start_date).', '.$db->Quote(str_replace(' ','-',$start_date)).', '.$db->Quote($start_date).', '.$db->Quote($end_date).', '.$db->Quote('{}').', '.$db->Quote(' ').', '.$db->Quote('*').', '.$db->Quote(date('Y-m-d G:i:s')).', '.$user->id.', '.$db->Quote(str_replace(' ','-',$user->name)).'),';
+
+            $index++;
+        }
+
+        $query = rtrim($query, ',');
+
+        try {
+
+            $db->setQuery($query);
+            $db->execute();
+            return true;
+
+        } catch (Exception $e) {
+            JLog::add('Error inserting events in model/calendar at query: '.$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
     // Helper function, gets all users that are coordinators to a program.
     function getProgramRecipients($program_name) {
 
