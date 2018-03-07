@@ -1541,7 +1541,7 @@ $(document).ready(function()
                             $('.modal-body').append('<div id="elements_detail" style="display: none">' +
                                                         '<div class="panel panel-default xclsform">' +
                                                             '<div class="panel-heading">'+
-                                                            '<table><tr>'+
+                                                            '<table style="width:100%;"><tr>'+
                                                                 '<th><h5>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
                                                                 ' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
@@ -2682,7 +2682,7 @@ $(document).ready(function()
                             $('th').css({'padding-right':"40px"});
                             $('#main').css({width: "95%",'margin': "auto" ,'margin-bottom': "180px", 'position':"relative"});
                             $('#list-element-export').css({'float': "left",'height':"150px", 'width':"70%",'position':"absolute"});
-                            $('#oelts').css({'float': "left", 'width':"29%", 'margin-left':"71%"});
+                            $('#oelts').css({'float': "left", 'width':"30.7%", 'margin-left':"70%", 'position':"absolute"});
 
                             $('#methode').css({width: "95%",'margin': "auto", 'padding-bottom': "70px", 'position':"relative"});
                             $('#exp').css({'float': "left", 'width':"50%", 'height':"75px", 'position':"absolute"});
@@ -2756,13 +2756,15 @@ $(document).ready(function()
                 $('#em-modal-actions .modal-body').append(
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
-                                '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label>'+
+                                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" />' +
+                                '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
                             '<div class="panel-body" id="felts" style="display:none;"></div>'+
                         '</div>'+
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
-                                '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label>'+
+                                '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
+                                '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
                             '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
                        '</div>'+
@@ -2770,35 +2772,24 @@ $(document).ready(function()
                        '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
                                 '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                                '<label for="em-ex-assessment">'+Joomla.JText._('ASSESSMENT_PDF')+'</label>'+
+                                '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
                         '</div>'+
 
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
                                 '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                                '<label for="em-ex-decision">'+Joomla.JText._('DECISION_PDF')+'</label>'+ 
+                                '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+ 
                             '</div>'+
                         '</div>'+
 
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
                                 '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                                '<label for="em-ex-admission">'+Joomla.JText._('ADMISSION_PDF')+'</label>'+
+                                '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
                         '</div><br/>'+
                 
-                                /*'<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" />' +
-                                '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/><br/>' +
-                                '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
-                                '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/><br/>' +
-                                '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                                '<label for="em-ex-assessment">'+Joomla.JText._('ASSESSMENT_PDF')+'</label> <br/><br/>' +
-                                '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                                '<label for="em-ex-decision">'+Joomla.JText._('DECISION_PDF')+'</label> <br/><br/>' +
-                                '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                                '<label for="em-ex-admission">'+Joomla.JText._('ADMISSION_PDF')+'</label> <br/>' +*/
-                           
                 
                 '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div></div>');
                 
@@ -2838,6 +2829,19 @@ $(document).ready(function()
                
                     
                         
+                $('#em-ex-forms').click(function(e){
+                    if ($('#em-ex-forms').is(":checked"))
+                        $('#felts :checkbox').prop("checked", true);
+                    else
+                        $('#felts :checkbox').prop("checked", false);
+                });
+
+                $('#em-ex-attachment').click(function(e){
+                    if ($('#em-ex-attachment').is(":checked"))
+                        $('#aelts :checkbox').prop("checked", true);
+                    else
+                        $('#aelts :checkbox').prop("checked", false);
+                });
                    
                    /* if ($('#em-ex-attachment').is(":checked"))
                         $('#elt').hide();*/
