@@ -132,18 +132,24 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
 
         // Information about the timeslots to create is obtained through the POST data.
-        $calendar_id    = $jinput->get('calId', null, 'INT');
-        $start_day       = $jinput->get('sDate', null, 'STR');
-        $end_day        = $jinput->get('eDate', null, 'STR');
-        $start_time     = $jinput->get('sTime', null, 'STR');
-        $end_time       = $jinput->get('eTime', null, 'STR');
-        $ts_length      = $jinput->get('tsLength', 50, 'INT');
-        $pause_length   = $jinput->get('pLength', 10, 'INT');
+        $calendar_id    = $jinput->get('calId', null, 'INT')[0];
+        $start_day      = $jinput->get('sDate', null, 'STR')[0];
+        $end_day        = $jinput->get('eDate', null, 'STR')[0];
+        $start_time     = $jinput->get('sTime', null, 'STR')[0];
+        $end_time       = $jinput->get('eTime', null, 'STR')[0];
+        $ts_length      = $jinput->get('tsLength', 50, 'INT')[0];
+        $pause_length   = $jinput->get('pLength', 10, 'INT')[0];
+        $today          = date('Y-m-d');
 
-        // Convert to PHP date object.
-        $start_day  = date('Y-m-d', strtotime($start_day));
-        $end_day    = date('Y-m-d', strtotime($end_day));
-        $today      = date('Y-m-d');
+
+        if ($calendar_id == 0) {
+            echo json_encode([
+                'status' => false,
+                'error' => JText::_('NO_CALENDAR')
+            ]);
+            die;
+        }
+
 
         // Check if the days selected are in the future.
         if ($today > $start_day || $today > $end_day) {
@@ -164,12 +170,11 @@ class EmundusControllerCalendar extends JControllerLegacy {
         }
 
         // Convert time to PHP date object.
-        $start_time = date('H:i', strtotime($start_time));
-        $end_time   = date('H:i', strtotime($end_time));
-
+        $start_time = new DateTime($start_time);
+        $end_time   = new DateTime($end_time);
 
         // Check that there is at least enough room for an entire time slot in a day.
-        $start_time_with_timeslot = $start_time;
+        $start_time_with_timeslot = new DateTime($start_time->format('H:i'));
         $start_time_with_timeslot->modify("+{$ts_length} minutes");
         if ($start_time_with_timeslot > $end_time) {
             echo json_encode([
@@ -180,15 +185,15 @@ class EmundusControllerCalendar extends JControllerLegacy {
         }
 
         // Build a single start date from both the start time and and the start date.
-        $current_date = $start_day;
-        $current_date->modify("+ ".date('H',$start_time)." hours");
-        $current_date->modify("+ ".date('i',$start_time)." minutes");
-        $start_date = $current_date;
+        $current_date = new DateTime($start_day);
+        $current_date->modify("+ ".$start_time->format('H')." hours");
+        $current_date->modify("+ ".$start_time->format('i')." minutes");
+        $start_date = new DateTime($current_date->format('Y-m-d H:i'));
 
         // Build a single end date from the end time and end date.
-        $end_date = $end_day;
-        $end_date->modify("+ ".date('H',$end_time)." hours");
-        $end_date->modify("+ ".date('i',$end_time)." minutes");
+        $end_date = new DateTime($end_day);
+        $end_date->modify("+ ".$end_time->format('H')." hours");
+        $end_date->modify("+ ".$end_time->format('i')." minutes");
 
         $nb_days = 0;
         $start_dates = array();
@@ -196,18 +201,18 @@ class EmundusControllerCalendar extends JControllerLegacy {
         while ($current_date < $end_date) {
 
             // Check that there is at least enough room for an entire time slot.
-            $time_with_timeslot = $current_date;
+            $time_with_timeslot = new DateTime($current_date->format('Y-m-d H:i'));
             $time_with_timeslot->modify("+{$ts_length} minutes");
 
             // If the next timeslot will cause the day to overflow then we should just move on to the next day.
             // Thins also means reseting the hours and minutes.
-            if (date('H:i', $time_with_timeslot) > date('H:i', $end_date)) {
+            if ($time_with_timeslot->format('H:i') > $end_date->format('H:i')) {
 
                 // Reset the date back to the beggining, this helps reset hours and minutes.
-                $current_date = $start_date;
+                $current_date = new DateTime($start_date->format('Y-m-d H:i'));
 
                 // If it's a Friday, skip the weekend.
-                if (date('w', $current_date) == 5)
+                if ($current_date->format('w') == 5)
                     $nb_days = $nb_days + 3;
                 else
                     $nb_days++;
@@ -219,21 +224,22 @@ class EmundusControllerCalendar extends JControllerLegacy {
             }
 
             // Add the current timedate to the list of start dates.
-            $start_dates[] = $current_date;
+            $start_dates[] = new DateTime($current_date->format('Y-m-d H:i'));
 
             // Move the date up for the duration of the even times.
             $current_date->modify("+{$ts_length} minutes");
 
             // Current time is now at the event end.
-            $end_dates[] = $current_date;
+            $end_dates[] = new DateTime($current_date->format('Y-m-d H:i'));
 
             // Add the buffer time in between events.
             $current_date->modify("+{$pause_length} minutes");
 
-
         }
 
-        echo json_encode(['status' => true]);
+        $result = $m_calendar->createTimeslots($calendar_id, $start_dates, $end_dates);
+
+        echo json_encode(['status' => $result]);
 
     }
 

@@ -6,14 +6,14 @@
 
         public function getCalendars() {
 
-            $db = getDBo();
+            $db = JFactory::getDBo();
 
             // Get the parent cal ID, this is the one we omit from the list
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $parent_id = $eMConfig->get('parentCalId');
 
             $query = 'SELECT id, title FROM #__categories
-                        WHERE extension LIKE com_dpcalendar
+                        WHERE extension LIKE "com_dpcalendar"
                         AND id != '.$parent_id;
 
             try {
