@@ -1895,7 +1895,7 @@ td {
         try {
             $query = "SELECT * FROM #__emundus_uploads WHERE fnum like ".$this->_db->quote($fnum);
 
-            if (isset($attachment_id) && !empty($attachment_id)){
+            if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
                 if(is_array($attachment_id))
                     $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
                 else
@@ -1904,7 +1904,7 @@ td {
                 
             if (!empty($ids) && $ids != "null")
                 $query .= " AND id in ($ids)";
-                
+
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch(Exception $e) {
