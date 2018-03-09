@@ -2569,14 +2569,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_campaigns = new EmundusModelCampaign;
         if(!empty($fnums)){
             $fnums = json_decode($fnums);
+            
             foreach($fnums as $fnum){
-                $campaign  = $m_campaigns->getCampaignByFnum($fnum);
-                $programme = $m_campaigns->getProgrammeByCampaignID((int)$campaign->id);
-                $option = '<option value="'.$programme['code'].'">'.$programme['label'].' - '.$programme['code'].'</option>';
-                if (strpos($html, $option) === false) {
-                    $html .= $option;
+                if($fnum != "em-check-all"){
+                    $campaign  = $m_campaigns->getCampaignByFnum($fnum);
+                    $programme = $m_campaigns->getProgrammeByCampaignID((int)$campaign->id);
+                    $option = '<option value="'.$programme['code'].'">'.$programme['label'].' - '.$programme['code'].'</option>';
+                    if (strpos($html, $option) === false) {
+                        $html .= $option;
+                    }
                 }
-                
             }
         }
         
