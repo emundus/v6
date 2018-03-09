@@ -631,7 +631,7 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $application_form_order = null) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -639,12 +639,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	
 	$config = JFactory::getConfig();
 	$offset = $config->get('offset');
 
 	$m_profile 		= new EmundusModelProfile;
 	$m_application 	= new EmundusModelApplication;
+	$m_files		= new EmundusModelFiles;
 
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
@@ -663,7 +665,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$htmldata = '';
 	$forms ='';
 	if ($form_post)
-		$forms = $m_application->getFormsPDF($user_id, $fnum, $application_form_order);
+		$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order);
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -770,36 +772,59 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	</div>';
 	/**  END APPLICANT   ****/
 
+	/*** Tags */
+	if(!empty($options)){
+		
+		if(in_array("tags", $options)){
+			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
+			$titletag = count($tags)>1?JText::_('TAGS'):JText::_('JTAG');
+			
+			$htmldata .='
+			<h2>'.$titletag.' : '.count($tags).'</h2>';
+			$htmldata .='<div class="tags">| ';
+			foreach($tags as $tag){
+				$htmldata .= '<b>'.$tag['label'].'</b> | ';
+			}
+			$htmldata .='</div>';
+		}
+	}
+	
+	
+	/*** End tags */
 
 	$htmldata .= $forms;
-//die($htmldata);
+	//die($htmldata);
 	// Listes des fichiers chargés
-	$uploads = $m_application->getUserAttachmentsByFnum($fnum);
-    $nbuploads=0;
-    foreach ($uploads as $upload) {
-        if (strrpos($upload->filename, "application_form") === false) {
-            $nbuploads++;
-        }
-    }
-	$titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
+	if(!empty($options)){
+		if(in_array("upload", $options)){
+			$uploads = $m_application->getUserAttachmentsByFnum($fnum);
+			$nbuploads=0;
+			foreach ($uploads as $upload) {
+				if (strrpos($upload->filename, "application_form") === false) {
+					$nbuploads++;
+				}
+			}
+			$titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
 
-	$htmldata .='
-	<h2>'.$titleupload.' : '.$nbuploads.'</h2>';
+			$htmldata .='
+			<h2>'.$titleupload.' : '.$nbuploads.'</h2>';
 
-	$htmldata .='<div class="file_upload">';
-	$htmldata .= '<ol>';
-	foreach ($uploads as $upload){
-        if (strrpos($upload->filename,"application_form")=== false) {
-            $path_href = JURI::base(true) . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
-            $htmldata .= '<li><b>' . $upload->value . '</b>';
-            $htmldata .= '<ul>';
-            $htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
-            $htmldata .= '</ul>';
-            $htmldata .= '</li>';
-        }
+			$htmldata .='<div class="file_upload">';
+			$htmldata .= '<ol>';
+			foreach ($uploads as $upload){
+				if (strrpos($upload->filename,"application_form")=== false) {
+					$path_href = JURI::base(true) . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
+					$htmldata .= '<li><b>' . $upload->value . '</b>';
+					$htmldata .= '<ul>';
+					$htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+					$htmldata .= '</ul>';
+					$htmldata .= '</li>';
+				}
 
+			}
+			$htmldata .='</ol></div>';
+		}
 	}
-	$htmldata .='</ol></div>';
 
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
 

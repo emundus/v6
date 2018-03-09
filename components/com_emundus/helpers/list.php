@@ -220,7 +220,7 @@ class EmundusHelperList{
 	// @description get forms list to create action block for each users
 	// @param	int applicant user id
 	// @return 	array Menu links of all forms needed to apply
-	function getFormsList($user_id, $fnum="0"){
+	function getFormsList($user_id, $fnum="0", $formids=null){
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		$m_profile 	= new EmundusModelProfile();
@@ -228,7 +228,7 @@ class EmundusHelperList{
 		$infos 		= $m_profile->getFnumDetails($fnum);
 		$profile 	= $m_profile->getProfileByCampaign($infos['campaign_id']);
 
-		return $h_menu->buildMenuQuery($profile['profile_id']);
+		return $h_menu->buildMenuQuery($profile['profile_id'], $formids);
 	}
 
 	// @description get forms list to create action block by profile_id

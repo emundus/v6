@@ -230,6 +230,9 @@ JText::script('COM_EMUNDUS_ERROR_CAPACITY_PDF');
 JText::script('DECISION_PDF');
 JText::script('ADMISSION_PDF');
 JText::script('GENERATE_PDF');
+JText::script('PDF_OPTIONS');
+JText::script('FILES_UPLOADED');
+JText::script('TAGS');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
