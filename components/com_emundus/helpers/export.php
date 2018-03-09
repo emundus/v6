@@ -27,7 +27,7 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport
 {
 	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1, $form_ids = null, $application_form_order = null ) {
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null ) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
         
 		if (!file_exists($file)) {
@@ -44,7 +44,7 @@ class EmundusHelperExport
 		
 		require_once($file);
         
-		application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $application_form_order);
+		application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
 	}
 

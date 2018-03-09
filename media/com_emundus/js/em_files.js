@@ -674,6 +674,7 @@ function generate_pdf(json) {
     var ids         = json.ids;
     var formids     = json.formschecked;
     var attachids   = json.attachmentchecked;
+    var options     = json.options;
 
     $.ajaxQ.abortAll();
 
@@ -695,7 +696,8 @@ function generate_pdf(json) {
                     admission: admission,
                     ids: ids,
                     formids: formids,
-                    attachids:attachids
+                    attachids:attachids,
+                    options:options
                 },
                 success: function (result) {
                     var json = result.json;
@@ -749,8 +751,19 @@ function generate_pdf(json) {
     }
 }
 
-function showelts(elt,idcode ){
-    $('#'+idcode).toggle(400);
+function showelts(elt,idcodeyear ){
+    if ($(elt).hasClass("btn btn-info")) {
+        $('#'+idcodeyear).toggle(400);
+        $(elt).removeClass("btn btn-info").addClass("btn btn-elements-success");
+        $(elt).empty();
+        $(elt).append('<span class="glyphicon glyphicon-minus"></span>');
+    }else{
+        $('#'+idcodeyear).toggle(400);
+        $(elt).removeClass("btn btn-elements-success").addClass("btn btn-info");
+        $(elt).empty();
+        $(elt).append('<span class="glyphicon glyphicon-plus"></span>');
+
+    }
 }
 
 $(document).ready(function()
@@ -2374,6 +2387,7 @@ $(document).ready(function()
                                     });
                                 }else{
                                     $('.btn-success').hide();
+                                    $('#camp').hide();
                                     $('#elements_detail').hide();
                                     $('#elements-popup').hide();
                                 }
@@ -2793,12 +2807,25 @@ $(document).ready(function()
                                 '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
                         '</div><br/>'+
+
+                        '<div class="panel panel-default pdform">'+
+                            '<div class="panel-heading">'+
+                                '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('PDF_OPTIONS').toUpperCase()+'</font></label>'+
+                            '</div>'+
+                            '<div class="panel-body" id="options">'+
+                                '<input class="em-ex-check-opt" type="checkbox"  value="upload" name="upload" id="em-ex-upload"/><label for="em-ex-upload">'+Joomla.JText._('FILES_UPLOADED')+'</label><br/>' +
+                                '<input class="em-ex-check-opt" type="checkbox"  value="tags" name="tags" id="em-ex-tags"/><label for="em-ex-tags">'+Joomla.JText._('TAGS')+'</label>' +
+                            '</div>'+
+                        '</div><br/>'+
+            
                 
                 
-                '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div></div>');
+                '<div style="padding-left:21px;"><a class="btn btn-default btn-attach" id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div></div></div>');
                 
                 var checkInput = getUserCheck();
                 //alert(checkInput);
+                var prghtml = "";
+                var atthtml = "";
 
                 $.ajax({
                     type:'post',
@@ -2822,7 +2849,8 @@ $(document).ready(function()
                                 var code = $('#em-export-prg').val();
                                 $.ajax({
                                     type:'get',
-                                    url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
+                                    url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                    data: {checkInput : checkInput},
                                     dataType:'json',
     
                                     success: function(result) {
@@ -2831,7 +2859,7 @@ $(document).ready(function()
                                             $('#em-export-camp').trigger("chosen:updated");
                                             $('#camp').show();
 
-                                            nbcamp = result.nbcamp;
+                                           
 
                                             var year = $("#em-export-camp").val();
 
@@ -2842,6 +2870,7 @@ $(document).ready(function()
                             
                                                 success: function(result) {
                                                     if(result.status){
+                                                        prghtml = result.html;
                                                         $('#felts').append(result.html);
                                                         $('#felts').toggle(400);
 
@@ -2852,6 +2881,7 @@ $(document).ready(function()
                                         
                                                             success: function(result) {
                                                                 if(result.status){
+                                                                    atthtml = result.html;
                                                                     $('#aelts').append(result.html);
                                                                     $('#aelts').toggle(400);
                                                                 }
@@ -2894,7 +2924,8 @@ $(document).ready(function()
                       
                         $.ajax({
                             type:'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
+                            url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                            data: {checkInput : checkInput},
                             dataType:'json',
 
                             success: function(result) {
@@ -2915,7 +2946,8 @@ $(document).ready(function()
                                         success: function(result) {
                                             if(result.status){
                                                 
-                                                //$('#felts').empty();
+                                                prghtml = result.html;
+                                                $('#felts-'+code+year).parent('div').remove();
                                                 $('#felts').append(result.html);
                                                 $('#felts').show();
                                                 $('#em-ex-forms').prop('checked', false);
@@ -2927,7 +2959,8 @@ $(document).ready(function()
                                 
                                                     success: function(result) {
                                                         if(result.status){
-                                                            //$('#aelts').empty();
+                                                            atthtml = result.html;
+                                                            $('#aelts-'+code+year).parent('div').remove();
                                                             $('#aelts').append(result.html);
                                                             $('#aelts').show();
                                                             $('#em-ex-attachment').prop('checked', false);
@@ -2952,7 +2985,14 @@ $(document).ready(function()
                                 console.log(jqXHR.responseText);
                             }
                         });
+                    }else{
+                        $('#camp').hide();
+                        $('#felts').hide();
+                        $('#aelts').hide();
+                        $('#felts').empty();
+                        $('#aelts').empty();
                     }
+                        
                 });
 
 
@@ -2962,84 +3002,61 @@ $(document).ready(function()
 
                     if (code != 0) {
                         var year = $("#em-export-camp").val();
+                        if (year != 0) {
+                            $.ajax({
+                                type:'get',
+                                url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
+                                dataType:'json',
+            
+                                success: function(result) {
+                                    if(result.status){
+                                        
+                                        $('#felts-'+code+year).parent('div').remove();
+                                        $('#felts-'+code+'0').parent('div').remove();
+                                        $('#felts').append(result.html);
+                                        $('#felts').show();
 
-                        $.ajax({
-                            type:'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
-                            dataType:'json',
-        
-                            success: function(result) {
-                                if(result.status){
-                                    $('#felts').empty();
-                                    $('#felts').append(result.html);
-                                    $('#felts').show();
-
-                                    $.ajax({
-                                        type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
-                                        dataType:'json',
-                    
-                                        success: function(result) {
-                                            if(result.status){
-                                                $('#aelts').empty();
-                                                $('#aelts').append(result.html);
-                                                $('#aelts').show();
-                                            }
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown)
-                                        {
-                                            console.log(jqXHR.responseText);
-                                        }
-                                    });
-                                }
-                            },
-                            error: function (jqXHR, textStatus, errorThrown)
-                            {
-                                console.log(jqXHR.responseText);
-                            }
-                        });
-                    }
-                });
-
-                
-                /*$.ajax({
-                    type:'get',
-                    url: 'index.php?option=com_emundus&controller=files&task=getformslist',
-                    dataType:'json',
-
-                    success: function(result) {
-                        if(result.status)
-                            $('#felts').append(result.html);
-                            $('#felts').toggle(400);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
-                    {
-                        console.log(jqXHR.responseText);
-                    }
-                });
-
-                $.ajax({
-                    type:'get',
-                    url: 'index.php?option=com_emundus&controller=files&task=getdoctype',
-                    dataType:'json',
-
-                    success: function(result) {
-                        if(result.status)
-                            $('#aelts').append(result.html);
-                            $('#aelts').toggle(400);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
-                    {
-                        console.log(jqXHR.responseText);
-                    }
-                });
-               */
-               
-                    
+                                        $.ajax({
+                                            type:'get',
+                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
+                                            dataType:'json',
                         
+                                            success: function(result) {
+                                                if(result.status){
+                                                    $('#aelts-'+code+year).parent('div').remove();
+                                                    $('#aelts-'+code+'0').parent('div').remove();
+                                                    $('#aelts').append(result.html);
+                                                    $('#aelts').show();
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown)
+                                            {
+                                                console.log(jqXHR.responseText);
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function (jqXHR, textStatus, errorThrown)
+                                {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
+                        }else{
+                            $('[id^=felts-'+code+']').parent('div').remove();
+                            $('[id^=aelts-'+code+']').parent('div').remove();
+                            //$('#felts').empty();
+                            //$('#aelts').empty();
+                            $('#felts').append(prghtml);
+                            $('#aelts').append(atthtml);
+                        }
+                    }
+                });
+
+                    
                 $('#em-ex-forms').click(function(e){
                     if ($('#em-ex-forms').is(":checked"))
                         $('#felts').hide();
+
                     else
                         $('#felts').show();
                 });
@@ -3406,6 +3423,7 @@ $(document).ready(function()
 
         var form_checked = [];
         var attach_checked = [];
+        var options = [];
 
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
@@ -3428,6 +3446,11 @@ $(document).ready(function()
         if ($('#em-ex-admission').is(":checked"))
             admission   = 1;
 
+        $('#options input:checked').each(function() {
+            options.push($(this).val());
+        });
+        //console.log(options);
+        
         $('.modal-body').empty();
         $('.modal-body').append('<div>' +
         '<h5>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</h5>'+
@@ -3464,7 +3487,7 @@ $(document).ready(function()
 
                                         var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
                                         '","totalfile":"' + totalfile + '","forms":"' + forms + '","formschecked":"' + form_checked +
-                                        '","attachment":"' + attachment + '", "attachmentchecked":"' + attach_checked + '","assessment":"' + assessment +
+                                        '","attachment":"' + attachment + '", "attachmentchecked":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
                                         '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
 
                                         $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');
