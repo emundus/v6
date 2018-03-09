@@ -766,6 +766,21 @@ function showelts(elt,idcodeyear ){
     }
 }
 
+function showoptions(opt){
+    if ($(opt).hasClass("btn btn-info")) {
+        $('#options').toggle(400);
+        $(opt).removeClass("btn btn-info").addClass("btn btn-elements-success");
+        $(opt).empty();
+        $(opt).append('<span class="glyphicon glyphicon-minus"></span>');
+    }else{
+        $('#options').toggle(400);
+        $(opt).removeClass("btn btn-elements-success").addClass("btn btn-info");
+        $(opt).empty();
+        $(opt).append('<span class="glyphicon glyphicon-plus"></span>');
+
+    }
+}
+
 $(document).ready(function()
 {
     var lastVal = new Object();
@@ -2811,8 +2826,11 @@ $(document).ready(function()
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
                                 '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('PDF_OPTIONS').toUpperCase()+'</font></label>'+
+                                '<button type="button" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'" style="float:right;" onclick="showoptions(this);">'+
+                                '<span class="glyphicon glyphicon-plus"></span>'+
+                                '</button>'+
                             '</div>'+
-                            '<div class="panel-body" id="options">'+
+                            '<div class="panel-body" id="options" style="display:none;">'+
                                 '<input class="em-ex-check-opt" type="checkbox"  value="upload" name="upload" id="em-ex-upload"/><label for="em-ex-upload">'+Joomla.JText._('FILES_UPLOADED')+'</label><br/>' +
                                 '<input class="em-ex-check-opt" type="checkbox"  value="tags" name="tags" id="em-ex-tags"/><label for="em-ex-tags">'+Joomla.JText._('TAGS')+'</label>' +
                             '</div>'+
@@ -3056,7 +3074,6 @@ $(document).ready(function()
                 $('#em-ex-forms').click(function(e){
                     if ($('#em-ex-forms').is(":checked"))
                         $('#felts').hide();
-
                     else
                         $('#felts').show();
                 });
