@@ -2,7 +2,7 @@
 /**
 * @version		$Id: mod_emunduspanel.php 7692 2016-04-18 rivalland $
 * @package		Joomla
-* @copyright	Copyright (C) 2016 emundus.fr. All rights reserved.
+* @copyright	Copyright (C) 2018 emundus.fr. All rights reserved.
 * @license		GNU/GPL, see LICENSE.php
 * Joomla! is free software. This version may have been modified pursuant
 * to the GNU General Public License, and as distributed it includes or
@@ -75,6 +75,7 @@ if (!empty($t__)) {
 				ORDER BY m.lft ASC';
 	$db->setQuery($query);
 	$res = $db->loadObjectList();
+
 
 	if (count($res > 0)) {
 		$tab = array();

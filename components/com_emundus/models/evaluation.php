@@ -3,7 +3,7 @@
  * @package        	Joomla
  * @subpackage    	eMundus
  * @link        	http://www.emundus.fr
- * @copyright    	Copyright (C) 2015 eMundus. All rights reserved.
+ * @copyright    	Copyright (C) 2018 eMundus. All rights reserved.
  * @license         GNU/GPL
  * @author        	Benjamin Rivalland - Yoan Durand
  */
@@ -966,21 +966,20 @@ class EmundusModelEvaluation extends JModelList
 						}
 						break;
 					case 'status':
-						// Code is redundant because $filt_menu has the status value as well.
 						if ($value)
 						{
-							if ( $value[0] == "%" || !isset($value[0]) )
+							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
 								$query['q'] .= ' ';
 							else
 							{
-								//$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
 							}
 						}
 						break;
 					case 'tag':
                         if ($value)
                         {
-                            if ( $value[0] == "%" || !isset($value[0]) )
+                            if ( $value[0] == "%" || !isset($value[0]) || $value[0] == ''  )
                                 $query['q'] .= ' ';
                             else
                             {
@@ -1130,7 +1129,10 @@ class EmundusModelEvaluation extends JModelList
 		$query .= $q['q'];
 
 		$query .=  $this->_buildContentOrderBy();
-
+/*
+if (JFactory::getUser()->id == 63)
+    echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
+*/
 		$dbo->setQuery($query);
 		try
 		{

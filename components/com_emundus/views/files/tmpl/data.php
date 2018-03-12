@@ -95,7 +95,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<?php elseif ($value->type == "date")  :?>
 										<strong>
 											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
-													<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
+													<span class="em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
 											<?php else: ?>
 												<?php
 													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
