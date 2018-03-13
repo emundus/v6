@@ -21,7 +21,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
 ?>
 <div class="ui attached segment">
   <p><?php echo ($show_programme==1)?'<b>'.$user->campaign_name.'</b> '.@$renew:''; ?></p>
-  <p align="right"><?php echo ($show_deadline==1)?JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b>':''; ?></p>
+  <p align="right"><?php echo ($show_deadline==1)?JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b>':''; ?> <?php echo $offset ?></p>
 </div>
 <div class="ui tablet stackable bottom attached steps">
   <div class="step">

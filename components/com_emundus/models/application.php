@@ -825,10 +825,20 @@ class EmundusModelApplication extends JModelList
                     $this->_db->setQuery( $query );
                     $cpt = $this->_db->loadResult();
 
-                    if($cpt>0)
-                        $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
-                    else
-                        $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&'.$itemt->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                    if($cpt>0) { 
+                        if ($allowEmbed) {
+                           $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                        } else {
+                            $forms .= ' <a id="'.$itemt->form_id.'" class="btn btn btn-info btn-sm" href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></a>';
+                        }
+                    }
+                    else {
+                        if ($allowEmbed) {
+                            $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&'.$itemt->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                        } else {
+                            $forms .= ' <a type="button" id="'.$itemt->form_id.'" class="btn btn-default btn-sm" href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&'.$itemt->db_table_name.'___user='.$aid.'&sid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></a>';
+                        }
+                    }
                 }
 
                 $forms .= '</h3>';
@@ -1098,11 +1108,11 @@ class EmundusModelApplication extends JModelList
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    function getFormsPDF($aid, $fnum = 0, $gids = 0) {
+    function getFormsPDF($aid, $fnum = 0, $fids=null, $gids = 0) {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list     = new EmundusHelperList;
-        $tableuser  = $h_list->getFormsList($aid, $fnum);
-
+        $tableuser  = $h_list->getFormsList($aid, $fnum, $fids);
+        //var_dump($tableuser);
         $forms = "<style>
                     table{
                         border-spacing: 1px;
@@ -1895,9 +1905,13 @@ td {
         try {
             $query = "SELECT * FROM #__emundus_uploads WHERE fnum like ".$this->_db->quote($fnum);
 
-            if (isset($attachment_id) && !empty($attachment_id))
-                $query .= " AND attachment_id=".$attachment_id;
-
+            if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
+                if(is_array($attachment_id))
+                    $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
+                else
+                    $query .= " AND attachment_id = ".$attachment_id;
+            }
+                
             if (!empty($ids) && $ids != "null")
                 $query .= " AND id in ($ids)";
 
@@ -2594,6 +2608,26 @@ $q=2;
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 
+        return true;
+    }
+
+    /**
+     * Check if iframe can be used
+     * @param $url             String     url to check
+     * @return bool
+     */
+    function allowEmbed($url) {
+        $header = @get_headers($url, 1);
+
+        // URL okay?
+        if (!$header || stripos($header[0], '200 ok') === false) return false;
+
+        // Check X-Frame-Option
+        elseif (isset($header['X-Frame-Options']) && (stripos($header['X-Frame-Options'], 'SAMEORIGIN') !== false || stripos($header['X-Frame-Options'], 'deny') !== false)) {
+            return false;
+        }
+
+        // Everything passed? Return true!
         return true;
     }
 }

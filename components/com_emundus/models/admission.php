@@ -930,7 +930,7 @@ class EmundusModelAdmission extends JModelList
 					case 'tag':
                         if ($value) {
 
-							if ( $value[0] == "%" || !isset($value[0]) )
+							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
                                 $query['q'] .= ' ';
                             else
                                 $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';

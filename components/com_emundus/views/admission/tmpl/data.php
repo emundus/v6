@@ -105,7 +105,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 														<h5 class="em-date">
 															<strong>
 																<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
-																		<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
+																		<span class="em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
 																<?php else: ?>
 																	<?php
 																		$params = json_decode($value->params);

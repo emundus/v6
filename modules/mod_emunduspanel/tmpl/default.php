@@ -43,61 +43,37 @@ if (isset($user->profile) && $user->profile > 0) {
         }
     }
 }
-
 ?>
-
-
-<div class="ui grid">
-<?php
-
-if (!isset($campaign) || empty($campaign)) {
-    if (isset($user->profile) && isset($applicant_profiles) && !in_array($user->profile, $applicant_profiles)) {
-        foreach ($tab as $t) {
-            echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
-        }
+    <div class="ui grid">
+    <?php
+    foreach ($tab as $t) {
+        echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
     }
-} else {
-    if ($user->profile == $campaign->profile_id) {
-        foreach ($tab as $t) {
-            echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
-        }
-    } else {
-        if (!in_array($user->profile, $applicant_profiles)){
-            foreach ($tab as $t) {
-                echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
-            }
-        }
-    }
-}
-
-?>
-</div>
+    ?>
+    </div>
 
 <?php } ?>
-
 </div>
 
 <script type="text/javascript">
+function postCProfile() {
 
-        function postCProfile() {
+    var current_fnum    = $$("#profile").get('value');
+    var ajax = new Request({
+        url:'index.php?option=com_emundus&task=switchprofile',
+        method: 'post',
+        data: {
+            profnum: current_fnum
+        },
+        onSuccess: function(result){
+            location.reload(true);
+        },
+        onFailure: function (jqXHR, status, err) {
+            alert("ajax sending error");
+          }
+    });
 
-            var current_fnum    = $$("#profile").get('value');
-            var ajax = new Request({
-                url:'index.php?option=com_emundus&task=switchprofile',
-                method: 'post',
-                data: {
-                    profnum: current_fnum
-                },
-                onSuccess: function(result){
-                    location.reload(true);
-                },
-                onFailure: function (jqXHR, status, err) {
-                    alert("ajax sending error");
-                  }
-            });
+    ajax.send();
 
-            ajax.send();
-
-        }
-
-    </script>
+}
+</script>

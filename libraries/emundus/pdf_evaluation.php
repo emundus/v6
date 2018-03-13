@@ -35,7 +35,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
     
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
-
+    
     // Get form HTML
     $htmldata = '';
 
@@ -61,6 +61,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
     $db->setQuery($query);
     $item = $db->loadObject();
 //die(str_replace("#_", "jos", $query));
+   
 
     //get logo
     $template   = $app->getTemplate(true);
@@ -141,7 +142,7 @@ $htmldata .= '
             $htmldata .= $html;
         }
     }
-
+    
     if (!empty($htmldata)) {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();
