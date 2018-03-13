@@ -269,7 +269,7 @@ class EmundusModelEvaluation extends JModelList
      * @param 	  hidden int show item defined as hidden in Fabrik List  ; yes=1
      * @return    string list of Fabrik element ID used in evaluation form
      **/
-    public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0)
+    public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array())
     {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
@@ -282,7 +282,7 @@ class EmundusModelEvaluation extends JModelList
             //var_dump($session->get('filt_params'));
             //$element_id = array();
             $filt_params = $session->get('filt_params');
-            if (count(@$filt_params['programme'])>0) {
+            if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
                 foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsEvalByProgramme($value);
                     if (empty($groups)) {
@@ -297,7 +297,24 @@ class EmundusModelEvaluation extends JModelList
                         }
                     }
                 }
-            }
+            }else{
+				if(!empty($code)){
+					foreach ($code as $value) {
+						$groups = $this->getGroupsEvalByProgramme($value);
+						if (empty($groups)) {
+							$eval_elt_list = array();
+						} else {
+							$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden, $time_date);
+							if (count($eval_elt_list)>0) {
+								foreach ($eval_elt_list as $eel) {
+									if(isset($eel->element_id) && !empty($eel->element_id))
+										$elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 //die(var_dump($elements_id));
         return @$elements;

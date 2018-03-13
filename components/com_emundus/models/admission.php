@@ -223,14 +223,14 @@ class EmundusModelAdmission extends JModelList
      * @param 	  int hidden from Fabrik List ; yes=1
      * @return    string list of Fabrik element ID used in admission form
      **/
-    public function getAdmissionElementsName($show_in_list_summary=1, $hidden=0) {
+    public function getAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 
         if ($session->has('filt_params')) {
 
             $filt_params = $session->get('filt_params');
-            if (count(@$filt_params['programme'])>0) {
+			if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
 
 				foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsAdmissionByProgramme($value);
@@ -247,7 +247,24 @@ class EmundusModelAdmission extends JModelList
                     }
                 }
 
-            }
+            }else{
+				if(!empty($code)){
+					foreach ($code as $value) {
+						$groups = $this->getGroupsAdmissionByProgramme($value);
+						if (empty($groups)) {
+							$decision_elt_list = array();
+						} else {
+							$decision_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+							if (count($decision_elt_list)>0) {
+								foreach ($decision_elt_list as $del) {
+									if (isset($del->element_id) && !empty($del->element_id))
+										$elements[] = $h_list->getElementsDetailsByID($del->element_id)[0];
+								}
+							}
+						}
+					}
+				}
+			}
         }
         return @$elements;
     }
@@ -258,14 +275,14 @@ class EmundusModelAdmission extends JModelList
      * @param 	  int hidden from Fabrik List ; yes=1
      * @return    string list of Fabrik element ID used in admission form
      **/
-    public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0) {
+    public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 
         if ($session->has('filt_params')) {
 
             $filt_params = $session->get('filt_params');
-            if (count(@$filt_params['programme'])>0) {
+            if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
 
 				foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsApplicantAdmissionByProgramme($value);
@@ -282,7 +299,24 @@ class EmundusModelAdmission extends JModelList
                     }
                 }
 
-            }
+            }else{
+				if(!empty($code)){
+					foreach ($code as $value) {
+						$groups = $this->getGroupsApplicantAdmissionByProgramme($value);
+						if (empty($groups)) {
+							$admission_elt_list = array();
+						} else {
+							$admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+							if (count($admission_elt_list)>0) {
+								foreach ($admission_elt_list as $ael) {
+									if (isset($ael->element_id) && !empty($ael->element_id))
+										$elements[] = $h_list->getElementsDetailsByID($ael->element_id)[0];
+								}
+							}
+						}
+					}
+				}
+			}
         }
         return @$elements;
     }

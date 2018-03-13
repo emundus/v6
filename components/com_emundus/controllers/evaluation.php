@@ -641,8 +641,12 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function getformelem()
     {
         //Filters
+        $jinput = JFactory::getApplication()->input;
+        $code   = $jinput->getVar('code', null);
+        $code = explode(',', $code);
         $m_evaluation = $this->getModel('Evaluation');
-        $defaultElements = $m_evaluation->getEvaluationElementsName(0, 1);
+        $defaultElements = $m_evaluation->getEvaluationElementsName(0, 1, $code);
+        
         foreach ($defaultElements as $kde => $de) {
             if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id')
                 unset($defaultElements[$kde]);

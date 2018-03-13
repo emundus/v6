@@ -2084,10 +2084,14 @@ die();*/
      * @param $fnums
      * @return bool|mixed
      */
-    public function getFilesByFnums($fnums)
+    public function getFilesByFnums($fnums, $attachment_ids = null)
     {
         $db = $this->getDbo();
-        $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") order by fu.fnum';
+        if(!empty($attachment_ids))
+            $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") and fu.attachment_id in ("'.implode('","', $attachment_ids).'") order by fu.fnum';
+        else
+            $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") order by fu.fnum';
+
         $db->setQuery($query);
         try
         {
