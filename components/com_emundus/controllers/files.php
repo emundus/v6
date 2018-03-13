@@ -1213,7 +1213,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $elements = $h_files->getElementsName(implode(',',$col));
-        //var_dump($elements);die;
+        
         // re-order elements
         $ordered_elements = array();
         foreach ($col as $c) {
@@ -1312,6 +1312,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
             }
+            //var_dump($line);die;
             foreach ($colsup as $kOpt => $vOpt) {
                 if ($vOpt=="forms" || $vOpt=="attachment")
                     $line .= $vOpt . "(%)\t";
@@ -1323,9 +1324,12 @@ class EmundusControllerFiles extends JControllerLegacy
             // On met les en-têtes dans le CSV
             $element_csv[] = $line;
             $line = "";
+            
         }
         //var_dump($fnumsArray);die;
         // On parcours les fnums
+
+        
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
             foreach ($fnum as $k => $v) {
@@ -1339,10 +1343,18 @@ class EmundusControllerFiles extends JControllerLegacy
                         $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
                         $line .= $lastname."\t";
                         $line .= $userProfil['firstname']."\t";
-                    } else $line .= $v."\t";
+                    } else{
+                        if($v == "")
+                            $line .= " "."\t";
+                        elseif($v[0] == "=")
+                            $line .= " ".$v."\t";
+                        else
+                            $line .= $v."\t";
+                    } 
 
                 }
             }
+
             // On ajoute les données supplémentaires
             foreach ($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
@@ -1423,6 +1435,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $i++;
 
         }
+        
         // On remplit le fichier CSV
         foreach ($element_csv as $data) {
             $res = fputcsv($csv, explode("\t",$data),"\t");
@@ -1757,8 +1770,6 @@ class EmundusControllerFiles extends JControllerLegacy
         
        
         
-        
-
         
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');

@@ -2795,7 +2795,7 @@ $(document).ready(function()
                 //alert(checkInput);
                 var prghtml = "";
                 var atthtml = "";
-                alert(url);
+                //alert(url);
                 $.ajax({
                     type:'post',
                     url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
