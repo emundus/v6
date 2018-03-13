@@ -16,15 +16,13 @@ defined('_JEXEC') or die();
 
 $db     = JFactory::getDBO();
 $user   = JFactory::getSession()->get('emundusUser');
-
-if (!isset($user->fnum))
-    exit;
+$fnum = $fabrikFormData['fnum_raw'];
 
 $institution_ids = [];
 
 // Get the home university that was filled out in the forms.
 $query = 'SELECT home_university FROM #__emundus_academic
-                WHERE fnum LIKE '.$user->fnum;
+                WHERE fnum LIKE '.$fnum;
 
 try {
 
@@ -42,7 +40,7 @@ if ($user->profile == 1008) {
 } else {
 
     $query = 'SELECT host_institution FROM #__emundus_mobility
-                WHERE fnum LIKE '.$user->fnum;
+                WHERE fnum LIKE '.$fnum;
 
     try {
 
@@ -72,7 +70,7 @@ try {
 foreach ($groups as $group) {
 
     $query = 'SELECT COUNT(id) FROM #__emundus_group_assoc
-                WHERE group_id = '.$group.' AND action_id = 1 AND fnum LIKE '.$db->Quote($user->fnum);
+                WHERE group_id = '.$group.' AND action_id = 1 AND fnum LIKE '.$db->Quote($fnum);
 
     try {
 
@@ -85,7 +83,7 @@ foreach ($groups as $group) {
 
     if ($cpt == 0) {
         $query = 'INSERT INTO #__emundus_group_assoc (`group_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
-                    VALUES ('.$group.', 1, '.$db->Quote($user->fnum).', 0, 1, 0, 0)';
+                    VALUES ('.$group.', 1, '.$db->Quote($fnum).', 0, 1, 0, 0)';
 
         try {
 
