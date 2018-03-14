@@ -41,6 +41,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	// module params
 	$show_programme = $params->get('show_programme', 1);
 	$show_deadline  = $params->get('show_deadline', 0);
+	$offset = JFactory::getConfig()->get('offset');
 
 	// eMundus params
 	$params_emundus 		= JComponentHelper::getParams('com_emundus');
