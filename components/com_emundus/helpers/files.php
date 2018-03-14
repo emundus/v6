@@ -334,10 +334,10 @@ class EmundusHelperFiles
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
-    
+
     public function getProgramCampaigns($code) {
         $db = JFactory::getDBO();
-       
+
         $query = 'SELECT *  FROM #__emundus_setup_campaigns WHERE published=1 AND training  LIKE "'.$code.'" ORDER BY year DESC';
         $db->setQuery( $query );
         return $db->loadObjectList();
@@ -468,7 +468,7 @@ class EmundusHelperFiles
         return $db->loadObjectList();
     }
 
-    public  function getAttachmentsTypesByProfileID($pid){
+    public  function getAttachmentsTypesByProfileID ($pid) {
         $db = JFactory::getDBO();
         $query = 'SELECT *
                 FROM #__emundus_setup_attachments WHERE id IN (SELECT attachment_id FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$pid.')
@@ -477,7 +477,7 @@ class EmundusHelperFiles
         return $db->loadObjectList();
     }
 
-    public  function getEvaluation_doc($result){
+    public  function getEvaluation_doc($result) {
         $db = JFactory::getDBO();
         $query = 'SELECT *
                 FROM #__emundus_setup_attachments esa
@@ -489,7 +489,7 @@ class EmundusHelperFiles
         return $db->loadObjectList();
     }
 
-    public  function setEvaluationList ($result) {
+    public  function setEvaluationList($result) {
         $h_files = new EmundusHelperFiles;
         $option_list =  $h_files->getEvaluation_doc($result);
         $current_filter = '<select class="chzn-select" name="attachment_id" id="attachment_id">';
@@ -513,11 +513,13 @@ class EmundusHelperFiles
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        
+        require_once(JPATH_COMPONENT.DS.'models'.DS.'programme.php');
+
 
         $h_menu     = new EmundusHelperMenu;
         $m_user     = new EmundusModelUsers;
         $m_profile  = new EmundusModelProfile;
+        $m_programme= new EmundusModelProgramme;
 
         $db = JFactory::getDBO();
 
@@ -525,11 +527,14 @@ class EmundusHelperFiles
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
-            
+
+            if (empty($programme) && empty($campaigns))
+                $programme = $m_programme->getLatestProgramme();
+
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
-            
+
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $years);
         }
@@ -737,7 +742,7 @@ class EmundusHelperFiles
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-                    INNER JOIN #__fabrik_forms AS forme ON formgroup.form_id = forme.id 
+                    INNER JOIN #__fabrik_forms AS forme ON formgroup.form_id = forme.id
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
@@ -938,7 +943,7 @@ class EmundusHelperFiles
     ** @param array $tables List of the tables contained in "Other filters" dropbox.
     ** @return string HTML to display in page for filter block.
     */  //$filts_details, $filts_options, $tables
-    public function createFilterBlock($params, $types, $tables){
+    public function createFilterBlock($params, $types, $tables) {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles;
         $h_files = new EmundusHelperFiles;
@@ -948,9 +953,11 @@ class EmundusHelperFiles
         $document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
         $document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );*/
 
-        $session     = JFactory::getSession();
-        $filt_params = $session->get('filt_params');
-        $select_id   = $session->get('select_filter');
+        $session        = JFactory::getSession();
+        $filt_menu      = $session->get('filt_menu');
+        $filt_params    = $session->get('filt_params');
+        $select_id      = $session->get('select_filter');
+
         if (!is_null($select_id)) {
             $research_filter = $h_files->getEmundusFilters($select_id);
             $filter =  json_decode($research_filter->constraints, true);
@@ -1304,6 +1311,15 @@ class EmundusHelperFiles
         if (@$params['status'] !== NULL) {
             $hidden = $types['status'] != 'hidden' ? false : true;
             $statusList = $h_files->getStatus();
+
+            if (!empty($filt_menu['status'])) {
+                foreach ($statusList as $key => $step) {
+                    if (!in_array($step->step, $filt_menu['status']))
+                        unset($statusList[$key]);
+                }
+            }
+
+
             $status = '';
             if (!$hidden) {
                 $status .= '<div id="status">
@@ -1319,7 +1335,7 @@ class EmundusHelperFiles
             foreach ($statusList as $p) {
                 $status .= '<option value="'.$p->step.'"';
                 if(!empty($current_status) && in_array($p->step, $current_status))
-                    $status .= ' selected="true" disabled="true"';
+                    $status .= ' selected="true"';
                 $status .= '>'.$p->value.'</option>';
             }
             $status .= '</select>';

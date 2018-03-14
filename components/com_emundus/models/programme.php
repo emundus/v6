@@ -94,7 +94,7 @@ class EmundusModelProgramme extends JModelList
           $query .= ' AND code NOT IN ('.implode('","', $db->Quote($codeList['NOT_IN'])).')';
         }
         try
-        {   
+        {
             $db->setQuery($query);
             return $db->loadAssocList('code');
         }
@@ -107,7 +107,7 @@ class EmundusModelProgramme extends JModelList
 
     /**
      * @param   array $data the row to add in table.
-     * 
+     *
      * @return boolean
      * Add new programme in DB
      */
@@ -116,11 +116,11 @@ class EmundusModelProgramme extends JModelList
         $db = $this->getDbo();
 
         if (count($data) > 0) {
-          
+
           unset($data[0]['organisation']);
           unset($data[0]['organisation_code']);
           $column = array_keys($data[0]);
-      
+
           $values = array();
           foreach ($data as $key => $v) {
             unset($v['organisation']);
@@ -131,7 +131,7 @@ class EmundusModelProgramme extends JModelList
           $query = 'INSERT INTO `#__emundus_setup_programmes` (`'.implode('`, `', $column).'`) VALUES '.implode(',', $values);
 
           try
-          {          
+          {
               $db->setQuery($query);
               return $db->execute();
           }
@@ -148,7 +148,7 @@ class EmundusModelProgramme extends JModelList
 
     /**
      * @param   array $data the row to add in table.
-     * 
+     *
      * @return boolean
      * Edit programme in DB
      */
@@ -157,9 +157,9 @@ class EmundusModelProgramme extends JModelList
         $db = $this->getDbo();
 
         if (count($data) > 0) {
-      
+
           try
-          {  
+          {
             foreach ($data as $key => $v) {
               $query = 'UPDATE `#__emundus_setup_programmes` SET label='.$db->Quote($v['label']).' WHERE code like '.$db->Quote($v['code']);
               $db->setQuery($query);
@@ -184,6 +184,34 @@ class EmundusModelProgramme extends JModelList
           return false;
         }
         return true;
+    }
+
+
+    /**
+	 * Gets the most recent programme code.
+	 * @return string The most recently added programme in the DB.
+	 */
+	function getLatestProgramme() {
+
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('code'))
+                ->from($db->quoteName('#__emundus_setup_programmes'))
+                ->order('id DESC')
+                ->setLimit('1');
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting latest programme at model/programme at query :'.$query, JLog::ERROR, 'com_emundus');
+            return '';
+        }
+
     }
 
 }

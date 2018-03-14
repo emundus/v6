@@ -569,13 +569,15 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function getformelem() {
         $jinput = JFactory::getApplication()->input;
         $form   = $jinput->getString('form', null);
-
+        $code   = $jinput->getVar('code', null);
+        $code = explode(',', $code);
+        
         $m_admission    = $this->getModel('Admission');
         $m_evaluation   = $this->getModel('Evaluation');
         $h_files        = new EmundusHelperFiles;
 
 
-        $defaultElements = $m_admission->getAdmissionElementsName(0, 1);
+        $defaultElements = $m_admission->getAdmissionElementsName(0, 1, $code);
 
         foreach ($defaultElements as $kde => $de) {
             if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id' || $de->element_name == 'user')
@@ -583,9 +585,9 @@ class EmundusControllerAdmission extends JControllerLegacy {
         }
 
         if ($form == "admission")
-            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0);
+            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
         elseif ($form == "decision")
-            $elements = $m_admission->getAdmissionElementsName(0, 0);
+            $elements = $m_admission->getAdmissionElementsName(0, 0, $code);
         else
             $elements = $h_files->getElements();
 
