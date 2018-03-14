@@ -1213,19 +1213,21 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $elements = $h_files->getElementsName(implode(',',$col));
-        
+       
         // re-order elements
         $ordered_elements = array();
         foreach ($col as $c) {
             $ordered_elements[$c] = $elements[$c];
         }
+        
         $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
+        //var_dump($fnumsArray);
         // On met a jour la liste des fnums traités
         $fnums = array();
         foreach ($fnumsArray as $fnum) {
             array_push($fnums, $fnum['fnum']);
         }
-
+        //var_dump($ordered_elements);
         foreach ($colsup as $col) {
             $col = explode('.', $col);
 
@@ -1295,19 +1297,19 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme') {
                     if(count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted"){
                         if(in_array("form-title", $opts) && in_array("form-group", $opts)){
-                            $line .= $fLine->form_label." > ".$fLine->group_label." > ".$fLine->element_label. "\t";
+                            $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->group_label)." > ".JText::_($fLine->element_label). "\t";
                             $nbcol++;
                         }elseif(count($opts) == 1){
                             if(in_array("form-title", $opts)){
-                                $line .= $fLine->form_label." > ".$fLine->element_label. "\t";
+                                $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->element_label). "\t";
                                 $nbcol++;
                             }elseif(in_array("form-group", $opts)){
-                                $line .= $fLine->group_label." > ".$fLine->element_label. "\t";
+                                $line .= JText::_($fLine->group_label)." > ".JText::_($fLine->element_label). "\t";
                                 $nbcol++;
                             }
                         }
                     }else{
-                        $line .= $fLine->element_label. "\t";
+                        $line .= JText::_($fLine->element_label). "\t";
                         $nbcol++;
                     }
                 }
@@ -1349,7 +1351,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         elseif($v[0] == "=")
                             $line .= " ".$v."\t";
                         else
-                            $line .= $v."\t";
+                            $line .= JText::_($v)."\t";
                     } 
 
                 }

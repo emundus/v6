@@ -1924,7 +1924,7 @@ where 1 order by ga.fnum asc, g.title';
                                     WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
                             }
 
-                            $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+                            $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
                         }
                         else {
                             $query .= ', (
