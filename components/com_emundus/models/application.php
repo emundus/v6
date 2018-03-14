@@ -1108,11 +1108,11 @@ class EmundusModelApplication extends JModelList
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    function getFormsPDF($aid, $fnum = 0, $gids = 0) {
+    function getFormsPDF($aid, $fnum = 0, $fids=null, $gids = 0) {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list     = new EmundusHelperList;
-        $tableuser  = $h_list->getFormsList($aid, $fnum);
-
+        $tableuser  = $h_list->getFormsList($aid, $fnum, $fids);
+        //var_dump($tableuser);
         $forms = "<style>
                     table{
                         border-spacing: 1px;
@@ -1905,9 +1905,13 @@ td {
         try {
             $query = "SELECT * FROM #__emundus_uploads WHERE fnum like ".$this->_db->quote($fnum);
 
-            if (isset($attachment_id) && !empty($attachment_id))
-                $query .= " AND attachment_id=".$attachment_id;
-
+            if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
+                if(is_array($attachment_id))
+                    $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
+                else
+                    $query .= " AND attachment_id = ".$attachment_id;
+            }
+                
             if (!empty($ids) && $ids != "null")
                 $query .= " AND id in ($ids)";
 

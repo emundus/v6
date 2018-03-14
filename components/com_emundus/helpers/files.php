@@ -468,6 +468,15 @@ class EmundusHelperFiles
         return $db->loadObjectList();
     }
 
+    public  function getAttachmentsTypesByProfileID($pid){
+        $db = JFactory::getDBO();
+        $query = 'SELECT *
+                FROM #__emundus_setup_attachments WHERE id IN (SELECT attachment_id FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$pid.')
+                ORDER BY value ASC';
+        $db->setQuery( $query );
+        return $db->loadObjectList();
+    }
+
     public  function getEvaluation_doc($result){
         $db = JFactory::getDBO();
         $query = 'SELECT *
