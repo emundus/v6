@@ -1312,7 +1312,7 @@ class EmundusHelperFiles
             $hidden = $types['status'] != 'hidden' ? false : true;
             $statusList = $h_files->getStatus();
 
-            if (!empty($filt_menu['status']) && $filt_menu['status'][0]) {
+            if (isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0])) {
                 foreach ($statusList as $key => $step) {
                     if (!in_array($step->step, $filt_menu['status']))
                         unset($statusList[$key]);
