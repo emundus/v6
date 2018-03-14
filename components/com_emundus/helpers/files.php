@@ -943,7 +943,7 @@ class EmundusHelperFiles
     ** @param array $tables List of the tables contained in "Other filters" dropbox.
     ** @return string HTML to display in page for filter block.
     */  //$filts_details, $filts_options, $tables
-    public function createFilterBlock($params, $types, $tables){
+    public function createFilterBlock($params, $types, $tables) {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles;
         $h_files = new EmundusHelperFiles;
@@ -953,9 +953,11 @@ class EmundusHelperFiles
         $document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
         $document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );*/
 
-        $session     = JFactory::getSession();
-        $filt_params = $session->get('filt_params');
-        $select_id   = $session->get('select_filter');
+        $session        = JFactory::getSession();
+        $filt_menu      = $session->get('filt_menu');
+        $filt_params    = $session->get('filt_params');
+        $select_id      = $session->get('select_filter');
+
         if (!is_null($select_id)) {
             $research_filter = $h_files->getEmundusFilters($select_id);
             $filter =  json_decode($research_filter->constraints, true);
@@ -1309,6 +1311,15 @@ class EmundusHelperFiles
         if (@$params['status'] !== NULL) {
             $hidden = $types['status'] != 'hidden' ? false : true;
             $statusList = $h_files->getStatus();
+
+            if (!empty($filt_menu['status'])) {
+                foreach ($statusList as $key => $step) {
+                    if (!in_array($step->step, $filt_menu['status']))
+                        unset($statusList[$key]);
+                }
+            }
+
+
             $status = '';
             if (!$hidden) {
                 $status .= '<div id="status">
@@ -1324,7 +1335,7 @@ class EmundusHelperFiles
             foreach ($statusList as $p) {
                 $status .= '<option value="'.$p->step.'"';
                 if(!empty($current_status) && in_array($p->step, $current_status))
-                    $status .= ' selected="true" disabled="true"';
+                    $status .= ' selected="true"';
                 $status .= '>'.$p->value.'</option>';
             }
             $status .= '</select>';
