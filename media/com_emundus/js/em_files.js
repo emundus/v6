@@ -590,12 +590,14 @@ function generate_csv(json, eltJson, objJson, options) {
                                         if (result.status) {
                                             $('#loadingimg').empty();
                                             $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
-                                            $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                                            $('#chargement').append('<a class="btn .btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
                                         }
                                     },
                                     error: function (jqXHR, textStatus, errorThrown) {
                                         $('#loadingimg').empty();
                                         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_XLS')+'</div>');
+                                        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
                                         console.log(jqXHR.responseText);
                                     }
                                 });
@@ -712,7 +714,8 @@ function generate_pdf(json) {
                             $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</p></div>');
                             $('#loadingimg').empty();
                             $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
-                            $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                            $('#chargement').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
                         }
 
                     } else {
@@ -723,6 +726,8 @@ function generate_pdf(json) {
                         } else {
                             $('#loadingimg').empty().append(json.msg);
                             $('#datasbs p').replaceWith('<span class="alert alert-danger"> '+json.msg+'</span>');
+                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+
                         }
 
                     }
@@ -730,23 +735,27 @@ function generate_pdf(json) {
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
                 }
             });
 
         } else if (start+limit> maxfiles) {
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_NBFILES_CAPACITY')+'</div>');
+        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
         exit();
 
     } else if( (start+limit <= maxfiles) ) {
         $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</p></div>');
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
-        $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+        $('#chargement').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
 
     } else {
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_PDF')+'</div><a class="btn .btn-link" title="'+Joomla.JText._('DOWNLOAD_PDF')+'" href="tmp/'+file+'" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('DOWNLOAD_PDF')+'</span></a>');
+        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
     }
 }
 
@@ -778,6 +787,12 @@ function showoptions(opt){
         $(opt).append('<span class="glyphicon glyphicon-plus"></span>');
 
     }
+}
+
+function back(){
+    $('div').remove('#chargement');
+    $('#data').show();
+    $('#can-val').show();
 }
 
 $(document).ready(function()
@@ -1533,6 +1548,11 @@ $(document).ready(function()
                 break;
             //export excel
             case 6:
+            $('#can-val').empty();
+            $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                                 '<button type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+            $('#can-val').show();
+            
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
                 //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem&Itemid='+itemId;
                 $.ajax({
@@ -1546,7 +1566,8 @@ $(document).ready(function()
                             $('.modal-body').empty();
 
                              //**export excel filter */
-                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
+                             $('.modal-body').append('<div id="data"></div>');
+                             $('#data').append('<div class="panel panel-default xclsform"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
                                 '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
 
                              '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
@@ -1564,11 +1585,11 @@ $(document).ready(function()
                                  '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
                                  '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
                              '</div>');
-
-
-                            $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
-
-                            $('.modal-body').append('<div id="elements_detail" style="display: none">' +
+                             
+ 
+                            $('#data').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
+                
+                            $('#data').append('<div id="elements_detail" style="display: none">' +
                                                         '<div class="panel panel-default xclsform">' +
                                                             '<div class="panel-heading">'+
                                                             '<table style="width:100%;"><tr>'+
@@ -1614,8 +1635,7 @@ $(document).ready(function()
                                                             '</div>' +
                                                         '</div>' +
                                                     '</div>');
-
-
+                                                    
                             $.ajax({
                                 type:'get',
                                 url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
@@ -2196,6 +2216,7 @@ $(document).ready(function()
                                                                     grId = result.elts[d].group_id
 
                                                                     item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+result.elts[d].element_label+'</option>';                                                                    
+                                                                    
                                                                 }*/
                                                                 
                                                                 item ="";
@@ -2269,6 +2290,7 @@ $(document).ready(function()
 
                                                                                                     success: function(result) {            
                                                                                                        
+                                                                                                       
                                                                                                         /*item+='<option value="0" selected>Select an option</option>';
             
                                                                                                         for (var d in result.elts) {
@@ -2281,7 +2303,8 @@ $(document).ready(function()
                                                                                                             else
                                                                                                                 var elt_label = Joomla.JText._(result.elts[d].element_label);
 
-                                                                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';                                                                                                        }*/
+                                                                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
+                                                                                                        }*/
                                                                                                 
                                                                                                         $('#decision-elements-popup').append(data);
                                                                                                         
@@ -2652,7 +2675,7 @@ $(document).ready(function()
                                     $('#elements-popup').hide();
                                 }
                             });
-                            $('.modal-body').append('<div id="main"><div id="list-element-export" class="panel panel-default xclsform"></div><div id="oelts"></div></div>');
+                            $('#data').append('<div id="main"><div id="list-element-export" class="panel panel-default xclsform"></div><div id="oelts"></div></div>');
 
                             var defaults = '<h5 style="padding-left:15px;">  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" style="height:73%;overflow:auto;" class="well" ><ul id="em-export"></ul></div>';
 
@@ -2681,9 +2704,9 @@ $(document).ready(function()
 
                             '</div></div></div>');
 
-
-
-                            $('.modal-body').append( '<div id="methode">'+
+                          
+                            
+                            $('#data').append( '<div id="methode">'+
                                 '<div id="exp" class="panel panel-default">'+
                                 '<b style="margin-left:15px; color:#32373D; text-transform:uppercase;">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</b>'+
                                 '<div id="exp1"><form style="margin-left:15px;">'+
@@ -2700,8 +2723,6 @@ $(document).ready(function()
                                     '</div>'+
                                 '</div>'+
                             '</div>' );
-
-
 
                             $('#em-export-prg').chosen({width: "95%"});
                             $('#em-export-camp').chosen({width: "95%"});
@@ -2734,11 +2755,12 @@ $(document).ready(function()
             //export zip
             case 7:
                 //*** zip export */
-                $('#em-modal-actions .modal-body').append('<div class="panel panel-default pdform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
-                $('#em-modal-actions .modal-body').append(
+                $('#em-modal-actions .modal-body').append('<div id="data"></div>');
+                $('#data').append('<div class="panel panel-default pdform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
+                $('#data').append(
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
-                                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" />' +
+                                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked />' +
                                 '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
                             '<div class="panel-body" id="felts" style="overflow:auto; display:none;"></div>'+
@@ -2783,11 +2805,10 @@ $(document).ready(function()
                                 '<input class="em-ex-check-opt" type="checkbox"  value="upload" name="upload" id="em-ex-upload"/><label for="em-ex-upload">'+Joomla.JText._('FILES_UPLOADED')+'</label><br/>' +
                                 '<input class="em-ex-check-opt" type="checkbox"  value="tags" name="tags" id="em-ex-tags"/><label for="em-ex-tags">'+Joomla.JText._('TAGS')+'</label>' +
                             '</div>'+
-                        '</div><br/>'+
+                        '</div><br/>');
             
                 
                
-                '<div style="padding-left:21px;"><a class="btn btn-default btn-attach" id="em_zip" href="'+url+'">'+Joomla.JText._('GENERATE_ZIP')+'</a><div id="attachement_res"></div></div></div>');
 
                 var checkInput = getUserCheck();
                 //alert(checkInput);
@@ -2840,6 +2861,10 @@ $(document).ready(function()
                                                         prghtml = result.html;
                                                         $('#felts').append(result.html);
                                                         $('#felts').toggle(400);
+                                                        if ($('#em-ex-forms').is(":checked"))
+                                                            $('#felts').hide();
+                                                        else
+                                                            $('#felts').show();
 
                                                         $.ajax({
                                                             type:'get',
@@ -2917,8 +2942,12 @@ $(document).ready(function()
                                                 $('#felts-'+code+year).parent('div').remove();
                                                 $('#felts').append(result.html);
                                                 $('#felts').show();
-                                                $('#em-ex-forms').prop('checked', false);
-                                                
+                                                //$('#em-ex-forms').prop('checked', false);
+                                                if ($('#em-ex-forms').is(":checked"))
+                                                    $('#felts').hide();
+                                                else
+                                                    $('#felts').show();
+                                        
                                                 $.ajax({
                                                     type:'get',
                                                     url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
@@ -3039,7 +3068,11 @@ $(document).ready(function()
                 $('#em-export-camp').chosen({width: "95%"});
                 $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
                 
-                $('#em-modal-actions .modal-footer').hide();
+                //$('#em-modal-actions .modal-footer ').hide();
+                $('#can-val').empty();
+                $('#can-val').append('<a class="btn btn-default btn-attach" id="em_zip" href="'+url+'">'+Joomla.JText._('GENERATE_ZIP')+'</a><div id="attachement_res"></div>'); 
+                $('#can-val').show();
+
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                 $('#em-modal-actions .modal').show();
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
@@ -3051,8 +3084,9 @@ $(document).ready(function()
             //export PDF;
             case 8 :
                 $('#em-modal-actions .modal-body').empty();
-                $('#em-modal-actions .modal-body').append('<div class="panel panel-default pdform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
-                $('#em-modal-actions .modal-body').append(
+                $('#em-modal-actions .modal-body').append('<div id="data"></div>');
+                $('#data').append('<div class="panel panel-default pdform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
+                $('#data').append(
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
                                 '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked />' +
@@ -3098,13 +3132,11 @@ $(document).ready(function()
                             '</div>'+
                             '<div class="panel-body" id="options" style="display:none;">'+
                                 '<input class="em-ex-check-opt" type="checkbox"  value="upload" name="upload" id="em-ex-upload"/><label for="em-ex-upload">'+Joomla.JText._('FILES_UPLOADED')+'</label><br/>' +
-                                '<input class="em-ex-check-opt" type="checkbox"  value="tags" name="tags" id="em-ex-tags"/><label for="em-ex-tags">'+Joomla.JText._('TAGS')+'</label>' +
+                                '<input class="em-ex-check-opt" type="checkbox"  value="tags" name="tags" id="em-ex-tags"/><label for="em-ex-tags">'+Joomla.JText._('PDF_TAGS')+'</label>' +
                             '</div>'+
-                        '</div><br/>'+
-            
-                
-                
-                '<div style="padding-left:21px;"><a class="btn btn-default btn-attach" id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div></div></div>');
+                        '</div><br/>' );
+
+                       
                 
                 var checkInput = getUserCheck();
                 //alert(checkInput);
@@ -3144,7 +3176,6 @@ $(document).ready(function()
                                             $('#camp').show();
 
                                            
-
                                             var year = $("#em-export-camp").val();
 
                                             $.ajax({
@@ -3342,8 +3373,7 @@ $(document).ready(function()
                         }else{
                             $('[id^=felts-'+code+']').parent('div').remove();
                             $('[id^=aelts-'+code+']').parent('div').remove();
-                            //$('#felts').empty();
-                            //$('#aelts').empty();
+                           
                             $('#felts').append(prghtml);
                             $('#aelts').append(atthtml);
                         }
@@ -3366,30 +3396,16 @@ $(document).ready(function()
                 });
                 
                 
-                   /* if ($('#em-ex-attachment').is(":checked"))
-                        $('#elt').hide();*/
                   
-                    /*if ($('#em-ex-assessment').is(":checked"))
-                        $('#elts-check').show();
-                    
-                    if ($('#em-ex-decision').is(":checked"))
-                        $('#elts-check').show();
-                    
-                        
-                    if ($('#em-ex-admission').is(":checked"))
-                        $('#elts-check').show();*/
-                   
-                
-                
-                
                    
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
                 $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
-                //$('#felts').css({height: "120px"});
-                //$('#aelts').css({height: "180px"});
                
-                $('#em-modal-actions .modal-footer').hide();
+                //$('#em-modal-actions .modal-footer').hide();
+                $('#can-val').empty();
+                $('#can-val').append('<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div>');
+                $('#can-val').show();
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                 $('#em-modal-actions .modal').show();
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
@@ -3749,8 +3765,15 @@ $(document).ready(function()
             options.push($(this).val());
         });
 
-        $('.modal-footer').hide();
-        $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
+        //$('.modal-footer').hide();
+        //$('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
+        $('#data').hide();
+        $('div').remove('#chargement');
+        $('.modal-body').append('<div id="chargement" style="padding:15px">' +
+        '<h5>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</h5>'+
+        '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
+        '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_ZIP')+'</p></div>'+
+        '</div>');
 
         url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
         $.ajax({
@@ -3772,11 +3795,16 @@ $(document).ready(function()
             {
                 if(result.status && result.name!=0)
                 {
-                    $('.modal-body').empty();
-                    $('.modal-body').append('<a class="btn .btn-link" title="'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=zip&name='+result.name+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'</span></a>');
+                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
+                    $('#loadingimg').empty();
+                    $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                    $('#chargement').append('<a class="btn .btn-link" title="'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=zip&name='+result.name+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'</span></a>');
                 } else {
-                    $('.modal-body').empty();
-                    $('.modal-body').append('<div class="alert alert-warning"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->Erreur, pas de document dans ce dossier </div>');
+                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
+                    $('#loadingimg').empty();
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                    $('#chargement').append('<div class="alert alert-warning"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->Erreur, pas de document dans ce dossier </div>');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown)
@@ -3846,13 +3874,15 @@ $(document).ready(function()
             options.push($(this).val());
         });
         //console.log(options);
-        
-        $('.modal-body').empty();
-        $('.modal-body').append('<div>' +
+        $('#data').hide();
+        $('div').remove('#chargement');
+        $('.modal-body').append('<div id="chargement" style="padding:15px">' +
         '<h5>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</h5>'+
         '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
         '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
         '</div>');
+
+       
 
         //console.log(ids);
         //console.log(fnums);
@@ -4131,14 +4161,18 @@ $(document).ready(function()
                 if ($('#view').val() == "evaluation")
                     methode = 0;
 
-                $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
+                $('#data').hide();
+                $('div').remove('#chargement');
+                $('.modal-body').append('<div id="chargement" style="padding:15px">' +
                 '<h5>'+Joomla.JText._('COM_EMUNDUS_EXCEL_GENERATION')+'</h5>'+
                 '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
                 '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_CSV')+'</p></div>'+
                 '</div>');
+
+                //$('#chargement').show();
                 
-                //$('.btn-success').attr('style', 'display: none !important');
+                $('#can-val').hide();
+               
                 $.ajax(
                     {
                         type: 'post',

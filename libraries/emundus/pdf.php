@@ -712,6 +712,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$title = $config->get('sitename');
 	if (is_file($logo))
 		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+		
 
 	unset($logo);
 	unset($title);
@@ -777,10 +778,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		
 		if(in_array("tags", $options)){
 			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
-			$titletag = count($tags)>1?JText::_('TAGS'):JText::_('JTAG');
 			
-			$htmldata .='
-			<h2>'.$titletag.' : '.count($tags).'</h2>';
 			$htmldata .='<div class="tags">| ';
 			foreach($tags as $tag){
 				$htmldata .= '<b>'.$tag['label'].'</b> | ';

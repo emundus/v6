@@ -94,15 +94,24 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<table style="width: 95%">
+					<tr>
+						<td>
+							<h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
+						</td>
+						<td style="text-align: right;" id="can-val">
+							<button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+							<button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+						</td>
+					</tr>
+				</table>
       </div>
       <div class="modal-body">
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-        <button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+        
       </div>
     </div>
   </div>

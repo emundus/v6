@@ -2131,7 +2131,7 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnums as $fnum) {
             
             
-            $formfile   = $fnum.'-applications.pdf';
+            $formfile   = $fnum.'_applications.pdf';
             
             
             $files_list = array();
@@ -2178,7 +2178,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     die("ERROR");
                 }
 
-                $application_pdf = $fnum . '_application.pdf';
+                $application_pdf = $fnum . '_applications.pdf';
                 $filename = $fnum . '_' . $users[$fnum]->name . DS . $application_pdf;
                 
                 
