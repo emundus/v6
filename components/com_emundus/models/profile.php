@@ -370,7 +370,7 @@ class EmundusModelProfile extends JModelList
             	JError::raiseError(500, $e->getMessage());
 	        }
 		}
-		elseif(!empty($code)>0){
+		elseif (!empty($code)>0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc
 						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") LIMIT 1';
@@ -385,8 +385,9 @@ class EmundusModelProfile extends JModelList
 	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             	JError::raiseError(500, $e->getMessage());
 	        }
-		}else
+		} else {
 			$res = $code;
+		}
 
 		return $res;
 	}
