@@ -513,13 +513,13 @@ class EmundusHelperFiles
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'programme.php');
+        require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
 
         $h_menu     = new EmundusHelperMenu;
         $m_user     = new EmundusModelUsers;
         $m_profile  = new EmundusModelProfile;
-        $m_programme= new EmundusModelProgramme;
+        $m_campaign = new EmundusModelCampaign;
 
         $db = JFactory::getDBO();
 
@@ -529,7 +529,7 @@ class EmundusHelperFiles
             $campaigns = @$params['campaign'];
 
             if (empty($programme) && empty($campaigns))
-                $programme = $m_programme->getLatestProgramme();
+                $programme = $m_campaign->getLatestCampaign();
 
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
