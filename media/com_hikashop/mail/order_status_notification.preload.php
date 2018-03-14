@@ -427,13 +427,13 @@ ob_start();
 
 	$sep = '';
 	if(hikashop_level(2)) {
-		$fields = $fieldsClass->getFields('display:mail_status_notif=1',$data,'order','');
+		$fields = $fieldsClass->getFields('display:mail_status_notif=1',$data->cart,'order','');
 		foreach($fields as $fieldName => $oneExtraField) {
 			if(isset($data->$fieldName) && !isset($data->cart->$fieldName))
 				$data->cart->$fieldName = $data->$fieldName;
-			if(empty($data->cart->$fieldName))
+			if($oneExtraField->field_type != 'customtext' && empty($data->cart->$fieldName))
 				continue;
-			echo $sep . $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField, $data->cart->$fieldName,'user_email');
+			echo $sep . $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField, @$data->cart->$fieldName,'user_email');
 			$sep = '<br />';
 		}
 	}

@@ -1345,9 +1345,9 @@ window.hikashop.ready( function() {
 
 	protected function addWaterMark_GD($thumb, $watermark, $dest_x, $dest_y, $wm_width, $wm_height, $opacity) {
 		$trnprt_color=null;
-		if(in_array($thumb['ext'], array('gif','png'))){
-			if ($thumb['gd_tridx'] >= 0) {
-				$trnprt_color = imagecolorsforindex($thumb['res'], $thumb['gd_tridx']);
+		if(in_array($watermark['ext'], array('gif','png'))){
+			if ($watermark['gd_tridx'] >= 0) {
+				$trnprt_color = imagecolorsforindex($watermark['res'], $watermark['gd_tridx']);
 			}
 		}
 		$this->GD_imagecopymerge_alpha($thumb['res'], $watermark['res'], $dest_x, $dest_y, 0, 0, $wm_width, $wm_height, $opacity, $trnprt_color);

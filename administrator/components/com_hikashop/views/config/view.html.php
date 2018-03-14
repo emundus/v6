@@ -317,6 +317,8 @@ class configViewConfig extends hikashopView
 		$aclcats['zone'] = array('view','manage','delete');
 		$this->assignRef('aclcats', $aclcats);
 		$this->assignRef('acltrans', $acltrans);
+		$doc = JFactory::getDocument();
+		$this->assignRef('doc', $doc);
 	}
 
 	protected function checkPlugins() {
