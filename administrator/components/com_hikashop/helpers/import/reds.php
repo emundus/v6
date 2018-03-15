@@ -362,17 +362,24 @@ class hikashopImportredsHelper extends hikashopImportHelper
 		$categoryClass = hikashop_get('class.category');
 		$categoryClass->getMainElement($element);
 
+		$query = "SHOW COLUMNS FROM #__redshop_tax_group";
+		$this->db->setQuery($query);
+		$cols = $this->db->loadObjectList('Field');
+		$prefix = 'tax_group_';
+		if (is_array($cols) && isset($cols['name'])) {
+			$prefix = '';
+		}
 		$data = array(
 				'category_type' => "'tax'",
-				'category_name' => "CONCAT('Tax imported (', rstg.tax_group_name,')')",
+				'category_name' => "CONCAT('Tax imported (', rstg.".$prefix."name,')')",
 				'category_published' => 'rstg.published',
 				'category_parent_id' => $element,
-				'category_namekey' => " CONCAT('REDS_TAX_CATEGORY_', rstg.tax_group_id)"
+				'category_namekey' => " CONCAT('REDS_TAX_CATEGORY_', rstg.".$prefix."id)"
 		);
 
 		$sql = 'INSERT IGNORE INTO `#__hikashop_category` (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT ' . implode(',',$data).' FROM `#__redshop_tax_group` AS rstg ';
-			'WHERE rstg.tax_group_id > ' . (int)$this->options->last_reds_taxclass;
+			'WHERE rstg.'.$prefix.'id > ' . (int)$this->options->last_reds_taxclass;
 
 		$this->db->setQuery($sql);
 		$this->db->query();
@@ -388,16 +395,16 @@ class hikashopImportredsHelper extends hikashopImportHelper
 
 		$data = array(
 				'zone_namekey' => "case when hkz.zone_namekey IS NULL then '' else hkz.zone_namekey end",
-				'category_namekey' => "CONCAT('REDS_TAX_CATEGORY_', rstg.tax_group_id)",
+				'category_namekey' => "CONCAT('REDS_TAX_CATEGORY_', rstg.".$prefix."id)",
 				'tax_namekey' => "CONCAT('REDS_TAX_', rstr.".$id.")",
 				'taxation_published' => '1',
 				'taxation_type' => "''",
-				'tax_reds_id' => 'rstg.tax_group_id'
+				'tax_reds_id' => 'rstg.'.$prefix.'id'
 			);
 
 		$sql = 'INSERT IGNORE INTO `#__hikashop_taxation` (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT ' . implode(',',$data).' FROM `#__redshop_tax_rate` AS rstr '.
-			'INNER JOIN `#__redshop_tax_group` AS rstg ON rstr.tax_group_id = rstg.tax_group_id '.
+			'INNER JOIN `#__redshop_tax_group` AS rstg ON rstr.tax_group_id = rstg.'.$prefix.'id '.
 			'LEFT JOIN `#__redshop_country` AS rsc ON rstr.tax_country = rsc.country_3_code ' . //Tocheck
 			"LEFT JOIN `#__hikashop_zone` hkz ON rsc.country_3_code = hkz.zone_code_3 AND hkz.zone_type = 'country' ".
 			'WHERE rstr.'.$id.' > ' . (int)$this->options->last_reds_taxrate;

@@ -954,7 +954,7 @@ class EmundusModelAdmission extends JModelList
 						if ($value) {
 
 							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
-								$query['q'] .= ' ';
+								$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
 							else
 								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
 

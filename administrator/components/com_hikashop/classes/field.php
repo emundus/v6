@@ -1837,6 +1837,9 @@ class hikashopFieldCustomtext extends hikashopFieldItem {
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) {
 		return $this->trans(@$field->field_options['customtext']);
 	}
+	function show(&$field, $value) {
+		return $this->trans(@$field->field_options['customtext']);
+	}
 }
 
 class hikashopFieldText extends hikashopFieldItem {

@@ -1035,7 +1035,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1802271207] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1803141115] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -2022,8 +2022,9 @@ class hikashopView extends hikashopBridgeView {
 		}
 
 
+		$this->toolbarHelper = hikashop_get('helper.toolbar');
+
 		if(!empty($this->toolbar)) {
-			$this->toolbarHelper = hikashop_get('helper.toolbar');
 			$app = JFactory::getApplication();
 			if($app->isAdmin())
 				$this->toolbarHelper->process($this->toolbar, $this->title);

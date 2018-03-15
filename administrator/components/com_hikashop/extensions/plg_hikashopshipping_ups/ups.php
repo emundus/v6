@@ -767,7 +767,7 @@ function checkAllBox(id, type){
 		if(@$rate->shipping_params->debug)
 			echo '<!-- '. $xml. ' -->'."\r\n"; // THIS LINE IS FOR DEBUG PURPOSES ONLY-IT WILL SHOW IN HTML COMMENTS
 
-		$session = curl_init("https://www.ups.com/ups.app/xml/Rate");
+		$session = curl_init("https://onlinetools.ups.com/ups.app/xml/Rate");
 		curl_setopt($session, CURLOPT_HEADER, 1);
 		curl_setopt($session,CURLOPT_POST,1);
 		curl_setopt($session,CURLOPT_TIMEOUT, 30);
