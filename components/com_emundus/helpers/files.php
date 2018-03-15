@@ -1684,7 +1684,11 @@ class EmundusHelperFiles
     public  function createTagsList($tags) {
         $tagsList = array();
         foreach ($tags as $tag) {
-            $tagsList[$tag['fnum']] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+            $fnum = $tag['fnum'];
+            if(!isset($tagsList[$fnum]))
+                $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+            else
+                $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
         }
         return $tagsList;
     }
