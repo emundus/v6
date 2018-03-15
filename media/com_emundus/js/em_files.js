@@ -717,15 +717,16 @@ function generate_pdf(json) {
                             $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
                             $('#chargement').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
                         }
-
+                            
                     } else {
 
                         var json = result.json;
                         if (start != json.start) {
                             generate_pdf(json);
                         } else {
-                            $('#loadingimg').empty().append(json.msg);
-                            $('#datasbs p').replaceWith('<span class="alert alert-danger"> '+json.msg+'</span>');
+                            $('#loadingimg').empty();//.append(json.msg);
+                            $('#addatatext').empty()
+                            $('#datasbs p').replaceWith('<span class="alert alert-danger"> '+json.msg+'</span><br/><br/>');
                             $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
 
                         }
@@ -1535,11 +1536,11 @@ $(document).ready(function()
             // 5:evaluation
             // 32: Admission
             // Export PDF
-            case 1 :
-            case 4 :
-            case 5 :
+            case 1 : $('#can-val').empty();
+            case 4 : $('#can-val').empty();
+            case 5 : $('#can-val').empty();
             case 32 :
-
+                $('#can-val').empty();
                 $('.modal-body').append('<div><img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/></div>');
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
@@ -2755,6 +2756,7 @@ $(document).ready(function()
             //export zip
             case 7:
                 //*** zip export */
+                $('#em-modal-actions .modal-body').empty();
                 $('#em-modal-actions .modal-body').append('<div id="data"></div>');
                 $('#data').append('<div class="panel panel-default pdform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
                 $('#data').append(
@@ -3412,6 +3414,7 @@ $(document).ready(function()
                 break;
             // Mail applicants
             case 9:
+                 $('#can-val').empty();
                 if($('#em-check-all-all').is(':checked'))
                 {
                     var fnums = 'all';
@@ -3437,6 +3440,10 @@ $(document).ready(function()
                 break;
             // Comment
             case 10:
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                                    '<button type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').show();
                 var textArea = '<form>' +
                     '<input placeholder="'+Joomla.JText._('TITLE')+'" class="form-control" id="comment-title" type="text" value="" name="comment-title"/>' +
                     '<textarea placeholder="'+Joomla.JText._('ENTER_COMMENT')+'" class="form-control" style="height:250px !important; margin-left:0px !important;"  id="comment-body"></textarea>' +
@@ -3448,6 +3455,10 @@ $(document).ready(function()
             // Access
             case 11:
                 var checkInput = getUserCheck();
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                                    '<button type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').show();
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
                 //url = 'index.php?option=com_emundus&view='+$('#view').val()+'&format=raw&layout=access';
@@ -3471,6 +3482,11 @@ $(document).ready(function()
                 break;
             // Status
             case 13:
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                                    '<button type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').show();
+
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -3482,6 +3498,7 @@ $(document).ready(function()
                     success: function(result)
                     {
                         $('.modal-body').empty();
+                        
                         var status = '<div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
 
                         for (var i in result.states)
@@ -3504,6 +3521,12 @@ $(document).ready(function()
                 break;
             // tags
             case 14:
+                
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                                    '<button type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').show();
+
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -3515,7 +3538,8 @@ $(document).ready(function()
                     success: function(result)
                     {
                         $('.modal-body').empty();
-                        var tags = '<div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.tag+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_tag+'" name="em-action-tag" id="em-action-tag" value="">';
+                        
+                        var tags = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.tag+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_tag+'" name="em-action-tag" id="em-action-tag" value="">';
 
 
                         for (var i in result.tags)
@@ -3537,6 +3561,7 @@ $(document).ready(function()
                 break;
             // email evaluator
             case 15:
+                $('#can-val').empty();
                 /*if($('#em-check-all-all').is(':checked'))
                  {
                  var fnums = 'all';
@@ -3582,7 +3607,7 @@ $(document).ready(function()
                 //                                  });
                 //  }
                 //  fnums = JSON.stringify(fnums);
-
+                $('#can-val').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -3611,7 +3636,7 @@ $(document).ready(function()
                 //                                 });
                 //  }
                 //  fnums = JSON.stringify(fnums);
-
+                $('#can-val').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -3624,7 +3649,12 @@ $(document).ready(function()
                 break;
             // generate DOCX
             case 27:
-               $('#em-modal-actions .modal-body').empty();
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                                    '<button type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').show();
+
+                $('#em-modal-actions .modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -3649,6 +3679,7 @@ $(document).ready(function()
                 break;
             // publication status od the application file
             case 28:
+                
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -3687,6 +3718,7 @@ $(document).ready(function()
 
                 // trombinoscope
                 case 31:
+                $('#can-val').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -3774,6 +3806,8 @@ $(document).ready(function()
         '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
         '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_ZIP')+'</p></div>'+
         '</div>');
+
+        $('#can-val').hide();
 
         url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
         $.ajax({
@@ -3881,7 +3915,7 @@ $(document).ready(function()
         '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
         '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
         '</div>');
-
+        $('#can-val').hide();
        
 
         //console.log(ids);
@@ -4168,8 +4202,6 @@ $(document).ready(function()
                 '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
                 '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_CSV')+'</p></div>'+
                 '</div>');
-
-                //$('#chargement').show();
                 
                 $('#can-val').hide();
                

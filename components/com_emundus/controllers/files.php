@@ -1587,6 +1587,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $attachids = explode(',', $attachids);
         $options = explode(',', $options);
         
+        $exists_files = array();
+
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
             if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum))
@@ -1600,7 +1602,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $files_list = array();
 
         
-        //$formids = array("275","256");
+        
         for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
@@ -1612,8 +1614,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $tmpArray = array();
                     $m_application = $this->getModel('application');
                     $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachids);
-                    
-                    EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                    $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
 
                 if ($assessment){
@@ -1628,15 +1629,17 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
         $start = $i;
-
+        
         if (count($files_list) > 0) {
             
             // all PDF in one file
             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
             $pdf = new ConcatPdf();
-
+            
             $pdf->setFiles($files_list);
+            
             $pdf->concat();
+            
             if (isset($tmpArray)) {
                 foreach ($tmpArray as $fn) {
                     unlink($fn);
@@ -1645,25 +1648,23 @@ class EmundusControllerFiles extends JControllerLegacy
             //for($f=1 ; $f < count($files_list) ; $f++){
             //    unlink($files_list[$f]);
             //}
-
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
             $start = $i;
-
+           
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
                 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'msg' => JText::_('FILES_ADDED').' : '.$fnum
+                'admission' => $admission, 'file' => $file, 'msg' => JText::_('FILES_ADDED')//.' : '.$fnum
             ];
-
             $result = array('status' => true, 'json' => $dataresult);
-
+        
         } else {
 
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
                 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$fnum
+                'admission' => $admission, 'file' => $file, 'msg' => JText::_('FILE_DEFINED_NOT_FOUND')//.' : '.$fnum
             ];
 
             $result = array('status' => false, 'json' => $dataresult);

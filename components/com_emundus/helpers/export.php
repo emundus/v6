@@ -123,10 +123,12 @@ class EmundusHelperExport
     }
 
 	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
+        
 		foreach($files as $file) {
             if (strrpos($file->filename, 'application_form') === false) {
                 $exFileName = explode('.', $file->filename);
                 $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
+                
                 if(file_exists($filePath)) {
                     if (strtolower($exFileName[1]) != 'pdf') {
                         $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
@@ -144,8 +146,9 @@ class EmundusHelperExport
                             $exports[] = $filePath;
                     }
                 }
+                   
 			}
-		}
+        }
 		return $exports;
 	}
 

@@ -737,6 +737,15 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
 	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
 	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
+	
+	.label {display: inline-block; color:#feffff; float:left; text-align:left; border-radius: 0.25px; padding:10px 10px 10px 10px; font-size: 100%; } 
+	.label-default {background-color:#999999} 
+	.label-primary {background-color:#337ab7} 
+	.label-success {background-color:#5cb85c} 
+	.label-info    {background-color:#033c73} 
+	.label-warning {background-color:#dd5600} 
+	.label-danger  {background-color:#c71c22} 
+	
 	</style>
 	<div class="card">
 	<table width="100%">
@@ -779,9 +788,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		if(in_array("tags", $options)){
 			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
 			
-			$htmldata .='<div class="tags">| ';
+			$htmldata .='<div class="tags"> ';
 			foreach($tags as $tag){
-				$htmldata .= '<b>'.$tag['label'].'</b> | ';
+				$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
 			}
 			$htmldata .='</div>';
 		}

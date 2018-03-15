@@ -239,6 +239,7 @@ JText::script('GENERATE_PDF');
 JText::script('PDF_OPTIONS');
 JText::script('FILES_UPLOADED');
 JText::script('TAGS');
+JText::script('FILE_DEFINED_NOT_FOUND');
 
 //Export ZIP
 JText::script('COM_EMUNDUS_ZIP_GENERATION');
