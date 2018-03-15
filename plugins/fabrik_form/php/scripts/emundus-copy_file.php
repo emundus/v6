@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: emundus_copy_file.php 89 2016-06-13 Benjamin Rivalland
+ * @version 1: emundus_copy_file.php 89 2018-03-15 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2016 eMundus. All rights reserved.
+ * @copyright Copyright (C) 2018 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -57,7 +57,7 @@ if ($copied == 1) {
 
 // 2. Copie definition of fnum for new file
 			$query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `user_id`, `campaign_id`, `submitted`, `date_submitted`, `cancelled`, `fnum`, `status`, `published`, `copied`) 
-					VALUES ('.$application_file['applicant_id'].', '.$user->id.', '.$campaign_id.', '.$application_file['submitted'].', '.$db->Quote($application_file['date_submitted']).', '.$application_file['cancelled'].', '.$db->Quote($fnum_to).', '.$status.', 1, 1)';
+					VALUES ('.$application_file['applicant_id'].', '.$user->id.', '.$campaign_id.', '.$db->Quote($application_file['submitted']).', '.$db->Quote($application_file['date_submitted']).', '.$application_file['cancelled'].', '.$db->Quote($fnum_to).', '.$status.', 1, 1)';
 			$db->setQuery( $query );
 			$db->execute();
 		}
@@ -76,14 +76,15 @@ if ($copied == 1) {
 		
 		$result = $m_application->copyApplication($fnum_from, $fnum_to, $pid);
 
+// 4. Duplicate attachments for new fnum
 		if ($result)
 			$result = $m_application->copyDocuments($fnum_from, $fnum_to, $pid);
 
-// 4. Duplicate attachment for new fnum
+// 5. Duplicate evaluation for new fnum
 // TODO
 	
 	} catch(Exception $e) {
-	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$query;
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
 	}
 	
@@ -96,7 +97,7 @@ if ($copied == 1) {
 	$m_application->moveApplication($fnum_from, $fnum_to, $campaign_id);
 
 } else {
-	
+	// new empty file	
 	try {
 
 		$query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `user_id`, `campaign_id`, `submitted`, `date_submitted`, `cancelled`, `fnum`, `status`, `published`, `copied`) 
@@ -105,7 +106,7 @@ if ($copied == 1) {
 		$db->execute();
 	
 	} catch(Exception $e) {
-	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$query;
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
 	}
 }
