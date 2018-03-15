@@ -2648,23 +2648,25 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('checkInput', null);
         $fnums = (array) json_decode(stripslashes($fnums));
         
-        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
-            $fnums = $m_files->getAllFnums();
+        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all"){
+             $fnums = $m_files->getAllFnums();
+             var_dump($fnums);
+        }
+           
         
         
         $m_campaigns = new EmundusModelCampaign;
        
         if(!empty($fnums)){
-           
             foreach($fnums as $fnum){
-                
-                $campaign  = $m_campaigns->getCampaignByFnum($fnum);
-                $programme = $m_campaigns->getProgrammeByCampaignID((int)$campaign->id);
-                $option = '<option value="'.$programme['code'].'">'.$programme['label'].' - '.$programme['code'].'</option>';
-                if (strpos($html, $option) === false) {
-                    $html .= $option;
+                if($fnum != "em-check-all"){
+                    $campaign  = $m_campaigns->getCampaignByFnum($fnum);
+                    $programme = $m_campaigns->getProgrammeByCampaignID((int)$campaign->id);
+                    $option = '<option value="'.$programme['code'].'">'.$programme['label'].' - '.$programme['code'].'</option>';
+                    if (strpos($html, $option) === false) {
+                        $html .= $option;
+                    }
                 }
-                
             }
         }
         
