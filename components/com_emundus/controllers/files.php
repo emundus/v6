@@ -2650,7 +2650,6 @@ class EmundusControllerFiles extends JControllerLegacy
         
         if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all"){
              $fnums = $m_files->getAllFnums();
-             var_dump($fnums);
         }
            
         
