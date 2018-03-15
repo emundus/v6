@@ -1021,9 +1021,9 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		if ($filt_menu['programme'][0] == "%"){
+		if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
 			$sql_code = '1=1';
-		} elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+		} elseif(isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
 			$sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
 		} else {
 			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
