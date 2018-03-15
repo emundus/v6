@@ -951,14 +951,19 @@ class EmundusModelAdmission extends JModelList
 						break;
 
 					case 'status':
-						if ($value) {
-
-							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
-								$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
-							else
-								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
-
-						}
+						if ($value)
+                        {
+                            if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
+                                if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
+                                    $query['q'] .= ' ';
+                                else
+                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                            }
+                            else
+                            {
+                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                            }
+                        }
 						break;
 
 					case 'tag':
