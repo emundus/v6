@@ -1495,7 +1495,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$year[0]."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].' - '.$campaign['training'].'('.$campaign['year'].')</b>
+                        <b>'.$campaign['label'].'('.$campaign['year'].')</b>
                     </div>
                     <div class="panel-body" id="felts-'.$code[0].$year[0].'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
@@ -1540,7 +1540,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'aelts-".$code[0].$year[0]."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].' - '.$campaign['training'].'('.$campaign['year'].')</b>
+                        <b>'.$campaign['label'].'('.$campaign['year'].')</b>
                     </div>
                     <div class="panel-body" id="aelts-'.$code[0].$year[0].'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
@@ -2662,7 +2662,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 if($fnum != "em-check-all"){
                     $campaign  = $m_campaigns->getCampaignByFnum($fnum);
                     $programme = $m_campaigns->getProgrammeByCampaignID((int)$campaign->id);
-                    $option = '<option value="'.$programme['code'].'">'.$programme['label'].' - '.$programme['code'].'</option>';
+                    $option = '<option value="'.$programme['code'].'">'.$programme['label'].'</option>';
                     if (strpos($html, $option) === false) {
                         $html .= $option;
                     }
@@ -2697,7 +2697,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $campaign  = $m_campaigns->getCampaignByFnum($fnum);
                 if($campaign->training == $code){
                     $nbcamp += 1;
-                    $option = '<option value="'.$campaign->year.'">'.$campaign->label.' - '.$campaign->training.'('.$campaign->year.')</option>';
+                    $option = '<option value="'.$campaign->year.'">'.$campaign->label.'('.$campaign->year.')</option>';
                     if (strpos($html, $option) === false) {
                         $html .= $option;
                     }
