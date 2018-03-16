@@ -513,13 +513,13 @@ class EmundusHelperFiles
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'programme.php');
+        require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
 
         $h_menu     = new EmundusHelperMenu;
         $m_user     = new EmundusModelUsers;
         $m_profile  = new EmundusModelProfile;
-        $m_programme= new EmundusModelProgramme;
+        $m_campaign = new EmundusModelCampaign;
 
         $db = JFactory::getDBO();
 
@@ -529,7 +529,7 @@ class EmundusHelperFiles
             $campaigns = @$params['campaign'];
 
             if (empty($programme) && empty($campaigns))
-                $programme = $m_programme->getLatestProgramme();
+                $programme = $m_campaign->getLatestCampaign();
 
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
@@ -1312,7 +1312,7 @@ class EmundusHelperFiles
             $hidden = $types['status'] != 'hidden' ? false : true;
             $statusList = $h_files->getStatus();
 
-            if (!empty($filt_menu['status'])) {
+            if (isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0])) {
                 foreach ($statusList as $key => $step) {
                     if (!in_array($step->step, $filt_menu['status']))
                         unset($statusList[$key]);
@@ -1684,7 +1684,11 @@ class EmundusHelperFiles
     public  function createTagsList($tags) {
         $tagsList = array();
         foreach ($tags as $tag) {
-            $tagsList[$tag['fnum']] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+            $fnum = $tag['fnum'];
+            if(!isset($tagsList[$fnum]))
+                $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+            else
+                $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
         }
         return $tagsList;
     }

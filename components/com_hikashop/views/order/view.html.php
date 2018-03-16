@@ -250,14 +250,19 @@ class OrderViewOrder extends hikashopView {
 					)
 				);
 			}
-			$back = array(
-				'icon' => 'back',
-				'name' => JText::_('HIKA_BACK'),
-				'javascript' =>  "submitbutton('cancel'); return false;"
-			);
-			$toolbar_array['back'] = $back;
-			$this->toolbar = $toolbar_array;
+			$user = JFactory::getUser();
+			if(!$user->guest) {
+				$back = array(
+					'icon' => 'back',
+					'name' => JText::_('HIKA_BACK'),
+					'javascript' =>  "submitbutton('cancel'); return false;"
+				);
+				$toolbar_array['back'] = $back;
+			}
 		}
+
+		if(count($toolbar_array))
+			$this->toolbar = $toolbar_array;
 		if($this->invoice_type == 'order' || empty($this->element->order_invoice_number))
 			$this->title = JText::_('HIKASHOP_ORDER').': '.$this->element->order_number;
 		else

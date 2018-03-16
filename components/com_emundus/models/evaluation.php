@@ -982,11 +982,15 @@ class EmundusModelEvaluation extends JModelList
 								$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
 						}
 						break;
-					case 'status':
+					case 'status': 
 						if ($value)
 						{
-							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
-								$query['q'] .= ' ';
+							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
+								if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
+									$query['q'] .= ' ';
+								else
+									$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+							}
 							else
 							{
 								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
@@ -1017,14 +1021,9 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		// force menu filter
-		if (count($filt_menu['status'])>0 && !empty($filt_menu['status'][0]) && isset($filt_menu['status']) && $filt_menu['status'][0] != "%") {
-			$query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
-		}
-
-		if ($filt_menu['programme'][0] == "%"){
+		if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
 			$sql_code = '1=1';
-		} elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+		} elseif(isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
 			$sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
 		} else {
 			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
@@ -1147,7 +1146,7 @@ class EmundusModelEvaluation extends JModelList
 
 		$query .=  $this->_buildContentOrderBy();
 /*
-if (JFactory::getUser()->id == 63)
+if (JFactory::getUser()->id == 655)
     echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
 */
 		$dbo->setQuery($query);

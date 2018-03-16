@@ -372,6 +372,33 @@ class EmundusModelCampaign extends JModelList
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Gets the most recent campaign programme code.
+	 * @return string The most recent campaign programme in the DB.
+	 */
+	function getLatestCampaign() {
+
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('training'))
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->order('id DESC')
+                ->setLimit('1');
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting latest programme at model/campaign at query :'.$query, JLog::ERROR, 'com_emundus');
+            return '';
+        }
+
     }
 
 }
