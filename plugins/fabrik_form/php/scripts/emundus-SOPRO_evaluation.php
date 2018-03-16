@@ -17,7 +17,7 @@ defined( '_JEXEC' ) or die();
 $db = JFactory::getDbo();
 
 $fnum = $fabrikFormData['fnum_raw'];
-$step = $fabrikFormData['evaluation_raw'];
+$step = $fabrikFormData['evaluation_raw'][0];
 
 // The status step is the value of the evaluation element dropdown.
 $query = 'UPDATE #__emundus_campaign_candidature SET status='.$step.' WHERE fnum like '. $db->Quote($fnum);
