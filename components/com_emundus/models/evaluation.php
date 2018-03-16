@@ -985,8 +985,12 @@ class EmundusModelEvaluation extends JModelList
 					case 'status': 
 						if ($value)
 						{
-							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
-								$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
+								if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
+									$query['q'] .= ' ';
+								else
+									$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+							}
 							else
 							{
 								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
@@ -1017,9 +1021,9 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		if ($filt_menu['programme'][0] == "%"){
+		if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
 			$sql_code = '1=1';
-		} elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+		} elseif(isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
 			$sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
 		} else {
 			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT

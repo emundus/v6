@@ -36,8 +36,8 @@ $jform = $app->getUserState('com_users.registration.data');
 $messages = $app->getMessageQueue();
 $errors = false;
 foreach ($messages as $message) {
-  	if ($message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
-		try{
+  	if ($message['message'] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
+		try {
 			$chars 	= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
 			//$passwd_md5 = md5($passwd);
 
@@ -45,7 +45,7 @@ foreach ($messages as $message) {
 			$m_users = new EmundusModelUsers;
 			$user = $m_users->getUserByEmail($jform["email2"]);
 			$uid = (int) $user[0]->id;
-			
+
 			$emails = new EmundusModelEmails;
 			$mailer = JFactory::getMailer();
 			$email = $emails->getEmail("account_already_exists");
@@ -86,7 +86,7 @@ foreach ($messages as $message) {
 			$mailer->isHTML(true);
 			$mailer->Encoding = 'base64';
 			$mailer->setBody($body);
-			//var_dump($mailer);
+			//var_dump($body);
 			$send = $mailer->Send();
 			if ($send !== true) {
 				$res = false;
@@ -115,10 +115,11 @@ foreach ($messages as $message) {
                 $group_add = JUserHelper::addUserToGroup($uid,$group[0]);
 
 				$msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
+
 			}
 			$app->enqueueMessage(JText::_('COM_USERS_REGISTER_CHECK_YOUR_MAIL'), 'notice');
-			$app->redirect('index.php');
-			
+			//$app->redirect('index.php');
+
 			//echo json_encode((object)array('status' => $res, 'msg' => $msg));
 
 			/***********************end mail sending ************************* */
