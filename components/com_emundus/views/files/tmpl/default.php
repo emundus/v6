@@ -90,10 +90,6 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 </div>
 
 
-
-
-
-
 <script type="text/javascript">
 	var itemId = '<?php echo @$this->itemId;?>';
 	var cfnum = '<?php echo @$this->cfnum;?>';

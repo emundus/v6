@@ -1,6 +1,6 @@
 <?php
 
-function pdf_admission($user_id, $fnum = null, $output = true, $name = null) {
+function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $options = null) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	
@@ -11,9 +11,11 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null) {
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+	include_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
 	$m_profile 		= new EmundusModelProfile;
 	$application 	= new EmundusModelApplication;
+	$m_files 			= new EmundusModelFiles;
 
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
@@ -88,6 +90,14 @@ $htmldata .=
 .nationality { display: block; margin: 0 0 0 20px;  padding:0;}
 .sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
 .birthday { display: block; margin: 0 0 0 20px; padding:0;}
+
+.label		   {white-space:nowrap; color:white; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+.label-default {background-color:#999999;} 
+.label-primary {background-color:#337ab7;} 
+.label-success {background-color:#5cb85c;} 
+.label-info    {background-color:#033c73;} 
+.label-warning {background-color:#dd5600;} 
+.label-danger  {background-color:#c71c22;} 
 </style>
 <div class="card">
 <table>
@@ -117,37 +127,58 @@ if (isset($item->maiden_name))
 	$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 
 $date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
-$htmldata .= '
-  <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
-  <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-  <div class="nationality">'.JText::_('EMAIL').' : '.$item->email.'</div>
-  <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-  <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y 	%H:%M", time()).'</div>
-</td>
-</tr>
-</table>
-</div>';
+
+if(!empty($options)){
+    if(in_array("aid", $options)){
+        $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>';
+    }
+    if(in_array("afnum", $options)){
+        $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
+    }
+    if(in_array("aemail", $options)){
+        $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>';
+    }
+    if(in_array("aapp-sent", $options)){
+        $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
+    }
+    if(in_array("adoc-print", $options)){
+        $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
+    }
+    $htmldata .= '</td>
+                  </tr>
+                  </table>
+                  </div>';
+
+    if(in_array("tags", $options)){
+        $tags = $m_files->getTagsByFnum(explode(',', $fnum));
+        
+        $htmldata .='<br/><table><tr><td style="display: inline;"> ';
+        foreach($tags as $tag){
+            $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+        }
+        $htmldata .='</td></tr></table>';
+    }
+    
+}
 /**  END APPLICANT   ****/
 
 	// get decision
 	$data = @EmundusHelperFiles::getAdmission('html', $fnum, $item->firstname.' '.strtoupper($item->lastname));
-
+	
 	foreach ($data as $fnums => $evals) {
 		foreach ($evals as $user => $html) {
 			$htmldata .= $html;
 		}
 	}
-
+	
 	if (!empty($htmldata)) {
-
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
 		$start_page = $pdf->getPage();
 		$pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
 		$pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
-
 	}
-
+	
     if (is_null($name))
         $path = EMUNDUS_PATH_ABS.$item->user_id.DS.'admission.pdf';
     else
@@ -157,7 +188,8 @@ $htmldata .= '
     if ($output)
         $pdf->Output($path, 'FI');
     else
-        $pdf->Output($path, 'F');
+		$pdf->Output($path, 'F');
+	
 
 }
 ?>

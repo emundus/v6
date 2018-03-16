@@ -2789,28 +2789,44 @@ $(document).ready(function()
                             '</div>'+
                         '</div>'+
 
-                        '<div class="panel panel-default pdform">'+
+                        '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
                             '<div class="panel-heading">'+
                                 '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
                                 '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
-                        '</div><br/>'+
-
-                        '<div class="panel panel-default pdform">'+
-                            '<div class="panel-heading">'+
-                                '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('PDF_OPTIONS').toUpperCase()+'</font></label>'+
-                                '<button type="button" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'" style="float:right;" onclick="showoptions(this);">'+
-                                '<span class="glyphicon glyphicon-plus"></span>'+
-                                '</button>'+
-                            '</div>'+
-                            '<div class="panel-body" id="options" style="display:none;">'+
-                                '<input class="em-ex-check-opt" type="checkbox"  value="upload" name="upload" id="em-ex-upload"/><label for="em-ex-upload">'+Joomla.JText._('FILES_UPLOADED')+'</label><br/>' +
-                                '<input class="em-ex-check-opt" type="checkbox"  value="tags" name="tags" id="em-ex-tags"/><label for="em-ex-tags">'+Joomla.JText._('TAGS')+'</label>' +
-                            '</div>'+
                         '</div><br/>');
+                
+                    $('#data').append('<div style="padding-left:30px">'+
+                        '<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+ 
+                        '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
+                            '<option  value="aid">'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
+                            '<option  value="afnum">'+Joomla.JText._('FNUM')+'</option>' +
+                            '<option  value="aemail">'+Joomla.JText._('EMAIL')+'</option>' +
+                            '<option  value="tags">'+Joomla.JText._('PDF_TAGS')+'</option>' +
+                            '<option  value="aapp-sent">'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
+                            '<option  value="adoc-print">'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
+                            '<option  value="upload">'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
+                        '</select>'+
+                        '</div><br/>' );
+                    
+                    $('#em-export-opt').chosen({width:'89.8%'});
             
                 
-               
+                $.ajax({
+                    type:'get',
+                    url: 'index.php?option=com_emundus&controller=files&task=checkadmission',
+                    dataType:'json',
+
+                    success: function(result) {
+                        if(result.status){
+                            $('#adm-exists').show();
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log(jqXHR.responseText);
+                    }
+                });
 
                 var checkInput = getUserCheck();
                 //alert(checkInput);
@@ -3068,7 +3084,7 @@ $(document).ready(function()
                    
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
-                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
+                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
                 
                 //$('#em-modal-actions .modal-footer ').hide();
                 $('#can-val').empty();
@@ -3085,6 +3101,7 @@ $(document).ready(function()
                 break;
             //export PDF;
             case 8 :
+                
                 $('#em-modal-actions .modal-body').empty();
                 $('#em-modal-actions .modal-body').append('<div id="data"></div>');
                 $('#data').append('<div class="panel panel-default pdform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
@@ -3118,27 +3135,43 @@ $(document).ready(function()
                             '</div>'+
                         '</div>'+
 
-                        '<div class="panel panel-default pdform">'+
+                        '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
                             '<div class="panel-heading">'+
                                 '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
                                 '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
-                        '</div><br/>'+
+                        '</div><br/>');
 
-                        '<div class="panel panel-default pdform">'+
-                            '<div class="panel-heading">'+
-                                '<button type="button" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'" style="float:left;" onclick="showoptions(this);">'+
-                                 '<span class="glyphicon glyphicon-plus"></span>'+
-                                '</button>&ensp;&ensp;'+
-                                '<label><font color="black">'+Joomla.JText._('PDF_OPTIONS').toUpperCase()+'</font></label>'+
-                            '</div>'+
-                            '<div class="panel-body" id="options" style="display:none;">'+
-                                '<input class="em-ex-check-opt" type="checkbox"  value="upload" name="upload" id="em-ex-upload"/><label for="em-ex-upload">'+Joomla.JText._('FILES_UPLOADED')+'</label><br/>' +
-                                '<input class="em-ex-check-opt" type="checkbox"  value="tags" name="tags" id="em-ex-tags"/><label for="em-ex-tags">'+Joomla.JText._('PDF_TAGS')+'</label>' +
-                            '</div>'+
+                        $('#data').append('<div style="padding-left:30px">'+
+                            '<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+ 
+                            '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
+                                '<option  value="aid">'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
+                                '<option  value="afnum">'+Joomla.JText._('FNUM')+'</option>' +
+                                '<option  value="aemail">'+Joomla.JText._('EMAIL')+'</option>' +
+                                '<option  value="tags">'+Joomla.JText._('PDF_TAGS')+'</option>' +
+                                '<option  value="aapp-sent">'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
+                                '<option  value="adoc-print">'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
+                                '<option  value="upload">'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
+                            '</select>'+
                         '</div><br/>' );
+                        
+                        $('#em-export-opt').chosen({width:'89.8%'});
 
-                       
+                        $.ajax({
+                            type:'get',
+                            url: 'index.php?option=com_emundus&controller=files&task=checkadmission',
+                            dataType:'json',
+        
+                            success: function(result) {
+                                if(result.status){
+                                    $('#adm-exists').show();
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown)
+                            {
+                                console.log(jqXHR.responseText);
+                            }
+                        });
                 
                 var checkInput = getUserCheck();
                 //alert(checkInput);
@@ -3402,7 +3435,7 @@ $(document).ready(function()
                    
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
-                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
+                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
                
                 //$('#em-modal-actions .modal-footer').hide();
                 $('#can-val').empty();
@@ -3499,7 +3532,7 @@ $(document).ready(function()
                     {
                         $('.modal-body').empty();
                         
-                        var status = '<div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
+                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
 
                         for (var i in result.states)
                         {
@@ -3691,7 +3724,7 @@ $(document).ready(function()
                     success: function(result)
                     {
                         $('.modal-body').empty();
-                        var status = '<div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
+                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
 
                         for (var i in result.states)
                         {
@@ -3793,7 +3826,7 @@ $(document).ready(function()
         if ($('#em-ex-admission').is(":checked"))
             admission   = 1;
 
-        $('#options input:checked').each(function() {
+        $('#em-export-opt option:selected').each(function() {
             options.push($(this).val());
         });
 
@@ -3904,7 +3937,7 @@ $(document).ready(function()
         if ($('#em-ex-admission').is(":checked"))
             admission   = 1;
 
-        $('#options input:checked').each(function() {
+        $('#em-export-opt option:selected').each(function() {
             options.push($(this).val());
         });
         //console.log(options);

@@ -240,6 +240,11 @@ JText::script('PDF_OPTIONS');
 JText::script('FILES_UPLOADED');
 JText::script('TAGS');
 JText::script('FILE_DEFINED_NOT_FOUND');
+JText::script('ID_CANDIDAT');
+JText::script('FNUM');
+JText::script('APPLICATION_SENT_ON');
+JText::script('DOCUMENT_PRINTED_ON');
+
 
 //Export ZIP
 JText::script('COM_EMUNDUS_ZIP_GENERATION');

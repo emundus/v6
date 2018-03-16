@@ -1618,14 +1618,14 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 if ($assessment){
-                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum);
+                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
                 }
                     
                 if ($decision)
-                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum);
+                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
 
                 if ($admission)
-                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum);
+                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
             }
         }
         $start = $i;
@@ -2156,13 +2156,13 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
                 
                 if ($assessment)
-                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum);
+                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
                 
                 if ($decision)
-                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum);
+                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
     
                 if ($admission)
-                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum);
+                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
                 
                 
                 if (count($files_list) > 0) {
@@ -2771,44 +2771,36 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $constraints = json_encode($constraints);
 
+        $h_files = new EmundusHelperFiles;
+
         if (empty($itemid))
             $itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 
         $time_date = (date('Y-m-d H:i:s'));
 
-        $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
-        $db->setQuery( $query );
+        
+        $result = $h_files->saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid);
+        
+        echo json_encode((object)(array('status' => true, 'filter' => $result)));
+        exit;
 
-        try {
-
-            $db->Query();
-            $query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
-            //echo $query;
-            $db->setQuery($query);
-            $result = $db->loadObject();
-            echo json_encode((object)(array('status' => true, 'filter' => $result)));
-            exit;
-
-        } catch (Exception $e) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        }
     }
     public function getExportExcelFilter(){
         $db = JFactory::getDBO();
         $user_id   = JFactory::getUser()->id;
-        $session     = JFactory::getSession();
+        
+        $h_files = new EmundusHelperFiles;
 
-        try {
-            $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
-            $db->setQuery($query);
-            $result = $db->loadObjectList();
-
-            echo json_encode((object)(array('status' => true, 'filter' => $result)));
-            exit;
-        } catch (Exception $e) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        }
+        $filters = $h_files->getExportExcelFilter($user_id);
+        
+        echo json_encode((object)(array('status' => true, 'filter' => $filters)));
+        exit;
+    }
+    
+    public function checkadmission(){
+        $h_files = new EmundusHelperFiles;
+        echo json_encode((object)(array('status' => $h_files->checkadmission())));
+        exit;
+        
     }
 }

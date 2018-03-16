@@ -738,13 +738,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
 	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
 	
-	.label {display: inline-block; color:#feffff; float:left; text-align:left; border-radius: 0.25px; padding:10px 10px 10px 10px; font-size: 100%; } 
-	.label-default {background-color:#999999} 
-	.label-primary {background-color:#337ab7} 
-	.label-success {background-color:#5cb85c} 
-	.label-info    {background-color:#033c73} 
-	.label-warning {background-color:#dd5600} 
-	.label-danger  {background-color:#c71c22} 
+	.label		   {white-space:nowrap; color:white; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+	.label-default {background-color:#999999;} 
+	.label-primary {background-color:#337ab7;} 
+	.label-success {background-color:#5cb85c;} 
+	.label-info    {background-color:#033c73;} 
+	.label-warning {background-color:#dd5600;} 
+	.label-danger  {background-color:#c71c22;} 
 	
 	</style>
 	<div class="card">
@@ -769,31 +769,46 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$dt = new DateTime('NOW', new DateTimeZone('UTC'));
 	// change the timezone of the object without changing it's time
 	$dt->setTimezone(new DateTimeZone($offset));
+	//var_dump($options);
+	if(!empty($options)){
+		if(in_array("aid", $options)){
+			$htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>';
+		}
+		if(in_array("afnum", $options)){
+			$htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
+		}
+		if(in_array("aemail", $options)){
+			$htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
+		}
+		if(in_array("aapp-sent", $options)){
+			$htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
+		}
+		if(in_array("adoc-print", $options)){
+			$htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
+		}
+		$htmldata .= '</td>
+					  </tr>
+					  </table>
+					  </div>';
 
-	$htmldata .= '
-	<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
-	<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-	<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>
-	<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-	<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>
-	</td>
-	</tr>
-	</table>
-	</div>';
+		if(in_array("tags", $options)){
+			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
+			
+			$htmldata .='<br/><table><tr><td style="display: inline;"> ';
+			foreach($tags as $tag){
+				$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+			}
+			$htmldata .='</td></tr></table>';
+		}
+		
+	}
+	
 	/**  END APPLICANT   ****/
 
 	/*** Tags */
 	if(!empty($options)){
 		
-		if(in_array("tags", $options)){
-			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
-			
-			$htmldata .='<div class="tags"> ';
-			foreach($tags as $tag){
-				$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
-			}
-			$htmldata .='</div>';
-		}
+		
 	}
 	
 	

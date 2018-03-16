@@ -2155,7 +2155,7 @@ class EmundusHelperFiles
 
             $data[$adm['fnum']][1] = $str;
         }
-
+        
         return $data;
     }
 
@@ -2171,5 +2171,53 @@ class EmundusHelperFiles
     public function createFnum($campaign_id, $user_id){
         $fnum    = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
         return $fnum;
+    }
+
+    public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid){
+        $db = JFactory::getDBO();
+        
+        try {
+            $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
+            $db->setQuery( $query );
+            $db->query();
+           
+            $query = 'SELECT f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
+            $db->setQuery($query);
+            return $db->loadObject();
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getExportExcelFilter($user_id){
+        $db = JFactory::getDBO();
+        
+        try {
+            $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
+            $db->setQuery($query);
+           return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function checkadmission(){
+        $db = JFactory::getDBO();
+        
+        try {
+            $query = 'SELECT * from #__emundus_admission limit 1';
+            $db->setQuery($query);
+            $db->query() ;
+            return true;
+
+        } catch (Exception $e) {
+           return false;
+        }
     }
 }

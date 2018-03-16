@@ -152,7 +152,7 @@ class EmundusHelperExport
 		return $exports;
 	}
 
-    public static function getEvalPDF($fnum)
+    public static function getEvalPDF($fnum, $options = null)
     {
         $user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
@@ -180,12 +180,12 @@ class EmundusHelperExport
 
         require_once($file);
 
-        pdf_evaluation($user->id, $fnum, false, $tmpName);
+        pdf_evaluation($user->id, $fnum, false, $tmpName, $options);
 
         return $tmpName;
     }
 
-    public static function getDecisionPDF($fnum) {
+    public static function getDecisionPDF($fnum, $options = null) {
         $user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_('ACCESS_DENIED'));
@@ -211,12 +211,12 @@ class EmundusHelperExport
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_decision.php';
 
         require_once($file);
-        pdf_decision($user->id, $fnum, false, $tmpName);
+        pdf_decision($user->id, $fnum, false, $tmpName, $options);
 
         return $tmpName;
     }
 
-	public static function getAdmissionPDF($fnum) {
+	public static function getAdmissionPDF($fnum, $options = null) {
         $user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_('ACCESS_DENIED'));
@@ -241,7 +241,7 @@ class EmundusHelperExport
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_admission.php';
 
         require_once($file);
-        pdf_admission($user->id, $fnum, false, $tmpName);
+        pdf_admission($user->id, $fnum, false, $tmpName, $options);
 
         return $tmpName;
     }
