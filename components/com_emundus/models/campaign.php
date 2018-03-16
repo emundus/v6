@@ -395,7 +395,7 @@ class EmundusModelCampaign extends JModelList
             return $db->loadResult();
 
         } catch (Exception $e) {
-            JLog::add('Error getting latest programme at model/campaign at query :'.$query, JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
             return '';
         }
 
