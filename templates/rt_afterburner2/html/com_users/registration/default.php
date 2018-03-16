@@ -86,7 +86,7 @@ foreach ($messages as $message) {
 			$mailer->isHTML(true);
 			$mailer->Encoding = 'base64';
 			$mailer->setBody($body);
-			//var_dump($mailer);
+			var_dump($body);
 			$send = $mailer->Send();
 			if ($send !== true) {
 				$res = false;
@@ -115,9 +115,10 @@ foreach ($messages as $message) {
                 $group_add = JUserHelper::addUserToGroup($uid,$group[0]);
 
 				$msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
+				
 			}
 			$app->enqueueMessage(JText::_('COM_USERS_REGISTER_CHECK_YOUR_MAIL'), 'notice');
-			$app->redirect('index.php');
+			//$app->redirect('index.php');
 			
 			//echo json_encode((object)array('status' => $res, 'msg' => $msg));
 
