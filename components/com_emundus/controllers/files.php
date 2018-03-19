@@ -1629,7 +1629,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
         $start = $i;
-        
+        //var_dump($files_list);
         if (count($files_list) > 0) {
             
             // all PDF in one file
