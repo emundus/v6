@@ -1688,17 +1688,18 @@ if (JFactory::getUser()->id == 655)
     * 	@return int
     */
     function getEvaluationFormByProgramme($code = null) {
-        if ($code === NULL) {
+
+		if ($code === NULL) {
             $session = JFactory::getSession();
-            if ($session->has('filt_params'))
-            {
-                $filt_params = $session->get('filt_params');
-                if (count(@$filt_params['programme'])>0) {
+            if ($session->has('filt_params')) {
+				$filt_params = $session->get('filt_params');
+                if (isset($filt_params['programme']) && !empty($filt_params['programme'])) {
                     $code = $filt_params['programme'][0];
                 }
             }
         }
-        try {
+
+		try {
             $query = 'SELECT ff.form_id
 					FROM #__fabrik_formgroup ff
 					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like ' .
