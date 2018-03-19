@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -263,7 +263,7 @@ class plgSearchHikashop_products extends JPlugin{
 			$class = hikashop_get('class.product');
 			$ids = array();
 			foreach ( $rows as $k => $row ) {
-				$ids[$row->id]=$row->id;
+				$ids[(int)$row->id]=(int)$row->id;
 				if(!empty($row->category_id)){
 					if(empty($item_id)){
 						if(!isset($itemids[$row->category_id])) $itemids[$row->category_id] = $menuClass->getItemidFromCategory($row->category_id);
@@ -281,7 +281,7 @@ class plgSearchHikashop_products extends JPlugin{
 				$row->title=$row->product_name;
 				$row->text=$row->product_description;
 				if($variants && $row->product_type=='variant'){
-					$ids[$row->product_parent_id]=$row->product_parent_id;
+					$ids[(int)$row->product_parent_id]=(int)$row->product_parent_id;
 					static $mains = array();
 					if(!isset($mains[$row->product_parent_id])){
 						$mains[$row->product_parent_id] = $class->get((int)$row->product_parent_id);

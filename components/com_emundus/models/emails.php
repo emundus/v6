@@ -318,7 +318,7 @@ class EmundusModelEmails extends JModelList
      *  @param          $element_ids    array   Fabrik element ID
      *  @return         array           array of application file elements values
      */
-    public function getFabrikElementValues($fnum, $element_ids){
+    public function getFabrikElementValues($fnum, $element_ids) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
         $db = JFactory::getDBO();
 
@@ -339,7 +339,7 @@ class EmundusModelEmails extends JModelList
      *  @param          $element_values     array   Array of values index by Fabrik elements IDs
      *  @return         string              String with values
      */
-    public function setElementValues($body, $element_values){
+    public function setElementValues($body, $element_values) {
 
         foreach ($element_values as $key => $value) {
             $body = str_replace('{'.$key.'}', $value, $body);

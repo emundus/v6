@@ -165,12 +165,14 @@ class EmundusHelperFiles
 
         }
 
+        /*
         // on force avec la valeur du filtre défini dans les options de menu
         if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0])) {
             $fd_with_param = $params['status'] + $filts_details['status'];
             $params['status'] = $filts_details['status'];
             $filts_details['status'] = $fd_with_param;
         }
+        */
 
         if (count($filts_details['group'])>0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
             $fd_with_param = $params['group'] + $filts_details['group'];
@@ -210,6 +212,11 @@ class EmundusHelperFiles
             }
         }
 
+
+        // Used for adding default collumns when no programme is loaded.
+        if (empty($params['programme']))
+            $params['programme'] = ["%"];
+
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
 
@@ -234,7 +241,7 @@ class EmundusHelperFiles
     * @param            query results
     * @param    array   values to extract and insert
     */
-    public  function insertValuesInQueryResult($results, $options)
+    public function insertValuesInQueryResult($results, $options)
     {
         foreach ($results as $key => $result)
         {
@@ -267,7 +274,7 @@ class EmundusHelperFiles
         return $results;
     }
 
-    public  function getCurrentCampaign(){
+    public function getCurrentCampaign(){
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config     = JFactory::getConfig();
@@ -289,7 +296,7 @@ class EmundusHelperFiles
         }
     }
 
-    public  function getCurrentCampaignsID(){
+    public function getCurrentCampaignsID(){
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config = JFactory::getConfig();
@@ -312,7 +319,7 @@ class EmundusHelperFiles
         }
     }
 
-    public  function getCampaigns() {
+    public function getCampaigns() {
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
         $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
@@ -513,13 +520,13 @@ class EmundusHelperFiles
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'programme.php');
+        require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
 
         $h_menu     = new EmundusHelperMenu;
         $m_user     = new EmundusModelUsers;
         $m_profile  = new EmundusModelProfile;
-        $m_programme= new EmundusModelProgramme;
+        $m_campaign = new EmundusModelCampaign;
 
         $db = JFactory::getDBO();
 
@@ -529,7 +536,7 @@ class EmundusHelperFiles
             $campaigns = @$params['campaign'];
 
             if (empty($programme) && empty($campaigns))
-                $programme = $m_programme->getLatestProgramme();
+                $programme = $m_campaign->getLatestCampaign();
 
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
@@ -1312,7 +1319,7 @@ class EmundusHelperFiles
             $hidden = $types['status'] != 'hidden' ? false : true;
             $statusList = $h_files->getStatus();
 
-            if (!empty($filt_menu['status'])) {
+            if (isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0])) {
                 foreach ($statusList as $key => $step) {
                     if (!in_array($step->step, $filt_menu['status']))
                         unset($statusList[$key]);
@@ -1684,7 +1691,11 @@ class EmundusHelperFiles
     public  function createTagsList($tags) {
         $tagsList = array();
         foreach ($tags as $tag) {
-            $tagsList[$tag['fnum']] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+            $fnum = $tag['fnum'];
+            if(!isset($tagsList[$fnum]))
+                $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+            else
+                $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
         }
         return $tagsList;
     }
