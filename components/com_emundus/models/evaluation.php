@@ -147,10 +147,10 @@ class EmundusModelEvaluation extends JModelList
 										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-					} 
+					}
 					else {
                         if($attribs->database_join_display_type=="checkbox"){
-                            
+
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
                             $query = '(
                                 SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
@@ -159,8 +159,8 @@ class EmundusModelEvaluation extends JModelList
                               ) AS `'.$t.'`';
                         } else {
                             $query = '(
-                                select DISTINCT '.$join_val_column.' 
-                                from '.$attribs->join_db_name.' 
+                                select DISTINCT '.$join_val_column.'
+                                from '.$attribs->join_db_name.'
                                 where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                         }
                     }
@@ -242,7 +242,8 @@ class EmundusModelEvaluation extends JModelList
 			//var_dump($session->get('filt_params'));
 			$element_id = array();
 			$filt_params = $session->get('filt_params');
-			if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
+
+			if (is_array($filt_params['programme']) && count(@$filt_params['programme']) > 0) {
 				foreach ($filt_params['programme'] as $value) {
 					$groups = $this->getGroupsEvalByProgramme($value);
 					if (empty($groups)) {
@@ -982,7 +983,7 @@ class EmundusModelEvaluation extends JModelList
 								$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
 						}
 						break;
-					case 'status': 
+					case 'status':
 						if ($value)
 						{
 							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
@@ -1116,10 +1117,10 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
-					LEFT JOIN #__users as u on u.id = c.applicant_id 
+					LEFT JOIN #__users as u on u.id = c.applicant_id
                     LEFT JOIN (
 					  SELECT GROUP_CONCAT(id_tag SEPARATOR ", ") id_tag, fnum
-					  FROM jos_emundus_tag_assoc 
+					  FROM jos_emundus_tag_assoc
 					  GROUP BY fnum
 					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
@@ -1460,7 +1461,7 @@ if (JFactory::getUser()->id == 655)
 					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id
 					WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND campaign_id='.$campaign_id.'
 					AND eu.attachment_id IN (
-						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl 
+						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl
 						)
 					AND eu.filename NOT LIKE "%lock%"
 					ORDER BY eu.timedate';
@@ -1490,16 +1491,17 @@ if (JFactory::getUser()->id == 655)
      * 	@return array
     **/
     function getEvaluationsFnumUser($fnum, $user) {
-        try {
-            $query = 'SELECT *
+
+		try {
+
+			$query = 'SELECT *
 					FROM #__emundus_evaluations ee
 					WHERE ee.fnum like ' . $this->_db->Quote($fnum) . ' AND user = ' . $user;
 //die(str_replace('#_', 'jos', $query));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+
+		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
@@ -1517,7 +1519,7 @@ if (JFactory::getUser()->id == 655)
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
 
-		} catch(Exception $e) {
+		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
@@ -1535,7 +1537,7 @@ if (JFactory::getUser()->id == 655)
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
 
-		} catch(Exception $e) {
+		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
@@ -1634,22 +1636,23 @@ if (JFactory::getUser()->id == 655)
 	* 	@return array
 	**/
     function getDecisionFnum($fnum) {
-        try {
+
+		try {
             $query = 'SELECT *
 					FROM #__emundus_final_grade efg
 					WHERE efg.fnum like ' . $this->_db->Quote($fnum);
 //die(str_replace('#_', 'jos', $query));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+
+		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
     }
 
 	function getLettersTemplate($eligibility, $training) {
+
 		//$query = "SELECT * FROM #__emundus_setup_letters WHERE status=".$eligibility." AND training=".$this->_db->Quote($training);
 		$query = "SELECT `l`.`id`, `l`.`header`, `l`.`body`, `l`.`footer`, `l`.`title`, `l`.`attachment_id`, `l`.`template_type`, `l`.`file`, `lrs`.`status` , `lrt`.`training`
 					FROM jos_emundus_setup_letters as l
@@ -1660,9 +1663,11 @@ if (JFactory::getUser()->id == 655)
 		$this->_db->setQuery($query);
 
 		return $this->_db->loadAssocList();
+
 	}
 
 	function getLettersTemplateByID($id = null) {
+
 		try {
 			//$query = "SELECT * FROM #__emundus_setup_letters WHERE id=" . $id;
             $query = "SELECT l.*, GROUP_CONCAT( DISTINCT(`lrs`.`status`) SEPARATOR ',' ) as `status`, CONCAT('\"',GROUP_CONCAT( DISTINCT(`lrt`.`training`) SEPARATOR '\",\"' ), '\"') as `training`
@@ -1675,9 +1680,8 @@ if (JFactory::getUser()->id == 655)
 
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+
+		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
@@ -1708,9 +1712,8 @@ if (JFactory::getUser()->id == 655)
             $this->_db->setQuery($query);
 
             return $this->_db->loadResult();
-        }
-        catch(Exception $e)
-        {
+
+		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
@@ -1724,15 +1727,15 @@ if (JFactory::getUser()->id == 655)
     function getDecisionFormByProgramme($code=null) {
         if ($code === NULL) {
             $session = JFactory::getSession();
-            if ($session->has('filt_params'))
-            {
+            if ($session->has('filt_params')) {
                 $filt_params = $session->get('filt_params');
                 if (count(@$filt_params['programme'])>0) {
                     $code = $filt_params['programme'][0];
                 }
             }
         }
-        try {
+
+		try {
             $query = 'SELECT ff.form_id
 					FROM #__fabrik_formgroup ff
 					WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
@@ -1741,9 +1744,8 @@ if (JFactory::getUser()->id == 655)
             $this->_db->setQuery($query);
 
             return $this->_db->loadResult();
-        }
-        catch(Exception $e)
-        {
+
+		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
