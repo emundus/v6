@@ -40,7 +40,7 @@ if (!empty($status[0])) {
 			break;
 
 		case 2:
-			$step = 4;
+			$step = 12;
 			break;
 
 	}
