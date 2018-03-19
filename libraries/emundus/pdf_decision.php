@@ -44,6 +44,29 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+	class myPdf extends TCPDF
+	{
+		var $lastname = "";
+		var $firstname = "";
+		var $program = "";
+
+		// Page footer
+		public function Footer() {
+			// Position at 16 mm from bottom
+			
+			$this->SetY(-10);
+			// Set font
+			
+			// Page number
+			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
+			$this->Cell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
+			
+		}
+
+	}
+	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('eMundus');
 	$pdf->SetTitle('Decision');
@@ -78,7 +101,7 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 	unset($title);
 	
 	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
 	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -87,6 +110,10 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 	$pdf->SetFont('helvetica', '', 10);
 	$pdf->AddPage();
 	//$dimensions = $pdf->getPageDimensions();
+
+	$pdf->lastname = $item->lastname;
+	$pdf->firstname = $item->firstname;
+	$pdf->program = $item->label;
 	
 /*** Applicant   ***/   
 $htmldata .= 
