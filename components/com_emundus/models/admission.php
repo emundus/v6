@@ -142,10 +142,10 @@ class EmundusModelAdmission extends JModelList
 										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-					} 
+					}
 					else {
                         if($attribs->database_join_display_type=="checkbox"){
-                            
+
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
                             $query = '(
                                 SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
@@ -154,8 +154,8 @@ class EmundusModelAdmission extends JModelList
                               ) AS `'.$t.'`';
                         } else {
                             $query = '(
-                                select DISTINCT '.$join_val_column.' 
-                                from '.$attribs->join_db_name.' 
+                                select DISTINCT '.$join_val_column.'
+                                from '.$attribs->join_db_name.'
                                 where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                         }
                     }
@@ -230,7 +230,8 @@ class EmundusModelAdmission extends JModelList
         if ($session->has('filt_params')) {
 
             $filt_params = $session->get('filt_params');
-			if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
+
+			if (is_array($filt_params['programme']) && count(@$filt_params['programme']) > 0) {
 
 				foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsAdmissionByProgramme($value);
@@ -961,7 +962,7 @@ class EmundusModelAdmission extends JModelList
                             }
                             else
                             {
-                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                                $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
                             }
                         }
 						break;

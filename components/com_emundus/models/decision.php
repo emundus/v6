@@ -909,7 +909,7 @@ class EmundusModelDecision extends JModelList
                             }
                             else
                             {
-                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                                $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
                             }
                         }
 						break;

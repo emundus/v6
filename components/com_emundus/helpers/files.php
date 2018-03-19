@@ -165,12 +165,14 @@ class EmundusHelperFiles
 
         }
 
+        /*
         // on force avec la valeur du filtre défini dans les options de menu
         if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0])) {
             $fd_with_param = $params['status'] + $filts_details['status'];
             $params['status'] = $filts_details['status'];
             $filts_details['status'] = $fd_with_param;
         }
+        */
 
         if (count($filts_details['group'])>0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
             $fd_with_param = $params['group'] + $filts_details['group'];
@@ -210,6 +212,11 @@ class EmundusHelperFiles
             }
         }
 
+
+        // Used for adding default collumns when no programme is loaded.
+        if (empty($params['programme']))
+            $params['programme'] = ["%"];
+
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
 
@@ -234,7 +241,7 @@ class EmundusHelperFiles
     * @param            query results
     * @param    array   values to extract and insert
     */
-    public  function insertValuesInQueryResult($results, $options)
+    public function insertValuesInQueryResult($results, $options)
     {
         foreach ($results as $key => $result)
         {
@@ -267,7 +274,7 @@ class EmundusHelperFiles
         return $results;
     }
 
-    public  function getCurrentCampaign(){
+    public function getCurrentCampaign(){
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config     = JFactory::getConfig();
@@ -289,7 +296,7 @@ class EmundusHelperFiles
         }
     }
 
-    public  function getCurrentCampaignsID(){
+    public function getCurrentCampaignsID(){
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config = JFactory::getConfig();
@@ -312,7 +319,7 @@ class EmundusHelperFiles
         }
     }
 
-    public  function getCampaigns() {
+    public function getCampaigns() {
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
         $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
