@@ -669,6 +669,31 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	
+	class myPdf extends TCPDF
+	{
+		var $lastname = "";
+		var $firstname = "";
+		var $program = "";
+
+		// Page footer
+		public function Footer() {
+			// Position at 16 mm from bottom
+			
+			$this->SetY(-10);
+			// Set font
+			
+			// Page number
+			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
+			$this->Cell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
+			
+		}
+
+	}
+	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+	
+
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Decision Publique');
 	$pdf->SetTitle('Application Form');
@@ -695,6 +720,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	}
 //die(str_replace("#_", "jos", $query));
 
+
 	//get logo
     $template 	= $app->getTemplate(true);
     $params     = $template->params;
@@ -718,7 +744,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	unset($title);
 
 	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
 	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -727,7 +753,16 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetFont('helvetica', '', 10);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
-
+	
+	//$pdf->setPrintFooter(false);
+	$pdf->lastname = $item->lastname;
+	$pdf->firstname = $item->firstname;
+	$pdf->program = $item->label;
+	
+	
+	
+	
+	
 	/*** Applicant   ***/
 	$htmldata .=
 	'<style>
@@ -769,6 +804,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$dt = new DateTime('NOW', new DateTimeZone('UTC'));
 	// change the timezone of the object without changing it's time
 	$dt->setTimezone(new DateTimeZone($offset));
+
 	//var_dump($options);
 	if(!empty($options)){
 		if(in_array("aid", $options)){
@@ -791,6 +827,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					  </table>
 					  </div>';
 
+		/*** Tags */
 		if(in_array("tags", $options)){
 			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
 			
@@ -800,19 +837,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			}
 			$htmldata .='</td></tr></table>';
 		}
+		/*** End tags */
 		
 	}
 	
 	/**  END APPLICANT   ****/
 
-	/*** Tags */
-	if(!empty($options)){
-		
-		
-	}
 	
-	
-	/*** End tags */
 
 	$htmldata .= $forms;
 	//die($htmldata);
@@ -858,12 +889,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 		$htmldata = '';
 	}
+	
 
 	if (!file_exists(EMUNDUS_PATH_ABS.@$item->user_id)) {
 		mkdir(EMUNDUS_PATH_ABS.$item->user_id, 0777, true);
 		chmod(EMUNDUS_PATH_ABS.$item->user_id, 0777);
 	}
 
+	
 	@chdir('tmp');
 	if ($output) {
 		if (!isset($current_user->applicant) && @$current_user->applicant != 1) {

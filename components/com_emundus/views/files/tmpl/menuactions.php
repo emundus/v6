@@ -72,7 +72,7 @@ endif;
 						</td>
 						<td style="text-align: right;" id="can-val">
 							<button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-							<button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+							<button style="margin-left:5px;" type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
 						</td>
 					</tr>
 				</table>
