@@ -2500,7 +2500,7 @@ $(document).ready(function()
 
                             $('#oelts').append('<div style="height:150px; width:65%;" class="panel panel-default xclsform">' +
                             '<h5 style="padding-left:15px;">  '+Joomla.JText._('COM_EMUNDUS_CHOOSE_OTHER_COL')+'</h5>'+
-                            '<div class="well" style="height:63%; overflow:auto;">'+
+                            '<div class="well" style="height:73%; overflow:auto;">'+
                             '<input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo" style="max-height:20px"/>' +
                             '<label for="em-ex-photo">'+Joomla.JText._('COM_EMUNDUS_PHOTO')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="forms" name="em-ex-forms" id="em-ex-forms" style="max-height:20px"/>' +
