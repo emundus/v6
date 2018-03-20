@@ -670,7 +670,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	
-	class myPdf extends TCPDF
+	/*class myPdf extends TCPDF
 	{
 		var $lastname = "";
 		var $firstname = "";
@@ -684,13 +684,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			// Set font
 			
 			// Page number
-			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
-			$this->Cell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
+			$this->writeHTMLCell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
+			$this->writeHTMLCell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
 			
-		}
 
 	}
-	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);*/
 
 	
 
@@ -738,7 +737,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$title = $config->get('sitename');
 	if (is_file($logo))
 		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
-		
+
+	
 
 	unset($logo);
 	unset($title);
@@ -755,12 +755,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$dimensions = $pdf->getPageDimensions();
 	
 	//$pdf->setPrintFooter(false);
-	$pdf->lastname = $item->lastname;
+	/*$pdf->lastname = $item->lastname;
 	$pdf->firstname = $item->firstname;
-	$pdf->program = $item->label;
-	
-	
-	
+	$pdf->program = $item->label;*/
 	
 	
 	/*** Applicant   ***/
@@ -878,7 +875,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			$htmldata .='</ol></div>';
 		}
 	}
-
+	
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
 
 	if (!empty($htmldata)) {

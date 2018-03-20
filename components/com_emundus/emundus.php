@@ -223,6 +223,7 @@ JText::script('SECONDE_PREFERENCE');
 JText::script('DID_YOU_APPLY_FOR_ANOTHER_PROGRAM');
 JText::script('PROGRAM_NAME');
 JText::script('CHOOSE_YOUR_OPTION');
+JText::script('RESTRICTED_ACCESS_OTHERS_EVAL');
 
 
 

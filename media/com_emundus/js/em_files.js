@@ -542,13 +542,14 @@ function getUserCheck() {
 
 maxcsv = 65000;
 maxxls = 65000;
-function generate_csv(json, eltJson, objJson, options) {
+function generate_csv(json, eltJson, objJson, options, objclass) {
     var start = json.start;
     var limit = json.limit;
     var totalfile = json.totalfile;
     var file = json.file;
     var nbcol = json.nbcol;
     var methode = json.methode;
+    var objclass = objclass;
     $.ajaxQ.abortAll();
     if (start+limit <= maxcsv) {
         $.ajax(
@@ -565,7 +566,8 @@ function generate_csv(json, eltJson, objJson, options) {
                     methode: methode,
                     elts: eltJson,
                     objs: objJson,
-                    opts: options
+                    opts: options,
+                    objclass: objclass
                 },
                 success: function (result) {
                     var json = result.json;
@@ -577,7 +579,7 @@ function generate_csv(json, eltJson, objJson, options) {
 
                         }
                         if (start!= json.start) {
-                            generate_csv(json, eltJson, objJson, options);
+                            generate_csv(json, eltJson, objJson, options, objclass);
                         } else {
                             $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_XLS_GENERATION')+'</p></div>');
                             $.ajax(
@@ -1795,6 +1797,7 @@ $(document).ready(function()
                                                                                                 if (isNaN(parseInt(d)))
                                                                                                     break;
                                                                                                 item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                             }
                                                                                             $('#em-export').append(item);
                                                                                         }
@@ -1849,6 +1852,7 @@ $(document).ready(function()
                                                                                                                                 if (isNaN(parseInt(d)))
                                                                                                                                     break;
                                                                                                                                 item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                                $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                             }
                                                                                                                             $('#em-export').append(item);
                                                                                                                         }
@@ -2184,6 +2188,7 @@ $(document).ready(function()
                                                                                             if (isNaN(parseInt(d)))
                                                                                                 break;
                                                                                             item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                            $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                         }
                                                                                         $('#em-export').append(item);
                                                                                     }
@@ -2234,6 +2239,7 @@ $(document).ready(function()
                                                                                                                                     if (isNaN(parseInt(d)))
                                                                                                                                         break;
                                                                                                                                     item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                                    $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                                 }
                                                                                                                                 $('#em-export').append(item);
                                                                                                                             }
@@ -2371,6 +2377,7 @@ $(document).ready(function()
                                                                                 if (isNaN(parseInt(d)))
                                                                                     break;
                                                                                 item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                             }
                                                                             $('#em-export').append(item);
                                                                         }
@@ -2421,6 +2428,7 @@ $(document).ready(function()
                                                                                                                         if (isNaN(parseInt(d)))
                                                                                                                             break;
                                                                                                                         item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                        $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                     }
                                                                                                                     $('#em-export').append(item);
                                                                                                                 }
@@ -4051,6 +4059,14 @@ $(document).ready(function()
             case 6:
                 var eltJson = "{";
                 var i = 0;
+                var objclass = [];
+
+                $('[class^="emundusitem"]:checkbox:checked').each(function() {
+                    if($(this).attr('class') == "emundusitem_evaluation otherForm"){
+                        objclass.push($(this).attr('class'));
+                    }
+                });
+                 objclass = $.unique(objclass);
 
                 $(".em-export-item").each(function() {
                     eltJson += '"'+i+'":"'+$(this).attr('id').split('-')[0]+'",';
@@ -4081,6 +4097,8 @@ $(document).ready(function()
                 });
                 options = options.substr(0, options.length - 1);
                 options += '}';
+
+
 
                 if ($('#view').val() == "evaluation")
                     methode = 0;
@@ -4121,7 +4139,7 @@ $(document).ready(function()
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
                                                 else
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
-                                                generate_csv(json, eltJson, objJson, options);
+                                                generate_csv(json, eltJson, objJson, options, objclass);
                                             }
                                         },
                                         error: function (jqXHR, textStatus, errorThrown) {
