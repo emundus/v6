@@ -96,7 +96,7 @@ $email_list = array();
 					<label for="select_template" ><?php echo JText::_('SELECT_TEMPLATE'); ?></label>
 					<select name="select_template" class="form-control" onChange="getTemplate(this);">
 						<?php if (!$AllMessage_template) :?>
-							<option value="%"> <?php echo JText::_('NO_CATEGORIES_FOUND'); ?> </option>
+							<option value="%"> <?php echo JText::_('NO_TEMPLATES_FOUND'); ?> </option>
 						<?php else: ?>
 							<option value="%"> <?php echo JText::_('SELECT_TEMPLATE'); ?> </option>
 							<?php foreach ($AllMessage_template as $message_template) :?>
