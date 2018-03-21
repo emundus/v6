@@ -718,7 +718,7 @@ class EmundusModelFiles extends JModelLegacy
                                 if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
                                     $query['q'] .= ' ';
                                 else
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                             else
                             {
