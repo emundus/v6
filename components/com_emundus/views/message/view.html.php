@@ -46,10 +46,10 @@ class EmundusViewMessage extends JViewLegacy {
 		$fnums = (array) json_decode(stripslashes($fnums));
 
 	    $document = JFactory::getDocument();
-		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
-		$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
-		$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
-		$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );
+		$document->addStyleSheet("media/com_emundus/css/emundus.css");
+		$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css");
+		$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js");
+		$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js");
 
 		$m_files = new EmundusModelFiles();
 		$m_application = new EmundusModelApplication();

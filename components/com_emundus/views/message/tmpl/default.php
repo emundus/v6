@@ -39,9 +39,11 @@ $mail_body = $editor->display('mail_body', '[NAME], ', '100%', '400', '20', '20'
 
 $m_messages = new EmundusModelMessages();
 
-// load all of the available messages
-$AllMessage_category = $m_messages->getAllCategories();
-$AllMessage_template = $m_messages->getAllMessages();
+// load all of the available messages, categories (to sort messages),attachements, letters.
+$message_categories = $m_messages->getAllCategories();
+$message_templates 	= $m_messages->getAllMessages();
+$setup_attachements = $m_messages->getAttachements();
+$setup_letters 		= $m_messages->getLetters();
 
 $email_list = array();
 
@@ -78,11 +80,11 @@ $email_list = array();
 				<div class="form-group col-md-6">
 					<label for="select_category" ><?php echo JText::_('SELECT_CATEGORY'); ?></label>
 					<select name="select_category" class="form-control" onChange="setCategory(this);">
-						<?php if (!$AllMessage_category) :?>
+						<?php if (!$message_categories) :?>
 							<option value="%"> <?php echo JText::_('NO_CATEGORIES_FOUND'); ?> </option>
 						<?php else: ?>
 							<option value="%"> <?php echo JText::_('SELECT_CATEGORY'); ?> </option>
-							<?php foreach ($AllMessage_category as $message_category) :?>
+							<?php foreach ($message_categories as $message_category) :?>
 								<?php if (!empty($message_category)) :?>
 									<option value="<?php echo $message_category; ?>"> <?php echo $message_category; ?></option>
 								<?php endif; ?>
@@ -95,11 +97,11 @@ $email_list = array();
 				<div class="form-group col-md-6">
 					<label for="select_template" ><?php echo JText::_('SELECT_TEMPLATE'); ?></label>
 					<select name="select_template" class="form-control" onChange="getTemplate(this);">
-						<?php if (!$AllMessage_template) :?>
+						<?php if (!$message_templates) :?>
 							<option value="%"> <?php echo JText::_('NO_TEMPLATES_FOUND'); ?> </option>
 						<?php else: ?>
 							<option value="%"> <?php echo JText::_('SELECT_TEMPLATE'); ?> </option>
-							<?php foreach ($AllMessage_template as $message_template) :?>
+							<?php foreach ($message_templates as $message_template) :?>
 								<option value="<?php echo $message_template->id; ?>"> <?php echo $message_template->subject; ?></option>
 							<?php endforeach; ?>
 						<?php endif; ?>
@@ -139,10 +141,13 @@ $email_list = array();
 				<?php echo $mail_body; ?>
 			</div>
 
+			<br>
+			<hr>
+
 			<div class="form-inline row">
 				<div class="form-group col-md-6">
 					<label for="select_attachement_type" ><?php echo JText::_('SELECT_ATTACHEMENT_TYPE'); ?></label>
-					<select name="select_attachement_type" class="form-control" onChange="toggleAttachementType(this);">
+					<select name="select_attachement_type" id="select_attachement_type" class="form-control" onChange="toggleAttachementType(this);">
 						<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
 						<option value="upload"> <?php echo JText::_('UPLOAD'); ?> </option>
 						<option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
@@ -150,12 +155,83 @@ $email_list = array();
 					</select>
 				</div>
 
+				<div class="form-group col-md-6">
+					<!-- Upload a file from computer -->
+					<div class="hidden" id="upload_file">
+						<label for="file_to_upload" ><?php echo JText::_('UPLOAD'); ?></label>
+						<input type="file" name="file_to_upload" id="file_to_upload">
+						<style>
+							#progress-wrp {
+								border: 1px solid #0099CC;
+								padding: 1px;
+								position: relative;
+								height: 30px;
+								border-radius: 3px;
+								margin: 10px;
+								text-align: left;
+								background: #fff;
+								box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
+							}
+							#progress-wrp .progress-bar{
+								height: 100%;
+								border-radius: 3px;
+								background-color: #f39ac7;
+								width: 0;
+								box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
+							}
+							#progress-wrp .status{
+								top:3px;
+								left:50%;
+								position:absolute;
+								display:inline-block;
+								color: #000000;
+							}
+						</style>
+						<div id="progress-wrp">
+							<div class="progress-bar"></div>
+							<div class="status">0%</div>
+						</div>
+					</div>
 
+					<!-- Get a file from setup_attachements -->
+					<div class="hidden" id="candidate_file">
+						<label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
+						<select name="candidate_file" class="form-control">
+						<?php if (!$setup_attachements) :?>
+							<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
+						<?php else: ?>
+							<option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+							<?php foreach ($setup_attachements as $attachement): ?>
+								<option value="<?php echo $attachement->id; ?>"> <?php echo $attachement->value; ?></option>
+							<?php endforeach; ?>
+						<?php endif; ?>
+						</select>
+					</div>
+
+					<!-- Get a file from setup_letters -->
+					<div class="hidden" id="setup_letters">
+						<label for="setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
+						<select name="setup_letters" class="form-control">
+						<?php if (!$setup_letters) :?>
+							<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
+						<?php else: ?>
+							<option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+							<?php foreach ($setup_letters as $letter): ?>
+								<option value="<?php echo $letter->id; ?>"> <?php echo $letter->title; ?></option>
+							<?php endforeach; ?>
+						<?php endif; ?>
+						</select>
+					</div>
+				</div>
 			</div>
-
-			<input class="btn btn-large btn-success" type="submit" name="applicant_email" value="<?php echo JText::_('SEND_CUSTOM_EMAIL'); ?>" >
-
+			<button class="btn btn-primary hidden" id="uploadButton" onClick="addFile();"><?php echo JText::_('ADD_FILE'); ?></button>
+			<div class="form-group">
+				<ul class="list-group" id="attachement-list">
+					<!-- Files to be attached will be added here. -->
+				</ul>
+			</div>
 		</div>
+		<input class="btn btn-large btn-success" type="submit" name="applicant_email" value="<?php echo JText::_('SEND_CUSTOM_EMAIL'); ?>" >
 		<script>
 			$(document).on("click", "input[type='submit']", function() {
 				if ($("#mail_subject").val() == "") {
@@ -202,4 +278,159 @@ $email_list = array();
 			return true;
 		}
 	}
+
+
+	// Used for reseting a File upload input.
+	function resetFileInput(e) {
+		e.wrap('<form>').closest('form').get(0).reset();
+		e.unwrap();
+	}
+
+
+	// Change the attachement type being uploaded.
+	function toggleAttachementType(toggle) {
+
+		switch (toggle.value) {
+
+			case 'upload' :
+				$('#upload_file').removeClass('hidden')
+				$('#candidate_file').addClass('hidden')
+				$('#setup_letters').addClass('hidden')
+				$('#uploadButton').removeClass('hidden')
+			break;
+
+			case 'candidate_file' :
+				resetFileInput($('#upload_file'))
+				$('#upload_file').addClass('hidden')
+				$('#candidate_file').removeClass('hidden')
+				$('#setup_letters').addClass('hidden')
+				$('#uploadButton').removeClass('hidden')
+			break;
+
+			case 'setup_letters' :
+				resetFileInput($('#upload_file'))
+				$('#upload_file').addClass('hidden')
+				$('#candidate_file').addClass('hidden')
+				$('#setup_letters').removeClass('hidden')
+				$('#uploadButton').removeClass('hidden')
+			break;
+
+			default :
+				resetFileInput($('#upload_file'))
+				$('#upload_file').addClass('hidden')
+				$('#candidate_file').addClass('hidden')
+				$('#setup_letters').addClass('hidden')
+				$('#uploadButton').addClass('hidden')
+			break;
+
+		}
+
+	}
+
+
+	// Add file to the list being attached.
+	function addFile() {
+
+		switch ($('#select_attachement_type :selected').val()) {
+
+			case 'upload' :
+
+				// We need to get the file uploaded by the user.
+				var file = $("#file_to_upload")[0].files[0];
+				var upload = new Upload(file);
+				// Verification of style size and type can be done here.
+				upload.doUpload();
+
+			break;
+
+
+			case 'candidate_file' :
+
+				// we just need to note the reference to the setup_attachement file.
+
+			break;
+
+			case 'setup_letters' :
+
+				// We need to note the reference to the setup_letters file.
+
+			break;
+
+			default :
+
+				// Nothing selected, this case should not happen.
+
+			break;
+
+		}
+
+		//TODO: Append a <li class="list-group-item"><span class="badge">14</span>Cras justo odio</li>
+		// Containing an ID and file info that allows the AJAX to know what to do.
+		// the span badge element can contain a fontawesome icon that changes based on the type of item.
+
+	}
+
+
+	// Helper function for uploading a file via AJAX.
+	var Upload = function (file) {
+		this.file = file;
+	};
+
+	Upload.prototype.getType = function() {
+		return this.file.type;
+	};
+	Upload.prototype.getSize = function() {
+		return this.file.size;
+	};
+	Upload.prototype.getName = function() {
+		return this.file.name;
+	};
+	Upload.prototype.doUpload = function () {
+		var that = this;
+		var formData = new FormData();
+
+		// add assoc key values, this will be posts values
+		formData.append("file", this.file, this.getName());
+		formData.append("upload_file", true);
+
+		$.ajax({
+			type: "POST",
+			url: "script",
+			xhr: function () {
+				var myXhr = $.ajaxSettings.xhr();
+				if (myXhr.upload) {
+					myXhr.upload.addEventListener('progress', that.progressHandling, false);
+				}
+				return myXhr;
+			},
+			success: function (data) {
+				// your callback here
+				$("#progress-wrp").fadeOut();
+				$('#attachement-list').append('<li class="list-group-item">hello<span class="badge">14</span></li>');
+			},
+			error: function (error) {
+				// handle error
+				$("#file_to_upload").append('<span class=alert> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+			},
+			async: true,
+			data: formData,
+			cache: false,
+			contentType: false,
+			processData: false,
+			timeout: 60000
+		});
+	};
+
+	Upload.prototype.progressHandling = function (event) {
+		var percent = 0;
+		var position = event.loaded || event.position;
+		var total = event.total;
+		var progress_bar_id = "#progress-wrp";
+		if (event.lengthComputable) {
+			percent = Math.ceil(position / total * 100);
+		}
+		// update progressbars classes so it fits your code
+		$(progress_bar_id + " .progress-bar").css("width", +percent + "%");
+		$(progress_bar_id + " .status").text(percent + "%");
+	};
 </script>

@@ -26,6 +26,12 @@ jimport('joomla.application.component.helper');
  */
 class EmundusHelperMessages {
 
+	/**
+	 * Gets the email template object using the label.
+	 *
+	 * @param String $lbl The label of the email
+	 * @return StdClass An object containing the email matching the label.
+	 */
 	function getEmail($lbl) {
 
 		$db = JFactory::getDbo();
@@ -36,169 +42,11 @@ class EmundusHelperMessages {
 
 	}
 
-	function sendGroupEmail() {
-
-		$current_user = JFactory::getUser();
-
-		$app = JFactory::getApplication();
-	    $email_from_sys = $app->getCfg('mailfrom');
-
-
-		if (!EmundusHelperAccess::asAccessAction(16, 'c'))
-			die (JText::_("ACCESS_DENIED"));
-
-        // Model for GetCampaignWithID()
-
-		// include model email for Tag
-		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-		$m_emails = new EmundusModelEmails;
-
-		$mainframe 	= JFactory::getApplication();
-		$db 		= JFactory::getDBO();
-		$jinput 	= JFactory::getApplication()->input;
-
-		$limitstart 		= JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order 		= JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir 	= JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$itemid 			= JRequest::getVar('Itemid', null, 'GET', null, 0);
-
-		$ag_id = $jinput->get('mail_group', array(), "ARRAY");
-		$users_id = array();
-		if (!empty($ag_id) && count($ag_id) > 0) {
-			$query='SELECT user_id FROM #__emundus_groups WHERE group_id IN ('.implode(", ",$ag_id).') GROUP BY user_id';
-			$db->setQuery( $query );
-            try {
-                $users_id=$db->loadColumn();
-            } catch (Exception $e) {
-                echo 'Error database: ' . $e ; die();
-            }
-		}
-
-		// Content of email
-		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
-
-		$from 		= JRequest::getVar( 'mail_from', null, 'post' );
-		$from_id	= JRequest::getVar( 'mail_from_id', null, 'post' );
-		$fromname	= JRequest::getVar( 'mail_from_name', null, 'post' );
-		$subject	= JRequest::getVar( 'mail_subject', null, 'post' );
-		$message	= JRequest::getVar( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML);
-
-		if ($subject == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
-			$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
-			return;
-		}
-		if ($message == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-			$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
-			return;
-		}
-
-		// setup mail
-		if (!isset($from) || empty($from)) {
-			if (isset($current_user->email)) {
-				$from = $current_user->email;
-				$from_id = $current_user->id;
-				$fromname=$current_user->name;
-			} elseif ($mainframe->getCfg( 'mailfrom' ) != '' && $mainframe->getCfg( 'fromname' ) != '') {
-				$from = $mainframe->getCfg( 'mailfrom' );
-				$fromname = $mainframe->getCfg( 'fromname' );
-				$from_id = 62;
-			} else {
-				$query = 'SELECT id, name, email' .
-					' FROM #__users' .
-					// administrator
-					' WHERE gid = 25 LIMIT 1';
-				$db->setQuery( $query );
-				$admin = $db->loadObject();
-				$from = $admin->name;
-				$from_id = $admin->id;
-				$fromname = $admin->email;
-			}
-		}
-
-		$query = 'SELECT u.id, u.name, u.email' .
-					' FROM #__users AS u' .
-					' WHERE u.id IN ('.implode( ',', $users_id ).')';
-		$db->setQuery( $query );
-        try {
-            $users = $db->loadObjectList();
-        } catch (Exception $e) {
-            echo '<div class="alert alert-warning">Aucun mail envoyé, groupe vide</div>';die();
-        }
-
-
-		$nUsers = count( $users );
-        $info = '';
-		for ($i = 0; $i < $nUsers; $i++) {
-			$user = $users[$i];
-
-			if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
-				include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-				$m_campaign = new EmundusModelCampaign;
-				$campaign 	= $m_campaign->getCampaignByID($campaigns_id[$i]);
-				$programme 	= $m_campaign->getProgrammeByCampaignID($campaigns_id[$i]);
-			}
-
-			// template replacements (patterns)
-			$post = array(	'COURSE_LABEL' => @$programme['label'],
-							'CAMPAIGN_LABEL' => @$campaign['label'],
-							'SITE_URL' => JURI::base(true),
-							'USER_EMAIL' => $user->email
-						 );
-			$tags = $m_emails->setTags($user->id, $post);
-
-			$body = preg_replace($tags['patterns'], $tags['replacements'], $message);
-
-			if(!empty($user->email)){
-				// mail function
-				$mailer = JFactory::getMailer();
-
-                // If the email sender has the same domain as the system sender address.
-				if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-					$mail_from_address = $from;
-				else
-					$mail_from_address = $email_from_sys;
-
-				// Set sender
-				$sender = [
-					$mail_from_address,
-					$fromname
-				];
-
-                $mailer->setSender($sender);
-	            $mailer->addReplyTo($from, $fromname);
-                $mailer->addRecipient($user->email);
-                $mailer->setSubject($subject);
-                $mailer->isHTML(true);
-                $mailer->Encoding = 'base64';
-                $mailer->setBody($body);
-
-                $send = $mailer->Send();
-                if ( $send !== true ) {
-		            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
-                    echo 'Error sending email: ' . $send->__toString(); die();
-                } else {
-                    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-						VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-                    $db->setQuery( $sql );
-                    try {
-                        $db->execute();
-                    } catch (Exception $e) {
-                        echo 'Error database: ' . $e ; die();
-                    }
-                    $info .= "<hr>".($i+1)." : ".$user->email." ".JText::_('SENT');
-                    if ($i%10 == 0) {
-                        @set_time_limit(10800);
-                        usleep(1000);
-                    }
-                }
-			}
-		}
-        $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=2', JText::_('REPORTS_MAILS_SENT').$info, 'message');
-
-	}
-
+	/**
+	 * Sends an email to an applicant.
+	 *
+	 * Uses data that is sent via POST in a form.
+	 */
 	function sendApplicantEmail() {
 
 		$current_user = JFactory::getUser();
