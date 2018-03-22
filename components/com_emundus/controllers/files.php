@@ -2197,6 +2197,11 @@ class EmundusControllerFiles extends JControllerLegacy
                     $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
                     $application_form_name = preg_replace('/\s/', '', $application_form_name);
                     $application_form_name = strtolower($application_form_name);
+
+                    if($application_form_name == "application_form_pdf"){
+                        $application_form_name = $fnum."_application";
+                    }
+
                     $application_pdf = $application_form_name . '_applications.pdf';
 
 
@@ -2228,42 +2233,49 @@ class EmundusControllerFiles extends JControllerLegacy
                         $pdf->concat();
 
                         $pdf->Output($dossier . $application_pdf, 'F');
-
-                    } else {
-
-                        $dataresult = [
-                            'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
-                            'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                            'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('FILE_DEFINED_NOT_FOUND')//.' : '.$fnum
-                        ];
-
-                        $result = array('status' => false, 'json' => $dataresult);
-                        echo json_encode((object) $result);
-                        exit();
-
-                    }
-
-
-                    $filename = $application_form_name . DS . $application_pdf;
+                        
+                        $filename = $application_form_name . DS . $application_pdf;
+                        //var_dump($filename);
+                        
+                        if (!$zip->addFile($dossier . $application_pdf, $filename))
+                            continue;
+                    } 
+                    
+                    
                     //var_dump($dossier . $application_pdf);
                     //$application_pdf = $fnum . '_applications.pdf';
                     //$filename = $application_pdf . DS . $application_pdf;
-
-                    if (!$zip->addFile($dossier . $application_pdf, $filename))
-                        continue;
-
+                    //var_dump($filename);
+                    
+                    
                     if ($attachment) {
+                        
                         $fnum = explode(',', $fnum);
+                        
                         $files = $m_files->getFilesByFnums($fnum, $attachids);
-
-                        foreach ($files as $key => $file) {
-                            $filename = $application_form_name . DS . $file['filename'];
-                            $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
-                            if (!$zip->addFile($dossier . $application_pdf, $filename)) {
-                                continue;
+                        
+                        if(!empty($files)){
+                            foreach ($files as $key => $file) {
+                                $filename = $application_form_name . DS . $file['filename'];
+                                $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+                                if(file_exists($dossier . $file['filename'])){
+                                    if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+                                        continue;
+                                    }
+                                }else{
+                                    $zip->addFromString($filename."-missing.txt", '');
+                                }
+                                
                             }
+                           
+                        }else{
+                            $msg = JText::_('FILE_NOT_FOUND');
+                            $result = array('status' => false, 'msg' => $msg);
+                            echo json_encode((object) $result);
+                            exit;
                         }
-                    }
+                    } 
+                    
                     $zip->close();
 
                 } else die("ERROR");
