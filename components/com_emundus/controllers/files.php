@@ -2192,15 +2192,15 @@ class EmundusControllerFiles extends JControllerLegacy
                     $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
                     $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 
+                    if ($application_form_name == "application_form_pdf") {
+                        $application_form_name = $users[$fnum]->name.'_'.$fnum;
+                    }
+
                     // Format filename
                     $application_form_name = $m_emails->stripAccents($application_form_name);
                     $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
                     $application_form_name = preg_replace('/\s/', '', $application_form_name);
                     $application_form_name = strtolower($application_form_name);
-
-                    if($application_form_name == "application_form_pdf"){
-                        $application_form_name = $fnum."_application";
-                    }
 
                     $application_pdf = $application_form_name . '_applications.pdf';
 
@@ -2233,27 +2233,27 @@ class EmundusControllerFiles extends JControllerLegacy
                         $pdf->concat();
 
                         $pdf->Output($dossier . $application_pdf, 'F');
-                        
+
                         $filename = $application_form_name . DS . $application_pdf;
                         //var_dump($filename);
-                        
+
                         if (!$zip->addFile($dossier . $application_pdf, $filename))
                             continue;
-                    } 
-                    
-                    
+                    }
+
+
                     //var_dump($dossier . $application_pdf);
                     //$application_pdf = $fnum . '_applications.pdf';
                     //$filename = $application_pdf . DS . $application_pdf;
                     //var_dump($filename);
-                    
-                    
+
+
                     if ($attachment) {
-                        
+
                         $fnum = explode(',', $fnum);
-                        
+
                         $files = $m_files->getFilesByFnums($fnum, $attachids);
-                        
+
                         if(!empty($files)){
                             foreach ($files as $key => $file) {
                                 $filename = $application_form_name . DS . $file['filename'];
@@ -2265,17 +2265,17 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }else{
                                     $zip->addFromString($filename."-missing.txt", '');
                                 }
-                                
+
                             }
-                           
+
                         }else{
                             $msg = JText::_('FILE_NOT_FOUND');
                             $result = array('status' => false, 'msg' => $msg);
                             echo json_encode((object) $result);
                             exit;
                         }
-                    } 
-                    
+                    }
+
                     $zip->close();
 
                 } else die("ERROR");
