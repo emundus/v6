@@ -1998,7 +1998,6 @@ class EmundusHelperFiles
 
         $element_id = $m_evaluation->getAllDecisionElements(1, $fnumInfo['training']);
         $elements = $h_files->getElementsName(implode(',',$element_id));
-
         $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
@@ -2080,54 +2079,59 @@ class EmundusHelperFiles
         $data = array();
 
         foreach ($admissions as $adm) {
-            if ($adm['jos_emundus_final_grade___time_date'] > 0) {
-                $str = '<br><hr>';
-                $str .= '<h1>Institutional Admission</h1>';
-                $str .= '<em>'.JHtml::_('date', $adm['jos_emundus_final_grade___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
-                $str .= '<h2>'.JFactory::getUser($eval['jos_emundus_final_grade___user'])->name.'</h2>';
+            $str = '<br><hr>';
+            $str .= '<h1>Institutional Admission</h1>';
+            foreach ($elements as $element) {
 
-                $str .= '<br><hr>';
-                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+                if ($element->element_name == 'time_date')
+                    $str .= '<em>'.JHtml::_('date', $adm[$element->tab_name.'___'.$element->element_name], JText::_('DATE_FORMAT_LC')).'</em>';
 
-                foreach ($elements as $element){
-                    $k = $element->tab_name.'___'.$element->element_name;
-
-                    if ($element->element_name != 'id' &&
-                        $element->element_name != 'time_date' &&
-                        $element->element_name != 'campaign_id' &&
-                        $element->element_name != 'student_id'&&
-                        $element->element_name != 'user' &&
-                        $element->element_name != 'fnum' &&
-                        $element->element_name != 'email' &&
-                        $element->element_name != 'label' &&
-                        $element->element_name != 'code' &&
-                        array_key_exists($k, $adm))
-                    {
-                        $str .= '<tr>';
-                        if (strpos($element->element_plugin, 'textarea') !== false)
-                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $adm[$k] . '</td>';
-                        else
-                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $adm[$k] . '</td>';
-                        $str .= '</tr>';
-                    }
+                if ($element->element_name == 'user') {
+                    $str .= '<h2>'.JFactory::getUser($adm[$element->tab_name.'___'.$element->element_name])->name.'</h2>';
                 }
-
-                $str .= '</table>';
-                $str .= '<p></p><hr>';
-
-                if ($format != 'html') {
-                    $str = str_replace('<br>', chr(10), $str);
-                    $str = str_replace('<br />', chr(10), $str);
-                    $str = str_replace('<h1>', '* ', $str);
-                    $str = str_replace('</h1>', ' : ', $str);
-                    $str = str_replace('<b>', chr(10), $str);
-                    $str = str_replace('</b>', ' : ', $str);
-                    $str = str_replace('&nbsp;', ' ', $str);
-                    $str = strip_tags($str, '<h1>');
-                }
-
-                $data[$adm['fnum']][0] = $str;
             }
+
+            $str .= '<br><hr>';
+            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+
+            foreach ($elements as $element) {
+                $k = $element->tab_name.'___'.$element->element_name;
+
+                if ($element->element_name != 'id' &&
+                    $element->element_name != 'time_date' &&
+                    $element->element_name != 'campaign_id' &&
+                    $element->element_name != 'student_id'&&
+                    $element->element_name != 'user' &&
+                    $element->element_name != 'fnum' &&
+                    $element->element_name != 'email' &&
+                    $element->element_name != 'label' &&
+                    $element->element_name != 'code' &&
+                    array_key_exists($k, $adm))
+                {
+                    $str .= '<tr>';
+                    if (strpos($element->element_plugin, 'textarea') !== false)
+                        $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $adm[$k] . '</td>';
+                    else
+                        $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $adm[$k] . '</td>';
+                    $str .= '</tr>';
+                }
+            }
+
+            $str .= '</table>';
+            $str .= '<p></p><hr>';
+
+            if ($format != 'html') {
+                $str = str_replace('<br>', chr(10), $str);
+                $str = str_replace('<br />', chr(10), $str);
+                $str = str_replace('<h1>', '* ', $str);
+                $str = str_replace('</h1>', ' : ', $str);
+                $str = str_replace('<b>', chr(10), $str);
+                $str = str_replace('</b>', ' : ', $str);
+                $str = str_replace('&nbsp;', ' ', $str);
+                $str = strip_tags($str, '<h1>');
+            }
+
+            $data[$adm['fnum']][0] = $str;
         }
 
         // Get information from application form filled out by the student
@@ -2182,7 +2186,7 @@ class EmundusHelperFiles
 
             $data[$adm['fnum']][1] = $str;
         }
-
+        
         return $data;
     }
 
@@ -2198,5 +2202,53 @@ class EmundusHelperFiles
     public function createFnum($campaign_id, $user_id){
         $fnum    = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
         return $fnum;
+    }
+
+    public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid){
+        $db = JFactory::getDBO();
+        
+        try {
+            $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
+            $db->setQuery( $query );
+            $db->query();
+           
+            $query = 'SELECT f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
+            $db->setQuery($query);
+            return $db->loadObject();
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getExportExcelFilter($user_id){
+        $db = JFactory::getDBO();
+        
+        try {
+            $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
+            $db->setQuery($query);
+           return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function checkadmission(){
+        $db = JFactory::getDBO();
+        
+        try {
+            $query = 'SELECT * from #__emundus_admission limit 1';
+            $db->setQuery($query);
+            $db->query() ;
+            return true;
+
+        } catch (Exception $e) {
+           return false;
+        }
     }
 }

@@ -1491,7 +1491,6 @@ if (JFactory::getUser()->id == 63)
             $user = JFactory::getUser()->id;
             foreach ($fnums as $fnum)
             {
-                //$fnumInfo = $this->getFnumInfos($fnum);
                 $query = 'insert into #__emundus_tag_assoc(fnum, id_tag, user_id) VALUES ("'.$fnum.'", '.$tag.','.$user.'); ';
                 $db->setQuery($query);
                 $db->execute();
