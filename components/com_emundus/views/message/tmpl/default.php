@@ -145,7 +145,7 @@ $email_list = array();
 			<hr>
 
 			<div class="form-inline row">
-				<div class="form-group col-md-6">
+				<div class="form-group col-md-5">
 					<label for="select_attachement_type" ><?php echo JText::_('SELECT_ATTACHEMENT_TYPE'); ?></label>
 					<select name="select_attachement_type" id="select_attachement_type" class="form-control" onChange="toggleAttachementType(this);">
 						<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
@@ -155,76 +155,83 @@ $email_list = array();
 					</select>
 				</div>
 
-				<div class="form-group col-md-6">
-					<!-- Upload a file from computer -->
-					<div class="hidden" id="upload_file">
-						<label for="file_to_upload" ><?php echo JText::_('UPLOAD'); ?></label>
-						<input type="file" name="file_to_upload" id="file_to_upload">
-						<style>
-							#progress-wrp {
-								border: 1px solid #0099CC;
-								padding: 1px;
-								position: relative;
-								height: 30px;
-								border-radius: 3px;
-								margin: 10px;
-								text-align: left;
-								background: #fff;
-								box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
-							}
-							#progress-wrp .progress-bar{
-								height: 100%;
-								border-radius: 3px;
-								background-color: #f39ac7;
-								width: 0;
-								box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
-							}
-							#progress-wrp .status{
-								top:3px;
-								left:50%;
-								position:absolute;
-								display:inline-block;
-								color: #000000;
-							}
-						</style>
-						<div id="progress-wrp">
-							<div class="progress-bar"></div>
-							<div class="status">0%</div>
+				<div class="form-group col-md-7">
+					<div class="input-group">
+							<!-- Upload a file from computer -->
+							<div class="hidden" id="upload_file">
+								<label for="file_to_upload" ><?php echo JText::_('UPLOAD'); ?></label>
+								<input type="file" name="file_to_upload" id="file_to_upload">
+								<style>
+									#progress-wrp {
+										border: 1px solid #0099CC;
+										padding: 1px;
+										position: relative;
+										height: 30px;
+										border-radius: 3px;
+										margin: 10px;
+										text-align: left;
+										background: #fff;
+										box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
+									}
+									#progress-wrp .progress-bar{
+										height: 100%;
+										border-radius: 3px;
+										background-color: #f39ac7;
+										width: 0;
+										box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
+									}
+									#progress-wrp .status{
+										top:3px;
+										left:50%;
+										position:absolute;
+										display:inline-block;
+										color: #000000;
+									}
+								</style>
+								<div id="progress-wrp">
+									<div class="progress-bar"></div>
+									<div class="status">0%</div>
+								</div>
+							</div>
+
+							<!-- Get a file from setup_attachements -->
+							<div class="hidden" id="candidate_file">
+								<label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
+								<select id="select_candidate_file" name="candidate_file" class="form-control">
+								<?php if (!$setup_attachements) :?>
+									<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
+								<?php else: ?>
+									<option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+									<?php foreach ($setup_attachements as $attachement): ?>
+										<option value="<?php echo $attachement->id; ?>"> <?php echo $attachement->value; ?></option>
+									<?php endforeach; ?>
+								<?php endif; ?>
+								</select>
+							</div>
+
+							<!-- Get a file from setup_letters -->
+							<div class="hidden" id="setup_letters">
+								<label for="setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
+								<select id="select_setup_letters" name="setup_letters" class="form-control">
+								<?php if (!$setup_letters) :?>
+									<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
+								<?php else: ?>
+									<option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+									<?php foreach ($setup_letters as $letter): ?>
+										<option value="<?php echo $letter->id; ?>"> <?php echo $letter->title; ?></option>
+									<?php endforeach; ?>
+								<?php endif; ?>
+								</select>
+							</div>
+							<span class="input-group-btn">
+								<button class="btn btn-primary hidden" type="button" id="uploadButton" style="top:13px;" onClick="addFile();"><?php echo JText::_('ADD_FILE'); ?></button>
+							</span>
 						</div>
-					</div>
-
-					<!-- Get a file from setup_attachements -->
-					<div class="hidden" id="candidate_file">
-						<label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
-						<select name="candidate_file" class="form-control">
-						<?php if (!$setup_attachements) :?>
-							<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
-						<?php else: ?>
-							<option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-							<?php foreach ($setup_attachements as $attachement): ?>
-								<option value="<?php echo $attachement->id; ?>"> <?php echo $attachement->value; ?></option>
-							<?php endforeach; ?>
-						<?php endif; ?>
-						</select>
-					</div>
-
-					<!-- Get a file from setup_letters -->
-					<div class="hidden" id="setup_letters">
-						<label for="setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
-						<select name="setup_letters" class="form-control">
-						<?php if (!$setup_letters) :?>
-							<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
-						<?php else: ?>
-							<option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-							<?php foreach ($setup_letters as $letter): ?>
-								<option value="<?php echo $letter->id; ?>"> <?php echo $letter->title; ?></option>
-							<?php endforeach; ?>
-						<?php endif; ?>
-						</select>
 					</div>
 				</div>
 			</div>
-			<button class="btn btn-primary hidden" id="uploadButton" onClick="addFile();"><?php echo JText::_('ADD_FILE'); ?></button>
+			<br>
+			<hr>
 			<div class="form-group">
 				<ul class="list-group" id="attachement-list">
 					<!-- Files to be attached will be added here. -->
@@ -347,12 +354,53 @@ $email_list = array();
 			case 'candidate_file' :
 
 				// we just need to note the reference to the setup_attachement file.
+				var file = $('#select_candidate_file :selected');
+
+				var alreadyPicked = $('#attachement-list li.candidate_file').find('.value:contains("'+file.val()+'")');
+
+				if (alreadyPicked.text() != '') {
+
+					// Flash the line a certain color to show it's already picked.
+					alreadyPicked.parent().attr("style", "background-color: #C5EFF7");
+					setTimeout(function(){
+						alreadyPicked.parent().attr("style", "");
+					}, 500);
+
+				} else {
+
+					// Disable the file from the dropdown.
+					file.attr('disabled', 'disabled');
+					// Add the file to the list.
+					$('#attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+
+				}
+
 
 			break;
 
 			case 'setup_letters' :
 
 				// We need to note the reference to the setup_letters file.
+				var file = $('#select_setup_letters :selected');
+
+				var alreadyPicked = $('#attachement-list li.setup_letters').find('.value:contains("'+file.val()+'")');
+
+				if (alreadyPicked.text() != '') {
+
+					// Flash the line a certain color to show it's already picked.
+					alreadyPicked.parent().attr("style", "background-color: #C5EFF7");
+					setTimeout(function(){
+						alreadyPicked.parent().attr("style", "");
+					}, 500);
+
+				} else {
+
+					// Disable the file from the dropdown.
+					file.attr('disabled', 'disabled');
+					// Add the file to the list.
+					$('#attachement-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+
+				}
 
 			break;
 
@@ -363,10 +411,6 @@ $email_list = array();
 			break;
 
 		}
-
-		//TODO: Append a <li class="list-group-item"><span class="badge">14</span>Cras justo odio</li>
-		// Containing an ID and file info that allows the AJAX to know what to do.
-		// the span badge element can contain a fontawesome icon that changes based on the type of item.
 
 	}
 
@@ -395,7 +439,7 @@ $email_list = array();
 
 		$.ajax({
 			type: "POST",
-			url: "script",
+			url: "index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
 			xhr: function () {
 				var myXhr = $.ajaxSettings.xhr();
 				if (myXhr.upload) {
@@ -406,7 +450,14 @@ $email_list = array();
 			success: function (data) {
 				// your callback here
 				$("#progress-wrp").fadeOut();
-				$('#attachement-list').append('<li class="list-group-item">hello<span class="badge">14</span></li>');
+
+				data = JSON.parse(data);
+
+				if (data.status) {
+					$('#attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+				} else {
+					$("#file_to_upload").append('<span class=alert> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+				}
 			},
 			error: function (error) {
 				// handle error
