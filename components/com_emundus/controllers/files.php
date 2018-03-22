@@ -1344,24 +1344,22 @@ class EmundusControllerFiles extends JControllerLegacy
        
         
         //check if evaluator can see others evaluators evaluations
-        if (@EmundusHelperAccess::isEvaluator($current_user->id)){
+        if (@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)){
             $user = $m_users->getUserById($current_user->id);
             $evaluator = $user[0]->lastname." ".$user[0]->firstname;
             if($eval_can_see_eval == 0 && !empty($objclass) && in_array("emundusitem_evaluation otherForm", $objclass)){
                 foreach ($fnumsArray as $idx => $d) {
                     foreach ($d as $k => $v) {
-                        if($k === 'jos_emundus_evaluations___user')
+                        if($k === 'jos_emundus_evaluations___user'){
                             if(strcasecmp($v, $evaluator) != 0){
                                 foreach($fnumsArray[$idx] as $key => $value){
                                     if(substr( $key, 0, 26 ) === "jos_emundus_evaluations___")
                                         $fnumsArray[$idx][$key] = JText::_('NO_RIGHT');
                                 }
                             }
-                                
-
+                        }
                     }
                 }
-                
             }
         }
 

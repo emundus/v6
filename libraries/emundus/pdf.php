@@ -660,13 +660,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	$infos = $m_profile->getFnumDetails($fnum);
 	$campaign_id = $infos['campaign_id'];
-
+	
 	// Get form HTML
 	$htmldata = '';
 	$forms ='';
 	if ($form_post)
 		$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order);
-
+	
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	
@@ -782,8 +782,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	</style>
 	<div class="card">
 	<table width="100%">
-	<tr>
-	';
+	<tr>';
+	
 	if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
 		$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
 	elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
@@ -820,11 +820,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		if(in_array("adoc-print", $options)){
 			$htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
 		}
-		$htmldata .= '</td>
-					  </tr>
-					  </table>
-					  </div>';
-
+		
 		/*** Tags */
 		if(in_array("tags", $options)){
 			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
@@ -837,8 +833,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		}
 		/*** End tags */
 		
+	}else{
+		$htmldata .= '
+		<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
+		<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+		<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>
+		<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+		<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
 	}
-	
+	$htmldata .= '</td>
+				</tr>
+				</table>
+				</div>';
 	/**  END APPLICANT   ****/
 
 	
@@ -878,13 +884,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	}
 	
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
-
+	
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
 		$start_page = $pdf->getPage();
 		$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
-
 		$htmldata = '';
 	}
 	

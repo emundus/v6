@@ -76,7 +76,7 @@ class EmundusController extends JControllerLegacy {
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
         //$profile = $model->getProfileByApplicant($student_id);
-
+        
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);

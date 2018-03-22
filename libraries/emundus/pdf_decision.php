@@ -152,10 +152,7 @@ if(!empty($options)){
     if(in_array("adoc-print", $options)){
         $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
     }
-    $htmldata .= '</td>
-                  </tr>
-                  </table>
-                  </div>';
+    
 
     if(in_array("tags", $options)){
         $tags = $m_files->getTagsByFnum(explode(',', $fnum));
@@ -167,7 +164,18 @@ if(!empty($options)){
         $htmldata .='</td></tr></table>';
     }
     
+}else{
+	$htmldata .= '
+	<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
+	<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+	<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
+	<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+	<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
 }
+$htmldata .= '</td>
+			</tr>
+			</table>
+			</div>';
 /**  END APPLICANT   ****/
 
 	// get decision
