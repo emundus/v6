@@ -1768,6 +1768,20 @@ if (JFactory::getUser()->id == 63)
 		}
 	}
 
+	function getEvalsByFnums($fnums) {
+        try {
+
+	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.fnum IN ("'.implode('","', $fnums).'") ORDER BY ee.id DESC' ;
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+
+		} catch(Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
+
 }
 
 ?>

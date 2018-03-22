@@ -675,10 +675,10 @@ function generate_pdf(json) {
     var decision    = json.decision;
     var admission   = json.admission;
     var ids         = json.ids;
-    var formids     = json.formschecked;
-    var attachids   = json.attachmentchecked;
+    var formids     = json.formids;
+    var attachids   = json.attachids;
     var options     = json.options;
-
+   //console.log(formids);
     $.ajaxQ.abortAll();
 
     if (start+limit < maxfiles) {
@@ -1596,25 +1596,25 @@ $(document).ready(function()
                                                         '<div class="panel panel-default xclsform">' +
                                                             '<div class="panel-heading">'+
                                                             '<table style="width:100%;"><tr>'+
-                                                                '<th><h5>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
-                                                                ' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                                                                '<th><h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
-                                                                 '</button></h5></th>' +
+                                                                 '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
+                                                                '</h5></th>' +
 
-                                                                '<th><h5>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+
-                                                                ' <button type="button" id="showevalelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                                                                '<th><h5><button type="button" id="showevalelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
-                                                                '</button></h5></th>'+
+                                                                '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+
+                                                                '</h5></th>'+
 
-                                                                '<th><h5>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_DECISION_FORM_ELEM')+
-                                                                ' <button type="button" id="showdecisionelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                                                                '<th><h5><button type="button" id="showdecisionelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
-                                                                '</button></h5></th>'+
+                                                                '</button> &ensp; ' +Joomla.JText._('COM_EMUNDUS_CHOOSE_DECISION_FORM_ELEM')+
+                                                                ' </h5></th>'+
 
-                                                                '<th><h5>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_ADMISSION_FORM_ELEM')+
-                                                                ' <button type="button" id="showadmissionelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                                                                '<th><h5> <button type="button" id="showadmissionelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
-                                                                '</button></h5></th>'+
+                                                                '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_ADMISSION_FORM_ELEM')+
+                                                                ' </h5></th>'+
                                                             '</tr></table>'+
 
                                                             '</div>' +
@@ -2699,11 +2699,7 @@ $(document).ready(function()
                                                         prghtml = result.html;
                                                         $('#felts').append(result.html);
                                                         $('#felts').toggle(400);
-                                                        if ($('#em-ex-forms').is(":checked"))
-                                                            $('#felts').hide();
-                                                        else
-                                                            $('#felts').show();
-
+                                                        
                                                         $.ajax({
                                                             type:'get',
                                                             url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
@@ -2780,11 +2776,7 @@ $(document).ready(function()
                                                 $('#felts-'+code+year).parent('div').remove();
                                                 $('#felts').append(result.html);
                                                 $('#felts').show();
-                                                if ($('#em-ex-forms').is(":checked"))
-                                                    $('#felts').hide();
-                                                else
-                                                    $('#felts').show();
-                                        
+                                                
                                                 $.ajax({
                                                     type:'get',
                                                     url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
@@ -2796,7 +2788,7 @@ $(document).ready(function()
                                                             $('#aelts-'+code+year).parent('div').remove();
                                                             $('#aelts').append(result.html);
                                                             $('#aelts').show();
-                                                            $('#em-ex-attachment').prop('checked', false);
+                                                           
                                                         }
                                                     },
                                                     error: function (jqXHR, textStatus, errorThrown)
@@ -2886,18 +2878,45 @@ $(document).ready(function()
 
                     
                 $('#em-ex-forms').click(function(e){
-                    if ($('#em-ex-forms').is(":checked"))
-                        $('#felts').hide();
-                    else
-                        $('#felts').show();
+                    if ($('#em-ex-forms').is(":checked")){
+                        $('[id^=felts-]').hide();
+                        $('#felts input').attr('checked', false);
+                        $('#felts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
+                        $('#felts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                    }else{
+                        $('[id^=felts-]').show();
+                        $('#felts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
+                        $('#felts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                    }
+                        
                 });
 
                 $('#em-ex-attachment').click(function(e){
-                    if ($('#em-ex-attachment').is(":checked"))
-                        $('#aelts').hide();
-                    else
-                        $('#aelts').show();
+                    if ($('#em-ex-attachment').is(":checked")){
+                        $('[id^=aelts-]').hide();
+                        $('#aelts input').attr('checked', false);
+                        $('#aelts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
+                        $('#aelts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                    }else{
+                        $('[id^=aelts-]').show();
+                        $('#aelts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
+                        $('#aelts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                    }
+                       
                 });
+
+                $('#felts').click(function(e){
+                    if ($(".em-ex-check").is(":checked"))
+                        $('#em-ex-forms').attr('checked', false);
+                    
+                });
+
+                $('#aelts').click(function(e){
+                    if ($(".em-ex-check").is(":checked"))
+                        $('#em-ex-attachment').attr('checked', false);
+                    
+                });
+
 
                 $('#data').click(function(e){
                     if ($(".em-ex-check").is(":checked"))
@@ -2951,7 +2970,7 @@ $(document).ready(function()
                                 '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked />' +
                                 '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                             '</div>'+
-                            '<div class="panel-body" id="felts" style="overflow:auto; display:none;"></div>'+
+                            '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
                         '</div>'+
                         '<div class="panel panel-default pdform">'+
                             '<div class="panel-heading">'+
@@ -3064,15 +3083,6 @@ $(document).ready(function()
                                                         $('#felts').append(result.html);
                                                         $('#felts').toggle(400);
 
-                                                        if ($('#em-ex-forms').is(":checked"))
-                                                            $('#felts').hide();
-                                                        else{
-                                                            $('#felts').show();
-                                                            $('#em-export-opt').hide();
-                                                        }
-                                                            
-                                                            
-
                                                         $.ajax({
                                                             type:'get',
                                                             url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
@@ -3149,12 +3159,6 @@ $(document).ready(function()
                                                 $('#felts-'+code+year).parent('div').remove();
                                                 $('#felts').append(result.html);
                                                 $('#felts').show();
-                                                //$('#em-ex-forms').prop('checked', false);
-
-                                                if ($('#em-ex-forms').is(":checked"))
-                                                    $('#felts').hide();
-                                                else
-                                                    $('#felts').show();
                                                 
                                                 $.ajax({
                                                     type:'get',
@@ -3167,7 +3171,6 @@ $(document).ready(function()
                                                             $('#aelts-'+code+year).parent('div').remove();
                                                             $('#aelts').append(result.html);
                                                             $('#aelts').show();
-                                                            $('#em-ex-attachment').prop('checked', false);
                                                         }
                                                     },
                                                     error: function (jqXHR, textStatus, errorThrown)
@@ -3219,11 +3222,7 @@ $(document).ready(function()
                                         $('#felts-'+code+'0').parent('div').remove();
                                         $('#felts').append(result.html);
                                         $('#felts').show();
-                                        if ($('#em-ex-forms').is(":checked"))
-                                            $('#felts').hide();
-                                        else
-                                            $('#felts').show();
-
+                                       
                                         $.ajax({
                                             type:'get',
                                             url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
@@ -3261,20 +3260,45 @@ $(document).ready(function()
 
                     
                 $('#em-ex-forms').click(function(e){
-                    if ($('#em-ex-forms').is(":checked"))
-                        $('#felts').hide();
-                    else
-                        $('#felts').show();
+                    if ($('#em-ex-forms').is(":checked")){
+                        $('[id^=felts-]').hide();
+                        $('#felts input').attr('checked', false);
+                        $('#felts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
+                        $('#felts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                    }else{
+                        $('[id^=felts-]').show();
+                        $('#felts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
+                        $('#felts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                    }
+                        
                 });
 
                 $('#em-ex-attachment').click(function(e){
-                    if ($('#em-ex-attachment').is(":checked"))
-                        $('#aelts').hide();
-                    else
-                        $('#aelts').show();
+                    if ($('#em-ex-attachment').is(":checked")){
+                        $('[id^=aelts-]').hide();
+                        $('#aelts input').attr('checked', false);
+                        $('#aelts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
+                        $('#aelts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                    }else{
+                        $('[id^=aelts-]').show();
+                        $('#aelts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
+                        $('#aelts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                    }
+                       
                 });
                 
-               
+                
+                $('#felts').click(function(e){
+                    if ($(".em-ex-check").is(":checked"))
+                        $('#em-ex-forms').attr('checked', false);
+                    
+                });
+
+                $('#aelts').click(function(e){
+                    if ($(".em-ex-check").is(":checked"))
+                        $('#em-ex-attachment').attr('checked', false);
+                    
+                });
 
                 $('#data').click(function(e){
                     if ($(".em-ex-check").is(":checked"))
@@ -3770,7 +3794,7 @@ $(document).ready(function()
 
 
         var start = 0;
-        var limit = 4;
+        var limit = 2;
         var forms = 0;
         var attachment  = 0;
         var assessment  = 0;
@@ -3844,8 +3868,8 @@ $(document).ready(function()
                                         '</p></div><div id="datasbs"</div>');
 
                                         var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
-                                        '","totalfile":"' + totalfile + '","forms":"' + forms + '","formschecked":"' + form_checked +
-                                        '","attachment":"' + attachment + '", "attachmentchecked":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
+                                        '","totalfile":"' + totalfile + '","forms":"' + forms + '","formids":"' + form_checked +
+                                        '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
                                         '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
 
                                         $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');

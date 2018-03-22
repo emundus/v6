@@ -43,7 +43,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     // Create PDF object
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-    /*class myPdf extends TCPDF
+   /* class myPdf extends TCPDF
 	{
 		var $lastname = "";
 		var $firstname = "";
@@ -58,7 +58,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
 			
 			// Page number
 			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
-			$this->Cell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
+			$this->Cell(0, 0, ''.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
 			
 		}
 
@@ -110,9 +110,9 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->AddPage();
     //$dimensions = $pdf->getPageDimensions();
 
-    $pdf->lastname = $item->lastname;
+    /*$pdf->lastname = $item->lastname;
 	$pdf->firstname = $item->firstname;
-	$pdf->program = $item->label;
+	$pdf->program = $item->label;*/
     
 /*** Applicant   ***/   
 $htmldata .= 
@@ -215,7 +215,7 @@ if(!empty($options)){
         $path = EMUNDUS_PATH_ABS.$item->user_id.DS.'evaluations.pdf';
     else
         $path = $name;
-
+    
     @chdir('tmp');
     if ($output)
         $pdf->Output($path, 'FI');

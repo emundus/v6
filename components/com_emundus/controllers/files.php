@@ -1185,7 +1185,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files        = $this->getModel('Files');
         $m_application  = $this->getModel('Application');
         $m_profile      = $this->getModel('Profile');
-        $m_admission        = $this->getModel('Admission');
+        $m_evaluation   = $this->getModel('Evaluation');
+        $m_users        = $this->getModel('Users');
+
         $session = JFactory::getSession();
         $fnumss = array();
         $fnums = $session->get('fnums_export');
@@ -1208,28 +1210,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $objclass   = $jinput->getVar('objclass', null);
 
         
-        //var_dump($objclass);
-        //check if evaluator can see others evaluators evaluations
-        if (@EmundusHelperAccess::isEvaluator($current_user->id)){
-            if($eval_can_see_eval == 0 && !empty($objclass) && in_array("emundusitem_evaluation otherForm", $objclass)){
-                $evals = $m_admission->getEvalsByFnum($fnums);
-                
-                foreach($evals as $key=>$value){
-                    if($value["user"] == $current_user->id){
-                        array_push($fnumss, $value["fnum"]);
-                    }
-                }
-                
-                if(count($fnumss) > 0)
-                    $fnums = $fnumss;
-                else
-                    die(JText::_('RESTRICTED_ACCESS_OTHERS_EVAL'));
-                
-                //var_dump($fnums);
-            }
-        }
-        //var_dump($elts);
-       
         $opts = $this->getcolumn($opts);
        
         $col    = $this->getcolumn($elts);
@@ -1252,13 +1232,14 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         
         $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-        //var_dump($fnumsArray);
+        
         // On met a jour la liste des fnums traités
         $fnums = array();
+        
         foreach ($fnumsArray as $fnum) {
             array_push($fnums, $fnum['fnum']);
         }
-        //var_dump($ordered_elements);
+        
         foreach ($colsup as $col) {
             $col = explode('.', $col);
 
@@ -1359,17 +1340,39 @@ class EmundusControllerFiles extends JControllerLegacy
             $line = "";
             
         }
-        //var_dump($fnumsArray);die;
-        // On parcours les fnums
-
         
+       
+        
+        //check if evaluator can see others evaluators evaluations
+        if (@EmundusHelperAccess::isEvaluator($current_user->id)){
+            $user = $m_users->getUserById($current_user->id);
+            $evaluator = $user[0]->lastname." ".$user[0]->firstname;
+            if($eval_can_see_eval == 0 && !empty($objclass) && in_array("emundusitem_evaluation otherForm", $objclass)){
+                foreach ($fnumsArray as $idx => $d) {
+                    foreach ($d as $k => $v) {
+                        if($k === 'jos_emundus_evaluations___user')
+                            if(strcasecmp($v, $evaluator) != 0){
+                                foreach($fnumsArray[$idx] as $key => $value){
+                                    if(substr( $key, 0, 26 ) === "jos_emundus_evaluations___")
+                                        $fnumsArray[$idx][$key] = JText::_('NO_RIGHT');
+                                }
+                            }
+                                
+
+                    }
+                }
+                
+            }
+        }
+
+        // On parcours les fnums
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
             foreach ($fnum as $k => $v) {
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
 
                     if ($k === 'fnum') {
-                        $line .= $v."\t";
+                        $line .= " ".$v."\t";
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
@@ -1468,7 +1471,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $i++;
 
         }
-        
+        //var_dump($element_csv);
         // On remplit le fichier CSV
         foreach ($element_csv as $data) {
             $res = fputcsv($csv, explode("\t",$data),"\t");
@@ -1485,7 +1488,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $start = $i;
-
+        
         $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
@@ -1610,13 +1613,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $decision   = $jinput->getInt('decision', 0);
         $admission  = $jinput->getInt('admission', 0);
         $ids        = $jinput->getVar('ids', null);
-        $formids    = $jinput->getVar('formids', null);
-        $attachids  = $jinput->getVar('attachids', null);
-        $options    = $jinput->getVar('options', null);
+        $formid    = $jinput->getVar('formids', null);
+        $attachid  = $jinput->getVar('attachids', null);
+        $option    = $jinput->getVar('options', null);
         
-        $formids = explode(',', $formids);
-        $attachids = explode(',', $attachids);
-        $options = explode(',', $options);
+        $formids = explode(',', $formid);
+        $attachids = explode(',', $attachid);
+        $options = explode(',', $option);
         
         $exists_files = array();
 
@@ -1626,7 +1629,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $validFnums[] = $fnum;
         }
         
-
+        //var_dump($formids);
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
         if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file))
             $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $file);
@@ -1642,7 +1645,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $formids, $options);
                     
                 }
-
+                
                 if ($attachment) {
                     $tmpArray = array();
                     $m_application = $this->getModel('application');
@@ -1670,6 +1673,7 @@ class EmundusControllerFiles extends JControllerLegacy
             
             // all PDF in one file
             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+            
             $pdf = new ConcatPdf();
             
             $pdf->setFiles($files_list);
@@ -1681,24 +1685,23 @@ class EmundusControllerFiles extends JControllerLegacy
                     unlink($fn);
                 }
             }
-            
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
             $start = $i;
            
             $dataresult = [
-                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
-                'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'msg' => JText::_('FILES_ADDED')//.' : '.$fnum
+                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('FILES_ADDED')//.' : '.$fnum
             ];
             $result = array('status' => true, 'json' => $dataresult);
         
         } else {
 
             $dataresult = [
-                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
-                'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'msg' => JText::_('FILE_DEFINED_NOT_FOUND')//.' : '.$fnum
+                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('FILE_DEFINED_NOT_FOUND')//.' : '.$fnum
             ];
 
             $result = array('status' => false, 'json' => $dataresult);

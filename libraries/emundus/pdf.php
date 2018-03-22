@@ -684,10 +684,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			// Set font
 			
 			// Page number
-			$this->writeHTMLCell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
-			$this->writeHTMLCell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
+			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
+			$this->Cell(0, 0, ''.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
 			
 
+		}
 	}
 	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);*/
 
