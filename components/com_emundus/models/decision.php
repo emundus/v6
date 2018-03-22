@@ -277,9 +277,9 @@ class EmundusModelDecision extends JModelList
 
         if ($session->has('filt_params')) {
             $elements_id = array();
-            $filt_params = $session->get('filt_params');
+			$filt_params = $session->get('filt_params');
 
-            if (is_array(@$filt_params['programme'])) {
+            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsDecisionByProgramme($value);
@@ -294,7 +294,7 @@ class EmundusModelDecision extends JModelList
                     }
                 }
             } else {
-                $groups = $this->getGroupsDecisionByProgramme($programme_code);
+				$groups = $this->getGroupsDecisionByProgramme($programme_code);
                 if (!empty($groups)) {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                     if (count($eval_elt_list)>0) {

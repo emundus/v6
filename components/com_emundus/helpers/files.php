@@ -1998,7 +1998,6 @@ class EmundusHelperFiles
 
         $element_id = $m_evaluation->getAllDecisionElements(1, $fnumInfo['training']);
         $elements = $h_files->getElementsName(implode(',',$element_id));
-
         $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
@@ -2080,7 +2079,7 @@ class EmundusHelperFiles
         $data = array();
 
         foreach ($admissions as $adm) {
-            if ($adm['jos_emundus_final_grade___time_date'] > 0) {
+            if ($adm['jos_emundus_final_grade___user'] > 0) {
                 $str = '<br><hr>';
                 $str .= '<h1>Institutional Admission</h1>';
                 $str .= '<em>'.JHtml::_('date', $adm['jos_emundus_final_grade___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';

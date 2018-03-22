@@ -209,7 +209,7 @@ $htmldata .= '</td>
             $htmldata .= $html;
         }
     }
-    
+
     if (!empty($htmldata)) {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();
