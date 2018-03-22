@@ -253,15 +253,24 @@ class DiscountViewDiscount extends hikashopView {
 				$type = $app->getUserState($this->paramBase . '.filter_type');
 				if(!in_array($type,array('all','nochilds'))) {
 					$element->discount_type = $type;
-					$this->nameForm = 'HIKASHOP_COUPON';
 				} else {
 					$element->discount_type = 'discount';
 				}
-				$element->discount_published=1;
+				if($type == 'coupon') {
 				$element->discount_tax = 1;
+			}
+				$element->discount_published=1;
+
 			}
 			$task = 'add';
 		}
+
+		if($element->discount_type == 'coupon')
+			$this->nameForm = 'HIKASHOP_COUPON';
+		if($element->discount_type == 'discount')
+			$element->discount_tax = 0;
+
+
 		$this->assignRef('element', $element);
 
 		hikashop_setTitle(JText::_($this->nameForm), $this->icon,$this->ctrl.'&task='.$task.'&discount_id='.$discount_id);

@@ -81,8 +81,7 @@ function jSelectArticle(id, title, object) {
 	window.top.hikashop.closeBox();
 }
 ';
-		$doc = JFactory::getDocument();
-		$doc->addScriptDeclaration($js);
+		$this->doc->addScriptDeclaration($js);
 	} else {
 		$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;function=jSelectArticle_checkout';
 		$js = '
@@ -91,8 +90,7 @@ function jSelectArticle_checkout(id, title, catid, object) {
 	hikashop.closeBox();
 }
 ';
-		$doc = JFactory::getDocument();
-		$doc->addScriptDeclaration($js);
+		$this->doc->addScriptDeclaration($js);
 	}
 	echo $this->popup->display(
 		'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
@@ -118,7 +116,7 @@ jQuery(document).ready(function(){
 	showTermsPopupSize(checkoutTerms);
 });
 ';
-$doc->addScriptDeclaration($js);
+$this->doc->addScriptDeclaration($js);
 ?>
 	<tr id="checkout_terms_size">
 		<td class="hk_tbl_key"<?php echo $this->docTip('terms_and_conditions_xy');?>><?php echo JText::_('TERMS_AND_CONDITIONS_POPUP_SIZE'); ?></td>
@@ -209,7 +207,7 @@ $doc->addScriptDeclaration($js);
 				});
 			}
 			';
-			$doc->addScriptDeclaration($js);
+			$this->doc->addScriptDeclaration($js);
 ?>
 			<button type="button" id="address_format_reset_button" class="btn" onclick="return resetAddressFormat();"><?php echo JText::_('RESET_ADDRESS_FORMAT_TO_DEFAULT'); ?></button>
 <?php 	} ?>

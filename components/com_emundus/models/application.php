@@ -810,34 +810,43 @@ class EmundusModelApplication extends JModelList
         $forms = '';
 
         try {
+
         if (isset($tableuser)) {
+
+            $allowEmbed = $this->allowEmbed(JURI::base().'index.php?lang=en');
+
             foreach ($tableuser as $key => $itemt) {
+
                 $forms .= '<br><hr><h3>';
                 $title = explode('-', JText::_($itemt->label));
+
                 if (empty($title[1]))
                     $forms .= JText::_($itemt->label);
                 else
                     $forms .= JText::_($title[1]);
 
-                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training")
-                {
+                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
+
                     $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
                     $this->_db->setQuery( $query );
                     $cpt = $this->_db->loadResult();
 
-                    if($cpt>0) { 
+                    if ($cpt > 0) {
+
                         if ($allowEmbed) {
                            $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
                         } else {
                             $forms .= ' <a id="'.$itemt->form_id.'" class="btn btn btn-info btn-sm" href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></a>';
                         }
-                    }
-                    else {
+
+                    } else {
+
                         if ($allowEmbed) {
                             $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&'.$itemt->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
                         } else {
                             $forms .= ' <a type="button" id="'.$itemt->form_id.'" class="btn btn-default btn-sm" href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&'.$itemt->db_table_name.'___user='.$aid.'&sid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></a>';
                         }
+
                     }
                 }
 
@@ -1269,7 +1278,7 @@ class EmundusModelApplication extends JModelList
                         }
                         unset($iteme);
 
-  */                      
+  */
 
                         if ($itemg->group_id == 14) {
 
@@ -1302,7 +1311,7 @@ class EmundusModelApplication extends JModelList
                             unset($element);
                             //$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
                             $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
-                            
+
                             try {
                                 $this->_db->setQuery($query);
                                 $table = $this->_db->loadResult();
@@ -1515,7 +1524,7 @@ class EmundusModelApplication extends JModelList
                                 try {
                                     $this->_db->setQuery($query);
                                     $res = $this->_db->loadRow();
-                                } 
+                                }
                                 catch (Exception $e) {
                                     JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                     throw $e;
@@ -1524,7 +1533,7 @@ class EmundusModelApplication extends JModelList
                                 if (count($res)>1) {
                                     $element->content = $res[1];
                                     $element->content_id = $res[0];
-                                } 
+                                }
                                 else {
                                     $element->content = '';
                                     $element->content_id = -1;
@@ -1567,7 +1576,7 @@ class EmundusModelApplication extends JModelList
                                                 } else {
                                                     $elt = '';
                                                 }
-                                            } 
+                                            }
                                             else {
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
@@ -1603,7 +1612,7 @@ class EmundusModelApplication extends JModelList
                                         }
                                         else ///////////////////////************
                                             $elt = JText::_($element->content);
-                                        
+
                                         $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
                                     }
                                 }
@@ -1914,7 +1923,7 @@ td {
                 else
                     $query .= " AND attachment_id = ".$attachment_id;
             }
-                
+
             if (!empty($ids) && $ids != "null")
                 $query .= " AND id in ($ids)";
 
@@ -2623,12 +2632,12 @@ $q=2;
         $header = @get_headers($url, 1);
 
         // URL okay?
-        if (!$header || stripos($header[0], '200 ok') === false) return false;
+        if (!$header || stripos($header[0], '200 ok') === false)
+            return false;
 
         // Check X-Frame-Option
-        elseif (isset($header['X-Frame-Options']) && (stripos($header['X-Frame-Options'], 'SAMEORIGIN') !== false || stripos($header['X-Frame-Options'], 'deny') !== false)) {
+        elseif (isset($header['X-Frame-Options']) && (stripos($header['X-Frame-Options'], 'SAMEORIGIN') !== false || stripos($header['X-Frame-Options'], 'deny') !== false))
             return false;
-        }
 
         // Everything passed? Return true!
         return true;
