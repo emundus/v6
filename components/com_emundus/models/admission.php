@@ -98,7 +98,7 @@ class EmundusModelAdmission extends JModelList
 		// get evaluation element
 		$show_in_list_summary = 1;
         $hidden = 0;
-		$elements_eval = $this->getAllAdmissionElements($show_in_list_summary, $hidden);
+		//$elements_eval = $this->getAllAdmissionElements($show_in_list_summary, $hidden);
 
 		if (count($elements_eval))
 			$this->elements_id .= implode(',', $elements_eval);
@@ -330,19 +330,19 @@ class EmundusModelAdmission extends JModelList
      * @return    string list of Fabrik element ID used in admission form
      **/
     public function getAllAdmissionElements($show_in_list_summary=1, $programme_code) {
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 
         if ($session->has('filt_params')) {
 			$elements_id = array();
             $filt_params = $session->get('filt_params');
 
-			if (is_array(@$filt_params['programme'])>0) {
+			if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
 
 				foreach ($filt_params['programme'] as $value) {
 					if ($value == $programme_code) {
 						$groups = $this->getGroupsAdmissionByProgramme($value);
 						if (!empty($groups)) {
-                            $admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+                            $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                             if (count($admission_elt_list)>0) {
                                 foreach ($admission_elt_list as $eel) {
                                     $elements_id[] = $eel->element_id;
@@ -356,7 +356,7 @@ class EmundusModelAdmission extends JModelList
 
 				$groups = $this->getGroupsAdmissionByProgramme($programme_code);
                 if (!empty($groups)) {
-					$admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+					$admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                     if (count($admission_elt_list)>0) {
                         foreach ($admission_elt_list as $eel) {
                             $elements_id[] = $eel->element_id;
@@ -382,13 +382,13 @@ class EmundusModelAdmission extends JModelList
 			$elements_id = array();
             $filt_params = $session->get('filt_params');
 
-			if (is_array(@$filt_params['programme'])>0) {
+			if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
 
 				foreach ($filt_params['programme'] as $value) {
 					if ($value == $programme_code) {
 						$groups = $this->getGroupsApplicantAdmissionByProgramme($value);
 						if (!empty($groups)) {
-                            $admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+                            $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                             if (count($admission_elt_list)>0) {
                                 foreach ($admission_elt_list as $eel) {
                                     $elements_id[] = $eel->element_id;
@@ -402,7 +402,7 @@ class EmundusModelAdmission extends JModelList
 
 				$groups = $this->getGroupsApplicantAdmissionByProgramme($programme_code);
                 if (!empty($groups)) {
-					$admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+					$admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                     if (count($admission_elt_list)>0) {
                         foreach ($admission_elt_list as $eel) {
                             $elements_id[] = $eel->element_id;

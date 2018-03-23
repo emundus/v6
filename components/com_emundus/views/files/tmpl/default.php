@@ -90,42 +90,6 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 </div>
 
 
-<div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
-      </div>
-      <div class="modal-body">
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-        <button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
-      </div>
-      <div class="modal-body">
-      	<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 <script type="text/javascript">
 	var itemId = '<?php echo @$this->itemId;?>';
 	var cfnum = '<?php echo @$this->cfnum;?>';

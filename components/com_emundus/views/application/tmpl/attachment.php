@@ -248,9 +248,23 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
         //url = url.fmt({ids: checkedInput});
 
-  
+        $.ajax({
+            type:'get',
+            url: url,
+            dataType:'json',
 
-        if(checked.length > 0)
+            success: function(result) {
+                if(result.link){
+                    window.open(result.link);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR.responseText);
+            }
+        });
+
+       /* if(checked.length > 0)
         {
             $('#em-modal-actions .modal-body').empty();
             $('#em-modal-actions-title').empty();
@@ -270,7 +284,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         else
         {
             $('.em_application_attachments').prop('checked', false);
-            alert("<?php echo JText::_('YOU_MUST_SELECT_ATTACHMENT')?>");
-        }
+            alert("<?php //echo JText::_('YOU_MUST_SELECT_ATTACHMENT')?>");
+        }*/
     });
 </script>

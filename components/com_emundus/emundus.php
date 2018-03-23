@@ -91,6 +91,9 @@ JText::script('COM_EMUNDUS_FORM_GROUP');
 JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION');
 JText::script('COM_EMUNDUS_CHOOSE_OTHER_OPTION');
 JText::script('GENERATE_ZIP');
+JText::script('CANCEL');
+JText::script('OK');
+JText::script('BACK');
 
 
 JText::script('LOADING');
@@ -113,6 +116,8 @@ JText::script('FILES_GENERATED');
 JText::script('FILE_NAME');
 JText::script('LINK_TO_DOWNLOAD');
 JText::script('ALL_IN_ONE_DOC');
+JText::script('PDF_TAGS');
+
 
 // view user
 JText::script('NOT_A_VALID_EMAIL');
@@ -218,6 +223,7 @@ JText::script('SECONDE_PREFERENCE');
 JText::script('DID_YOU_APPLY_FOR_ANOTHER_PROGRAM');
 JText::script('PROGRAM_NAME');
 JText::script('CHOOSE_YOUR_OPTION');
+JText::script('RESTRICTED_ACCESS_OTHERS_EVAL');
 
 
 
@@ -234,6 +240,18 @@ JText::script('GENERATE_PDF');
 JText::script('PDF_OPTIONS');
 JText::script('FILES_UPLOADED');
 JText::script('TAGS');
+JText::script('FILE_NOT_FOUND');
+JText::script('FILE_NOT_DEFINED');
+JText::script('ID_CANDIDAT');
+JText::script('FNUM');
+JText::script('APPLICATION_SENT_ON');
+JText::script('DOCUMENT_PRINTED_ON');
+
+
+//Export ZIP
+JText::script('COM_EMUNDUS_ZIP_GENERATION');
+JText::script('COM_EMUNDUS_CREATE_ZIP');
+
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
