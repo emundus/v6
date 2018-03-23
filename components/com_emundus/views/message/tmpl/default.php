@@ -33,6 +33,8 @@ if (count($fnumsArray) > 0) {
 	$fnums = json_encode($fnums_tab);
 }
 
+// TODO: #ud element needs fnums, not just users.
+
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
 $mail_body = $editor->display('mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
@@ -63,7 +65,7 @@ $email_list = array();
 						<span class="label label-primary">
 							<?php echo $user['name'].'<em>&lt;'.$user['email'].'&gt;</em>'; ?>
 						</span>
-						<input type="hidden" name="ud[]" value="<?php echo $user['id'].'|'.$user['campaign_id'] ?>"/>
+						<input type="hidden" name="ud[]" id="ud" value="<?php echo $user['id'] ?>"/>
 					<?php endif; ?>
 
 				<?php endforeach; ?>
@@ -96,7 +98,7 @@ $email_list = array();
 				<!-- Dropdown to select the email template used. -->
 				<div class="form-group col-md-6">
 					<label for="select_template" ><?php echo JText::_('SELECT_TEMPLATE'); ?></label>
-					<select name="select_template" class="form-control" onChange="getTemplate(this);">
+					<select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
 						<?php if (!$message_templates) :?>
 							<option value="%"> <?php echo JText::_('NO_TEMPLATES_FOUND'); ?> </option>
 						<?php else: ?>
@@ -114,7 +116,7 @@ $email_list = array();
 			</div>
 
 			<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="<?php echo $current_user->id; ?>" /><br>
-			<input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?php echo $fnums; ?>" />
+			<input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?php echo implode(',',$this->fnums); ?>" />
 
 
 			<div class="form-inline row">
@@ -239,15 +241,6 @@ $email_list = array();
 			</div>
 		</div>
 		<input class="btn btn-large btn-success" type="submit" name="applicant_email" value="<?php echo JText::_('SEND_CUSTOM_EMAIL'); ?>" >
-		<script>
-			$(document).on("click", "input[type='submit']", function() {
-				if ($("#mail_subject").val() == "") {
-					$("#mail_subject").css("border", "2px solid red");
-					return false;
-				} else
-					document.pressed = this.name;
-				});
-		</script>
 
 		<script> <?php echo EmundusHelperJavascript::getTemplate(); ?></script>
 		<?php // TODO: Add EmundusHelperJavascript::setCategory() ?>
@@ -258,32 +251,77 @@ $email_list = array();
 
 <script type="text/javascript">
 	function OnSubmitForm() {
-		if (typeof document.pressed !== "undefined") {
 
-			document.adminForm.task.value = "";
-			var button_name = document.pressed.split("|");
+		// Submitting the form will be entirely done via AJAX due to the fact that the attachements are saved in a list that isnt a form.
 
-			switch (button_name[0]) {
+		// Get all form elements.
+		var data = {
+			recipients 		: $('#fnums').val(),
+			template		: $('#message_template :selected').val()
+			Bcc 			: $('#sendUserACopy').prop('checked'),
+			mail_from_name 	: $('#mail_from_name').val(),
+			mail_from 		: $('#mail_from').val(),
+			mail_subject 	: $('#mail_subject').val(),
+			message			: $('#mail_body').val()
+		}
 
-				case 'expert':
-				break;
 
-				case 'applicant_email':
-					document.adminForm.task.value = "applicantemail";
-					document.adminForm.action = "index.php?option=com_emundus&view=files&controller=files&Itemid=<?php echo $itemid; ?>&task=applicantemail";
-				break;
+		// Attachements object used for sorting the different attachement types.
+		var attachements = {
+			upload : [],
+			candidate_file : [],
+			setup_letters : []
+		}
 
-				case 'group_email':
-					document.adminForm.task.value = "groupmail";
-					document.adminForm.action ="index.php?option=com_emundus&view=files&controller=files&Itemid=<?php echo $itemid; ?>&task=groupmail";
-				break;
+		// Looping through the list and sorting attachements based on their type.
+		var listItems = $("#attachement-list li");
+		listItems.each(function(idx, li) {
+			var attachement = $(li);
 
-				default:
-					return false;
+			if (attachement.hasClass('upload')) {
+
+				var item = {
+					value : attachement.find('.value').text(),
+					label : attachement.text()
+				}
+
+				attachements.upload.push(item);
+
+			} else if (attachement.hasClass('candidate_file')) {
+
+				var item = {
+					value : attachement.find('.value').text(),
+					label : attachement.text()
+				}
+
+				attachements.candidate_file.push(item);
+
+			} else if (attachement.hasClass('setup_letters')) {
+
+				var item = {
+					value : attachement.find('.value').text(),
+					label : attachement.text()
+				}
+
+				attachements.setup_letters.push(item);
 
 			}
-			return true;
-		}
+		});
+
+		data.attachements = attachements;
+
+		$.ajax({
+			type: "POST",
+			url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
+			data: data,
+			success: function (result) {
+				// Maybe dipslay a "message sent" banner instead of reloading the page?
+				$("#em_email_block").append('<span class="alert alert-success"> <?php echo JText::_('MAIL_SENT'); ?> </span>')
+			},
+			error : function (error) {
+				$("#em_email_block").append('<span class="alert alert-danger"> <?php echo JText::_('SEND_FAILED'); ?> </span>')
+			}
+		});
 	}
 
 
@@ -371,7 +409,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.attr('disabled', 'disabled');
 					// Add the file to the list.
-					$('#attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+					$('#attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 
 				}
 
@@ -398,7 +436,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.attr('disabled', 'disabled');
 					// Add the file to the list.
-					$('#attachement-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+					$('#attachement-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
 
 				}
 
@@ -407,11 +445,16 @@ $email_list = array();
 			default :
 
 				// Nothing selected, this case should not happen.
+				// TODO: Make an error appear.
 
 			break;
 
 		}
 
+	}
+
+	function removeAttachement(element) {
+		$(element).parent().remove();
 	}
 
 
@@ -454,14 +497,14 @@ $email_list = array();
 				data = JSON.parse(data);
 
 				if (data.status) {
-					$('#attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+					$('#attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
 				} else {
-					$("#file_to_upload").append('<span class=alert> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+					$("#file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
 				}
 			},
 			error: function (error) {
 				// handle error
-				$("#file_to_upload").append('<span class=alert> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+				$("#file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
 			},
 			async: true,
 			data: formData,

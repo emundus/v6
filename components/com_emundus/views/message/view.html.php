@@ -54,6 +54,7 @@ class EmundusViewMessage extends JViewLegacy {
 		$m_files = new EmundusModelFiles();
 		$m_application = new EmundusModelApplication();
 
+
 		// If we are selecting all fnums: we get them using the files model
 		if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
 			$fnums = $m_files->getAllFnums();
@@ -61,18 +62,20 @@ class EmundusViewMessage extends JViewLegacy {
 			$fnums = $fnums_infos;
 		}
 
-		$fnum_array = array();
+		$fnum_array = [];
 
 		$tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
 		foreach ($fnums as $fnum) {
 			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
 				$user = $m_application->getApplicantInfos($fnum->sid, $tables);
 				$user['campaign_id'] = $fnum->cid;
+				$fnum_array[] = $fnum->fnum;
 				$users[] = $user;
 			}
 		}
 
 		$this->assignRef('users', $users);
+		$this->assignRef('fnums', $fnum_array);
 
 		parent::display($tpl);
 
