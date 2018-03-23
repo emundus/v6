@@ -329,7 +329,7 @@ class EmundusHelperFiles
         } elseif (count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $where = ' training IN ("'.implode('","', $filt_menu['programme']).'") ';
         } else {
-            if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0)) {
+            if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0) && $params['programme'][0] != '%') {
                 $code = implode('","', $params['programme']);
                 $where = 'training IN ("'.$code.'")';
             } else
@@ -338,7 +338,7 @@ class EmundusHelperFiles
         $db = JFactory::getDBO();
         $query = 'SELECT id, label, year  FROM #__emundus_setup_campaigns WHERE published=1 AND '.$where.' ORDER BY year DESC';
 
-        $db->setQuery( $query );
+        $db->setQuery($query);
         return $db->loadObjectList();
     }
 

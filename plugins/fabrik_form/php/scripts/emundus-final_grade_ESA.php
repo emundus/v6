@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: final_grade.php 89 2015-06-15 Benjamin Rivalland
+ * @version 1: final_grade_ESA.php 89 2018-03-21 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 eMundus SAS. All rights reserved.
+ * @copyright Copyright (C) 2018 eMundus SAS. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -30,9 +30,9 @@ if (!empty($status[0])) {
 
 		case 4:
 			if ($engaged == 1)
-				$step = 7;
+				$step = 9;
 			else
-				$step = 8;
+				$step = 7;
 			break;
 
 		case 3:
@@ -40,7 +40,7 @@ if (!empty($status[0])) {
 			break;
 
 		case 2:
-			$step = 4;
+			$step = 12;
 			break;
 
 	}
