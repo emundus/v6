@@ -210,7 +210,9 @@ if (!empty($s_elements)) {
 
                                 if (checked) {
                                     var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                                    $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                                    var exists = $('#' + itemid + '-item').length;
+                                    if(exists==0)
+                                        $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
                                 } else {
                                     $('#' + itemid + '-item').remove();
                                 }
@@ -229,7 +231,10 @@ if (!empty($s_elements)) {
 
                             if (checked) {
                                 var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                                $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                                var exists = $('#' + itemid + '-item').length;
+                                if(exists==0)
+                                    $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                    
                             } else {
                                 $('#' + itemid + '-item').remove();
                             }
@@ -247,7 +252,10 @@ if (!empty($s_elements)) {
 
                     if (checked) {
                         var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                        $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                        var exists = $('#' + itemid + '-item').length;
+                        if(exists==0)
+                            $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+            
                     } else {
                         $('#' + itemid + '-item').remove();
                     }
@@ -264,7 +272,9 @@ if (!empty($s_elements)) {
 
             if (checked) {
                 var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                var exists = $('#' + itemid + '-item').length;
+                if(exists==0)
+                    $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
             } else {
                 $('#' + itemid + '-item').remove();
             }

@@ -146,17 +146,6 @@ if(!empty($options)){
         $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
     }
     
-
-    if(in_array("tags", $options)){
-        $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-        
-        $htmldata .='<br/><table><tr><td style="display: inline;"> ';
-        foreach($tags as $tag){
-            $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
-        }
-        $htmldata .='</td></tr></table>';
-    }
-    
 }else{
 	$htmldata .= '
 	<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
@@ -170,6 +159,21 @@ $htmldata .= '</td>
 			</table>
 			</div>';
 /**  END APPLICANT   ****/
+
+/*** Tags */
+if(!empty($options)){
+	if(in_array("tags", $options)){
+		$tags = $m_files->getTagsByFnum(explode(',', $fnum));
+		
+		$htmldata .='<br/><table><tr><td style="display: inline;"> ';
+		foreach($tags as $tag){
+			$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+		}
+		$htmldata .='</td></tr></table>';
+	}
+}
+/*** End tags */
+
 
 	// get decision
 	$data = @EmundusHelperFiles::getAdmission('html', $fnum, $item->firstname.' '.strtoupper($item->lastname));

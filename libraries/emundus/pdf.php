@@ -821,17 +821,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			$htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
 		}
 		
-		/*** Tags */
-		if(in_array("tags", $options)){
-			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
-			
-			$htmldata .='<br/><table><tr><td style="display: inline;"> ';
-			foreach($tags as $tag){
-				$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
-			}
-			$htmldata .='</td></tr></table>';
-		}
-		/*** End tags */
 		
 	}else{
 		$htmldata .= '
@@ -846,6 +835,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 				</table>
 				</div>';
 	/**  END APPLICANT   ****/
+
+	/*** Tags */
+	if(!empty($options)){
+		if(in_array("tags", $options)){
+			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
+			
+			$htmldata .='<br/><table><tr><td style="display: inline;"> ';
+			foreach($tags as $tag){
+				$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+			}
+			$htmldata .='</td></tr></table>';
+		}
+	}
+	/*** End tags */
+	
 
 	
 
@@ -873,9 +877,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					$path_href = JURI::base(true) . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
 					$htmldata .= '<li><b>' . $upload->value . '</b>';
 					$htmldata .= '<ul>';
-					$htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+					$htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
 					$htmldata .= '</ul>';
 					$htmldata .= '</li>';
+					
 				}
 
 			}
@@ -885,6 +890,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
 	
+
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
@@ -893,7 +899,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		$htmldata = '';
 	}
 	
-
 	if (!file_exists(EMUNDUS_PATH_ABS.@$item->user_id)) {
 		mkdir(EMUNDUS_PATH_ABS.$item->user_id, 0777, true);
 		chmod(EMUNDUS_PATH_ABS.$item->user_id, 0777);
