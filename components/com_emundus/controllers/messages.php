@@ -48,6 +48,10 @@ class EmundusControllerMessages extends JControllerLegacy {
             mkdir('tmp'.DS.'messageattachements', 0777, true);
         }
 
+        // Sanitize filename.
+        $file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
+        $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
+
         // Move the uploaded file to the server directory.
         $target = 'tmp'.DS.'messageattachements'.DS.$file['name'];
 
@@ -71,9 +75,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        require_once (JPATH_COMPONENET.DS.'models'.DS.'emails.php');
         $m_messages = new EmundusModelMessages();
+        $m_emails   = new EmundusModelEmails();
         $m_files    = new EmundusModelFiles();
 
+        $user   = JFactory::getUser();
         $mailer = JFactory::getMailer();
         $config = JFactory::getConfig();
         $jinput = JFactory::getApplication()->input;
@@ -95,22 +102,88 @@ class EmundusControllerMessages extends JControllerLegacy {
         $attachements   = $jinput->post->get('attachements', null, null);
 
 
-        // Get additional info for the fnum such as the 
+        // Get additional info for the fnums such as the user email.
         $fnums = $m_files->getFnumsInfos($fnums, 'object');
 
+        // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
+        $template = $m_email->getEmailById($template_id);
+
+        // If the email sender has the same domain as the system sender address.
+        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+            $mail_from_address = $mail_from;
+        else
+            $mail_from_address = $mail_from_sys;
+
+        // Set sender
+        $sender = [
+            $mail_from_address,
+            $mail_from_name
+        ];
+
         foreach ($fnums as $fnum) {
+
+            $post = [
+                'FNUM'      => $fnum->fnum,
+                'USER_NAME' => $fnum->name,
+            ];
+
+            $tags = $m_emails->setTags($fnum->applicant_id, $post);
+            $body = $m_emails->setTagsFabrik($body, array($user->fnum));
+
+            // Tags are replaced with their corresponding values using the PHP preg_replace function.
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
+            $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $template->Template);
+
+            // Configure email sender
+            $mailer->ClearAllRecipients();
+            $mailer->setSender($sender);
+            $mailer->addReplyTo($mail_from, $mail_from_name);
+            $mailer->addRecipient($fnum->email);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
 
             foreach ($attachements as $attachement) {
 
                 if (!empty($attachement['upload'])) {
 
                     // In the case of an uploaded file, just add it to the email.
+                    foreach ($attachement['upload'] as $upload) {
+
+                        // Sanitize file label.
+                        $upload['label'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $upload['label']);
+                        $upload['label'] = preg_replace("([\.]{2,})", '', $upload['label']);
+
+                        // Sanitize filename.
+                        $upload['value'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $upload['value']);
+                        $upload['value'] = preg_replace("([\.]{2,})", '', $upload['value']);
+
+                        $mailer->addAttachement($upload['value'], $upload['label']);
+                    }
 
                 }
 
                 if (!empty($attachement['candidate_file'])) {
 
                     // Get from DB by fnum.
+                    foreach ($attachement['candidate_file'] as $candidate_file) {
+
+                        $filename = $m_messages->get_upload($fnum->fnum, $candidate_file['value']);
+
+                        if ($filename != false) {
+
+                            // Build the path to the file we are searching for on the disk.
+                            $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
+
+                            if (file_exists($path)) {
+                                $mailer->addAttachement($path, $filename);
+                            }
+
+                        }
+
+                    }
 
                 }
 
@@ -118,9 +191,35 @@ class EmundusControllerMessages extends JControllerLegacy {
                 if (!empty($attachement['setup_letters'])) {
 
                     // Get from DB and generate using the tags.
+                    foreach ($attachement['setup_letters'] as $setup_letter) {
+
+                        $letter = $m_messages->get_letter($setup_letter['value']);
+
+                        if ($letter != false) {
+
+                            
+
+                        }
+
+                    }
 
                 }
 
+            }
+
+            // Send and log the email.
+            $send = $mailer->Send();
+            if ( $send !== true ) {
+                echo 'Error sending email: ' . $send->__toString();
+                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+            } else {
+                $message = array(
+                    'user_id_from' => $from_id,
+                    'user_id_to' => $recipient->id,
+                    'subject' => $subject,
+                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$recipient->email.'</i><br>'.$body
+                );
+                $m_emails->logEmail($message);
             }
 
         }

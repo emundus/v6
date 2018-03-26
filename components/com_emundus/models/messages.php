@@ -218,7 +218,65 @@ class EmundusModelMessages extends JModelList {
         echo json_encode((object)(array('status' => true, 'tmpl' => $email)));
 		die();
 
-	}
+    }
+
+
+    /**
+     * Gets the a file from the setup_attachement table linked to an fnum.
+     *
+     * @since 3.8.6
+     * @param String $fnum the fnum used for getting the attachement.
+     * @param Int $attachement_id the ID of the attachement used in setup_attachement
+     */
+    function get_upload($fnum, $attachement_id) {
+
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('filename'))
+                ->from($db->quoteName('#__emundus_uploads'))
+                ->where($db->quoteName('attachement_id').' = '.$attachement_id.' AND '.$db->quoteName('fnum').' = '.$fnum);
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting upload filename in model/messages at query '.$query, JLog::ERROR, 'com_emudus');
+            return false;
+        }
+
+    }
+
+    /**
+     * Gets the a file from the setup_letters table linked to an fnum.
+     *
+     * @since 3.8.6
+     * @param Int $letter_id the ID of the letter used in setup_letters
+     */
+    function get_letter($letter_id) {
+
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('*'))
+                ->from($db->quoteName('#__emundus_setup_letters'))
+                ->where($db->quoteName('id').' = '.$letter_id);
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting upload filename in model/messages at query '.$query, JLog::ERROR, 'com_emudus');
+            return false;
+        }
+
+    }
 
 
 }
