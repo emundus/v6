@@ -51,7 +51,7 @@ $email_list = array();
 
 ?>
 
-<form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
+<form id="adminForm" name="adminForm">
 	<div class="emundusraw">
 		<div class="em_email_block" id="em_email_block">
 
@@ -240,7 +240,7 @@ $email_list = array();
 				</ul>
 			</div>
 		</div>
-		<input class="btn btn-large btn-success" type="submit" name="applicant_email" value="<?php echo JText::_('SEND_CUSTOM_EMAIL'); ?>" >
+		<input class="btn btn-large btn-success" type="button" onClick="SubmitForm();" name="applicant_email" value="<?php echo JText::_('SEND_CUSTOM_EMAIL'); ?>" >
 
 		<script> <?php echo EmundusHelperJavascript::getTemplate(); ?></script>
 		<?php // TODO: Add EmundusHelperJavascript::setCategory() ?>
@@ -250,14 +250,14 @@ $email_list = array();
 </form>
 
 <script type="text/javascript">
-	function OnSubmitForm() {
+	function SubmitForm() {
 
 		// Submitting the form will be entirely done via AJAX due to the fact that the attachements are saved in a list that isnt a form.
 
 		// Get all form elements.
 		var data = {
 			recipients 		: $('#fnums').val(),
-			template		: $('#message_template :selected').val()
+			template		: $('#message_template :selected').val(),
 			Bcc 			: $('#sendUserACopy').prop('checked'),
 			mail_from_name 	: $('#mail_from_name').val(),
 			mail_from 		: $('#mail_from').val(),
@@ -280,30 +280,15 @@ $email_list = array();
 
 			if (attachement.hasClass('upload')) {
 
-				var item = {
-					value : attachement.find('.value').text(),
-					label : attachement.text()
-				}
-
-				attachements.upload.push(item);
+				attachements.upload.push(attachement.find('.value').text());
 
 			} else if (attachement.hasClass('candidate_file')) {
 
-				var item = {
-					value : attachement.find('.value').text(),
-					label : attachement.text()
-				}
-
-				attachements.candidate_file.push(item);
+				attachements.candidate_file.push(attachement.find('.value').text());
 
 			} else if (attachement.hasClass('setup_letters')) {
 
-				var item = {
-					value : attachement.find('.value').text(),
-					label : attachement.text()
-				}
-
-				attachements.setup_letters.push(item);
+				attachements.setup_letters.push(attachement.find('.value').text());
 
 			}
 		});

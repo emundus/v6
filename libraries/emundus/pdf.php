@@ -30,6 +30,185 @@ function get_mime_type($filename, $mimePath = '../etc') {
 	   return (false); // no match at all
 }
 
+
+/** Generate a PDF letter based on the HTML it contains.
+ * This is only for letter type 2, letters type 1 are any file uploaded by the user and 3 are DOC templates.
+ *
+ * @param Object $letter The letter to generate the pdf file from.
+ * @param String $fnum The fnum of the file to generate for.
+ * @param Int $user_id The ID of the user who's data we want.
+ * @param String $training The training code for the fnum.
+ *
+ * @return Boolean False if queries fail or the letter template is not 2.
+ */
+function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
+
+	if ($letter->template_type != 2)
+		return false;
+
+	set_time_limit(0);
+	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+
+	$user = JFactory::getUser($user_id);
+	$current_user = JFactory::getUser();
+	$db = JFactory::getDBO();
+	$config = JFactory::getConfig();
+	$app = JFactory::getApplication();
+
+	$files = array();
+
+	$m_application 	= new EmundusModelApplication;
+	$m_campaign 	= new EmundusModelCampaign;
+	$m_emails 		= new EmundusModelEmails;
+
+	$campaign = $m_campaign->getCampaignsByCourse($training);
+
+	// Extend the TCPDF class to create custom Header and Footer
+	class MYPDF extends TCPDF {
+
+		var $logo = "";
+		var $logo_footer = "";
+		var $footer = "";
+
+		//Page header
+		public function Header() {
+			// Logo
+			if (is_file($this->logo))
+				$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			// Set font
+			$this->SetFont('helvetica', 'B', 16);
+			// Title
+			$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+		}
+
+		// Page footer
+		public function Footer() {
+			// Position at 15 mm from bottom
+			$this->SetY(-15);
+			// Set font
+			$this->SetFont('helvetica', 'I', 8);
+			// Page number
+			$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+			// footer
+			$this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+			//logo
+			if (is_file($this->logo_footer))
+				$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+
+		}
+	}
+
+	$error = 0;
+
+	$attachment = $m_application->getAttachmentByID($letter->attachment_id);
+
+	try {
+
+		// Test if letter type has already been created for that user/campaign/attachment and delete before if true.
+		$query = 'SELECT * FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum);
+		$db->setQuery($query);
+		$file = $db->loadAssoc();
+
+	} catch (Exception $e) {
+		JLog::add('SQL Error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+		return false;
+	}
+
+	// test if directory exist
+	if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
+		mkdir(EMUNDUS_PATH_ABS.$user_id, 0755, true);
+		chmod(EMUNDUS_PATH_ABS.$user_id, 0755);
+	}
+
+	if (count($file) > 0 && strpos($file['filename'], 'lock') === false) {
+
+		try {
+
+			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
+			$db->setQuery($query);
+			$db->query();
+
+		} catch (Exception $e) {
+			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		@unlink(EMUNDUS_PATH_ABS.$user_id.DS.$file['filename']);
+	}
+
+	// Common tags to use.
+	$post = [
+		'TRAINING_CODE' 	=> $training,
+		'TRAINING_PROGRAMME'=> $campaign['label'],
+		'USER_NAME' 		=> $user->name,
+		'USER_EMAIL' 		=> $user->email,
+		'FNUM' 				=> $fnum
+	];
+
+	$tags = $m_emails->setTags($user_id, $post, $fnum);
+	$htmldata = "";
+	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+	$pdf->SetCreator(PDF_CREATOR);
+	$pdf->SetAuthor($current_user->name);
+	$pdf->SetTitle($letter->title);
+
+	// set margins
+	$pdf->SetMargins(5, 40, 5);
+
+	$pdf->footer = $letter->footer;
+
+	//get logo
+	preg_match('#src="(.*?)"#i', $letter->header, $tab);
+	$pdf->logo = JPATH_BASE.DS.$tab[1];
+
+	preg_match('#src="(.*?)"#i', $letter->footer, $tab);
+	$pdf->logo_footer = JPATH_BASE.DS.@$tab[1];
+
+	unset($logo);
+	unset($logo_footer);
+
+	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+	$pdf->SetFont('helvetica', '', 8);
+
+	$letter->body = $m_emails->setTagsFabrik($letter->body, array($fnum));
+
+	$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter->body))));
+
+	$pdf->AddPage();
+
+	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
+	@chdir('tmp');
+
+	$name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.pdf';
+
+	$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'F');
+
+	$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
+
+	if ($error == 0) {
+
+		try {
+
+			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter->attachment_id.', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign['id'].', '.$db->Quote($fnum).')';
+			$db->setQuery($query);
+			$db->query();
+
+		} catch (Exception $e) {
+			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+		}
+
+		return $path;
+	}
+
+}
+
+
 /** Generate the letter result
 * @param int $user_id the user ID
 * @param bool Eligibility ID of the evaluation
