@@ -218,6 +218,10 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                             case '3':
                                 // This is a DOC template to be completed with applicant information.
+                                $path = $m_messages->generateLetterDoc($letter, $fnum->fnum);
+
+                                if ($path != false && file_exists($path))
+                                    $mailer->addAttachment($path);
                             break;
 
                         }

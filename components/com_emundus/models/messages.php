@@ -313,6 +313,167 @@ class EmundusModelMessages extends JModelList {
 
     }
 
+
+    /** Generates a DOC file for setup_letters
+     *
+     * @param Object $letter The template for the doc to create.
+     * @param String $fnum The fnum used to generate the tags.
+     * @return String The path to the saved file.
+     * @return Boolean False if an error occurs.
+     */
+    function generateLetterDoc($letter, $fnum) {
+
+        require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+
+        $m_emails   = new EmundusModelEmails;
+        $m_files    = new EmundusModelFiles;
+
+
+        $fnumsInfos = $m_files->getFnumTagsInfos($fnum);
+        $attachInfos= $m_files->getAttachmentInfos($letter->attachment_id);
+
+        $user = JFactory::getUser();
+
+        $const = [
+            'user_id'       => $user->id,
+            'user_email'    => $user->email,
+            'user_name'     => $user->name,
+            'current_date'  => date('d/m/Y', time())
+        ];
+
+        try {
+
+            $phpWord = new \PhpOffice\PhpWord\PhpWord();
+            $preprocess = $phpWord->loadTemplate(JPATH_BASE.$letter->file);
+            $tags = $preprocess->getVariables();
+
+            $idFabrik   = array();
+            $setupTags  = array();
+            foreach ($tags as $i => $val) {
+                $tag = strip_tags($val);
+                if (is_numeric($tag))
+                    $idFabrik[] = $tag;
+                else
+                    $setupTags[] = $tag;
+            }
+
+            // Process the Fabrik tags in the document ${tag}
+            $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
+            $fabrikValues = array();
+            foreach ($fabrikElts as $elt) {
+
+                $params = json_decode($elt['params']);
+                $groupParams = json_decode($elt['group_params']);
+                $isDate = ($elt['plugin'] == 'date');
+                $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+
+                if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                    $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnum, $params, $groupParams->repeat_group_button == 1);
+                } else {
+                    if ($isDate)
+                        $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                    else
+                        $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name']);
+                }
+
+                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+
+                        if ($elt['plugin'] == "checkbox")
+                            $val = json_decode($val['val']);
+                        else
+                            $val = explode(',', $val['val']);
+
+                        if (count($val) > 0) {
+                            foreach ($val as $k => $v) {
+                                $index = array_search(trim($v),$params->sub_options->sub_values);
+                                $val[$k] = $params->sub_options->sub_labels[$index];
+                            }
+                            $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                        } else {
+                            $fabrikValues[$elt['id']][$fnum]['val'] = "";
+                        }
+                    }
+
+                } elseif ($elt['plugin'] == "birthday") {
+
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                        $val = explode(',', $val['val']);
+                        foreach ($val as $k => $v) {
+                            $val[$k] = date($params->details_date_format, strtotime($v));
+                        }
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+                    }
+
+                } else {
+                    if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin)
+                        $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnum, $params, $groupParams->repeat_group_button == 1);
+                    else
+                        $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name']);
+                }
+
+            }
+
+            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$letter->file);
+            if (isset($fnumsInfos)) {
+
+                foreach ($setupTags as $tag) {
+                    $val = "";
+                    $lowerTag = strtolower($tag);
+
+                    if (array_key_exists($lowerTag, $const))
+                        $preprocess->setValue($tag, $const[$lowerTag]);
+                    elseif (!empty(@$fnumsInfos[$lowerTag]))
+                        $preprocess->setValue($tag, @$fnumsInfos[$lowerTag]);
+                    else {
+                        $tags = $m_emails->setTagsWord(@$fnumsInfos['applicant_id'], null, $fnum, '');
+                        $i = 0;
+                        foreach ($tags['patterns'] as $key => $value) {
+                            if ($value == $tag) {
+                                $val = $tags['replacements'][$i];
+                                break;
+                            }
+                            $i++;
+                        }
+
+                        $preprocess->setValue($tag, htmlspecialchars($val));
+                    }
+                }
+
+                foreach ($idFabrik as $id) {
+                    if (isset($fabrikValues[$id][$fnum])) {
+                        $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                        $preprocess->setValue($id, $value);
+                    } else {
+                        $preprocess->setValue($id, '');
+                    }
+                }
+
+                $rand = rand(0, 1000000);
+                if (!file_exists(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id']))
+                    mkdir(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'], 0775);
+
+                $filename = str_replace(' ', '', $fnumsInfos['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".docx";
+
+                $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename);
+
+                $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos['applicant_id'], $fnumsInfos['campaign_id'], $letter->attachment_id, $attachInfos['description']);
+
+                return EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename;
+
+            }
+            unset($preprocess);
+
+
+        } catch (Extension $e) {
+            JLog::add('Error generating DOC file in model/messages', JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
 }
 
 ?>
