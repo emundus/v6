@@ -3377,7 +3377,7 @@ $(document).ready(function()
                     var code = $('#em-export-prg').val();
 
                     if (code != 0) {
-                        
+
                         $.ajax({
                             type:'get',
                             url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
@@ -4823,9 +4823,22 @@ $(document).ready(function()
     });
     $(document).on('click', '#showelements', function() {
         $.ajaxQ.abortAll();
-        if ($(this).hasClass("btn btn-info")) {
+        if ($(this).hasClass("btn-info")) {
+           
+            
+            $('#showevalelements').empty();
+            $('#showevalelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showevalelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#eval-elements-popup').hide();
+            
+            $('#showdecisionelements').empty();
+            $('#showdecisionelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showdecisionelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#decision-elements-popup').hide();
+            
+            $('#showadmissionelements').empty();
+            $('#showadmissionelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showadmissionelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#admission-elements-popup').hide();
 
             $('#elements-popup').toggle(400);
@@ -4843,9 +4856,23 @@ $(document).ready(function()
     });
     $(document).on('click', '#showevalelements', function() {
         $.ajaxQ.abortAll();
-        if ($(this).hasClass("btn btn-info")) {
+        if ($(this).hasClass("btn-info")) {
+            
+            
+
+            $('#showelements').empty();
+            $('#showelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#elements-popup').hide();
+
+            $('#showdecisionelements').empty();
+            $('#showdecisionelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showdecisionelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#decision-elements-popup').hide();
+
+            $('#showadmissionelements').empty();
+            $('#showadmissionelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showadmissionelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#admission-elements-popup').hide();
 
             $('#eval-elements-popup').toggle(400);
@@ -4863,9 +4890,22 @@ $(document).ready(function()
     });
     $(document).on('click', '#showdecisionelements', function() {
         $.ajaxQ.abortAll();
-        if ($(this).hasClass("btn btn-info")) {
+        if ($(this).hasClass("btn-info")) {
+
+            $('#showelements').empty();
+            $('#showelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#elements-popup').hide();
+
+            $('#showevalelements').empty();
+            $('#showevalelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showevalelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#eval-elements-popup').hide();
+
+
+            $('#showadmissionelements').empty();
+            $('#showadmissionelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showadmissionelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#admission-elements-popup').hide();
 
             $('#decision-elements-popup').toggle(400);
@@ -4883,9 +4923,21 @@ $(document).ready(function()
     });
     $(document).on('click', '#showadmissionelements', function() {
         $.ajaxQ.abortAll();
-        if ($(this).hasClass("btn btn-info")) {
+        if ($(this).hasClass("btn-info")) {
+
+            $('#showelements').empty();
+            $('#showelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#elements-popup').hide();
+
+            $('#showevalelements').empty();
+            $('#showevalelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showevalelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#eval-elements-popup').hide();
+
+            $('#showdecisionelements').empty();
+            $('#showdecisionelements').removeAttr('class').addClass("btn btn-info btn-xs");
+            $('#showdecisionelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#decision-elements-popup').hide();
 
             $('#admission-elements-popup').toggle(400);
