@@ -1,4 +1,7 @@
-html {overflow-y: scroll;}
+html {
+    overflow-y: scroll;
+}
+
 p {
     margin-bottom: 0 !important;
     margin-left: 0;
@@ -140,8 +143,8 @@ label {
 }
 
 .btn-elements-success {
-    background-color: #5bb75b!important;
-    color: #FFFFFF!important;
+    background-color: #5bb75b !important;
+    color: #FFFFFF !important;
 }
 
 ul {
@@ -272,7 +275,6 @@ thead th:hover {
     position: relative;
     top: 10%;
 }
-
 
 /*
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
@@ -418,7 +420,6 @@ thead th:hover {
     border-radius: 3px !important;
 }
 
-
 /*
 *   Chosen overload
 */
@@ -426,7 +427,6 @@ thead th:hover {
 .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
     height: 30px !important;
 }
-
 
 /**
 *   table css
@@ -443,7 +443,7 @@ thead th:hover {
 
 .table-hover>tbody>tr>td.success:hover,
 .table-hover>tbody>tr>th.success:hover,
-{
+    {
     background-color: #d0e9c6 !important;
 }
 
@@ -472,7 +472,7 @@ thead th:hover {
 
 .table-hover>tbody>tr>td.warning:hover,
 .table-hover>tbody>tr>th.warning:hover,
-{
+    {
     background-color: #faf2cc !important;
 }
 
@@ -486,7 +486,7 @@ thead th:hover {
 }
 
 .panel-info {
-   height: auto !important;
+    height: auto !important;
 }
 
 .em_attachs {
@@ -547,7 +547,7 @@ thead th:hover {
 
 /*scrollbar style------------*/
 
- /*   scrollbar {
+/*   scrollbar {
        -moz-appearance: none !important;
        background: rgb(0,255,0) !important;
     }
@@ -566,8 +566,10 @@ thead th:hover {
     scrollbar[orient="vertical"] {
       min-width: 15px !important;
     }*/
-   /*google chrome*/
-    /*::-webkit-scrollbar {
+
+/*google chrome*/
+
+/*::-webkit-scrollbar {
       width: 2px;
       height: 2px;
     }
@@ -600,9 +602,6 @@ thead th:hover {
     ::-webkit-scrollbar-corner {
       background: transparent;
     }*/
-
-
-
 
 /*fixed thead------------
 
@@ -666,6 +665,7 @@ thead th:hover {
     z-index:2;
 }
 */
+
 /*scroll side
     height: 1000px !important;
     overflow-y:scroll !important;
@@ -674,8 +674,6 @@ thead th:hover {
     height: 1000px !important;
     overflow-y:scroll !important;
 }*/
-
-
 
 /* COLORS */
 
@@ -691,8 +689,57 @@ thead th:hover {
     color: deepskyblue;
 }
 
-
 .ldap-card {
-	background-color: #EEEEEE;
-	color: #3a87ad;
+    background-color: #EEEEEE;
+    color: #3a87ad;
+}
+
+/* SWITCH PROFILE SELECT BOX*/
+
+select#profile,
+select#profile-color {
+    background-position: 100% center;
+    background-repeat: no-repeat;
+    border: 3px solid rgba(75, 74, 74, 0.404);
+    color: rgb(14, 12, 12);
+    font-family: Arial;
+    font-size: 16px;
+    margin: 20px;
+    overflow: hidden;
+    padding: 5px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 95%;
+    height: 50px;
+    background: rgba(226, 226, 226, 0.918);
+}
+
+/* PROGRESS BAR FOR EMAIL DIALOG */
+
+#progress-wrp {
+    border: 1px solid #0099CC;
+    padding: 1px;
+    position: relative;
+    height: 30px;
+    border-radius: 3px;
+    margin: 10px;
+    text-align: left;
+    background: #fff;
+    box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+#progress-wrp .progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    background-color: #f39ac7;
+    width: 0;
+    box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
+}
+
+#progress-wrp .status {
+    top: 3px;
+    left: 50%;
+    position: absolute;
+    display: inline-block;
+    color: #000000;
 }
