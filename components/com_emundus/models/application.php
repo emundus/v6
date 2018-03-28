@@ -1960,32 +1960,38 @@ td {
                 $access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
                 $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
             }
-            $query = "SELECT jega.* , jesg.label as gname, jesa.label as aname FROM #__emundus_group_assoc as jega
-                      LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
-                      LEFT JOIN #__emundus_setup_actions as jesa ON jesa.id = jega.action_id
-                      WHERE  jega.fnum like ".$db->quote($fnum)." and jesa.status = 1 ORDER BY jega.fnum, jega.group_id, jega.action_id";
+            $query = "SELECT jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d, 
+                        jega.fnum, jega.action_id, jega.c, jega.r, jega.u, jega.d, jesa.label as aname, 
+                        jesg.label as gname 
+                        FROM jos_emundus_acl as jeacl
+                        LEFT JOIN jos_emundus_setup_actions as jesa ON jesa.id = jeacl.action_id
+                        LEFT JOIN jos_emundus_setup_groups as jesg on jesg.id = jeacl.group_id
+                        LEFT JOIN jos_emundus_group_assoc as jega on jega.group_id=jesg.id 
+                        WHERE  jega.fnum like ".$db->quote($fnum)." and jesa.status = 1 
+                        ORDER BY jega.fnum, jega.group_id, jega.action_id";
             $db->setQuery($query);
             $res = $db->loadAssocList();
             foreach($res as $r)
             {
-                if(isset($access['groups'][$r['group_id']]['actions'][$r['action_id']]))
+                $ovverideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
+                if(isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
                 {
                     $access['groups'][$r['group_id']]['isAssoc'] = true;
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['c'] += $r['c'];
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] += $r['r'];
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] += $r['u'];
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] += $r['d'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($ovverideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($ovverideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($ovverideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($ovverideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
                 }
                 else
                 {
                     $access['groups'][$r['group_id']]['gname'] = $r['gname'];
                     $access['groups'][$r['group_id']]['isAssoc'] = true;
                     $access['groups'][$r['group_id']]['isACL'] = false;
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['c'] = $r['c'];
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] = $r['r'];
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
-                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] = ($ovverideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] = ($ovverideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] = ($ovverideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] = ($ovverideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
                 }
             }
 
