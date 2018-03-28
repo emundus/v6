@@ -31,6 +31,37 @@ class EmundusControllerMessages extends JControllerLegacy {
         parent::__construct($config);
     }
 
+
+    /**
+     * Get email templates by category.
+     *
+     * @since 3.8.6
+     */
+    public function setcategory() {
+
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
+
+        $jinput = JFactory::getApplication()->input;
+        $category = $jinput->get->getString('category', 'all');
+
+        $m_messages = new EmundusModelMessages();
+
+        $templates = $m_messages->getEmailsByCategory($category);
+
+        if (!$templates) {
+            echo json_encode((object)(['status' => false]));
+            exit;
+        }
+
+        echo json_encode((object)([
+            'status' => true,
+            'templates' => $templates
+        ]));
+        exit;
+
+    }
+
+
     /**
      * Upload a file from computer to be attached to the emails sent.
      *
@@ -144,6 +175,9 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
+            if ($Bcc)
+                $mailer->addBCC($user->email);
+
 
             if (!empty($attachements['upload'])) {
 
@@ -213,7 +247,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                                 if ($path != false && file_exists($path))
                                     $mailer->addAttachment($path);
-
                             break;
 
                             case '3':

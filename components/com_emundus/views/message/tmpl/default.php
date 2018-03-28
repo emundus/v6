@@ -33,8 +33,6 @@ if (count($fnumsArray) > 0) {
 	$fnums = json_encode($fnums_tab);
 }
 
-// TODO: #ud element needs fnums, not just users.
-
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
 $mail_body = $editor->display('mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
@@ -163,33 +161,6 @@ $email_list = array();
 							<div class="hidden" id="upload_file">
 								<label for="file_to_upload" ><?php echo JText::_('UPLOAD'); ?></label>
 								<input type="file" name="file_to_upload" id="file_to_upload">
-								<style>
-									#progress-wrp {
-										border: 1px solid #0099CC;
-										padding: 1px;
-										position: relative;
-										height: 30px;
-										border-radius: 3px;
-										margin: 10px;
-										text-align: left;
-										background: #fff;
-										box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
-									}
-									#progress-wrp .progress-bar{
-										height: 100%;
-										border-radius: 3px;
-										background-color: #f39ac7;
-										width: 0;
-										box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
-									}
-									#progress-wrp .status{
-										top:3px;
-										left:50%;
-										position:absolute;
-										display:inline-block;
-										color: #000000;
-									}
-								</style>
 								<div id="progress-wrp">
 									<div class="progress-bar"></div>
 									<div class="status">0%</div>
@@ -226,7 +197,7 @@ $email_list = array();
 								</select>
 							</div>
 							<span class="input-group-btn">
-								<button class="btn btn-primary hidden" type="button" id="uploadButton" style="top:13px;" onClick="addFile();"><?php echo JText::_('ADD_FILE'); ?></button>
+								<button class="btn btn-primary hidden" type="button" id="uploadButton" style="top:13px;" onClick="addFile();"><?php echo JText::_('ADD_ATTACHMENT'); ?></button>
 							</span>
 						</div>
 					</div>
@@ -243,13 +214,51 @@ $email_list = array();
 		<input class="btn btn-large btn-success" type="button" onClick="SubmitForm();" name="applicant_email" value="<?php echo JText::_('SEND_CUSTOM_EMAIL'); ?>" >
 
 		<script> <?php echo EmundusHelperJavascript::getTemplate(); ?></script>
-		<?php // TODO: Add EmundusHelperJavascript::setCategory() ?>
 
 	</div>
 	<input type="hidden" name="task" value=""/>
 </form>
 
 <script type="text/javascript">
+
+	// Used for toggling the options dipslayed in the message templates dropdown.
+	function setCategory(element) {
+
+		if (element.value == "%")
+			category = 'all';
+		else
+			category = element.value;
+
+		$.ajax({
+			type: "GET",
+			url: "index.php?option=com_emundus&controller=messages&task=setcategory&category="+category,
+			success: function (data) {
+
+				data = JSON.parse(data);
+
+				if (data.status) {
+
+					var $el = $("#message_template");
+					$('#message_template option:gt(0)').remove();
+
+					$.each(data.templates, function(key,value) {
+					$el.append($("<option></option>")
+						.attr("value", value.id).text(value.subject));
+					});
+				} else {
+					$("#message_template").append('<span class="alert"> <?php echo JText::_('ERROR'); ?> </span>')
+				}
+			},
+			error: function (error) {
+				// handle error
+				$("#message_template").append('<span class="alert"> <?php echo JText::_('ERROR'); ?> </span>')
+			},
+
+		});
+
+	}
+
+
 	function SubmitForm() {
 
 		// Submitting the form will be entirely done via AJAX due to the fact that the attachements are saved in a list that isnt a form.
@@ -301,7 +310,7 @@ $email_list = array();
 			data: data,
 			success: function (result) {
 				// Maybe dipslay a "message sent" banner instead of reloading the page?
-				$("#em_email_block").append('<span class="alert alert-success"> <?php echo JText::_('MAIL_SENT'); ?> </span>')
+				$("#em_email_block").append('<span class="alert alert-success"> <?php echo JText::_('EMAIL_SENT'); ?> </span>')
 			},
 			error : function (error) {
 				$("#em_email_block").append('<span class="alert alert-danger"> <?php echo JText::_('SEND_FAILED'); ?> </span>')
@@ -430,7 +439,7 @@ $email_list = array();
 			default :
 
 				// Nothing selected, this case should not happen.
-				// TODO: Make an error appear.
+				$("#attachement-list").append('<span class="alert alert-danger"> <?php echo JText::_('ERROR'); ?> </span>')
 
 			break;
 

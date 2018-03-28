@@ -230,7 +230,6 @@ class EmundusModelMessages extends JModelList {
 	function getEmail($id) {
 
 		$db = JFactory::getDBO();
-        $select = JRequest::getVar('select', null, 'POST', 'none', 0);
 
         $query = $db->getQuery(true);
 
@@ -248,6 +247,38 @@ class EmundusModelMessages extends JModelList {
             JLog::add('Error getting template in model/messages at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
+
+    }
+
+    /**
+     * Gets the email templates by using the category.
+     *
+     * @since 3.8.6
+     * @param String $category The name of the category.
+     * @return Object The list of templates corresponding.
+    */
+    function getEmailsByCategory($category) {
+
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query->select('id, subject')
+                ->from($db->quoteName('#__emundus_setup_emails'));
+
+        if ($category != 'all')
+            $query->where($db->quoteName('category').' = '.$db->Quote($category));
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting emails by category in model/messages at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
 
     }
 
