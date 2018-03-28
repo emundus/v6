@@ -94,6 +94,9 @@ JText::script('GENERATE_ZIP');
 JText::script('CANCEL');
 JText::script('OK');
 JText::script('BACK');
+JText::script('USERNAME');
+JText::script('ID');
+JText::script('SELECT_ALL');
 
 
 JText::script('LOADING');

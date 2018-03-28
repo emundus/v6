@@ -16,6 +16,17 @@ JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 ?>
 
+<!--<link rel="stylesheet" href="/libraries/emundus/visualsearch/build-min/visualsearch-datauri.css" type="text/css" media="screen" charset="utf-8">
+<link rel="stylesheet" href="/libraries/emundus/visualsearch/docs/assets/github.css" type="text/css" media="screen" charset="utf-8">
+<script src="/libraries/emundus/visualsearch/build-min/dependencies.js" type="text/javascript" charset="utf-8"></script>
+<script src="/libraries/emundus/visualsearch/build-min/visualsearch.js" type="text/javascript" charset="utf-8"></script>
+<script src="/libraries/emundus/visualsearch/docs/assets/highlight.js" type="text/javascript" charset="utf-8"></script>
+<script src="/libraries/emundus/visualsearch/docs/assets/javascript.js" type="text/javascript" charset="utf-8"></script>
+<script src="/libraries/emundus/visualsearch/docs/assets/xml.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css">-->
+
+
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-3 side-panel">
