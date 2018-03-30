@@ -3399,7 +3399,7 @@ $(document).ready(function()
 
                 // Display the button on the top of the modal.
                 $('#can-val').empty();
-                $('#can-val').append('<a class="btn btn-large btn-success" type="button" onClick="SubmitForm();" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL')+'</a>');
+                $('#can-val').append('<a class="btn btn-large" onClick="SubmitForm();" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL')+'</a>');
                 $('#can-val').show();
 
                 if ($('#em-check-all-all').is(':checked')) {

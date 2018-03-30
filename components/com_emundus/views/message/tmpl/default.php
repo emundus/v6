@@ -36,11 +36,7 @@ $email_list = array();
 <link rel="stylesheet" href="/components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/js/tinymce.min.js"></script>
-<script data-cfasync="false" type="text/javascript">tinyMCE.init({
-    menubar:false,
-    statusbar: false,
-        //etc
-})</script>
+<script data-cfasync="false" type="text/javascript">tinyMCE.init({menubar:false,statusbar: false})</script>
 
 <form id="emailForm"  name="emailForm" style="padding:0px 15px;">
 	<div class="em_email_block" id="em_email_block">
@@ -273,8 +269,10 @@ $email_list = array();
 
 	}
 
-
 	function SubmitForm() {
+
+		// update the textarea with the WYSIWYG content.
+		tinymce.triggerSave();
 
 		// Get all form elements.
 		var data = {

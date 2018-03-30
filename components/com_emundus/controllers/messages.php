@@ -128,7 +128,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $mail_subject   = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id    = $jinput->post->getInt('template', null);
-        $message        = $jinput->post->get('message', null, null);
+        $message        = $jinput->post->get('message', null, 'RAW');
         $attachements   = $jinput->post->get('attachements', null, null);
 
 
