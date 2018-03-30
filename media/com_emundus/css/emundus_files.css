@@ -700,7 +700,7 @@ select#profile,
 select#profile-color {
     background-position: 100% center;
     background-repeat: no-repeat;
-    border: 3px solid rgba(75, 74, 74, 0.404);
+    border: 3px solid black;
     color: rgb(14, 12, 12);
     font-family: Arial;
     font-size: 16px;
@@ -715,7 +715,6 @@ select#profile-color {
 }
 
 /* PROGRESS BAR FOR EMAIL DIALOG */
-
 #progress-wrp {
     border: 1px solid #0099CC;
     padding: 1px;
@@ -731,7 +730,7 @@ select#profile-color {
 #progress-wrp .progress-bar {
     height: 100%;
     border-radius: 3px;
-    background-color: #f39ac7;
+    background-color: #1BBC9B;
     width: 0;
     box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
 }
@@ -744,10 +743,35 @@ select#profile-color {
     color: #000000;
 }
 
+/* Email labels in the email dialog */
 .em-email-label {
     margin: 1px;
     padding: 2px 1px !important;
 }
 .em-email-label:hover {
 	background-color: #ccc;
+}
+
+/* Custom file upload style */
+#file_to_upload {
+    position: absolute;
+    left: -9999px;
+}
+
+label[for="file_to_upload"] {
+    padding: 0.5em;
+    display: inline-block;
+    background: #F2F1EF;
+    cursor: pointer;
+}
+label[for="file_to_upload"]:hover {
+    background: #BFBFBF;
+}
+#filename{
+    padding: 0.5em;
+    float: left;
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    background: #F2F1EF;
 }

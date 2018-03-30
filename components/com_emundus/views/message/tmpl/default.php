@@ -138,10 +138,13 @@ $email_list = array();
 
 			<div class="form-group col-md-7">
 				<div class="input-group">
+
 						<!-- Upload a file from computer -->
 						<div class="hidden" id="upload_file">
-							<label for="file_to_upload" ><?php echo JText::_('UPLOAD'); ?></label>
-							<input type="file" name="file_to_upload" id="file_to_upload">
+							<span id="filename"><?php echo JText::_('FILE_NAME'); ?></span>
+    						<label for="file_to_upload"><?php echo JText::_('SELECT_FILE_TO_UPLOAD') ?>
+								<input type="file" id="file_to_upload">
+							</label>
 							<div id="progress-wrp">
 								<div class="progress-bar"></div>
 								<div class="status">0%</div>
@@ -178,7 +181,7 @@ $email_list = array();
 							</select>
 						</div>
 						<span class="input-group-btn">
-							<a class="btn btn-primary hidden" type="button" id="uploadButton" style="top:13px;" onClick="addFile();"><?php echo JText::_('ADD_ATTACHMENT'); ?></a>
+							<a class="btn btn-grey hidden" type="button" id="uploadButton" style="top:13px;" onClick="addFile();"><?php echo JText::_('ADD_ATTACHMENT'); ?></a>
 						</span>
 					</div>
 				</div>
@@ -201,6 +204,13 @@ $email_list = array();
 	// Editor loads disabled by default, we apply must toggle it active on page load.
 	$(document).ready(function() {
 		tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
+	});
+
+	// Change file upload string to selected file and reset the progress bar.
+	$('#file_to_upload').change(function() {
+		$('#filename').html(this.value.match(/([^\/\\]+)$/)[1]);
+		$("#progress-wrp .progress-bar").css("width", + 0 + "%");
+		$("#progress-wrp .status").text(0 + "%");
 	});
 
 	// Loads the template and updates the WYSIWYG editor
@@ -495,9 +505,6 @@ $email_list = array();
 				return myXhr;
 			},
 			success: function (data) {
-				// your callback here
-				$("#progress-wrp").fadeOut();
-
 				data = JSON.parse(data);
 
 				if (data.status) {
@@ -523,12 +530,12 @@ $email_list = array();
 		var percent = 0;
 		var position = event.loaded || event.position;
 		var total = event.total;
-		var progress_bar_id = "#progress-wrp";
+		var progress_bar_id = "";
 		if (event.lengthComputable) {
 			percent = Math.ceil(position / total * 100);
 		}
 		// update progressbars classes so it fits your code
-		$(progress_bar_id + " .progress-bar").css("width", +percent + "%");
-		$(progress_bar_id + " .status").text(percent + "%");
+		$("#progress-wrp .progress-bar").css("width", +percent + "%");
+		$("#progress-wrp .status").text(percent + "%");
 	};
 </script>
