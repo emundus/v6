@@ -51,12 +51,18 @@ class EmundusViewMessage extends JViewLegacy {
 		$m_files = new EmundusModelFiles();
 		$m_application = new EmundusModelApplication();
 
-
 		// If we are selecting all fnums: we get them using the files model
-		if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
+		if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all") {
 			$fnums = $m_files->getAllFnums();
-			$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
-			$fnums = $fnums_infos;
+			$formatted_fnums = [];
+			foreach ($fnums as $fnum) {
+				$tmp = new stdClass();
+				$tmp->fnum = $fnum;
+				$tmp->cid = substr($fnum, 14, 7);
+				$tmp->sid = substr($fnum, 21, 7);
+				$formatted_fnums[] = $tmp;
+			}
+			$fnums = $formatted_fnums;
 		}
 
 		$fnum_array = [];

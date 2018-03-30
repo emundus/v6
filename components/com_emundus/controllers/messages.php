@@ -28,6 +28,7 @@ class EmundusControllerMessages extends JControllerLegacy {
      * @since 3.8.6
      */
     function __construct($config = array()) {
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
     }
 
@@ -103,6 +104,11 @@ class EmundusControllerMessages extends JControllerLegacy {
      * @since 3.8.6
      */
     public function applicantemail() {
+
+
+        if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			die(JText::_("ACCESS_DENIED"));
+		}
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
