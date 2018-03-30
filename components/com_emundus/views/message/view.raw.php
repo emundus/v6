@@ -2,10 +2,11 @@
 /**
  * @package    Joomla
  * @subpackage emundus
+ *             components/com_emundus/emundus.php
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Hugo Moracchini
- */
+*/
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
@@ -20,37 +21,61 @@ jimport('joomla.application.component.view');
 
 class EmundusViewMessage extends JViewLegacy {
 
-	function __construct($config = array()) {
 
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'messages.php');
+	public function __construct($config = array()) {
+
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
 
 		parent::__construct($config);
+
 	}
 
-	function display($tpl = null) {
+    public function display($tpl = null) {
 
-		// Fnums are sent in a JSON via GET
-		$jinput = JFactory::getApplication()->input;
+		$current_user = JFactory::getUser();
+
+    	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+			die (JText::_('RESTRICTED_ACCESS'));
+
+		// List of fnum is sent via GET in JSON format.
+	    $jinput = JFactory::getApplication()->input;
 		$fnums = $jinput->getString('fnums', null);
-		$fnums = json_decode($fnums, true);
+		$fnums = (array) json_decode($fnums);
 
+	    $document = JFactory::getDocument();
+		$document->addStyleSheet('media/com_emundus/css/emundus.css');
+
+		$m_files = new EmundusModelFiles();
 		$m_application = new EmundusModelApplication();
-		$h_messages = new EmundusHelperMessages();
 
-		foreach ($fnums as $fnum) {
-			$users[] = $m_application->getApplicantInfos($fnum['sid'], ['jos_emundus_personal_detail.last_name', 'jos_emundus_personal_detail.first_name', 'jos_users.username', 'jos_users.email']);
+
+		// If we are selecting all fnums: we get them using the files model
+		if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
+			$fnums = $m_files->getAllFnums();
+			$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
+			$fnums = $fnums_infos;
 		}
 
-		$messageBlock = $h_messages->createMessageBlock(['applicant_list']);
+		$fnum_array = [];
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$default_email_tmpl = $eMConfig->get('default_email_tmpl', 'expert');
+		$tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
+		foreach ($fnums as $fnum) {
+			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
+				$user = $m_application->getApplicantInfos($fnum->sid, $tables);
+				$user['campaign_id'] = $fnum->cid;
+				$fnum_array[] = $fnum->fnum;
+				$users[] = $user;
+			}
+		}
 
-		$this->assignRef('email', $messageBlock);
-		$this->assignRef('default_email_tmpl', $default_email_tmpl);
+		$this->assignRef('users', $users);
+		$this->assignRef('fnums', $fnum_array);
 
 		parent::display($tpl);
-	}
+
+    }
 }
 ?>

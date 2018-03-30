@@ -743,3 +743,11 @@ select#profile-color {
     display: inline-block;
     color: #000000;
 }
+
+.em-email-label {
+    margin: 1px;
+    padding: 2px 1px !important;
+}
+.em-email-label:hover {
+	background-color: #ccc;
+}
