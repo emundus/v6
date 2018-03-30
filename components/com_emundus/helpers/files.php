@@ -77,10 +77,10 @@ class EmundusHelperFiles
         $current_menu   = $menu->getActive();
         $menu_params    = $menu->getParams(@$current_menu->id);
         $m_files        = new EmundusModelFiles();
-
+        
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
-
+        
         //Filters
         $tables         = explode(',', $menu_params->get('em_tables_id'));
         $filts_names    = explode(',', $menu_params->get('em_filters_names'));
@@ -136,6 +136,7 @@ class EmundusHelperFiles
         $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users', 'group', 'institution');
 
         //$tab_params = array();
+        
         foreach ($filts_names as $key => $filt_name) {
 
             if (isset($filts_values[$key]) && !is_null($filts_values[$key]) && empty($params[$filt_name])) {
@@ -145,7 +146,7 @@ class EmundusHelperFiles
                     $params[$filt_name] = array_unique($params[$filt_name]);
                 } else $params[$filt_name] = $filts_values[$key];
             }
-
+            
             if (array_key_exists($key, $filts_values)) {
                 if (in_array($filt_name, $filter_multi_list))
                     $filts_details[$filt_name] = explode('|', $filts_values[$key]);
@@ -216,12 +217,13 @@ class EmundusHelperFiles
         // Used for adding default collumns when no programme is loaded.
         if (empty($params['programme']))
             $params['programme'] = ["%"];
-
+        
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
-
+        
         $filters['filts_details'] = $filts_details;
         $filters['filts_options'] = $filts_options;
+       
         $filters['tables'] = $tables;
 
         return $filters;
@@ -995,52 +997,48 @@ class EmundusHelperFiles
         $spam_suspect           = @$filt_params['spam_suspect'];
 
         $filters = '';
+        
+        $cs = '';
+        if(!empty($current_s)){
+            foreach($current_s as $c)
+                $cs .= $c .',';
+            $cs = rtrim($cs, ',');
+        }
+        
+
+        
+        
         // Quick filter
         $quick = '<div id="filters">
                     <div id="quick" class="form-group">
-                        <label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'
+                        <label for="input-tags" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</label>
+                            <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'">'.
+                        /*<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'
                             <a href="javascript:clearchosen(\'#text_s\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
                         </label>
-                        <input class="form-control" id="text_s" type="text" name="s" value="'.$current_s.'"/>
-                    </div>
+                        <input class="form-control" id="text_s" type="text" name="s" value="'.$current_s.'"/>*/
+                    '</div>
                     <button type="button" class="btn btn-xs" id="shower"><i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS') . '</button>
                     <button type="button" class="btn btn-xs" id="hider"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button>
                 </div>';
        
         $filters .= $quick;
-        /*$filters .= ' <script>
-                        $(document).ready(function() {
-                            window.visualSearch = VS.init({
-                                container  : $("#quick"),
-                                query      : "",
-                                showFacets : true,
-                                unquotable : [
-                                "'.JText::_('ID').'",
-                                "'.JText::_('FIRST_NAME').'",
-                                "'.JText::_('LAST_NAME').'",
-                                "'.JText::_('USERNAME').'",
-                                "'.JText::_('EMAIL').'"
-                                
-                                ],
-                                callbacks  : {
-                                
-                                    valueMatches : function(category, searchTerm, callback) {
-                                        
-                                    },
-                                    facetMatches : function(callback) {
-                                        callback([
-                                        { label: "'.JText::_('ID').'",        category: "search by" },
-                                        { label: "'.JText::_('FIRST_NAME').'",  category: "search by" },
-                                        { label: "'.JText::_('LAST_NAME').'",   category: "search by" },
-                                        { label: "'.JText::_('USERNAME').'",   category: "search by" },
-                                        { label: "'.JText::_('EMAIL').'",      category: "search by" }
-                                        
-                                        ]);
+        $filters .= '<script type="text/javascript">
+                        $("#input-tags").selectize({
+                            plugins: ["remove_button"],
+                                persist: false,
+                                create: true,
+                                render: {
+                                    item: function(data, escape) {
+                                        return "<div>" + escape(data.text) + "</div>";
                                     }
+                                },
+                                onDelete: function(values) {
+                                    return true;
                                 }
-                            });
                         });
-                    </script>';*/
+                    </script>';
+                    
 
 
         $filters .= '<fieldset class="em_filters_filedset">';
@@ -1072,8 +1070,7 @@ class EmundusHelperFiles
             $hidden = $types['o_profiles'] != 'hidden' ? false : true;
             if ($types['o_profiles'] != 'hidden')
                 $profile .= '<div class="form-group" id="o_profiles">
-                                    <label class="control-label">'.JText::_('OTHER_PROFILES').'</label>
-                                    <input type="checkbox" id="chk-oprofiles"/>'.JText::_('SELECT_ALL').'<br/>';
+                                    <label class="control-label">'.JText::_('OTHER_PROFILES').'</label> ';
                                     
             $profile .= '           <select class="chzn-select em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($types['o_profiles'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
                          <option value="0">'.JText::_('ALL').'</option>';
@@ -1088,20 +1085,7 @@ class EmundusHelperFiles
             if ($types['o_profiles'] != 'hidden')
                 $profile .= '</div>';
             $filters .= $profile;
-            $filters .= '<script>
-                            $("#chk-oprofiles").click(function() {
-                                if($("#chk-oprofiles").is(":checked")){
-                                    $("#select_oprofiles option").each(function(){
-                                        $(this).prop("selected", true);
-                                    });
-                                }else{
-                                    $("#select_oprofiles option").each(function(){
-                                        $(this).prop("selected", false);
-                                    });
-                                }
-                                $("#select_oprofiles").trigger("chosen:updated");
-                            });
-                        </script>';
+           
         }
 
         if (@$params['profile_users'] !== NULL) {
@@ -1285,7 +1269,6 @@ class EmundusHelperFiles
                                  <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
                                 </label>
                             </div>
-                            <input type="checkbox" id="chk-campaigns"/>'.JText::_('SELECT_ALL').'<br/>
                           <div class="em_filtersElement">';
             }
             $campaign .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_campaigns" name="campaign" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;"> ' : '>');
@@ -1306,20 +1289,7 @@ class EmundusHelperFiles
                 $campaign .= '<script>$(document).ready(function() {$("#select_multiple_campaigns").chosen({width:"75%"}); })</script>';
             }
             $filters .= $campaign;
-            $filters .= '<script>
-                            $("#chk-campaigns").click(function() {
-                                if($("#chk-campaigns").is(":checked")){
-                                    $("#select_multiple_campaigns option").each(function(){
-                                        $(this).prop("selected", true);
-                                    });
-                                }else{
-                                    $("#select_multiple_campaigns option").each(function(){
-                                        $(this).prop("selected", false);
-                                    });
-                                }
-                                $("#select_multiple_campaigns").trigger("chosen:updated");
-                            });
-                        </script>';
+            
         }
 
         if ($params['schoolyear'] !== NULL) {
@@ -1329,8 +1299,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $schoolyear .= '<div id="schoolyear">
                                     <div class="em_label"><label class="control-label">'.JText::_('SCHOOLYEARS').' <a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
-                                    <input type="checkbox" id="chk-schoolyears"/>'.JText::_('SELECT_ALL').'<br/>
-                                    <div class="em_filtersElement">';
+                                   <div class="em_filtersElement">';
             }
 
             $schoolyear .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_schoolyears" name="schoolyear" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;"> ' : '>');
@@ -1350,20 +1319,7 @@ class EmundusHelperFiles
                 $schoolyear .= '<script>$(document).ready(function() {$("#select_multiple_schoolyears").chosen({width:"75%"});})</script>';
             }
             $filters .= $schoolyear;
-            $filters .= '<script>
-                            $("#chk-schoolyears").click(function() {
-                                if($("#chk-schoolyears").is(":checked")){
-                                    $("#select_multiple_schoolyears option").each(function(){
-                                        $(this).prop("selected", true);
-                                    });
-                                }else{
-                                    $("#select_multiple_schoolyears option").each(function(){
-                                        $(this).prop("selected", false);
-                                    });
-                                }
-                                $("#select_multiple_schoolyears").trigger("chosen:updated");
-                            });
-                        </script>';
+            
         }
 
         if (@$params['programme'] !== NULL) {
@@ -1373,7 +1329,6 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $programme .= '<div id="programme">
                     <div class="em_label"><label class="control-label">'.JText::_('PROGRAMME').' <a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
-                    <input type="checkbox" id="chk-programmes"/>'.JText::_('SELECT_ALL').'<br/>
                     <div class="em_filtersElement">';
             }
             $programme .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_programmes" name="programme" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
@@ -1394,20 +1349,7 @@ class EmundusHelperFiles
                 $programme .= '<script>$(document).ready(function() {$("#select_multiple_programmes").chosen({width: "75%"});})</script>';
             }
             $filters .= $programme;
-            $filters .= '<script>
-                            $("#chk-programmes").click(function() {
-                                if($("#chk-programmes").is(":checked")){
-                                    $("#select_multiple_programmes option").each(function(){
-                                        $(this).prop("selected", true);
-                                    });
-                                }else{
-                                    $("#select_multiple_programmes option").each(function(){
-                                        $(this).prop("selected", false);
-                                    });
-                                }
-                                $("#select_multiple_programmes").trigger("chosen:updated");
-                            });
-                        </script>';
+           
         }
 
         if (@$params['status'] !== NULL) {
@@ -1426,7 +1368,6 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $status .= '<div id="status">
                     <div class="em_label"><label class="control-label">'.JText::_('STATUS').' <a href="javascript:clearchosen(\'#select_multiple_status\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
-                    <input type="checkbox" id="chk-status"/>'.JText::_('SELECT_ALL').'<br/>
                     <div class="em_filtersElement">';
                 
             }
@@ -1445,24 +1386,12 @@ class EmundusHelperFiles
             $status .= '</select>';
             if (!$hidden) {
                 $status .= '</div></div>';
-                $status .= '<script>$(document).ready(function() {$("#select_multiple_status").chosen({width: "75%"});})
-                $("#chk-status").click(function() {
-                    if($("#chk-status").is(":checked")){
-                        $("#select_multiple_status option").each(function(){
-                            $(this).prop("selected", true);
-                        });
-                    }else{
-                        $("#select_multiple_status option").each(function(){
-                            $(this).prop("selected", false);
-                        });
-                    }
-                    $("#select_multiple_status").trigger("chosen:updated");
-                });
-                </script>';
-                
+                $status .= '<script>$(document).ready(function() {$("#select_multiple_status").chosen({width: "75%"});});</script>';
                 
             }
             $filters .= $status;
+            
+                
         }
 
         if ($params['published'] !== NULL) {
@@ -1499,7 +1428,6 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $tag .= '<div id="tag">
                     <div class="em_label"><label class="control-label">'.JText::_('TAG').' <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
-                    <input type="checkbox" id="chk-tags"/>'.JText::_('SELECT_ALL').'<br/>
                     <div class="em_filtersElement">';
             }
             $tag .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_tags" name="tag" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
@@ -1519,20 +1447,7 @@ class EmundusHelperFiles
                 $tag .= '<script>$(document).ready(function() {$("#select_multiple_tags").chosen({width: "75%"});})</script>';
             }
             $filters .= $tag;
-            $filters .= '<script>
-                            $("#chk-tags").click(function() {
-                                if($("#chk-tags").is(":checked")){
-                                    $("#select_multiple_tags option").each(function(){
-                                        $(this).prop("selected", true);
-                                    });
-                                }else{
-                                    $("#select_multiple_tags option").each(function(){
-                                        $(this).prop("selected", false);
-                                    });
-                                }
-                                $("#select_multiple_tags").trigger("chosen:updated");
-                            });
-                        </script>';
+            
         }
 
         //Advance filter builtin
@@ -1672,7 +1587,6 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $group .= '<div id="group">
                     <div class="em_label"><label class="control-label">'.JText::_('GROUP').' <a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
-                    <input type="checkbox" id="chk-groups"/>'.JText::_('SELECT_ALL').'<br/>
                     <div class="em_filtersElement">';
             }
             $group .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_groups" name="group" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
@@ -1693,20 +1607,7 @@ class EmundusHelperFiles
                 $group .= '<script>$(document).ready(function() {$("#select_multiple_groups").chosen({width: "75%"});})</script>';
             }
             $filters .= $group;
-            $filters .= '<script>
-                            $("#chk-groups").click(function() {
-                                if($("#chk-groups").is(":checked")){
-                                    $("#select_multiple_groups option").each(function(){
-                                        $(this).prop("selected", true);
-                                    });
-                                }else{
-                                    $("#select_multiple_groups option").each(function(){
-                                        $(this).prop("selected", false);
-                                    });
-                                }
-                                $("#select_multiple_groups").trigger("chosen:updated");
-                            });
-                        </script>';
+           
         }
 
         if (@$params['institution'] !== NULL) {
@@ -1716,7 +1617,6 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $institution .= '<div id="group">
                     <div class="em_label"><label class="control-label">'.JText::_('UNIVERSITY').' <a href="javascript:clearchosen(\'#select_multiple_institutions\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
-                    <input type="checkbox" id="chk-institutions"/>'.JText::_('SELECT_ALL').'<br/>
                     <div class="em_filtersElement">';
             }
             $institution .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_institutions" name="institution" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
@@ -1737,20 +1637,7 @@ class EmundusHelperFiles
                 $institution .= '<script>$(document).ready(function() {$("#select_multiple_institutions").chosen({width: "75%"});})</script>';
             }
             $filters .= $institution;
-            $filters .= '<script>
-                            $("#chk-institutions").click(function() {
-                                if($("#chk-institutions").is(":checked")){
-                                    $("#select_multiple_institutions option").each(function(){
-                                        $(this).prop("selected", true);
-                                    });
-                                }else{
-                                    $("#select_multiple_institutions option").each(function(){
-                                        $(this).prop("selected", false);
-                                    });
-                                }
-                                $("#select_multiple_institutions").trigger("chosen:updated");
-                            });
-                        </script>';
+            
         }
 
         if (@$params['spam_suspect'] !== NULL) {

@@ -130,7 +130,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
-
+        
         if ($elements == 'false') {
             $params[$filterName] = $filterval;
         } else {
@@ -147,6 +147,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $session->set('filt_params', $params);
+        
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();

@@ -55,7 +55,7 @@ class EmundusViewFiles extends JViewLegacy
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
 		$layout = $app->input->getString('layout', null);
-
+		
 		$m_files = $this->getModel('Files');
 
 		$h_files->setMenuFilter();
@@ -165,7 +165,7 @@ class EmundusViewFiles extends JViewLegacy
 			    $menu = $app->getMenu();
 			    $current_menu  = $menu->getActive();
 				$menu_params = $menu->getParams($current_menu->id);
-
+				
 				$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 
 				$m_user = new EmundusModelUsers();
@@ -183,6 +183,7 @@ class EmundusViewFiles extends JViewLegacy
 				
 			    // get applications files
 				$users = $this->get('Users');
+				
 				
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();

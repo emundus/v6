@@ -14,17 +14,8 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
-?>
 
-<!--<link rel="stylesheet" href="/libraries/emundus/visualsearch/build-min/visualsearch-datauri.css" type="text/css" media="screen" charset="utf-8">
-<link rel="stylesheet" href="/libraries/emundus/visualsearch/docs/assets/github.css" type="text/css" media="screen" charset="utf-8">
-<script src="/libraries/emundus/visualsearch/build-min/dependencies.js" type="text/javascript" charset="utf-8"></script>
-<script src="/libraries/emundus/visualsearch/build-min/visualsearch.js" type="text/javascript" charset="utf-8"></script>
-<script src="/libraries/emundus/visualsearch/docs/assets/highlight.js" type="text/javascript" charset="utf-8"></script>
-<script src="/libraries/emundus/visualsearch/docs/assets/javascript.js" type="text/javascript" charset="utf-8"></script>
-<script src="/libraries/emundus/visualsearch/docs/assets/xml.js" type="text/javascript" charset="utf-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css">-->
+?>
 
 
 <div class="container-fluid">
@@ -34,6 +25,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 				<div class="panel-heading">
 					<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3>
 				</div>
+				
 				<div class="panel-body">
 					<?php echo @$this->filters ?>
 				</div>
@@ -120,4 +112,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
        // search();
         reloadActions();
 	})
+	
 </script>
+
+

@@ -49,12 +49,17 @@ function getUrlParameter(url, sParam) {
 }
 
 function search() {
+    var quick = [];
+    $("div[data-value]").each( function () {
+        quick.push($(this).attr("data-value")) ;
+    });
     var inputs = [{
         name: 's',
-        value: $('#text_s').val(),
+        value: quick,//$('#text_s').val(),
         adv_fil : false
     }];
-
+    
+    ;
     $('[id^=em-adv-fil-]').each(function(){
         var name = $(this).attr('name');
         inputs.push({
@@ -725,7 +730,7 @@ function generate_pdf(json) {
                         var json = result.json;
                         if (start != json.start) {
                             generate_pdf(json);
-                        } else {
+                        }else {
                             $('#loadingimg').empty();//.append(json.msg);
                             $('#addatatext').empty()
                             $('#datasbs p').replaceWith('<span class="alert alert-danger"> '+json.msg+'</span><br/><br/>');
