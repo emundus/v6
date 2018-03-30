@@ -235,6 +235,9 @@ JText::script('PDF_OPTIONS');
 JText::script('FILES_UPLOADED');
 JText::script('TAGS');
 
+// Email to applicant
+JText::script('SEND_CUSTOM_EMAIL');
+
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
 
