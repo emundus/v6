@@ -175,7 +175,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
-            if ($Bcc)
+            if ($bcc)
                 $mailer->addBCC($user->email);
 
 
