@@ -237,6 +237,8 @@ JText::script('TAGS');
 
 // Email to applicant
 JText::script('SEND_CUSTOM_EMAIL');
+JText::script('EMAIL_SENT');
+JText::script('SEND_FAILED');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');

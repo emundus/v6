@@ -280,62 +280,7 @@ $email_list = array();
 	}
 
 	function SubmitForm() {
-
-		// update the textarea with the WYSIWYG content.
-		tinymce.triggerSave();
-
-		// Get all form elements.
-		var data = {
-			recipients 		: $('#fnums').val(),
-			template		: $('#message_template :selected').val(),
-			Bcc 			: $('#sendUserACopy').prop('checked'),
-			mail_from_name 	: $('#mail_from_name').text(),
-			mail_from 		: $('#mail_from').text(),
-			mail_subject 	: $('#mail_subject').text(),
-			message			: $('#mail_body').val()
-		}
-
-
-		// Attachements object used for sorting the different attachement types.
-		var attachements = {
-			upload : [],
-			candidate_file : [],
-			setup_letters : []
-		}
-
-		// Looping through the list and sorting attachements based on their type.
-		var listItems = $("#attachement-list li");
-		listItems.each(function(idx, li) {
-			var attachement = $(li);
-
-			if (attachement.hasClass('upload')) {
-
-				attachements.upload.push(attachement.find('.value').text());
-
-			} else if (attachement.hasClass('candidate_file')) {
-
-				attachements.candidate_file.push(attachement.find('.value').text());
-
-			} else if (attachement.hasClass('setup_letters')) {
-
-				attachements.setup_letters.push(attachement.find('.value').text());
-
-			}
-		});
-
-		data.attachements = attachements;
-
-		$.ajax({
-			type: "POST",
-			url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
-			data: data,
-			success: function (result) {
-				$("#em_email_block").append('<span class="alert alert-success"> <?php echo JText::_('EMAIL_SENT'); ?> </span>')
-			},
-			error : function (error) {
-				$("#em_email_block").append('<span class="alert alert-danger"> <?php echo JText::_('SEND_FAILED'); ?> </span>')
-			}
-		});
+		// Form submission has been moved to em_files.js under the modal submission listener.
 	}
 
 
