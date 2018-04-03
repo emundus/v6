@@ -38,6 +38,13 @@ $email_list = array();
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/js/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript">tinyMCE.init({menubar:false,statusbar: false})</script>
 
+<div id="em-email-messages"></div>
+
+<div class="em-modal-sending-emails" id="em-modal-sending-emails">
+	<div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ?></div>
+	<img class="em-sending-email-img" src="/images/emundus/sending-email.gif">
+</div>
+
 <form id="emailForm"  name="emailForm" style="padding:0px 15px;">
 	<div class="em_email_block" id="em_email_block">
 
@@ -193,8 +200,6 @@ $email_list = array();
 			<ul class="list-group" id="em-attachement-list">
 				<!-- Files to be attached will be added here. -->
 			</ul>
-		</div>
-		<div id="em-email-messages">
 		</div>
 	</div>
 

@@ -4244,6 +4244,8 @@ $(document).ready(function()
 
                 $('#em-email-messages').empty();
 
+                $('#em-modal-sending-emails').css('display', 'block');
+
                 $.ajax({
                     type: "POST",
                     url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
@@ -4252,30 +4254,32 @@ $(document).ready(function()
 
                         result = JSON.parse(result);
 
+                        $('#em-modal-sending-emails').css('display', 'none');
+
                         if (result.status) {
 
                             if (result.sent.length > 0) {
                                 // Block containing the email adresses of the sent emails.
-                                $("#em-email-messages").append('<div class="alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
+                                $("#em-email-messages").append('<div class="alert alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
                                                             '<ul class="list-group" id="em-mails-sent"></ul>');
 
                                 result.sent.forEach(function (element) {
-                                    $('#em-mails-sent').append('<li class="list-group-item alert alert-success">'+element+'</li>');
+                                    $('#em-mails-sent').append('<li class="list-group-item alert-success">'+element+'</li>');
                                 });
 
                                 $('#em-email-messages').append('</div>');
 
                             } else {
-                                $("#em-email-messages").append('<span class="alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');
+                                $("#em-email-messages").append('<span class="alert alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');
                             }
 
                             if (result.failed.length > 0) {
                                 // Block containing the email adresses of the failed emails.
-                                $("#em-email-messages").append('<div class="alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
+                                $("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
                                                             '<ul class="list-group" id="em-mails-failed"></ul>');
 
                                 result.failed.forEach(function (element) {
-                                    $('#em-mails-sent').append('<li class="list-group-item alert alert-danger">'+element+'</li>');
+                                    $('#em-mails-sent').append('<li class="list-group-item alert-danger">'+element+'</li>');
                                 });
 
                                 $('#em-email-messages').append('</div>');
