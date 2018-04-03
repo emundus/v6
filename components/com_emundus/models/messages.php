@@ -298,7 +298,7 @@ class EmundusModelMessages extends JModelList {
 
         $query->select($db->quoteName('filename'))
                 ->from($db->quoteName('#__emundus_uploads'))
-                ->where($db->quoteName('attachement_id').' = '.$attachement_id.' AND '.$db->quoteName('fnum').' = '.$fnum);
+                ->where($db->quoteName('attachment_id').' = '.$attachement_id.' AND '.$db->quoteName('fnum').' = '.$db->Quote($fnum));
 
         try {
 

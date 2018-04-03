@@ -190,11 +190,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                 // In the case of an uploaded file, just add it to the email.
                 foreach ($attachements['upload'] as $upload) {
 
-                    // Sanitize filename.
-                    $upload = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $upload);
-                    $upload = preg_replace("([\.]{2,})", '', $upload);
-
                     $mailer->addAttachment($upload);
+
                 }
 
             }
