@@ -237,7 +237,9 @@ JText::script('TAGS');
 
 // Email to applicant
 JText::script('SEND_CUSTOM_EMAIL');
-JText::script('EMAIL_SENT');
+JText::script('NO_EMAILS_SENT');
+JText::script('EMAILS_SENT');
+JText::script('EMAILS_FAILED');
 JText::script('SEND_FAILED');
 
 //view application layout share

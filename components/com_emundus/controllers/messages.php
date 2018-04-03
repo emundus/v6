@@ -141,6 +141,10 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Get additional info for the fnums such as the user email.
         $fnums = $m_files->getFnumsInfos($fnums, 'object');
 
+        // This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
+        $sent = [];
+        $failed = [];
+
         // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
         $template = $m_messages->getEmail($template_id);
 
@@ -164,12 +168,13 @@ class EmundusControllerMessages extends JControllerLegacy {
             ];
 
             $tags = $m_emails->setTags($fnum->applicant_id, $post);
-            $body = $m_emails->setTagsFabrik($message, array($fnum->fnum));
+            $body = $m_emails->setTagsFabrik($message, [$fnum->fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
-            $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $template->Template);
+            if ($template != false)
+                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 
             // Configure email sender
             $mailer = JFactory::getMailer();
@@ -271,19 +276,24 @@ class EmundusControllerMessages extends JControllerLegacy {
             // Send and log the email.
             $send = $mailer->Send();
             if ( $send !== true ) {
+                $failed[] = $fnum->email;
                 echo 'Error sending email: ' . $send->__toString();
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
             } else {
-                $message = array(
+                $sent[] = $fnum->email;
+                $log = [
                     'user_id_from' => $user->id,
                     'user_id_to' => $fnum->applicant_id,
                     'subject' => $subject,
                     'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$fnum->email.'</i><br>'.$body
-                );
-                $m_emails->logEmail($message);
+                ];
+                $m_emails->logEmail($log);
             }
 
         }
+
+        echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
+        exit;
 
     }
 

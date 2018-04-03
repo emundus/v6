@@ -775,3 +775,9 @@ label[for="file_to_upload"]:hover {
     overflow: hidden;
     background: #F2F1EF;
 }
+
+/* Messages sent / failed emails list style. */
+#mails-sent, #mails-failed {
+    overflow: scroll;
+    max-height: 100px;
+}

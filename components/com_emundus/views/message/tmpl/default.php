@@ -194,6 +194,8 @@ $email_list = array();
 				<!-- Files to be attached will be added here. -->
 			</ul>
 		</div>
+		<div id="email-messages">
+		</div>
 	</div>
 
 	<input type="hidden" name="task" value=""/>
