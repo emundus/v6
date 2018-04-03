@@ -954,6 +954,11 @@ class EmundusModelAdmission extends JModelList
 					case 'status':
 						if ($value)
                         {
+                        	$diff = array();
+                        	if (is_array($value) && is_array($filt_menu['status']) && count($filt_menu['status'])>0) {
+                        		$diff = array_diff($value, $filt_menu['status']);
+                        	}
+                        	
                             if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
                                 if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
                                     $query['q'] .= ' ';
@@ -962,11 +967,14 @@ class EmundusModelAdmission extends JModelList
                             }
                             else
                             {
-                                $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+                            	if ( count($diff) == 0 )
+	                                $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+	                            else
+	                            	$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                         }
 						break;
-
+						
 					case 'tag':
                         if ($value) {
 

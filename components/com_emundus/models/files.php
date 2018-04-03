@@ -714,6 +714,11 @@ class EmundusModelFiles extends JModelLegacy
                     case 'status':
                         if ($value)
                         {
+                            $diff = array();
+                            if (is_array($value) && is_array($filt_menu['status']) && count($filt_menu['status'])>0) {
+                                $diff = array_diff($value, $filt_menu['status']);
+                            }
+                            
                             if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
                                 if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
                                     $query['q'] .= ' ';
@@ -722,7 +727,10 @@ class EmundusModelFiles extends JModelLegacy
                             }
                             else
                             {
-                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                                if ( count($diff) == 0 )
+                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                                else
+                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                         }
                         break;
