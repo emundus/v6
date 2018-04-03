@@ -986,23 +986,26 @@ class EmundusModelEvaluation extends JModelList
 					case 'status':
 						if ($value)
                         {
-                        	$diff = array();
-                        	if (is_array($value) && is_array($filt_menu['status']) && count($filt_menu['status'])>0) {
-                        		$diff = array_diff($value, $filt_menu['status']);
-                        	}
-                        	
+                            $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
+
+                            // session filter is empty
                             if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
-                                if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
+                                if ( !$filt_menu_defined )
                                     $query['q'] .= ' ';
                                 else
                                     $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                             else
                             {
-                            	if ( count($diff) == 0 )
-	                                $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
-	                            else
-	                            	$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                // Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
+                                $diff = array();
+                                if (is_array($value) && $filt_menu_defined) 
+                                    $diff = array_diff($value, $filt_menu['status']);
+                                
+                                if ( count($diff) == 0 )
+                                    $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+                                else
+                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                         }
 						break;
