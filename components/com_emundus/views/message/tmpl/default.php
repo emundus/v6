@@ -88,7 +88,7 @@ $email_list = array();
 
 		<div class="form-group">
 			<!-- List of users / their emails, gotten from the fnums selected. -->
-			<div class="well well-sm">
+			<div class="well well-sm" id="em-recipitents">
 			<span class='label label-grey'><?php echo JText::_('TO'); ?>:</span>
 				<?php foreach ($this->users as $user) : ?>
 
@@ -127,8 +127,8 @@ $email_list = array();
 
 		<div class="form-inline row">
 			<div class="form-group col-md-5">
-				<label for="select_attachement_type" ><?php echo JText::_('SELECT_ATTACHEMENT_TYPE'); ?></label>
-				<select name="select_attachement_type" id="select_attachement_type" class="form-control" onChange="toggleAttachementType(this);">
+				<label for="em-select_attachement_type" ><?php echo JText::_('SELECT_ATTACHEMENT_TYPE'); ?></label>
+				<select name="em-select_attachement_type" id="em-select_attachement_type" class="form-control" onChange="toggleAttachementType(this);">
 					<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
 					<option value="upload"> <?php echo JText::_('UPLOAD'); ?> </option>
 					<option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
@@ -141,11 +141,11 @@ $email_list = array();
 
 						<!-- Upload a file from computer -->
 						<div class="hidden" id="upload_file">
-							<span id="filename"><?php echo JText::_('FILE_NAME'); ?></span>
-    						<label for="file_to_upload"><?php echo JText::_('SELECT_FILE_TO_UPLOAD') ?>
-								<input type="file" id="file_to_upload">
+							<span id="em-filename"><?php echo JText::_('FILE_NAME'); ?></span>
+    						<label for="em-file_to_upload"><?php echo JText::_('SELECT_FILE_TO_UPLOAD') ?>
+								<input type="file" id="em-file_to_upload">
 							</label>
-							<div id="progress-wrp">
+							<div id="em-progress-wrp">
 								<div class="progress-bar"></div>
 								<div class="status">0%</div>
 							</div>
@@ -154,7 +154,7 @@ $email_list = array();
 						<!-- Get a file from setup_attachements -->
 						<div class="hidden" id="candidate_file">
 							<label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
-							<select id="select_candidate_file" name="candidate_file" class="form-control">
+							<select id="em-select_candidate_file" name="candidate_file" class="form-control">
 							<?php if (!$setup_attachements) :?>
 								<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
 							<?php else: ?>
@@ -190,11 +190,11 @@ $email_list = array();
 		<br>
 		<hr>
 		<div class="form-group">
-			<ul class="list-group" id="attachement-list">
+			<ul class="list-group" id="em-attachement-list">
 				<!-- Files to be attached will be added here. -->
 			</ul>
 		</div>
-		<div id="email-messages">
+		<div id="em-email-messages">
 		</div>
 	</div>
 
@@ -209,10 +209,10 @@ $email_list = array();
 	});
 
 	// Change file upload string to selected file and reset the progress bar.
-	$('#file_to_upload').change(function() {
-		$('#filename').html(this.value.match(/([^\/\\]+)$/)[1]);
-		$("#progress-wrp .progress-bar").css("width", + 0 + "%");
-		$("#progress-wrp .status").text(0 + "%");
+	$('#em-file_to_upload').change(function() {
+		$('#em-filename').html(this.value.match(/([^\/\\]+)$/)[1]);
+		$("#em-progress-wrp .progress-bar").css("width", + 0 + "%");
+		$("#em-progress-wrp .status").text(0 + "%");
 	});
 
 	// Loads the template and updates the WYSIWYG editor
@@ -337,12 +337,12 @@ $email_list = array();
 	// Add file to the list being attached.
 	function addFile() {
 
-		switch ($('#select_attachement_type :selected').val()) {
+		switch ($('#em-select_attachement_type :selected').val()) {
 
 			case 'upload' :
 
 				// We need to get the file uploaded by the user.
-				var file = $("#file_to_upload")[0].files[0];
+				var file = $("#em-file_to_upload")[0].files[0];
 				var upload = new Upload(file);
 				// Verification of style size and type can be done here.
 				upload.doUpload();
@@ -353,9 +353,9 @@ $email_list = array();
 			case 'candidate_file' :
 
 				// we just need to note the reference to the setup_attachement file.
-				var file = $('#select_candidate_file :selected');
+				var file = $('#em-select_candidate_file :selected');
 
-				var alreadyPicked = $('#attachement-list li.candidate_file').find('.value:contains("'+file.val()+'")');
+				var alreadyPicked = $('#em-attachement-list li.candidate_file').find('.value:contains("'+file.val()+'")');
 
 				if (alreadyPicked.text() != '') {
 
@@ -370,7 +370,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.attr('disabled', 'disabled');
 					// Add the file to the list.
-					$('#attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+					$('#em-attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 
 				}
 
@@ -382,7 +382,7 @@ $email_list = array();
 				// We need to note the reference to the setup_letters file.
 				var file = $('#select_setup_letters :selected');
 
-				var alreadyPicked = $('#attachement-list li.setup_letters').find('.value:contains("'+file.val()+'")');
+				var alreadyPicked = $('#em-attachement-list li.setup_letters').find('.value:contains("'+file.val()+'")');
 
 				if (alreadyPicked.text() != '') {
 
@@ -397,7 +397,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.attr('disabled', 'disabled');
 					// Add the file to the list.
-					$('#attachement-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+					$('#em-attachement-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
 
 				}
 
@@ -406,7 +406,7 @@ $email_list = array();
 			default :
 
 				// Nothing selected, this case should not happen.
-				$("#attachement-list").append('<span class="alert alert-danger"> <?php echo JText::_('ERROR'); ?> </span>')
+				$("#em-attachement-list").append('<span class="alert alert-danger"> <?php echo JText::_('ERROR'); ?> </span>')
 
 			break;
 
@@ -455,14 +455,14 @@ $email_list = array();
 				data = JSON.parse(data);
 
 				if (data.status) {
-					$('#attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+					$('#em-attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
 				} else {
-					$("#file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+					$("#em-file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
 				}
 			},
 			error: function (error) {
 				// handle error
-				$("#file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+				$("#em-file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
 			},
 			async: true,
 			data: formData,
@@ -482,7 +482,7 @@ $email_list = array();
 			percent = Math.ceil(position / total * 100);
 		}
 		// update progressbars classes so it fits your code
-		$("#progress-wrp .progress-bar").css("width", +percent + "%");
-		$("#progress-wrp .status").text(percent + "%");
+		$("#em-progress-wrp .progress-bar").css("width", +percent + "%");
+		$("#em-progress-wrp .status").text(percent + "%");
 	};
 </script>

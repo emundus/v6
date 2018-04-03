@@ -4221,7 +4221,7 @@ $(document).ready(function()
                 }
 
                 // Looping through the list and sorting attachements based on their type.
-                var listItems = $("#attachement-list li");
+                var listItems = $("#em-attachement-list li");
                 listItems.each(function(idx, li) {
                     var attachement = $(li);
 
@@ -4242,7 +4242,7 @@ $(document).ready(function()
 
                 data.attachements = attachements;
 
-                $('#email-messages').empty();
+                $('#em-email-messages').empty();
 
                 $.ajax({
                     type: "POST",
@@ -4256,37 +4256,37 @@ $(document).ready(function()
 
                             if (result.sent.length > 0) {
                                 // Block containing the email adresses of the sent emails.
-                                $("#email-messages").append('<div class="alert alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
-                                                            '<ul class="list-group" id="mails-sent"></ul>');
+                                $("#em-email-messages").append('<div class="alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
+                                                            '<ul class="list-group" id="em-mails-sent"></ul>');
 
                                 result.sent.forEach(function (element) {
-                                    $('#mails-sent').append('<li class="list-group-item alert alert-success">'+element+'</li>');
+                                    $('#em-mails-sent').append('<li class="list-group-item alert alert-success">'+element+'</li>');
                                 });
 
-                                $('#email-messages').append('</div>');
+                                $('#em-email-messages').append('</div>');
 
                             } else {
-                                $("#email-messages").append('<span class="alert alert-danger" id="mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');
+                                $("#em-email-messages").append('<span class="alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');
                             }
 
                             if (result.failed.length > 0) {
                                 // Block containing the email adresses of the failed emails.
-                                $("#email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
-                                                            '<ul class="list-group" id="mails-failed"></ul>');
+                                $("#em-email-messages").append('<div class="alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
+                                                            '<ul class="list-group" id="em-mails-failed"></ul>');
 
                                 result.failed.forEach(function (element) {
-                                    $('#mails-sent').append('<li class="list-group-item alert alert-danger">'+element+'</li>');
+                                    $('#em-mails-sent').append('<li class="list-group-item alert alert-danger">'+element+'</li>');
                                 });
 
-                                $('#email-messages').append('</div>');
+                                $('#em-email-messages').append('</div>');
                             }
 
                         } else {
-                            $("#email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                            $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
                         }
                     },
                     error : function (error) {
-                        $("#email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                        $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
                     }
                 });
             break;

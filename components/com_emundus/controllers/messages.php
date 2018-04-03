@@ -162,6 +162,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         foreach ($fnums as $fnum) {
 
+            $toAttach = [];
+
             $post = [
                 'FNUM'      => $fnum->fnum,
                 'USER_NAME' => $fnum->name,
@@ -194,9 +196,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                 // In the case of an uploaded file, just add it to the email.
                 foreach ($attachements['upload'] as $upload) {
-
-                    $mailer->addAttachment($upload);
-
+                    if (file_exists(JPATH_BASE.DS.$upload))
+                        $toAttach[] = JPATH_BASE.DS.$upload;
                 }
 
             }
@@ -214,7 +215,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                         $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
 
                         if (file_exists($path)) {
-                            $mailer->addAttachment($path);
+                            $toAttach[] = $path;
                         }
 
                     }
@@ -244,7 +245,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                             case '1':
                                 // This is a static file, we just need to find its path add it as an attachement.
                                 if (file_exists(JPATH_BASE.$letter->file))
-                                    $mailer->addAttachment(JPATH_BASE.$letter->file);
+                                    $toAttach[] = JPATH_BASE.$letter->file;
                             break;
 
                             case '2':
@@ -254,7 +255,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                                 $path = generateLetterFromHtml($letter, $fnum->fnum, $fnum->applicant_id, $fnum->training);
 
                                 if ($path != false && file_exists($path))
-                                    $mailer->addAttachment($path);
+                                    $toAttach[] = $path;
                             break;
 
                             case '3':
@@ -262,7 +263,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                                 $path = $m_messages->generateLetterDoc($letter, $fnum->fnum);
 
                                 if ($path != false && file_exists($path))
-                                    $mailer->addAttachment($path);
+                                    $toAttach[] = $path;
                             break;
 
                         }
@@ -272,6 +273,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
 
             }
+
+            $mailer->addAttachment($toAttach);
 
             // Send and log the email.
             $send = $mailer->Send();

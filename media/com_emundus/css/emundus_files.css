@@ -715,7 +715,7 @@ select#profile-color {
 }
 
 /* PROGRESS BAR FOR EMAIL DIALOG */
-#progress-wrp {
+#em-progress-wrp {
     border: 1px solid #0099CC;
     padding: 1px;
     position: relative;
@@ -727,7 +727,7 @@ select#profile-color {
     box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
 }
 
-#progress-wrp .progress-bar {
+#em-progress-wrp .progress-bar {
     height: 100%;
     border-radius: 3px;
     background-color: #1BBC9B;
@@ -735,7 +735,7 @@ select#profile-color {
     box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
 }
 
-#progress-wrp .status {
+#em-progress-wrp .status {
     top: 3px;
     left: 50%;
     position: absolute;
@@ -753,21 +753,21 @@ select#profile-color {
 }
 
 /* Custom file upload style */
-#file_to_upload {
+#em-file_to_upload {
     position: absolute;
     left: -9999px;
 }
 
-label[for="file_to_upload"] {
+label[for="em-file_to_upload"] {
     padding: 0.5em;
     display: inline-block;
     background: #F2F1EF;
     cursor: pointer;
 }
-label[for="file_to_upload"]:hover {
+label[for="em-file_to_upload"]:hover {
     background: #BFBFBF;
 }
-#filename{
+#em-filename{
     padding: 0.5em;
     float: left;
     width: 150px;
@@ -776,8 +776,8 @@ label[for="file_to_upload"]:hover {
     background: #F2F1EF;
 }
 
-/* Messages sent / failed emails list style. */
-#mails-sent, #mails-failed {
+/* Messages sent / failed emails list style. Message recipient list */
+#em-mails-sent, #em-mails-failed, #em-recipitents {
     overflow: scroll;
-    max-height: 100px;
+    max-height: 70px;
 }
