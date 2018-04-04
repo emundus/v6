@@ -285,10 +285,11 @@ class EmundusControllerMessages extends JControllerLegacy {
             } else {
                 $sent[] = $fnum->email;
                 $log = [
-                    'user_id_from' => $user->id,
-                    'user_id_to' => $fnum->applicant_id,
-                    'subject' => $subject,
-                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$fnum->email.'</i><br>'.$body
+                    'user_id_from'  => $user->id,
+                    'user_id_to'    => $fnum->applicant_id,
+                    'subject'       => $subject,
+                    'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$fnum->email.'</i><br>'.$body,
+                    'type'          => $template->type
                 ];
                 $m_emails->logEmail($log);
             }
