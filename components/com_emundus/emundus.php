@@ -96,8 +96,9 @@ JText::script('OK');
 JText::script('BACK');
 JText::script('USERNAME');
 JText::script('ID');
-JText::script('SELECT_ALL');
+JText::script('ALL');
 JText::script('IN');
+JText::script('SELECT_HERE');
 
 
 JText::script('LOADING');
@@ -282,12 +283,14 @@ JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('media/com_emundus/js/em_calendar.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
+JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
 JHtml::styleSheet( 'media/com_emundus/lib/chosen/chosen.min.css');
 JHtml::styleSheet( 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
 JHTML::stylesheet('libraries/emundus/selectize/examples/css/normalize.css' );
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
+JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 
 $app = JFactory::getApplication();
 

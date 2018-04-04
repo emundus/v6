@@ -75,12 +75,13 @@ class EmundusViewUsers extends JViewLegacy
 
 	private function _loadFilter() {
         $m_users = new EmundusModelUsers();
-        $model = new EmundusModelFiles;
+		$model = new EmundusModelFiles;
+		
         $model->code = $m_users->getUserGroupsProgrammeAssoc($this->_user->id);
         $model->fnum_assoc = $m_users->getApplicantsAssoc($this->_user->id);
         $this->assignRef('code', $model->code);
         $this->assignRef('fnum_assoc', $model->fnum_assoc);
-
+		
         // reset filter
         $filters = @EmundusHelperFiles::resetFilter();
         $this->assignRef('filters', $filters);

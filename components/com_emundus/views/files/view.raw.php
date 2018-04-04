@@ -125,8 +125,9 @@ class EmundusViewFiles extends JViewLegacy
 		        $m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
                 $this->assignRef('code', $m_files->code);
-                $this->assignRef('fnum_assoc', $m_files->fnum_assoc);
-
+				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
+				
+				//var_dump($params);
 				// reset filter
 				$filters = $h_files->resetFilter();
 			    $this->assignRef('filters', $filters);
