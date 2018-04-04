@@ -718,7 +718,7 @@ class EmundusModelFiles extends JModelLegacy
                                 if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
                                     $query['q'] .= ' ';
                                 else
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                             else
                             {
@@ -1491,7 +1491,6 @@ if (JFactory::getUser()->id == 63)
             $user = JFactory::getUser()->id;
             foreach ($fnums as $fnum)
             {
-                //$fnumInfo = $this->getFnumInfos($fnum);
                 $query = 'insert into #__emundus_tag_assoc(fnum, id_tag, user_id) VALUES ("'.$fnum.'", '.$tag.','.$user.'); ';
                 $db->setQuery($query);
                 $db->execute();

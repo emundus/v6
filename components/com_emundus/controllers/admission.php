@@ -578,11 +578,13 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
 
         $defaultElements = $m_admission->getAdmissionElementsName(0, 1, $code);
-
-        foreach ($defaultElements as $kde => $de) {
-            if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id' || $de->element_name == 'user')
-                unset($defaultElements[$kde]);
+        if(!empty($defaultElements)){
+            foreach ($defaultElements as $kde => $de) {
+                if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id' || $de->element_name == 'user')
+                    unset($defaultElements[$kde]);
+            }
         }
+        
 
         if ($form == "admission")
             $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);

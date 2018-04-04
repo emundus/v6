@@ -337,9 +337,9 @@ class EmundusModelEvaluation extends JModelList
         {
             //var_dump($session->get('filt_params'));
             $elements_id = array();
-            $filt_params = $session->get('filt_params');
+			$filt_params = $session->get('filt_params');
 
-            if (is_array(@$filt_params['programme'])) {
+            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsEvalByProgramme($value);
@@ -388,12 +388,12 @@ class EmundusModelEvaluation extends JModelList
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
-            if (is_array(@$filt_params['programme'])) {
+            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsDecisionByProgramme($value);
                         if (!empty($groups)) {
-                            $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
+                            $eval_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                             if (count($eval_elt_list)>0) {
                                 foreach ($eval_elt_list as $eel) {
                                     $elements_id[] = $eel->element_id;
@@ -403,9 +403,9 @@ class EmundusModelEvaluation extends JModelList
                     }
                 }
             } else {
-                $groups = $this->getGroupsDecisionByProgramme($programme_code);
+				$groups = $this->getGroupsDecisionByProgramme($programme_code);
                 if (!empty($groups)) {
-                    $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
+                    $eval_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                     if (count($eval_elt_list)>0) {
                         foreach ($eval_elt_list as $eel) {
                             $elements_id[] = $eel->element_id;
@@ -1769,6 +1769,20 @@ if (JFactory::getUser()->id == 655)
 			throw $e;
 		}
 	}
+
+	function getEvalsByFnums($fnums) {
+        try {
+
+	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.fnum IN ("'.implode('","', $fnums).'") ORDER BY ee.id DESC' ;
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+
+		} catch(Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
 
 }
 

@@ -1912,7 +1912,10 @@ td {
 
     public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
         try {
-            $query = "SELECT * FROM #__emundus_uploads WHERE fnum like ".$this->_db->quote($fnum);
+              
+            $query = "SELECT eu.*, sa.value FROM #__emundus_uploads as eu 
+                        LEFT JOIN #__emundus_setup_attachments as sa on sa.id = eu.attachment_id 
+                        WHERE fnum like ".$this->_db->quote($fnum);
 
             if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
                 if(is_array($attachment_id))

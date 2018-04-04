@@ -123,10 +123,12 @@ class EmundusHelperExport
     }
 
 	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
+        
 		foreach($files as $file) {
             if (strrpos($file->filename, 'application_form') === false) {
                 $exFileName = explode('.', $file->filename);
                 $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
+                
                 if(file_exists($filePath)) {
                     if (strtolower($exFileName[1]) != 'pdf') {
                         $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
@@ -144,12 +146,13 @@ class EmundusHelperExport
                             $exports[] = $filePath;
                     }
                 }
+                   
 			}
-		}
+        }
 		return $exports;
 	}
 
-    public static function getEvalPDF($fnum)
+    public static function getEvalPDF($fnum, $options = null)
     {
         $user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
@@ -177,12 +180,12 @@ class EmundusHelperExport
 
         require_once($file);
 
-        pdf_evaluation($user->id, $fnum, false, $tmpName);
+        pdf_evaluation($user->id, $fnum, false, $tmpName, $options);
 
         return $tmpName;
     }
 
-    public static function getDecisionPDF($fnum) {
+    public static function getDecisionPDF($fnum, $options = null) {
         $user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_('ACCESS_DENIED'));
@@ -208,12 +211,12 @@ class EmundusHelperExport
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_decision.php';
 
         require_once($file);
-        pdf_decision($user->id, $fnum, false, $tmpName);
+        pdf_decision($user->id, $fnum, false, $tmpName, $options);
 
         return $tmpName;
     }
 
-	public static function getAdmissionPDF($fnum) {
+	public static function getAdmissionPDF($fnum, $options = null) {
         $user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_('ACCESS_DENIED'));
@@ -238,7 +241,7 @@ class EmundusHelperExport
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_admission.php';
 
         require_once($file);
-        pdf_admission($user->id, $fnum, false, $tmpName);
+        pdf_admission($user->id, $fnum, false, $tmpName, $options);
 
         return $tmpName;
     }
@@ -269,7 +272,7 @@ class EmundusHelperExport
 				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 		} else {
 			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
-			$htmlData .= '<a href="'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
+			$htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
 			$pdf->startTransaction();
 			$start_y = $pdf->GetY();
 			$start_page = $pdf->getPage();

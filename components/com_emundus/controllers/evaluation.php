@@ -646,10 +646,11 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $code = explode(',', $code);
         $m_evaluation = $this->getModel('Evaluation');
         $defaultElements = $m_evaluation->getEvaluationElementsName(0, 1, $code);
-        
-        foreach ($defaultElements as $kde => $de) {
-            if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id')
-                unset($defaultElements[$kde]);
+        if(!empty($defaultElements)){
+            foreach ($defaultElements as $kde => $de) {
+                if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id')
+                    unset($defaultElements[$kde]);
+            }
         }
         //var_dump($defaultElements);die();
         $elements = EmundusHelperFiles::getElements();

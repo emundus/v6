@@ -21,26 +21,25 @@ if (isset($user->profile) && $user->profile > 0) {
 
     echo '<legend>'.$title.'</legend>';
 
-    if (isset($user->fnums)) {
-        $ids_array = array();
-
+    $ids_array = array();
+    if (isset($user->fnums)) {  
         if ($user->fnums) {
             foreach ($user->fnums as $fnum) {
                 $ids_array[$fnum->profile_id] = $fnum->fnum;
             }
+        } 
+    }
+    
+    if (!empty($user->emProfiles)) {
+        echo('<br/><div class="styled-select slate"');
+        echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
+        foreach ($user->emProfiles as $profile) {
+            if (array_key_exists($profile->id, $ids_array))
+                echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
+            else
+                echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
         }
-
-        if (!empty($user->emProfiles)) {
-            echo('<br/><div class="styled-select slate"');
-            echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
-            foreach ($user->emProfiles as $profile) {
-                if (array_key_exists($profile->id,$ids_array))
-                    echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
-                else
-                    echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
-            }
-            echo '</select></legend></div><br/>';
-        }
+        echo '</select></legend></div><br/>';
     }
 }
 ?>

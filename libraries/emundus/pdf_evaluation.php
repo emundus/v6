@@ -1,6 +1,6 @@
 <?php
 
-function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
+function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = null) {
     jimport( 'joomla.html.parameter' );
     set_time_limit(0);
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -12,7 +12,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
     //require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
     include_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
     include_once(JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
-    //include_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
+    include_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
     include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
     $m_profile      = new EmundusModelProfile;
@@ -20,7 +20,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
     //$menu             = new EmundusHelperMenu;
     $application    = new EmundusModelApplication;
     //$evaluation   = new EmundusModelEvaluation;
-    //$files            = new EmundusModelFiles;
+    $m_files            = new EmundusModelFiles;
 
     $db             = JFactory::getDBO();
     $app            = JFactory::getApplication();
@@ -42,6 +42,29 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
 
     // Create PDF object
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+   /* class myPdf extends TCPDF
+	{
+		var $lastname = "";
+		var $firstname = "";
+		var $program = "";
+
+		// Page footer
+		public function Footer() {
+			// Position at 16 mm from bottom
+			
+			$this->SetY(-10);
+			// Set font
+			
+			// Page number
+			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
+			$this->Cell(0, 0, ''.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
+			
+		}
+
+	}
+	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);*/
+
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
     $pdf->SetTitle('Evaluation');
@@ -77,7 +100,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
     unset($title);
     
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -86,6 +109,10 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
     //$dimensions = $pdf->getPageDimensions();
+
+    /*$pdf->lastname = $item->lastname;
+	$pdf->firstname = $item->firstname;
+	$pdf->program = $item->label;*/
     
 /*** Applicant   ***/   
 $htmldata .= 
@@ -96,6 +123,14 @@ $htmldata .=
 .nationality { display: block; margin: 0 0 0 20px;  padding:0;}
 .sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
 .birthday { display: block; margin: 0 0 0 20px; padding:0;}
+
+.label		   {white-space:nowrap; color:white; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+.label-default {background-color:#999999;} 
+.label-primary {background-color:#337ab7;} 
+.label-success {background-color:#5cb85c;} 
+.label-info    {background-color:#033c73;} 
+.label-warning {background-color:#dd5600;} 
+.label-danger  {background-color:#c71c22;} 
 </style>
 <div class="card">
 <table>
@@ -123,17 +158,53 @@ $htmldata .= '
 if(isset($item->maiden_name))
     $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 $date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
-$htmldata .= '
-  <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
-  <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-  <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
-  <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-  <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
-</td>
-</tr>
-</table>
-</div>';
+
+if(!empty($options)){
+    if(in_array("aid", $options)){
+        $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>';
+    }
+    if(in_array("afnum", $options)){
+        $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
+    }
+    if(in_array("aemail", $options)){
+        $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>';
+    }
+    if(in_array("aapp-sent", $options)){
+        $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
+    }
+    if(in_array("adoc-print", $options)){
+        $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
+    }
+    
+}else{
+	$htmldata .= '
+	<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
+	<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+	<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
+	<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+	<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
+}
+$htmldata .= '</td>
+            </tr>
+            </table>
+            </div>';
+
 /**  END APPLICANT   ****/
+
+/*** Tags */
+if(!empty($options)){
+    if(in_array("tags", $options)){
+        $tags = $m_files->getTagsByFnum(explode(',', $fnum));
+        
+        $htmldata .='<br/><table><tr><td style="display: inline;"> ';
+        foreach($tags as $tag){
+            $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+        }
+        $htmldata .='</td></tr></table>';
+    }
+}
+/*** End tags */
+
 
     // get evaluation
     $data = @EmundusHelperFiles::getEvaluation('html', $fnum);
@@ -142,7 +213,7 @@ $htmldata .= '
             $htmldata .= $html;
         }
     }
-    
+
     if (!empty($htmldata)) {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();
@@ -155,7 +226,7 @@ $htmldata .= '
         $path = EMUNDUS_PATH_ABS.$item->user_id.DS.'evaluations.pdf';
     else
         $path = $name;
-
+    
     @chdir('tmp');
     if ($output)
         $pdf->Output($path, 'FI');

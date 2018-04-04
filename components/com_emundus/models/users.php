@@ -1750,4 +1750,11 @@ class EmundusModelUsers extends JModelList
         $ret->users = $ldap->search($filters);
         return $ret;
     }
+
+    public function getUserById($uid){
+        $db = JFactory::getDBO();
+        $query = 'SELECT * FROM #__emundus_users WHERE user_id = '.$uid;
+        $db->setQuery( $query );
+        return $db->loadObjectList();
+    }
 }
