@@ -183,7 +183,7 @@ $email_list = array();
 						<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
 						<div class="hidden" id="setup_letters">
 							<label for="setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
-							<select id="select_setup_letters" name="setup_letters" class="form-control">
+							<select id="em-select_setup_letters" name="setup_letters" class="form-control">
 							<?php if (!$setup_letters) :?>
 								<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
 							<?php else: ?>
@@ -249,6 +249,31 @@ $email_list = array();
 				$("#mail_body").val(email.tmpl.message);
 				tinyMCE.execCommand("mceSetContent", false, email.tmpl.message);
 				tinyMCE.execCommand("mceRepaint");
+
+				//Reset attachements.
+				$('#em-attachement-list').each(function(idx, li) {
+					var attachment = $(li);
+
+					if (attachment.hasClass('candidate_file')) {
+
+						// Remove 'disabled' attr from select options.
+						$('#em-select_candidate_file option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
+
+					} else if (attachment.hasClass('setup_letters')) {
+
+						// Remove 'disabled' attr from select options.
+						$('#em-select_setup_letters option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
+
+					}
+				});
+
+				// Remove all attachments from list.
+				$('#em-attachement-list').empty();
+
+				if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
+					$('#em-attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+				}
+
 			},
 			error: function () {
 				// handle error
@@ -382,7 +407,7 @@ $email_list = array();
 				} else {
 
 					// Disable the file from the dropdown.
-					file.attr('disabled', 'disabled');
+					file.prop('disabled', true);
 					// Add the file to the list.
 					$('#em-attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 
@@ -394,7 +419,7 @@ $email_list = array();
 			case 'setup_letters' :
 
 				// We need to note the reference to the setup_letters file.
-				var file = $('#select_setup_letters :selected');
+				var file = $('#em-select_setup_letters :selected');
 
 				var alreadyPicked = $('#em-attachement-list li.setup_letters').find('.value:contains("'+file.val()+'")');
 
@@ -409,7 +434,7 @@ $email_list = array();
 				} else {
 
 					// Disable the file from the dropdown.
-					file.attr('disabled', 'disabled');
+					file.prop('disabled', true);
 					// Add the file to the list.
 					$('#em-attachement-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
 
@@ -429,6 +454,21 @@ $email_list = array();
 	}
 
 	function removeAttachement(element) {
+
+		element = $(element);
+
+		if (element.parent().hasClass('candidate_file')) {
+
+			// Remove 'disabled' attr from select options.
+			$('#em-select_candidate_file option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+
+		} else if (element.parent().hasClass('setup_letters')) {
+
+			// Remove 'disabled' attr from select options.
+			$('#em-select_setup_letters option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+
+		}
+
 		$(element).parent().remove();
 	}
 
