@@ -138,8 +138,12 @@ $email_list = array();
 				<select name="em-select_attachement_type" id="em-select_attachement_type" class="form-control" onChange="toggleAttachementType(this);">
 					<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
 					<option value="upload"> <?php echo JText::_('UPLOAD'); ?> </option>
+					<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
 					<option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
+					<?php endif; ?>
+					<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
 					<option value="setup_letters"> <?php echo JText::_('SETUP_LETTERS'); ?> </option>
+					<?php endif; ?>
 				</select>
 			</div>
 
@@ -159,6 +163,7 @@ $email_list = array();
 						</div>
 
 						<!-- Get a file from setup_attachements -->
+						<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
 						<div class="hidden" id="candidate_file">
 							<label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
 							<select id="em-select_candidate_file" name="candidate_file" class="form-control">
@@ -172,8 +177,10 @@ $email_list = array();
 							<?php endif; ?>
 							</select>
 						</div>
+						<?php endif; ?>
 
 						<!-- Get a file from setup_letters -->
+						<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
 						<div class="hidden" id="setup_letters">
 							<label for="setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
 							<select id="select_setup_letters" name="setup_letters" class="form-control">
@@ -187,6 +194,8 @@ $email_list = array();
 							<?php endif; ?>
 							</select>
 						</div>
+						<?php endif; ?>
+
 						<span class="input-group-btn">
 							<a class="btn btn-grey hidden" type="button" id="uploadButton" style="top:13px;" onClick="addFile();"><?php echo JText::_('ADD_ATTACHMENT'); ?></a>
 						</span>

@@ -191,7 +191,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             if ($bcc)
                 $mailer->addBCC($user->email);
 
-
+            // Files uploaded from the frontend.
             if (!empty($attachements['upload'])) {
 
                 // In the case of an uploaded file, just add it to the email.
@@ -202,76 +202,81 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             }
 
-            if (!empty($attachements['candidate_file'])) {
+            // Files gotten from candidate files, requires attachement read rights.
+            if (EmundusHelperAccess::asAccessAction(4, 'r')) {
+                if (!empty($attachements['candidate_file'])) {
 
-                // Get from DB by fnum.
-                foreach ($attachements['candidate_file'] as $candidate_file) {
+                    // Get from DB by fnum.
+                    foreach ($attachements['candidate_file'] as $candidate_file) {
 
-                    $filename = $m_messages->get_upload($fnum->fnum, $candidate_file);
+                        $filename = $m_messages->get_upload($fnum->fnum, $candidate_file);
 
-                    if ($filename != false) {
+                        if ($filename != false) {
 
-                        // Build the path to the file we are searching for on the disk.
-                        $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
+                            // Build the path to the file we are searching for on the disk.
+                            $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
 
-                        if (file_exists($path)) {
-                            $toAttach[] = $path;
+                            if (file_exists($path)) {
+                                $toAttach[] = $path;
+                            }
+
                         }
 
                     }
 
                 }
-
             }
 
+            // Files generated using the Letters system. Requires attachement creation and doc generation rights.
+            if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) {
+                if (!empty($attachements['setup_letters'])) {
 
-            if (!empty($attachements['setup_letters'])) {
+                    // Get from DB and generate using the tags.
+                    foreach ($attachements['setup_letters'] as $setup_letter) {
 
-                // Get from DB and generate using the tags.
-                foreach ($attachements['setup_letters'] as $setup_letter) {
+                        $letter = $m_messages->get_letter($setup_letter);
 
-                    $letter = $m_messages->get_letter($setup_letter);
+                        // We only get the letters if they are for that particular programme.
+                        if ($letter != false && in_array($fnum->training, explode('","',$letter->training))) {
 
-                    // We only get the letters if they are for that particular programme.
-                    if ($letter != false && in_array($fnum->training, explode('","',$letter->training))) {
+                            // Some letters are only for files of a certain status, this is where we check for that.
+                            if ($letter->status != null && !in_array($fnum->step, explode(',',$letter->status)))
+                                continue;
 
-                        // Some letters are only for files of a certain status, this is where we check for that.
-                        if ($letter->status != null && !in_array($fnum->step, explode(',',$letter->status)))
-                            continue;
+                            // A different file is to be generated depending on the template type.
+                            switch ($letter->template_type) {
 
-                        // A different file is to be generated depending on the template type.
-                        switch ($letter->template_type) {
+                                case '1':
+                                    // This is a static file, we just need to find its path add it as an attachement.
+                                    if (file_exists(JPATH_BASE.$letter->file))
+                                        $toAttach[] = JPATH_BASE.$letter->file;
+                                break;
 
-                            case '1':
-                                // This is a static file, we just need to find its path add it as an attachement.
-                                if (file_exists(JPATH_BASE.$letter->file))
-                                    $toAttach[] = JPATH_BASE.$letter->file;
-                            break;
+                                case '2':
+                                    // This is a PDF to be generated from HTML.
+                                    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
 
-                            case '2':
-                                // This is a PDF to be generated from HTML.
-                                require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+                                    $path = generateLetterFromHtml($letter, $fnum->fnum, $fnum->applicant_id, $fnum->training);
 
-                                $path = generateLetterFromHtml($letter, $fnum->fnum, $fnum->applicant_id, $fnum->training);
+                                    if ($path != false && file_exists($path))
+                                        $toAttach[] = $path;
+                                break;
 
-                                if ($path != false && file_exists($path))
-                                    $toAttach[] = $path;
-                            break;
+                                case '3':
+                                    // This is a DOC template to be completed with applicant information.
+                                    $path = $m_messages->generateLetterDoc($letter, $fnum->fnum);
 
-                            case '3':
-                                // This is a DOC template to be completed with applicant information.
-                                $path = $m_messages->generateLetterDoc($letter, $fnum->fnum);
+                                    if ($path != false && file_exists($path))
+                                        $toAttach[] = $path;
+                                break;
 
-                                if ($path != false && file_exists($path))
-                                    $toAttach[] = $path;
-                            break;
+                            }
 
                         }
 
                     }
 
                 }
-
             }
 
             $mailer->addAttachment($toAttach);
