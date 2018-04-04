@@ -694,26 +694,6 @@ thead th:hover {
     color: #3a87ad;
 }
 
-/* SWITCH PROFILE SELECT BOX*/
-
-select#profile,
-select#profile-color {
-    background-position: 100% center;
-    background-repeat: no-repeat;
-    border: 3px solid black;
-    color: rgb(14, 12, 12);
-    font-family: Arial;
-    font-size: 16px;
-    margin: 20px;
-    overflow: hidden;
-    padding: 5px 10px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 95%;
-    height: 50px;
-    background: rgba(226, 226, 226, 0.918);
-}
-
 /* PROGRESS BAR FOR EMAIL DIALOG */
 #em-progress-wrp {
     border: 1px solid #0099CC;
