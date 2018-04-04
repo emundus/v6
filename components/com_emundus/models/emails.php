@@ -838,10 +838,33 @@ class EmundusModelEmails extends JModelList
     // @description Log email send by the system or via the system
     // @param $row array of data
     public function logEmail($row) {
-        $query = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-                        VALUES (".$this->_db->quote($row['user_id_from']).", ".$this->_db->quote($row['user_id_to']).", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW())";
-        $this->_db->setQuery( $query );
-        $this->_db->query();
+
+        $query = $this->_db->getQuery(true);
+
+        $columns = ['user_id_from', 'user_id_to', 'subject', 'message' , 'date_time'];
+
+        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), 'NOW()'];
+
+        // If we are logging the email type as well, this allows us to put them in separate folders.
+        if (isset($row['type']) && !empty($row['type'])) {
+            $columns[] = 'folder_id';
+            $values[] = $row['type'];
+        }
+
+        $query->insert($this->_db->quoteName('#__messages'))
+                ->columns($this->_db->quoteName($columns))
+                ->values(implode(',',$values));
+
+        $query .= ", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW() ";
+
+        try {
+
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+
+        } catch (Exception $e) {
+            JLog::add('Error logging email in model/emails', JLog::ERROR, 'com_emundus');
+        }
 
     }
 
