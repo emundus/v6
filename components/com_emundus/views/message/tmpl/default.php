@@ -206,7 +206,7 @@ $email_list = array();
 		<br>
 		<hr>
 		<div class="form-group">
-			<ul class="list-group" id="em-attachement-list">
+			<ul class="list-group" id="em-attachment-list">
 				<!-- Files to be attached will be added here. -->
 			</ul>
 		</div>
@@ -251,7 +251,7 @@ $email_list = array();
 				tinyMCE.execCommand("mceRepaint");
 
 				//Reset attachements.
-				$('#em-attachement-list').each(function(idx, li) {
+				$('#em-attachment-list').each(function(idx, li) {
 					var attachment = $(li);
 
 					if (attachment.hasClass('candidate_file')) {
@@ -268,11 +268,11 @@ $email_list = array();
 				});
 
 				// Remove all attachments from list.
-				$('#em-attachement-list').empty();
+				$('#em-attachment-list').empty();
 
 				// Get the attached uploaded file if there is one.
 				if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
-					$('#em-attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
 				}
 
 				<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
@@ -292,7 +292,7 @@ $email_list = array();
 
 								// Add the attachements to the list and deselect the corresponding selects from the option.
 								attachments.attachments.forEach(function(attachment) {
-									$('#em-attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+									$('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 									$('#em-select_candidate_file option[value="'+attachment.id+'"]').prop('disabled', true);
 								});
 
@@ -424,7 +424,7 @@ $email_list = array();
 				// we just need to note the reference to the setup_attachement file.
 				var file = $('#em-select_candidate_file :selected');
 
-				var alreadyPicked = $('#em-attachement-list li.candidate_file').find('.value:contains("'+file.val()+'")');
+				var alreadyPicked = $('#em-attachment-list li.candidate_file').find('.value:contains("'+file.val()+'")');
 
 				if (alreadyPicked.text() != '') {
 
@@ -439,7 +439,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.prop('disabled', true);
 					// Add the file to the list.
-					$('#em-attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 
 				}
 
@@ -451,7 +451,7 @@ $email_list = array();
 				// We need to note the reference to the setup_letters file.
 				var file = $('#em-select_setup_letters :selected');
 
-				var alreadyPicked = $('#em-attachement-list li.setup_letters').find('.value:contains("'+file.val()+'")');
+				var alreadyPicked = $('#em-attachment-list li.setup_letters').find('.value:contains("'+file.val()+'")');
 
 				if (alreadyPicked.text() != '') {
 
@@ -466,7 +466,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.prop('disabled', true);
 					// Add the file to the list.
-					$('#em-attachement-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
 
 				}
 
@@ -475,7 +475,7 @@ $email_list = array();
 			default :
 
 				// Nothing selected, this case should not happen.
-				$("#em-attachement-list").append('<span class="alert alert-danger"> <?php echo JText::_('ERROR'); ?> </span>')
+				$("#em-attachment-list").append('<span class="alert alert-danger"> <?php echo JText::_('ERROR'); ?> </span>')
 
 			break;
 
@@ -539,7 +539,7 @@ $email_list = array();
 				data = JSON.parse(data);
 
 				if (data.status) {
-					$('#em-attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
 				} else {
 					$("#em-file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
 				}
