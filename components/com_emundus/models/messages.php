@@ -190,53 +190,29 @@ class EmundusModelMessages extends JModelList {
     /**
      * Gets a message template.
      *
-     * Gets selected template from POST data.
-     * Returns a JSON containing the template info.
+     * @param Int The ID of the email.
+     * @param Bool Whether or not to also get the candidate file attachements linked to this template, this is an option use for compatibility because some DBs may not have this table.
+     * @return Object The email we seek, false if none is found.
      */
-	function getTemplate() {
-
-		$db = JFactory::getDBO();
-        $select = JRequest::getVar('select', null, 'POST', 'none', 0);
-
-        $query = $db->getQuery(true);
-
-        $query->select('*')
-                ->from($db->quoteName('#__emundus_setup_emails'))
-                ->where($db->quoteName('id').' = '.$select);
-
-        try {
-
-            $db->setQuery($query);
-            $email = $db->loadObject();
-
-        } catch (Exception $e) {
-            JLog::add('Error getting template in model/messages at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
-            echo json_encode((object)(array('status' => false)));
-            die();
-        }
-
-        echo json_encode((object)(array('status' => true, 'tmpl' => $email)));
-		die();
-
-    }
-
-
-    /**
-     * Gets a message template.
-     *
-     * Gets selected template from POST data.
-     * Returns a JSON containing the template info.
-     */
-	function getEmail($id) {
+	function getEmail($id, $candidateAttachements = false) {
 
 		$db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
 
-        $query->select('*')
+        if ($candidateAttachements)
+            $select = 'e.*, et.*, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
+        else
+            $select = '*';
+
+        $query->select($select)
                 ->from($db->quoteName('#__emundus_setup_emails','e'))
-                ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
-                ->where($db->quoteName('e.id').' = '.$id);
+                ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'));
+
+        if ($candidateAttachements)
+            $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
+
+        $query->where($db->quoteName('e.id').' = '.$id);
 
         try {
 
@@ -339,6 +315,35 @@ class EmundusModelMessages extends JModelList {
 
         } catch (Exception $e) {
             JLog::add('Error getting upload filename in model/messages at query '.$query->__toString(), JLog::ERROR, 'com_emudus');
+            return false;
+        }
+
+    }
+
+    /**
+     * Gets the names of candidate files.
+     *
+     * @since 3.8.6
+     * @param String The IDs of the candidate files to get the names of
+     * @return Array A list of objects containing the names and ids of the candidate files.
+     */
+    function getCandidateFileNames($ids) {
+
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName(['id', 'value']))
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id').' IN ('.$ids.')');
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting candidate file attachement name in model/messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 

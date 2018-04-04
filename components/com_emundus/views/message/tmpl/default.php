@@ -234,7 +234,7 @@ $email_list = array();
 
 		$.ajax({
 			type: "POST",
-			url : "index.php?option=com_emundus&controller=email&view=email&task=getTemplate",
+			url : "index.php?option=com_emundus&controller=messages&task=gettemplate",
 			data : {
 				select : select.value
 			},
@@ -270,9 +270,39 @@ $email_list = array();
 				// Remove all attachments from list.
 				$('#em-attachement-list').empty();
 
+				// Get the attached uploaded file if there is one.
 				if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
 					$('#em-attachement-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
 				}
+
+				<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
+				// Get the attached candidate files if there are any.
+				if (typeof(email.tmpl.candidate_attachments) != 'undefined' && email.tmpl.candidate_attachments != null) {
+
+					// We need another AJAX to get the info about the attachements, we only have the IDs and we need the names.
+					$.ajax({
+						type: 'POST',
+						url: 'index.php?option=com_emundus&controller=messages&task=getcandidatefilenames',
+						data : {
+							attachments : email.tmpl.candidate_attachments
+						},
+						success: function (attachments) {
+							attachments = JSON.parse(attachments);
+							if (attachments.status) {
+
+								// Add the attachements to the list and deselect the corresponding selects from the option.
+								attachments.attachments.forEach(function(attachment) {
+									$('#em-attachement-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+									$('#em-select_candidate_file option[value="'+attachment.id+'"]').prop('disabled', true);
+								});
+
+							}
+						}
+
+					})
+
+				}
+				<?php endif; ?>
 
 			},
 			error: function () {

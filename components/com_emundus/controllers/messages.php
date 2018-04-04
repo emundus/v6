@@ -29,9 +29,41 @@ class EmundusControllerMessages extends JControllerLegacy {
      */
     function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
         parent::__construct($config);
     }
 
+    /**
+     * Get all of the information for an email template.
+     *
+     * @since 3.8.6
+     */
+    function gettemplate() {
+
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
+
+        $jinput = JFactory::getApplication()->input;
+        $template_id = $jinput->post->getInt('select', null);
+
+        $m_messages = new EmundusModelMessages();
+        $h_files = new EmundusHelperFiles();
+
+        $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
+
+        $template = $m_messages->getEmail($template_id, $get_candidate_attachments);
+
+        if (!$template) {
+            echo json_encode((object)(['status' => false]));
+            exit;
+        }
+
+		echo json_encode((object)([
+            'status' => true,
+            'tmpl' => $template
+        ]));
+		exit;
+
+    }
 
     /**
      * Get email templates by category.
@@ -39,8 +71,6 @@ class EmundusControllerMessages extends JControllerLegacy {
      * @since 3.8.6
      */
     public function setcategory() {
-
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
 
         $jinput = JFactory::getApplication()->input;
         $category = $jinput->get->getString('category', 'all');
@@ -98,6 +128,36 @@ class EmundusControllerMessages extends JControllerLegacy {
 
     }
 
+
+    /**
+     * Gets the names of the candidate files.
+     * @since 3.8.6
+     */
+    public function getcandidatefilenames() {
+
+        $m_messages = new EmundusModelMessages();
+
+        $jinput = JFactory::getApplication()->input;
+        $attachment_ids = $jinput->post->getString('attachments', null);
+
+        if (empty($attachment_ids)) {
+            echo json_encode((object)['status' => false]);
+            exit;
+        }
+
+        $attachements = $m_messages->getCandidateFileNames($attachment_ids);
+
+        if (!$attachements) {
+            echo json_encode((object)['status' => false]);
+            exit;
+        }
+
+        echo json_encode((object)['status' => true, 'attachments' => $attachements]);
+        exit;
+
+    }
+
+
     /**
      * Send the email defined in the dialog.
      *
@@ -110,7 +170,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 			die(JText::_("ACCESS_DENIED"));
 		}
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
         $m_messages = new EmundusModelMessages();

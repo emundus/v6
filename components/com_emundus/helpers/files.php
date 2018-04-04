@@ -2188,7 +2188,7 @@ class EmundusHelperFiles
 
 
     /**
-     * Method to create a new FNUM
+     * Function to create a new FNUM
      *
      * @param   integer     The id of the campaign.
      * @param   integer     The id of the user.
@@ -2196,7 +2196,32 @@ class EmundusHelperFiles
      * @since   1.6
      */
     public function createFnum($campaign_id, $user_id){
-        $fnum    = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+        $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
         return $fnum;
+    }
+
+    /**
+     * Checks if a table exists in the database.
+     *
+     * @since 3.8.6
+     * @param String Table name
+     * @return Bool True if table found, else false.
+     */
+    public function tableExists($table_name) {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        // The strategy is simple: if there's an error, the table probably doesn't exist.
+        $query->select($db->quoteName('id'))->from($db->quoteName($table_name))->setLimit('1');
+
+
+        try {
+            $db->setQuery($query);
+            return !empty($db->loadResult());
+        } catch (Exception $e) {
+            return false;
+        }
+
     }
 }
