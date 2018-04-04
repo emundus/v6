@@ -4208,34 +4208,34 @@ $(document).ready(function()
                 }
 
 
-                // Attachements object used for sorting the different attachement types.
-                var attachements = {
+                // Attachments object used for sorting the different attachment types.
+                var attachments = {
                     upload : [],
                     candidate_file : [],
                     setup_letters : []
                 }
 
-                // Looping through the list and sorting attachements based on their type.
-                var listItems = $("#em-attachement-list li");
+                // Looping through the list and sorting attachments based on their type.
+                var listItems = $("#em-attachment-list li");
                 listItems.each(function(idx, li) {
-                    var attachement = $(li);
+                    var attachment = $(li);
 
-                    if (attachement.hasClass('upload')) {
+                    if (attachment.hasClass('upload')) {
 
-                        attachements.upload.push(attachement.find('.value').text());
+                        attachments.upload.push(attachment.find('.value').text());
 
-                    } else if (attachement.hasClass('candidate_file')) {
+                    } else if (attachment.hasClass('candidate_file')) {
 
-                        attachements.candidate_file.push(attachement.find('.value').text());
+                        attachments.candidate_file.push(attachment.find('.value').text());
 
-                    } else if (attachement.hasClass('setup_letters')) {
+                    } else if (attachment.hasClass('setup_letters')) {
 
-                        attachements.setup_letters.push(attachement.find('.value').text());
+                        attachments.setup_letters.push(attachment.find('.value').text());
 
                     }
                 });
 
-                data.attachements = attachements;
+                data.attachments = attachments;
 
                 $('#em-email-messages').empty();
 

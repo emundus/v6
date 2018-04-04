@@ -105,9 +105,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Get the file sent via AJAX POST
         $file = $jinput->files->get('file');
 
-        // Check if the message attachements directory exists.
-        if (!is_dir('tmp'.DS.'messageattachements')) {
-            mkdir('tmp'.DS.'messageattachements', 0777, true);
+        // Check if the message attachments directory exists.
+        if (!is_dir('tmp'.DS.'messageattachments')) {
+            mkdir('tmp'.DS.'messageattachments', 0777, true);
         }
 
         // Sanitize filename.
@@ -115,7 +115,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
 
         // Move the uploaded file to the server directory.
-        $target = 'tmp'.DS.'messageattachements'.DS.$file['name'];
+        $target = 'tmp'.DS.'messageattachments'.DS.$file['name'];
 
         if (file_exists($target))
             unlink($target);
@@ -145,14 +145,14 @@ class EmundusControllerMessages extends JControllerLegacy {
             exit;
         }
 
-        $attachements = $m_messages->getCandidateFileNames($attachment_ids);
+        $attachments = $m_messages->getCandidateFileNames($attachment_ids);
 
-        if (!$attachements) {
+        if (!$attachments) {
             echo json_encode((object)['status' => false]);
             exit;
         }
 
-        echo json_encode((object)['status' => true, 'attachments' => $attachements]);
+        echo json_encode((object)['status' => true, 'attachments' => $attachments]);
         exit;
 
     }
@@ -194,7 +194,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_subject   = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id    = $jinput->post->getInt('template', null);
         $message        = $jinput->post->get('message', null, 'RAW');
-        $attachements   = $jinput->post->get('attachements', null, null);
+        $attachments    = $jinput->post->get('attachments', null, null);
 
 
         // Get additional info for the fnums such as the user email.
@@ -251,22 +251,22 @@ class EmundusControllerMessages extends JControllerLegacy {
                 $mailer->addBCC($user->email);
 
             // Files uploaded from the frontend.
-            if (!empty($attachements['upload'])) {
+            if (!empty($attachments['upload'])) {
 
                 // In the case of an uploaded file, just add it to the email.
-                foreach ($attachements['upload'] as $upload) {
+                foreach ($attachments['upload'] as $upload) {
                     if (file_exists(JPATH_BASE.DS.$upload))
                         $toAttach[] = JPATH_BASE.DS.$upload;
                 }
 
             }
 
-            // Files gotten from candidate files, requires attachement read rights.
+            // Files gotten from candidate files, requires attachment read rights.
             if (EmundusHelperAccess::asAccessAction(4, 'r')) {
-                if (!empty($attachements['candidate_file'])) {
+                if (!empty($attachments['candidate_file'])) {
 
                     // Get from DB by fnum.
-                    foreach ($attachements['candidate_file'] as $candidate_file) {
+                    foreach ($attachments['candidate_file'] as $candidate_file) {
 
                         $filename = $m_messages->get_upload($fnum->fnum, $candidate_file);
 
@@ -286,12 +286,12 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
             }
 
-            // Files generated using the Letters system. Requires attachement creation and doc generation rights.
+            // Files generated using the Letters system. Requires attachment creation and doc generation rights.
             if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) {
-                if (!empty($attachements['setup_letters'])) {
+                if (!empty($attachments['setup_letters'])) {
 
                     // Get from DB and generate using the tags.
-                    foreach ($attachements['setup_letters'] as $setup_letter) {
+                    foreach ($attachments['setup_letters'] as $setup_letter) {
 
                         $letter = $m_messages->get_letter($setup_letter);
 
@@ -306,7 +306,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                             switch ($letter->template_type) {
 
                                 case '1':
-                                    // This is a static file, we just need to find its path add it as an attachement.
+                                    // This is a static file, we just need to find its path add it as an attachment.
                                     if (file_exists(JPATH_BASE.$letter->file))
                                         $toAttach[] = JPATH_BASE.$letter->file;
                                 break;

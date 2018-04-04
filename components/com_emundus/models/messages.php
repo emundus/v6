@@ -86,12 +86,12 @@ class EmundusModelMessages extends JModelList {
 
 
     /**
-     * Gets all published attachements unless a filter is active.
+     * Gets all published attachments unless a filter is active.
      *
      * @return Boolean False if the query fails and nothing can be loaded.
-     * @return Array An array of objects describing attachements.
+     * @return Array An array of objects describing attachments.
      */
-    function getAttachements() {
+    function getAttachments() {
 
         $db = JFactory::getDbo();
         $session = JFactory::getSession();
@@ -100,7 +100,7 @@ class EmundusModelMessages extends JModelList {
 
         $query = $db->getQuery(true);
 
-        // Get all info about the attachements in the table.
+        // Get all info about the attachments in the table.
         $query->select('a.*')
                 ->from($db->quoteName('#__emundus_setup_attachments', 'a'));
 
@@ -135,7 +135,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting attachements in model/messages at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting attachments in model/messages at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -191,16 +191,16 @@ class EmundusModelMessages extends JModelList {
      * Gets a message template.
      *
      * @param Int The ID of the email.
-     * @param Bool Whether or not to also get the candidate file attachements linked to this template, this is an option use for compatibility because some DBs may not have this table.
+     * @param Bool Whether or not to also get the candidate file attachments linked to this template, this is an option use for compatibility because some DBs may not have this table.
      * @return Object The email we seek, false if none is found.
      */
-	function getEmail($id, $candidateAttachements = false) {
+	function getEmail($id, $candidateAttachments = false) {
 
 		$db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
 
-        if ($candidateAttachements)
+        if ($candidateAttachments)
             $select = 'e.*, et.*, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
         else
             $select = '*';
@@ -209,7 +209,7 @@ class EmundusModelMessages extends JModelList {
                 ->from($db->quoteName('#__emundus_setup_emails','e'))
                 ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'));
 
-        if ($candidateAttachements)
+        if ($candidateAttachments)
             $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
 
         $query->where($db->quoteName('e.id').' = '.$id);
@@ -260,13 +260,13 @@ class EmundusModelMessages extends JModelList {
 
 
     /**
-     * Gets the a file from the setup_attachement table linked to an fnum.
+     * Gets the a file from the setup_attachment table linked to an fnum.
      *
      * @since 3.8.6
-     * @param String $fnum the fnum used for getting the attachement.
-     * @param Int $attachement_id the ID of the attachement used in setup_attachement
+     * @param String $fnum the fnum used for getting the attachment.
+     * @param Int $attachment_id the ID of the attachment used in setup_attachment
      */
-    function get_upload($fnum, $attachement_id) {
+    function get_upload($fnum, $attachment_id) {
 
         $db = JFactory::getDbo();
 
@@ -274,7 +274,7 @@ class EmundusModelMessages extends JModelList {
 
         $query->select($db->quoteName('filename'))
                 ->from($db->quoteName('#__emundus_uploads'))
-                ->where($db->quoteName('attachment_id').' = '.$attachement_id.' AND '.$db->quoteName('fnum').' = '.$db->Quote($fnum));
+                ->where($db->quoteName('attachment_id').' = '.$attachment_id.' AND '.$db->quoteName('fnum').' = '.$db->Quote($fnum));
 
         try {
 
@@ -343,7 +343,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting candidate file attachement name in model/messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting candidate file attachment name in model/messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 

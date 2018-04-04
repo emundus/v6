@@ -22,10 +22,10 @@ $mail_body = $editor->display('mail_body', '[NAME], ', '100%', '400', '20', '20'
 
 $m_messages = new EmundusModelMessages();
 
-// load all of the available messages, categories (to sort messages),attachements, letters.
+// load all of the available messages, categories (to sort messages),attachments, letters.
 $message_categories = $m_messages->getAllCategories();
 $message_templates 	= $m_messages->getAllMessages();
-$setup_attachements = $m_messages->getAttachements();
+$setup_attachments 	= $m_messages->getAttachments();
 $setup_letters 		= $m_messages->getLetters();
 
 $email_list = array();
@@ -134,15 +134,15 @@ $email_list = array();
 
 		<div class="form-inline row">
 			<div class="form-group col-md-5">
-				<label for="em-select_attachement_type" ><?php echo JText::_('SELECT_ATTACHEMENT_TYPE'); ?></label>
-				<select name="em-select_attachement_type" id="em-select_attachement_type" class="form-control" onChange="toggleAttachementType(this);">
+				<label for="em-select_attachment_type" ><?php echo JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
+				<select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control" onChange="toggleAttachmentType(this);">
 					<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
 					<option value="upload"> <?php echo JText::_('UPLOAD'); ?> </option>
 					<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
 					<option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
 					<?php endif; ?>
 					<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-					<option value="setup_letters"> <?php echo JText::_('SETUP_LETTERS'); ?> </option>
+					<option value="setup_letters"> <?php echo JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
 					<?php endif; ?>
 				</select>
 			</div>
@@ -162,17 +162,17 @@ $email_list = array();
 							</div>
 						</div>
 
-						<!-- Get a file from setup_attachements -->
+						<!-- Get a file from setup_attachments -->
 						<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
 						<div class="hidden" id="candidate_file">
 							<label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
 							<select id="em-select_candidate_file" name="candidate_file" class="form-control">
-							<?php if (!$setup_attachements) :?>
+							<?php if (!$setup_attachments) :?>
 								<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
 							<?php else: ?>
 								<option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-								<?php foreach ($setup_attachements as $attachement): ?>
-									<option value="<?php echo $attachement->id; ?>"> <?php echo $attachement->value; ?></option>
+								<?php foreach ($setup_attachments as $attachment): ?>
+									<option value="<?php echo $attachment->id; ?>"> <?php echo $attachment->value; ?></option>
 								<?php endforeach; ?>
 							<?php endif; ?>
 							</select>
@@ -250,7 +250,7 @@ $email_list = array();
 				tinyMCE.execCommand("mceSetContent", false, email.tmpl.message);
 				tinyMCE.execCommand("mceRepaint");
 
-				//Reset attachements.
+				//Reset attachments.
 				$('#em-attachment-list').each(function(idx, li) {
 					var attachment = $(li);
 
@@ -272,14 +272,14 @@ $email_list = array();
 
 				// Get the attached uploaded file if there is one.
 				if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
-					$('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
 				}
 
 				<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
 				// Get the attached candidate files if there are any.
 				if (typeof(email.tmpl.candidate_attachments) != 'undefined' && email.tmpl.candidate_attachments != null) {
 
-					// We need another AJAX to get the info about the attachements, we only have the IDs and we need the names.
+					// We need another AJAX to get the info about the attachments, we only have the IDs and we need the names.
 					$.ajax({
 						type: 'POST',
 						url: 'index.php?option=com_emundus&controller=messages&task=getcandidatefilenames',
@@ -290,9 +290,9 @@ $email_list = array();
 							attachments = JSON.parse(attachments);
 							if (attachments.status) {
 
-								// Add the attachements to the list and deselect the corresponding selects from the option.
+								// Add the attachments to the list and deselect the corresponding selects from the option.
 								attachments.attachments.forEach(function(attachment) {
-									$('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+									$('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 									$('#em-select_candidate_file option[value="'+attachment.id+'"]').prop('disabled', true);
 								});
 
@@ -362,8 +362,8 @@ $email_list = array();
 	}
 
 
-	// Change the attachement type being uploaded.
-	function toggleAttachementType(toggle) {
+	// Change the attachment type being uploaded.
+	function toggleAttachmentType(toggle) {
 
 		switch (toggle.value) {
 
@@ -406,7 +406,7 @@ $email_list = array();
 	// Add file to the list being attached.
 	function addFile() {
 
-		switch ($('#em-select_attachement_type :selected').val()) {
+		switch ($('#em-select_attachment_type :selected').val()) {
 
 			case 'upload' :
 
@@ -421,7 +421,7 @@ $email_list = array();
 
 			case 'candidate_file' :
 
-				// we just need to note the reference to the setup_attachement file.
+				// we just need to note the reference to the setup_attachment file.
 				var file = $('#em-select_candidate_file :selected');
 
 				var alreadyPicked = $('#em-attachment-list li.candidate_file').find('.value:contains("'+file.val()+'")');
@@ -439,7 +439,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.prop('disabled', true);
 					// Add the file to the list.
-					$('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 
 				}
 
@@ -466,7 +466,7 @@ $email_list = array();
 					// Disable the file from the dropdown.
 					file.prop('disabled', true);
 					// Add the file to the list.
-					$('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
 
 				}
 
@@ -483,7 +483,7 @@ $email_list = array();
 
 	}
 
-	function removeAttachement(element) {
+	function removeAttachment(element) {
 
 		element = $(element);
 
@@ -539,7 +539,7 @@ $email_list = array();
 				data = JSON.parse(data);
 
 				if (data.status) {
-					$('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachement(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+					$('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
 				} else {
 					$("#em-file_to_upload").append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
 				}
