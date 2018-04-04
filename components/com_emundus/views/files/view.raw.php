@@ -97,8 +97,10 @@ class EmundusViewFiles extends JViewLegacy
 				$display = $app->input->getString('display', 'none');
 				$menu = @JSite::getMenu();
 				$current_menu = $menu->getActive();
+				$Itemid = $app->input->getInt('Itemid', $current_menu->id);
+
 				if (isset($current_menu) && !empty($current_menu)) {
-					$params = $menu->getParams($current_menu->id);
+					$params = $menu->getParams($Itemid);
 
 					if ($fnum === "0")
 						$items = $h_files->getMenuList($params);
@@ -164,7 +166,8 @@ class EmundusViewFiles extends JViewLegacy
 			default :
 			    $menu = $app->getMenu();
 			    $current_menu  = $menu->getActive();
-				$menu_params = $menu->getParams($current_menu->id);
+			    $Itemid = $app->input->getInt('Itemid', $current_menu->id);
+				$menu_params = $menu->getParams($Itemid);
 
 				$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 

@@ -75,7 +75,8 @@ class EmundusHelperFiles
         $current_user   = JFactory::getUser();
         $menu           = @JSite::getMenu();
         $current_menu   = $menu->getActive();
-        $menu_params    = $menu->getParams(@$current_menu->id);
+        $Itemid         = JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
+        $menu_params    = $menu->getParams($Itemid);
         $m_files        = new EmundusModelFiles();
 
         $session = JFactory::getSession();
