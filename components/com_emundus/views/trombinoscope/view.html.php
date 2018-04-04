@@ -46,7 +46,6 @@ class EmundusViewTrombinoscope extends JViewLegacy
             'mode' => '1'
         );*/
         $params = array('mode' => 'simple');
-        $editor = JFactory::getEditor('tinymce');
 
         $editor = JFactory::getEditor();
         // DISPLAY THE EDITOR (name, html, width, height, columns, rows, bottom buttons, id, asset, author, params)

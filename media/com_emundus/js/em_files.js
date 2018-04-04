@@ -1802,7 +1802,6 @@ $(document).ready(function()
                                                                                             $('#em-export').append(item);
                                                                                         }
 
-
                                                                                         //***decision elements */
                                                                                         $.ajax({
                                                                                             type: 'get',
@@ -1856,6 +1855,7 @@ $(document).ready(function()
                                                                                                                             }
                                                                                                                             $('#em-export').append(item);
                                                                                                                         }
+
                                                                                                                     },
 
                                                                                                                     error: function (jqXHR, textStatus, errorThrown) {
@@ -2150,7 +2150,6 @@ $(document).ready(function()
                                                             success: function(result)
                                                             {
                                                                 var item='';
-
                                                                 item ="";
                                                                 if(view == "files"){
                                                                     for (var d in result.defaults) {
@@ -2207,7 +2206,6 @@ $(document).ready(function()
                                                                                                     dataType:'json',
 
                                                                                                     success: function(result) {
-
 
                                                                                                         $('#decision-elements-popup').append(data);
 
@@ -3069,7 +3067,6 @@ $(document).ready(function()
                                             $('#em-export-camp').trigger("chosen:updated");
                                             $('#camp').show();
 
-
                                             var year = $("#em-export-camp").val();
 
                                             $.ajax({
@@ -3321,10 +3318,9 @@ $(document).ready(function()
                         $('#exp-opt').hide();
                 });
 
-
-
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
+
                 $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
 
                 $('#can-val').empty();
@@ -3336,29 +3332,43 @@ $(document).ready(function()
                 break;
             // Mail applicants
             case 9:
-                 $('#can-val').empty();
-                if($('#em-check-all-all').is(':checked'))
-                {
+
+                // Display the button on the top of the modal.
+                $('#can-val').empty();
+                $('#can-val').append('<a class="btn btn-success btn-large" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL')+'</a>');
+                $('#can-val').show();
+
+                if ($('#em-check-all-all').is(':checked')) {
+
                     var fnums = 'all';
-                }
-                else
-                {
+                } else {
                     var fnums = [];
                     $('.em-check:checked').each(function()
                     {
-                        var id = $(this).attr('id').split('_')[0];
-                        var cid = parseInt(id.substr(14, 7));
-                        var sid = parseInt(id.substr(21, 7));
-                        fnums.push({fnum: id, cid: cid, sid:sid});
+                        fnum = $(this).attr('id').split('_')[0];
+                        cid = parseInt(fnum.substr(14, 7));
+                        sid = parseInt(fnum.substr(21, 7));
+                        fnums.push({fnum: fnum, cid: cid, sid:sid});
                     });
                 }
-                fnums = JSON.stringify(fnums);
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
-                $('.modal-body').empty();
-                //var url = 'index.php?option=com_emundus&view=email&tmpl=component&Itemid='+itemId+'&fnums='+encodeURIComponent(fnums)+'&desc=0';
-                $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
+                $.ajax({
+                    type: 'POST',
+                    url: 'index.php?option=com_emundus&view=message&format=raw',
+                    data: {
+                        fnums: JSON.stringify(fnums)
+                    },
+                    success: function(result) {
+                        $('.modal-body').empty();
+                        $('.modal-body').append(result);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.responseText);
+                    }
+
+                });
                 break;
             // Comment
             case 10:
@@ -3830,6 +3840,7 @@ $(document).ready(function()
             options.push($(this).val());
         });
         //console.log(options);
+
         $('#data').hide();
         $('div').remove('#chargement');
         $('.modal-body').append('<div id="chargement" style="padding:15px">' +
@@ -4179,6 +4190,105 @@ $(document).ready(function()
                         }
                     });
                 break;
+
+            // Send an email to a candidate
+            case 9:
+                // update the textarea with the WYSIWYG content.
+                tinymce.triggerSave();
+
+                // Get all form elements.
+                var data = {
+                    recipients 		: $('#fnums').val(),
+                    template		: $('#message_template :selected').val(),
+                    Bcc 			: $('#sendUserACopy').prop('checked'),
+                    mail_from_name 	: $('#mail_from_name').text(),
+                    mail_from 		: $('#mail_from').text(),
+                    mail_subject 	: $('#mail_subject').text(),
+                    message			: $('#mail_body').val()
+                }
+
+
+                // Attachements object used for sorting the different attachement types.
+                var attachements = {
+                    upload : [],
+                    candidate_file : [],
+                    setup_letters : []
+                }
+
+                // Looping through the list and sorting attachements based on their type.
+                var listItems = $("#em-attachement-list li");
+                listItems.each(function(idx, li) {
+                    var attachement = $(li);
+
+                    if (attachement.hasClass('upload')) {
+
+                        attachements.upload.push(attachement.find('.value').text());
+
+                    } else if (attachement.hasClass('candidate_file')) {
+
+                        attachements.candidate_file.push(attachement.find('.value').text());
+
+                    } else if (attachement.hasClass('setup_letters')) {
+
+                        attachements.setup_letters.push(attachement.find('.value').text());
+
+                    }
+                });
+
+                data.attachements = attachements;
+
+                $('#em-email-messages').empty();
+
+                $('#em-modal-sending-emails').css('display', 'block');
+
+                $.ajax({
+                    type: "POST",
+                    url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
+                    data: data,
+                    success: function (result) {
+
+                        result = JSON.parse(result);
+
+                        $('#em-modal-sending-emails').css('display', 'none');
+
+                        if (result.status) {
+
+                            if (result.sent.length > 0) {
+                                // Block containing the email adresses of the sent emails.
+                                $("#em-email-messages").append('<div class="alert alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
+                                                            '<ul class="list-group" id="em-mails-sent"></ul>');
+
+                                result.sent.forEach(function (element) {
+                                    $('#em-mails-sent').append('<li class="list-group-item alert-success">'+element+'</li>');
+                                });
+
+                                $('#em-email-messages').append('</div>');
+
+                            } else {
+                                $("#em-email-messages").append('<span class="alert alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');
+                            }
+
+                            if (result.failed.length > 0) {
+                                // Block containing the email adresses of the failed emails.
+                                $("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
+                                                            '<ul class="list-group" id="em-mails-failed"></ul>');
+
+                                result.failed.forEach(function (element) {
+                                    $('#em-mails-sent').append('<li class="list-group-item alert-danger">'+element+'</li>');
+                                });
+
+                                $('#em-email-messages').append('</div>');
+                            }
+
+                        } else {
+                            $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                        }
+                    },
+                    error : function (error) {
+                        $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                    }
+                });
+            break;
 
             // Add a comment
             case 10:
