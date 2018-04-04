@@ -2226,6 +2226,7 @@ class EmundusHelperFiles
         } catch (Exception $e) {
             return false;
         }
+    }
 
     public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid){
         $db = JFactory::getDBO();
