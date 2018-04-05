@@ -1669,12 +1669,12 @@ class EmundusHelperFiles
             // $filters.= '<div class="em_filtersElement"><input id="check_spam-suspect" name="spam_suspect" onMouseUp="if(this.checked==true){this.value=1;}else{this.value=0;}" type="checkbox" value="0" '.($spam_suspect==1?'checked=checked':'').' /></div>';
             $filters.= '</div>';
         }
-
+       
         // Buttons
         $filters .='<br/><div class="buttons">
-                <button type="button" class="btn btn-sm btn-info" name="search" id="search" title="'.JText::_('SEARCH_BTN').'"><i class="ui search icon"></i></button>';
-        $filters .=' <button type="button" class="btn btn-sm btn-danger" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"><i class="ui ban icon"></i></button>';
-        $filters .=' <button class="btn btn-warning" id="save-filter" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/></div>';
+                     <input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="'.JText::_('SEARCH_BTN').'"/>';
+        $filters .=' <input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"/>';
+        $filters .=' <button class="btn btn-warning" id="save-filter" style="width: 50px;" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/></div>';
         $filters .=' </fieldset>';
         $filters .= '<script>
                             $( "#showhide" ).click(function() {
