@@ -75,7 +75,8 @@ class EmundusHelperFiles
         $current_user   = JFactory::getUser();
         $menu           = @JSite::getMenu();
         $current_menu   = $menu->getActive();
-        $menu_params    = $menu->getParams(@$current_menu->id);
+        $Itemid         = JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
+        $menu_params    = $menu->getParams($Itemid);
         $m_files        = new EmundusModelFiles();
         
         $session = JFactory::getSession();
@@ -334,7 +335,8 @@ class EmundusHelperFiles
         } elseif (count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $where = ' training IN ("'.implode('","', $filt_menu['programme']).'") ';
         } else {
-            if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0) && $params['programme'][0] != "%" ) {
+
+            if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0) && $params['programme'][0] != '%') {
                 $code = implode('","', $params['programme']);
                 $where = 'training IN ("'.$code.'")';
             } else
@@ -343,7 +345,7 @@ class EmundusHelperFiles
         $db = JFactory::getDBO();
         $query = 'SELECT id, label, year  FROM #__emundus_setup_campaigns WHERE published=1 AND '.$where.' ORDER BY year DESC';
 
-        $db->setQuery( $query );
+        $db->setQuery($query);
         return $db->loadObjectList();
     }
 
@@ -2249,13 +2251,13 @@ class EmundusHelperFiles
 
             $data[$adm['fnum']][1] = $str;
         }
-        
+
         return $data;
     }
 
 
     /**
-     * Method to create a new FNUM
+     * Function to create a new FNUM
      *
      * @param   integer     The id of the campaign.
      * @param   integer     The id of the user.
@@ -2263,18 +2265,42 @@ class EmundusHelperFiles
      * @since   1.6
      */
     public function createFnum($campaign_id, $user_id){
-        $fnum    = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+        $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
         return $fnum;
+    }
+
+    /**
+     * Checks if a table exists in the database.
+     *
+     * @since 3.8.6
+     * @param String Table name
+     * @return Bool True if table found, else false.
+     */
+    public function tableExists($table_name) {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        // The strategy is simple: if there's an error, the table probably doesn't exist.
+        $query->select($db->quoteName('id'))->from($db->quoteName($table_name))->setLimit('1');
+
+
+        try {
+            $db->setQuery($query);
+            return !empty($db->loadResult());
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid){
         $db = JFactory::getDBO();
-        
+
         try {
             $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
             $db->setQuery( $query );
             $db->query();
-           
+
             $query = 'SELECT f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
             $db->setQuery($query);
             return $db->loadObject();
@@ -2288,7 +2314,7 @@ class EmundusHelperFiles
 
     public function getExportExcelFilter($user_id){
         $db = JFactory::getDBO();
-        
+
         try {
             $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
             $db->setQuery($query);
@@ -2303,7 +2329,7 @@ class EmundusHelperFiles
 
     public function checkadmission(){
         $db = JFactory::getDBO();
-        
+
         try {
             $query = 'SELECT * from #__emundus_admission limit 1';
             $db->setQuery($query);
@@ -2313,5 +2339,6 @@ class EmundusHelperFiles
         } catch (Exception $e) {
            return false;
         }
+
     }
 }

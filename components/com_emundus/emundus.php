@@ -259,6 +259,13 @@ JText::script('COM_EMUNDUS_ZIP_GENERATION');
 JText::script('COM_EMUNDUS_CREATE_ZIP');
 
 
+// Email to applicant
+JText::script('SEND_CUSTOM_EMAIL');
+JText::script('NO_EMAILS_SENT');
+JText::script('EMAILS_SENT');
+JText::script('EMAILS_FAILED');
+JText::script('SEND_FAILED');
+
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
 

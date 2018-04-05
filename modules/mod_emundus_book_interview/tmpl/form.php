@@ -65,7 +65,11 @@ defined('_JEXEC') or die;
                     location.reload(true);
                 } else {
                     $$('#btnBook').setStyle('background-color','#96281B');
-                    $$('#btnBook').set('text','Error!');
+
+                    if (typeof result.message != 'undefined')
+                        $$('#btnBook').set('text',result.message);
+                    else
+                        $$('#btnBook').set('text','Error!');
                 }
             },
             onFailure: function(jqXHR, textStatus, errorThrown) {

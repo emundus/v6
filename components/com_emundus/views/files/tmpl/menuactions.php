@@ -25,17 +25,17 @@ if (!empty($this->items)) :
         }
         else {
             switch ($multiple) {
-                case 0 : 
+                case 0 :
                 if ($item->action['multi']==-1) {
                     echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
                 }
                 break;
 
-                case 1 : 
+                case 1 :
                 echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
                 break;
 
-                default: 
+                default:
                 if ($item->action['multi']==-1 || $item->action['multi']==1) {
                     echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
                 }
@@ -81,7 +81,6 @@ endif;
 
       </div>
       <div class="modal-footer">
-        
       </div>
     </div>
   </div>

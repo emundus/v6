@@ -990,18 +990,29 @@ class EmundusModelEvaluation extends JModelList
 						break;
 					case 'status':
 						if ($value)
-						{
-							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
-								if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
-									$query['q'] .= ' ';
-								else
-									$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
-							}
-							else
-							{
-								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
-							}
-						}
+                        {
+                            $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
+
+                            // session filter is empty
+                            if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
+                                if ( !$filt_menu_defined )
+                                    $query['q'] .= ' ';
+                                else
+                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                            }
+                            else
+                            {
+                                // Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
+                                $diff = array();
+                                if (is_array($value) && $filt_menu_defined) 
+                                    $diff = array_diff($value, $filt_menu['status']);
+                                
+                                if ( count($diff) == 0 )
+                                    $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+                                else
+                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                            }
+                        }
 						break;
 					case 'tag':
                         if ($value)

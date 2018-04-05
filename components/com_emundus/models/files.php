@@ -718,15 +718,26 @@ class EmundusModelFiles extends JModelLegacy
                     case 'status':
                         if ($value)
                         {
+                            $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
+
+                            // session filter is empty
                             if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
-                                if ( $filt_menu['status'] == "%" || !isset($filt_menu['status'][0]) || $filt_menu['status'][0] == '' )
+                                if ( !$filt_menu_defined )
                                     $query['q'] .= ' ';
                                 else
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                             else
                             {
-                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                                // Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
+                                $diff = array();
+                                if (is_array($value) && $filt_menu_defined) 
+                                    $diff = array_diff($value, $filt_menu['status']);
+                                
+                                if ( count($diff) == 0 )
+                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                                else
+                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
                             }
                         }
                         break;
@@ -964,7 +975,7 @@ class EmundusModelFiles extends JModelLegacy
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-       
+
         $dbo->setQuery($query);
         try
         {
@@ -1854,6 +1865,33 @@ where 1 order by ga.fnum asc, g.title';
         }
     }
 
+    /** Gets info for Fabrik tags.
+     * @param String $fnum
+     * @return bool|mixed
+     */
+    public function getFnumTagsInfos($fnum)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            $query = 'select u.name as applicant_name, u.email as applicant_email, u.username as username, cc.fnum, sc.id as campaign_id , sc.label as campaign_label, sc.training as campaign_code,  sc.start_date as campaign_start, sc.end_date as campaign_end, sc.year as campaign_year,  jesp.code as training_code, jesp.label as training_programme, cc.applicant_id as applicant_id, jess.value as application_status, group_concat(jesat.label) as application_tags
+                        from jos_emundus_campaign_candidature as cc
+                        left join jos_users as u on u.id = cc.applicant_id
+                        left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id
+                        left join jos_emundus_setup_programmes as jesp on jesp.code = sc.training
+                        left join jos_emundus_setup_status as jess on jess.step = cc.status
+                        left join jos_emundus_tag_assoc as jeta on jeta.fnum like cc.fnum
+                        left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
+                        where cc.fnum = '.$fnum;
+            $db->setQuery($query);
+            return $db->loadAssoc();
+        }
+        catch (Exception $e)
+        {
+            return false;
+        }
+    }
+
 
     /**
      * @param $fnum
@@ -2632,6 +2670,10 @@ die();*/
      */
     public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat)
     {
+
+        if (!is_array($fnums))
+            $fnums = [$fnums];
+
         //$gid = $elt['group_id'];
         $tableName = $elt['db_table_name'];
         $tableJoin = $elt['table_join'];
@@ -2746,6 +2788,10 @@ die();*/
      */
     public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null)
     {
+
+        if (!is_array($fnums))
+            $fnums = [$fnums];
+
         $dbo = $this->getDbo();
         if($dateFormat !== null)
         {
