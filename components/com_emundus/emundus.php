@@ -99,6 +99,7 @@ JText::script('ID');
 JText::script('ALL');
 JText::script('IN');
 JText::script('SELECT_HERE');
+JText::script('COM_EMUNDUS_CHECK_ALL_ALL');
 
 
 JText::script('LOADING');
@@ -295,7 +296,7 @@ JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 JHtml::styleSheet( 'media/com_emundus/lib/chosen/chosen.min.css');
 JHtml::styleSheet( 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
-JHTML::stylesheet('libraries/emundus/selectize/examples/css/normalize.css' );
+JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
 JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 

@@ -982,7 +982,52 @@ class EmundusModelDecision extends JModelList
 		$q = array('q' => array(), 'join' => array());
         foreach($str_array as $str){
            
-            $val = explode(': ', $str);
+			$val = explode(': ', $str);
+			
+			if($val[0] == JText::_('ALL')){
+                if (is_numeric($val[1]))
+                {
+                    //possibly fnum ou uid
+                    $q['q'][] .= ' (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
+                    if (!in_array('jos_users', $tableAlias))
+                        $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                    $q['users'] = true;
+
+                }
+                else
+                {
+                    if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false)
+                    {
+                        //the request is an email
+                        $q['q'][] .= 'u.email = "'.$val[1].'"';
+                        if (!in_array('jos_users', $tableAlias))
+                            $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                        $q['users'] = true;
+
+                    }
+                    else
+                    {
+                        $q['q'][] .= ' (ue.lastname LIKE "%' . ($str) . '%" OR ue.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                        if (!in_array('jos_users', $tableAlias))
+                            $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id';
+                        $q['join'][] .= ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
+                        $q['users'] = true;
+                        $q['em_user'] = true;
+                    }
+                }
+            }
+            if($val[0] == JText::_('FNUM')){
+                
+                if (is_numeric($val[1]))
+                {
+                    //possibly fnum ou uid
+                    $q['q'][]= ' (c.fnum like "'.$val[1].'%") ';
+                    if (!in_array('jos_users', $tableAlias))
+                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                    $q['users'] = true;
+
+                }
+            }
             if($val[0] == JText::_('ID')){
                 
                 if (is_numeric($val[1]))

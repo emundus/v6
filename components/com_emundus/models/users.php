@@ -254,6 +254,16 @@ class EmundusModelUsers extends JModelList
                 $q ='';
                 foreach($search as $str){
                     $val = explode(': ', $str);
+
+                    if($val[0] == JText::_('ALL'))
+                        $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR u.email LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR e.schoolyear LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR u.username LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR u.id LIKE '.$db->Quote('%'.$val[1].'%');
+
+
                     if($val[0] == JText::_('ID'))
                         $q .= ' OR u.id LIKE '.$db->Quote('%'.$val[1].'%');
                     
@@ -265,15 +275,16 @@ class EmundusModelUsers extends JModelList
                     if($val[0] == JText::_('USERNAME'))
                         $q .= ' OR u.username LIKE '.$db->Quote('%'.$val[1].'%');
                     
-
+                    
                     if($val[0] == JText::_('LAST_NAME'))
-                        $q .= ' e.lastname LIKE '.$db->Quote('%'.$val[1].'%');
+                        $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%');
                     
                        
                     if($val[0] == JText::_('FIRST_NAME'))
                         $q .= ' OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%');
                     
                 }
+
                 $q = substr($q, 3);
                 //var_dump($q);die;
                 $query .= '('.$q.')' ;
