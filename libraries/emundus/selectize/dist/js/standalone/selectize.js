@@ -2268,11 +2268,14 @@
 			// add create option
 			has_create_option = self.canCreate(query);
 			if (has_create_option) {
+				if($('#view').val() != "users")
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FNUM')}));
 				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ID')}));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('EMAIL')}));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('USERNAME')}));
 				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FIRST_NAME')}));
 				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('LAST_NAME')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('USERNAME')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('EMAIL')}));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ALL')}));
 				$create = $($dropdown_content[0].childNodes[0]);
 			}
 			
@@ -2645,10 +2648,11 @@
 		removeItem: function(value, silent) {
 			var self = this;
 			var $item, i, idx;
+			
 	
 			$item = (value instanceof $) ? value : self.getItem(value);
 			value = hash_key($item.attr('data-value'));
-
+			
 			i = self.items.indexOf(value);
 	
 			if (i !== -1) {
@@ -2660,9 +2664,9 @@
 	
 				self.items.splice(i, 1);
 				self.lastQuery = null;
-				if (!self.settings.persist && self.userOptions.hasOwnProperty(value)) {
+				//if (!self.settings.persist && self.userOptions.hasOwnProperty(value)) {
 					self.removeOption(value, silent);
-				}
+				//}
 	
 				if (i < self.caretPos) {
 					self.setCaret(self.caretPos - 1);
