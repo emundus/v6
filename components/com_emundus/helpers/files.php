@@ -1023,8 +1023,7 @@ class EmundusHelperFiles
                             <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'">'.
                         
                     '</div>
-                    <button type="button" class="btn btn-xs" id="shower"><i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS') . '</button>
-                    <button type="button" class="btn btn-xs" id="hider"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button>
+                    <button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button>
                 </div>';
        
         $filters .= $quick;
@@ -1671,26 +1670,22 @@ class EmundusHelperFiles
             $filters.= '</div>';
         }
 
-
         // Buttons
         $filters .='<br/><div class="buttons">
-                    <input type="button" class="btn btn-info btn-sm" name="search" id="search"  value="'.JText::_('SEARCH_BTN').'"/>';
-        $filters .=' <input type="button" class="btn btn-sm btn-danger" name="clear-search" id="clear-search" value="'.JText::_('CLEAR_BTN').'"/> ';
-        $filters .=' <button class="btn btn-warning" id="save-filter"><i class="icon-star"></i></button><br/><br/></div>';
-        $filters .= '</fieldset>';
+                <button type="button" class="btn btn-sm btn-info" name="search" id="search" title="'.JText::_('SEARCH_BTN').'"><i class="ui search icon"></i></button>';
+        $filters .=' <button type="button" class="btn btn-sm btn-danger" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"><i class="ui ban icon"></i></button>';
+        $filters .=' <button class="btn btn-warning" id="save-filter" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/></div>';
+        $filters .=' </fieldset>';
         $filters .= '<script>
-                            $( "#hider" ).click(function() {
-                                $( ".em_filters_filedset" ).hide( "slow" );
-                                document.cookie="em_filters=hidden";
-                            });
-                            $( "#shower" ).click(function() {
-                                $( ".em_filters_filedset" ).show( "slow" );
-                                document.cookie="em_filters=displayed";
-                            });
-                            var cookies = document.cookie;
-                            if(cookies.indexOf("em_filters=hidden")>=0)
-                                    $( ".em_filters_filedset" ).hide("slow");
-                          
+                            $( "#showhide" ).click(function() {
+                                if($("#showhide i").hasClass("icon-chevron-up")){
+                                    $(".em_filters_filedset").toggle(400);
+                                    $("#showhide").html('."'".'<i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS')."'".');
+                                }else{
+                                      $(".em_filters_filedset").toggle(400);
+                                      $("#showhide").html('."'".'<i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS')."'".');
+                                }
+                            });   
                     </script>';
 
 
