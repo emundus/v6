@@ -1467,7 +1467,7 @@ class EmundusHelperFiles
             $elements = $h_files->getElements();
             $adv_filter = '<div class="em_filters" id="em_adv_filters">
                                     <label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>';
-            $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
+            $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><br/><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
             $adv_filter .= '<div id="advanced-filters" class="form-group">';
 
             if (!empty($search)) {
@@ -1673,7 +1673,7 @@ class EmundusHelperFiles
 
 
         // Buttons
-        $filters .='<div class="buttons">
+        $filters .='<br/><div class="buttons">
                     <input type="button" class="btn btn-info btn-sm" name="search" id="search"  value="'.JText::_('SEARCH_BTN').'"/>';
         $filters .=' <input type="button" class="btn btn-sm btn-danger" name="clear-search" id="clear-search" value="'.JText::_('CLEAR_BTN').'"/> ';
         $filters .=' <button class="btn btn-warning" id="save-filter"><i class="icon-star"></i></button><br/><br/></div>';
