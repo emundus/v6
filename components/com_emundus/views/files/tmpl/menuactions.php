@@ -25,17 +25,17 @@ if (!empty($this->items)) :
         }
         else {
             switch ($multiple) {
-                case 0 : 
+                case 0 :
                 if ($item->action['multi']==-1) {
                     echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
                 }
                 break;
 
-                case 1 : 
+                case 1 :
                 echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
                 break;
 
-                default: 
+                default:
                 if ($item->action['multi']==-1 || $item->action['multi']==1) {
                     echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
                 }
@@ -60,3 +60,44 @@ if (!empty($this->items)) :
 <?php
 endif;
 ?>
+<div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<table style="width: 95%">
+					<tr>
+						<td>
+							<h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
+						</td>
+						<td style="text-align: right;" id="can-val">
+							<button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+							<button style="margin-left:5px;" type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+						</td>
+					</tr>
+				</table>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
+      </div>
+      <div class="modal-body">
+      	<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+      </div>
+    </div>
+  </div>
+</div>

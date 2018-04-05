@@ -277,9 +277,9 @@ class EmundusModelDecision extends JModelList
 
         if ($session->has('filt_params')) {
             $elements_id = array();
-            $filt_params = $session->get('filt_params');
+			$filt_params = $session->get('filt_params');
 
-            if (is_array(@$filt_params['programme'])) {
+            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsDecisionByProgramme($value);
@@ -294,7 +294,7 @@ class EmundusModelDecision extends JModelList
                     }
                 }
             } else {
-                $groups = $this->getGroupsDecisionByProgramme($programme_code);
+				$groups = $this->getGroupsDecisionByProgramme($programme_code);
                 if (!empty($groups)) {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                     if (count($eval_elt_list)>0) {
@@ -748,8 +748,12 @@ class EmundusModelDecision extends JModelList
 						if (!empty($value))
 						{
 							$q = $this->_buildSearch($value, $tableAlias);
-							$query['q'] .= ' and ' . $q['q'];
-							$query['join'] .= $q['join'];
+							foreach($q['q'] as $v)
+                                $query['q'] .= ' and ' . $v;
+
+                            foreach($q['join'] as $u)
+								$query['join'] .= $u;
+								
 							if (isset($q['users']))
 							{
 								$query['users'] = true;
@@ -973,39 +977,62 @@ class EmundusModelDecision extends JModelList
         return $query;
 	}
 
-	private function _buildSearch($str, $tableAlias = array())
+	private function _buildSearch($str_array, $tableAlias = array())
 	{
-		$q = array('q' => '', 'join' => '');
-		if (is_numeric($str))
-		{
-			//possibly fnum ou uid
-			$q['q'] .= ' (u.id = ' . $str . ' or c.fnum like "'.$str.'%") ';
-			if (!in_array('jos_users', $tableAlias))
-				$q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
-			$q['users'] = true;
+		$q = array('q' => array(), 'join' => array());
+        foreach($str_array as $str){
+           
+            $val = explode(': ', $str);
+            if($val[0] == JText::_('ID')){
+                
+                if (is_numeric($val[1]))
+                {
+                    //possibly fnum ou uid
+                    $q['q'][]= ' (u.id = ' . $val[1] . ') ';
+                    if (!in_array('jos_users', $tableAlias))
+                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                    $q['users'] = true;
 
-		}
-		else
-		{
-			if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false)
-			{
-				//the request is an email
-				$q['q'] .= 'u.email = '.$db->Quote($str);
+                }
+            }
+            if($val[0] == JText::_('EMAIL')){
+               
+                
+                    //the request is an email
+                    $q['q'][] = 'u.email like "%'.$val[1].'%"';
+                    if (!in_array('jos_users', $tableAlias))
+                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                    $q['users'] = true;
+                
+            }
+            if($val[0] == JText::_('USERNAME')){
+                 //the request is an username
+               
+				$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
 				if (!in_array('jos_users', $tableAlias))
-					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				$q['users'] = true;
+			
+            }
+            if($val[0] == JText::_('LAST_NAME')){
+                //the request is an lastname
+             
+                    $q['q'][] = ' (ue.lastname LIKE "%' . ($val[1]) . '%" ) '; 
+                    if (!in_array(' left join #__emundus_users as ue on ue.user_id = c.applicant_id ', $q['join']))
+                        $q['join'][] = ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
+                    $q['em_user'] = true;
+                
+            }
+            if($val[0] == JText::_('FIRST_NAME')){
+                //the request is an firstname
+                
+                    $q['q'][] = ' (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                    if (!in_array(' left join #__emundus_users as ue on ue.user_id = c.applicant_id ', $q['join']))
+                        $q['join'][] = ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
+                    $q['em_user'] = true;
+                
+            }
 
-			}
-			else
-			{
-				$q['q'] .= ' (ue.lastname LIKE '.$db->Quote('%'.$str.'%').' OR ue.firstname LIKE '.$db->Quote('%'.$str.'%').' OR u.email LIKE '.$db->Quote('%'.$str.'%').' OR u.username LIKE '.$db->Quote('%'.$str.'%').' ) ';
-				if (!in_array('jos_users', $tableAlias))
-					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id';
-				$q['join'] .= ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
-				$q['users'] = true;
-				$q['em_user'] = true;
-
-			}
 		}
 		return $q;
 	}
