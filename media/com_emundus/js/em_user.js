@@ -176,18 +176,32 @@ function exist(fnum) {
 }
 
 function search() {
-	var inputs = [{
-		name: 's',
-		value: $('#text_s').val(),
-		adv_fil: false
-	}];
-	$('.em_filters_filedset .chzn-select').each(function () {
+	
+	var quick = [];
+    $("div[data-value]").each( function () {
+        quick.push($(this).attr("data-value")) ;
+    });
+    var inputs = [{
+        name: 's',
+        value: quick,//$('#text_s').val(),
+        adv_fil : false
+    }];
+    
+	$('.em_filters_filedset .testSelAll').each(function () {
 		inputs.push({
 			name: $(this).attr('name'),
 			value: $(this).val(),
 			adv_fil: false
 		});
 	});
+
+	$('.em_filters_filedset .search_test').each(function () {
+        inputs.push({
+            name: $(this).attr('name'),
+            value: $(this).val(),
+            adv_fil : false
+        });
+    });
 
 	$.ajax({
 		type: 'POST',

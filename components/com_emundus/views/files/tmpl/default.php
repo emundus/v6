@@ -14,7 +14,9 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
+
 ?>
+
 
 <div class="container-fluid">
 	<div class="row">
@@ -23,6 +25,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 				<div class="panel-heading">
 					<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3>
 				</div>
+				
 				<div class="panel-body">
 					<?php echo @$this->filters ?>
 				</div>
@@ -109,4 +112,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
        // search();
         reloadActions();
 	})
+	
 </script>
+
+

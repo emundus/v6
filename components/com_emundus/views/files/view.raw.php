@@ -55,7 +55,7 @@ class EmundusViewFiles extends JViewLegacy
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
 		$layout = $app->input->getString('layout', null);
-
+		
 		$m_files = $this->getModel('Files');
 
 		$h_files->setMenuFilter();
@@ -127,8 +127,9 @@ class EmundusViewFiles extends JViewLegacy
 		        $m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
                 $this->assignRef('code', $m_files->code);
-                $this->assignRef('fnum_assoc', $m_files->fnum_assoc);
-
+				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
+				
+				//var_dump($params);
 				// reset filter
 				$filters = $h_files->resetFilter();
 			    $this->assignRef('filters', $filters);
@@ -166,6 +167,7 @@ class EmundusViewFiles extends JViewLegacy
 			default :
 			    $menu = $app->getMenu();
 			    $current_menu  = $menu->getActive();
+
 			    $Itemid = $app->input->getInt('Itemid', $current_menu->id);
 				$menu_params = $menu->getParams($Itemid);
 
@@ -186,6 +188,7 @@ class EmundusViewFiles extends JViewLegacy
 				
 			    // get applications files
 				$users = $this->get('Users');
+				
 				
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();
