@@ -122,6 +122,9 @@ class EmundusModelCalendar extends JModelLegacy {
             die(json_encode(['status' => false]));
         }
 
+        if ($event->booking_information != '' && $event->capacity_used == 1)
+            die(json_encode(['status' => false, 'message' => 'Event already booked, please refresh the page.']));
+
         $event->title = $booked_prefix.' - '.$event->title;
         $event->description = $user->name;
         $event->booking_information = $user->id;

@@ -64,7 +64,7 @@ function read_file()
 	// El fichero se ha subido correctamente
 	if ($upload_res) {
 		// Leemos el contenido del fichero, que ha de estar en formato json
-		$file_content = JFile::read($tmp_dest);
+		$file_content = file_get_contents($tmp_dest);
 		$file_content_json = json_decode($file_content,true);
 		
 		$db = JFactory::getDBO();

@@ -94,6 +94,13 @@ JText::script('GENERATE_ZIP');
 JText::script('CANCEL');
 JText::script('OK');
 JText::script('BACK');
+JText::script('USERNAME');
+JText::script('ID');
+JText::script('ALL');
+JText::script('IN');
+JText::script('SELECT_HERE');
+JText::script('COM_EMUNDUS_CHECK_ALL_ALL');
+JText::script('SAVE_FILTER');
 
 
 JText::script('LOADING');
@@ -224,6 +231,7 @@ JText::script('DID_YOU_APPLY_FOR_ANOTHER_PROGRAM');
 JText::script('PROGRAM_NAME');
 JText::script('CHOOSE_YOUR_OPTION');
 JText::script('RESTRICTED_ACCESS_OTHERS_EVAL');
+JText::script('GENERATE_EXCEL');
 
 
 
@@ -253,6 +261,13 @@ JText::script('COM_EMUNDUS_ZIP_GENERATION');
 JText::script('COM_EMUNDUS_CREATE_ZIP');
 
 
+// Email to applicant
+JText::script('SEND_CUSTOM_EMAIL');
+JText::script('NO_EMAILS_SENT');
+JText::script('EMAILS_SENT');
+JText::script('EMAILS_FAILED');
+JText::script('SEND_FAILED');
+
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
 
@@ -276,10 +291,16 @@ JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('media/com_emundus/js/em_calendar.js');
+JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
+JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
+JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
 JHtml::styleSheet( 'media/com_emundus/lib/chosen/chosen.min.css');
 JHtml::styleSheet( 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
+JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
+JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
+JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 
 $app = JFactory::getApplication();
 

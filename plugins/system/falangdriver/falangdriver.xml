@@ -2,12 +2,12 @@
 <extension version="2.5" type="plugin" group="system" method="upgrade">
     <name>plg_system_falangdriver</name>
     <author>Stéphane Bouey</author>
-    <creationDate>20 february 2018</creationDate>
+    <creationDate>26 march 2018</creationDate>
     <copyright>2011-2018, Faboba</copyright>
     <license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
     <authorEmail>stephane.bouey@faboba.com</authorEmail>
     <authorUrl>www.faboba.com</authorUrl>
-    <version>2.9.6</version>
+    <version>2.9.7</version>
     <description>PLG_SYSTEM_FALANGDRIVER_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="falangdriver">index.html</filename>
@@ -16,6 +16,7 @@
 		<folder>language</folder>
         <folder>menu</folder>
         <folder>drivers</folder>
+        <folder>routers</folder>
 	</files>
 	<languages>
 		<language tag="language/en-GB">en-GB.plg_falang_driver.ini</language>

@@ -48,7 +48,9 @@ class com_falangInstallerScript
                            'show_form' => 1,
                            'component_list' => 'com_menus#menu#id#items,item#10#13com_content#content#id#default,articles,article,featured#10#13com_categories#categories#id#default,categories,category#10#13com_modules#modules#id#default,modules,module#10#13com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed',
 	                       'copy_images_and_urls' => 0,
-	                       'advanced_menu_show' => 0
+	                       'advanced_menu_show' => 0,
+                           'advanced_router' => 0,
+	                       'update_caching' => 1
                    )
            )
         );
@@ -66,14 +68,14 @@ class com_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.3.3';
+	protected $minimumPHPVersion = '5.6.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.4.0';
+	protected $minimumJoomlaVersion = '3.8.0';
 
 
     private $falangRemoveFilesPaid = array(

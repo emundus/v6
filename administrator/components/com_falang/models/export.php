@@ -76,7 +76,8 @@ class ExportModelExport extends JModelForm
 	public function process()
 	{
 		$falangManager = FalangManager::getInstance();
-		$contentElements = $falangManager->getContentElements();
+		//need to reload content element due to quickjump side effect
+		$contentElements = $falangManager->getContentElements(true);
 		$db = JFactory::getDbo();
 
 		// Prepare variables

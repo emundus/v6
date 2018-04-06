@@ -325,7 +325,7 @@ function import_blacklist()
 		// Inicializamos las variables
 		$insert = false;
 		// Leemos el contenido del fichero
-		$file_content = JFile::read($tmp_dest);
+		$file_content = file_get_contents($tmp_dest);
 		// Chequeamos si el fichero contiene sólo números
 		if ( preg_match("/[a-z]/i",$file_content) ) {
 			JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_FORMAT'));
@@ -439,7 +439,7 @@ function import_whitelist()
 		// Inicializamos las variables
 		$insert = false;
 		// Leemos el contenido del fichero
-		$file_content = JFile::read($tmp_dest);
+		$file_content = file_get_contents($tmp_dest);
 		// Chequeamos si el fichero contiene sólo números
 		if ( preg_match("/[a-z]/i",$file_content) ) {
 			JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_FORMAT'));

@@ -1,4 +1,7 @@
-html {overflow-y: scroll;}
+html {
+    overflow-y: scroll;
+}
+
 p {
     margin-bottom: 0 !important;
     margin-left: 0;
@@ -140,8 +143,8 @@ label {
 }
 
 .btn-elements-success {
-    background-color: #5bb75b!important;
-    color: #FFFFFF!important;
+    background-color: #5bb75b !important;
+    color: #FFFFFF !important;
 }
 
 ul {
@@ -272,7 +275,6 @@ thead th:hover {
     position: relative;
     top: 10%;
 }
-
 
 /*
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
@@ -418,7 +420,6 @@ thead th:hover {
     border-radius: 3px !important;
 }
 
-
 /*
 *   Chosen overload
 */
@@ -426,7 +427,6 @@ thead th:hover {
 .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
     height: 30px !important;
 }
-
 
 /**
 *   table css
@@ -443,7 +443,7 @@ thead th:hover {
 
 .table-hover>tbody>tr>td.success:hover,
 .table-hover>tbody>tr>th.success:hover,
-{
+    {
     background-color: #d0e9c6 !important;
 }
 
@@ -472,7 +472,7 @@ thead th:hover {
 
 .table-hover>tbody>tr>td.warning:hover,
 .table-hover>tbody>tr>th.warning:hover,
-{
+    {
     background-color: #faf2cc !important;
 }
 
@@ -486,7 +486,7 @@ thead th:hover {
 }
 
 .panel-info {
-   height: auto !important;
+    height: auto !important;
 }
 
 .em_attachs {
@@ -547,7 +547,7 @@ thead th:hover {
 
 /*scrollbar style------------*/
 
- /*   scrollbar {
+/*   scrollbar {
        -moz-appearance: none !important;
        background: rgb(0,255,0) !important;
     }
@@ -566,8 +566,10 @@ thead th:hover {
     scrollbar[orient="vertical"] {
       min-width: 15px !important;
     }*/
-   /*google chrome*/
-    /*::-webkit-scrollbar {
+
+/*google chrome*/
+
+/*::-webkit-scrollbar {
       width: 2px;
       height: 2px;
     }
@@ -600,9 +602,6 @@ thead th:hover {
     ::-webkit-scrollbar-corner {
       background: transparent;
     }*/
-
-
-
 
 /*fixed thead------------
 
@@ -666,6 +665,7 @@ thead th:hover {
     z-index:2;
 }
 */
+
 /*scroll side
     height: 1000px !important;
     overflow-y:scroll !important;
@@ -674,8 +674,6 @@ thead th:hover {
     height: 1000px !important;
     overflow-y:scroll !important;
 }*/
-
-
 
 /* COLORS */
 
@@ -691,8 +689,123 @@ thead th:hover {
     color: deepskyblue;
 }
 
-
 .ldap-card {
-	background-color: #EEEEEE;
-	color: #3a87ad;
+    background-color: #EEEEEE;
+    color: #3a87ad;
+}
+
+/* PROGRESS BAR FOR EMAIL DIALOG */
+#em-progress-wrp {
+    border: 1px solid #0099CC;
+    padding: 1px;
+    position: relative;
+    height: 30px;
+    border-radius: 3px;
+    margin: 10px;
+    text-align: left;
+    background: #fff;
+    box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+#em-progress-wrp .progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    background-color: #1BBC9B;
+    width: 0;
+    box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
+}
+
+#em-progress-wrp .status {
+    top: 3px;
+    left: 50%;
+    position: absolute;
+    display: inline-block;
+    color: #000000;
+}
+
+/* Email labels in the email dialog */
+.em-email-label {
+    margin: 1px;
+    padding: 2px 1px !important;
+}
+.em-email-label:hover {
+	background-color: #ccc;
+}
+
+/* Custom file upload style */
+#em-file_to_upload {
+    position: absolute;
+    left: -9999px;
+}
+
+label[for="em-file_to_upload"] {
+    padding: 0.5em;
+    display: inline-block;
+    background: #F2F1EF;
+    cursor: pointer;
+}
+label[for="em-file_to_upload"]:hover {
+    background: #BFBFBF;
+}
+#em-filename{
+    padding: 0.5em;
+    float: left;
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    background: #F2F1EF;
+}
+
+/* Messages sent / failed emails list style. Message recipient list */
+#em-mails-sent, #em-mails-failed, #em-recipitents {
+    overflow: scroll;
+    max-height: 70px;
+}
+
+/* Sending email modal */
+.em-modal-sending-emails {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 10000; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+}
+#em-sending-email-caption {
+    margin: auto;
+    display: block;
+    width: 60%;
+    max-width: 400px;
+    text-align: center;
+    color: #ccc;
+    padding: 25px 0;
+    font-size: 40px;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+.em-sending-email-img {
+    margin: auto;
+    display: block;
+    width: 50%;
+    max-width: 300px;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+    from {
+        transform:scale(0);
+        -webkit-transform:scale(0);
+        -moz-transform:scale(0);
+    }
+    to {
+        transform:scale(1);
+        -webkit-transform:scale(1);
+        -moz-transform:scale(1);
+    }
 }

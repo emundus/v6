@@ -37,7 +37,7 @@ public function &getInfo()
 		$keys = $db->loadObjectList();
 		$array_val = get_object_vars($keys[0]);
 		$tamanno_max_allowed_packet = (int) ($array_val["Value"]/1024/1024);
-		
+				
 		// Obtenemos el tamaño máximo de memoria establecido
 		$params = JComponentHelper::getParams('com_securitycheckpro');
 		$memory_limit = $params->get('memory_limit','512M');
@@ -76,18 +76,12 @@ public function &getInfo()
 		$this->info['files_with_bad_integrity']		= $values->data['files_with_bad_integrity'];
 		$this->info['vuln_extensions']		= $values->data['vuln_extensions'];
 		$this->info['suspicious_files']		= $values->data['suspicious_files'];
-		// Si el directorio de administración está protegido con contraseña, marcamos la opción de protección del backend como habilitada
-		if ( !$ConfigApplied['hide_backend_url'] ) {
-			if ( file_exists(JPATH_ADMINISTRATOR. DIRECTORY_SEPARATOR . '.htpasswd') ) {				
-				$ConfigApplied['hide_backend_url'] = '1';
-			}
-		}
-		$this->info['backend_protection']		= $ConfigApplied['hide_backend_url'];
+		$this->info['backend_protection']	= $values->data['backend_protection'];
 		// Existe el fichero kickstart.php
-		$this->info['kickstart_exists']		= $this->check_kickstart();	
+		$this->info['kickstart_exists']		= $values->data['kickstart_exists'];
 		$this->info['firewall_options']		= $FirewallOptions;
-		$this->info['twofactor_enabled']	= $this->get_two_factor_status();
-		$this->info['overall_joomla_configuration']		= $this->getOverall($this->info,1);
+		$this->info['twofactor_enabled']	= $values->data['twofactor_enabled'];
+		$this->info['overall_joomla_configuration']		= $values->data['overall'];
 		//Extension status
 		$this->info['cron_plugin_enabled']		= $cron_plugin_enabled;
 		$this->info['firewall_plugin_enabled']		= $firewall_plugin_enabled;
@@ -101,45 +95,6 @@ public function &getInfo()
 		
 	}
 	return $this->info;
-}
-
-// Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
-function get_two_factor_status() {
-	$enabled = 0;
-	
-	$db = $this->getDbo();
-	$query = $db->getQuery(true)
-		->select(array($db->quoteName('enabled')))
-		->from($db->quoteName('#__extensions'))
-		->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_totp'));
-	$db->setQuery($query);
-	$enabled = $db->loadResult();
-	
-	if ( $enabled == 0 ) {
-		$query = $db->getQuery(true)
-			->select(array($db->quoteName('enabled')))
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_yubikey'));
-		$db->setQuery($query);
-		$enabled = $db->loadResult();
-	}
-	
-	return $enabled;
-}
-
-// Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
-public function check_kickstart() {
-	$found = false;	
-	$akeeba_kickstart_file = JPATH_ROOT . DIRECTORY_SEPARATOR . "kickstart.php";
-	
-	if ( file_exists($akeeba_kickstart_file) ){
-		if ( strpos(file_get_contents($akeeba_kickstart_file),"AKEEBA") !== false ) {
-			$found = true;
-		}		
-	}
-	
-	return $found;
-	
 }
 
 // Obtiene el porcentaje general de cada una de las barras de progreso

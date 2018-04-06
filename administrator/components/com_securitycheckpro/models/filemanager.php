@@ -452,7 +452,7 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 		
 		// Cargamos los datos de la BBDD, si existen, de escaneos anteriores.
 		if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name) ) {
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 		}
@@ -793,7 +793,7 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 		}
 		
 		if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name) ) {
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
+			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);			
 			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 		}
@@ -869,6 +869,16 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 					// Buscamos la verdadera extensión del fichero (esto es, buscamos archivos tipo .php.xxx o .php.xxx.yyy)
 					$explodedName = explode('.', $file);
 					array_reverse($explodedName);
+									
+					// Array que contiene todas las extensiones de ficheros de imagen
+					$imageExtensions = array("gif","jpeg","png","swf","psd","bmp","tiff","jpc","jp2","jpx","jb2","swc","iff","wbmp","xbm","ico","webp");
+					// Esta variable la inicializamos a true e indicará si el fichero, que tiene extensión de imagen, realmente lo es
+					$is_image = true;
+					
+					if ( (array_key_exists(1,$explodedName)) && (in_array(strtolower($explodedName[1]),$imageExtensions)) ) {
+						// Chequeamos si el fichero es una imagen o no utilizando la función 'exif_imagetype', que devolverá un entero en caso afirmativo
+						$is_image = is_int(exif_imagetype($file));						
+					}					
 										
 					if( (count($explodedName) > 3) && (strtolower($explodedName[1]) == 'php') ) {  // Archivo tipo .php.xxx.yyy
 						/* Cargamos el lenguaje del sitio */
@@ -892,7 +902,7 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 						$malware_code =  $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
 						$malware_alert_level = 0;
 						$this->suspicious_files++;
-					} else if (in_array(pathinfo($file, PATHINFO_EXTENSION), $ext) && filesize($file) ) {  // Archivo en la lista de extensiones a analizar
+					} else if ( (in_array(pathinfo($file, PATHINFO_EXTENSION), $ext) || (!$is_image) ) && filesize($file) ) {  // Archivo en la lista de extensiones a analizar
 						$resultado = $this->scan_file($file);
 						if ( $resultado[0][0] ) {  // Se ha encontrado contenido malicioso!
 							$safe_malwarescan = 0;
@@ -1197,6 +1207,7 @@ private function saveStack($opcion, $borrar=true)
 		
 		// ... y escribimos el contenido del array a un nuevo fichero
 		$filename = $this->generateKey();
+		
 		try {
 			$content_malwarescan = utf8_encode(json_encode(array('files_folders'	=> $this->Stack)));
 			$content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
@@ -1259,12 +1270,12 @@ function loadStack($opcion,$field,$showall=false)
 		ini_set('memory_limit','512M');
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_VALID_MEMORY_LIMIT'),'error');
 	}
-			
+				
 	switch ($opcion) {
 		case "permissions":
 			
 			// Leemos el contenido del fichero
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
+			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
 			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 						
@@ -1289,7 +1300,7 @@ function loadStack($opcion,$field,$showall=false)
 				}
 			}
 			
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 						
@@ -1301,7 +1312,7 @@ function loadStack($opcion,$field,$showall=false)
 		case "malwarescan":
 			// Leemos el contenido del fichero			
 			if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name) ) {
-				$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
+				$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
 				// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 				$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 			}
@@ -1755,21 +1766,29 @@ if ( $deep_scan ) {
 
 	// Cargamos los strings que se buscan como malware desde el fichero de strings
 	if(@file_exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_strings.dat')) {
-		$Suspicious_Strings = JFile::read(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_strings.dat');			
+		// Leemos el contenido del fichero, que estará en formato base64
+		$Suspicious_Strings = file_get_contents(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_strings.dat');
+
+		// Lo decodificamos
+		$Suspicious_Strings = base64_decode($Suspicious_Strings);		
 	} 
 } 
 
 // Cargamos los patrones que se buscarán como malware desde el fichero de patrones
 if(@file_exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_patterns.dat')) {
 
-	// Leemos el contenido del fichero
-	$malware_patterns = JFile::read(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_patterns.dat');	
-
+	// Leemos el contenido del fichero, que estará en formato base64
+	$malware_patterns = file_get_contents(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_patterns.dat');	
+	
+	// Lo decodificamos
+	$malware_patterns = base64_decode($malware_patterns);
+	
 	// Creamos un array bidimensional con el contenido del fichero leído
 	$Suspicious_Patterns  = array_map (
-		function ($_) {return explode('¬', $_);},
+		function ($_) {return explode('~', $_);},
 		explode ('¡', $malware_patterns)
 	);	
+	
 }
 
 
@@ -1893,7 +1912,7 @@ $jamssFileNames = array(
 								if ( is_array($pattern) ) { // then it has some additional comments
 									$resultado[0][0] = true;
 									$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-									$resultado[0][2] = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),$pattern[2],$pattern[1],$results_count,$pattern[3]);
+									$resultado[0][2] = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),$pattern[2],$pattern[1],$results_count,utf8_decode($pattern[3]));
 									$resultado[0][4] = '0';									
 								} else { // it's a string, no comments available
 									$resultado[0][0] = true;
@@ -1909,10 +1928,11 @@ $jamssFileNames = array(
 								}
 							} else if ( is_array($pattern) ) {
 								// Found a malware pattern; it's almost sure a malware even when it's hide into a valid Joomla file.
+								
 								$count++;
 								$resultado[0][0] = true;
 								$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-								$resultado[0][2] = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),$pattern[2],$pattern[1],$results_count,$pattern[3]);
+								$resultado[0][2] = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),$pattern[2],$pattern[1],$results_count,utf8_decode($pattern[3]));								
 								$resultado[0][4] = '0';									
 								// Añadimos el código sospechoso encontrado (previamente sanitizado)
 								foreach ($all_results as $match) {
@@ -2003,7 +2023,7 @@ function loadModifiedFiles() {
 	}
 	
 	if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name) ) {
-		$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+		$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 		$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 	}
@@ -2133,7 +2153,7 @@ function repair(){
 	
 	// Cargamos el array de archivos
 	if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name) ) {
-		$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
+		$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
 		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 		$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 	}
@@ -2234,7 +2254,7 @@ function mark_all_unsafe_files_as_safe(){
 	$db = $this->getDbo();
 	
 	if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name) ) {
-		$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+		$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 		$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 	}
@@ -2297,7 +2317,7 @@ function mark_checked_files_as_safe(){
 	
 	// Leemos el contenido del fichero
 	if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name) ) {
-		$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+		$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 		$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 	}
@@ -2976,7 +2996,7 @@ public function quarantined_file($opcion) {
 	// Establecemos la ruta donde está la cuarentena
 	$quarantine_folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.'quarantine';
 	
-	$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
+	$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
 	// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 	$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 	
@@ -3116,7 +3136,7 @@ function view_file()
 		if ( count($paths) > 1 ) {
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SELECT_ONLY_ONE_FILE'),'error');	
 		} else {
-			$file_content = JFile::read($paths[0]);		
+			$file_content = file_get_contents($paths[0]);		
 			$contenido = $mainframe->setUserState('contenido', $file_content);				
 		}		
 	}

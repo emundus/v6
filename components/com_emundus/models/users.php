@@ -250,12 +250,50 @@ class EmundusModelUsers extends JModelList
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
 
-                $query .= '(e.lastname LIKE '.$db->Quote('%'.$search.'%').'
+                //var_dump($search);
+                $q ='';
+                foreach($search as $str){
+                    $val = explode(': ', $str);
+
+                    if($val[0] == JText::_('ALL'))
+                        $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR u.email LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR e.schoolyear LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR u.username LIKE '.$db->Quote('%'.$val[1].'%').'
+                        OR u.id LIKE '.$db->Quote('%'.$val[1].'%');
+
+
+                    if($val[0] == JText::_('ID'))
+                        $q .= ' OR u.id LIKE '.$db->Quote('%'.$val[1].'%');
+                    
+
+                    if($val[0] == JText::_('EMAIL'))
+                        $q .= ' OR u.email LIKE '.$db->Quote('%'.$val[1].'%');
+                    
+
+                    if($val[0] == JText::_('USERNAME'))
+                        $q .= ' OR u.username LIKE '.$db->Quote('%'.$val[1].'%');
+                    
+                    
+                    if($val[0] == JText::_('LAST_NAME'))
+                        $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%');
+                    
+                       
+                    if($val[0] == JText::_('FIRST_NAME'))
+                        $q .= ' OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%');
+                    
+                }
+
+                $q = substr($q, 3);
+                //var_dump($q);die;
+                $query .= '('.$q.')' ;
+                /*$query .= '(e.lastname LIKE '.$db->Quote('%'.$search.'%').'
                             OR e.firstname LIKE '.$db->Quote('%'.$search.'%').'
                             OR u.email LIKE '.$db->Quote('%'.$search.'%').'
                             OR e.schoolyear LIKE '.$db->Quote('%'.$search.'%').'
                             OR u.username LIKE '.$db->Quote('%'.$search.'%').'
-                            OR u.id LIKE '.$db->Quote('%'.$search.'%').')';
+                            OR u.id LIKE '.$db->Quote('%'.$search.'%').')';*/
             }
             /*if(isset($schoolyears) &&  !empty($schoolyears)) {
                 if($and) $query .= ' AND ';

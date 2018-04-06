@@ -54,6 +54,8 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
 
         $this->_user = JFactory::getSession()->get('emundusUser');
@@ -125,10 +127,10 @@ class EmundusControllerFiles extends JControllerLegacy
             $filterval = $jinput->get('val', array(), 'ARRAY');
         else
             $filterval = $jinput->getString('val', null);
-
+        
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
-
+        
         if ($elements == 'false') {
             $params[$filterName] = $filterval;
         } else {
@@ -143,9 +145,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
             } else $params['elements'][$filterName] = $filterval;
         }
-
+        
         $session->set('filt_params', $params);
-        $session->set('limitstart', 0);
+        
+        //$session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();
     }
@@ -1526,7 +1529,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$year[0]."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].'('.$campaign['year'].')</b>
+                        <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
                     </div>
                     <div class="panel-body" id="felts-'.$code[0].$year[0].'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
@@ -1571,7 +1574,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'aelts-".$code[0].$year[0]."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].'('.$campaign['year'].')</b>
+                        <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
                     </div>
                     <div class="panel-body" id="aelts-'.$code[0].$year[0].'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
@@ -2769,13 +2772,11 @@ class EmundusControllerFiles extends JControllerLegacy
                 $campaign  = $m_campaigns->getCampaignByFnum($fnum);
                 if($campaign->training == $code){
                     $nbcamp += 1;
-                    $option = '<option value="'.$campaign->year.'">'.$campaign->label.'('.$campaign->year.')</option>';
+                    $option = '<option value="'.$campaign->year.'">'.$campaign->label.' ('.$campaign->year.')</option>';
                     if (strpos($html, $option) === false) {
                         $html .= $option;
                     }
                 }
-
-
 
             }
         }
@@ -2793,6 +2794,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $programmes = $h_files->getProgrammes($filt_params['programme']);
+        
         $nbprg = count($programmes);
         if (empty($filt_params)){
             $params['programme'] = $programmes;
@@ -2820,9 +2822,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcamp = count($campaigns);
         foreach ($campaigns as $c) {
             if ($nbcamp == 1) {
-                $html .= '<option value="'.$c->year.'" selected>'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
+                $html .= '<option value="'.$c->year.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             } else {
-                $html .= '<option value="'.$c->year.'">'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
+                $html .= '<option value="'.$c->year.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             }
         }
 
@@ -2869,10 +2871,40 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function checkadmission(){
-        $h_files = new EmundusHelperFiles;
-        echo json_encode((object)(array('status' => $h_files->checkadmission())));
+    public function checkforms(){
+        $user_id   = JFactory::getUser()->id;
+        $jinput    = JFactory::getApplication()->input;
+        $code      = $jinput->getString('code', null);
+       
+        $m_eval = new EmundusModelEvaluation;
+        $m_adm = new EmundusModelAdmission;
+
+        $eval = $m_eval->getGroupsEvalByProgramme($code);
+        $dec = $m_eval->getGroupsDecisionByProgramme($code);
+        $adm = $m_adm->getGroupsAdmissionByProgramme($code);
+        
+        $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user->id);
+        $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user->id);
+        $hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user->id);
+        $hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user->id);
+
+        $showatt = 0;
+        $showeval = 0;
+        $showdec  = 0;
+        $showadm  = 0;
+        
+        if($hasAccessEval)
+            $showatt = 1;
+        if(!empty($eval) && $hasAccessEval)
+            $showeval = 1;
+        if(!empty($dec) && $hasAccessDec)
+            $showdec = 1;
+        if(!empty($adm) && $hasAccessAdm)
+            $showadm = 1;
+        
+        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm)));
         exit;
 
     }
+    
 }
