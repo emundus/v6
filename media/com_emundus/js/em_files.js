@@ -876,11 +876,12 @@ $(document).ready(function()
 
         }
     });
+   
     $(document).on('click', 'input:button', function(e) {
         $.ajaxQ.abortAll();
         if (e.event !== true) {
             e.handle = true;
-            var name = $(this).attr('name');
+            var name = $(this).attr('id');
             switch (name) {
                 case 'clear-search':
                     lastVal = new Object();

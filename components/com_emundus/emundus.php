@@ -100,6 +100,7 @@ JText::script('ALL');
 JText::script('IN');
 JText::script('SELECT_HERE');
 JText::script('COM_EMUNDUS_CHECK_ALL_ALL');
+JText::script('SAVE_FILTER');
 
 
 JText::script('LOADING');
@@ -293,6 +294,7 @@ JHTML::script('media/com_emundus/js/em_calendar.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
+JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
 JHtml::styleSheet( 'media/com_emundus/lib/chosen/chosen.min.css');
 JHtml::styleSheet( 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');

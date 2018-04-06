@@ -1023,8 +1023,7 @@ class EmundusHelperFiles
                             <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'">'.
                         
                     '</div>
-                    <button type="button" class="btn btn-xs" id="shower"><i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS') . '</button>
-                    <button type="button" class="btn btn-xs" id="hider"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button>
+                    <button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button>
                 </div>';
        
         $filters .= $quick;
@@ -1467,7 +1466,7 @@ class EmundusHelperFiles
             $elements = $h_files->getElements();
             $adv_filter = '<div class="em_filters" id="em_adv_filters">
                                     <label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>';
-            $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
+            $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><br/><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
             $adv_filter .= '<div id="advanced-filters" class="form-group">';
 
             if (!empty($search)) {
@@ -1670,27 +1669,23 @@ class EmundusHelperFiles
             // $filters.= '<div class="em_filtersElement"><input id="check_spam-suspect" name="spam_suspect" onMouseUp="if(this.checked==true){this.value=1;}else{this.value=0;}" type="checkbox" value="0" '.($spam_suspect==1?'checked=checked':'').' /></div>';
             $filters.= '</div>';
         }
-
-
+       
         // Buttons
-        $filters .='<div class="buttons">
-                    <input type="button" class="btn btn-info btn-sm" name="search" id="search"  value="'.JText::_('SEARCH_BTN').'"/>';
-        $filters .=' <input type="button" class="btn btn-sm btn-danger" name="clear-search" id="clear-search" value="'.JText::_('CLEAR_BTN').'"/> ';
-        $filters .=' <button class="btn btn-warning" id="save-filter"><i class="icon-star"></i></button><br/><br/></div>';
-        $filters .= '</fieldset>';
+        $filters .='<br/><div class="buttons">
+                     <input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="'.JText::_('SEARCH_BTN').'"/>';
+        $filters .=' <input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"/>';
+        $filters .=' <button class="btn btn-warning" id="save-filter" style="width: 50px;" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/></div>';
+        $filters .=' </fieldset>';
         $filters .= '<script>
-                            $( "#hider" ).click(function() {
-                                $( ".em_filters_filedset" ).hide( "slow" );
-                                document.cookie="em_filters=hidden";
-                            });
-                            $( "#shower" ).click(function() {
-                                $( ".em_filters_filedset" ).show( "slow" );
-                                document.cookie="em_filters=displayed";
-                            });
-                            var cookies = document.cookie;
-                            if(cookies.indexOf("em_filters=hidden")>=0)
-                                    $( ".em_filters_filedset" ).hide("slow");
-                          
+                            $( "#showhide" ).click(function() {
+                                if($("#showhide i").hasClass("icon-chevron-up")){
+                                    $(".em_filters_filedset").toggle(400);
+                                    $("#showhide").html('."'".'<i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS')."'".');
+                                }else{
+                                      $(".em_filters_filedset").toggle(400);
+                                      $("#showhide").html('."'".'<i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS')."'".');
+                                }
+                            });   
                     </script>';
 
 
