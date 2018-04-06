@@ -1,26 +1,7 @@
-DROP TABLE IF EXISTS `#__securitycheckpro`;
-CREATE TABLE `#__securitycheckpro` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`Product` VARCHAR(35) NOT NULL,
-`sc_type` VARCHAR(35),
-`Installedversion` VARCHAR(30) DEFAULT '---',
-`Vulnerable` VARCHAR(10) NOT NULL DEFAULT 'No',
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `#__securitycheckpro_dynamic_blacklist`;
-CREATE TABLE `#__securitycheckpro_dynamic_blacklist` (
-`ip` VARCHAR(26) NOT NULL,
-`timeattempt` DATETIME NOT NULL,
-`counter` INT NOT NULL DEFAULT 1,
-PRIMARY KEY (`ip`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `#__securitycheckpro_vuln_components`;
-CREATE TABLE `#__securitycheckpro_vuln_components` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`Product` VARCHAR(35) NOT NULL,
-`vuln_id` INT(11) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_users_control` (
+`id` INT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+`users` VARCHAR(100) NOT NULL,
+`contador` INT(3) UNSIGNED NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
@@ -32,7 +13,7 @@ CREATE TABLE `#__securitycheckpro_db` (
 `Vulnerableversion` VARCHAR(10) DEFAULT '---',
 `modvulnversion` VARCHAR(2) DEFAULT '==',
 `Joomlaversion` VARCHAR(30) DEFAULT 'Notdefined',
-`modvulnjoomla` VARCHAR(20) DEFAULT '==',
+`modvulnjoomla` VARCHAR(2) DEFAULT '==',
 `description` VARCHAR(90),
 `vuln_class` VARCHAR(70),
 `published` VARCHAR(35),
@@ -318,7 +299,6 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_myportfolio','component','3.0.2','==','3.0.0','>=','Joomla MyPortfolio Component','SQL Injection Vulnerability','Apr 28 2017','Version 3.0.2','none','No details'),
 ('com_jgrid','component','4.44','==','3.0.0','>=','Joomla JGrid Component','SQL Injection Vulnerability','May 02 2017','Version 4.44','none','No details'),
 ('Joomla!','core','3.7.0','==','3.0.0','>=','Joomla! SQL Injection Vulnerability','Inadequate filtering','May 17 2017','Joomla! versions 3.7.0','update','3.7.1'),
-('com_videoflow','component','1.2.0','==','3.0.0','>=','Joomla VideoFlow Component','SQL Injection Vulnerability','May 24 2017','Version 1.2.0','none','No details'),
 ('com_kunena','component','5.0.9','<','3.0.0','>=','Joomla Kunena Component','Cross Site scripting Vulnerability','May 24 2017','Version 4.0.0 through 5.0.8','update','5.0.9'),
 ('com_payage','component','2.0.6','<','3.0.0','>=','Joomla Payage Component','SQL Injection Vulnerability','Jun 22 2017','Version 2.0.5 and lower','update','2.0.6'),
 ('com_hikashop','component','3.1.0','==','3.0.0','>=','Joomla Hikashop Business Component','SQL Injection Vulnerability','Jun 22 2017','Version 3.1.0','update','3.1.1'),
@@ -354,8 +334,6 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_hdwplayer','component','4.0.0','<=','3.0.0','>=','HDW Player Component','RCE Vulnerability','Oct 26 2017','Version 4.0.0 and all previous','none','No details'),
 ('com_jsjobs','component','1.1.8','==','3.0.0','>=','Js Jobs Component','RCE Vulnerability','Oct 26 2017','Version 1.1.8','update','1.1.9'),
 ('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! LDAP Information Disclosure','Inadequate escaping in the LDAP authentication plugin','Nov 07 2017','Joomla! versions 1.5.0 through 3.8.1','update','3.8.2'),
-('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! 2-factor-authentication bypass vulnerability','---','Nov 07 2017','Joomla! versions 3.2.0 through 3.8.1','update','3.8.2'),
-('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! Information Disclosure vulnerability','logic bug in com_fields','Nov 07 2017','Joomla! versions 3.7.0 through 3.8.1','update','3.8.2'),
 ('com_virtuemart','component','3.2.4','==','3.0.0','>=','Virtuemart Component','XSS Vulnerability','Dec 04 2017','Version 3.2.4','update','3.2.6'),
 ('com_jbuildozer','component','1.4.1','==','3.0.0','>=','JBuildozer Component','SQL Injection Vulnerability','Dec 20 2017','Version 1.4.1','none','No details'),
 ('com_jevideogallery','component','3.0.5','==','3.0.0','>=','JEXTN Video Gallery Component','SQL Injection Vulnerability','Dec 20 2017','Version 3.0.5','none','No details'),
@@ -380,7 +358,7 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_jssupportticket','component','1.1.0','==','3.0.0','>=','JS Support Ticket Component','Cross site scripting Vulnerability','Feb 21 2018','Version 1.1.0','update','1.1.1'),
 ('com_jsjobs','component','1.1.9','<=','3.0.0','>=','JS Jobs Component','SQL Injection Vulnerability','Feb 21 2018','Version 1.1.9 and previous','update','1.2.0'),
 ('com_ccnewsletter','component','2.2.2','<=','3.0.0','>=','ccnewsletter Component','SQL Injection Vulnerability','Feb 21 2018','Version 2.2.2 and previous','update','2.2.3'),
-('com_jimtawl','component','2.2.6','==','3.0.0','>=','Jimtawl Component','Arbitrary File upload Vulnerability','Feb 23 2018','Version 2.2.6','update','2.2.7'),
+('com_jimtawl','component','2.2.6','==','3.0.0','>=','Jimtawl Component','Arbitrary File upload Vulnerability','Feb 23 2018','Version 2.2.6','none','No details'),
 ('com_zhgooglemap','component','8.4.0.0','<=','3.0.0','>=','ZH GoogleMap Component','Sql Injection Vulnerability','Feb 23 2018','Version 8.4.0.0 and previous','update','8.4.1.0'),
 ('com_zhyandexmap','component','6.2.1.0','<=','3.0.0','>=','ZH YandexMap Component','Sql Injection Vulnerability','Feb 23 2018','Version 6.2.1.0 and previous','update','6.3.1.0'),
 ('com_zhbaidumap','component','3.0.0.1','<=','3.0.0','>=','ZH BaiduMap Component','Sql Injection Vulnerability','Feb 23 2018','Version 3.0.0.1 and previous','update','3.0.1.0'),
@@ -424,31 +402,6 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_attachments','component','3.2.5','<=','3.0.0','>=','Attachments Component','Sql Injection Vulnerability','Apr 20 2018','Version 3.2.5 and previous','none','No details'),
 ('com_visualcalendar','component','3.1.5','<=','3.0.0','>=','Visual Calendar Component','Sql Injection Vulnerability','Apr 20 2018','Version 3.1.5 and previous','update','3.1.6');
 
-DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
-CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ip` VARCHAR(35) NOT NULL,
-`geolocation` VARCHAR(150) DEFAULT '---',
-`username` VARCHAR(150) DEFAULT '---',
-`time` DATETIME NOT NULL,
-`tag_description` VARCHAR(50),
-`description` VARCHAR(300) NOT NULL,
-`type` VARCHAR(50),
-`uri` VARCHAR(100),
-`component` VARCHAR(150) DEFAULT '---',
-`marked` TINYINT(1) DEFAULT 0,
-`original_string` VARCHAR(700),
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `#__securitycheckpro_own_logs`;
-CREATE TABLE IF NOT EXISTS `#__securitycheckpro_own_logs` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`time` DATETIME NOT NULL,
-`description` VARCHAR(1200) NOT NULL,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
 `userid` INT(4) UNSIGNED NOT NULL,
@@ -459,83 +412,6 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
 PRIMARY KEY (`userid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `#__securitycheckpro_emails`;
-CREATE TABLE IF NOT EXISTS `#__securitycheckpro_emails` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`envoys` TINYINT(3) DEFAULT 0,
-`send_date` DATE DEFAULT '2012-01-01',
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_emails` (`envoys`,`send_date`) VALUES 
-('0','2012-01-01');
-
-DROP TABLE IF EXISTS `#__securitycheckpro_file_manager`;
-CREATE TABLE IF NOT EXISTS `#__securitycheckpro_file_manager` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`last_check` DATETIME,
-`last_check_integrity` DATETIME,
-`files_scanned` INT(10) DEFAULT 0,
-`files_scanned_integrity` INT(10) DEFAULT 0,
-`files_with_incorrect_permissions` INT(10) DEFAULT 0,
-`files_with_bad_integrity` INT(10) DEFAULT 0,
-`estado` VARCHAR(40) DEFAULT 'IN_PROGRESS',
-`estado_integrity` VARCHAR(40) DEFAULT 'IN_PROGRESS',
-`hash_alg` VARCHAR(30),
-`estado_cambio_permisos` VARCHAR(40) DEFAULT 'IN_PROGRESS',
-`estado_clear_data` VARCHAR(40) DEFAULT 'DELETING_ENTRIES',
-`last_task` VARCHAR(40) DEFAULT 'INTEGRITY',
-`cron_tasks_launched` TINYINT(1) DEFAULT 0,
-`last_check_malwarescan` DATETIME,
-`files_scanned_malwarescan` INT(10) DEFAULT 0,
-`suspicious_files` INT(10) DEFAULT 0,
-`estado_malwarescan` VARCHAR(40) DEFAULT 'IN_PROGRESS',
-`last_online_check_malwarescan` DATETIME,
-`online_checked_files` INT(4) DEFAULT 0,
-`online_checked_hashes` INT(4) DEFAULT 0,
-`last_check_database` DATETIME,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_file_manager` (`estado`,`estado_integrity`,`estado_cambio_permisos`,`estado_clear_data`,`estado_malwarescan`) VALUES 
-('ENDED','ENDED','ENDED','DELETING_ENTRIES','ENDED');
-
-DROP TABLE IF EXISTS `#__securitycheckpro_storage`;
-CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
-`storage_key` varchar(255) NOT NULL,
-`storage_value` longtext NOT NULL,
-PRIMARY KEY (`storage_key`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `#__securitycheckpro_rules`;
-CREATE TABLE `#__securitycheckpro_rules` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`group_id` INT(10),
-`rules_applied` TINYINT(1) DEFAULT 0,
-`last_change` DATETIME,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `#__securitycheckpro_rules_logs`;
-CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules_logs` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ip` VARCHAR(35) NOT NULL,
-`username` VARCHAR(150) NOT NULL,
-`last_entry` DATETIME,
-`reason` VARCHAR(300),
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `#__securitycheckpro_online_checks`;
-CREATE TABLE IF NOT EXISTS `#__securitycheckpro_online_checks` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`filename` VARCHAR(35) NOT NULL,
-`files_checked` INT(3) DEFAULT 0,
-`threats_found` INT(3) DEFAULT 0,
-`scan_date` DATETIME,
-`infected_files` VARCHAR(300) DEFAULT NULL,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `#__securitycheckpro_update_database`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `version` VARCHAR(10),
@@ -545,11 +421,12 @@ PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.6');
 
-DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
-CREATE TABLE `#__securitycheckpro_users_control` (
-`id` INT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
-`users` VARCHAR(100) NOT NULL,
-`contador` INT(3) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ip` VARCHAR(35) NOT NULL,
+`uri` VARCHAR(100),
+`forbidden_words` VARCHAR(300) NOT NULL,
+`date_added` DATETIME,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 

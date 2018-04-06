@@ -335,11 +335,11 @@ function saveConfig($newParams, $key_name = 'cparams')
 	} else {
 		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
-
+	
 	foreach($newParams as $key => $value)
 	{
 		// Do not save unnecessary parameters
-		if(!array_key_exists($key, $this->defaultConfig)) continue;
+		if(!array_key_exists($key, $this->defaultConfig)) continue;		
 		$params->setValue($key,$value,'',$key_name);
 	}
 	
@@ -829,7 +829,7 @@ function loadStack($opcion,$field)
 		case "permissions":
 			
 			// Leemos el contenido del fichero
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
+			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
 			
 			if(empty($stack)) {
 				$stack = array();
@@ -839,7 +839,7 @@ function loadStack($opcion,$field)
 		case "integrity":
 			
 			// Leemos el contenido del fichero
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 			
 			if(empty($stack)) {
 				$this->Stack_Integrity = array();
@@ -887,7 +887,7 @@ function loadStack($opcion,$field)
 				$this->suspicious_files = 0;
 				return;
 			}
-			break;
+			break;		
 	}
 	
 	$stack = json_decode($stack, true);
@@ -931,7 +931,7 @@ function loadStack($opcion,$field)
 			} else {
 				$this->suspicious_files = $stack['suspicious_files'];			
 			}	
-			return ($this->suspicious_files);
+			return ($this->suspicious_files);		
 	}
 }
 

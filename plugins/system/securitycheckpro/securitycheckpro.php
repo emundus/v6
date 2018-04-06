@@ -479,9 +479,9 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			}	
 						
 				/* LFI Prevention */
-				$lfiStatements = array("/\.\.\//");
+				$lfiStatements = array("/\.\.\//","/\?\?\?/");
 				if ( ( !(strstr($lfi_exceptions,$pageoption)) || $extension_vulnerable ) && !(strstr($lfi_exceptions,'*')) ){
-					if (!$modified) {
+					if (!$modified) {						
 						$string_sanitized = preg_replace($lfiStatements,'', $string);
 							if (strcmp($string_sanitized,$string) <> 0){ //Se han eliminado caracteres; escribimos en el log
 								if ($base64){

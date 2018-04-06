@@ -325,15 +325,6 @@ if ( empty($this->files_status) ) {
 							<div id="error_button" class="securitycheck-bootstrap centrado margen-container">	
 							</div>
 							
-							<div id="scan_only_executable_message" class="centrado margen-loading texto_14">
-								<?php 
-									if ( $this->scan_executables_only ) {
-										$span = "<span class=\"label label-warning\">";
-										echo $span . JText::_('COM_SECURITYCHECKPRO_SCAN_ONLY_EXECUTABLES_WARNING') . "</span>";
-									}
-								?>
-							</div>
-
 							<div id="memory_limit_message" class="centrado margen-loading">
 								<?php 
 									// Extract 'memory_limit' value cutting the last character
@@ -420,17 +411,17 @@ if ( empty($this->files_status) ) {
 												<td><span class="label label-success"> </span>
 												</td>
 												<td>
-													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_GREEN_COLOR' ); ?>
+													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEINTEGRITY_GREEN_COLOR' ); ?>
 												</td>
 												<td><span class="label label-warning"> </span>
 												</td>
 												<td>
-													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_YELLOW_COLOR' ); ?>
+													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEINTEGRITY_YELLOW_COLOR' ); ?>
 												</td>
 												<td><span class="label label-important"> </span>
 												</td>
 												<td>
-													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RED_COLOR' ); ?>
+													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEINTEGRITY_RED_COLOR' ); ?>
 												</td>
 											</tr>
 										</thead>

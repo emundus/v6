@@ -72,6 +72,10 @@ class plgSystemFalangdriver extends JPlugin
             $router->attachParseRule(array($this, 'parseRule'));
         }
         //end fix
+
+	    //override joomla compoenent routeur
+	    $this->setupAdvancedRouter();
+
     }
 
     public function buildRule(&$router, &$uri)
@@ -728,5 +732,38 @@ class plgSystemFalangdriver extends JPlugin
 
 	}
 
+	//@since 2.9.7
+	public function setupAdvancedRouter()
+	{
+		//support advanced router
+		jimport('joomla.application.component.helper');
+		$params          = JComponentHelper::getParams('com_falang');
+		$advanced_router = $params->get('advanced_router', 0);
+
+		if (!isset($advanced_router) || $advanced_router == '0')
+		{
+			return;
+		}
+		$app = JFactory::getApplication();
+		$router = $app->getRouter();
+
+		//loop on folder to override each component router.
+		jimport('joomla.filesystem.folder');
+		$folders = JFolder::folders(JPATH_PLUGINS . '/system/falangdriver/routers/');
+		if (count($folders))
+		{
+			foreach ($folders as $folder)
+			{
+				$router_file_path  = JPATH_PLUGINS . '/system/falangdriver/routers/' . $folder . '/router.php';
+				if (file_exists($router_file_path))
+				{
+					require_once $router_file_path;
+					$router_name = 'Falang'.str_replace('com_','',$folder).'Router';
+					$crouter = new $router_name($app, $app->getMenu());
+					$router->setComponentRouter($folder, $crouter);
+				}
+			}
+		}
+	}
 
 }

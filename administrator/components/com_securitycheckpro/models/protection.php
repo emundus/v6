@@ -111,7 +111,7 @@ public function load($key_name)
 		->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
 	$db->setQuery($query);
 	$res = $db->loadResult();
-		
+			
 	if(version_compare(JVERSION, '3.0', 'ge')) {
 		$this->config = new JRegistry();
 	} else {
@@ -190,8 +190,11 @@ public function GetConfigApplied(){
 	/* Variable que indicará si existe el/los strings en el archivo .htaccess */
 	$exists = false;	
 	
+	// Get actual config
+	$actual_config = $this->getConfig();
+	
 	if ( JFile::exists(JPATH_SITE.DIRECTORY_SEPARATOR.'.htaccess') ) {
-		$rules_applied = JFile::read(JPATH_SITE.DIRECTORY_SEPARATOR.'.htaccess');
+		$rules_applied = file_get_contents(JPATH_SITE.DIRECTORY_SEPARATOR.'.htaccess');
 		
 		/* 'prevent_access' habilitado? */
 		if ( stripos($rules_applied,"<FilesMatch \"^.ht\">") ) {
@@ -279,7 +282,9 @@ public function GetConfigApplied(){
 					break;
 				}
 			}			
+			
 		}
+			
 		if ( $exists ) {
 			$this->ConfigApplied['disallow_sensible_files_access'] = 1;
 		}		
@@ -324,6 +329,12 @@ public function GetConfigApplied(){
 		
 	}
 	
+	if ( $actual_config['backend_protection_applied'] == 1 ) {
+		$this->ConfigApplied['backend_protection_applied'] = 1;
+	} else if ( $actual_config['backend_protection_applied'] == 0 ) {
+		$this->ConfigApplied['backend_protection_applied'] = 0;
+	}
+	
 	return $this->ConfigApplied;	
 }
 
@@ -347,7 +358,7 @@ public function protect()
 		}
 		
 		//Leemos el contenido del fichero htaccess.txt existente y lo guardamos en el buffer.		
-		$rules_applied .= JFile::read(JPATH_SITE . DIRECTORY_SEPARATOR . '.htaccess');
+		$rules_applied .= file_get_contents(JPATH_SITE . DIRECTORY_SEPARATOR . '.htaccess');
 		
 		// Obtenemos los valores que ya están aplicados para evitar duplicar valores
 		$this-> ConfigApplied = $this->GetConfigApplied();
@@ -379,10 +390,10 @@ public function protect()
 		/* Si no existe el fichero, copiamos el que incorpora Joomla por defecto */		
 		if ( $this->ExistsFile('htaccess.txt') ) {			
 			// Leemos el contenido del fichero .htaccess existente y lo guardamos en el buffer.
-			$rules .= JFile::read(JPATH_SITE . DIRECTORY_SEPARATOR . 'htaccess.txt');
+			$rules .= file_get_contents(JPATH_SITE . DIRECTORY_SEPARATOR . 'htaccess.txt');
 		} else {
 			// Leemos el contenido del fichero .htaccess existente y lo guardamos en el buffer.
-			$rules .= JFile::read(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'default_joomla_htaccess.inc');
+			$rules .= file_get_contents(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'default_joomla_htaccess.inc');
 			$status = JFile::copy(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'default_joomla_htaccess.inc',JPATH_SITE.DIRECTORY_SEPARATOR.'.htaccess');
 		}
 	}
@@ -457,7 +468,7 @@ public function protect()
 	/* Comprobamos si hay que aplicar la lista de user-agents por defecto */
 	if ( $this->getValue("default_banned_list") ) {
 		
-			$user_agent_rules = JFile::read(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist.inc');
+			$user_agent_rules = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist.inc');
 			// Añadimos el contenido del fichero por defecto al final del buffer
 			$rules .= PHP_EOL . $user_agent_rules . PHP_EOL;
 		
@@ -683,7 +694,7 @@ function generate_rules() {
 	
 	/* Comprobamos si hay que aplicar la lista de user-agents por defecto */
 	if ( $this->getValue("default_banned_list") ) {
-		$user_agent_rules = JFile::read(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist_nginx.inc');
+		$user_agent_rules = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist_nginx.inc');
 		// Añadimos el contenido del fichero por defecto al final del buffer
 		$rules .= PHP_EOL . $user_agent_rules . PHP_EOL;
 	}
