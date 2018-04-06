@@ -237,7 +237,7 @@ class EmundusHelperFiles
     public function resetFilter() {
         $h_files = new EmundusHelperFiles;
         $filters = $h_files->setMenuFilter();
-        //var_dump($filters['filts_details']);
+        //var_dump($filters['tables']);
         return $h_files->createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
     }
 
@@ -910,7 +910,7 @@ class EmundusHelperFiles
                 //$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
                 $query_params = json_decode($selected->element_attribs);
                 $option_list =  $h_files->buildOptions($selected->element_name, $query_params);
-                $current_filter .= '<select class="chzn-select em-filt-select" id="em-adv-fil-'.$i.'"  name="'.$elements_values.'" id="'.$elements_values.'">
+                $current_filter .= '<br/><select class="chzn-select em-filt-select" id="em-adv-fil-'.$i.'"  name="'.$elements_values.'" id="'.$elements_values.'">
                 <option value="">'.JText::_('PLEASE_SELECT').'</option>';
                 if(!empty($option_list))
                 {
@@ -930,7 +930,7 @@ class EmundusHelperFiles
                 //$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
                 $query_params = json_decode($selected->element_attribs);
                 $option_list =  $h_files->buildOptions($selected->element_name, $query_params);
-                $current_filter .= '<select class="chzn-select em-filt-select" id="em-adv-fil-'.$i.'" name="'.$elements_values.'" id="'.$elements_values.'">
+                $current_filter .= '<br/><select class="chzn-select em-filt-select" id="em-adv-fil-'.$i.'" name="'.$elements_values.'" id="'.$elements_values.'">
                 <option value="">'.JText::_('PLEASE_SELECT').'</option>';
                 if(!empty($option_list))
                 {
@@ -944,7 +944,7 @@ class EmundusHelperFiles
                 }
                 $current_filter .= '</select>';
             } else
-                $current_filter .= '<input type="text" id="em-adv-fil-'.$i.'" class="form-control" name="'.$elements_values.'" value="'.$search_value.'" />';
+                $current_filter .= '<br/><input type="text" id="em-adv-fil-'.$i.'" class="form-control" name="'.$elements_values.'" value="'.$search_value.'" />';
         }
 
         return $current_filter;
@@ -1002,7 +1002,7 @@ class EmundusHelperFiles
         $current_institution    = @$filt_params['institution'];
         $spam_suspect           = @$filt_params['spam_suspect'];
 
-        
+        $program_selected = false;
         
         $filters = '';
         
@@ -1326,9 +1326,11 @@ class EmundusHelperFiles
             
         }
 
+        
         if (@$params['programme'] !== NULL) {
             $hidden = $types['programme'] != 'hidden' ? false : true;
             $programmeList = $h_files->getProgrammes($params['programme']);
+            
             $programme = '';
             if (!$hidden) {
                 $programme .= '<div id="programme">
@@ -1344,8 +1346,11 @@ class EmundusHelperFiles
 
             foreach ($programmeList as $p) {
                 $programme .= '<option value="'.$p->code.'"';
-                if (!empty($current_programme) && in_array($p->code, $current_programme))
+                if (!empty($current_programme) && in_array($p->code, $current_programme)){
                     $programme .= ' selected="true"';
+                    $program_selected = true;
+                }
+                   
                 $programme .= '>'.$p->label.' - '.$p->code.'</option>';
             }
             $programme .= '</select>';
@@ -1464,8 +1469,11 @@ class EmundusHelperFiles
 
             $hidden = $types['adv_filter'] != 'hidden' ? false : true;
             $elements = $h_files->getElements();
-            $adv_filter = '<div class="em_filters" id="em_adv_filters">
-                                    <label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>';
+            if($program_selected)
+                $adv_filter = '<div class="em_filters" id="em_adv_filters">';
+            else
+                $adv_filter = '<div class="em_filters" id="em_adv_filters" style="display:none">';
+            $adv_filter .= '<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>';
             $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><br/><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
             $adv_filter .= '<div id="advanced-filters" class="form-group">';
 
