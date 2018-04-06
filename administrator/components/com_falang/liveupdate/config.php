@@ -14,7 +14,7 @@ class LiveUpdateConfig extends LiveUpdateAbstractConfig
 {
 	var $_extensionName			= 'com_falang';
 	var $_extensionTitle		= 'Falang';
-	var $_updateURL				= 'http://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=2';
+	var $_updateURL				= 'https://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=2';
 	var $_requiresAuthorization	= true;
 	var $_versionStrategy		= 'vcompare';
     var $_storageAdapter		= 'component';
@@ -35,19 +35,19 @@ class LiveUpdateConfig extends LiveUpdateAbstractConfig
         switch ($version->_versiontype) {
             case "basic" :
                     $this->_requiresAuthorization = true;
-                    $this->_updateURL = 'http://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=3';
+                    $this->_updateURL = 'https://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=3';
                     break;
             case "standard" :
                     $this->_requiresAuthorization = true;
-                    $this->_updateURL = 'http://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=4';
+                    $this->_updateURL = 'https://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=4';
                     break;
             case "pro" :
                     $this->_requiresAuthorization = true;
-                    $this->_updateURL = 'http://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=5';
+                    $this->_updateURL = 'https://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=5';
                     break;
             default :
                     $this->_requiresAuthorization = false;
-                    $this->_updateURL = 'http://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=2';
+                    $this->_updateURL = 'https://www.faboba.com/index.php?option=com_ars&lang=en&view=update&format=ini&id=2';
         }
 
         $this->_extensionTitle = 'Falang '. $version->_versiontype .' version';

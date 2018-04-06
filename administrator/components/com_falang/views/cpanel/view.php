@@ -51,17 +51,10 @@ class CPanelViewCpanel extends FalangViewDefault
 
 		$this->sidebar = JHtmlSidebar::render();
 
-		//$this->panelStates	= $this->get('PanelStates');
-		//$this->contentInfo	= $this->get('ContentInfo');
-		//$this->performanceInfo	= $this->get('PerformanceInfo');
-
-		//$this->assignRef('panelStates', $this->panelStates);
-		//$this->assignRef('contentInfo', $this->contentInfo);
-		//$this->assignRef('performanceInfo', $this->performanceInfo);
-
-        //version
-		// no need to force the update exept in dev
-        $updateInfo = LiveUpdate::getUpdateInformation();
+        $params = JComponentHelper::getParams('com_falang');
+		$updateCaching = $params->get('update_caching',false);
+        //if caching enalbed we don't force the update
+        $updateInfo = LiveUpdate::getUpdateInformation(!$updateCaching);
 
         // Get current version available
         $this->currentVersion = $updateInfo->extInfo->version;

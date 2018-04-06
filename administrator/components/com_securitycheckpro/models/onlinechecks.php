@@ -59,7 +59,7 @@ public function view_log()
 	if ( !empty($filename) && (count($filename) == 1) ) {	
 		// Establecemos la ruta donde están almacenados los escaneos
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
-		$file_content = JFile::read($folder_path.$filename[0]);
+		$file_content = file_get_contents($folder_path.$filename[0]);
 		$contenido = $mainframe->setUserState('contenido', $file_content);
 		
 	}else {

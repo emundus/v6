@@ -261,7 +261,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$extension_updates = null;
 		$installed_version = "0.0.0";
 		$hasUpdates = 0;
-		
+				
 		$db = JFactory::getDBO();
 		
 		// Buscamos la versión de SCP instalada
@@ -299,7 +299,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$update_database_plugin_last_check = $update_model->last_check();
 				
 		// Check for vulnerable components
-		$cpanel_model->buscarQuickIcons();
+		//$cpanel_model->buscarQuickIcons();
 		
 		// Vulnerable components
 		$db = JFactory::getDBO();
@@ -348,8 +348,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 		
 		// Comprobamos el estado del backup
-		$this->getBackupInfo();
-		
+		$this->getBackupInfo();	
 			
 		// Verificamos si el core está actualizado (obviando la caché) 
 		require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';
@@ -367,6 +366,33 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Añadimos la información del sistema
 		$this->getInfo();
 		
+		// Obtenemos las opciones de protección .htaccess
+		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/models/protection.php';
+		$ConfigApplied = new SecuritycheckprosModelProtection();
+		$ConfigApplied = $ConfigApplied->GetConfigApplied();
+					
+		// Si el directorio de administración está protegido con contraseña, marcamos la opción de protección del backend como habilitada
+		if ( !$ConfigApplied['hide_backend_url'] ) {
+			if ( file_exists(JPATH_ADMINISTRATOR. DIRECTORY_SEPARATOR . '.htpasswd') ) {				
+				$ConfigApplied['hide_backend_url'] = '1';
+			}
+		}
+		
+		// Si se ha seleccionado la opción de "backend protected using other options" ponemos "hide_backend_url" como enable porque esta opción marca si el backend está habilitado
+		if ( $ConfigApplied['backend_protection_applied'] == 1 ) {
+			$ConfigApplied['hide_backend_url'] = '1';
+		}
+			
+		// Obtenemos los parámetros del Firewall
+		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
+		$FirewallOptions = new SecuritycheckproModel();
+		$FirewallOptions = $FirewallOptions->getConfig();
+		
+		// Chequeamos si existe el fichero kickstart
+		$kickstart = $this->check_kickstart();
+		// Chequeamos si el segundo factor de autenticación está habilitado
+		$two_factor = $this->get_two_factor_status();
+		
 		// Añadimos la información sobre las extensiones no actualizadas. Esta opción no es necesaria cuando escogemos la opción 'System Info'
 		if ( $opcion ) {
 			$extension_updates = $this->getNotUpdatedExtensions();
@@ -377,7 +403,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			if ( $key_sc !== false ) {
 				$installed_version = $outdated_extensions[$key_sc][4];
 				$hasUpdates = 1;
-			}		
+			}	
 			
 		}	
 		
@@ -406,9 +432,93 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			'database_version'	=>	$this->info['dbversion'],
 			'web_server'	=>	$this->info['server'],
 			'extension_updates'	=>	$extension_updates,
-			'last_check_database_optimization'	=> $last_check_database_optimization
-		);		
-				
+			'last_check_database_optimization'	=> $last_check_database_optimization,
+			'overall'	=>	200,
+			'twofactor_enabled'	=> $two_factor,
+			'backend_protection'	=>	$ConfigApplied['hide_backend_url'],
+			'forbid_new_admins'		=> $FirewallOptions['forbid_new_admins'],
+			'kickstart_exists'	=>	$kickstart
+		);	
+			
+		// Obtenemos el porcentaje para 'Overall security status'
+		$overall = $this->getOverall($this->data);
+		$this->data['overall'] = $overall;		
+		
+	}
+	
+	// Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
+	function check_kickstart() {
+		$found = false;	
+		$akeeba_kickstart_file = JPATH_ROOT . DIRECTORY_SEPARATOR . "kickstart.php";
+		
+		if ( file_exists($akeeba_kickstart_file) ){
+			if ( strpos(file_get_contents($akeeba_kickstart_file),"AKEEBA") !== false ) {
+				$found = true;
+			}		
+		}
+		
+		return $found;
+		
+	}
+	
+	// Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
+	function get_two_factor_status() {
+		$enabled = 0;
+		
+		$db = $this->getDbo();
+		$query = $db->getQuery(true)
+			->select(array($db->quoteName('enabled')))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_totp'));
+		$db->setQuery($query);
+		$enabled = $db->loadResult();
+		
+		if ( $enabled == 0 ) {
+			$query = $db->getQuery(true)
+				->select(array($db->quoteName('enabled')))
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_yubikey'));
+			$db->setQuery($query);
+			$enabled = $db->loadResult();
+		}
+		
+		return $enabled;
+	}
+	
+	// Obtiene el porcentaje general de cada una de las barras de progreso
+	function getOverall($info) {
+		// Inicializamos variables
+		$overall = 0;
+		
+		if ( $info['kickstart_exists'] ) {
+			return 2;
+		}
+		if ( version_compare($info['coreinstalled'],$info['corelatest'],'==') ) {
+			$overall = $overall + 10;
+		}
+		if ( $info['files_with_incorrect_permissions'] == 0 ) {
+			$overall = $overall + 5;
+		}
+		if ( $info['files_with_bad_integrity'] == 0 ) {
+			$overall = $overall + 10;
+		}
+		if ( $info['vuln_extensions'] == 0 ) {
+			$overall = $overall + 30;
+		}
+		if ( $info['suspicious_files'] == 0 ) {
+			$overall = $overall + 20;
+		}
+		if ( $info['backend_protection'] ) {
+			$overall = $overall + 10;
+		}
+		if ( $info['forbid_new_admins'] == 1 ) {
+			$overall = $overall + 5;
+		}
+		if ( $info['twofactor_enabled'] == 1 ) {
+			$overall = $overall + 10;
+		}
+		
+		return $overall;
 	}
 	
 	/* Función que comprueba si existen extensiones vulnerables  */

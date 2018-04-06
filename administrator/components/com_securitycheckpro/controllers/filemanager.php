@@ -354,13 +354,13 @@ function GoToUploadScanner()
 /* Redirecciona a la opción User session del firewall */
 function GoToUserSessionProtection()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=firewallsessionprotection&view=firewallsessionprotection&'. JSession::getFormToken() .'=1' );
+	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. JSession::getFormToken() .'=1#session_protection' );
 }
 
 /* Redirecciona a la opción User session del firewall */
 function GoToMalware()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&task=malwarescan_panel&'. JSession::getFormToken() .'=1' );
+	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=malwarescan&'. JSession::getFormToken() .'=1' );
 }
 
 /* Redirecciona las peticiones a System Info */
@@ -457,7 +457,7 @@ function export_logs_integrity(){
 				
 		// Leemos el contenido del fichero
 		if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name) ) {
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name);
+			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name);
 			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
 		}

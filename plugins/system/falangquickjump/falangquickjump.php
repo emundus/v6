@@ -274,7 +274,6 @@ class plgSystemFalangquickjump extends JPlugin
         $input = JFactory::getApplication()->input;
         $option = $input->get('option', false, 'cmd');
         $view = $input->get('view', 'default', 'cmd');
-
         //load content element quickjump if exist first
 	    $falangManager = FalangManager::getInstance();
 	    $contentElmentName = str_replace('com_','',$option);

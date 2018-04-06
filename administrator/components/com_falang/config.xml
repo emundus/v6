@@ -41,6 +41,17 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
         </field>
+        <field
+                name="advanced_router"
+                type="radio"
+                default="0"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_FIELD_ADVANCED_ROUTER_LABEL"
+                description="COM_FALANG_FIELD_ADVANCED_ROUTER_DESC">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+        </field>
+
         <!-- <<< [PAID] <<< -->
         <field
                 name="show_list"
@@ -87,6 +98,20 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+
+        <field
+                name="update_caching"
+                type="radio"
+                default="0"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_CONFIG_UPDATE_CACHING_LBL"
+                description="COM_FALANG_CONFIG_UPDATE_CACHING_DESC"
+        >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+
         </fieldset>
         <fieldset name="translation"
                   label="COM_FALANG_CONGIG_MANAGE_TRANSLATION"

@@ -130,10 +130,6 @@ var Password = {
 
 <script type="text/javascript" language="javascript">
 
-/*window.addEvent('domready', function() {
-	hideIt();
-});*/
-
 var ActiveTabHtaccess = "autoprotection";
 
 function SetActiveTabHtaccess($value) {
@@ -158,6 +154,7 @@ function getStoredValue(key) {
 }
 
 window.onload = function() {
+	hideIt();
 	ActiveTabHtaccess = getStoredValue('active_htaccess');
 			
 	if (ActiveTabHtaccess) {
@@ -208,18 +205,20 @@ function muestra_default_user_agent(){
 
 function hideIt(){
 	var selected = document.getElementById('backend_protection_applied');
-	if (selected.checked) {
+	if (selected.checked) {		
 		jQuery("#menu_hide_backend_1").hide();
 		jQuery("#menu_hide_backend_2").hide();
 		jQuery("#menu_hide_backend_3").hide();
 		jQuery("#menu_hide_backend_4").hide();
 		document.getElementById("hide_backend_url").value = "";
 		document.getElementById("backend_exceptions").value = "";		
+		document.getElementById("backend_protection_applied").value = "1";
 	} else {
 		jQuery("#menu_hide_backend_1").show();
 		jQuery("#menu_hide_backend_2").show();
 		jQuery("#menu_hide_backend_3").show();
 		jQuery("#menu_hide_backend_4").show();
+		document.getElementById("backend_protection_applied").value = "0";
 	}	
 }
 	
@@ -381,7 +380,7 @@ function hideIt(){
 					<div class="tab-pane" id="user_agents_protection" role="tabpanel">
 					
 						<!-- View default user agent list -->
-						<?php $default = JFile::read(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist.inc'); ?>
+						<?php $default = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist.inc'); ?>
 						<div class="modal" id="div_default_user_agents" tabindex="-1" role="dialog" aria-labelledby="defaultuseragentsLabel" aria-hidden="true">
 							<div class="modal-dialog modal-lg" role="document">
 								<div class="modal-content">
@@ -493,7 +492,7 @@ function hideIt(){
 						</div>	
 					<!-- fingerprinting tab end -->
 					</div>
-					
+										
 					<div class="tab-pane" id="backend_protection" role="tabpanel">
 						<div class="control-group">
 							<label for="hide_backend_url" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_TEXT'); ?></label>

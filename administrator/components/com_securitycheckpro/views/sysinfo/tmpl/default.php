@@ -44,10 +44,24 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
 
 <script type="text/javascript" language="javascript">	
+
+	function SetActiveTab($value) {
+		ActiveTab = $value;
+		storeValue('active', ActiveTab);
+	}
+	
+	function storeValue(key, value) {
+		if (localStorage) {
+			localStorage.setItem(key, value);
+		} else {
+			$.cookies.set(key, value);
+		}
+	}
+	
 	// Set active tab
 	window.onload = function() {
 		$('.nav-tabs a[href="#overall_status"]').parent().addClass('active');				
-	};	
+	};		
 </script>
 
 <form action="index.php" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
@@ -386,7 +400,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													} else {
 														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" onclick="SetActiveTab('session_protection'); Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal forbid new admins -->
 													<div class="modal hide bd-example-modal-lg" id="modal_forbid_new_admins" tabindex="-1" role="dialog" aria-labelledby="modal_forbid_new_adminsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
