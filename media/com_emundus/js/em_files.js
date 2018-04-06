@@ -97,9 +97,7 @@ function search() {
         success: function(result) {
             if (result.status) {
                 refreshFilter();
-                //reloadData($('#view').val());
             }
-
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);
@@ -1293,7 +1291,6 @@ $(document).ready(function()
                         success: function(result) {
                             if (result.status) {
                                 refreshFilter();
-                                //reloadData($('#view').val());
                             }
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
