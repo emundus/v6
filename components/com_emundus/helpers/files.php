@@ -1008,8 +1008,11 @@ class EmundusHelperFiles
         
         $cs = '';
         if(!empty($current_s)){
-            foreach($current_s as $c)
+            foreach($current_s as $c){
+               // $key = explode(': ', $c);
+               // $tag = JText::_($key[0]).": ".$key[1];
                 $cs .= $c .',';
+            }
             $cs = rtrim($cs, ',');
         }
         

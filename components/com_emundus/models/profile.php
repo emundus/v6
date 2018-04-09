@@ -526,7 +526,7 @@ class EmundusModelProfile extends JModelList
 		$app			= JFactory::getApplication();
 
 		$profile 		= $this->getProfileByApplicant($current_user->id);
-
+		
 		$emundusSession = new stdClass();
 
 		foreach ($session->get('user') as $key => $value) {
@@ -538,22 +538,30 @@ class EmundusModelProfile extends JModelList
 		$emundusSession->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
 		$emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
 
+		$profiles = $m_users->getApplicantProfiles();
+		$profile_array = array();
+			foreach($profiles as $pf)
+				array_push($profile_array, $pf->id);
 
+		$profile = $this->getCurrentProfile($current_user->id);
 
-		if (EmundusHelperAccess::isApplicant($current_user->id)) {
-
+		if(in_array($profile['profile'], $profile_array)){
+			
 			// Get the current user profile
-			$profile = $this->getCurrentProfile($current_user->id);
-			//$emundusSession->current_profile   = $profile;
+			
 			// If the profile number is 8 that means he has been admitted
 			// This means that regardless of his other applications he must be considered admitted
+			
+
+			//var_dump($profile_array);die;
 			if ($profile['profile'] != 8) {
-
-				$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
-
-				if (!empty($campaign))
-					$profile = $this->getProfileByCampaign($campaign["id"]);
-
+				
+					$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
+					
+					if (!empty($campaign)){
+						$profile = $this->getProfileByCampaign($campaign["id"]);
+					}
+				
 			} else {
 
 				$admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
@@ -564,9 +572,9 @@ class EmundusModelProfile extends JModelList
 				}
 
 			}
-
-			if ((empty($campaign["id"]) || !isset($campaign["id"])) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
+			
+			/*if ((empty($campaign["id"]) || !isset($campaign["id"])) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));*/
 
 			// If the user is admitted then we fill the session with information about the admitted file
 			// regardeless of the current campaign
@@ -626,7 +634,14 @@ class EmundusModelProfile extends JModelList
 		$emundus_user->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
 		$emundus_user->emProfiles = $this->getUserProfiles($current_user->id);
 
-		if (EmundusHelperAccess::isApplicant($current_user->id)) {
+		$profiles = $m_users->getApplicantProfiles();
+		$profile_array = array();
+		foreach($profiles as $pf)
+			array_push($profile_array, $pf->id);
+
+		$profile = $this->getCurrentProfile($current_user->id);
+
+		if(in_array($profile['profile'], $profile_array)){
 			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
 			$p 			= $this->isProfileUserSet($current_user->id);

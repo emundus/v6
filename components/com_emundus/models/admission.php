@@ -1014,7 +1014,7 @@ class EmundusModelAdmission extends JModelList
            
 			$val = explode(': ', $str);
 			
-			if($val[0] == JText::_('ALL')){
+			if($val[0] == "ALL"){
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -1046,7 +1046,7 @@ class EmundusModelAdmission extends JModelList
                     }
                 }
             }
-            if($val[0] == JText::_('FNUM')){
+            if($val[0] == "FNUM"){
                 
                 if (is_numeric($val[1]))
                 {
@@ -1058,7 +1058,7 @@ class EmundusModelAdmission extends JModelList
 
                 }
             }
-            if($val[0] == JText::_('ID')){
+            if($val[0] == "ID"){
                 
                 if (is_numeric($val[1]))
                 {
@@ -1070,7 +1070,7 @@ class EmundusModelAdmission extends JModelList
 
                 }
             }
-            if($val[0] == JText::_('EMAIL')){
+            if($val[0] == "EMAIL"){
                
                 
                     //the request is an email
@@ -1080,7 +1080,7 @@ class EmundusModelAdmission extends JModelList
                     $q['users'] = true;
                 
             }
-            if($val[0] == JText::_('USERNAME')){
+            if($val[0] == "USERNAME"){
                  //the request is an username
                
 				$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
@@ -1089,7 +1089,7 @@ class EmundusModelAdmission extends JModelList
 				$q['users'] = true;
 			
             }
-            if($val[0] == JText::_('LAST_NAME')){
+            if($val[0] == "LAST_NAME"){
                 //the request is an lastname
              
                     $q['q'][] = ' (ue.lastname LIKE "%' . ($val[1]) . '%" ) '; 
@@ -1098,7 +1098,7 @@ class EmundusModelAdmission extends JModelList
                     $q['em_user'] = true;
                 
             }
-            if($val[0] == JText::_('FIRST_NAME')){
+            if($val[0] == "FIRST_NAME"){
                 //the request is an firstname
                 
                     $q['q'][] = ' (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';

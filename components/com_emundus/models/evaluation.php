@@ -1064,7 +1064,7 @@ class EmundusModelEvaluation extends JModelList
            
 			$val = explode(': ', $str);
 			
-			if($val[0] == JText::_('ALL')){
+			if($val[0] == "ALL"){
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -1079,7 +1079,7 @@ class EmundusModelEvaluation extends JModelList
                     if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false)
                     {
                         //the request is an email
-                        $q['q'][] .= 'u.email = "'.$val[1].'"';
+                        $q['q'][] .= ' u.email = "'.$val[1].'"';
                         if (!in_array('jos_users', $tableAlias))
                             $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
                         $q['users'] = true;
@@ -1096,7 +1096,7 @@ class EmundusModelEvaluation extends JModelList
                     }
                 }
             }
-            if($val[0] == JText::_('FNUM')){
+            if($val[0] == "FNUM"){
                 
                 if (is_numeric($val[1]))
                 {
@@ -1108,19 +1108,19 @@ class EmundusModelEvaluation extends JModelList
 
                 }
             }
-            if($val[0] == JText::_('ID')){
+            if($val[0] == "ID"){
                 
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
                     $q['q'][]= ' (u.id = ' . $val[1] . ') ';
                     if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                        $q['join'][] = '  ';
                     $q['users'] = true;
 
                 }
             }
-            if($val[0] == JText::_('EMAIL')){
+            if($val[0] == "EMAIL"){
                
                 
                     //the request is an email
@@ -1130,7 +1130,7 @@ class EmundusModelEvaluation extends JModelList
                     $q['users'] = true;
                 
             }
-            if($val[0] == JText::_('USERNAME')){
+            if($val[0] == "USERNAME"){
                  //the request is an username
                
 				$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
@@ -1139,7 +1139,7 @@ class EmundusModelEvaluation extends JModelList
 				$q['users'] = true;
 			
             }
-            if($val[0] == JText::_('LAST_NAME')){
+            if($val[0] == "LAST_NAME"){
                 //the request is an lastname
              
                     $q['q'][] = ' (ue.lastname LIKE "%' . ($val[1]) . '%" ) '; 
@@ -1148,7 +1148,7 @@ class EmundusModelEvaluation extends JModelList
                     $q['em_user'] = true;
                 
             }
-            if($val[0] == JText::_('FIRST_NAME')){
+            if($val[0] == "FIRST_NAME"){
                 //the request is an firstname
                 
                     $q['q'][] = ' (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
@@ -1156,7 +1156,7 @@ class EmundusModelEvaluation extends JModelList
                         $q['join'][] = ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
                     $q['em_user'] = true;
                 
-            }
+			}
 
 
            /* if (is_numeric($str))
