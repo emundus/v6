@@ -102,6 +102,14 @@ JText::script('SELECT_HERE');
 JText::script('COM_EMUNDUS_CHECK_ALL_ALL');
 JText::script('SAVE_FILTER');
 
+JText::script('USERNAME_Q');
+JText::script('ID_Q');
+JText::script('ALL_Q');
+JText::script('LAST_NAME_Q');
+JText::script('FIRST_NAME_Q');
+JText::script('FNUM_Q');
+JText::script('EMAIL_Q');
+
 
 JText::script('LOADING');
 JText::script('TITLE');
