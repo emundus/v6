@@ -31,6 +31,7 @@ emundus_bdd*
 /.htaccess
 /*.sql.zip
 /test*
+administrator/components/com_admin/sq/lupdates/mysql/eM-*
 
 
 ### macOS ###
