@@ -32,6 +32,8 @@ emundus_bdd*
 /*.sql.zip
 /test*
 administrator/components/com_admin/sq/lupdates/mysql/eM-*
+administrator/templates/isis/images/joomla.png
+administrator/templates/isis/images/logo.png
 
 
 ### macOS ###
