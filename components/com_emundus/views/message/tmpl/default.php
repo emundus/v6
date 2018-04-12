@@ -304,6 +304,34 @@ $email_list = array();
 				}
 				<?php endif; ?>
 
+				// TODO: Rights?
+				// Get the attached candidate files if there are any.
+				if (typeof(email.tmpl.letter_attachments) != 'undefined' && email.tmpl.letter_attachments != null) {
+
+					// We need another AJAX to get the info about the letter, we only have the IDs and we need the names.
+					$.ajax({
+						type: 'POST',
+						url: 'index.php?option=com_emundus&controller=messages&task=getletterfilenames',
+						data : {
+							attachments : email.tmpl.letter_attachments
+						},
+						success: function (attachments) {
+							attachments = JSON.parse(attachments);
+							if (attachments.status) {
+
+								// Add the attachments to the list and deselect the corresponding selects from the option.
+								attachments.attachments.forEach(function(attachment) {
+									$('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+attachment.id+'</div>'+attachment.title+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+									$('#em-select_setup_letters option[value="'+attachment.id+'"]').prop('disabled', true);
+								});
+
+							}
+						}
+
+					})
+
+				}
+
 			},
 			error: function () {
 				// handle error

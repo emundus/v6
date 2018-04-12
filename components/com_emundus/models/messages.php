@@ -194,16 +194,19 @@ class EmundusModelMessages extends JModelList {
      * @param Bool Whether or not to also get the candidate file attachments linked to this template, this is an option use for compatibility because some DBs may not have this table.
      * @return Object The email we seek, false if none is found.
      */
-	function getEmail($id, $candidateAttachments = false) {
+	function getEmail($id, $candidateAttachments = false, $letterAttachments = false) {
 
 		$db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
 
+        $select = 'e.*, et.*';
+
         if ($candidateAttachments)
-            $select = 'e.*, et.*, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
-        else
-            $select = '*';
+            $select .= ', GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
+
+        if ($letterAttachments)
+            $select .= ', GROUP_CONCAT(la.letter_attachment) AS letter_attachments';
 
         $query->select($select)
                 ->from($db->quoteName('#__emundus_setup_emails','e'))
@@ -211,6 +214,9 @@ class EmundusModelMessages extends JModelList {
 
         if ($candidateAttachments)
             $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
+
+        if ($letterAttachments)
+            $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
 
         $query->where($db->quoteName('e.id').' = '.$id);
 
@@ -344,6 +350,35 @@ class EmundusModelMessages extends JModelList {
 
         } catch (Exception $e) {
             JLog::add('Error getting candidate file attachment name in model/messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
+    /**
+     * Gets the names of candidate files.
+     *
+     * @since 3.8.6
+     * @param String The IDs of the candidate files to get the names of
+     * @return Array A list of objects containing the names and ids of the candidate files.
+     */
+    function getLetterFileNames($ids) {
+
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName(['id', 'title']))
+                ->from($db->quoteName('#__emundus_setup_letters'))
+                ->where($db->quoteName('id').' IN ('.$ids.')');
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting letter attachment name in model/messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 
