@@ -258,7 +258,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             ];
 
             $tags = $m_emails->setTags($fnum->applicant_id, $post);
-            $body = $m_emails->setTagsFabrik($message, [$fnum->fnum]);
+            $message = $m_emails->setTagsFabrik($message, [$fnum->fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
