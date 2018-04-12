@@ -49,8 +49,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         $h_files = new EmundusHelperFiles();
 
         $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
+        $get_letters_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_letter_attachment');
 
-        $template = $m_messages->getEmail($template_id, $get_candidate_attachments);
+        $template = $m_messages->getEmail($template_id, $get_candidate_attachments, $get_letters_attachments);
 
         if (!$template) {
             echo json_encode((object)(['status' => false]));
@@ -146,6 +147,34 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
 
         $attachments = $m_messages->getCandidateFileNames($attachment_ids);
+
+        if (!$attachments) {
+            echo json_encode((object)['status' => false]);
+            exit;
+        }
+
+        echo json_encode((object)['status' => true, 'attachments' => $attachments]);
+        exit;
+
+    }
+
+    /**
+     * Gets the names of the letter files.
+     * @since 3.8.6
+     */
+    public function getletterfilenames() {
+
+        $m_messages = new EmundusModelMessages();
+
+        $jinput = JFactory::getApplication()->input;
+        $attachment_ids = $jinput->post->getString('attachments', null);
+
+        if (empty($attachment_ids)) {
+            echo json_encode((object)['status' => false]);
+            exit;
+        }
+
+        $attachments = $m_messages->getLetterFileNames($attachment_ids);
 
         if (!$attachments) {
             echo json_encode((object)['status' => false]);

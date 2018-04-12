@@ -4451,9 +4451,9 @@ $(document).ready(function()
                     data: data,
                     success: function (result) {
 
-                        result = JSON.parse(result);
-
                         $('#em-modal-sending-emails').css('display', 'none');
+
+                        result = JSON.parse(result);
 
                         if (result.status) {
 
