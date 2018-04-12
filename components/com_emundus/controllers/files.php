@@ -59,6 +59,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
         $this->_user = JFactory::getSession()->get('emundusUser');
+
         $this->_db = JFactory::getDBO();
 
         parent::__construct($config);
@@ -76,6 +77,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $default = 'files';
             JRequest::setVar('view', $default );
         }
+        
         parent::display();
     }
 
@@ -119,7 +121,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $filterName = $jinput->getString('id', null);
         $elements   = $jinput->getString('elements', null);
         $multi      = $jinput->getString('multi', null);
-
+        
         $h_files = new EmundusHelperFiles;
         $h_files->clearfilter();
 
@@ -128,6 +130,7 @@ class EmundusControllerFiles extends JControllerLegacy
         else
             $filterval = $jinput->getString('val', null);
         
+        //var_dump($filterval);
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
         

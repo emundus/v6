@@ -96,6 +96,8 @@ class EmundusViewUsers extends JViewLegacy
 		{
 			$uid = JFactory::getApplication()->input->getInt('user', null);
 			$user  = $m_users->getUserInfos($uid);
+			
+			
 			$uGroups = $m_users->getUserGroups($uid);
 			$uCamps = $m_users->getUserCampaigns($uid);
 			$uOprofiles = $m_users->getUserOprofiles($uid);

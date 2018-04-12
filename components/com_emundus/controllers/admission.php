@@ -36,6 +36,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
 
         $this->_user    = JFactory::getSession()->get('emundusUser');
+    
         $this->_db      = JFactory::getDBO();
 
         parent::__construct($config);

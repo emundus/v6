@@ -775,7 +775,8 @@ $(document).ready(function () {
 						state: 0
 					},
 					success: function (result) {
-						reloadData();
+						if(result.status)
+							reloadData();
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
@@ -799,7 +800,8 @@ $(document).ready(function () {
 						state: 1
 					},
 					success: function (result) {
-						reloadData();
+						if(result.status)
+							reloadData();
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
@@ -833,7 +835,7 @@ $(document).ready(function () {
 			case 26:
 				// delete user
 				$('.modal-body').empty();
-				$('.modal-body').append('<strong>' + Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong>');
+				$('.modal-body').append('<div style="padding:26px"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
 				break;
 		}
 
@@ -1034,6 +1036,7 @@ $(document).ready(function () {
 						jgr: $('#profiles option:selected').attr('id'),
 						email: email,
 						newsletter: $('#news').is(':checked') ? 1 : 0,
+						dataexploit: $('#dataexploit').is(':checked') ? 1 : 0,
 						university_id: $('#univ').val(),
 						ldap: $('#ldap').is(':checked') ? 1 : 0
 					},
@@ -1169,6 +1172,7 @@ $(document).ready(function () {
 						jgr: $('#profiles option:selected').attr('id'),
 						email: email,
 						newsletter: $('#news').is(':checked') ? 1 : 0,
+						dataexploit: $('#dataexploit').is(':checked') ? 1 : 0,
 						university_id: $('#univ').val()
 					},
 					dataType: 'json',

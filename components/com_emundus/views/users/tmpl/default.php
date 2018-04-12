@@ -149,7 +149,7 @@ JHTML::_('behavior.tooltip');
 	var loadingLine = "<?php echo JURI::base(true).'media/com_emundus/images/icones/loader-line.gif'?>";
 	$(document).ready(function()
 	                  {
-
+						  
                           $('#rt-mainbody-surround').children().addClass('mainemundus');
                           $('#rt-main').children().addClass('mainemundus');
                           $('#rt-main').children().children().addClass('mainemundus');
