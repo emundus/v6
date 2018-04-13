@@ -104,13 +104,15 @@ if ($s == '')
 				<?php foreach($this->campaigns as $campaign):?>
 				<option value="<?php echo $campaign->id?>" <?php if(($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps))){echo 'selected="true"';}?>><?php echo trim($campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date);?></option>
 				<?php endforeach;?>
-				</select>
+			</select>
 		</div>
-		<input type="checkbox" id="news" name="news" <?php if(($this->edit != 1) || ($this->user['newsletter'])){echo "checked";}?> style="margin-bottom: 5px; width: 20px !important">
+		<input type="checkbox" id="news" name="news" <?php if(($this->edit == 1) && ($this->user['newsletter']== '"1"')){echo "checked";}?> style="margin-bottom: 5px; width: 20px !important">
 		<label for="news">
 		 <?php echo JText::_('NEWSLETTER'); ?>
 		</label>
 		</div>
+		
+		
 		<!-- LDAP registration will go inside the div -->
 		<div id="ldap-form" style="display : none;">
 			<div id="ldap-errors"></div>
@@ -126,7 +128,9 @@ if ($s == '')
 	};
 	$(document).ready(function() {
 		var edit = '<?php echo $this->edit?>';
-		$('.em-chosen').chosen({width:'80%'});
+		$('form').css({padding:"26px"})
+		$('alertes-details').css({padding:"30px"})
+		$('.em-chosen').chosen({width:'100%'});
 
 		if (edit == '1')
 		{
@@ -141,6 +145,7 @@ if ($s == '')
 				$('.em-hidden-appli-fields').hide();
 			}
 		}
+		
 
 		$(document).on('change', '#ldap', function() {
 			if ($(this).is(':checked')) {

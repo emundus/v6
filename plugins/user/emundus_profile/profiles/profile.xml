@@ -53,15 +53,37 @@
 			hint="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
 		/>
 		<field
+			name="cgu"
+			type="checkbox"
+			value="1"
+			default="0"
+			filter="string"
+			label="PLG_USER_EMUNDUS_PROFILE_FIELD_CGU_LABEL"
+			description="PLG_USER_EMUNDUS_PROFILE_FIELD_CGU_DESC"
+			>
+			
+		</field>
+		<field
 			name="newsletter"
-			type="list"
-			default="1"
+			type="checkbox"
+			value="1"			
+			default="0"
 			filter="string"
 			label="PLG_USER_EMUNDUS_PROFILE_FIELD_NEWSLETTER_LABEL"
 			description="PLG_USER_EMUNDUS_PROFILE_FIELD_NEWSLETTER_DESC"
 			>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
+			
+		</field>
+		
+		<field
+			name="alert"
+			type="checkbox"
+			value="1"
+			default="0"
+			filter="string"
+			label="PLG_USER_EMUNDUS_PROFILE_FIELD_ALERT_LABEL"
+			description="PLG_USER_EMUNDUS_PROFILE_FIELD_ALERT_DESC"
+			>
 			
 		</field>
 		</fieldset>

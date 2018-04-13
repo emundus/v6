@@ -56,7 +56,7 @@
                         ' ORDER BY ordering'
                 );
                 $results = $db->loadRowList();
-
+                
                 // Check for a database error.
                 if ($db->getErrorNum()) {
                         $this->_subject->setError($db->getErrorMsg());
@@ -105,7 +105,9 @@
 					'firstname',
 					'profile',
 					'campaign',
-          'newsletter'
+          'newsletter',
+          'cgu',
+          'alert'
 				);
 
         foreach ($fields as $field)
