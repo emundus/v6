@@ -352,20 +352,14 @@ class EmundusModelProfile extends JModelList
 	* @param 	$code 	array 	list of programmes code
 	* @return  	string The greeting to be displayed to the user
 	*/
-	function getProfileIDByCourse($code = array(), $years = array(), $camp = "") {
+	function getProfileIDByCourse($code = array(), $camps = array()) {
 
-		if (!empty($code)>0 && isset($years[0]) && $years[0] != 0) {
-			if($camp != ""){
-				$query = 'SELECT DISTINCT(esc.profile_id)
-						FROM  #__emundus_setup_campaigns AS esc
-						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") AND esc.year IN ("'.implode("','", $years).'") AND esc.label LIKE '.$camp;
-			}else{
-				$query = 'SELECT DISTINCT(esc.profile_id)
-						FROM  #__emundus_setup_campaigns AS esc
-						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") AND esc.year IN ("'.implode("','", $years).'")';
-			}
+		if (!empty($code)>0 && isset($camps[0]) && $camps[0] != 0) {
 			
-
+			$query = 'SELECT DISTINCT(esc.profile_id)
+					FROM  #__emundus_setup_campaigns AS esc
+					WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") AND esc.id IN ("'.implode("','", $camps).'")';
+			
 			try
 	        {
 				$this->_db->setQuery( $query );

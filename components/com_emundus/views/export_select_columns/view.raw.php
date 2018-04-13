@@ -44,15 +44,15 @@ class EmundusViewExport_select_columns extends JViewLegacy
         $prg    = $jinput->getVar('code', null);
         $view   = $jinput->getVar('viewcall', null);
         $form   = $jinput->getVar('form', null);
-        $year   = $jinput->getVar('year', null);
+        
         $camp   = $jinput->getVar('camp', null);
 
 
         $code       = array();
-        $years       = array();
+        $camps       = array();
         $code[]     = $prg;
-        $years[]     = $year;
-
+        $camps[]     = $camp;
+        //var_dump($camps);
         $current_user = JFactory::getUser();
 
         
@@ -70,8 +70,8 @@ class EmundusViewExport_select_columns extends JViewLegacy
         elseif ($form == "evaluation")
             $elements = $m_eval->getEvaluationElementsName(1, 1, $code);
         else
-		    $elements = EmundusHelperFiles::getElements($code, $years, $camp);
-
+		    $elements = EmundusHelperFiles::getElements($code, $camps);
+        
         $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
 		parent::display($tpl);

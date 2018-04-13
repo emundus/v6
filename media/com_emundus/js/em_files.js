@@ -1705,13 +1705,12 @@ $(document).ready(function()
 
                                                         nbcamp = result.nbcamp;
 
-                                                        var year = $("#em-export-camp").val();
+                                                        var camp = $("#em-export-camp").val();
                                                         
                                                         $.ajax({
                                                             type: 'get',
-                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code,
-                                                            dataType:'json',
-                                                            
+                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp='+camp+'&code=' + code,
+                                                           
                                                             success: function (data) {
                                                                 $('#elements-popup').empty();
                                                                 $('#em-export').empty();
@@ -1724,36 +1723,7 @@ $(document).ready(function()
                                                                     success: function(result) {
 
                                                                         var item='';
-                                                                        /*item+='<option value="0" selected>Select an option</option>';
-
-                                                                        for (var d in result.elts) {
-
-                                                                            if (isNaN(parseInt(d)))
-                                                                                break;
-
-                                                                            var menu_tmp = result.elts[d].title;
-
-                                                                            if (menu != menu_tmp) {
-                                                                                item += '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">' + menu_tmp.toUpperCase() + '</option></optgroup>';
-                                                                                menu = menu_tmp;
-                                                                            }
-
-                                                                            if (grId != null || grId != result.elts[d].group_id)
-                                                                                item += '</optgroup>'
-
-                                                                            if (grId != result.elts[d].group_id)
-                                                                                item += '<optgroup label=">> '+Joomla.JText._(result.elts[d].group_label)+'">'
-
-                                                                            grId = result.elts[d].group_id
-
-                                                                            if (Joomla.JText._(result.elts[d].element_label) == "undefined")
-                                                                                var elt_label = result.elts[d].element_label;
-                                                                            else
-                                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
-
-                                                                            item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
-                                                                        }*/
-
+                                                                      
                                                                         $('#elements-popup').append(data);
                                                                         item ='';
 
@@ -1787,21 +1757,7 @@ $(document).ready(function()
                                                                                     success: function(result) {
 
                                                                                         var item='';
-                                                                                        /*item+='<option value="0" selected>Select an option</option>';
-
-                                                                                        for (var d in result.elts) {
-
-                                                                                            if (isNaN(parseInt(d)))
-                                                                                                break;
-
-                                                                                            if (Joomla.JText._(result.elts[d].element_label) == "")
-                                                                                                var elt_label = result.elts[d].element_label;
-                                                                                            else
-                                                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
-
-                                                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
-                                                                                        }*/
-
+                                                                                        
 
                                                                                         $('#eval-elements-popup').append(data);
                                                                                         item ="";
@@ -1947,6 +1903,193 @@ $(document).ready(function()
                                                 if(result.eval == 1){ $('#th-eval').show(); $('#evalelement').show();} 
                                                 if(result.dec == 1) { $('#th-dec').show();$('#decelement').show();}
                                                 if(result.adm == 1) { $('#th-adm').show();$('#admelement').show();}
+
+                                                $.ajax({
+                                                    type:'get',
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
+                                                    dataType:'json',
+            
+                                                    success: function(result) {
+                                                        if (result.status) {
+                                                            $('#em-export-camp').empty();
+                                                            $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
+                                                            $('#em-export-camp').append(result.html);
+                                                            $('#em-export-camp').trigger("chosen:updated");
+                                                            $('#camp').show();
+            
+                                                            var camp = $("#em-export-camp").val();
+            
+                                                                /*** application form elements */
+                                                            $.ajax({
+                                                                type: 'get',
+                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&camp='+camp+'&code=' + code,
+            
+                                                                success: function (data) {
+                                                                    $('#em-export').empty();
+                                                                    $.ajax({
+                                                                        type:'get',
+                                                                        url: 'index.php?option=com_emundus&controller=files&task=getformelem&Itemid='+itemId,
+                                                                        dataType:'json',
+                                                                        success: function(result)
+                                                                        {
+                                                                            var item='';
+                                                                            item ="";
+                                                                            if(view == "files"){
+                                                                                for (var d in result.defaults) {
+                                                                                    if (isNaN(parseInt(d)))
+                                                                                        break;
+            
+                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                }
+                                                                                $('#em-export').append(item);
+                                                                            }
+            
+                                                                            /*** evaluation elements */
+                                                                            $.ajax({
+                                                                                type: 'get',
+                                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=evaluation',
+            
+                                                                                success: function (data) {
+                                                                                    $('#eval-elements-popup').empty();
+            
+                                                                                        $.ajax({
+                                                                                            type:'get',
+                                                                                            url: 'index.php?option=com_emundus&controller=evaluation&task=getformelem',
+                                                                                            data: {code:code},
+                                                                                            dataType:'json',
+            
+                                                                                            success: function(result) {
+            
+                                                                                                var item='';
+            
+                                                                                                $('#eval-elements-popup').append(data);
+                                                                                                item ="";
+            
+                                                                                                if(view == "evaluation"){
+                                                                                                    for (var d in result.defaults) {
+                                                                                                        if (isNaN(parseInt(d)))
+                                                                                                            break;
+                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                        $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
+                                                                                                    }
+                                                                                                    $('#em-export').append(item);
+                                                                                                }
+                                                                                                /*** decision elements */
+                                                                                                $.ajax({
+                                                                                                    type: 'get',
+                                                                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
+            
+                                                                                                    success: function (data) {
+                                                                                                        $('#decision-elements-popup').empty();
+            
+                                                                                                            $.ajax({
+                                                                                                                type:'get',
+                                                                                                                url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=decision',
+                                                                                                                data: {code:code},
+                                                                                                                dataType:'json',
+            
+                                                                                                                success: function(result) {
+            
+                                                                                                                    $('#decision-elements-popup').append(data);
+            
+                                                                                                                    $('.btn-success').show();
+            
+                                                                                                                    /*** admission elements */
+                                                                                                                    $.ajax({
+                                                                                                                        type: 'get',
+                                                                                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
+            
+                                                                                                                        success: function (data) {
+                                                                                                                            $('#admission-elements-popup').empty();
+            
+                                                                                                                                $.ajax({
+                                                                                                                                    type:'get',
+                                                                                                                                    url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=admission',
+                                                                                                                                    data: {code:code},
+                                                                                                                                    dataType:'json',
+            
+                                                                                                                                    success: function(result) {
+            
+                                                                                                                                        var item='';
+            
+                                                                                                                                        $('#admission-elements-popup').append(data);
+                                                                                                                                        item ="";
+            
+                                                                                                                                        if(view == "admission"){
+                                                                                                                                            for (var d in result.defaults) {
+                                                                                                                                                if (isNaN(parseInt(d)))
+                                                                                                                                                    break;
+                                                                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                                                $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
+                                                                                                                                            }
+                                                                                                                                            $('#em-export').append(item);
+                                                                                                                                        }
+            
+                                                                                                                                    },
+            
+                                                                                                                                    error: function (jqXHR, textStatus, errorThrown) {
+                                                                                                                                        console.log(jqXHR.responseText);
+                                                                                                                                    }
+            
+                                                                                                                                });
+            
+                                                                                                                        },
+                                                                                                                        error: function (jqXHR, textStatus, errorThrown) {
+                                                                                                                            console.log(jqXHR.responseText);
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                },
+            
+                                                                                                                error: function (jqXHR, textStatus, errorThrown) {
+                                                                                                                    console.log(jqXHR.responseText);
+                                                                                                                }
+            
+                                                                                                            });
+            
+                                                                                                    },
+                                                                                                    error: function (jqXHR, textStatus, errorThrown) {
+                                                                                                        console.log(jqXHR.responseText);
+                                                                                                    }
+                                                                                                });
+                                                                                            },
+            
+                                                                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                                                                console.log(jqXHR.responseText);
+                                                                                            }
+            
+                                                                                        });
+            
+                                                                                },
+                                                                                error: function (jqXHR, textStatus, errorThrown) {
+                                                                                    console.log(jqXHR.responseText);
+                                                                                }
+                                                                            });
+            
+                                                                        },
+                                                                        error: function (jqXHR, textStatus, errorThrown)
+                                                                        {
+                                                                            console.log(jqXHR.responseText);
+                                                                        }
+                                                                    });
+                                                                    // $('#elements_detail').show();
+                                                                    $('#elements-popup').empty();
+                                                                    $('#elements-popup').append(data);
+                                                                },
+                                                                error: function (jqXHR, textStatus, errorThrown) {
+                                                                    console.log(jqXHR.responseText);
+                                                                }
+                                                            });
+            
+                                                            $('.btn-success').show();
+                                                            $('#elements_detail').show();
+            
+                                                        }
+            
+                                                    },
+                                                    error: function(jqXHR, textStatus, errorThrown) {
+                                                        console.log(jqXHR.responseText);
+                                                    }
+                                                });
                                             }
                                         },
                                         error: function (jqXHR, textStatus, errorThrown)
@@ -1954,28 +2097,45 @@ $(document).ready(function()
                                             console.log(jqXHR.responseText);
                                         }
                                     });
+                                    
+                                }else{
+                                    $('.btn-success').hide();
+                                    $('#camp').hide();
+                                    $('#em-export').empty();
+                                    $('#elements_detail').hide();
+                                    $('#elements-popup').hide();
+                                }
+                            });
+
+                            $('#em-export-camp').on('change', function() {
+
+                                var code = $('#em-export-prg').val();
+
+                                if (code != 0) {
+
+                                    var camp = $("#em-export-camp").val();
+                                   
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
+                                        url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                         dataType:'json',
-
+                                        
                                         success: function(result) {
-                                            if (result.status) {
-                                                $('#em-export-camp').empty();
-                                                $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
-                                                $('#em-export-camp').append(result.html);
-                                                $('#em-export-camp').trigger("chosen:updated");
-                                                $('#camp').show();
+                                            if(result.status){
+                                                if(result.eval == 1){ $('#th-eval').show(); $('#evalelement').show();} 
+                                                if(result.dec == 1) { $('#th-dec').show();$('#decelement').show();}
+                                                if(result.adm == 1) { $('#th-adm').show();$('#admelement').show();}
 
-                                                var year = $("#em-export-camp").val();
-
-                                                    /*** application form elements */
+                                                 /*** application form elements */
                                                 $.ajax({
                                                     type: 'get',
-                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&year='+year+'&code=' + code,
-
+                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&camp='+camp+'&code=' + code,
+                                                   
                                                     success: function (data) {
+                                                        $('.btn-success').show();
                                                         $('#em-export').empty();
+                                                        $('#elements-popup').empty();
+                                                        $('#elements-popup').append(data);
                                                         $.ajax({
                                                             type:'get',
                                                             url: 'index.php?option=com_emundus&controller=files&task=getformelem&Itemid='+itemId,
@@ -1983,6 +2143,7 @@ $(document).ready(function()
                                                             success: function(result)
                                                             {
                                                                 var item='';
+
                                                                 item ="";
                                                                 if(view == "files"){
                                                                     for (var d in result.defaults) {
@@ -2040,6 +2201,8 @@ $(document).ready(function()
 
                                                                                                     success: function(result) {
 
+                                                                                                        var item='';
+
                                                                                                         $('#decision-elements-popup').append(data);
 
                                                                                                         $('.btn-success').show();
@@ -2064,7 +2227,6 @@ $(document).ready(function()
 
                                                                                                                             $('#admission-elements-popup').append(data);
                                                                                                                             item ="";
-
                                                                                                                             if(view == "admission"){
                                                                                                                                 for (var d in result.defaults) {
                                                                                                                                     if (isNaN(parseInt(d)))
@@ -2114,58 +2276,18 @@ $(document).ready(function()
                                                                         console.log(jqXHR.responseText);
                                                                     }
                                                                 });
-
                                                             },
                                                             error: function (jqXHR, textStatus, errorThrown)
                                                             {
                                                                 console.log(jqXHR.responseText);
                                                             }
                                                         });
-                                                        // $('#elements_detail').show();
-                                                        $('#elements-popup').empty();
-                                                        $('#elements-popup').append(data);
+                                                        
                                                     },
                                                     error: function (jqXHR, textStatus, errorThrown) {
                                                         console.log(jqXHR.responseText);
                                                     }
                                                 });
-
-                                                $('.btn-success').show();
-                                                $('#elements_detail').show();
-
-                                            }
-
-                                        },
-                                        error: function(jqXHR, textStatus, errorThrown) {
-                                            console.log(jqXHR.responseText);
-                                        }
-                                    });
-                                }else{
-                                    $('.btn-success').hide();
-                                    $('#camp').hide();
-                                    $('#elements_detail').hide();
-                                    $('#elements-popup').hide();
-                                }
-                            });
-
-                            $('#em-export-camp').on('change', function() {
-
-                                var code = $('#em-export-prg').val();
-
-                                if (code != 0) {
-
-                                    var year = $("#em-export-camp").val();
-                                   
-                                    $.ajax({
-                                        type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
-                                        dataType:'json',
-                                        
-                                        success: function(result) {
-                                            if(result.status){
-                                                if(result.eval == 1){ $('#th-eval').show(); $('#evalelement').show();} 
-                                                if(result.dec == 1) { $('#th-dec').show();$('#decelement').show();}
-                                                if(result.adm == 1) { $('#th-adm').show();$('#admelement').show();}
                                             }
                                         },
                                         error: function (jqXHR, textStatus, errorThrown)
@@ -2173,168 +2295,7 @@ $(document).ready(function()
                                             console.log(jqXHR.responseText);
                                         }
                                     });
-                                     /*** application form elements */
-                                    $.ajax({
-                                        type: 'get',
-                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&year='+year+'&code=' + code,
-                                        dataType:'json',
-                                       
-                                        success: function (data) {
-                                            $('.btn-success').show();
-                                            $('#em-export').empty();
-                                            $.ajax({
-                                                type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getformelem&Itemid='+itemId,
-                                                dataType:'json',
-                                                success: function(result)
-                                                {
-                                                    var item='';
-
-                                                    item ="";
-                                                    if(view == "files"){
-                                                        for (var d in result.defaults) {
-                                                            if (isNaN(parseInt(d)))
-                                                                break;
-
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                        }
-                                                        $('#em-export').append(item);
-                                                    }
-
-                                                     /*** evaluation elements */
-                                                    $.ajax({
-                                                        type: 'get',
-                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=evaluation',
-
-                                                        success: function (data) {
-                                                            $('#eval-elements-popup').empty();
-
-                                                                $.ajax({
-                                                                    type:'get',
-                                                                    url: 'index.php?option=com_emundus&controller=evaluation&task=getformelem',
-                                                                    data: {code:code},
-                                                                    dataType:'json',
-
-                                                                    success: function(result) {
-
-                                                                        var item='';
-
-                                                                        $('#eval-elements-popup').append(data);
-                                                                        item ="";
-
-                                                                        if(view == "evaluation"){
-                                                                            for (var d in result.defaults) {
-                                                                                if (isNaN(parseInt(d)))
-                                                                                    break;
-                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                                                $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
-                                                                            }
-                                                                            $('#em-export').append(item);
-                                                                        }
-                                                                        /*** decision elements */
-                                                                        $.ajax({
-                                                                            type: 'get',
-                                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
-
-                                                                            success: function (data) {
-                                                                                $('#decision-elements-popup').empty();
-
-                                                                                    $.ajax({
-                                                                                        type:'get',
-                                                                                        url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=decision',
-                                                                                        data: {code:code},
-                                                                                        dataType:'json',
-
-                                                                                        success: function(result) {
-
-                                                                                            var item='';
-
-                                                                                            $('#decision-elements-popup').append(data);
-
-                                                                                            $('.btn-success').show();
-
-                                                                                            /*** admission elements */
-                                                                                            $.ajax({
-                                                                                                type: 'get',
-                                                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
-
-                                                                                                success: function (data) {
-                                                                                                    $('#admission-elements-popup').empty();
-
-                                                                                                        $.ajax({
-                                                                                                            type:'get',
-                                                                                                            url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=admission',
-                                                                                                            data: {code:code},
-                                                                                                            dataType:'json',
-
-                                                                                                            success: function(result) {
-
-                                                                                                                var item='';
-
-                                                                                                                $('#admission-elements-popup').append(data);
-                                                                                                                item ="";
-                                                                                                                if(view == "admission"){
-                                                                                                                    for (var d in result.defaults) {
-                                                                                                                        if (isNaN(parseInt(d)))
-                                                                                                                            break;
-                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                                                                                        $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
-                                                                                                                    }
-                                                                                                                    $('#em-export').append(item);
-                                                                                                                }
-
-                                                                                                            },
-
-                                                                                                            error: function (jqXHR, textStatus, errorThrown) {
-                                                                                                                console.log(jqXHR.responseText);
-                                                                                                            }
-
-                                                                                                        });
-
-                                                                                                },
-                                                                                                error: function (jqXHR, textStatus, errorThrown) {
-                                                                                                    console.log(jqXHR.responseText);
-                                                                                                }
-                                                                                            });
-                                                                                        },
-
-                                                                                        error: function (jqXHR, textStatus, errorThrown) {
-                                                                                            console.log(jqXHR.responseText);
-                                                                                        }
-
-                                                                                    });
-
-                                                                            },
-                                                                            error: function (jqXHR, textStatus, errorThrown) {
-                                                                                console.log(jqXHR.responseText);
-                                                                            }
-                                                                        });
-                                                                    },
-
-                                                                    error: function (jqXHR, textStatus, errorThrown) {
-                                                                        console.log(jqXHR.responseText);
-                                                                    }
-
-                                                                });
-
-                                                        },
-                                                        error: function (jqXHR, textStatus, errorThrown) {
-                                                            console.log(jqXHR.responseText);
-                                                        }
-                                                    });
-                                                },
-                                                error: function (jqXHR, textStatus, errorThrown)
-                                                {
-                                                    console.log(jqXHR.responseText);
-                                                }
-                                            });
-                                            $('#elements-popup').empty();
-                                            $('#elements-popup').append(data);
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown) {
-                                            console.log(jqXHR.responseText);
-                                        }
-                                    });
+                                    
 
                                     $('.btn-success').show();
                                     $('#elements_detail').show();
@@ -2365,8 +2326,6 @@ $(document).ready(function()
                             '<label for="em-ex-forms">'+Joomla.JText._('COM_EMUNDUS_FORMS')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="attachment" name="em-ex-attachment" id="em-ex-attachment" style="max-height:20px"/>' +
                             '<label for="em-ex-attachment">'+Joomla.JText._('COM_EMUNDUS_ATTACHMENT')+'</label> <br/>' +
-                            //'<input class="em-ex-check" type="checkbox" value="assessment" name="em-ex-assessment" id="em-ex-assessment"/>' +
-                           // '<label for="em-ex-assessment">'+Joomla.JText._('COM_EMUNDUS_ASSESSMENT')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment" style="max-height:20px"/>' +
                             '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags" style="max-height:20px"/>' +
@@ -2431,14 +2390,14 @@ $(document).ready(function()
                                                         var constraints = result.filter[d].constraints;
                                                         constraints = jQuery.parseJSON(constraints);
                                                         var filter = jQuery.parseJSON(constraints.excelfilter);
-                                                        var label = filter.programme;
+                                                        var proglabel = filter.programmelabel;
+                                                        var camplabel = filter.campaignlabel;
                                                         var code = filter.code;
-                                                        //var year = label.split('(')[1];
-                                                        var year = filter.year;
-                                                        //year = year.substr(0, year.length - 1);
-
+                                                        
+                                                        var camp = filter.camp;
+                                                       
                                                         if (code != 0) { //for programmes
-                                                            html = '<option value="'+code+'">'+label+'</option>';
+                                                            html = '<option value="'+code+'">'+proglabel+'</option>';
                                                             if($("#em-export-prg option[value="+code+"]").length == 0){
                                                                 $('#em-export-prg').append(html);// add option to list
                                                             }
@@ -2453,10 +2412,10 @@ $(document).ready(function()
                                                                 success: function(result) {
                                                                     if (result.status) {
 
-                                                                        if($("#em-export-camp option[value="+year+"]").length == 0){
-                                                                            $('#em-export-camp').append('<option value="'+year+'">'+label+" ("+year+')</option>');// add option to list
+                                                                        if($("#em-export-camp option[value="+camp+"]").length == 0){
+                                                                            $('#em-export-camp').append('<option value="'+camp+'">'+camplabel+'</option>');// add option to list
                                                                         }
-                                                                        $('#em-export-camp').val(year);
+                                                                        $('#em-export-camp').val(camp);
                                                                         $('#em-export-camp').trigger("chosen:updated");
                                                                         $('#camp').show();
 
@@ -2488,7 +2447,7 @@ $(document).ready(function()
                                                             /*** application form elements */
                                                             $.ajax({
                                                                 type: 'get',
-                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&year='+year+'&code=' + code,
+                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&camp='+camp+'&code=' + code,
 
                                                                 success: function (data) {
 
@@ -2620,10 +2579,6 @@ $(document).ready(function()
                                             console.log(jqXHR.responseText);
                                         }
                                     });
-                                }else{
-                                    $('.btn-success').hide();
-                                    $('#elements_detail').hide();
-                                    $('#elements-popup').hide();
                                 }
                             });
 
@@ -2775,11 +2730,11 @@ $(document).ready(function()
 
 
 
-                                            var year = $("#em-export-camp").val();
+                                            var camp = $("#em-export-camp").val();
 
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
+                                                url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
                                                 dataType:'json',
 
                                                 success: function(result) {
@@ -2790,7 +2745,7 @@ $(document).ready(function()
 
                                                         $.ajax({
                                                             type:'get',
-                                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
+                                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
                                                             dataType:'json',
 
                                                             success: function(result) {
@@ -2847,55 +2802,55 @@ $(document).ready(function()
                                     if(result.eval == 1){ $('#eval-exists').show();} 
                                     if(result.dec == 1) { $('#dec-exists').show();}
                                     if(result.adm == 1) { $('#adm-exists').show();}
-                                }
-                            },
-                            error: function (jqXHR, textStatus, errorThrown)
-                            {
-                                console.log(jqXHR.responseText);
-                            }
-                        });
-
-                        $.ajax({
-                            type:'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
-                            data: {checkInput : checkInput},
-                            dataType:'json',
-
-                            success: function(result) {
-                                if (result.status) {
-                                    $('#em-export-camp').empty();
-                                    $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
-                                    $('#em-export-camp').append(result.html);
-                                    $('#em-export-camp').trigger("chosen:updated");
-                                    $('#camp').show();
-
-                                    var year = $("#em-export-camp").val();
 
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
+                                        url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                        data: {checkInput : checkInput},
                                         dataType:'json',
-
+            
                                         success: function(result) {
-                                            if(result.status){
-
-                                                prghtml = result.html;
-                                                $('#felts-'+code+year).parent('div').remove();
-                                                $('#felts').append(result.html);
-                                                $('#felts').show();
-
+                                            if (result.status) {
+                                                $('#em-export-camp').empty();
+                                                $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
+                                                $('#em-export-camp').append(result.html);
+                                                $('#em-export-camp').trigger("chosen:updated");
+                                                $('#camp').show();
+            
+                                                var camp = $("#em-export-camp").val();
+            
                                                 $.ajax({
                                                     type:'get',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
                                                     dataType:'json',
-
+            
                                                     success: function(result) {
                                                         if(result.status){
-                                                            atthtml = result.html;
-                                                            $('#aelts-'+code+year).parent('div').remove();
-                                                            $('#aelts').append(result.html);
-                                                            $('#aelts').show();
-
+            
+                                                            prghtml = result.html;
+                                                            $('#felts-'+code+camp).parent('div').remove();
+                                                            $('#felts').append(result.html);
+                                                            $('#felts').show();
+            
+                                                            $.ajax({
+                                                                type:'get',
+                                                                url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                                dataType:'json',
+            
+                                                                success: function(result) {
+                                                                    if(result.status){
+                                                                        atthtml = result.html;
+                                                                        $('#aelts-'+code+camp).parent('div').remove();
+                                                                        $('#aelts').append(result.html);
+                                                                        $('#aelts').show();
+            
+                                                                    }
+                                                                },
+                                                                error: function (jqXHR, textStatus, errorThrown)
+                                                                {
+                                                                    console.log(jqXHR.responseText);
+                                                                }
+                                                            });
                                                         }
                                                     },
                                                     error: function (jqXHR, textStatus, errorThrown)
@@ -2917,6 +2872,7 @@ $(document).ready(function()
                                 console.log(jqXHR.responseText);
                             }
                         });
+                        
                     }else{
                         $('#camp').hide();
                         $('#felts').hide();
@@ -2944,6 +2900,57 @@ $(document).ready(function()
                                 if(result.eval == 1){ $('#eval-exists').show();} 
                                 if(result.dec == 1) { $('#dec-exists').show();}
                                 if(result.adm == 1) { $('#adm-exists').show();}
+
+                                if (code != 0) {
+                                    var camp = $("#em-export-camp").val();
+                                   
+                                    if (camp != 0) {
+                                        $.ajax({
+                                            type:'get',
+                                            url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
+                                            dataType:'json',
+                                           
+                                            success: function(result) {
+                                                if(result.status){
+            
+                                                    $('#felts-'+code+camp).parent('div').remove();
+                                                    $('#felts-'+code+'0').parent('div').remove();
+                                                    $('#felts').append(result.html);
+                                                    $('#felts').show();
+            
+                                                    $.ajax({
+                                                        type:'get',
+                                                        url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                        dataType:'json',
+                                                        
+                                                        success: function(result) {
+                                                            if(result.status){
+                                                                $('#aelts-'+code+camp).parent('div').remove();
+                                                                $('#aelts-'+code+'0').parent('div').remove();
+                                                                $('#aelts').append(result.html);
+                                                                $('#aelts').show();
+                                                            }
+                                                        },
+                                                        error: function (jqXHR, textStatus, errorThrown)
+                                                        {
+                                                            console.log(jqXHR.responseText);
+                                                        }
+                                                    });
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown)
+                                            {
+                                                console.log(jqXHR.responseText);
+                                            }
+                                        });
+                                    }else{
+                                        $('[id^=felts-'+code+']').parent('div').remove();
+                                        $('[id^=aelts-'+code+']').parent('div').remove();
+            
+                                        $('#felts').append(prghtml);
+                                        $('#aelts').append(atthtml);
+                                    }
+                                }
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown)
@@ -2952,64 +2959,7 @@ $(document).ready(function()
                         }
                     });
 
-                    if (code != 0) {
-                        var year = $("#em-export-camp").val();
-                        var camp = $("#em-export-camp option:selected").text();
-                        camp = camp.split(' (')[0];
-
-                        if (year != 0) {
-                            $.ajax({
-                                type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
-                                dataType:'json',
-                                data:{
-                                    camplabel: JSON.stringify(camp)
-                                },
-
-                                success: function(result) {
-                                    if(result.status){
-
-                                        $('#felts-'+code+year).parent('div').remove();
-                                        $('#felts-'+code+'0').parent('div').remove();
-                                        $('#felts').append(result.html);
-                                        $('#felts').show();
-
-                                        $.ajax({
-                                            type:'get',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
-                                            dataType:'json',
-                                            data:{
-                                                camplabel: JSON.stringify(camp)
-                                            },
-
-                                            success: function(result) {
-                                                if(result.status){
-                                                    $('#aelts-'+code+year).parent('div').remove();
-                                                    $('#aelts-'+code+'0').parent('div').remove();
-                                                    $('#aelts').append(result.html);
-                                                    $('#aelts').show();
-                                                }
-                                            },
-                                            error: function (jqXHR, textStatus, errorThrown)
-                                            {
-                                                console.log(jqXHR.responseText);
-                                            }
-                                        });
-                                    }
-                                },
-                                error: function (jqXHR, textStatus, errorThrown)
-                                {
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
-                        }else{
-                            $('[id^=felts-'+code+']').parent('div').remove();
-                            $('[id^=aelts-'+code+']').parent('div').remove();
-
-                            $('#felts').append(prghtml);
-                            $('#aelts').append(atthtml);
-                        }
-                    }
+                    
                 });
 
 
@@ -3189,6 +3139,64 @@ $(document).ready(function()
                                             if(result.eval == 1){ $('#eval-exists').show();} 
                                             if(result.dec == 1) { $('#dec-exists').show();}
                                             if(result.adm == 1) { $('#adm-exists').show();}
+
+                                            $.ajax({
+                                                type:'get',
+                                                url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                                data: {checkInput : checkInput},
+                                                dataType:'json',
+            
+                                                success: function(result) {
+                                                    if (result.status) {
+                                                        $('#em-export-camp').append(result.html);
+                                                        $('#em-export-camp').trigger("chosen:updated");
+                                                        $('#camp').show();
+            
+                                                        var camp = $("#em-export-camp").val();
+            
+                                                        $.ajax({
+                                                            type:'get',
+                                                            url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
+                                                            dataType:'json',
+            
+                                                            success: function(result) {
+                                                                if(result.status){
+                                                                    prghtml = result.html;
+                                                                    $('#felts').append(result.html);
+                                                                    $('#felts').toggle(400);
+            
+                                                                    $.ajax({
+                                                                        type:'get',
+                                                                        url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                                        dataType:'json',
+            
+                                                                        success: function(result) {
+                                                                            if(result.status){
+                                                                                atthtml = result.html;
+                                                                                $('#aelts').append(result.html);
+                                                                                $('#aelts').toggle(400);
+                                                                            }
+                                                                        },
+                                                                        error: function (jqXHR, textStatus, errorThrown)
+                                                                        {
+                                                                            console.log(jqXHR.responseText);
+                                                                        }
+                                                                    });
+                                                                }
+                                                            },
+                                                            error: function (jqXHR, textStatus, errorThrown)
+                                                            {
+                                                                console.log(jqXHR.responseText);
+                                                            }
+                                                        });
+            
+                                                    }
+                                                },
+                                                error: function (jqXHR, textStatus, errorThrown)
+                                                {
+                                                    console.log(jqXHR.responseText);
+                                                }
+                                            });
                                         }
                                     },
                                     error: function (jqXHR, textStatus, errorThrown)
@@ -3197,63 +3205,6 @@ $(document).ready(function()
                                     }
                                 });
             
-                                $.ajax({
-                                    type:'get',
-                                    url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
-                                    data: {checkInput : checkInput},
-                                    dataType:'json',
-
-                                    success: function(result) {
-                                        if (result.status) {
-                                            $('#em-export-camp').append(result.html);
-                                            $('#em-export-camp').trigger("chosen:updated");
-                                            $('#camp').show();
-
-                                            var year = $("#em-export-camp").val();
-
-                                            $.ajax({
-                                                type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
-                                                dataType:'json',
-
-                                                success: function(result) {
-                                                    if(result.status){
-                                                        prghtml = result.html;
-                                                        $('#felts').append(result.html);
-                                                        $('#felts').toggle(400);
-
-                                                        $.ajax({
-                                                            type:'get',
-                                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
-                                                            dataType:'json',
-
-                                                            success: function(result) {
-                                                                if(result.status){
-                                                                    atthtml = result.html;
-                                                                    $('#aelts').append(result.html);
-                                                                    $('#aelts').toggle(400);
-                                                                }
-                                                            },
-                                                            error: function (jqXHR, textStatus, errorThrown)
-                                                            {
-                                                                console.log(jqXHR.responseText);
-                                                            }
-                                                        });
-                                                    }
-                                                },
-                                                error: function (jqXHR, textStatus, errorThrown)
-                                                {
-                                                    console.log(jqXHR.responseText);
-                                                }
-                                            });
-
-                                        }
-                                    },
-                                    error: function (jqXHR, textStatus, errorThrown)
-                                    {
-                                        console.log(jqXHR.responseText);
-                                    }
-                                });
                             }
                         }
                     },
@@ -3282,54 +3233,54 @@ $(document).ready(function()
                                     if(result.eval == 1){ $('#eval-exists').show();} 
                                     if(result.dec == 1) { $('#dec-exists').show();}
                                     if(result.adm == 1) { $('#adm-exists').show();}
-                                }
-                            },
-                            error: function (jqXHR, textStatus, errorThrown)
-                            {
-                                console.log(jqXHR.responseText);
-                            }
-                        });
-    
-                        $.ajax({
-                            type:'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
-                            data: {checkInput : checkInput},
-                            dataType:'json',
-
-                            success: function(result) {
-                                if (result.status) {
-                                    $('#em-export-camp').empty();
-                                    $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
-                                    $('#em-export-camp').append(result.html);
-                                    $('#em-export-camp').trigger("chosen:updated");
-                                    $('#camp').show();
-
-                                    var year = $("#em-export-camp").val();
 
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
+                                        url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                        data: {checkInput : checkInput},
                                         dataType:'json',
-
+            
                                         success: function(result) {
-                                            if(result.status){
-
-                                                prghtml = result.html;
-                                                $('#felts-'+code+year).parent('div').remove();
-                                                $('#felts').append(result.html);
-                                                $('#felts').show();
-
+                                            if (result.status) {
+                                                $('#em-export-camp').empty();
+                                                $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
+                                                $('#em-export-camp').append(result.html);
+                                                $('#em-export-camp').trigger("chosen:updated");
+                                                $('#camp').show();
+            
+                                                var camp = $("#em-export-camp").val();
+            
                                                 $.ajax({
                                                     type:'get',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
                                                     dataType:'json',
-
+            
                                                     success: function(result) {
                                                         if(result.status){
-                                                            atthtml = result.html;
-                                                            $('#aelts-'+code+year).parent('div').remove();
-                                                            $('#aelts').append(result.html);
-                                                            $('#aelts').show();
+            
+                                                            prghtml = result.html;
+                                                            $('#felts-'+code+camp).parent('div').remove();
+                                                            $('#felts').append(result.html);
+                                                            $('#felts').show();
+            
+                                                            $.ajax({
+                                                                type:'get',
+                                                                url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                                dataType:'json',
+            
+                                                                success: function(result) {
+                                                                    if(result.status){
+                                                                        atthtml = result.html;
+                                                                        $('#aelts-'+code+camp).parent('div').remove();
+                                                                        $('#aelts').append(result.html);
+                                                                        $('#aelts').show();
+                                                                    }
+                                                                },
+                                                                error: function (jqXHR, textStatus, errorThrown)
+                                                                {
+                                                                    console.log(jqXHR.responseText);
+                                                                }
+                                                            });
                                                         }
                                                     },
                                                     error: function (jqXHR, textStatus, errorThrown)
@@ -3351,6 +3302,8 @@ $(document).ready(function()
                                 console.log(jqXHR.responseText);
                             }
                         });
+    
+                        
                     }else{
                         $('#camp').hide();
                         $('#felts').hide();
@@ -3380,6 +3333,54 @@ $(document).ready(function()
                                     if(result.eval == 1){ $('#eval-exists').show();} 
                                     if(result.dec == 1) { $('#dec-exists').show();}
                                     if(result.adm == 1) { $('#adm-exists').show();}
+
+                                    var camp = $("#em-export-camp").val();
+                        
+                                    if (camp != 0) {
+                                        $.ajax({
+                                            type:'get',
+                                            url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
+                                            dataType:'json',
+                                            
+                                            success: function(result) {
+                                                if(result.status){
+                                                    $('#felts-'+code+camp).parent('div').remove();
+                                                    $('#felts-'+code+'0').parent('div').remove();
+                                                    $('#felts').append(result.html);
+                                                    $('#felts').show();
+            
+                                                    $.ajax({
+                                                        type:'post',
+                                                        url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                        dataType:'json',
+                                                        
+                                                        success: function(result) {
+                                                            if(result.status){
+                                                                $('#aelts-'+code+camp).parent('div').remove();
+                                                                $('#aelts-'+code+'0').parent('div').remove();
+                                                                $('#aelts').append(result.html);
+                                                                $('#aelts').show();
+                                                            }
+                                                        },
+                                                        error: function (jqXHR, textStatus, errorThrown)
+                                                        {
+                                                            console.log(jqXHR.responseText);
+                                                        }
+                                                    });
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown)
+                                            {
+                                                console.log(jqXHR.responseText);
+                                            }
+                                        });
+                                    }else{
+                                        $('[id^=felts-'+code+']').parent('div').remove();
+                                        $('[id^=aelts-'+code+']').parent('div').remove();
+            
+                                        $('#felts').append(prghtml);
+                                        $('#aelts').append(atthtml);
+                                    }
                                 }
                             },
                             error: function (jqXHR, textStatus, errorThrown)
@@ -3388,62 +3389,7 @@ $(document).ready(function()
                             }
                         });
     
-                        var year = $("#em-export-camp").val();
-                        var camp = $("#em-export-camp option:selected").text();
-                        camp = camp.split(' (')[0];
-                        
-                        if (year != 0) {
-                            $.ajax({
-                                type:'post',
-                                url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
-                                dataType:'json',
-                                data:{
-                                    camplabel: JSON.stringify(camp)
-                                },
-
-                                success: function(result) {
-                                    if(result.status){
-
-                                        $('#felts-'+code+year).parent('div').remove();
-                                        $('#felts-'+code+'0').parent('div').remove();
-                                        $('#felts').append(result.html);
-                                        $('#felts').show();
-
-                                        $.ajax({
-                                            type:'post',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
-                                            dataType:'json',
-                                            data:{
-                                                camplabel: JSON.stringify(camp)
-                                            },
-
-                                            success: function(result) {
-                                                if(result.status){
-                                                    $('#aelts-'+code+year).parent('div').remove();
-                                                    $('#aelts-'+code+'0').parent('div').remove();
-                                                    $('#aelts').append(result.html);
-                                                    $('#aelts').show();
-                                                }
-                                            },
-                                            error: function (jqXHR, textStatus, errorThrown)
-                                            {
-                                                console.log(jqXHR.responseText);
-                                            }
-                                        });
-                                    }
-                                },
-                                error: function (jqXHR, textStatus, errorThrown)
-                                {
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
-                        }else{
-                            $('[id^=felts-'+code+']').parent('div').remove();
-                            $('[id^=aelts-'+code+']').parent('div').remove();
-
-                            $('#felts').append(prghtml);
-                            $('#aelts').append(atthtml);
-                        }
+                       
                     }
                 });
 
@@ -4143,10 +4089,11 @@ $(document).ready(function()
 
     $(document).on('click', '#savefilter', function(e) {
         var code = $('#em-export-prg').val();
-        var year = $('#em-export-camp').val();
-        var label = $("#em-export-prg option:selected").text();
+        var camp = $('#em-export-camp').val();
+        var proglabel = $("#em-export-prg option:selected").text();
+        var camplabel = $("#em-export-camp option:selected").text();
         var exp_methode = $('#em-export-methode:checked').val();
-        var params = '{"programme":"'+label+'","code":"'+code+'","year":"'+year+'","elements":'
+        var params = '{"programmelabel":"'+proglabel+'","code":"'+code+'","camp":"'+camp+'","campaignlabel":"'+camplabel+'","elements":'
         var eltJson = "{";
         var i = 0;
 

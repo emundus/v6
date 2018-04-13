@@ -1503,24 +1503,24 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         $jinput     = JFactory::getApplication()->input;
         $code    = $jinput->getVar('code', null);
-        $year    = $jinput->getVar('year', null);
-        $camp    = $jinput->getVar('camplabel', null);
+        $camp    = $jinput->getVar('camp', null);
+        
         
         $code = explode(',', $code);
-        $year = explode(',', $year);
+        $camp = explode(',', $camp);
         
-        $profile = EmundusModelProfile::getProfileIDByCourse($code, $year, $camp);
+        $profile = EmundusModelProfile::getProfileIDByCourse($code, $camp);
         $pages = EmundusHelperMenu::buildMenuQuery((int)$profile[0]);
         
-        if($year[0] != 0)
-            $campaign = EmundusModelCampaign::getCampaignsByCourseYear($code[0], $year[0], $camp);
+        if($camp[0] != 0)
+            $campaign = EmundusModelCampaign::getCampaignsByCourseCampaign($code[0], $camp[0]);
         else
             $campaign = EmundusModelCampaign::getCampaignsByCourse($code[0]);
 
         
         $html1 = '';
         $html2 = '';
-        //var_dump(count($pages));
+        
         for ($i = 0; $i < count($pages); $i++) {
             if($i < count($pages)/2){
                 $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id.'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id.'" /><label for="'.$pages[$i]->form_id.'">'.JText::_($pages[$i]->label).'</label><br/>';
@@ -1528,15 +1528,15 @@ class EmundusControllerFiles extends JControllerLegacy
                 $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id.'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id.'" /><label for="'.$pages[$i]->form_id.'">'.JText::_($pages[$i]->label).'</label><br/>';
             }
         }
-
+       //var_dump($camp[0]);
         $html = '<div class="panel panel-default pdform">
                     <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].str_replace(" ","",$year[0])."'".')">
+                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
                         <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
                     </div>
-                    <div class="panel-body" id="felts-'.$code[0].str_replace(" ","",$year[0]).'" style="display:none;">
+                    <div class="panel-body" id="felts-'.$code[0].$camp[0].'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
                     </div>
                 </div>';
@@ -1550,17 +1550,17 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         $jinput     = JFactory::getApplication()->input;
         $code    = $jinput->getVar('code', null);
-        $year    = $jinput->getVar('year', null);
+        $camp    = $jinput->getVar('camp', null);
         $code = explode(',', $code);
-        $year = explode(',', $year);
-        $camp    = $jinput->getVar('camplabel', null);
+        $camp = explode(',', $camp);
+        
 
-        $profile = EmundusModelProfile::getProfileIDByCourse($code, $year, $camp);
+        $profile = EmundusModelProfile::getProfileIDByCourse($code, $camp);
         $docs = EmundusHelperFiles::getAttachmentsTypesByProfileID((int)$profile[0]);
         $campaign = EmundusModelCampaign::getCampaignsByCourse($code[0]);
 
-        if($year[0] != 0)
-            $campaign = EmundusModelCampaign::getCampaignsByCourseYear($code[0], $year[0], $camp);
+        if($camp[0] != 0)
+            $campaign = EmundusModelCampaign::getCampaignsByCourseCampaign($code[0], $camp[0]);
         else
             $campaign = EmundusModelCampaign::getCampaignsByCourse($code[0]);
 
@@ -1577,12 +1577,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $html = '<div class="panel panel-default pdform">
                     <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'aelts-".$code[0].str_replace(" ","",$year[0])."'".')">
+                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'aelts-".$code[0].$camp[0]."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
                         <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
                     </div>
-                    <div class="panel-body" id="aelts-'.$code[0].str_replace(" ","",$year[0]).'" style="display:none;">
+                    <div class="panel-body" id="aelts-'.$code[0].$camp[0].'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
                     </div>
                 </div>';
@@ -2778,7 +2778,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $campaign  = $m_campaigns->getCampaignByFnum($fnum);
                 if($campaign->training == $code){
                     $nbcamp += 1;
-                    $option = '<option value="'.$campaign->year.'">'.$campaign->label.' ('.$campaign->year.')</option>';
+                    $option = '<option value="'.$campaign->id.'">'.$campaign->label.' ('.$campaign->year.')</option>';
                     if (strpos($html, $option) === false) {
                         $html .= $option;
                     }
@@ -2824,13 +2824,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $code       = $jinput->getString('code', null);
         $campaigns = $h_files->getProgramCampaigns($code);
-
+       
         $nbcamp = count($campaigns);
         foreach ($campaigns as $c) {
             if ($nbcamp == 1) {
-                $html .= '<option value="'.$c->year.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             } else {
-                $html .= '<option value="'.$c->year.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             }
         }
 

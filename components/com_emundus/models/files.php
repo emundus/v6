@@ -562,7 +562,7 @@ class EmundusModelFiles extends JModelLegacy
                         {
                             $q = $this->_buildSearch($value, $tableAlias);
                             foreach($q['q'] as $v)
-                                $query['q'] .= ' and ' . $v;
+                                $query['q'] .= $v;
 
                             foreach($q['join'] as $u)
                                 $query['join'] .= $u;
@@ -804,8 +804,8 @@ class EmundusModelFiles extends JModelLegacy
         foreach($str_array as $str){
            
             $val = explode(': ', $str);
-            if($val[0] == "ALL"){
-                if (is_numeric($val[1]))
+            
+               /* if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
                     $q['q'][] .= ' (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
@@ -902,10 +902,11 @@ class EmundusModelFiles extends JModelLegacy
                         $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
                     }
                     $q['em_user'] = true;
-            }
+            }*/
 
+            if($val[0] == "ALL"){
            
-           /* if (is_numeric($val[1]))
+                if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
                     if($all > 0){
@@ -921,7 +922,7 @@ class EmundusModelFiles extends JModelLegacy
                 }
                 else
                 {
-                    if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false)
+                    if(filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false)
                     {
                         //the request is an email
                         if($all > 0){
@@ -937,16 +938,19 @@ class EmundusModelFiles extends JModelLegacy
                     else
                     {
                         if($all > 0){
-                            $q['q'][]= ' or (ue.lastname LIKE "%' . ($str) . '%" OR ue.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                            $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
                         }else{
-                            $q['q'][]= ' and (ue.lastname LIKE "%' . ($str) . '%" OR ue.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                            $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
                         }
-                        //$q['q'][] .= ' (ue.lastname LIKE "%' . ($str) . '%" OR ue.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        if (!in_array('jos_users', $tableAlias))
+                        if (!in_array('jos_users', $tableAlias)){
                             $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
-                        $q['join'][] .= ' left join #__emundus_users as ue on ue.user_id = jos_emundus_campaign_candidature.applicant_id ';
-                        $q['users'] = true;
-                        $q['em_user'] = true;
+                            $q['users'] = true;
+                        }
+                            
+                        if (!in_array('jos_emundus_users', $tableAlias)){
+                            $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+                            $q['em_user'] = true;
+                        }
                     }
                 }
                 
@@ -1020,31 +1024,33 @@ class EmundusModelFiles extends JModelLegacy
             if($val[0] == "LAST_NAME"){
                 //the request is a lastname
                 if($lastname > 0){
-                    $q['q'][]= ' or (ue.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                    $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
                 }else{
-                    $q['q'][]= ' and (ue.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                    $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
                 }
                 
-                if (!in_array(' left join #__emundus_users as ue on ue.user_id = jos_emundus_campaign_candidature.applicant_id ', $q['join']))
-                    $q['join'][] = ' left join #__emundus_users as ue on ue.user_id = jos_emundus_campaign_candidature.applicant_id ';
-                $q['em_user'] = true;
+                if (!in_array('jos_emundus_users', $tableAlias)){
+                    $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+                    $q['em_user'] = true;
+                }
                 
                 $lastname = $lastname + 1;
             }
             if($val[0] == "FIRST_NAME"){
                 //the request is a firstname
                     if($firstname > 0){
-                        $q['q'][]= ' or (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                        $q['q'][]= ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
                     }else{
-                        $q['q'][]= ' and (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                        $q['q'][]= ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
                     }
                     //$q['q'][] = ' and (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    if (!in_array(' left join #__emundus_users as ue on ue.user_id = jos_emundus_campaign_candidature.applicant_id ', $q['join']))
-                        $q['join'][] = ' left join #__emundus_users as ue on ue.user_id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['em_user'] = true;
+                    if (!in_array('jos_emundus_users', $tableAlias)){
+                        $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+                        $q['em_user'] = true;
+                    }
                     
                     $firstname = $firstname + 1;
-            }*/
+            }
         }
         //var_dump($q['join']);die;
         return $q;
