@@ -1502,20 +1502,22 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         $jinput     = JFactory::getApplication()->input;
-        $code    = $jinput->get('code', null);
-        $year    = $jinput->get('year', null);
-
+        $code    = $jinput->getVar('code', null);
+        $year    = $jinput->getVar('year', null);
+        $camp    = $jinput->getVar('camplabel', null);
+        
         $code = explode(',', $code);
         $year = explode(',', $year);
-        $profile = EmundusModelProfile::getProfileIDByCourse($code, $year);
+        
+        $profile = EmundusModelProfile::getProfileIDByCourse($code, $year, $camp);
         $pages = EmundusHelperMenu::buildMenuQuery((int)$profile[0]);
-
+        
         if($year[0] != 0)
-            $campaign = EmundusModelCampaign::getCampaignsByCourseYear($code[0], $year[0]);
+            $campaign = EmundusModelCampaign::getCampaignsByCourseYear($code[0], $year[0], $camp);
         else
             $campaign = EmundusModelCampaign::getCampaignsByCourse($code[0]);
 
-
+        
         $html1 = '';
         $html2 = '';
         //var_dump(count($pages));
@@ -1529,12 +1531,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $html = '<div class="panel panel-default pdform">
                     <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$year[0]."'".')">
+                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].str_replace(" ","",$year[0])."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
                         <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
                     </div>
-                    <div class="panel-body" id="felts-'.$code[0].$year[0].'" style="display:none;">
+                    <div class="panel-body" id="felts-'.$code[0].str_replace(" ","",$year[0]).'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
                     </div>
                 </div>';
@@ -1547,17 +1549,18 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         $jinput     = JFactory::getApplication()->input;
-        $code    = $jinput->get('code', null);
-        $year    = $jinput->get('year', null);
+        $code    = $jinput->getVar('code', null);
+        $year    = $jinput->getVar('year', null);
         $code = explode(',', $code);
         $year = explode(',', $year);
+        $camp    = $jinput->getVar('camplabel', null);
 
-        $profile = EmundusModelProfile::getProfileIDByCourse($code, $year);
+        $profile = EmundusModelProfile::getProfileIDByCourse($code, $year, $camp);
         $docs = EmundusHelperFiles::getAttachmentsTypesByProfileID((int)$profile[0]);
         $campaign = EmundusModelCampaign::getCampaignsByCourse($code[0]);
 
         if($year[0] != 0)
-            $campaign = EmundusModelCampaign::getCampaignsByCourseYear($code[0], $year[0]);
+            $campaign = EmundusModelCampaign::getCampaignsByCourseYear($code[0], $year[0], $camp);
         else
             $campaign = EmundusModelCampaign::getCampaignsByCourse($code[0]);
 
@@ -1574,12 +1577,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $html = '<div class="panel panel-default pdform">
                     <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'aelts-".$code[0].$year[0]."'".')">
+                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'aelts-".$code[0].str_replace(" ","",$year[0])."'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
                         <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
                     </div>
-                    <div class="panel-body" id="aelts-'.$code[0].$year[0].'" style="display:none;">
+                    <div class="panel-body" id="aelts-'.$code[0].str_replace(" ","",$year[0]).'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
                     </div>
                 </div>';

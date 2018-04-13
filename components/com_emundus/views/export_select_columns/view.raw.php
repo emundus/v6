@@ -41,10 +41,11 @@ class EmundusViewExport_select_columns extends JViewLegacy
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
         $jinput = JFactory::getApplication()->input;
-        $prg    = $jinput->get('code', null);
-        $view   = $jinput->get('viewcall', null);
-        $form   = $jinput->get('form', null);
-        $year   = $jinput->get('year', null);
+        $prg    = $jinput->getVar('code', null);
+        $view   = $jinput->getVar('viewcall', null);
+        $form   = $jinput->getVar('form', null);
+        $year   = $jinput->getVar('year', null);
+        $camp   = $jinput->getVar('camp', null);
 
 
         $code       = array();
@@ -60,7 +61,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
         $m_admission = new EmundusModelAdmission;
         $m_eval = new EmundusModelEvaluation;
-
+        
         //@TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
         if ($form == "decision")
             $elements = $m_admission->getAdmissionElementsName(1, 1, $code);
@@ -69,7 +70,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
         elseif ($form == "evaluation")
             $elements = $m_eval->getEvaluationElementsName(1, 1, $code);
         else
-		    $elements = EmundusHelperFiles::getElements($code, $years);
+		    $elements = EmundusHelperFiles::getElements($code, $years, $camp);
 
         $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);

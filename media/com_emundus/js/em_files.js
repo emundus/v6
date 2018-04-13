@@ -777,7 +777,7 @@ function generate_pdf(json) {
     }
 }
 
-function showelts(elt,idcodeyear ){
+function showelts(elt, idcodeyear){
     if ($(elt).hasClass("btn btn-info")) {
         $('#'+idcodeyear).toggle(400);
         $(elt).removeClass("btn btn-info").addClass("btn btn-elements-success");
@@ -1634,38 +1634,6 @@ $(document).ready(function()
                                                         '</div>' +
                                                     '</div>');
                             
-                           /* $.ajax({
-                                type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=checkdecision',
-                                dataType:'json',
-            
-                                success: function(result) {
-                                    if(result.status){
-                                        $('#th-dec').show();
-                                        $('#decelement').show();
-                                    }
-                                },
-                                error: function (jqXHR, textStatus, errorThrown)
-                                {
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
-                            $.ajax({
-                                type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=checkadmission',
-                                dataType:'json',
-            
-                                success: function(result) {
-                                    if(result.status){
-                                        $('#th-adm').show();
-                                        $('#admelement').show();
-                                    }
-                                },
-                                error: function (jqXHR, textStatus, errorThrown)
-                                {
-                                    console.log(jqXHR.responseText);
-                                }
-                            });*/
 
                             $.ajax({
                                 type:'get',
@@ -1738,11 +1706,12 @@ $(document).ready(function()
                                                         nbcamp = result.nbcamp;
 
                                                         var year = $("#em-export-camp").val();
-
+                                                        
                                                         $.ajax({
                                                             type: 'get',
                                                             url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code,
-
+                                                            dataType:'json',
+                                                            
                                                             success: function (data) {
                                                                 $('#elements-popup').empty();
                                                                 $('#em-export').empty();
@@ -2186,12 +2155,12 @@ $(document).ready(function()
                                 if (code != 0) {
 
                                     var year = $("#em-export-camp").val();
-
+                                   
                                     $.ajax({
                                         type:'get',
                                         url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                         dataType:'json',
-                    
+                                        
                                         success: function(result) {
                                             if(result.status){
                                                 if(result.eval == 1){ $('#th-eval').show(); $('#evalelement').show();} 
@@ -2208,7 +2177,8 @@ $(document).ready(function()
                                     $.ajax({
                                         type: 'get',
                                         url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&year='+year+'&code=' + code,
-
+                                        dataType:'json',
+                                       
                                         success: function (data) {
                                             $('.btn-success').show();
                                             $('#em-export').empty();
@@ -2984,11 +2954,17 @@ $(document).ready(function()
 
                     if (code != 0) {
                         var year = $("#em-export-camp").val();
+                        var camp = $("#em-export-camp option:selected").text();
+                        camp = camp.split(' (')[0];
+
                         if (year != 0) {
                             $.ajax({
                                 type:'get',
                                 url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
                                 dataType:'json',
+                                data:{
+                                    camplabel: JSON.stringify(camp)
+                                },
 
                                 success: function(result) {
                                     if(result.status){
@@ -3002,6 +2978,9 @@ $(document).ready(function()
                                             type:'get',
                                             url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
                                             dataType:'json',
+                                            data:{
+                                                camplabel: JSON.stringify(camp)
+                                            },
 
                                             success: function(result) {
                                                 if(result.status){
@@ -3410,11 +3389,17 @@ $(document).ready(function()
                         });
     
                         var year = $("#em-export-camp").val();
+                        var camp = $("#em-export-camp option:selected").text();
+                        camp = camp.split(' (')[0];
+                        
                         if (year != 0) {
                             $.ajax({
-                                type:'get',
+                                type:'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&year=' + year,
                                 dataType:'json',
+                                data:{
+                                    camplabel: JSON.stringify(camp)
+                                },
 
                                 success: function(result) {
                                     if(result.status){
@@ -3425,9 +3410,12 @@ $(document).ready(function()
                                         $('#felts').show();
 
                                         $.ajax({
-                                            type:'get',
+                                            type:'post',
                                             url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&year=' + year,
                                             dataType:'json',
+                                            data:{
+                                                camplabel: JSON.stringify(camp)
+                                            },
 
                                             success: function(result) {
                                                 if(result.status){
