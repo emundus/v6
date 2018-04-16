@@ -93,6 +93,7 @@
 <script type="text/javascript">
 $(document).ready(function()
 {
+	$('form').css({padding:"26px"})
 	$('#gprogs').chosen({width:'100%'});
 });
 </script>

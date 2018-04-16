@@ -173,11 +173,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadAssoc();
 	}
 
-	function getCampaignsByCourseYear($course, $year)
+	function getCampaignsByCourseCampaign($course, $camp)
 	{
+		
 		$query = 'SELECT esc.*
-					FROM #__emundus_setup_campaigns AS esc
-					WHERE esc.training like '.$this->_db->Quote($course).' AND esc.year like '.$this->_db->Quote($year);
+				FROM #__emundus_setup_campaigns AS esc
+				WHERE esc.training like '.$this->_db->Quote($course).' AND esc.id like '.$this->_db->Quote($camp);
+	
+		
 		$this->_db->setQuery( $query );
 		return $this->_db->loadAssoc();
 	}

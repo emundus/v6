@@ -202,15 +202,27 @@ if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($c
 				<?php if ($field->hidden):?>
 					<?php echo $field->input;?>
 				<?php else:?>
-					<dt>
-						<?php echo $field->label; ?>
-					</dt>
-					<dd>
-						<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, ""); ?>
-						<span class="help-inline has-warning">
-						<div class="em_msg" id="em_msg_<?php echo $field->name; ?>" style="display: inline; border-width: 2px; border-color: #FF0000; color:#FF0000; padding: 5px"></div>
-						</span>
-					</dd>
+					<?php if ($field->type == 'Checkbox'):?>
+						<div><table><tr>
+							<td><?php echo $field->input; ?></td>
+							<?php if ($field->name == 'jform[emundus_profile][cgu]'):?>
+								<td><?php echo '<a href="'.JUri::base().'index.php?option=com_content&view=article&id=2"> <i>'.$field->label.'</i></a>'; ?></td>
+							<?php else:?>
+								<td><?php echo '<i>'.$field->label.'</i>'; ?></td>
+							<?php endif;?>
+							
+						</tr></table></div>
+					<?php else:?>
+						<dt>
+							<?php echo $field->label; ?>
+						</dt>
+						<dd>
+							<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, ""); ?>
+							<span class="help-inline has-warning">
+							<div class="em_msg" id="em_msg_<?php echo $field->name; ?>" style="display: inline; border-width: 2px; border-color: #FF0000; color:#FF0000; padding: 5px"></div>
+							</span>
+						</dd>
+					<?php endif;?>
 				<?php endif;?>
 			<?php endif; ?>
 		<?php endforeach;?>

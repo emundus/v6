@@ -255,32 +255,32 @@ class EmundusModelUsers extends JModelList
                 foreach($search as $str){
                     $val = explode(': ', $str);
 
-                    if($val[0] == JText::_('ALL'))
+                    if($val[0] == "ALL")
                         $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR u.email LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR e.schoolyear LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR u.username LIKE '.$db->Quote('%'.$val[1].'%').'
-                        OR u.id LIKE '.$db->Quote('%'.$val[1].'%');
+                        OR u.id = '.$db->Quote($val[1]);
 
 
-                    if($val[0] == JText::_('ID'))
-                        $q .= ' OR u.id LIKE '.$db->Quote('%'.$val[1].'%');
+                    if($val[0] == "ID")
+                        $q .= ' OR u.id = '.$db->Quote($val[1]);
                     
 
-                    if($val[0] == JText::_('EMAIL'))
+                    if($val[0] == "EMAIL")
                         $q .= ' OR u.email LIKE '.$db->Quote('%'.$val[1].'%');
                     
 
-                    if($val[0] == JText::_('USERNAME'))
+                    if($val[0] == "USERNAME")
                         $q .= ' OR u.username LIKE '.$db->Quote('%'.$val[1].'%');
                     
                     
-                    if($val[0] == JText::_('LAST_NAME'))
+                    if($val[0] == "LAST_NAME")
                         $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%');
                     
                        
-                    if($val[0] == JText::_('FIRST_NAME'))
+                    if($val[0] == "FIRST_NAME")
                         $q .= ' OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%');
                     
                 }
@@ -838,13 +838,12 @@ class EmundusModelUsers extends JModelList
 
                 if ($news == 1) {
                     $query="INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`)
-                            VALUES (".$user->id.", 'emundus_profiles.newsletter', '1', 4)";
+                            VALUES (".$user->id.", 'emundus_profile.newsletter', '1', 4)";
                     $db->setQuery($query);
                     $db->query() or die($db->getErrorMsg());
                 }
 
-
-
+                
                 /*$query="INSERT INTO `#__emundus_users_profiles_history` VALUES ('','".date('Y-m-d H:i:s')."',".$user->id.",".$profile.",'profile')";
                 $db->setQuery($query);
                 $db->Query() or die($db->getErrorMsg());*/
@@ -1281,8 +1280,9 @@ class EmundusModelUsers extends JModelList
             $query = 'select u.username as login, u.email, eu.firstname, eu.lastname, eu.profile, eu.university_id, up.profile_value as newsletter
                       from #__users as u
                       left join #__emundus_users as eu on eu.user_id = u.id
-                      left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profiles.newsletter")
+                      left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profile.newsletter")
                       where u.id = ' .$uid;
+            //var_dump($query);die;
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadAssoc();
@@ -1292,6 +1292,7 @@ class EmundusModelUsers extends JModelList
             return false;
         }
     }
+
 
     // Get groups of user
     public function getUserGroups($uid, $return = 'AssocList')
@@ -1571,10 +1572,16 @@ class EmundusModelUsers extends JModelList
                                                         university_id = '.$user['university_id'].' WHERE user_id = '.(int)$user['id']);
             $db->query();
 
+            $db->setQuery('UPDATE #__user_profiles SET profile_value = '.$db->Quote($user['firstname']).' WHERE user_id = '.(int)$user['id'] .' and profile_key like "emundus_profile.firstname"');
+            $db->query();
+            
+            $db->setQuery('UPDATE #__user_profiles SET profile_value = '.$db->Quote($user['lastname']).' WHERE user_id = '.(int)$user['id'] .' and profile_key like "emundus_profile.lastname"');
+            $db->query();
+
             $db->setQuery('delete from #__emundus_groups where user_id = '. (int)$user['id']);
             $db->query();
 
-            $db->setQuery('delete from #__user_profiles where user_id = ' .(int)$user['id'].' and profile_key like "emundus_profiles.newsletter"');
+            $db->setQuery('delete from #__user_profiles where user_id = ' .(int)$user['id'].' and profile_key like "emundus_profile.newsletter"');
             $db->query();
 
             $db->setQuery('delete from #__emundus_users_profiles WHERE user_id='.(int)$user['id']);
@@ -1628,12 +1635,13 @@ class EmundusModelUsers extends JModelList
                 }
 
             }
-
-            if ($user['news'] == 1) {
-                $query="INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`) VALUES (".$user['id'].", 'emundus_profiles.newsletter', '1', 4)";
+            
+            if ($user['news'] == "1") {
+                $query="INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`) VALUES (".$user['id'].", 'emundus_profile.newsletter', '\"1\"', 4)";
                 $db->setQuery($query);
                 $db->query();
             }
+
             return true;
 
         } catch(Exeption $e) {

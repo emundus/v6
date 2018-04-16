@@ -65,21 +65,22 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 
-		$jinput 	= JFactory::getApplication()->input;
-		$itemid 	= $jinput->post->get('Itemid', null, null);
-		$firstname 	= $jinput->post->get('firstname', null, null);
-		$lastname 	= $jinput->post->get('lastname', null, null);
-		$username 	= $jinput->post->get('login', null, null);
-		$name 		= strtolower($firstname).' '.strtoupper($lastname);
-		$email 		= $jinput->post->get('email', null, null);
-		$profile 	= $jinput->post->get('profile', null, null);
-		$oprofiles 	= $jinput->post->get('oprofiles', null, 'string');
-		$jgr 		= $jinput->post->get('jgr', null, null);
-		$univ_id 	= $jinput->post->get('university_id', null, null);
-		$groups 	= $jinput->post->get('groups', null, 'string');
-		$campaigns 	= $jinput->post->get('campaigns', null, 'string');
-		$news		= $jinput->post->get('newsletter', null, 'string');
-		$ldap		= $jinput->post->get('ldap', 0, null);
+		$jinput      = JFactory::getApplication()->input;
+		$itemid 	 = $jinput->post->get('Itemid', null, null);
+		$firstname 	 = $jinput->post->get('firstname', null, null);
+		$lastname  	 = $jinput->post->get('lastname', null, null);
+		$username 	 = $jinput->post->get('login', null, null);
+		$name 		 = strtolower($firstname).' '.strtoupper($lastname);
+		$email 		 = $jinput->post->get('email', null, null);
+		$profile 	 = $jinput->post->get('profile', null, null);
+		$oprofiles 	 = $jinput->post->get('oprofiles', null, 'string');
+		$jgr 		 = $jinput->post->get('jgr', null, null);
+		$univ_id 	 = $jinput->post->get('university_id', null, null);
+		$groups 	 = $jinput->post->get('groups', null, 'string');
+		$campaigns 	 = $jinput->post->get('campaigns', null, 'string');
+		$news		 = $jinput->post->get('newsletter', null, 'string');
+		$ldap		 = $jinput->post->get('ldap', 0, null);
+		//var_dump($dataexploit);
 
 		// If we are creating a new user from the LDAP system, he does not have a password.
 		if ($ldap == 0)
@@ -608,7 +609,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$newuser['em_campaigns'] 	= JRequest::getVar('campaigns', null, 'POST', '', 0);
 		$newuser['em_groups'] 		= JRequest::getVar('groups', null, 'POST', '', 0);
 		$newuser['news'] 			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
-
+		
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.\+]+$/', $newuser['username']) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
 			exit;

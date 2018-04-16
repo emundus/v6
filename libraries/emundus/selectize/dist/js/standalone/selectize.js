@@ -1412,6 +1412,7 @@
 		setupTemplates: function() {
 			var self = this;
 			var field_label = self.settings.labelField;
+			
 			var field_optgroup = self.settings.optgroupLabelField;
 	
 			var templates = {
@@ -1428,7 +1429,7 @@
 					return '<div class="item">' + escape(data[field_label]) + '</div>';
 				},
 				'option_create': function(data, escape) {
-					return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
+					return '<div class="create"><strong id="">' + escape(data.input) + '</strong></div>';
 				}
 			};
 	
@@ -1810,8 +1811,10 @@
 			}
 	
 			$target = $(e.currentTarget);
+			
+			var key = $target[0].id;
 			var text = $target[0].textContent.split(Joomla.JText._('IN'));
-			var val = text[1]+": "+text[0];
+			var val = key + ": " + text[0];
 			if ($target.hasClass('create')) {
 				
 				self.createItem(val, function() {
@@ -2269,16 +2272,15 @@
 			has_create_option = self.canCreate(query);
 			if (has_create_option) {
 				if($('#view').val() != "users")
-					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FNUM')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ID')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('EMAIL')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('USERNAME')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FIRST_NAME')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('LAST_NAME')}));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ALL')}));
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FNUM')}, 'FNUM'));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ID')}, 'ID'));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('EMAIL')}, 'EMAIL'));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('USERNAME')}, 'USERNAME'));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FIRST_NAME')}, 'FIRST_NAME'));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('LAST_NAME')}, 'LAST_NAME'));
+				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ALL')}, 'ALL'));
 				$create = $($dropdown_content[0].childNodes[0]);
 			}
-			
 			// activate
 			self.hasOptions = results.items.length > 0 || has_create_option;
 			if (self.hasOptions) {
@@ -2616,14 +2618,14 @@
 					// update menu / remove the option (if this is not one item being added as part of series)
 					if (!self.isPending) {
 						$option = self.getOption(value);
-
+						
 						value_next = self.getAdjacentOption($option, 1).attr('data-value');
 						self.refreshOptions(self.isFocused && inputMode !== 'single');
 						if (value_next) {
 							self.setActiveOption(self.getOption(value_next));
 						}
 					}
-	
+					
 					// hide the menu if the maximum number of items have been selected or no options are left
 					if (!$options.length || self.isFull()) {
 						self.close();
@@ -2633,7 +2635,7 @@
 	
 					self.updatePlaceholder();
 					self.trigger('item_add', value, $item);
-
+					
 					self.updateOriginalInput({silent: silent});
 				}
 			});
@@ -2696,6 +2698,7 @@
 		createItem: function(input, triggerDropdown) {
 			var self  = this;
 			var caret = self.caretPos;
+
 			input = input || $.trim(self.$control_input.val() || '');
 			
 			var callback = arguments[arguments.length - 1];
@@ -2715,7 +2718,9 @@
 			
 			var setup = (typeof self.settings.create === 'function') ? this.settings.create : function(input) {
 				var data = {};
-				data[self.settings.labelField] = input;
+				var inputs = input.split(": ");
+				
+				data[self.settings.labelField] = Joomla.JText._(inputs[0])+": "+inputs[1];
 				data[self.settings.valueField] = input;
 				data[self.settings.id]   = input;
 				
@@ -2728,7 +2733,6 @@
 				if (!data || typeof data !== 'object') return callback();
 				var value = hash_key(data[self.settings.valueField]);
 				if (typeof value !== 'string') return callback();
-	
 				self.setTextboxValue('');
 				self.addOption(data);
 				self.setCaret(caret);
@@ -3204,9 +3208,10 @@
 		 *
 		 * @param {string} templateName
 		 * @param {object} data
+		 * @param {string} data
 		 * @returns {string}
 		 */
-		render: function(templateName, data) {
+		render: function(templateName, data, lang) {
 			var value, id, label;
 			var html = '';
 			var cache = false;
@@ -3234,6 +3239,7 @@
 			// add mandatory attributes
 			if (templateName === 'option' || templateName === 'option_create') {
 				html.attr('data-selectable', '');
+				html.attr('id', lang);
 			}
 			else if (templateName === 'optgroup') {
 				id = data[self.settings.optgroupValueField] || '';
@@ -3393,13 +3399,17 @@
 			if (!data_raw) {
 				var value = $.trim($input.val() || '');
 				if (!settings.allowEmptyOption && !value.length) return;
+				
 				values = value.split(settings.delimiter);
 				for (i = 0, n = values.length; i < n; i++) {
 					option = {};
-					option[field_label] = values[i];
+					var value = values[i].split(": ");
+					option[field_label] = Joomla.JText._(value[0]) + ": " + value[1];
 					option[field_value] = values[i];
 					settings_element.options.push(option);
 				}
+				
+				
 				settings_element.items = values;
 			} else {
 				settings_element.options = JSON.parse(data_raw);

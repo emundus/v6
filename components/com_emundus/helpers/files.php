@@ -523,7 +523,7 @@ class EmundusHelperFiles
      * @param array $fabrik_elements
      * @return array
      */
-    public static function getElements($code = array(), $years = array(), $fabrik_elements = array()) {
+    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array()) {
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -536,7 +536,7 @@ class EmundusHelperFiles
         $m_campaign = new EmundusModelCampaign;
 
         $db = JFactory::getDBO();
-
+       // var_dump($camp);
         if (count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
@@ -550,9 +550,9 @@ class EmundusHelperFiles
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
 
         } else {
-            $plist = $m_profile->getProfileIDByCourse($code, $years);
+            $plist = $m_profile->getProfileIDByCourse($code, $camps);
         }
-
+        
         if ($plist) {
             // get Fabrik list ID for profile_id
             $fl = array();
@@ -574,6 +574,7 @@ class EmundusHelperFiles
                     }
                 }
             }
+            
 
             if (count($fl) == 0)
                 return array();
@@ -1008,8 +1009,11 @@ class EmundusHelperFiles
         
         $cs = '';
         if(!empty($current_s)){
-            foreach($current_s as $c)
+            foreach($current_s as $c){
+               // $key = explode(': ', $c);
+               // $tag = JText::_($key[0]).": ".$key[1];
                 $cs .= $c .',';
+            }
             $cs = rtrim($cs, ',');
         }
         

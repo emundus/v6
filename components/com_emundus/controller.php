@@ -543,8 +543,8 @@ class EmundusController extends JControllerLegacy {
 
 
                 }
-                $u_model = new EmundusModelUsers;
-                $u_model->changeCurrentUserProfile($current_user->id, $emProfile->id);
+                $m_users = new EmundusModelUsers;
+                //$m_users->changeCurrentUserProfile($current_user->id, $emProfile->id);
             }
         }
         $session->set('emundusUser', $aid);
