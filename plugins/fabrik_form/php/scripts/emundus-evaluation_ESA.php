@@ -75,9 +75,20 @@ if ($interviewed) {
 		JLog::add('Error in plugin evaluation-ESA on query : '.$query, JLog::ERROR, 'com_emundus');
 	}
 
+	$post = [
+		'FNUM'      => $fnum->fnum,
+		'USER_NAME' => $student->name,
+	];
+
+	$tags = $m_emails->setTags($student->id, $post);
+	$body = $m_emails->setTagsFabrik($obj->message, [$fnum->fnum]);
+
+	$subject = preg_replace($tags['patterns'], $tags['replacements'], $obj->subject);
+	$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
 	// template replacements (patterns)
-	$subject    = $m_emails->setTagsFabrik($obj->subject, array($fnum));
-	$body       = $m_emails->setTagsFabrik($obj->message, array($fnum));
+	$subject    = $m_emails->setTagsFabrik($subject, array($fnum));
+	$body       = $m_emails->setTagsFabrik($body, array($fnum));
 
 	// Mail au candidat
 	$from           = $obj->emailfrom;
