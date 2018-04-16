@@ -3822,7 +3822,7 @@ $(document).ready(function()
                     {
                         $('.modal-body').empty();
 
-                        var tags = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.tag+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_tag+'" name="em-action-tag" id="em-action-tag" value="">';
+                        var tags = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.tag+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_tag+'" name="em-action-tag" id="em-action-tag" multiple value="">';
 
 
                         for (var i in result.tags)
@@ -4829,6 +4829,7 @@ $(document).ready(function()
             // Validating tags
             case 14:
                 var tag = $("#em-action-tag").val();
+                
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +

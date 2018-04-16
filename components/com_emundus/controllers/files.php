@@ -483,8 +483,8 @@ class EmundusControllerFiles extends JControllerLegacy
     {
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
-        $tag    = $jinput->getInt('tag', null);
-
+        $tag    = $jinput->getVar('tag', null);
+        //var_dump($fnums);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
 
         $m_files = $this->getModel('Files');
