@@ -851,30 +851,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-	/*class myPdf extends TCPDF
-	{
-		var $lastname = "";
-		var $firstname = "";
-		var $program = "";
-
-		// Page footer
-		public function Footer() {
-			// Position at 16 mm from bottom
-
-			$this->SetY(-10);
-			// Set font
-
-			// Page number
-			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
-			$this->Cell(0, 0, ''.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
-
-
-		}
-	}
-	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);*/
-
-
-
+	
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Decision Publique');
 	$pdf->SetTitle('Application Form');
@@ -935,11 +912,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetFont('helvetica', '', 10);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
-
-	//$pdf->setPrintFooter(false);
-	/*$pdf->lastname = $item->lastname;
-	$pdf->firstname = $item->firstname;
-	$pdf->program = $item->label;*/
 
 
 	/*** Applicant   ***/
@@ -1051,7 +1023,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 
 
-
+	//var_dump($forms);die;
 	$htmldata .= $forms;
 	//die($htmldata);
 	// Listes des fichiers chargés

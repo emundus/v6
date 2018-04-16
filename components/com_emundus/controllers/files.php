@@ -904,7 +904,6 @@ class EmundusControllerFiles extends JControllerLegacy
             $res = false;
 
         $result = array('status' => $res);
-
         echo json_encode((object)$result);
         exit;
     }
@@ -917,9 +916,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $h_files = new EmundusHelperFiles;
 
-        $defaultElements    = $m_files->getDefaultElements();
-        $elements           = $h_files->getElements();
+        $jinput = JFactory::getApplication()->input;
+        $code = $jinput->getVar('code', null);
+        $camp = $jinput->getVar('camp', null);
+        
+        $code = explode(",", $code);
+        $camp = explode(",", $camp);
 
+        $defaultElements    = $m_files->getDefaultElements();
+        $elements           = $h_files->getElements($code, $camp);
+        //var_dump($elements);
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
         exit;

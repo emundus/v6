@@ -534,6 +534,7 @@ class EmundusHelperFiles
         $m_user     = new EmundusModelUsers;
         $m_profile  = new EmundusModelProfile;
         $m_campaign = new EmundusModelCampaign;
+        $h_files    = new EmundusHelperFiles;
 
         $db = JFactory::getDBO();
        // var_dump($camp);
@@ -541,18 +542,22 @@ class EmundusHelperFiles
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
+           
 
             if (empty($programme) && empty($campaigns))
                 $programme = $m_campaign->getLatestCampaign();
 
+            
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
 
+            
+            
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
         }
-        
+        //var_dump($plist);
         if ($plist) {
             // get Fabrik list ID for profile_id
             $fl = array();
@@ -1706,7 +1711,8 @@ class EmundusHelperFiles
         $filters .='<fieldset>
                             <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
                             <table><tr><td style="width:95%; padding-right: 5px">
-                                <select class="search_test" id="select_filter" name="select_filter" > ';
+                                <select class="search_test" id="select_filter" name="select_filter" > 
+                                <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
                 if($select_id==$filter->id)

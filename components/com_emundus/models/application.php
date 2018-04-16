@@ -1201,6 +1201,7 @@ class EmundusModelApplication extends JModelList
 
 
                     if (count($elements)>0) {
+                        
                         $asTextArea = false;
                         foreach ($elements as $key => $element) {
                             if ($element->plugin == 'textarea') {
@@ -1211,7 +1212,8 @@ class EmundusModelApplication extends JModelList
                         $forms .= '<hr><h4>';
                         $forms .= JText::_($itemg->label);
                         $forms .= '</h4>';
-/*
+                        
+/*              
                         if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
                             foreach($elements as &$iteme) {
 
@@ -1281,7 +1283,7 @@ class EmundusModelApplication extends JModelList
   */
 
                         if ($itemg->group_id == 14) {
-
+                            
                             foreach ($elements as $element) {
 
                                 if (!empty($element->label) && $element->label!=' ' && !empty($element->content)) {
@@ -1297,6 +1299,7 @@ class EmundusModelApplication extends JModelList
 
                         // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
                         } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements)<7 && !$asTextArea){
+                           
                             $forms .= '<p><table class="adminlist">
                             <thead>
                             <tr> ';
@@ -1414,6 +1417,7 @@ class EmundusModelApplication extends JModelList
 
                         // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                         } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
+                            
 
                             //-- Entrée du tableau -- */
                             $t_elt = array();
@@ -1518,6 +1522,7 @@ class EmundusModelApplication extends JModelList
 
                         // AFFICHAGE EN LIGNE
                         } else {
+                            
                             foreach ($elements as $element) {
                                 $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
 
@@ -1540,8 +1545,9 @@ class EmundusModelApplication extends JModelList
                                 }
 
                                 $params = json_decode($element->params);
-
+                                //var_dump($element->content);
                                 if (!empty($element->content) || $params->database_join_display_type == 'checkbox') {
+                                    
                                     if (!empty($element->label) && $element->label!=' ') {
                                         if ($element->plugin=='date' && $element->content>0) {
                                             $elt = date($params->date_form_format, strtotime($element->content));
@@ -1614,6 +1620,10 @@ class EmundusModelApplication extends JModelList
                                             $elt = JText::_($element->content);
 
                                         $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
+                                    }
+                                }elseif(empty($element->content)){
+                                    if (!empty($element->label) && $element->label!=' ') {
+                                        $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: ';
                                     }
                                 }
                             }
