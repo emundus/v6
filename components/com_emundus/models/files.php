@@ -1722,18 +1722,23 @@ if (JFactory::getUser()->id == 63)
      * @param $tag
      * @return bool|mixed
      */
-    public function tagFile($fnums, $tag)
+    public function tagFile($fnums, $tags)
     {
         try
         {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
+            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
             foreach ($fnums as $fnum)
             {
-                $query = 'insert into #__emundus_tag_assoc(fnum, id_tag, user_id) VALUES ("'.$fnum.'", '.$tag.','.$user.'); ';
-                $db->setQuery($query);
-                $db->execute();
+                foreach($tags as $tag)
+                    $query .= '("'.$fnum.'", '.$tag.','.$user.'),';
             }
+            $query = substr_replace($query, ";", -1);
+
+            $db->setQuery($query);
+            $db->execute();
+            
             return true;
         }
         catch (Exception $e)
@@ -1754,7 +1759,7 @@ if (JFactory::getUser()->id == 63)
         $db = $this->getDbo();
         $query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where';
         $user = JFactory::getUser()->id;
-
+        
         if(is_null($tag))
         {
             $query .= ' t.user_id = ' . $user;
@@ -1773,7 +1778,7 @@ if (JFactory::getUser()->id == 63)
             $user = JFactory::getUser()->id;
 
             if (is_array($tag))
-                $query .= ' t.id_tag IN '.implode(',',$tag). ' and t.user_id = ' . $user;
+                $query .= ' t.id_tag IN ('.implode(',',$tag). ') and t.user_id = ' . $user;
             else
                 $query .= ' t.id_tag = '.$tag. ' and t.user_id = ' . $user;
 
@@ -1787,6 +1792,7 @@ if (JFactory::getUser()->id == 63)
                 throw $e;
             }
         }
+        
 
 
     }
