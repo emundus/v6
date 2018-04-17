@@ -132,6 +132,8 @@ JText::script('FILE_NAME');
 JText::script('LINK_TO_DOWNLOAD');
 JText::script('ALL_IN_ONE_DOC');
 JText::script('PDF_TAGS');
+JText::script('PDF_STATUS');
+JText::script('ADD_HEADER');
 
 
 // view user

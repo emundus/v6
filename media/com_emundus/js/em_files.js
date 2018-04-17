@@ -693,7 +693,7 @@ function generate_pdf(json) {
     var formids     = json.formids;
     var attachids   = json.attachids;
     var options     = json.options;
-   //console.log(formids);
+    //console.log(attachids);
     $.ajaxQ.abortAll();
 
     if (start+limit < maxfiles) {
@@ -2867,20 +2867,24 @@ $(document).ready(function()
                         '</div>'+
                     '</div><br/>');
 
-                    $('#data').append('<div style="padding-left:30px" id="exp-opt">'+
-                        '<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
+                    $('#data').append('<div style="padding-left:30px" id="exp-options">'+
+                        '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header"/>&ensp;' +
+                        '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
+                        '<div style="padding-left:30px; display:none;" id="exp-opt">'+
+                        '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
                         '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
                             '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
                             '<option  value="afnum" selected>'+Joomla.JText._('FNUM')+'</option>' +
                             '<option  value="aemail" selected>'+Joomla.JText._('EMAIL')+'</option>' +
-                            '<option  value="tags" selected>'+Joomla.JText._('PDF_TAGS')+'</option>' +
                             '<option  value="aapp-sent" selected>'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
                             '<option  value="adoc-print" selected>'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
+                            '<option  value="tags" selected>'+Joomla.JText._('PDF_TAGS')+'</option>' +
+                            '<option  value="status" selected>'+Joomla.JText._('PDF_STATUS')+'</option>' +
                             '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
                         '</select>'+
                     '</div><br/>' );
 
-                    $('#em-export-opt').chosen({width:'89.8%'});
+                    $('#em-export-opt').chosen({width:'80%'});
 
 
                 var checkInput = getUserCheck();
@@ -3216,22 +3220,8 @@ $(document).ready(function()
                 });
 
 
-                $('#data').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
-                        $('#exp-opt').show();
-                    else
-                        $('#exp-opt').hide();
-                });
-
-                $('#felts').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
-                        $('#exp-opt').show();
-                    else
-                        $('#exp-opt').hide();
-                });
-
-                $('#aelts').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
+                $('#em-add-header').click(function(e){
+                    if ($("#em-add-header").is(":checked"))
                         $('#exp-opt').show();
                     else
                         $('#exp-opt').hide();
@@ -3298,20 +3288,32 @@ $(document).ready(function()
                             '</div>'+
                         '</div><br/>');
 
-                        $('#data').append('<div style="padding-left:30px" id="exp-opt">'+
-                            '<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
-                            '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
+                        $('#data').append('<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
+                        '<div class="panel-heading">'+
+                            '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
+                            '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                        '</div>'+
+                        '</div><br/>');
+
+                        $('#data').append('<div style="padding-left:30px" id="em-options">'+
+                            
+                            '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header"/>&ensp;' +
+                            '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
+                            '<div style="padding-left:30px; display:none;" id="exp-opt">'+
+                            '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
+                            '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple >'+
                                 '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
                                 '<option  value="afnum" selected>'+Joomla.JText._('FNUM')+'</option>' +
                                 '<option  value="aemail" selected>'+Joomla.JText._('EMAIL')+'</option>' +
-                                '<option  value="tags" selected>'+Joomla.JText._('PDF_TAGS')+'</option>' +
                                 '<option  value="aapp-sent" selected>'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
                                 '<option  value="adoc-print" selected>'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
+                                '<option  value="tags" selected>'+Joomla.JText._('PDF_TAGS')+'</option>' +
+                                '<option  value="status" selected>'+Joomla.JText._('PDF_STATUS')+'</option>' +
                                 '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
                             '</select>'+
-                        '</div><br/>' );
+                        '</div></div><br/>' );
 
-                        $('#em-export-opt').chosen({width:'89.8%'});
+                        $('#em-export-opt').chosen({width:'80%'});
 
                         
                 var checkInput = getUserCheck();
@@ -3648,14 +3650,14 @@ $(document).ready(function()
 
                 });
 
-                $('#data').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
+                $('#em-add-header').click(function(e){
+                    if ($("#em-add-header").is(":checked"))
                         $('#exp-opt').show();
                     else
                         $('#exp-opt').hide();
                 });
 
-                $('#felts').click(function(e){
+                /*$('#felts').click(function(e){
                     if ($(".em-ex-check").is(":checked"))
                         $('#exp-opt').show();
                     else
@@ -3667,7 +3669,7 @@ $(document).ready(function()
                         $('#exp-opt').show();
                     else
                         $('#exp-opt').hide();
-                });
+                });*/
 
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
@@ -4057,12 +4059,12 @@ $(document).ready(function()
 
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
-            forms       = 1;
+            forms       = 0;
         });
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
-            attachment       = 1;
+            attachment       = 0;
         });
 
         if ($('#em-ex-forms').is(":checked"))
@@ -4076,9 +4078,11 @@ $(document).ready(function()
         if ($('#em-ex-admission').is(":checked"))
             admission   = 1;
 
-        $('#em-export-opt option:selected').each(function() {
-            options.push($(this).val());
-        });
+        if($('#em-add-header').is(":checked")){
+            $('#em-export-opt option:selected').each(function() {
+                options.push($(this).val());
+            });
+        }
 
         //$('.modal-footer').hide();
         //$('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
@@ -4168,12 +4172,12 @@ $(document).ready(function()
 
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
-            forms       = 1;
+            forms       = 0;
         });
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
-            attachment       = 1;
+            attachment       = 0;
         });
 
         if ($('#em-ex-forms').is(":checked"))
@@ -4186,11 +4190,13 @@ $(document).ready(function()
             decision    = 1;
         if ($('#em-ex-admission').is(":checked"))
             admission   = 1;
-
-        $('#em-export-opt option:selected').each(function() {
-            options.push($(this).val());
-        });
-        //console.log(options);
+        if($('#em-add-header').is(":checked")){
+            $('#em-export-opt option:selected').each(function() {
+                options.push($(this).val());
+            });
+        }
+        
+        //console.log(form_checked);
 
         $('#data').hide();
         $('div').remove('#chargement');
