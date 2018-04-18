@@ -1749,6 +1749,27 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
+    public function deletetags($fnums, $tags)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            $user = JFactory::getUser()->id;
+            $query ="DELETE from `#__emundus_tag_assoc` WHERE fnum IN (".implode(',', $fnums).") AND id_tag IN (".implode(',', $tags).") AND user_id = ".$user ;
+            //die($query);
+            $db->setQuery($query);
+            $db->execute();
+            
+            return true;
+        }
+        catch (Exception $e)
+        {
+            error_log($e->getMessage());
+            error_log($query);
+            return false;
+        }
+    }
+
     /**
      * @param null $tag
      * @return mixed

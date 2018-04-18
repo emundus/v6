@@ -60,6 +60,7 @@ class EmundusHelperAccess {
 	static function asApplicantAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 4);
 	}
+	
 	static function asPublicAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 1);
 	}

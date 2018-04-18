@@ -510,6 +510,47 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+    public function deletetags()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $fnums  = $jinput->getString('fnums', null);
+        $tags    = $jinput->getVar('tag', null);
+        
+        //var_dump($fnums);
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+
+        $m_files = $this->getModel('Files');
+
+        if ($fnums == "all")
+            $fnums = $m_files->getAllFnums();
+
+        $validFnums = array();
+
+        foreach ($fnums as $fnum)
+        {
+            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+            {
+                if(!in_array($fnum, $validFnums))
+                    $validFnums[] = $fnum;
+            }
+            if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
+            {
+                if(!in_array($fnum, $validFnums))
+                    $validFnums[] = $fnum;
+            }
+        }
+        unset($fnums);
+        if(!empty($tags))
+            $res    = $m_files->deletetags($validFnums, $tags);
+        else   
+            die("No tags ...");
+            
+        $tagged = $m_files->getTaggedFile($tag);
+            echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
+        exit;
+    }
+
+
     /**
      *
      */
@@ -2936,13 +2977,15 @@ class EmundusControllerFiles extends JControllerLegacy
         $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user->id);
         $hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user->id);
         $hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user->id);
+        $hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user->id);
 
         $showatt = 0;
         $showeval = 0;
         $showdec  = 0;
         $showadm  = 0;
+        $showtag  =0;
         
-        if($hasAccessEval)
+        if($hasAccessAtt)
             $showatt = 1;
         if(!empty($eval) && $hasAccessEval)
             $showeval = 1;
@@ -2950,8 +2993,10 @@ class EmundusControllerFiles extends JControllerLegacy
             $showdec = 1;
         if(!empty($adm) && $hasAccessAdm)
             $showadm = 1;
+        if($hasAccessTags)
+            $showtag = 1;
         
-        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm)));
+        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag)));
         exit;
 
     }
