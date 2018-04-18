@@ -123,32 +123,34 @@ class EmundusHelperExport
     }
 
 	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
-        
-		foreach($files as $file) {
-            if (strrpos($file->filename, 'application_form') === false) {
-                $exFileName = explode('.', $file->filename);
-                $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
-                
-                if(file_exists($filePath)) {
-                    if (strtolower($exFileName[1]) != 'pdf') {
-                        $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
-                        $exports[] = $fn;
-                        $tmpArray[] = $fn;
-                    } else {
-                        /*$prop = EmundusHelperExport::get_pdf_prop($filePath);
-                        echo "<pre>";
-            var_dump($prop); die();*/
-                        if (EmundusHelperExport::isEncrypted($filePath)) { 
+        if(!empty($files)){
+            foreach($files as $file) {
+                if (strrpos($file->filename, 'application_form') === false) {
+                    $exFileName = explode('.', $file->filename);
+                    $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
+                    
+                    if(file_exists($filePath)) {
+                        if (strtolower($exFileName[1]) != 'pdf') {
                             $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                             $exports[] = $fn;
                             $tmpArray[] = $fn;
-                        } else
-                            $exports[] = $filePath;
+                        } else {
+                            /*$prop = EmundusHelperExport::get_pdf_prop($filePath);
+                            echo "<pre>";
+                var_dump($prop); die();*/
+                            if (EmundusHelperExport::isEncrypted($filePath)) { 
+                                $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
+                                $exports[] = $fn;
+                                $tmpArray[] = $fn;
+                            } else
+                                $exports[] = $filePath;
+                        }
                     }
+                       
                 }
-                   
-			}
+            }
         }
+		
 		return $exports;
 	}
 
@@ -253,7 +255,7 @@ class EmundusHelperExport
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 		$pdf->SetCreator(PDF_CREATOR);
 		$pdf->SetAuthor('eMundus');
-		$pdf->SetTitle($fileName);
+        $pdf->SetTitle($fileName);
 		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);

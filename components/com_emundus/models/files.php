@@ -1722,18 +1722,44 @@ if (JFactory::getUser()->id == 63)
      * @param $tag
      * @return bool|mixed
      */
-    public function tagFile($fnums, $tag)
+    public function tagFile($fnums, $tags)
     {
         try
         {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
+            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
             foreach ($fnums as $fnum)
             {
-                $query = 'insert into #__emundus_tag_assoc(fnum, id_tag, user_id) VALUES ("'.$fnum.'", '.$tag.','.$user.'); ';
-                $db->setQuery($query);
-                $db->execute();
+                foreach($tags as $tag)
+                    $query .= '("'.$fnum.'", '.$tag.','.$user.'),';
             }
+            $query = substr_replace($query, ";", -1);
+
+            $db->setQuery($query);
+            $db->execute();
+            
+            return true;
+        }
+        catch (Exception $e)
+        {
+            error_log($e->getMessage());
+            error_log($query);
+            return false;
+        }
+    }
+
+    public function deletetags($fnums, $tags)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            $user = JFactory::getUser()->id;
+            $query ="DELETE from `#__emundus_tag_assoc` WHERE fnum IN (".implode(',', $fnums).") AND id_tag IN (".implode(',', $tags).") AND user_id = ".$user ;
+            //die($query);
+            $db->setQuery($query);
+            $db->execute();
+            
             return true;
         }
         catch (Exception $e)
@@ -1754,7 +1780,7 @@ if (JFactory::getUser()->id == 63)
         $db = $this->getDbo();
         $query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where';
         $user = JFactory::getUser()->id;
-
+        
         if(is_null($tag))
         {
             $query .= ' t.user_id = ' . $user;
@@ -1773,7 +1799,7 @@ if (JFactory::getUser()->id == 63)
             $user = JFactory::getUser()->id;
 
             if (is_array($tag))
-                $query .= ' t.id_tag IN '.implode(',',$tag). ' and t.user_id = ' . $user;
+                $query .= ' t.id_tag IN ('.implode(',',$tag). ') and t.user_id = ' . $user;
             else
                 $query .= ' t.id_tag = '.$tag. ' and t.user_id = ' . $user;
 
@@ -1787,6 +1813,7 @@ if (JFactory::getUser()->id == 63)
                 throw $e;
             }
         }
+        
 
 
     }
@@ -1983,7 +2010,7 @@ where 1 order by ga.fnum asc, g.title';
         try
         {
             $db = $this->getDbo();
-            $query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.published, sc.training, cc.applicant_id
+            $query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.id as campaign_id, sc.published, sc.training, cc.applicant_id
                         from #__emundus_campaign_candidature as cc
                         left join #__users as u on u.id = cc.applicant_id
                         left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
