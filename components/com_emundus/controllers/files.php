@@ -525,7 +525,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $fnums = $m_files->getAllFnums();
 
         $validFnums = array();
-
+        
         foreach ($fnums as $fnum)
         {
             if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
@@ -539,6 +539,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $validFnums[] = $fnum;
             }
         }
+        
         unset($fnums);
         if(!empty($tags))
             $res    = $m_files->deletetags($validFnums, $tags);
