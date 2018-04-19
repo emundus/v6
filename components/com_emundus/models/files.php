@@ -1749,6 +1749,27 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
+    public function deletetags($fnums, $tags)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            $user = JFactory::getUser()->id;
+            $query ="DELETE from `#__emundus_tag_assoc` WHERE fnum IN (".implode(',', $fnums).") AND id_tag IN (".implode(',', $tags).") AND user_id = ".$user ;
+            //die($query);
+            $db->setQuery($query);
+            $db->execute();
+            
+            return true;
+        }
+        catch (Exception $e)
+        {
+            error_log($e->getMessage());
+            error_log($query);
+            return false;
+        }
+    }
+
     /**
      * @param null $tag
      * @return mixed
@@ -1989,7 +2010,7 @@ where 1 order by ga.fnum asc, g.title';
         try
         {
             $db = $this->getDbo();
-            $query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.published, sc.training, cc.applicant_id
+            $query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.id as campaign_id, sc.published, sc.training, cc.applicant_id
                         from #__emundus_campaign_candidature as cc
                         left join #__users as u on u.id = cc.applicant_id
                         left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id

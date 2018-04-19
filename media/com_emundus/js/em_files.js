@@ -693,7 +693,7 @@ function generate_pdf(json) {
     var formids     = json.formids;
     var attachids   = json.attachids;
     var options     = json.options;
-   //console.log(formids);
+    //console.log(attachids);
     $.ajaxQ.abortAll();
 
     if (start+limit < maxfiles) {
@@ -2480,17 +2480,12 @@ $(document).ready(function()
                             '<label for="em-ex-forms">'+Joomla.JText._('COM_EMUNDUS_FORMS')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="attachment" name="em-ex-attachment" id="em-ex-attachment" style="max-height:20px"/>' +
                             '<label for="em-ex-attachment">'+Joomla.JText._('COM_EMUNDUS_ATTACHMENT')+'</label> <br/>' +
-                            //'<input class="em-ex-check" type="checkbox" value="assessment" name="em-ex-assessment" id="em-ex-assessment"/>' +
-                           // '<label for="em-ex-assessment">'+Joomla.JText._('COM_EMUNDUS_ASSESSMENT')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment" style="max-height:20px"/>' +
                             '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags" style="max-height:20px"/>' +
                             '<label for="em-ex-tags">'+Joomla.JText._('JTAG')+'</label> <br/>' +
 
-
                             '</div></div></div>');
-
-
 
                             $('#data').append( '<div id="methode">'+
                                 '<div id="exp" class="panel panel-default">'+
@@ -2549,9 +2544,7 @@ $(document).ready(function()
                                                         var proglabel = filter.programmelabel;
                                                         var camplabel = filter.campaignlabel;
                                                         var code = filter.code;
-                                                        //var year = label.split('(')[1];
                                                         var camp = filter.camp;
-                                                        //year = year.substr(0, year.length - 1);
 
                                                         if (code != 0) { //for programmes
                                                             html = '<option value="'+code+'">'+proglabel+'</option>';
@@ -2787,11 +2780,7 @@ $(document).ready(function()
                                             console.log(jqXHR.responseText);
                                         }
                                     });
-                                }/*else{
-                                    $('.btn-success').hide();
-                                    $('#elements_detail').hide();
-                                    $('#elements-popup').hide();
-                                }*/
+                                }
                             });
 
 
@@ -2867,20 +2856,24 @@ $(document).ready(function()
                         '</div>'+
                     '</div><br/>');
 
-                    $('#data').append('<div style="padding-left:30px" id="exp-opt">'+
-                        '<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
+                    $('#data').append('<div style="padding-left:30px" id="exp-options">'+
+                        '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header"/>&ensp;' +
+                        '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
+                        '<div style="padding-left:30px; display:none;" id="exp-opt">'+
+                        '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
                         '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
                             '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
                             '<option  value="afnum" selected>'+Joomla.JText._('FNUM')+'</option>' +
                             '<option  value="aemail" selected>'+Joomla.JText._('EMAIL')+'</option>' +
-                            '<option  value="tags" selected>'+Joomla.JText._('PDF_TAGS')+'</option>' +
                             '<option  value="aapp-sent" selected>'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
                             '<option  value="adoc-print" selected>'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
+                            '<option  value="tags"  disabled>'+Joomla.JText._('PDF_TAGS')+'</option>' +
+                            '<option  value="status" selected>'+Joomla.JText._('PDF_STATUS')+'</option>' +
                             '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
                         '</select>'+
                     '</div><br/>' );
 
-                    $('#em-export-opt').chosen({width:'89.8%'});
+                    $('#em-export-opt').chosen({width:'80%'});
 
 
                 var checkInput = getUserCheck();
@@ -2921,6 +2914,9 @@ $(document).ready(function()
                                             if(result.eval == 1){ $('#eval-exists').show();} 
                                             if(result.dec == 1) { $('#dec-exists').show();}
                                             if(result.adm == 1) { $('#adm-exists').show();}
+                                            if(result.tag == 1) { $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
+                                                                  $('#em-export-opt').trigger("chosen:updated");}
+                                                                 
                                         }
                                     },
                                     error: function (jqXHR, textStatus, errorThrown)
@@ -2940,8 +2936,6 @@ $(document).ready(function()
                                             $('#em-export-camp').append(result.html);
                                             $('#em-export-camp').trigger("chosen:updated");
                                             $('#camp').show();
-
-
 
                                             var camp = $("#em-export-camp").val();
 
@@ -3015,6 +3009,8 @@ $(document).ready(function()
                                     if(result.eval == 1){ $('#eval-exists').show();} 
                                     if(result.dec == 1) { $('#dec-exists').show();}
                                     if(result.adm == 1) { $('#adm-exists').show();}
+                                    if(result.tag == 1) { $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
+                                                          $('#em-export-opt').trigger("chosen:updated");}
 
                                     $.ajax({
                                         type:'get',
@@ -3113,6 +3109,8 @@ $(document).ready(function()
                                 if(result.eval == 1){ $('#eval-exists').show();} 
                                 if(result.dec == 1) { $('#dec-exists').show();}
                                 if(result.adm == 1) { $('#adm-exists').show();}
+                                if(result.tag == 1) { $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
+                                                          $('#em-export-opt').trigger("chosen:updated");}
 
                                 if (code != 0) {
                                     var camp = $("#em-export-camp").val();
@@ -3216,22 +3214,8 @@ $(document).ready(function()
                 });
 
 
-                $('#data').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
-                        $('#exp-opt').show();
-                    else
-                        $('#exp-opt').hide();
-                });
-
-                $('#felts').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
-                        $('#exp-opt').show();
-                    else
-                        $('#exp-opt').hide();
-                });
-
-                $('#aelts').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
+                $('#em-add-header').click(function(e){
+                    if ($("#em-add-header").is(":checked"))
                         $('#exp-opt').show();
                     else
                         $('#exp-opt').hide();
@@ -3298,20 +3282,32 @@ $(document).ready(function()
                             '</div>'+
                         '</div><br/>');
 
-                        $('#data').append('<div style="padding-left:30px" id="exp-opt">'+
-                            '<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
-                            '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
+                        $('#data').append('<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
+                        '<div class="panel-heading">'+
+                            '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
+                            '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                        '</div>'+
+                        '</div><br/>');
+
+                        $('#data').append('<div style="padding-left:30px" id="em-options">'+
+                            
+                            '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header"/>&ensp;' +
+                            '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
+                            '<div style="padding-left:30px; display:none;" id="exp-opt">'+
+                            '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
+                            '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple >'+
                                 '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
                                 '<option  value="afnum" selected>'+Joomla.JText._('FNUM')+'</option>' +
                                 '<option  value="aemail" selected>'+Joomla.JText._('EMAIL')+'</option>' +
-                                '<option  value="tags" selected>'+Joomla.JText._('PDF_TAGS')+'</option>' +
                                 '<option  value="aapp-sent" selected>'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
                                 '<option  value="adoc-print" selected>'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
+                                '<option  value="tags" disabled>'+Joomla.JText._('PDF_TAGS')+'</option>' +
+                                '<option  value="status" selected>'+Joomla.JText._('PDF_STATUS')+'</option>' +
                                 '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
                             '</select>'+
-                        '</div><br/>' );
+                        '</div></div><br/>' );
 
-                        $('#em-export-opt').chosen({width:'89.8%'});
+                        $('#em-export-opt').chosen({width:'80%'});
 
                         
                 var checkInput = getUserCheck();
@@ -3352,6 +3348,8 @@ $(document).ready(function()
                                             if(result.eval == 1){ $('#eval-exists').show();} 
                                             if(result.dec == 1) { $('#dec-exists').show();}
                                             if(result.adm == 1) { $('#adm-exists').show();}
+                                            if(result.tag == 1) { $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
+                                                          $('#em-export-opt').trigger("chosen:updated");}
 
                                             $.ajax({
                                                 type:'get',
@@ -3446,6 +3444,8 @@ $(document).ready(function()
                                     if(result.eval == 1){ $('#eval-exists').show();} 
                                     if(result.dec == 1) { $('#dec-exists').show();}
                                     if(result.adm == 1) { $('#adm-exists').show();}
+                                    if(result.tag == 1) { $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
+                                                          $('#em-export-opt').trigger("chosen:updated");}
 
                                     $.ajax({
                                         type:'get',
@@ -3546,6 +3546,8 @@ $(document).ready(function()
                                     if(result.eval == 1){ $('#eval-exists').show();} 
                                     if(result.dec == 1) { $('#dec-exists').show();}
                                     if(result.adm == 1) { $('#adm-exists').show();}
+                                    if(result.tag == 1) { $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
+                                                          $('#em-export-opt').trigger("chosen:updated");}
 
                                     var camp = $("#em-export-camp").val();
                         
@@ -3648,26 +3650,14 @@ $(document).ready(function()
 
                 });
 
-                $('#data').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
+                $('#em-add-header').click(function(e){
+                    if ($("#em-add-header").is(":checked"))
                         $('#exp-opt').show();
                     else
                         $('#exp-opt').hide();
                 });
 
-                $('#felts').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
-                        $('#exp-opt').show();
-                    else
-                        $('#exp-opt').hide();
-                });
-
-                $('#aelts').click(function(e){
-                    if ($(".em-ex-check").is(":checked"))
-                        $('#exp-opt').show();
-                    else
-                        $('#exp-opt').hide();
-                });
+               
 
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
@@ -3782,7 +3772,7 @@ $(document).ready(function()
                     {
                         $('.modal-body').empty();
 
-                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
+                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
 
                         for (var i in result.states)
                         {
@@ -3790,7 +3780,7 @@ $(document).ready(function()
                                 break;
                             status += '<option value="'+result.states[i].step+'" >'+result.states[i].value+'</option>';
                         }
-                        '</select></div>';
+                        status += '</select></div>';
                         $('.modal-body').append(status);
 
                         $('.modal-chzn-select').chosen({width:'75%'});
@@ -3807,7 +3797,7 @@ $(document).ready(function()
 
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                                    '<button id="success-ok" style="margin-left:5px;" type="button" class="btn btn-success" disabled="disabled">'+Joomla.JText._('OK')+'</button>');
                 $('#can-val').show();
 
                 $('.modal-body').append('<div>' +
@@ -3822,25 +3812,36 @@ $(document).ready(function()
                     {
                         $('.modal-body').empty();
 
-                        var tags = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.tag+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_tag+'" name="em-action-tag" id="em-action-tag" multiple value="">';
-
-
+                        var tags = '<br/><div class="form-group" style="color:black !important">'+
+                                    '<div style="padding-left: 15.5%;"><form style="margin-left:15px; margin-bottom:6px">'+
+                                        '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('ADD_TAGS')+
+                                        '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('DELETE_TAGS')+ '<br>'+
+                                    '</form></div></div>'+
+                                   '<label class="col-lg-2 control-label">'+result.tag+'</label><select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple" >';
+                              
                         for (var i in result.tags)
                         {
                             if(isNaN(parseInt(i)))
                                 break;
                             tags += '<option value="'+result.tags[i].id+'" >'+result.tags[i].label+'</option>';
                         }
-                        '</select></div>';
+                        tags += '</select></div>';
                         $('.modal-body').append(tags);
                         $('.modal-chzn-select').chosen({width:'75%'});
+
+                        $('#em-action-tag').on('change', function() {
+                            if($(this).val() != null)
+                                $('#success-ok').removeAttr("disabled");
+                            else
+                                $('#success-ok').attr("disabled", "disabled");
+                        });
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
                         console.log(jqXHR.responseText);
                     }
                 });
-
+                
                 break;
             // email evaluator
             case 15:
@@ -3974,7 +3975,7 @@ $(document).ready(function()
                     success: function(result)
                     {
                         $('.modal-body').empty();
-                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
+                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
 
                         for (var i in result.states)
                         {
@@ -4057,12 +4058,12 @@ $(document).ready(function()
 
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
-            forms       = 1;
+            forms       = 0;
         });
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
-            attachment       = 1;
+            attachment       = 0;
         });
 
         if ($('#em-ex-forms').is(":checked"))
@@ -4076,9 +4077,11 @@ $(document).ready(function()
         if ($('#em-ex-admission').is(":checked"))
             admission   = 1;
 
-        $('#em-export-opt option:selected').each(function() {
-            options.push($(this).val());
-        });
+        if($('#em-add-header').is(":checked")){
+            $('#em-export-opt option:selected').each(function() {
+                options.push($(this).val());
+            });
+        }
 
         //$('.modal-footer').hide();
         //$('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
@@ -4168,12 +4171,12 @@ $(document).ready(function()
 
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
-            forms       = 1;
+            forms       = 0;
         });
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
-            attachment       = 1;
+            attachment       = 0;
         });
 
         if ($('#em-ex-forms').is(":checked"))
@@ -4186,11 +4189,13 @@ $(document).ready(function()
             decision    = 1;
         if ($('#em-ex-admission').is(":checked"))
             admission   = 1;
-
-        $('#em-export-opt option:selected').each(function() {
-            options.push($(this).val());
-        });
-        //console.log(options);
+        if($('#em-add-header').is(":checked")){
+            $('#em-export-opt option:selected').each(function() {
+                options.push($(this).val());
+            });
+        }
+        
+        //console.log(form_checked);
 
         $('#data').hide();
         $('div').remove('#chargement');
@@ -4392,7 +4397,7 @@ $(document).ready(function()
     });
 
     $(document).on('click', '#delfilter', function(e) {
-        if (confirm('Are you sure to delete the filter ?')) {
+        if (confirm(Joomla.JText._('CONFIRM_DELETE_FILTER'))) {
             var id = $('#filt_save').val();
             if (id != 0) {
                 $.ajax({
@@ -4429,7 +4434,7 @@ $(document).ready(function()
 
     });
 
-
+   
     /********************************* */
     // Modals for actions such as exporting documents to pdf
     $(document).on('click', '#em-modal-actions .btn.btn-success', function(e) {
@@ -4829,12 +4834,18 @@ $(document).ready(function()
             // Validating tags
             case 14:
                 var tag = $("#em-action-tag").val();
-                
+                var option = $('#em-tags:checked').val();
+                //console.log(option)
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
-                url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=tagfile';
+                var url="";
+                if(option == 1)
+                    url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=deletetags';
+                else
+                    url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=tagfile';
+
                 $.ajax(
                     {
                         type:'POST',
@@ -4852,6 +4863,7 @@ $(document).ready(function()
                                     $('#'+result.tagged[i].fnum).parents('td').addClass(result.tagged[i].class);
                                     $('#'+result.tagged[i].fnum+'_check').parents('td').addClass(result.tagged[i].class);
                                 }
+                                reloadData();
                             } else {
                                 $('.modal-body').empty();
                                 $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
