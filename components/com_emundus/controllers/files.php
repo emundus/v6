@@ -1363,19 +1363,19 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme') {
                     if(count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted"){
                         if(in_array("form-title", $opts) && in_array("form-group", $opts)){
-                            $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->group_label)." > ".JText::_($fLine->element_label). "\t";
+                            $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                             $nbcol++;
                         }elseif(count($opts) == 1){
                             if(in_array("form-title", $opts)){
-                                $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->element_label). "\t";
+                                $line .= JText::_($fLine->form_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
                             }elseif(in_array("form-group", $opts)){
-                                $line .= JText::_($fLine->group_label)." > ".JText::_($fLine->element_label). "\t";
+                                $line .= JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
                             }
                         }
                     }else{
-                        $line .= JText::_($fLine->element_label). "\t";
+                        $line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                         $nbcol++;
                     }
                 }
