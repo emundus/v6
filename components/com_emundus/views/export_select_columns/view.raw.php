@@ -54,6 +54,12 @@ class EmundusViewExport_select_columns extends JViewLegacy
         $camps[]     = $camp;
         //var_dump($camps);
         $current_user = JFactory::getUser();
+       
+        /*if ($view == "evaluation" || $form == "decision" || $form == "admission") {
+            $session = JFactory::getSession();
+            $params['programme'] = $code;
+            $session->set('filt_params', $params);
+        }*/
 
         
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))

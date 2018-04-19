@@ -845,36 +845,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	// Get form HTML
 	$htmldata = '';
 	$forms ='';
-	if ($form_post)
+	//var_dump($form_post);
+	if ($form_post || !empty($form_ids))
 		$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order);
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-	/*class myPdf extends TCPDF
-	{
-		var $lastname = "";
-		var $firstname = "";
-		var $program = "";
-
-		// Page footer
-		public function Footer() {
-			// Position at 16 mm from bottom
-
-			$this->SetY(-10);
-			// Set font
-
-			// Page number
-			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
-			$this->Cell(0, 0, ''.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
-
-
-		}
-	}
-	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);*/
-
-
-
+	
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Decision Publique');
 	$pdf->SetTitle('Application Form');
@@ -936,11 +914,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
 
-	//$pdf->setPrintFooter(false);
-	/*$pdf->lastname = $item->lastname;
-	$pdf->firstname = $item->firstname;
-	$pdf->program = $item->label;*/
-
 
 	/*** Applicant   ***/
 	$htmldata .=
@@ -952,7 +925,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
 	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
 
-	.label		   {white-space:nowrap; color:white; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+	.label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
 	.label-default {background-color:#999999;}
 	.label-primary {background-color:#337ab7;}
 	.label-success {background-color:#5cb85c;}
@@ -978,32 +951,32 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.label-red { background-color: #CF000F }
 	.label-darkred { background-color: #96281B }
 
-	</style>
-	<div class="card">
-	<table width="100%">
-	<tr>';
+	</style>';
+	//var_dump($options[0]);die;
+	if(!empty($options) && $options[0] != ""){
+		$htmldata .= '<div class="card">
+					<table width="100%"><tr>';
+		if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
+			$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
+		elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
+			$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
+		$htmldata .= '
+		<td width="80%">
 
-	if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
-		$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
-	elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
-		$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
-	$htmldata .= '
-	<td width="80%">
+		<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
 
-	<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
+		if (isset($item->maiden_name))
+			$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 
-	if (isset($item->maiden_name))
-		$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+		$date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
-	$date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+		// create a $dt object with the UTC timezone
+		$dt = new DateTime('NOW', new DateTimeZone('UTC'));
+		// change the timezone of the object without changing it's time
+		$dt->setTimezone(new DateTimeZone($offset));
 
-	// create a $dt object with the UTC timezone
-	$dt = new DateTime('NOW', new DateTimeZone('UTC'));
-	// change the timezone of the object without changing it's time
-	$dt->setTimezone(new DateTimeZone($offset));
-
-	//var_dump($options);
-	if(!empty($options)){
+		//var_dump($options);
+	
 		if(in_array("aid", $options)){
 			$htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>';
 		}
@@ -1019,39 +992,24 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		if(in_array("adoc-print", $options)){
 			$htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
 		}
-
-
-	}else{
-		$htmldata .= '
-		<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
-		<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-		<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>
-		<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-		<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
-	}
-	$htmldata .= '</td>
-				</tr>
-				</table>
-				</div>';
-	/**  END APPLICANT   ****/
-
-	/*** Tags */
-	if(!empty($options)){
+		if(in_array("status", $options)){
+			$status = $m_files->getStatusByFnums(explode(',', $fnum));
+			$htmldata .= '<div class="sent">'.JText::_('PDF_STATUS').' : '.$status[$fnum]['value'].'</div>';
+		}
 		if(in_array("tags", $options)){
 			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
-
 			$htmldata .='<br/><table><tr><td style="display: inline;"> ';
 			foreach($tags as $tag){
 				$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
 			}
 			$htmldata .='</td></tr></table>';
 		}
+		$htmldata .= '</td></tr></table></div>';
 	}
-	/*** End tags */
+	
+	/**  END APPLICANT   ****/
 
-
-
-
+	//var_dump($forms);die;
 	$htmldata .= $forms;
 	//die($htmldata);
 	// Listes des fichiers chargés

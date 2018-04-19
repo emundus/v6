@@ -1,13 +1,13 @@
-<?php 
+<?php
 defined('_JEXEC') or die('Restricted access');
-JHTML::_('behavior.tooltip'); 
+JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
 //JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
-$view = JRequest::getVar('v', null, 'GET', 'none',0); 
-//$view = JRequest::getVar('view', null, 'GET', 'none',0); 
+$view = JRequest::getVar('v', null, 'GET', 'none',0);
+//$view = JRequest::getVar('view', null, 'GET', 'none',0);
 $comments = JRequest::getVar('comments', null, 'POST', 'none', 0);
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 // Starting a session.
@@ -71,7 +71,7 @@ foreach($s_elements as $s){
         echo '<div id="emundus_elements">';
         $tbl_tmp='';
 		$grp_tmp='';
-		
+
 		foreach($this->elements as $t){
 			if ($tbl_tmp == '') {
 				echo '<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
@@ -81,7 +81,7 @@ foreach($s_elements as $s){
 				echo ' <label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.'</label></legend></div><div class="panel-body">
 					  <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
 						<div class="panel-heading"><legend>';
-				
+
 				echo ' <label for="emundus_checkall_grp_'.$t->group_id.'"> '.$t->group_label.'</label></legend></div><div class="panel-body">';
 			} elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
 					echo '</div></div></div></div>
@@ -92,19 +92,19 @@ foreach($s_elements as $s){
 					echo ' <label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.'</label></legend></div><div class="panel-body">
 						<div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
 							<div class="panel-heading"><legend>';
-					
+
 					echo ' <label for="emundus_checkall_grp_'.$t->group_id.'"> '.$t->group_label.'</label></legend></div><div class="panel-body">';
 			} else {
 				if ($t->group_id != $grp_tmp && $grp_tmp != '') {
 						echo '</div></div><div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
 								<div class="panel-heading"><legend>';
-						
+
 						echo ' <label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</legend></div><div class="panel-body">';
-				} 
+				}
 			}
 
-			echo ' <label class="label-element" for="emundus_elm_'.$t->id.'">{'.$t->id.'} '.$t->element_label.'</label><br> ';
-		
+			echo ' <label class="label-element" for="emundus_elm_'.$t->id.'">${'.$t->id.'} '.$t->element_label.'</label><br> ';
+
 			$tbl_tmp=$t->table_id;
 			$grp_tmp=$t->group_id;
 		}
@@ -114,4 +114,4 @@ foreach($s_elements as $s){
     else {
         echo JText::_('NO_FORM_DEFINED');
     }
-?>   
+?>

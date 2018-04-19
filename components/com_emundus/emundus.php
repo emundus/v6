@@ -132,6 +132,14 @@ JText::script('FILE_NAME');
 JText::script('LINK_TO_DOWNLOAD');
 JText::script('ALL_IN_ONE_DOC');
 JText::script('PDF_TAGS');
+JText::script('PDF_STATUS');
+JText::script('ADD_HEADER');
+JText::script('DELETE_TAGS');
+JText::script('DELETE_TAGS_CONFIRM');
+JText::script('TAGS_DELETE_SUCCESS');
+JText::script('CONFIRM_DELETE_FILTER');
+JText::script('ADD_TAGS');
+JText::script('PLEASE_SELECT_TAG');
 
 
 // view user
