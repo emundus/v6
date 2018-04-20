@@ -96,7 +96,7 @@ function search() {
         }),
         success: function(result) {
             if (result.status) {
-                refreshFilter();
+                reloadData($('#view').val());
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -505,8 +505,7 @@ function getSearchBox(id, father_id) {
                 $('#' + father_id).append(result.html);
                 $('.chzn-select').chosen();
                 
-                refreshFilter();
-                //reloadData($('#view').val());
+                reloadData($('#view').val());
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -827,13 +826,13 @@ $(document).ready(function()
         if (event.handle !== true) {
             event.handle = true;
             var id = $(this).attr('id');
-           
+
             if (id != 'elements') {
                 if ($('#' + id).attr('multiple') != undefined)
                     var multi = true;
                 else
                     var multi = false;
-                
+
                 var test = id.split('-');
                 test.pop();
                 if (test.join('-') == 'em-adv-fil')
@@ -847,7 +846,7 @@ $(document).ready(function()
                         if ((lastVal.hasOwnProperty(id) && lastVal[id][0] != '%')) {
                             $('#' + id + ' option:selected').removeAttr('selected');
                             $('#' + id + ' option')[0].selected = true;
-                           // $('.chzn-select').trigger('chosen:updated');
+                            $('.chzn-select').trigger('chosen:updated');
                         } else {
                             $('#' + id + ' option')[0].selected = false;
                             $('#' + id + ' option')[0].removeAttribute('selected');
@@ -856,9 +855,14 @@ $(document).ready(function()
                         lastVal[id] = $('#' + id).val();
                     }
                 }
+                if ($('#select_multiple_programmes').val() != null)
+                    $('#em_adv_filters').show();
+                else
+                    $('#em_adv_filters').hide();
+
                 search();
             } else {
-                var father = $(this).parent().parent().attr('id');
+                var father = $(this).parent('fieldset').attr('id');
                 getSearchBox($(this).val(), father);
             }
         }
@@ -1470,7 +1474,7 @@ $(document).ready(function()
 
         $('.modal-dialog').addClass('modal-lg');
         $(".modal-body").empty();
-
+        //console.log(url);
         $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
     });
 //

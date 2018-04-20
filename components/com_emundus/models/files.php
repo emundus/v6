@@ -482,19 +482,20 @@ class EmundusModelFiles extends JModelLegacy
                                             $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
                                             $db->setQuery($sql);
                                             $join_from_table = $db->loadResult();
-
+                                        
                                             if (!empty($join_from_table)) {
                                                 $table = $join_from_table;
                                                 $table_join = $tab[0];
 
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
-
+                                                
                                                 if(!isset($query[$table]))
                                                 {
                                                     $query[$table] = true;
                                                     if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias))
                                                         $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                 }
+                                                
                                                 if(!isset($query[$table_join]))
                                                 {
                                                     $query[$table_join] = true;
@@ -503,7 +504,14 @@ class EmundusModelFiles extends JModelLegacy
                                                 }
                                             }
                                             else {
-                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+                                                $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
+                                                $db->setQuery($sql);
+                                                $res = $db->loadResult();
+                                                //var_dump($res);die;
+                                                if($res == "radiobutton" || $res == "dropdown")
+                                                    $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
+                                                else
+                                                    $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
 
                                                 if(!isset($query[$tab[0]]))
                                                 {
@@ -787,7 +795,6 @@ class EmundusModelFiles extends JModelLegacy
             $sql_fnum = ' OR jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 
         $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
-        
         return $query;
     }
 
@@ -1064,6 +1071,7 @@ class EmundusModelFiles extends JModelLegacy
         $session = JFactory::getSession();
         $limitStart = $session->get('limitstart');
         $limit = $session->get('limit');
+        
         return $this->getAllUsers($limitStart, $limit);
     }
 
@@ -1103,6 +1111,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (count($this->_elements)>0) {
             $leftJoin = '';
+            
             foreach ($this->_elements as $elt)
             {
                 if(!isset($lastTab))
@@ -1115,6 +1124,7 @@ class EmundusModelFiles extends JModelLegacy
                 }
                 $lastTab[] = $elt->tab_name;
             }
+            
         }
         if (count($this->_elements_default)>0) {
             $query .= ', '.implode(',', $this->_elements_default);
@@ -1131,19 +1141,18 @@ class EmundusModelFiles extends JModelLegacy
 
         if (in_array('overall', $em_other_columns))
             $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
-
+        
         $q = $this->_buildWhere($lastTab);
-
+        
         if (!empty($leftJoin))
             $query .= $leftJoin;
-
         $query .= $q['join'];
         $query .= " where u.block=0 ".$q['q'];
-
+        
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-
+        
         $dbo->setQuery($query);
         try
         {

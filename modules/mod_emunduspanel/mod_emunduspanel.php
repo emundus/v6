@@ -17,6 +17,8 @@ defined('_JEXEC') or die('Restricted access');
 require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
@@ -31,8 +33,10 @@ $current_user = JFactory::getuser();
 $user = JFactory::getSession()->get('emundusUser');
 
 $app = JFactory::getApplication();
-$fnum = $app->input->getString('fnum', null);
+//$fnum = $app->input->getString('fnum', null);
 
+$m_users = new EmundusModelUsers;
+$applicant_profiles = $m_users->getApplicantProfiles();
 
 if (isset($user->menutype))
 	$user_menutype = $user->menutype;

@@ -490,6 +490,7 @@ class EmundusController extends JControllerLegacy {
                         $aid->status        = $application['status'];
                     }  else{
                         $aid->profile       = $profile;
+                        $aid->fnum          = $ids[1];
                         $profiles = $m_profile->getProfileById($profile);
 
                         $aid->profile_label          = $profiles["label"];

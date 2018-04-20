@@ -130,7 +130,6 @@ class EmundusControllerFiles extends JControllerLegacy
         else
             $filterval = $jinput->getString('val', null);
         
-        //var_dump($filterval);
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
         
@@ -1159,10 +1158,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
         $m_files = $this->getModel('Files');
-
+        
         if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
             $fnums = $m_files->getAllFnums();
 
+        //var_dump($fnums);die;
         $validFnums = array();
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
