@@ -1697,16 +1697,18 @@ class EmundusControllerFiles extends JControllerLegacy
             if (is_numeric($fnum) && !empty($fnum)) {
                 if (isset($forms)) {
                     $forms_to_export = array();
-                    foreach($formids as $fids){
-                        $detail = explode("|", $fids);
-                        if($detail[1] == $fnumsInfo[$fnum]['training'])
-                            if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                $forms_to_export[] = $detail[0];
+                    if(!empty($formids)){
+                        foreach($formids as $fids){
+                            $detail = explode("|", $fids);
+                            if($detail[1] == $fnumsInfo[$fnum]['training'])
+                                if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
+                                    $forms_to_export[] = $detail[0];
+                        }
                     }
+                    
                     if ($forms || !empty($forms_to_export))
                         $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
-                    else
-                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+                   
                  }
 
                 if ($attachment || !empty($attachids)) {
@@ -2265,10 +2267,13 @@ class EmundusControllerFiles extends JControllerLegacy
                     /// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
                     $post = array('FNUM' => $fnum);
                     $tags = $m_emails->setTags($users[$fnum]->id, $post);
+                    //var_dump($tags);die;
                     $application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
+                    
                     $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
+                    
                     $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
-
+                    //var_dump($application_form_name);
                     if ($application_form_name == "application_form_pdf") {
                         $application_form_name = $users[$fnum]->name.'_'.$fnum;
                     }
@@ -2285,15 +2290,16 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     if (isset($form_post)) {
                         $forms_to_export = array();
-                        foreach($form_ids as $fids){
-                            $detail = explode("|", $fids);
-                            if($detail[1] == $fnumsInfo[$fnum]['training'])
-                                if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                    $forms_to_export[] = $detail[0];
+                        if(!empty($form_ids)){
+                            foreach($form_ids as $fids){
+                                $detail = explode("|", $fids);
+                                if($detail[1] == $fnumsInfo[$fnum]['training'])
+                                    if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
+                                        $forms_to_export[] = $detail[0];
+                            }
                         }
+                        
                         if ($form_post || !empty($forms_to_export))
-                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $users[$fnum]->id, $fnum, $form_post, $forms_to_export, $options);
-                        else
                             $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $users[$fnum]->id, $fnum, $form_post, $forms_to_export, $options);
                         
                     }
@@ -2326,23 +2332,18 @@ class EmundusControllerFiles extends JControllerLegacy
                             continue;
                     }
 
-
-                    //var_dump($dossier . $application_pdf);
-                    //$application_pdf = $fnum . '_applications.pdf';
-                    //$filename = $application_pdf . DS . $application_pdf;
-                    //var_dump($filename);
-
                     //var_dump($attachment);
                     if ($attachment || !empty($attachids)) {
                         $attachment_to_export = array();
                         //var_dump($attachids);
-                        foreach($attachids as $aids){
-                            $detail = explode("|", $aids);
-                            if($detail[1] == $fnumsInfo[$fnum]['training'])
-                                if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                    $attachment_to_export[] = $detail[0];
+                        if(!empty($attachids)){
+                            foreach($attachids as $aids){
+                                $detail = explode("|", $aids);
+                                if($detail[1] == $fnumsInfo[$fnum]['training'])
+                                    if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
+                                        $attachment_to_export[] = $detail[0];
+                            }
                         }
-
                         
                         $fnum = explode(',', $fnum);
                         //var_dump($attachment_to_export);

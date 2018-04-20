@@ -499,15 +499,24 @@ class EmundusModelFiles extends JModelLegacy
                                                 if(!isset($query[$table_join]))
                                                 {
                                                     $query[$table_join] = true;
-                                                    if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
-                                                        $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
+                                                    try{
+                                                        $db->setQuery('SELECT parent_id FROM '.$table_join);
+                                                        $col_exists = $db->loadResult();
+
+                                                        if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
+                                                            $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
+                                                    }catch(Exception $e){
+                                                        if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
+                                                            $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
+                                                    }
+                                                    
                                                 }
                                             }
                                             else {
                                                 $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
                                                 $db->setQuery($sql);
                                                 $res = $db->loadResult();
-                                                //var_dump($res);die;
+                                                var_dump($res);die;
                                                 if($res == "radiobutton" || $res == "dropdown")
                                                     $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
                                                 else
@@ -516,8 +525,9 @@ class EmundusModelFiles extends JModelLegacy
                                                 if(!isset($query[$tab[0]]))
                                                 {
                                                     $query[$tab[0]] = true;
-                                                    if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias))
+                                                    if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)){
                                                         $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
+                                                    }
                                                 }
                                             }
                                         }

@@ -250,7 +250,8 @@ class EmundusHelperExport
 
 	public static function makePDF($fileName, $ext, $aid)
 	{
-		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+        include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 		$imgExt = array('jpeg', 'jpg', 'png', 'gif', 'svg');
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 		$pdf->SetCreator(PDF_CREATOR);
@@ -265,13 +266,26 @@ class EmundusHelperExport
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 		$pdf->SetFont('helvetica', '', 8);
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-		$pdf->AddPage();
+        $pdf->AddPage();
+        
+        
+        $m_profile      = new EmundusModelProfile;
+        $profile = $m_profile->getProfileByApplicant($aid);
+        
 		if (in_array(strtolower($ext), $imgExt)) {
+            $htmlData = '<i><h3>'.JText::_('APPLICANT').' : '.$profile['firstname'].' '.$profile['lastname'].'</h3></i><br/><br/>';
+			$pdf->startTransaction();
+			$start_y = $pdf->GetY();
+			$start_page = $pdf->getPage();
+			$pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
 			$pdf->setJPEGQuality(75);
 			if ($ext == 'svg')
 				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 			else
-				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
+                $pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
+        
+               
+        
 		} else {
 			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
 			$htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';

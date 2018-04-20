@@ -4087,8 +4087,6 @@ $(document).ready(function()
             });
         }
 
-        //$('.modal-footer').hide();
-        //$('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
         $('#data').hide();
         $('div').remove('#chargement');
         $('.modal-body').append('<div id="chargement" style="padding:15px">' +
