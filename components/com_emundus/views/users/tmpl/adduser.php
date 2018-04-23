@@ -68,7 +68,7 @@ if ($s == '')
 			<div>
 				<label class="control-label" for="otherprofile"><?php echo JText::_('ALL_PROFILES'); ?></label><br/>
 				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
-					<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
+					<option value="0" disabled="disabled"><?php echo JText::_('PLEASE_SELECT')?></option>
 					<?php foreach($this->profiles as $otherprofile):?>
 						<option id="<?php echo $otherprofile->acl_aro_groups?>" value="<?php echo $otherprofile->id?>" <?php if(($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles))){echo 'selected="true"';}?>><?php echo trim($otherprofile->label);?></option>
 					<?php endforeach;?>

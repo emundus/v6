@@ -112,7 +112,7 @@ if (!empty($s_elements)) {
                 if ((!empty($s_elements) && in_array($t->tab_name, $table_name) && in_array($t->element_name, $element_name)))
                     echo "checked=checked";
 
-                echo ' value="'.$t->element_id.'"/><label class="label-element" for="emundus_elm_'.$t->element_id.'">'.JText::_($t->element_label).'</label> ';
+                echo ' value="'.$t->element_id.'"/><label class="label-element" for="emundus_elm_'.$t->element_id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label> ';
 
                 $tbl_tmp=$this->form;
             }
@@ -163,7 +163,7 @@ if (!empty($s_elements)) {
                 }
                 echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_elm_'.$t->id.'\')" ';
                 if ((!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) echo "checked=checked";
-                echo ' value="'.$t->id.'"/><label class="label-element" for="emundus_elm_'.$t->id.'">'.JText::_($t->element_label).'</label> ';
+                echo ' value="'.$t->id.'"/><label class="label-element" for="emundus_elm_'.$t->id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label> ';
 
                 $tbl_tmp=$t->table_id;
                 $grp_tmp=$t->group_id;

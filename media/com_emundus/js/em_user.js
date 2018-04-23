@@ -659,7 +659,7 @@ $(document).ready(function () {
 
 		$('.modal-dialog').addClass('modal-lg');
 		$(".modal-body").empty();
-
+		
 		$(".modal-body").append('<iframe src="' + url + '" style="width:100%; height:720px; border:none"></iframe>');
 	});
 	//

@@ -285,7 +285,7 @@ class EmundusHelperFilters {
 
 
 	/**
-	* Get list of elements declared in a list of Fabrik groups
+	* Get list of elements declared in a list of Fabrik groups AND groupe.id IN (551,580,581)
 	* @param 	string 	List of Fabrik groups comma separated
 	* @param 	int 	Does the element are shown in Fabrik list ; if 1, show only item displayed in Fabrik List ?
 	* @param 	int 	Does the element are hidden in Fabrik list ; if 0, show only displayed Fabrik Items ?
@@ -312,7 +312,7 @@ class EmundusHelperFilters {
 					AND element.plugin != "display"
 				ORDER BY formgroup.ordering, element.ordering';
 		try {
-
+			//die(str_replace("#_", "jos", $query));
 			$db->setQuery($query);
 			return $db->loadObjectList();
 
