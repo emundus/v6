@@ -142,8 +142,14 @@ class EmundusHelperExport
                                 $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                                 $exports[] = $fn;
                                 $tmpArray[] = $fn;
-                            } else
+                            } else{
+                                $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
+                                $exports[] = $fn;
+                                $tmpArray[] = $fn;
                                 $exports[] = $filePath;
+                                
+                            }
+                                
                         }
                     }
                        
@@ -271,24 +277,27 @@ class EmundusHelperExport
         
         $m_profile      = new EmundusModelProfile;
         $profile = $m_profile->getProfileByApplicant($aid);
-        
+
+        $htmlData = '<i><h3>'.JText::_('APPLICANT').' : '.$profile['firstname'].' '.$profile['lastname'].'</h3></i><br/><br/>';
 		if (in_array(strtolower($ext), $imgExt)) {
-            $htmlData = '<i><h3>'.JText::_('APPLICANT').' : '.$profile['firstname'].' '.$profile['lastname'].'</h3></i><br/><br/>';
-			$pdf->startTransaction();
-			$start_y = $pdf->GetY();
-			$start_page = $pdf->getPage();
-			$pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
+           
+			
 			$pdf->setJPEGQuality(75);
 			if ($ext == 'svg')
 				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
-			else
+            else
                 $pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
-        
-               
+
+            $pdf->startTransaction();
+            $start_y = $pdf->GetY();
+            $start_page = $pdf->getPage();
+            $pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);     
         
 		} else {
-			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
-			$htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
+            if (EmundusHelperExport::isEncrypted(EMUNDUS_PATH_ABS.$aid.DS.$fileName)) { 
+			    $htmlData .= JText::_('ENCRYPTED_FILE').' : ';
+                $htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
+            }
 			$pdf->startTransaction();
 			$start_y = $pdf->GetY();
 			$start_page = $pdf->getPage();

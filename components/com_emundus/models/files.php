@@ -516,7 +516,6 @@ class EmundusModelFiles extends JModelLegacy
                                                 $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
                                                 $db->setQuery($sql);
                                                 $res = $db->loadResult();
-                                                var_dump($res);die;
                                                 if($res == "radiobutton" || $res == "dropdown")
                                                     $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
                                                 else
