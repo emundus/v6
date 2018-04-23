@@ -2267,13 +2267,10 @@ class EmundusControllerFiles extends JControllerLegacy
                     /// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
                     $post = array('FNUM' => $fnum);
                     $tags = $m_emails->setTags($users[$fnum]->id, $post);
-                    //var_dump($tags);die;
                     $application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
-                    
                     $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
-                    
                     $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
-                    //var_dump($application_form_name);
+
                     if ($application_form_name == "application_form_pdf") {
                         $application_form_name = $users[$fnum]->name.'_'.$fnum;
                     }

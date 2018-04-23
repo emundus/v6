@@ -2846,8 +2846,8 @@ die();*/
      */
     public function getVariables($str)
     {
-        //preg_match_all('/\$\{(.*?)}/i', $str, $matches);
-        preg_match_all( '#\{(\w+)}#', $str, $matches );
+        preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+        //preg_match_all( '#\{(\w+)}#', $str, $matches);
 
         return $matches[1];
     }
