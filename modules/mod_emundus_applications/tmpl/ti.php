@@ -38,7 +38,7 @@ echo $description;
           <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
       </a>
 
-      <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0) : ?>
+      <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0 && !$is_dead_line_passed) : ?>
         <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
       <?php endif; ?>
 

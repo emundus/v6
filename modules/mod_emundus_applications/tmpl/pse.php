@@ -23,7 +23,7 @@ echo $description;
     	<span class="label label-<?php echo $application->class; ?>"> <?php echo $application->value; ?></span> 
     	<?php if($application->fnum == $user->fnum) : ?>
     		<span class="badge <?php echo($progress>=100)?'badge-success':'badge-inverse'; ?>"><?php echo $progress; ?>%</span>
-    		<?php if($progress>=100 && $application->status==0) : ?>
+    		<?php if($progress>=100 && $application->status==0 && !$is_dead_line_passed) : ?>
     			<a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
     		<?php endif; ?>
     	<?php endif; ?>
