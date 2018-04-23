@@ -855,8 +855,6 @@ class EmundusModelEmails extends JModelList
                 ->columns($this->_db->quoteName($columns))
                 ->values(implode(',',$values));
 
-        $query .= ", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW() ";
-
         try {
 
             $this->_db->setQuery($query);
