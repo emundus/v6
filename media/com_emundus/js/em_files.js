@@ -1416,7 +1416,7 @@ $(document).ready(function()
             }
         }
     });
-    $(document).on('click', '.em-dropdown', function(e)
+    $(document).on('mouseover', '.em-dropdown', function(e)
     {
         $.ajaxQ.abortAll();
         var id = $(this).attr('id');
