@@ -1478,10 +1478,8 @@ class EmundusHelperFiles
 
             $hidden = $types['adv_filter'] != 'hidden' ? false : true;
             $elements = $h_files->getElements();
-            if($program_selected)
-                $adv_filter = '<div class="em_filters" id="em_adv_filters">';
-            else
-                $adv_filter = '<div class="em_filters" id="em_adv_filters" style="display:none">';
+            
+            $adv_filter = '<div class="em_filters" id="em_adv_filters">';
             $adv_filter .= '<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>';
             $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><br/><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
             $adv_filter .= '<div id="advanced-filters" class="form-group">';
@@ -1742,7 +1740,12 @@ class EmundusHelperFiles
                         $(document).ready(function() {
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
                             $(".testSelAll").SumoSelect({selectAll:true,search:true, searchText: "'.JText::_('ENTER_HERE').'"});
-                           
+                            
+                            if ($("#select_multiple_programmes").val() != null)
+                                $("#em_adv_filters").show();
+                            else
+                                $("#em_adv_filters").hide();
+            
                         });
                     </script>';
 
@@ -2007,7 +2010,7 @@ class EmundusHelperFiles
 
                 $str = '<br><hr>';
                 $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
-                $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name.'</h1>';
+                $str .= '<h1>'.JText::_('EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name.'</h1>';
                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
                 foreach ($elements as $element) {

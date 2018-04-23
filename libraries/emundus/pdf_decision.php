@@ -108,11 +108,7 @@ $htmldata .=
 .label-info    {background-color:#033c73;} 
 .label-warning {background-color:#dd5600;} 
 .label-danger  {background-color:#c71c22;} 
-</style>
-<div class="card">
-<table>
-<tr>
-';
+</style>';
 
 if ( ! function_exists( 'exif_imagetype' ) ) {
     function exif_imagetype ( $filename ) {
@@ -123,20 +119,23 @@ if ( ! function_exists( 'exif_imagetype' ) ) {
     }
 }
 
-if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar))
-	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
-elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar))
-	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
-$htmldata .= '
-<td>
+if(!empty($options) && $options[0] != ""){
+    $htmldata .= '<div class="card">
+					<table width="100%"><tr>';
+	if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar))
+		$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
+	elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar))
+		$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
+	$htmldata .= '
+	<td>
 
-  <div class="name"><strong>'.$item->firstname.' '.strtoupper($item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
+	<div class="name"><strong>'.$item->firstname.' '.strtoupper($item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
 
-if(isset($item->maiden_name))
-	$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
-$date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
+	if(isset($item->maiden_name))
+		$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+		
+	$date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
 
-if(!empty($options)){
     if(in_array("aid", $options)){
         $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>';
     }
@@ -151,36 +150,19 @@ if(!empty($options)){
     }
     if(in_array("adoc-print", $options)){
         $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
-    }
-
-}else{
-	$htmldata .= '
-	<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
-	<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-	<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
-	<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-	<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
-}
-$htmldata .= '</td>
-			</tr>
-			</table>
-			</div>';
-/**  END APPLICANT   ****/
-
-/*** Tags */
-if(!empty($options)){
-	if(in_array("tags", $options)){
-		$tags = $m_files->getTagsByFnum(explode(',', $fnum));
-		
-		$htmldata .='<br/><table><tr><td style="display: inline;"> ';
-		foreach($tags as $tag){
-			$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
-		}
-		$htmldata .='</td></tr></table>';
 	}
-}
-/*** End tags */
+	if(in_array("tags", $options)){
+        $tags = $m_files->getTagsByFnum(explode(',', $fnum));
+        $htmldata .='<br/><table><tr><td style="display: inline;"> ';
+        foreach($tags as $tag){
+            $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+        }
+        $htmldata .='</td></tr></table>';
+    }
+    $htmldata .= '</td></tr></table></div>';
+    
 
+}
 
 	// get decision
 	$data = @EmundusHelperFiles::getDecision('html', $fnum);

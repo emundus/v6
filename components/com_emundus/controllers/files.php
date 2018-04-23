@@ -130,7 +130,6 @@ class EmundusControllerFiles extends JControllerLegacy
         else
             $filterval = $jinput->getString('val', null);
         
-        //var_dump($filterval);
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
         
@@ -1159,10 +1158,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
         $m_files = $this->getModel('Files');
-
+        
         if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
             $fnums = $m_files->getAllFnums();
 
+        //var_dump($fnums);die;
         $validFnums = array();
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
@@ -1363,19 +1363,19 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme') {
                     if(count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted"){
                         if(in_array("form-title", $opts) && in_array("form-group", $opts)){
-                            $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->group_label)." > ".JText::_($fLine->element_label). "\t";
+                            $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                             $nbcol++;
                         }elseif(count($opts) == 1){
                             if(in_array("form-title", $opts)){
-                                $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->element_label). "\t";
+                                $line .= JText::_($fLine->form_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
                             }elseif(in_array("form-group", $opts)){
-                                $line .= JText::_($fLine->group_label)." > ".JText::_($fLine->element_label). "\t";
+                                $line .= JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
                             }
                         }
                     }else{
-                        $line .= JText::_($fLine->element_label). "\t";
+                        $line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                         $nbcol++;
                     }
                 }
@@ -1697,16 +1697,18 @@ class EmundusControllerFiles extends JControllerLegacy
             if (is_numeric($fnum) && !empty($fnum)) {
                 if (isset($forms)) {
                     $forms_to_export = array();
-                    foreach($formids as $fids){
-                        $detail = explode("|", $fids);
-                        if($detail[1] == $fnumsInfo[$fnum]['training'])
-                            if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                $forms_to_export[] = $detail[0];
+                    if(!empty($formids)){
+                        foreach($formids as $fids){
+                            $detail = explode("|", $fids);
+                            if($detail[1] == $fnumsInfo[$fnum]['training'])
+                                if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
+                                    $forms_to_export[] = $detail[0];
+                        }
                     }
+                    
                     if ($forms || !empty($forms_to_export))
                         $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
-                    else
-                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+                   
                  }
 
                 if ($attachment || !empty($attachids)) {
@@ -2285,15 +2287,16 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     if (isset($form_post)) {
                         $forms_to_export = array();
-                        foreach($form_ids as $fids){
-                            $detail = explode("|", $fids);
-                            if($detail[1] == $fnumsInfo[$fnum]['training'])
-                                if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                    $forms_to_export[] = $detail[0];
+                        if(!empty($form_ids)){
+                            foreach($form_ids as $fids){
+                                $detail = explode("|", $fids);
+                                if($detail[1] == $fnumsInfo[$fnum]['training'])
+                                    if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
+                                        $forms_to_export[] = $detail[0];
+                            }
                         }
+                        
                         if ($form_post || !empty($forms_to_export))
-                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $users[$fnum]->id, $fnum, $form_post, $forms_to_export, $options);
-                        else
                             $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $users[$fnum]->id, $fnum, $form_post, $forms_to_export, $options);
                         
                     }
@@ -2326,23 +2329,18 @@ class EmundusControllerFiles extends JControllerLegacy
                             continue;
                     }
 
-
-                    //var_dump($dossier . $application_pdf);
-                    //$application_pdf = $fnum . '_applications.pdf';
-                    //$filename = $application_pdf . DS . $application_pdf;
-                    //var_dump($filename);
-
                     //var_dump($attachment);
                     if ($attachment || !empty($attachids)) {
                         $attachment_to_export = array();
                         //var_dump($attachids);
-                        foreach($attachids as $aids){
-                            $detail = explode("|", $aids);
-                            if($detail[1] == $fnumsInfo[$fnum]['training'])
-                                if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                    $attachment_to_export[] = $detail[0];
+                        if(!empty($attachids)){
+                            foreach($attachids as $aids){
+                                $detail = explode("|", $aids);
+                                if($detail[1] == $fnumsInfo[$fnum]['training'])
+                                    if($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
+                                        $attachment_to_export[] = $detail[0];
+                            }
                         }
-
                         
                         $fnum = explode(',', $fnum);
                         //var_dump($attachment_to_export);
