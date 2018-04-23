@@ -37,6 +37,8 @@ $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 $display_poll 				= $eMConfig->get('display_poll', 0);
 $display_poll_id 			= $eMConfig->get('display_poll_id', null);
 $application_fee			= $eMConfig->get('application_fee', 0);
+$id_applicants 			 	= $eMConfig->get('id_applicants', '0');
+$applicants 			 	= explode(',',$id_applicants);
 
 $description		 		= JText::_($params->get('description', ''));
 $show_add_application 		= $params->get('show_add_application', 1);
