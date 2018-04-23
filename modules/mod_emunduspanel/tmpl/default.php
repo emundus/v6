@@ -31,7 +31,7 @@ if (isset($user->profile) && $user->profile > 0) {
     }
     
     if (!empty($user->emProfiles)) {
-        echo('<br/><div class="styled-select slate"');
+        echo('<br/><div class="select"');
         echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
         foreach ($user->emProfiles as $profile) {
             if (array_key_exists($profile->id, $ids_array))
@@ -39,15 +39,21 @@ if (isset($user->profile) && $user->profile > 0) {
             else
                 echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
         }
-        echo '</select></legend></div><br/>';
+        echo '</select><div class="select_arrow">
+        </div></legend></div><br/>';
     }
 }
 ?>
     <div class="ui grid">
     <?php
-    foreach ($tab as $t) {
-        echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+    //if profile is not applicant or fnum not empty? 
+    //var_dump($user);
+    if(!in_array($user->profile, $applicant_profiles) || $user->fnum){
+        foreach ($tab as $t) {
+            echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+        }
     }
+    
     ?>
     </div>
 
@@ -75,4 +81,5 @@ function postCProfile() {
     ajax.send();
 
 }
+
 </script>

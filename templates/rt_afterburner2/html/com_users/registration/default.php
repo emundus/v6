@@ -206,7 +206,7 @@ if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($c
 						<div><table><tr>
 							<td><?php echo $field->input; ?></td>
 							<?php if ($field->name == 'jform[emundus_profile][cgu]'):?>
-								<td><?php echo '<a href="'.JUri::base().'index.php?option=com_content&view=article&id=2"> <i>'.$field->label.'</i></a>'; ?></td>
+								<td><?php echo '<i>'.$field->label.'</i>'; ?></td>
 							<?php else:?>
 								<td><?php echo '<i>'.$field->label.'</i>'; ?></td>
 							<?php endif;?>

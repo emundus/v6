@@ -489,7 +489,7 @@ class EmundusModelEmails extends JModelList
     {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $file = new EmundusModelFiles();
-
+        
         $jinput = JFactory::getApplication()->input;
 
         if (count($fnums) == 0) {
@@ -499,12 +499,14 @@ class EmundusModelEmails extends JModelList
         else {
             $fnumsArray = $fnums;
         }
-
+        
         $tags = $file->getVariables($str);
+        
         $idFabrik = array();
         $setupTags = array();
 
         if(count($tags) > 0) {
+            
             foreach($tags as $i => $val)
             {
                 $tag = strip_tags($val);
@@ -540,14 +542,12 @@ class EmundusModelEmails extends JModelList
                             $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
                 }
+                
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                        if (($elt['plugin'] == "checkbox") || ($elt['plugin'] == "radiobutton")) {
-                            $val = json_decode($val['val']);
-                        } else {
-                            $val = explode(',', $val['val']);
-                        }
-
+                        
+                        $val = explode(',', $val["val"]);
+                        
                         foreach ($val as $k => $v) {
                             $index = array_search(trim($v), $params->sub_options->sub_values);
                             $val[$k] = $params->sub_options->sub_labels[$index];
@@ -555,6 +555,7 @@ class EmundusModelEmails extends JModelList
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                     }
                 }
+                
                 if ($elt['plugin'] == "birthday") {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                         $val = explode(',', $val['val']);
@@ -567,7 +568,6 @@ class EmundusModelEmails extends JModelList
             }
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
-
                 foreach ($idFabrik as $id) {
                     $preg['patterns'][] = '/\${' . $id . '\}/';
                     if (isset($fabrikValues[$id][$fnum])) {
@@ -577,6 +577,7 @@ class EmundusModelEmails extends JModelList
                     }
                 }
             }
+            
             return $this->replace($preg, $str);
         }
         else return $str;
@@ -855,8 +856,6 @@ class EmundusModelEmails extends JModelList
                 ->columns($this->_db->quoteName($columns))
                 ->values(implode(',',$values));
 
-        $query .= ", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW() ";
-
         try {
 
             $this->_db->setQuery($query);
@@ -883,13 +882,13 @@ class EmundusModelEmails extends JModelList
     }
 
     /**
-     * Gets all emails sent to the User id.
+     * Gets all emails sent to or from the User id.
      * @param Int user ID
      * @return Mixed Array
      */
-    public function get_messages_to_user($user_id) {
+    public function get_messages_to_from_user($user_id) {
 
-        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' ORDER BY date_time desc';
+        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' OR user_id_from ='.$user_id.' ORDER BY date_time desc';
 
         try {
 
@@ -897,7 +896,7 @@ class EmundusModelEmails extends JModelList
             return $this->_db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error gatting messages sent to user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus');
             return false;
         }
 

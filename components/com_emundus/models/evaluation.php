@@ -277,19 +277,18 @@ class EmundusModelEvaluation extends JModelList
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
-
+		//$elements = array();
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
-            //$element_id = array();
             $filt_params = $session->get('filt_params');
             if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
                 foreach (array_unique($filt_params['programme']) as $value) {
-                    $groups = $this->getGroupsEvalByProgramme($value);
+					$groups = $this->getGroupsEvalByProgramme($value);
                     if (empty($groups)) {
                         $eval_elt_list = array();
                     } else {
 						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden, $time_date);
+						//var_dump($eval_elt_list);die;
                         if (count($eval_elt_list)>0) {
                             foreach ($eval_elt_list as $eel) {
                                 if(isset($eel->element_id) && !empty($eel->element_id))
@@ -297,7 +296,9 @@ class EmundusModelEvaluation extends JModelList
                             }
                         }
                     }
-                }
+				}
+				//var_dump($elements);
+				
             }else{
 				if(!empty($code)){
 					foreach ($code as $value) {
@@ -317,7 +318,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		}
-//die(var_dump($elements_id));
+	
         return @$elements;
     }
     /**

@@ -164,6 +164,15 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadAssoc();
 	}
 
+	function getProgrammeByTraining($training)
+	{
+		$query = 'SELECT esp.*
+					FROM #__emundus_setup_programmes AS esp
+					WHERE esp.code like "'.$training.'"';
+		$this->_db->setQuery($query);
+		return $this->_db->loadObject();
+	}
+
 	function getCampaignsByCourse($course)
 	{
 		$query = 'SELECT esc.*
@@ -175,12 +184,12 @@ class EmundusModelCampaign extends JModelList
 
 	function getCampaignsByCourseCampaign($course, $camp)
 	{
-		
+
 		$query = 'SELECT esc.*
 				FROM #__emundus_setup_campaigns AS esc
 				WHERE esc.training like '.$this->_db->Quote($course).' AND esc.id like '.$this->_db->Quote($camp);
-	
-		
+
+
 		$this->_db->setQuery( $query );
 		return $this->_db->loadAssoc();
 	}
