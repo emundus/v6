@@ -39,12 +39,6 @@ include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 $m_profile = new EmundusModelProfile();
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
-if (!in_array($user->profile, $applicant_profiles)){
-	echo "<hr>";
-	echo '<h1><img src="'.JURI::base(true).'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
-	echo "<hr>";
-	exit();
-}
 
 /*if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
 	echo "<hr>";
@@ -233,9 +227,9 @@ $formid = $jinput->get('formid');
 
 $db 	= JFactory::getDBO();
 
-if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
+if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$levels = JAccess::getAuthorisedViewLevels($user->id);
-
+	
 	try {
 		$query = 'SELECT CONCAT(link,"&Itemid=",id) 
 				FROM #__menu 
@@ -293,6 +287,7 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 		$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
 		$db->setQuery( $query );
 		$db_table_name = $db->loadResult();
+		
 	} 
 	catch (Exception $e){
 		$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
@@ -314,10 +309,15 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 		$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 		JLog::add($error, JLog::ERROR, 'com_emundus');
 	}
+
+	$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
+
+	echo "<hr>";
+	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+	echo "<hr>";
+	//exit;
 	
-	$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum);
 }
-			
 header('Location: '.$link);
 exit();
  ?>
