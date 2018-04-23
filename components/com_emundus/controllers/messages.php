@@ -201,9 +201,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+
         $m_messages = new EmundusModelMessages();
         $m_emails   = new EmundusModelEmails();
         $m_files    = new EmundusModelFiles();
+        $m_campaign = new EmundusModelCampaign();
 
         $user   = JFactory::getUser();
         $config = JFactory::getConfig();
@@ -214,7 +217,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_from_sys_name = $config->get('fromname');
 
         $fnums  = explode(',',$jinput->post->get('recipients', null, null));
-        $bcc    = $jinput->post->getBool('Bcc', false);
+        $bcc    = (bool)$jinput->post->get('Bcc', false, null);
 
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
@@ -250,18 +253,25 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         foreach ($fnums as $fnum) {
 
+            $programme = $m_campaign->getProgrammeByTraining($fnum->training);
+
             $toAttach = [];
 
             $post = [
                 'FNUM'      => $fnum->fnum,
                 'USER_NAME' => $fnum->name,
+                'COURSE_LABEL' => $programme->label,
+                'CAMPAIGN_LABEL' => $fnum->label,
+                'SITE_URL' => JURI::base(true),
+                'USER_EMAIL' => $fnum->email
             ];
 
             $tags = $m_emails->setTags($fnum->applicant_id, $post);
             $message = $m_emails->setTagsFabrik($message, [$fnum->fnum]);
+            $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
             if ($template != false)
                 $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
