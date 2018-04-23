@@ -332,7 +332,7 @@ class EmundusViewApplication extends JViewLegacy
 					if (EmundusHelperAccess::asAccessAction(9, 'r', $this->_user->id, $fnum)) {
 
 						$m_emails = new EmundusModelEmails();
-						$messages = $m_emails->get_messages_to_user(intval($fnumInfos['applicant_id']));
+						$messages = $m_emails->get_messages_to_from_user(intval($fnumInfos['applicant_id']));
 						$this->assignRef('messages', $messages);
 
 					} else {

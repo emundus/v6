@@ -92,16 +92,13 @@ if (!$mainframe->isAdmin()) {
 					}
 				}
 			}
-		
+			//echo $fnum;
 		
 	}else{
-		if($can_edit != 0){
-			if ($reload < 3) {
-				$reload++;
-				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);	
-			}	
+		if($can_edit == 1){
+			return;
 		}else{
-			if($can_read != 0){
+			if($can_read == 1){
 				if ($reload < 3) {
 					$reload++;
 					$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
