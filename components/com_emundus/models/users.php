@@ -1588,6 +1588,8 @@ class EmundusModelUsers extends JModelList
             $db->query();
 
 
+            $this->addProfileToUser($user['id'],$user['profile']);
+
             if (!empty($user['em_groups'])) {
                 $groups = explode(',', $user['em_groups']);
                 foreach ($groups as $group) {
@@ -1596,6 +1598,7 @@ class EmundusModelUsers extends JModelList
                     $db->query() or die($db->getErrorMsg());
                 }
             }
+            
             if (!empty($user['em_campaigns'])) {
                 $connected = JFactory::getUser()->id;
                 $campaigns = explode(',', $user['em_campaigns']);

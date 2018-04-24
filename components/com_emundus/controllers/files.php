@@ -2972,11 +2972,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $dec = $m_eval->getGroupsDecisionByProgramme($code);
         $adm = $m_adm->getGroupsAdmissionByProgramme($code);
         
-        $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user->id);
-        $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user->id);
-        $hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user->id);
-        $hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user->id);
-        $hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user->id);
+        $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user_id);
+        $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
+        $hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user_id);
+        $hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user_id);
+        $hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
         $showatt = 0;
         $showeval = 0;

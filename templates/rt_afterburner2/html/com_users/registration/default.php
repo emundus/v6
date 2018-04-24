@@ -31,7 +31,6 @@ $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 $this->form->loadFile(dirname(__FILE__) . DS . "registration.xml");
 $jform = $app->getUserState('com_users.registration.data');
 
-
 /**check if warning and send a mail to @ email */
 $messages = $app->getMessageQueue();
 $errors = false;
@@ -114,6 +113,17 @@ foreach ($messages as $message) {
 
                 $group_add = JUserHelper::addUserToGroup($uid,$group[0]);
 
+				$campaign_id = (int)$jform["emundus_profile"]['campaign'];
+				if (isset($campaign_id) && !empty($campaign_id)) {
+                    $query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `campaign_id`, `fnum`) VALUES ('.$uid.','.$campaign_id.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+                    $db->setQuery($query);
+                    try {
+                        $db->Query();
+                    } catch (Exception $e) {
+                       	error_log($e->getMessage(), 0);
+            			return false;
+                    }
+                }
 				$msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
 
 			}
@@ -362,6 +372,8 @@ function check_field(){
 
 	campaign = document.getElementById("jform_emundus_profile_campaign");
 	campaign.onclick = function() { if(campaign.value == "") $('em_msg_jform[emundus_profile][campaign]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_CAMPAIGN_MESSAGE');?>"; else $('em_msg_jform[emundus_profile][campaign]').innerHTML = ""; };
+
+
 }
 check_field();
 
