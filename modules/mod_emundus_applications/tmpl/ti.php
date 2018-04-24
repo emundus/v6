@@ -12,9 +12,9 @@ echo $description;
 
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew && !isset($admission_fnum)) : ?>
-  <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <?php elseif (isset($admission_fnum) && ($position_add_application == 0 || $position_add_application == 2)) :?>
-  <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_fabrik&view=form&formid=272&Itemid=2720&usekey=fnum&rowid=<?php echo $admission_fnum ?>"><span class="icon-plus-sign"> <?php echo JText::_('COMPLETE_ADMISSION'); ?></span></a>
+  <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=272&Itemid=2720&usekey=fnum&rowid=<?php echo $admission_fnum ?>"><span class="icon-plus-sign"> <?php echo JText::_('COMPLETE_ADMISSION'); ?></span></a>
 <?php endif; ?>
 <hr>
 <?php if (!empty($applications)) : ?>
@@ -23,7 +23,7 @@ echo $description;
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-xs-6 col-md-4">
       <p class="">
-        <a href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
+        <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
           <?php
             echo ($application->fnum == $user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label;
           ?>
@@ -34,15 +34,15 @@ echo $description;
       <p>
         <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
       </p>
-      <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
+      <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
           <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
       </a>
 
-      <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0) : ?>
-        <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+      <?php if( ((int)($attachments[$application->fnum])>=100 && $application->status==0 && !$is_dead_line_passed) || in_array($user->id, $applicants) ) : ?>
+        <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
       <?php endif; ?>
 
-      <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+      <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
       
       <?php if($application->status<=1) : ?>
         <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php echo $attachments[$application->fnum]; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
@@ -133,9 +133,9 @@ echo $description;
 <?php endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew && !isset($admission_fnum)) : ?>
-  <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <?php elseif (isset($admission_fnum) && $position_add_application > 0) :?>
-  <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_fabrik&view=form&formid=272&Itemid=2720&usekey=fnum&rowid=<?php echo $admission_fnum ?>"><span class="icon-plus-sign"> <?php echo JText::_('COMPLETE_ADMISSION'); ?></span></a>
+  <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=272&Itemid=2720&usekey=fnum&rowid=<?php echo $admission_fnum ?>"><span class="icon-plus-sign"> <?php echo JText::_('COMPLETE_ADMISSION'); ?></span></a>
 <?php endif; ?>
 
 <?php if ($filled_poll_id == 0 && $poll_url != "") : ?>
@@ -147,7 +147,7 @@ echo $description;
       </div>
       <div class="modal-body">
         <h4 class="modal-title" id="em-modal-form-title"><?php echo JText::_('LOADING');?></h4>
-        <img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
+        <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
       </div>
     </div>
   </div>
@@ -164,7 +164,7 @@ echo $description;
 <script type="text/javascript">
 function deletefile(fnum){
   if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-    url = "<?php echo JURI::base(true).'index.php?option=com_emundus&task=deletefile&fnum='; ?>";
+    url = "<?php echo JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='; ?>";
     document.location.href=url+fnum;
   }
 }

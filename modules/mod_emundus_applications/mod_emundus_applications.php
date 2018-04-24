@@ -37,6 +37,8 @@ $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 $display_poll 				= $eMConfig->get('display_poll', 0);
 $display_poll_id 			= $eMConfig->get('display_poll_id', null);
 $application_fee			= $eMConfig->get('application_fee', 0);
+$id_applicants 			 	= $eMConfig->get('id_applicants', '0');
+$applicants 			 	= explode(',',$id_applicants);
 
 $description		 		= JText::_($params->get('description', ''));
 $show_add_application 		= $params->get('show_add_application', 1);
@@ -106,6 +108,18 @@ if (in_array($user->profile, $applicant_profiles)) {
 		}
 	}
 
+	$offset = $app->get('offset', 'UTC');
+	try {
+	    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+	    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+	    $now = $dateTime->format('Y-m-d H:i:s');
+	    //echo "::".$this->now;
+	} catch(Exception $e) {
+	    echo $e->getMessage() . '<br />';
+	}
+
+	$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))? true : false;
+	$is_app_sent 		 = ($user->status != 0)? true : false;
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $params->get('layout', 'default'));
 }
