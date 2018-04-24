@@ -70,21 +70,23 @@ $menutype = $campaign['menutype'];
 
 // Insert data in #__emundus_users
 $p = $mprofile->isProfileUserSet($user->id);
-if( $p['cpt'] == 0 )
+if( $p['cpt'] == 0 ){
 	$query = 'INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate)
 			values ('.$user->id.', '.$db->quote(ucfirst($firstname)).', '.$db->quote(strtoupper($lastname)).', '.$profile.', '.$db->quote($schoolyear).', '.$db->quote($user->registerDate).')';
-else
-	$query = 'UPDATE #__emundus_users SET profile = '.$profile.', schoolyear='.$db->quote($schoolyear).' WHERE user_id = '.$user->id;
-
-try {
-	$db->setQuery($query);
-	$db->execute();
+	/*else
+		$query = 'UPDATE #__emundus_users SET profile = '.$profile.', schoolyear='.$db->quote($schoolyear).' WHERE user_id = '.$user->id;
+	*/
+	try {
+		$db->setQuery($query);
+		$db->execute();
+	}
+	catch(Exception $e)
+	{
+	JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+	JError::raiseError(500, $query);
+	}	
 }
-catch(Exception $e)
-{
-   JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-   JError::raiseError(500, $query);
-}
+	
 
 // Insert data in #__emundus_users_profiles
 $query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';

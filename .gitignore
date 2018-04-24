@@ -31,7 +31,9 @@ emundus_bdd*
 /.htaccess
 /*.sql.zip
 /test*
-administrator/components/com_admin/sq/lupdates/mysql/eM-*
+/administrator/components/com_admin/sq/lupdates/mysql/eM-*
+/administrator/templates/isis/images/joomla.png
+/administrator/templates/isis/images/logo.png
 administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
 

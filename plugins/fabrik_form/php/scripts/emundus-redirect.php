@@ -315,7 +315,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 	echo "<hr>";
 	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
 	echo "<hr>";
-	//exit;
+	exit;
 	
 }
 header('Location: '.$link);

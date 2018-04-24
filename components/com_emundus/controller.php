@@ -1143,52 +1143,59 @@ class EmundusController extends JControllerLegacy {
      * Check if user can or not open PDF file
      */
     function getfile() {
-        $db = JFactory::getDBO();
 
-        $url = $_GET['u'];
+        // Get the filename and user ID from the URL.
+        $jinput = JFactory::getApplication()->input;
+        $url = $jinput->get->get('u', null, 'RAW');
+
         $urltab = explode('/', $url);
 
+        // Split the URL into different parts.
         $cpt = count($urltab);
         $uid = $urltab[$cpt-2];
         $file = $urltab[$cpt-1];
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        if ( !EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id != $uid) ) {
-            JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) );
-        } else {
-            // Check if document can be viewed by applicant
-            if (EmundusHelperAccess::isApplicant($current_user->id)) {
-                $query = 'SELECT can_be_viewed FROM #__emundus_uploads WHERE user_id = '.$uid.' AND filename like '.$db->Quote($file);
-                $db->setQuery( $query );
-                $can_be_viewed = $db->loadResult();
-                if ($can_be_viewed != 1)
-                    die(JText::_( 'ACCESS_DENIED' ));
-            }
-            $file = JPATH_BASE.DS.$url;
-            if (file_exists($file)) {
-                $mime_type = $this->get_mime_type($file);
-                //header('Content-type: application/'.$mime_type);
-                header('Content-type: '.$mime_type);
-                header('Content-Disposition: inline; filename='.basename($file));
-                header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-                header('Cache-Control: no-store, no-cache, must-revalidate');
-                header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-                header('Pragma: anytextexeptno-cache', true);
-                header('Cache-control: private');
-                header('Expires: 0');
-                //header('Content-Transfer-Encoding: binary');
-                //header('Content-Length: ' . filesize($file));
-                //header('Accept-Ranges: bytes');
+        // Check if the user is an applicant and it is his file.
+        if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid) {
 
-                ob_clean();
-                flush();
-                readfile($file);
-                exit;
-            } else {
-                JError::raiseWarning( 500, JText::_( 'FILE_NOT_FOUND' ).' '.$file );
-                //$this->setRedirect('index.php?option=com_emundus&view='.$view.'&Itemid='.$Itemid);
-            }
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+
+            // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
+            $query = 'SELECT can_be_viewed FROM #__emundus_uploads WHERE user_id = '.$uid.' AND filename like '.$db->Quote($file);
+            $db->setQuery($query);
+            $can_be_viewed = $db->loadResult();
+            if ($can_be_viewed != 1)
+                die (JText::_( 'ACCESS_DENIED' ));
+
+        }
+
+        // If the user has the rights to open attachments.
+        elseif (!EmundusHelperAccess::asAccessAction(4,'r')) {
+            die (JText::_('ACCESS_DENIED'));
+        }
+
+        // Otherwise, open the file if it exists.
+        $file = JPATH_BASE.DS.$url;
+        if (file_exists($file)) {
+            $mime_type = $this->get_mime_type($file);
+            header('Content-type: '.$mime_type);
+            header('Content-Disposition: inline; filename='.basename($file));
+            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+            header('Pragma: anytextexeptno-cache', true);
+            header('Cache-control: private');
+            header('Expires: 0');
+
+            ob_clean();
+            flush();
+            readfile($file);
+            exit;
+        } else {
+            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$file);
         }
     }
 

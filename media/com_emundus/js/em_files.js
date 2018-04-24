@@ -4085,6 +4085,8 @@ $(document).ready(function()
             $('#em-export-opt option:selected').each(function() {
                 options.push($(this).val());
             });
+        }else{
+            options.push("0");
         }
 
         $('#data').hide();
@@ -4195,6 +4197,8 @@ $(document).ready(function()
             $('#em-export-opt option:selected').each(function() {
                 options.push($(this).val());
             });
+        }else{
+            options.push("0");
         }
 
         //console.log(form_checked);

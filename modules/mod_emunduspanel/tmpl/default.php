@@ -40,7 +40,7 @@ if (isset($user->profile) && $user->profile > 0) {
                 echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
         }
         echo '</select><div class="select_arrow">
-        </div></legend></div><br/>';
+        </div></legend></div><br/><br/>';
     }
 }
 ?>
