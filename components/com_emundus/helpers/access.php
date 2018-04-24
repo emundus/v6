@@ -142,21 +142,22 @@ class EmundusHelperAccess {
 	 * @return	boolean		As acces or not
 	 * @since	6.0
 	*/
-	static function asAccessAction($action_id, $crud, $user_id=null, $fnum=null){
+	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null) {
+
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$userModel = new EmundusModelUsers();
-		if (!is_null($fnum) && !empty($fnum))
-		{
+
+		if (!is_null($fnum) && !empty($fnum)) {
 			$canAccess = $userModel->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
 			if ($canAccess > 0)
 				return true;
-			elseif($canAccess == 0 || $canAccess === null) {
+			elseif ($canAccess == 0 || $canAccess === null) {
 				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
 
-				if (count($groups)>0) 
+				if (count($groups) > 0)
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
-				else 
-					return false;	
+				else
+					return false;
 			} else
 				return false;
 		}
