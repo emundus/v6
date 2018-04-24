@@ -142,7 +142,7 @@ if ( ! function_exists( 'exif_imagetype' ) ) {
     }
 }
 
-if(!empty($options) && $options[0] != ""){
+if(!empty($options) && $options[0] != "" && $options[0] != "0"){
     $htmldata .= '<div class="card">
 					<table width="100%"><tr>';
 if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar))
@@ -183,6 +183,35 @@ $date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strto
     }
     $htmldata .= '</td></tr></table></div>';
     
+}elseif($options[0] == "0"){
+    $htmldata .= '';
+}else{
+    $htmldata .= '<div class="card">
+                <table width="100%"><tr>';
+    if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar))
+        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
+    elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar))
+        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
+    $htmldata .= '
+    <td width="80%">
+
+    <div class="name"><strong>'.$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
+
+    if(isset($item->maiden_name))
+        $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+
+    $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+
+    $htmldata .= '
+    <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
+    <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+    <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
+    <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+    <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
+    </td>
+    </tr>
+    </table>
+    </div>';
 }
 /**  END APPLICANT   ****/
 
