@@ -14,8 +14,6 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
 
-
-
 <input type="hidden" id="view" name="view" value="files">
 <div class="panel panel-default">
 	<?php if(is_array($this->datas)):?>
@@ -25,7 +23,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		</div>
 		<div class="em-data-container">
 			<table class="table table-striped table-hover" id="em-data">
-				<thead>
+				<thead >
 				<tr>
 					<?php foreach($this->datas[0] as $kl => $v): ?>
 						<th title="<?php echo JText::_(strip_tags($v))?>" id="<?php echo $kl?>" >

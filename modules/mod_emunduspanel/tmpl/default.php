@@ -46,14 +46,11 @@ if (isset($user->profile) && $user->profile > 0) {
 ?>
     <div class="ui grid">
     <?php
-    //if profile is not applicant or fnum not empty? 
-    //var_dump($user);
     if(!in_array($user->profile, $applicant_profiles) || $user->fnum){
         foreach ($tab as $t) {
             echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
         }
     }
-    
     ?>
     </div>
 

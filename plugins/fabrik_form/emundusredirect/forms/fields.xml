@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-juseremundus" label="PLG_FABRIK_FORM_JUSEREMUNDUS_FIELDS">
+
+			<field name="emundusredirect_field_status"
+				type="field"
+				default="-1"
+				description="PLG_FABRIK_FORM_EMUNDUSREDIRECT_STATUS_FIELD_DESC"
+				label="PLG_FABRIK_FORM_EMUNDUSREDIRECT_STATUS_FIELD_LABEL" />
+
+		</fieldset>
+	</fields>
+</form>
