@@ -1420,33 +1420,34 @@ $(document).ready(function()
             }
         }
     });
+
     $(document).on('mouseover', '.em-dropdown', function(e)
     {
-        $.ajaxQ.abortAll();
+        // Aborting AJAX calls means that the menu can be reached by the user before the AJAX returns (it takes about 700ms).
+        // This leads to users being locked out of the menu because the ajax to update it has been cacelled on mouseover.
+        //$.ajaxQ.abortAll();
         var id = $(this).attr('id');
 
         $('ul.dropdown-menu.open').hide();
         $('ul.dropdown-menu.open').removeClass('open');
+
         if ($('ul[aria-labelledby="' + id + '"]').hasClass('open'))
         {
             $('ul[aria-labelledby="' + id + '"]').hide();
             $('ul[aria-labelledby="' + id + '"]').removeClass('open');
-        }
-        else
-        {
+        } else {
             $('ul[aria-labelledby="' + id + '"]').show();
             $('ul[aria-labelledby="' + id + '"]').addClass('open just-open');
         }
 
-
-        setTimeout(function()
-        {
+        setTimeout(function(){
             $('ul[aria-labelledby="' + id + '"]').removeClass('just-open')
         }, 300);
     });
-//
-// Button Form actions
-//
+
+    //
+    // Button Form actions
+    //
     $(document).on('click', '.em-actions-form', function(e)
     {
         $.ajaxQ.abortAll();
@@ -1459,7 +1460,7 @@ $(document).ready(function()
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
 
-        if($('.modal-dialog').hasClass('modal-lg'))
+        if ($('.modal-dialog').hasClass('modal-lg'))
             $('.modal-dialog').removeClass('modal-lg');
 
         $('.modal-body').attr('act-id', id);
@@ -1477,9 +1478,10 @@ $(document).ready(function()
         //console.log(url);
         $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
     });
-//
-// Menu action
-//
+
+    //
+    // Menu action
+    //
     $(document).on('click', '.em-actions', function(e) {
 
         $.ajaxQ.abortAll();
@@ -1524,6 +1526,7 @@ $(document).ready(function()
         var view = $('#view').val();
         var url = $(this).children('a').attr('href');
         var formid = 29;
+
         // get formid by fnum
         $.ajax({
             type:'post',
