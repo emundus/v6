@@ -200,9 +200,9 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                             dataType: 'json',
                             data: {ids: JSON.stringify(checked)},
                             success: function (result) {
-                                $('#em-modal-actions').hide();
-                                var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
+                                $('#em-modal-actions').modal('hide');
 
+                                var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
                                 $.ajax({
                                     type:'get',
                                     url:url,

@@ -1811,22 +1811,7 @@ $(document).ready(function()
                                                                                     success: function(result) {
 
                                                                                         var item='';
-                                                                                        /*item+='<option value="0" selected>Select an option</option>';
-
-                                                                                        for (var d in result.elts) {
-
-                                                                                            if (isNaN(parseInt(d)))
-                                                                                                break;
-
-                                                                                            if (Joomla.JText._(result.elts[d].element_label) == "")
-                                                                                                var elt_label = result.elts[d].element_label;
-                                                                                            else
-                                                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
-
-                                                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
-                                                                                        }*/
-
-
+                                                                        
                                                                                         $('#eval-elements-popup').append(data);
                                                                                         item ="";
 
@@ -2864,9 +2849,9 @@ $(document).ready(function()
                     '</div><br/>');
 
                     $('#data').append('<div style="padding-left:30px" id="exp-options">'+
-                        '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header"/>&ensp;' +
+                        '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked/>&ensp;' +
                         '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
-                        '<div style="padding-left:30px; display:none;" id="exp-opt">'+
+                        '<div style="padding-left:30px;" id="exp-opt">'+
                         '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
                         '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
                             '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
@@ -3298,9 +3283,9 @@ $(document).ready(function()
 
                         $('#data').append('<div style="padding-left:30px" id="em-options">'+
 
-                            '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header"/>&ensp;' +
+                            '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked/>&ensp;' +
                             '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
-                            '<div style="padding-left:30px; display:none;" id="exp-opt">'+
+                            '<div style="padding-left:30px;" id="exp-opt">'+
                             '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
                             '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple >'+
                                 '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
@@ -4204,8 +4189,6 @@ $(document).ready(function()
             options.push("0");
         }
 
-        //console.log(form_checked);
-
         $('#data').hide();
         $('div').remove('#chargement');
         $('.modal-body').append('<div id="chargement" style="padding:15px">' +
@@ -4215,9 +4198,6 @@ $(document).ready(function()
         '</div>');
         $('#can-val').hide();
 
-
-        //console.log(ids);
-        //console.log(fnums);
 
             $.ajax(
             {
