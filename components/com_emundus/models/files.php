@@ -1747,11 +1747,14 @@ if (JFactory::getUser()->id == 63)
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
-            foreach ($fnums as $fnum)
-            {
-                foreach($tags as $tag)
-                    $query .= '("'.$fnum.'", '.$tag.','.$user.'),';
+            if(!empty($fnums) && !empty($tags)){
+                foreach ($fnums as $fnum)
+                {
+                    foreach($tags as $tag)
+                        $query .= '("'.$fnum.'", '.$tag.','.$user.'),';
+                }
             }
+           
             $query = substr_replace($query, ";", -1);
 
             $db->setQuery($query);
