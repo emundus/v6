@@ -4849,7 +4849,6 @@ $(document).ready(function()
                                     $('#'+result.tagged[i].fnum).parents('td').addClass(result.tagged[i].class);
                                     $('#'+result.tagged[i].fnum+'_check').parents('td').addClass(result.tagged[i].class);
                                 }
-                                reloadData();
                             } else {
                                 $('.modal-body').empty();
                                 $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
