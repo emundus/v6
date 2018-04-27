@@ -855,7 +855,7 @@ $(document).ready(function()
                         lastVal[id] = $('#' + id).val();
                     }
                 }
-                if ($('#select_multiple_programmes').val() != null)
+                if ($('#select_multiple_programmes').val() != null || $('#select_multiple_campaigns').val() != null)
                     $('#em_adv_filters').show();
                 else
                     $('#em_adv_filters').hide();

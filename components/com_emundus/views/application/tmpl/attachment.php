@@ -235,35 +235,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
     });
 
-    $(document).on('click', '#em_export_pdf', function()
-    {
-        var checkedInput = getJsonChecked();
-        var checked = getChecked();
-        /*String.prototype.fmt = function (hash) {
-            var string = this, key;
-            for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
-        }*/
-
-        //var url = $(this).attr('link')+'&ids='+encodeURIComponent(JSON.stringify(checkedInput));
-        var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
-        //url = url.fmt({ids: checkedInput});
-
-        $.ajax({
-            type:'get',
-            url: url,
-            dataType:'json',
-
-            success: function(result) {
-                if(result.link){
-                    window.open(result.link);
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log(jqXHR.responseText);
-            }
-        });
-
        /* if(checked.length > 0)
         {
             $('#em-modal-actions .modal-body').empty();

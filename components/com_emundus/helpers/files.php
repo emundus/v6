@@ -1270,6 +1270,42 @@ class EmundusHelperFiles
             $filters .= $validate;
         }
 
+        if (@$params['programme'] !== NULL) {
+            $hidden = $types['programme'] != 'hidden' ? false : true;
+            $programmeList = $h_files->getProgrammes($params['programme']);
+            
+            $programme = '';
+            if (!$hidden) {
+                $programme .= '<div id="programme">
+                    <div class="em_label"><label class="control-label">'.JText::_('PROGRAMME').//<a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
+                    '</label></div>
+                    <div class="em_filtersElement">';
+            }
+            $programme .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_programmes" name="programme" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
+            /*$programme .= '<option value="%" ';
+            if ((@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 )
+                $programme .= ' selected="true"';
+            $programme .= '>'.JText::_('ALL').'</option>';*/
+
+            foreach ($programmeList as $p) {
+                $programme .= '<option value="'.$p->code.'"';
+                if (!empty($current_programme) && in_array($p->code, $current_programme)){
+                    $programme .= ' selected="true"';
+                    $program_selected = true;
+                }
+                   
+                $programme .= '>'.$p->label.' - '.$p->code.'</option>';
+            }
+            $programme .= '</select>';
+            if (!$hidden) {
+                $programme .= '</div></div>';
+                //$programme .= '<script>$(document).ready(function() {$("#select_multiple_programmes").chosen({width: "75%"});})</script>';
+            }
+            $filters .= $programme;
+           
+        }
+
+
         if (@$params['campaign'] !== NULL) {
             $hidden = $types['campaign'] != 'hidden' ? false : true;
             $campaignList = $h_files->getCampaigns();
@@ -1333,42 +1369,6 @@ class EmundusHelperFiles
             }
             $filters .= $schoolyear;
             
-        }
-
-        
-        if (@$params['programme'] !== NULL) {
-            $hidden = $types['programme'] != 'hidden' ? false : true;
-            $programmeList = $h_files->getProgrammes($params['programme']);
-            
-            $programme = '';
-            if (!$hidden) {
-                $programme .= '<div id="programme">
-                    <div class="em_label"><label class="control-label">'.JText::_('PROGRAMME').//<a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
-                    '</label></div>
-                    <div class="em_filtersElement">';
-            }
-            $programme .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_programmes" name="programme" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$programme .= '<option value="%" ';
-            if ((@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 )
-                $programme .= ' selected="true"';
-            $programme .= '>'.JText::_('ALL').'</option>';*/
-
-            foreach ($programmeList as $p) {
-                $programme .= '<option value="'.$p->code.'"';
-                if (!empty($current_programme) && in_array($p->code, $current_programme)){
-                    $programme .= ' selected="true"';
-                    $program_selected = true;
-                }
-                   
-                $programme .= '>'.$p->label.' - '.$p->code.'</option>';
-            }
-            $programme .= '</select>';
-            if (!$hidden) {
-                $programme .= '</div></div>';
-                //$programme .= '<script>$(document).ready(function() {$("#select_multiple_programmes").chosen({width: "75%"});})</script>';
-            }
-            $filters .= $programme;
-           
         }
 
         if (@$params['status'] !== NULL) {
@@ -1740,8 +1740,8 @@ class EmundusHelperFiles
                         $(document).ready(function() {
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
                             $(".testSelAll").SumoSelect({selectAll:true,search:true, searchText: "'.JText::_('ENTER_HERE').'"});
-                            
-                            if ($("#select_multiple_programmes").val() != null)
+
+                            if ($("#select_multiple_programmes").val() != null || $("#select_multiple_campaigns").val() != null)
                                 $("#em_adv_filters").show();
                             else
                                 $("#em_adv_filters").hide();
