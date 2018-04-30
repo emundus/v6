@@ -320,13 +320,15 @@ class EmundusHelperFilters {
 			throw $e;
 		}
 	}
+
 	/**
 	* Get list of ALL elements declared in a list of Fabrik groups
 	* @param 	string 	List of Fabrik groups comma separated
 	* @param 	int 	Does the element are shown in Fabrik list ?
+	* @param 	int 	Does the element are an hidden element ?
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
-	function getAllElementsByGroups($groups) {
+	function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
@@ -337,8 +339,10 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
 				WHERE tab.published = 1
 					AND element.published=1
-					AND groupe.id IN ('.$groups.')
-				ORDER BY formgroup.ordering, groupe.id, element.ordering';
+					AND groupe.id IN ('.$groups.') ';
+		$query .= isset($show_in_list_summary) ?' AND element.show_in_list_summary = '.$show_in_list_summary : '';
+		$query .= isset($hidden) ?' AND element.hidden = '.$hidden : '';
+		$query .= ' ORDER BY formgroup.ordering, groupe.id, element.ordering';
 	//die(str_replace("#_", "jos", $query));
 		$db->setQuery( $query );
 		return $db->loadObjectList();
