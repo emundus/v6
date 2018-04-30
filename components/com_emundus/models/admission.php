@@ -98,7 +98,7 @@ class EmundusModelAdmission extends JModelList
 		// get evaluation element
 		$show_in_list_summary = 1;
         $hidden = 0;
-		//$elements_eval = $this->getAllAdmissionElements($show_in_list_summary, $hidden);
+		$elements_eval = $this->getAllAdmissionElements($show_in_list_summary, $hidden);
 
 		if (count($elements_eval))
 			$this->elements_id .= implode(',', $elements_eval);
@@ -153,8 +153,7 @@ class EmundusModelAdmission extends JModelList
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
                               ) AS `'.$t.'`';
                         } else {
-                            $query = '(
-                                select DISTINCT '.$join_val_column.'
+                            $query = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
                                 from '.$attribs->join_db_name.'
                                 where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                         }
@@ -1242,14 +1241,14 @@ class EmundusModelAdmission extends JModelList
 		//$fnum_assoc = $userModel->getApplicantsAssoc(JFactory::getUser()->id);
 		$query .= ' AND (sp.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
 		//////////////////////////////////////////////////////////////
+
+//		if (in_array('overall', $em_blocks_names))
+		$query .= ' GROUP BY c.fnum';
+
 		$query .=  $this->_buildContentOrderBy();
 
-		if (in_array('overall', $em_blocks_names))
-			$query .= ' GROUP BY c.fnum';
-
-		$dbo->setQuery($query);
 		try {
-
+			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
@@ -1257,6 +1256,9 @@ class EmundusModelAdmission extends JModelList
 			$limitStart = $session->get('limit');
 			if ($limitStart > 0)
 				$query .= " limit $limit, $limitStart ";
+/*
+if (JFactory::getUser()->id == 63)
+    echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';*/
 
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
@@ -1276,8 +1278,8 @@ class EmundusModelAdmission extends JModelList
 
 	// get ALL elements by groups
 	// @params string List of Fabrik groups comma separated
-	function getAllElementsByGroups($groups) {
-		return @EmundusHelperFilters::getAllElementsByGroups($groups);
+	function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
+		return @EmundusHelperFilters::getAllElementsByGroups($groups, $show_in_list_summary, $hidden);
 	}
 
 
