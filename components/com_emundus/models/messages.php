@@ -164,15 +164,20 @@ class EmundusModelMessages extends JModelList {
         // if a filter is added then we need to filter out the letters that dont match.
         if (isset($filt_params['campaign'][0]) && $filt_params['campaign'][0] != '%') {
 
-            $query->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p').' ON '.$db->QuoteName('l.code').' = '.$db->QuoteName('p.code'))
+            $query->leftJoin($db->quoteName('#__emundus_setup_letters_repeat_training','lrt').' ON '.$db->quoteName('lrt.parent_id').' = '.$db->quoteName('l.id'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p').' ON '.$db->QuoteName('lrt.training').' = '.$db->QuoteName('p.code'))
                     ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->QuoteName('c.profile_id').' = '.$db->QuoteName('p.id'))
                     ->where($db->quoteName('c.id').' LIKE '.$filt_params['campaign'][0]);
 
         } else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {
 
-            $query->where($db->quoteName('l.code').' LIKE '.$db->Quote($filt_params['programme'][0]));
+            $query->leftJoin($db->quoteName('#__emundus_setup_letters_repeat_training','lrt').' ON '.$db->quoteName('lrt.parent_id').' = '.$db->quoteName('l.id'))
+                        ->where($db->quoteName('lrt.training').' LIKE '.$db->Quote($filt_params['programme'][0]));
 
         }
+
+        echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
+        
 
         try {
 
