@@ -1036,7 +1036,6 @@ $(document).ready(function () {
 						jgr: $('#profiles option:selected').attr('id'),
 						email: email,
 						newsletter: $('#news').is(':checked') ? 1 : 0,
-						dataexploit: $('#dataexploit').is(':checked') ? 1 : 0,
 						university_id: $('#univ').val(),
 						ldap: $('#ldap').is(':checked') ? 1 : 0
 					},
@@ -1172,7 +1171,6 @@ $(document).ready(function () {
 						jgr: $('#profiles option:selected').attr('id'),
 						email: email,
 						newsletter: $('#news').is(':checked') ? 1 : 0,
-						dataexploit: $('#dataexploit').is(':checked') ? 1 : 0,
 						university_id: $('#univ').val()
 					},
 					dataType: 'json',
