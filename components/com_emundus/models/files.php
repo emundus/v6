@@ -814,8 +814,8 @@ class EmundusModelFiles extends JModelLegacy
      */
     private function _buildSearch($str_array, $tableAlias = array())
     {
-        
         $q = array('q' => array(), 'join' => array());
+        $all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
         
         foreach($str_array as $str){
            
@@ -921,7 +921,7 @@ class EmundusModelFiles extends JModelLegacy
             }*/
 
             if($val[0] == "ALL"){
-           
+                
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
