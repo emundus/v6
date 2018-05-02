@@ -932,19 +932,27 @@ class EmundusModelApplication extends JModelList
                             $this->_db->setQuery($query);
                             $table = $this->_db->loadResult();
 
-                            if($itemg->group_id == 174)
+                            if ($itemg->group_id == 174)
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
                                         WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                             else
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
                                     WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
                             //$forms .= $query;
+
                             $this->_db->setQuery($query);
-                            $repeated_elements = $this->_db->loadObjectList();
+
+                            try {
+                                $repeated_elements = $this->_db->loadObjectList();
+                            } catch (Exception $e) {
+                                JLog::Add('ERROR getting repeated elements in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                            }
+
                             unset($t_elt);
+
                             $forms .= '</tr></thead>';
                             // -- Ligne du tableau --
-                            if (count($repeated_elements)>0) {
+                            if (count($repeated_elements) > 0) {
                                 $forms .= '<tbody>';
                                 foreach ($repeated_elements as $r_element) {
                                     $delete_link = false;
@@ -953,10 +961,12 @@ class EmundusModelApplication extends JModelList
                                     foreach ($r_element as $key => $r_elt) {
                                         $params = json_decode($elements[$j]->params);
                                         if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
-                                            if ($elements[$j]->plugin=='date') {
+
+                                            if ($elements[$j]->plugin == 'date') {
                                                 $elt = date($params->date_form_format, strtotime($r_elt));
                                             }
-                                            elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
+
+                                            elseif ($elements[$j]->plugin == 'birthday' && $r_elt>0) {
                                                 $format = 'Y-n-j';
                                                 $d = DateTime::createFromFormat($format, $r_elt);
                                                 if($d && $d->format($format) == $r_elt)
@@ -964,7 +974,8 @@ class EmundusModelApplication extends JModelList
                                                 else
                                                     $elt = $r_elt;
                                             }
-                                            elseif($elements[$j]->plugin=='databasejoin') {
+
+                                            elseif($elements[$j]->plugin == 'databasejoin') {
                                                 $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
@@ -974,7 +985,8 @@ class EmundusModelApplication extends JModelList
                                                 $this->_db->setQuery( $query );
                                                 $elt = $this->_db->loadResult();
                                             }
-                                            elseif ($elements[$j]->plugin=='cascadingdropdown') {
+
+                                            elseif ($elements[$j]->plugin == 'cascadingdropdown') {
                                                 $cascadingdropdown_id = $params->cascadingdropdown_id;
                                                 $r1 = explode('___', $cascadingdropdown_id);
                                                 $cascadingdropdown_label = $params->cascadingdropdown_label;
@@ -988,18 +1000,23 @@ class EmundusModelApplication extends JModelList
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
+
                                             elseif ($elements[$j]->plugin == 'checkbox') {
                                                 $elt = implode(", ", json_decode (@$r_elt));
                                             }
-                                            elseif ($elements[$j]->plugin=='dropdown' || $elements[$j]->plugin=='radiobutton') {
+
+                                            elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
                                                 $elt = $params->sub_options->sub_labels[$index];
                                             }
-                                            else
+
+                                            else {
                                                 $elt = $r_elt;
+                                            }
+
                                             //print_r($this->_mainframe->data);
                                             /*if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && !$delete_link) {
-                                                //$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::base(true).'media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
+                                                //$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::base().'media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
                                                 $delete_link = '<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​';
                                             }
                                             $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';

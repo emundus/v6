@@ -1299,7 +1299,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             switch ($col[0]) {
                 case "photo":
-                   //$colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($m_files, JURI::base(true));
+                   //$colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($m_files, JURI::base());
                     $photos = $m_files->getPhotos($fnums);
                     if (count($photos) > 0) {
                         $pictures = array();

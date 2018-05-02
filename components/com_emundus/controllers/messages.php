@@ -262,7 +262,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'USER_NAME' => $fnum->name,
                 'COURSE_LABEL' => $programme->label,
                 'CAMPAIGN_LABEL' => $fnum->label,
-                'SITE_URL' => JURI::base(true),
+                'SITE_URL' => JURI::base(),
                 'USER_EMAIL' => $fnum->email
             ];
 

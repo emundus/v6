@@ -45,7 +45,7 @@ function sortObjectByArray($object,$orderArray) {
 
 			@set_time_limit(10800);
 			global $mainframe;
-			$baseurl = JURI::base(true);
+			$baseurl = JURI::base();
 			$db	= JFactory::getDBO();
 			jimport( 'joomla.user.user' );
 			error_reporting(0);

@@ -1066,7 +1066,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			$htmldata .= '<ol>';
 			foreach ($uploads as $upload){
 				if (strrpos($upload->filename,"application_form")=== false) {
-					$path_href = JURI::base(true) . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
+					$path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
 					$htmldata .= '<li><b>' . $upload->value . '</b>';
 					$htmldata .= '<ul>';
 					$htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';

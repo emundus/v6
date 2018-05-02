@@ -13,7 +13,7 @@ defined( '_JEXEC' ) or die();
  * @description Met à jour le status du dossier en fonction du nombre de lettres de références reçues. 
  */
 
-$baseurl = JURI::base(true);
+$baseurl = JURI::base();
 $db = JFactory::getDBO();
 
 $current_user = JFactory::getSession()->get('emundusUser');

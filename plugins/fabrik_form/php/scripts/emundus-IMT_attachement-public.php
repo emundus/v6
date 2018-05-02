@@ -25,7 +25,7 @@ $fnum       = $jinput->get('jos_emundus_reference_letter___fnum');
 
 $mailer     = JFactory::getMailer();
 $db         = JFactory::getDBO();
-$baseurl    = JURI::base(true);
+$baseurl    = JURI::base();
 
 $key_id     = JRequest::getVar('keyid', null, 'get');
 $sid        = JRequest::getVar('sid', null, 'get');

@@ -60,8 +60,8 @@ class EmundusModelTrombinoscope extends JModelLegacy
             $fnums = array();
             foreach ($fnums_obj as $key => $value) {
                 if (@$value->sid > 0) {
-                    $fnums[] = array( 'fnum' => @$value->fnum, 
-                                      'applicant_id' => @$value->sid, 
+                    $fnums[] = array( 'fnum' => @$value->fnum,
+                                      'applicant_id' => @$value->sid,
                                       'campaign_id' => @$value->cid
                                     );
                 }
@@ -70,13 +70,13 @@ class EmundusModelTrombinoscope extends JModelLegacy
         return $fnums;
     }
 
-    public function set_template($programme_code, $format = 'trombi') { 
-    
+    public function set_template($programme_code, $format = 'trombi') {
+
         if (!empty($programme_code)) {
             $db = JFactory::getDBO();
             if ($format == 'trombi') {
                 try
-                {   
+                {
                     $query = 'SELECT tmpl_trombinoscope FROM #__emundus_setup_programmes WHERE code like '.$db->quote($programme_code);
                     $db->setQuery($query);
                     $this->trombi_tpl = $db->loadResult();
@@ -91,7 +91,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
                 }
             } else {
                 try
-                {   
+                {
                     $query = 'SELECT tmpl_badge FROM #__emundus_setup_programmes WHERE code like '.$db->quote($programme_code);
                     $db->setQuery($query);
                     $this->badge_tpl = $db->loadResult();
@@ -162,11 +162,11 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $tmpName = JPATH_BASE.DS.'tmp'.DS.$fileName;
         $pdf->Output($tmpName, 'F');
 
-        return JURI::base(true).'tmp'.DS.$fileName;
+        return JURI::base().'tmp'.DS.$fileName;
     }
 */
     // DOMPDF
-    public function generate_pdf($html_value, $format = 'trombi') { 
+    public function generate_pdf($html_value, $format = 'trombi') {
         set_time_limit(0);
         require_once(JPATH_LIBRARIES.DS.'dompdf'.DS.'dompdf_config.inc.php');
 
@@ -185,12 +185,12 @@ class EmundusModelTrombinoscope extends JModelLegacy
 
         //$pdf->setOptions($options);
 
-        $contxt = stream_context_create([ 
-            'ssl' => [ 
-                'verify_peer' => FALSE, 
+        $contxt = stream_context_create([
+            'ssl' => [
+                'verify_peer' => FALSE,
                 'verify_peer_name' => FALSE,
                 'allow_self_signed'=> TRUE
-            ] 
+            ]
         ]);
         $pdf->setHttpContext($contxt);
 */
@@ -206,6 +206,6 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $output = $pdf->output();
         file_put_contents($tmpName, $output);
 
-        return JURI::base(true).'tmp'.DS.$fileName;
+        return JURI::base().'tmp'.DS.$fileName;
     }
 }

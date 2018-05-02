@@ -18,7 +18,7 @@ return false;
 */
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
-$baseurl = JURI::base(true);
+$baseurl = JURI::base();
 $db = JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_attachment = $eMConfig->get('alert_new_attachment');

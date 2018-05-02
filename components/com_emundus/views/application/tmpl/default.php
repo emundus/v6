@@ -43,20 +43,20 @@ function age($naiss) {
                     <div id="photo">
                       <?php
                                 if(!empty($this->userInformations["filename"])) {
-                                    echo'<img id="image" class="rounded ui image" src="'.JURI::base(true).EMUNDUS_PATH_REL.$this->student->id.'/'.$this->userInformations["filename"].'" width="50%">';
+                                    echo'<img id="image" class="rounded ui image" src="'.JURI::base().EMUNDUS_PATH_REL.$this->student->id.'/'.$this->userInformations["filename"].'" width="50%">';
                                 } else if(!empty($this->userInformations["gender"])){
-                                    echo'<img id="image" class="rounded ui image" src="'.JURI::base(true).'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
+                                    echo'<img id="image" class="rounded ui image" src="'.JURI::base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
                                 }
                                 ?>
-                      <div class="ui buttons"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&amp;task=pdf&amp;user=<?php echo $this->student->id; ?>">
+                      <div class="ui buttons"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&amp;task=pdf&amp;user=<?php echo $this->student->id; ?>">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"> <i class="file icon"></i> </button>
                         </a>
                         <button class="mini ui icon button" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>" onclick="document.pressed=this.name;" name="export_zip"> <i class="archive icon"></i> </button>
-                        <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=67&amp;tableid=70&amp;rowid=&amp;jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
+                        <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=67&amp;tableid=70&amp;rowid=&amp;jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="attachment basic icon"></i> </button>
-                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=89&amp;tableid=92&amp;rowid=&amp;jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
+                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=89&amp;tableid=92&amp;rowid=&amp;jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="comment basic icon"></i> </button>
-                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
+                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('SEND_EMAIL'); ?>"> <i class="mail basic icon "></i> </button>
                         </a> </div>
                     </div>
@@ -135,30 +135,30 @@ function age($naiss) {
                 ?>
               <a data-title="<?php echo JText::_('SUBMITTED'); ?>" data-content="<?php echo JText::_('JNO'); ?>" href="#" title="" >
               <?php
-                    echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/publish_x.png" style="margin-right:20px;" />';
+                    echo '<img style="border:0;" src="'.JURI::base().'media/com_emundus/images/icones/publish_x.png" style="margin-right:20px;" />';
                     echo '</a>';
                 }else{
                     if($campaign->result_sent==0){
                     ?>
               <a data-title="<?php echo JText::_('SUBMITTED'); ?>" data-content="<?php echo JText::_('JYES'); ?>" href="#" title="" >
               <?php
-                        echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/tick.png" />
+                        echo '<img style="border:0;" src="'.JURI::base().'media/com_emundus/images/icones/tick.png" />
 							</a>';
                         ?>
               <a data-title="<?php echo JText::_('RESULT_SENT'); ?>" data-content="<?php echo JText::_('JNO'); ?>" href="#" title="" >
               <?php
-                            echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/email_not_send.png" />
+                            echo '<img style="border:0;" src="'.JURI::base().'media/com_emundus/images/icones/email_not_send.png" />
 							</a>';
                             }else if($campaign->result_sent==1){
                             ?>
               <a data-title="<?php echo JText::_('SUBMITTED'); ?>" data-content="<?php echo JText::_('JYES'); ?>" href="#" title="" >
               <?php
-                                echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/tick.png" />
+                                echo '<img style="border:0;" src="'.JURI::base().'media/com_emundus/images/icones/tick.png" />
 							</a>';
                                 ?>
               <a data-title="<?php echo JText::_('RESULT_SENT'); ?>" data-content="<?php echo JText::_('JYES'); ?>" href="#" title="" >
               <?php
-                                    echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/email_send.png" />
+                                    echo '<img style="border:0;" src="'.JURI::base().'media/com_emundus/images/icones/email_send.png" />
 							</a>';
                                     }
                     }
@@ -175,7 +175,7 @@ function age($naiss) {
                     ?>
               <a data-title="<?php echo JText::_('FINAL_GRADE'); ?>" data-content="<?php echo $contenu; ?>" href="#" title="" >
               <?php
-                        echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/grade-'.$campaign->final_grade.'_16x16.png" /></a>';
+                        echo '<img style="border:0;" src="'.JURI::base().'media/com_emundus/images/icones/grade-'.$campaign->final_grade.'_16x16.png" /></a>';
                     }
                     echo'</div>';
                     if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && count($this->userCampaigns) > 1) {
@@ -219,9 +219,9 @@ function age($naiss) {
               <td><?php echo JHtml::_('date', $this->student->lastvisitDate, JText::_('DATE_FORMAT_LC2')); ?></td>
               <td><?php
 						if (isset($this->logged[0]->logoutLink))
-							echo '<img style="border:0;" src="'.JURI::base(true).'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
+							echo '<img style="border:0;" src="'.JURI::base().'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
 						else
-							echo '<img style="border:0;" src="'.JURI::base(true).'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
+							echo '<img style="border:0;" src="'.JURI::base().'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
 						?></td>
             </tr>
           </tbody>
@@ -234,7 +234,7 @@ function age($naiss) {
           <?php
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id)) {
 			?>
-          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8,onClose:function(){delayAct('<?php echo $this->student->id; ?>');}}}" href="<?php echo JURI::base(true); ?>/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&jos_emundus_uploads___fnum[value]=<?php echo $this->student->fnum; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
+          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8,onClose:function(){delayAct('<?php echo $this->student->id; ?>');}}}" href="<?php echo JURI::base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&jos_emundus_uploads___fnum[value]=<?php echo $this->student->fnum; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
           <button class="ui right icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="large attachment basic icon"></i> </button>
           </a>
           <?php
@@ -272,7 +272,7 @@ function age($naiss) {
 				echo '<div class="attachment_name">';
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 					echo '<input type="checkbox" name="attachments[]" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
-				echo '<a href="'.JURI::base(true).$path.'" target="_blank" data-html="'.htmlentities($info).'">';
+				echo '<a href="'.JURI::base().$path.'" target="_blank" data-html="'.htmlentities($info).'">';
 				echo '<label for="aid_'.$i.'">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.' <em>'.$attachment->description.'</em></label>';
 				echo '</a> ';
 				echo '</div>';
@@ -283,7 +283,7 @@ function age($naiss) {
       </div>
       <div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> <?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?> </div>
       <div class="active content">
-        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>/index.php?option=com_emundus&amp;task=pdf&amp;user=<?php echo $this->student->id; ?>">
+        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>/index.php?option=com_emundus&amp;task=pdf&amp;user=<?php echo $this->student->id; ?>">
           <button class="ui icon button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"> <i class="large file icon"></i> </button>
           </a>
           <button class="ui icon button" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>" onclick="document.pressed=this.name;" name="export_zip"> <i class="large archive icon"></i> </button>
@@ -291,7 +291,7 @@ function age($naiss) {
         <?php echo $this->forms; ?> </div>
       <div class="title" id="em_application_comments"> <i class="dropdown icon"></i> <?php echo JText::_('COMMENTS'); ?> </div>
       <div class="content">
-        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>/index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=89&amp;tableid=92&amp;rowid=&amp;jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
+        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>/index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=89&amp;tableid=92&amp;rowid=&amp;jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
           <button class="ui button teal submit labeled icon" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="icon edit"></i><?php echo JText::_('ADD_COMMENT'); ?> </button>
           </a> </div>
         <div class="ui comments">
@@ -320,11 +320,11 @@ function age($naiss) {
       <div class="title" id="em_application_evaluations"> <i class="dropdown icon"></i> <?php echo JText::_('EVALUATIONS'); ?> </div>
       <div class="content">
         <?php echo $this->actions[$this->student->id][$this->current_user->id][$this->campaign_id]; ?>
-        <iframe classe="iframe evaluation" id="em_evaluations" src="<?php echo JURI::base(true); ?>/index.php?option=com_emundus&amp;view=evaluation&amp;layout=evaluation&amp;aid=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1&amp;Itemid=<?php echo $itemid; ?>" width="100%" height="400px" frameborder="0" marfin="0" padding="0"></iframe>
+        <iframe classe="iframe evaluation" id="em_evaluations" src="<?php echo JURI::base(); ?>/index.php?option=com_emundus&amp;view=evaluation&amp;layout=evaluation&amp;aid=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1&amp;Itemid=<?php echo $itemid; ?>" width="100%" height="400px" frameborder="0" marfin="0" padding="0"></iframe>
       </div>
       <div class="title" id="em_application_emails"> <i class="dropdown icon"></i> <?php echo JText::_('EMAIL_HISTORY'); ?> </div>
       <div class="content">
-        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>/index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
+        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>/index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
           <button class="ui button teal submit labeled icon" data-title="<?php echo JText::_('SEND_EMAIL'); ?>"> <i class="icon mail"></i><?php echo JText::_('SEND_EMAIL'); ?> </button>
           </a> </div>
         <?php
@@ -676,7 +676,7 @@ function deleteData(id, table){
                 var i;
                 for (i=0;i<comment_icon.childNodes.length;i++)
                 {
-                    comment_icon.childNodes[i].src = "<?php echo JURI::base(true); ?>/media/com_emundus/images/icones/trash.png";
+                    comment_icon.childNodes[i].src = "<?php echo JURI::base(); ?>/media/com_emundus/images/icones/trash.png";
                     comment_icon.childNodes[i].onclick = null;
                 }
                 $(comment).style.background="#B0B4B3";

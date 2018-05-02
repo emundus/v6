@@ -20,7 +20,7 @@ $email 		= JRequest::getVar('email', null,'GET');
 $campaign_id= JRequest::getVar('cid', null,'GET');
 $formid 	= JRequest::getVar('formid', null,'GET');
 
-$baseurl 	= JURI::base(true);
+$baseurl 	= JURI::base();
 
 $db 		= JFactory::getDBO();
 
@@ -42,7 +42,7 @@ if (isset($obj)) {
 		$student_id = !empty($up_uid)?$jinput->get('jos_emundus_files_request___student_id'):$jinput->get->get('jos_emundus_files_request___student_id');
 		$attachment_id = !empty($up_attachment)?$jinput->get('jos_emundus_files_request___attachment_id'):$jinput->get->get('jos_emundus_files_request___attachment_id');
 		if (empty($student_id) || empty($key_id) || empty($attachment_id) || $attachment_id != $obj->attachment_id || !is_numeric($sid) || $sid != $student_id) { 
-			$baseurl = JURI::base(true);
+			$baseurl = JURI::base();
 			JError::raiseWarning(500, JText::_('ERROR: please try again','error'));
 			header('Location: '.$baseurl);
 			exit();

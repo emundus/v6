@@ -77,7 +77,7 @@ class plgContentemundusSchoolyear extends JPlugin
 		if ($user->profile <= 2) {
 			JHTML::_('behavior.tooltip'); 
 			JHTML::_('behavior.modal');
-			$baseurl = JURI::base(true);
+			$baseurl = JURI::base();
 			$db = & JFactory::getDBO();
 	
 			//load language
@@ -102,7 +102,7 @@ class plgContentemundusSchoolyear extends JPlugin
 			$db->setQuery( $query );
 			$schoolyear=$db->loadResult();
 	
-			//JURI::base(true);
+			//JURI::base();
 			//  SCHOOLYEAR
 			//
 			if ($usekey=='schoolyear') {			

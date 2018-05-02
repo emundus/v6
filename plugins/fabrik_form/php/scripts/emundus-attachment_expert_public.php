@@ -18,7 +18,7 @@ return false;
 
 $mainframe 	= JFactory::getApplication();
 $jinput 	= $mainframe->input;
-$baseurl 	= JURI::base(true);
+$baseurl 	= JURI::base();
 $db 		= JFactory::getDBO();
 $files 		= JRequest::get('FILES');
 $key_id 	= JRequest::getVar('keyid', null,'get');
