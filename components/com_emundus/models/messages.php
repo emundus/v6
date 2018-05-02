@@ -176,9 +176,6 @@ class EmundusModelMessages extends JModelList {
 
         }
 
-        echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
-        
-
         try {
 
             $db->setQuery($query);
