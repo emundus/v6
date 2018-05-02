@@ -120,7 +120,7 @@ $email_list = array();
 		<div class="form-group">
 			<div class="inputbox input-xlarge form-control form-inline">
 				<span class='label label-grey' for="mail_from" ><?php echo JText::_('SUBJECT'); ?>:</span>
-				<div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"></div>
+				<div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?php echo JFactory::getConfig()->get('sitename'); ?></div>
 			</div>
 
 			<!-- Email WYSIWYG -->
