@@ -2320,7 +2320,6 @@ class EmundusControllerFiles extends JControllerLegacy
                         $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
 
-                    //var_dump($files_list);
                     if (count($files_list) > 0) {
                         // all PDF in one file
                         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
@@ -2332,16 +2331,13 @@ class EmundusControllerFiles extends JControllerLegacy
                         $pdf->Output($dossier . $application_pdf, 'F');
 
                         $filename = $application_form_name . DS . $application_pdf;
-                        //var_dump($filename);
 
                         if (!$zip->addFile($dossier . $application_pdf, $filename))
                             continue;
                     }
 
-                    //var_dump($attachment);
                     if ($attachment || !empty($attachids)) {
                         $attachment_to_export = array();
-                        //var_dump($attachids);
                         if(!empty($attachids)){
                             foreach($attachids as $aids){
                                 $detail = explode("|", $aids);
@@ -2352,10 +2348,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         $fnum = explode(',', $fnum);
-                        //var_dump($attachment_to_export);
                         if ($attachment || !empty($attachment_to_export)) {
                             $files = $m_files->getFilesByFnums($fnum, $attachment_to_export);
-                            //var_dump($files);
                             if(!empty($files)){
                                 foreach ($files as $key => $file) {
                                     $filename = $application_form_name . DS . $file['filename'];

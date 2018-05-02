@@ -730,7 +730,7 @@ class EmundusController extends JControllerLegacy {
                 if (($file['size']) == 0) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> size is not allowed, please check out your filesize : '.$file['size'];
                     JLog::add($error, JLog::ERROR, 'com_emundus');
-                    $errorInfo = JText::_("COM_EMUNDUS_ERROR_INFO_FILETYPE");
+                    $errorInfo = JText::_("COM_EMUNDUS_ERROR_INFO_FILESIZE");
 
                     if ($format == "raw") {
                         echo '{"aid":"0","status":false,"message":"'.$errorInfo.'" }';

@@ -855,7 +855,7 @@ $(document).ready(function()
                         lastVal[id] = $('#' + id).val();
                     }
                 }
-                if ($('#select_multiple_programmes').val() != null)
+                if ($('#select_multiple_programmes').val() != null || $('#select_multiple_campaigns').val() != null)
                     $('#em_adv_filters').show();
                 else
                     $('#em_adv_filters').hide();
@@ -4852,7 +4852,6 @@ $(document).ready(function()
                                     $('#'+result.tagged[i].fnum).parents('td').addClass(result.tagged[i].class);
                                     $('#'+result.tagged[i].fnum+'_check').parents('td').addClass(result.tagged[i].class);
                                 }
-                                reloadData();
                             } else {
                                 $('.modal-body').empty();
                                 $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
