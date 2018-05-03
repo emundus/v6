@@ -63,46 +63,48 @@ if (!$mainframe->isAdmin()) {
 	// once access condition is not correct, redirect page
 	$reload_url = true;
 	// FNUM sent by URL is like user fnum (means an applicant trying to open a file)
-	if (!empty($fnum) && $fnum == @$user->fnum) {
-		//try to access edit view
-		if ($view == 'form') {
-			if ( !$is_dead_line_passed || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline) || $can_edit) {
+	if (!empty($fnum)) {
+		if ($fnum == @$user->fnum) {
+			//try to access edit view
+			if ($view == 'form') {
+				if (!$is_dead_line_passed || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline) || $can_edit) {
+					$reload_url = false;
+				}
+			}
+			//try to access detail view or other
+			else {
 				$reload_url = false;
 			}
 		}
-		//try to access detail view or other
+		// FNUM sent not like user fnum (partner or bad FNUM)
 		else {
-			$reload_url = false;
+			$document = JFactory::getDocument();
+			$document->addStyleSheet("media/com_fabrik/css/fabrik.css" );
+
+			if ($view == 'form') {
+				if ($can_edit) {
+					$reload_url = false;
+				}
+			}
+			//try to access detail view or other
+			else {
+				if ($can_read) {
+					$reload_url = false;
+				}
+			}
+
 		}
 	}
-	// FNUM sent not like user fnum (partner or bad FNUM)
-	else {
-		$document = JFactory::getDocument();
-		$document->addStyleSheet("media/com_fabrik/css/fabrik.css" );
 
-		if ($view == 'form') {
-			if ( $can_edit ) {
-				$reload_url = false;
-			}
-		}
-		//try to access detail view or other
-		else {
-			if ( $can_read ) {
-				$reload_url = false;
-			}
-		}
+	if (isset($user->fnum) && !empty($user->fnum)){
 
-	}
-
-	if(isset($user->fnum) && !empty($user->fnum)){
-		
 			if( in_array($user->id, $applicants) ){
 				if ($reload_url) {
 					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 				}
-				
+
 			}else{
-				if($is_dead_line_passed ){ 
+				if($is_dead_line_passed ){
 					if ($reload_url) {
 						JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
 						$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
@@ -111,17 +113,17 @@ if (!$mainframe->isAdmin()) {
 					if($is_app_sent){
 						if($can_edit_until_deadline != 0 ){
 							if ($reload_url) {
-								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);			
+								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 							}
 						}else{
 							if ($reload_url) {
-								$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);				
+								$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 							}
 						}
-					}else{			
+					}else{
 						if ($reload_url) {
 							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
-						}					
+						}
 					}
 				}
 			}

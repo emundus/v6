@@ -20,7 +20,7 @@ $email 		= JRequest::getVar('email', null,'GET');
 $campaign_id= JRequest::getVar('cid', null,'GET');
 $formid 	= JRequest::getVar('formid', null,'GET');
 
-$baseurl 	= JURI::base(true);
+$baseurl 	= JURI::base();
 $db 		= JFactory::getDBO();
 
 try {
