@@ -112,7 +112,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 				submit_attachment.value = "<?php echo JText::_('UPLOAD'); ?>";
     			var objJSON = JSON.parse(response);
 				var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?php echo JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
-				html += '<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
+				html += '<img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
 				
 				document.getElementById("em_attachment").innerHTML += html;
 
@@ -124,7 +124,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 			}
 		</script>
  
-	<form action="<?php echo JURI::base(true); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
+	<form action="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 		<div>
 			<?php echo EmundusHelperFilters::setEvaluationList($result_id); ?>
 			<input name="campaign_id" type="hidden" value="<?php echo $evaluation[0]["campaign_id"]; ?>" />
@@ -157,7 +157,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 						<div class="vJ"></div>
 					</a>
 					<div class="em_email_icon" id="attachment_'.$file['id'].'">
-						<img src="'.JURI::base(true).'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
+						<img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
 					</div>
 				</div>
 			</div>';

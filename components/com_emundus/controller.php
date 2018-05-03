@@ -76,7 +76,7 @@ class EmundusController extends JControllerLegacy {
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
         //$profile = $model->getProfileByApplicant($student_id);
-        
+
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
@@ -402,8 +402,10 @@ class EmundusController extends JControllerLegacy {
         $app    = JFactory::getApplication();
         $Itemid = $app->input->getInt('Itemid', null, 'int');
         $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
+
         if (empty($fnum))
-            $app->redirect(JURI::base(true).'index.php');
+            $app->redirect(JURI::base().'index.php');
+
         $redirect   = JRequest::getVar('redirect', null, 'GET');
         $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php';
         $session    = JFactory::getSession();
@@ -412,7 +414,8 @@ class EmundusController extends JControllerLegacy {
         $m_profile = new EmundusModelProfile;
         $infos = $m_profile->getFnumDetails($fnum);
 
-        if ($aid->id != $infos['applicant_id']) return;
+        if ($aid->id != $infos['applicant_id'])
+            return;
 
         $profile        = $m_profile->getProfileByCampaign($infos['campaign_id']);
         $campaign       = $m_profile->getCampaignById($infos['campaign_id']);

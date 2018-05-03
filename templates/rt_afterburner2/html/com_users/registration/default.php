@@ -277,6 +277,9 @@ else
 ?>
 
 <script>
+	function mycgu(){
+		window.location="index.php?option=com_content&view=article&id=2";
+	}
 
 var courseInURL = "<?php echo (isset($course)) ? 'true' : 'null'; ?>";
 var cidInUrl 	= "<?php echo (isset($cid)) ? 'true' : 'null' ?>";

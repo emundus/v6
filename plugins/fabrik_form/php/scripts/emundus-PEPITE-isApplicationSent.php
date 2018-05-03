@@ -26,8 +26,8 @@ $fnum = $jinput->get('rowid', null);
 
 if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
     if ($jinput->get('tmpl')=='component') {
-        JHTML::stylesheet( JURI::base(true).'media/com_fabrik/css/fabrik.css' );
-        JHTML::stylesheet( JURI::base(true).'media/system/css/modal.css' );
+        JHTML::stylesheet( JURI::base().'media/com_fabrik/css/fabrik.css' );
+        JHTML::stylesheet( JURI::base().'media/system/css/modal.css' );
         $doc = JFactory::getDocument();
         $doc->addScript("media/com_fabrik/js/window-min.js");
         $doc->addScript("media/com_fabrik/js/lib/form_placeholder/Form.Placeholder.js");

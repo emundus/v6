@@ -102,8 +102,8 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 	var jtextArray = ['<?php echo JText::_('ENTER_COMMENT')?>',
 	                  '<?php echo JText::_('TITLE')?>',
 	                  '<?php echo JText::_('COMMENT_SENT')?>'];
-	var loading = '<?php echo JURI::base(true).'media/com_emundus/images/icones/loader.gif'?>';
-	var loadingLine = '<?php echo JURI::base(true).'media/com_emundus/images/icones/loader-line.gif'?>';
+	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>';
+	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>';
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});

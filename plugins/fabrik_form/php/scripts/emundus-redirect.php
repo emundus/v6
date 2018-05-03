@@ -42,7 +42,7 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 /*if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
 	echo "<hr>";
-	echo '<h1><img src="'.JURI::base(true).'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
 	echo "<hr>";
 	exit();
 }*/

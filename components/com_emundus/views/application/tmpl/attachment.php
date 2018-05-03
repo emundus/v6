@@ -67,7 +67,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                         echo '<tr>
                                   <td>'.$checkbox.' '.$i.'</td>
-                                  <td><a href="'.JURI::base(true).$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
+                                  <td><a href="'.JURI::base().$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
                                   <td>'.JHtml::_('date', $attachment->timedate, JText::_('DATE_FORMAT_LC2')).'</td>
                                   <td>'.$attachment->description.'</td>
                                   <td>'.$attachment->campaign_label.'</td>
@@ -113,7 +113,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                             <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
                         </div>
                         <div class="modal-body">
-                            <img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
+                            <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
@@ -182,6 +182,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         if(e.handle === true) {
             e.handle = false;
             var checked = getChecked();
+            
             if (checked.length > 0) {
                 var res = confirm("<?php echo JText::_('CONFIRM_DELETE_SELETED_ATTACHMENTS')?>");
                 if (res) {
@@ -234,6 +235,35 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         }
 
     });
+
+    $(document).on('click', '#em_export_pdf', function()
+    {
+        var checkedInput = getJsonChecked();
+        var checked = getChecked();
+        /*String.prototype.fmt = function (hash) {
+            var string = this, key;
+            for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
+        }*/
+        
+        //var url = $(this).attr('link')+'&ids='+encodeURIComponent(JSON.stringify(checkedInput));
+        var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
+        //url = url.fmt({ids: checkedInput});
+
+        $.ajax({
+            type:'get',
+            url: url,
+            dataType:'json',
+
+            success: function(result) {
+                if(result.link){
+                    window.open(result.link);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR.responseText);
+            }
+        });
 
        /* if(checked.length > 0)
         {

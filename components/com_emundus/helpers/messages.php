@@ -90,16 +90,19 @@ class EmundusHelperMessages {
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
+
 		if (count( $users_id ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
+
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
+
 		if ($message == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
@@ -121,27 +124,37 @@ class EmundusHelperMessages {
 		// setup mail
 		if (!isset($from) || empty($from)) {
 			if (isset($current_user->email)) {
+
 				$from = $current_user->email;
 				$from_id = $current_user->id;
 				$fromname=$current_user->name;
-			} elseif ($mainframe->getCfg( 'mailfrom' ) != '' && $mainframe->getCfg( 'fromname' ) != '') {
+
+			} elseif ($mainframe->getCfg('mailfrom') != '' && $mainframe->getCfg('fromname') != '') {
+
 				$from = $mainframe->getCfg( 'mailfrom' );
 				$fromname = $mainframe->getCfg( 'fromname' );
 				$from_id = 62;
+
 			} else {
-				$query = 'SELECT id, name, email' .
-					' FROM #__users' .
-					// administrator
-					' WHERE gid = 25 LIMIT 1';
-				$db->setQuery( $query );
-				$admin = $db->loadObject();
+
+				// Get the administrator
+				$query = 'SELECT id, name, email FROM #__users WHERE gid = 25 LIMIT 1';
+				$db->setQuery($query);
+
+				try {
+					$admin = $db->loadObject();
+				} catch (Exception $e) {
+					JLog::add('Error getting admin in helper messages at query : '.$query, JLog::ERROR, 'com_emundus');
+				}
+
 				$from = $admin->name;
 				$from_id = $admin->id;
 				$fromname = $admin->email;
+
 			}
 		}
 
-		$nUsers = count( $users );
+		$nUsers = count($users);
         $info='';
 		for ($i = 0; $i < $nUsers; $i++) {
 
@@ -155,11 +168,12 @@ class EmundusHelperMessages {
             }
 
             // template replacements (patterns)
-            $post = array('COURSE_LABEL' => @$programme['label'],
+            $post = [
+				'COURSE_LABEL' => @$programme['label'],
                 'CAMPAIGN_LABEL' => @$campaign['label'],
-                'SITE_URL' => JURI::base(true),
+                'SITE_URL' => JURI::base(),
                 'USER_EMAIL' => $user->email
-            );
+			];
             $tags = $m_emails->setTags($user->id, $post);
 
             $from 		= preg_replace($tags['patterns'], $tags['replacements'], $from);

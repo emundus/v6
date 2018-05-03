@@ -32,13 +32,13 @@ JFactory::getSession()->set('application_layout', 'tag');
                                             </div>
                                         </div>
                                         <div class="comment-text">
-                                            <h1><span class="label <?php echo $tag['class']; ?>"><?php echo $tag['label']; ?></span>
+                                            <h2><span class="label <?php echo $tag['class']; ?>"><?php echo $tag['label']; ?></span>
                                                 <?php if($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)):?>
                                                         <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
                                                             <span class="glyphicon glyphicon-trash"></span>
                                                         </button>
                                                 <?php endif; ?>
-                                            </h1>
+                                            </h2>
                                         </div>
 
                                     </div>

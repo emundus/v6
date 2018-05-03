@@ -21,17 +21,17 @@ JFactory::getSession()->set('application_layout', 'decision');
     <div class="panel panel-default widget">
         <div class="panel-heading">
             <h3 class="panel-title">
-            <span class="glyphicon glyphicon-check"></span> 
+            <span class="glyphicon glyphicon-check"></span>
                 <?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
-                <a class="  clean" target="_blank" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
+                <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
                     <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-file"></span></button>
                 </a>
-                <?php endif;?>
+                <?php endif; ?>
             </h3>
-            <?php if(!empty($this->url_form)):?>
+            <?php if (!empty($this->url_form)):?>
                 <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB'); ?></a>
-            <?php endif;?>
+            <?php endif; ?>
         </div>
         <div class="panel-body">
             <div class="content">
@@ -40,9 +40,9 @@ JFactory::getSession()->set('application_layout', 'decision');
                     <?php if(!empty($this->url_form)):?>
                         <div class="holds-iframe"><?php echo JText::_('LOADING'); ?></div>
                         <iframe id="iframe" class="embed-responsive-item" src="<?php echo $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0" onload="resizeIframe(this)"></iframe>
-                    <?php else:?>
+                    <?php else: ?>
                         <div class="em_no-form"><?php echo JText::_('NO_DECISION_FORM_SET'); ?></div>
-                    <?php endif;?>
+                    <?php endif; ?>
                 </div>
               </div>
             </div>

@@ -93,7 +93,7 @@ endif;
         <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
       </div>
       <div class="modal-body">
-      	<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
+      	<img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>

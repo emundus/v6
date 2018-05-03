@@ -42,7 +42,7 @@ function sortObjectByArray($object,$orderArray) {
 
 			@set_time_limit(10800);
 			global $mainframe;
-			$baseurl = JURI::base(true);
+			$baseurl = JURI::base();
 			$db	= &JFactory::getDBO();
 			jimport( 'joomla.user.user' );
 			error_reporting(0);
@@ -73,11 +73,11 @@ function sortObjectByArray($object,$orderArray) {
 			$cacheSettings = array( 'memoryCacheSize' => '32MB');
 			PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 			// Set properties
-			$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
-			$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
-			$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
-			$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
-			$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
+			$objPHPExcel->getProperties()->setCreator("Dï¿½cision Publique : http://www.decisionpublique.fr/");
+			$objPHPExcel->getProperties()->setLastModifiedBy("Dï¿½cision Publique");
+			$objPHPExcel->getProperties()->setTitle("eMmundusï¿½ Report");
+			$objPHPExcel->getProperties()->setSubject("eMmundusï¿½ Report");
+			$objPHPExcel->getProperties()->setDescription("Report from open source eMundusï¿½ plateform : http://www.emundus.fr/");
 	
 			
 			$objPHPExcel->setActiveSheetIndex(0);
@@ -121,7 +121,7 @@ function sortObjectByArray($object,$orderArray) {
 			//die(str_replace("#_","jos",$query));
 			$elements = $db->loadObjectList();		
 			
-			// @TODO : générer une chaine de caractère avec tous les user_id
+			// @TODO : gï¿½nï¿½rer une chaine de caractï¿½re avec tous les user_id
 			
 			foreach($uids as $uid){
 				$params=explode('|',$uid);

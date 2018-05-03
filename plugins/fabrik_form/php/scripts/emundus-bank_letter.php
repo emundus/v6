@@ -12,7 +12,7 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Envoi d'un email à la banque lorsque toutes les pièces nécessaire à l'ouverture d'un compte sont fournie par l'étudiant
  */
-$baseurl = JURI::base(true);
+$baseurl = JURI::base();
 $student_id = $_REQUEST['jos_emundus_bank___student_id'];
 $mailer = JFactory::getMailer();
 

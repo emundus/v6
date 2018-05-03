@@ -367,7 +367,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 		$me = JFactory::getUser();
 		//$acl = JFactory::getACL();
 
-		//$siteURL = JURI::base(true);
+		//$siteURL = JURI::base();
 		$bypassActivation = $params->get('juseremundus_bypass_activation', false);
 		$bypassRegistration = $params->get('juseremundus_bypass_registration', true);
 		$autoLogin = $params->get('juseremundus_auto_login', false);

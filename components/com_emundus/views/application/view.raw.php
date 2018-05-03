@@ -162,7 +162,7 @@ class EmundusViewApplication extends JViewLegacy
 
 								if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum))
 	                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
-	                            
+
 	                            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum))
 	                                $this->$url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 
@@ -175,14 +175,15 @@ class EmundusViewApplication extends JViewLegacy
                                 	} else {
                                     	$this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid=&jos_emundus_evaluations___student_id[value]='.$this->student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
                                 	}
-	                                
+
 	                            } elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum)) {
 	                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$evaluations[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 	                            }
 	                        }
 
 							if (!empty($formid))
-	                            $this->url_evaluation = JURI::base(true).'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
+								$this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
+
 	                    } else {
                             $this->url_evaluation = '';
                             $this->url_form = '';

@@ -9,14 +9,14 @@ class EmundusModelXls_ranking extends JModelList
 
 		@set_time_limit(10800);
 		global $mainframe;
-		$baseurl = JURI::base(true);
+		$baseurl = JURI::base();
 		$db	= JFactory::getDBO();
-		jimport( 'joomla.user.user' );
+		jimport('joomla.user.user');
 
 		/** PHPExcel */
 		ini_set('include_path', JPATH_BASE . '/libraries/');
-		include 'PHPExcel.php'; 
-		include 'PHPExcel/Writer/Excel5.php'; 
+		include 'PHPExcel.php';
+		include 'PHPExcel/Writer/Excel5.php';
 		$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
 		$realpath = EMUNDUS_PATH_REL.'tmp/'.$filename;
 
@@ -40,15 +40,15 @@ class EmundusModelXls_ranking extends JModelList
 		// Set properties
 		$objPHPExcel->getProperties()->setCreator("eMundus SAS : http://www.emundus.fr/");
 		$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
-		$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
-		$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
-		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
+		$objPHPExcel->getProperties()->setTitle("eMmundusï¿½ Report");
+		$objPHPExcel->getProperties()->setSubject("eMmundusï¿½ Report");
+		$objPHPExcel->getProperties()->setDescription("Report from open source eMundusï¿½ plateform : http://www.emundus.fr/");
 		$objPHPExcel->setActiveSheetIndex(0);
 		$objPHPExcel->getActiveSheet()->setTitle('Ranking');
 		$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-		
+
 		$model = new EmundusModelRanking;
 		$model->getUsers();
 		/*$users=$model->_applicants;
@@ -58,11 +58,11 @@ class EmundusModelXls_ranking extends JModelList
 
 
 		$objPHPExcel->setActiveSheetIndex(0);
-		
+
 		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 		$objWriter->save('php://output');
 
-		// Redirect output to a client’s web browser (Excel5)
+		// Redirect output to a clientï¿½s web browser (Excel5)
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'.$filename.'"');
 		header('Cache-Control: max-age=0');
