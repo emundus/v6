@@ -918,7 +918,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	/*** Applicant   ***/
 	$htmldata .=
 	'<style>
-	.card  { background-color: #cecece; border: none; display:block; line-height:80%;}
+	.card  { border: none; display:block; line-height:80%;}
 	.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
 	.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
 	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
@@ -960,6 +960,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
 		elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
 			$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
+		
 		$htmldata .= '
 		<td width="80%">
 

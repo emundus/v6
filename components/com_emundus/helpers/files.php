@@ -1270,6 +1270,40 @@ class EmundusHelperFiles
             $filters .= $validate;
         }
 
+        if (@$params['campaign'] !== NULL) {
+            $hidden = $types['campaign'] != 'hidden' ? false : true;
+            $campaignList = $h_files->getCampaigns();
+            $campaign = '';
+            if ($types['campaign'] != 'hidden') {
+                $campaign .= '<div id="campaign">
+                            <div class="em_label">
+                            <label class="control-label">'.JText::_('CAMPAIGN').
+                                // <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
+                            '</label>
+                            </div>
+                          <div class="em_filtersElement">';
+            }
+            $campaign .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_campaigns" name="campaign" multiple="" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
+            /*$campaign .= '<option value="%" ';
+            if ((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2)
+                $campaign .= ' selected="true"';
+            $campaign .= '>'.JText::_('ALL').'</option>';*/
+           
+            foreach ($campaignList as $c) {
+                $campaign .= '<option value="'.$c->id.'"';
+                if (!empty($current_campaign) && in_array($c->id, $current_campaign))
+                    $campaign .= ' selected="true"';
+                $campaign .= '>'.$c->label.' - '.$c->year.'</option>';
+            }
+            $campaign .= '</select>';
+            if (!$hidden) {
+                $campaign .= '</div></div>';
+                //$campaign .= '<script>$(document).ready(function() {$("#select_multiple_campaigns").chosen({width:"75%"}); })</script>';
+            }
+            $filters .= $campaign;
+            
+        }
+
         if (@$params['programme'] !== NULL) {
             $hidden = $types['programme'] != 'hidden' ? false : true;
             $programmeList = $h_files->getProgrammes($params['programme']);
@@ -1302,41 +1336,6 @@ class EmundusHelperFiles
                 //$programme .= '<script>$(document).ready(function() {$("#select_multiple_programmes").chosen({width: "75%"});})</script>';
             }
             $filters .= $programme;
-
-        }
-
-
-        if (@$params['campaign'] !== NULL) {
-            $hidden = $types['campaign'] != 'hidden' ? false : true;
-            $campaignList = $h_files->getCampaigns();
-            $campaign = '';
-            if ($types['campaign'] != 'hidden') {
-                $campaign .= '<div id="campaign">
-                            <div class="em_label">
-                            <label class="control-label">'.JText::_('CAMPAIGN').
-                                // <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
-                            '</label>
-                            </div>
-                          <div class="em_filtersElement">';
-            }
-            $campaign .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_campaigns" name="campaign" multiple="" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$campaign .= '<option value="%" ';
-            if ((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2)
-                $campaign .= ' selected="true"';
-            $campaign .= '>'.JText::_('ALL').'</option>';*/
-
-            foreach ($campaignList as $c) {
-                $campaign .= '<option value="'.$c->id.'"';
-                if (!empty($current_campaign) && in_array($c->id, $current_campaign))
-                    $campaign .= ' selected="true"';
-                $campaign .= '>'.$c->label.' - '.$c->year.'</option>';
-            }
-            $campaign .= '</select>';
-            if (!$hidden) {
-                $campaign .= '</div></div>';
-                //$campaign .= '<script>$(document).ready(function() {$("#select_multiple_campaigns").chosen({width:"75%"}); })</script>';
-            }
-            $filters .= $campaign;
 
         }
 

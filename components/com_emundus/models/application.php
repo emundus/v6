@@ -878,7 +878,7 @@ class EmundusModelApplication extends JModelList
                         $forms .= '</legend>';
 
                         if ($itemg->group_id == 14) {
-
+                            $forms .='<table>';
                             foreach($elements as &$element) {
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
@@ -909,9 +909,10 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
+                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td>: '.JText::_($elt).'</td></tr>';
                                 }
                             }
+                            $forms .='</table>';
 
                             // TABLEAU DE PLUSIEURS LIGNES
                         } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
@@ -1033,6 +1034,7 @@ class EmundusModelApplication extends JModelList
 
                             // AFFICHAGE EN LIGNE
                         } else {
+                            $forms .='<table>';
                             foreach($elements as &$element) {
                                 if(!empty($element->label) && $element->label!=' ') {
                                     $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -1108,12 +1110,13 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-
-                                    $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
+                                    
+                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td>: '.JText::_($elt).'</td></tr>';
                                     unset($params);
                                 }
                             }
                         }
+                        $forms .='</table>';
                         $forms .= '</fieldset>';
                     }
                 }
@@ -1301,7 +1304,7 @@ class EmundusModelApplication extends JModelList
   */
 
                         if ($itemg->group_id == 14) {
-
+                            $forms .= '<table>';
                             foreach ($elements as $element) {
 
                                 if (!empty($element->label) && $element->label!=' ' && !empty($element->content)) {
@@ -1310,10 +1313,11 @@ class EmundusModelApplication extends JModelList
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = JText::_($element->content);
-
-                                    $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
+                                    $forms .= '<tr><td style="padding-right:35px;"><b>'.JText::_($element->label).'</b></td> <td>: </td></tr>';
+                                    //$forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
                             }
+                            $forms .= '</table>';
 
                         // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
                         } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 7 && !$asTextArea){
@@ -1464,10 +1468,11 @@ class EmundusModelApplication extends JModelList
                             // -- Ligne du tableau --
                             if (count($repeated_elements) > 0) {
                                 $i = 1;
+                               
                                 foreach ($repeated_elements as $r_element) {
                                     $j = 0;
-                                    $forms .= '<br>---- '.$i.' ----';
-
+                                    $forms .= '<br>---- '.$i.' ----<br>';
+                                    $forms .= '<table>';
                                     foreach ($r_element as $key => $r_elt) {
 
                                         if (!empty($r_elt)) {
@@ -1531,19 +1536,22 @@ class EmundusModelApplication extends JModelList
                                                 else $elt = JText::_($r_elt);
 
                                                 if (!empty($elt)) {
-                                                    $forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.JText::_($elt);
+                                                    //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.JText::_($elt);
+                                                    $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;">: '.JText::_($elt).'</td></tr>';
                                                 }
                                             }
                                         }
                                         $j++;
                                     }
+                                    $forms .= '</table>';
                                     $i++;
                                 }
+                                
                             }
 
                         // AFFICHAGE EN LIGNE
                         } else {
-
+                            $forms .= '<table>';
                             foreach ($elements as $element) {
 
                                 $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -1647,15 +1655,18 @@ class EmundusModelApplication extends JModelList
 
                                         else
                                             $elt = JText::_($element->content);
+                                        //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
+                                        $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;">: '.JText::_($elt).'</td></tr>';
 
-                                        $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
                                     }
                                 }elseif(empty($element->content)){
                                     if (!empty($element->label) && $element->label!=' ') {
-                                        $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: ';
+                                        //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: ';
+                                        $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;">: </td></tr>';
                                     }
                                 }
                             }
+                            $forms .= '</table>';
                         }
                         //$forms .= '</fieldset>';
                     }
