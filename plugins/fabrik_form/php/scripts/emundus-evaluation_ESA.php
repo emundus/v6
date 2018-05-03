@@ -75,6 +75,8 @@ if ($interviewed) {
 		JLog::add('Error in plugin evaluation-ESA on query : '.$query, JLog::ERROR, 'com_emundus');
 	}
 
+	// EMAILS ARE NOT SENT AUTOMATICALLY BY OLAGE.
+	/*
 	$post = [
 		'FNUM'      => $fnum->fnum,
 		'USER_NAME' => $student->name,
@@ -143,6 +145,7 @@ if ($interviewed) {
 		}
 
 	}
+	*/
 
 }
 ?>

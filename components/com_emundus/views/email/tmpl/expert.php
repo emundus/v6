@@ -1,12 +1,12 @@
-<?php 
-defined('_JEXEC') or die('Restricted access'); 
+<?php
+defined('_JEXEC') or die('Restricted access');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 
-JHTML::_('behavior.modal'); 
-JHTML::_('behavior.tooltip'); 
+JHTML::_('behavior.modal');
+JHTML::_('behavior.tooltip');
 
 $document = JFactory::getDocument();
 // AJAX upload
@@ -17,8 +17,8 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	echo "<script>window.setTimeout('closeme();', 1500); function closeme() { parent.SqueezeBox.close(); }</script>";
 	die('<h1>'.JText::_("RESTRICTED_ACCESS").'</h1>');
 } else {
-	$student_id = $this->fnums->sid; 
-	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 
+	$student_id = $this->fnums->sid;
+	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0);
 
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -34,9 +34,9 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 
 
 	$experts_email = array();
-	foreach ($this->experts_list as $key => $value) { 
+	foreach ($this->experts_list as $key => $value) {
 		$experts_email[] = $value['email'];
-	} 
+	}
 	?>
 
 	<div id="attachment_list">
@@ -45,12 +45,12 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	  </form>
 	</div>
 
-	<?php 
+	<?php
 
-	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->cid, 0); 
+	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->cid, 0);
 	if ( count($attachments) == 0 ) {
-		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
-		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->cid, 0, "F", $this->fnums->fnum);	
+		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->cid, 0, "F", $this->fnums->fnum);
 	} else {
 		if (!empty($attachments)) {
 			$files = array();
@@ -66,7 +66,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 		}
 	}
 
-	echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>'; 
+	echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>';
 	echo '<label><input type="checkbox" name="delete_attachment_box" id="delete_attachment_box" value="1"> '.JText::_('DELETE_ATTACHMENT_ONCE_MESSAGE_SENT').'</label>';
 	echo "<hr>";
 	// Upload ajax
@@ -87,22 +87,22 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 				submit_attachment.value = "<?php echo JText::_('UPLOAD'); ?>";
     			var objJSON = JSON.parse(response);
 				var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?php echo JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
-				html += '<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
-				
+				html += '<img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
+
 				document.getElementById("em_attachment").innerHTML += html;
 
 				$('mail_attachments').value += "," + "<?php echo str_replace('\\', '\\\\', EMUNDUS_PATH_ABS.$student_id.DS); ?>" + objJSON.filename;
-				
+
 
 				//document.getElementById("nr").innerHTML = parseInt(document.getElementById("nr").innerHTML) + 1;
 				//document.getElementById("r").innerHTML = response;
 			}
 		</script>
- <?php 
+ <?php
  	$attachment_types = @EmundusHelperfilters::setEvaluationList(0);
  	if (!empty($attachment_types)) {
  ?>
-	<form action="<?php echo JURI::base(true); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
+	<form action="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 		<div>
 			<?php echo $attachment_types; ?>
 			<input name="campaign_id" type="hidden" value="<?php echo $this->fnums->cid; ?>" />
@@ -117,7 +117,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	</form>
 	<?php
 	}
-	echo '<hr />'; 
+	echo '<hr />';
 	//	<div># of submited forms: <span id="nr">0</span></div>
 	//	<div>last submit response: <span id="r"></span></div>';
 /////////////////////////////////////////
@@ -136,7 +136,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 						<div class="vJ"></div>
 					</a>
 					<div class="em_email_icon" id="attachment_'.$file['id'].'">
-						<img src="'.JURI::base(true).'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
+						<img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
 					</div>
 				</div>
 			</div>';
@@ -154,19 +154,19 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 
 	<script>
 	function OnSubmitForm() {
-		var btn = document.getElementsByName(document.pressed); 
+		var btn = document.getElementsByName(document.pressed);
 		btn[0].disabled = true;
 		btn[0].value = "<?php echo JText::_('SENDING_EMAIL'); ?>";
 
-		var delete_attachment = 0; 
+		var delete_attachment = 0;
 		if (document.getElementById('delete_attachment_box').checked) {
 			document.getElementById("delete_attachment").value = 1;
-			delete_attachment = 1; 
+			delete_attachment = 1;
 		}
 
 		//alert(btn+' '+btn.disabled+' : '+btn.value);
 		switch(document.pressed) {
-			case 'expert': 
+			case 'expert':
 				document.adminForm.action ="index.php?option=com_emundus&task=sendmail_expert&fnum=<?php echo $this->fnums->fnum ?>&sid=<?php echo $student_id ?>&Itemid=<?php echo $itemid ?>&delete_attachment="+delete_attachment;
 			break;
 			default: return false;
@@ -179,16 +179,16 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	var mail_to = document.getElementById("mail_to");
 	var mail_from = document.getElementById("mail_from");
 	var mail_from_name = document.getElementById("mail_from_name");
-	mail_body.value = '<?php echo str_replace("'", "\'", preg_replace('~[[:cntrl:]]~', '', $email->message)); ?>'; 
+	mail_body.value = '<?php echo str_replace("'", "\'", preg_replace('~[[:cntrl:]]~', '', $email->message)); ?>';
 	mail_subject.value = "<?php echo $email->subject; ?>";
-	mail_attachments.value = "<?php echo $files_path; ?>"; 
+	mail_attachments.value = "<?php echo $files_path; ?>";
 	mail_to.value = "<?php echo implode(',', $experts_email); ?>";
 	mail_from.value = "<?php echo $email->emailfrom; ?>";
 	mail_from_name.value = "<?php echo $email->name; ?>";
 
 	</script>
-<?php 
+<?php
 
-} 
+}
 
 ?>

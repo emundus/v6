@@ -24,18 +24,18 @@ jimport('joomla.application.component.helper');
  * @since 1.5
  */
 abstract class EmundusHelperJavascript{
-	
+
 	public static function onSubmitForm(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$view = JRequest::getVar('view', null, 'GET', 'none',0);
-		
+
 		$script = '
-function OnSubmitForm() { 
-	if(typeof document.pressed !== "undefined") { 
+function OnSubmitForm() {
+	if(typeof document.pressed !== "undefined") {
 		document.adminForm.task.value = "";
-		var button_name=document.pressed.split("|"); 
+		var button_name=document.pressed.split("|");
 		switch(button_name[0]) {
-		   case \'affect\': 
+		   case \'affect\':
 		   		if(is_checked("ud")) {
 		   			document.adminForm.task.value = "setAssessor";
 					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
@@ -44,17 +44,17 @@ function OnSubmitForm() {
 					return false;
 				}
 			break;
-			case \'unaffect\': 
+			case \'unaffect\':
 				if(is_checked("ud")) {
 					if (confirm("'.JText::_("CONFIRM_UNAFFECT_ASSESSORS").'")) {
 						document.adminForm.task.value = "unsetAssessor";
 						document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=unsetAssessor";
-					} else 
+					} else
 						return false;
-				} else 
+				} else
 					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
 			break;
-			case \'export_zip\': 
+			case \'export_zip\':
 				if (is_checked()) {
 					document.adminForm.task.value = "export_zip";
 					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
@@ -63,15 +63,15 @@ function OnSubmitForm() {
 					return false;
 				}
 			break;
-			case \'export_to_xls\': 
+			case \'export_to_xls\':
 				document.adminForm.task.value = "transfert_view";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=transfert_view&v='.$view.'";
 			break;
-			case \'custom_email\': 
+			case \'custom_email\':
 				document.adminForm.task.value = "customEmail";
 				document.adminForm.action = "index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=customemail";
 			break;
-			case \'applicant_email\': 
+			case \'applicant_email\':
 				if(is_checked("ud")) {
 					document.adminForm.task.value = "applicantEmail";
 					document.adminForm.action = "index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=applicantEmail";
@@ -80,17 +80,17 @@ function OnSubmitForm() {
 					return false;
 				}
 			break;
-			case \'default_email\': 
+			case \'default_email\':
 				if (confirm("'.JText::_("CONFIRM_DEFAULT_EMAIL").'")) {
 					document.adminForm.task.value = "defaultEmail";
 					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=defaultEmail";
-				} else 
+				} else
 					return false;
 			break;
-			case \'search_button\': 
+			case \'search_button\':
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'";
 			break;
-			case \'clear_button\': 
+			case \'clear_button\':
 				document.adminForm.task.value = "clear";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=clear";
 			break;
@@ -100,7 +100,7 @@ function OnSubmitForm() {
 				document.adminForm.action = "index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=delete&sid="+button_name[1];
 			}
 			break;
-			case \'push_true\': 
+			case \'push_true\':
 				document.adminForm.task.value = "push_true";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=push_true";
 			break;
@@ -108,13 +108,13 @@ function OnSubmitForm() {
 				document.adminForm.task.value = "push_false";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=push_false";
 			break;
-			case \'validate\': 
+			case \'validate\':
 				document.adminForm.task.value = "administrative_check";
 				document.getElementById("cb"+button_name[1]).checked = true;
 				document.getElementById("validation_list").value = 1;
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
 			break;
-			case \'unvalidate\': 
+			case \'unvalidate\':
 				document.adminForm.task.value = "administrative_check";
 				document.getElementById("cb"+button_name[1]).checked = true;
 				document.getElementById("validation_list").value = 0;
@@ -124,68 +124,68 @@ function OnSubmitForm() {
 				document.adminForm.task.value = "administrative_check";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
 			break;
-			case \'delete_eval\': 
+			case \'delete_eval\':
 			if(confirm("'.JText::_("CONFIRM_DELETE_EVAL").'")) {
 				document.adminForm.task.value = "delete_eval";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=delete_eval&sid="+button_name[1];
 			} else return false;
 			break;
-			case \'export_account_to_xls\': 
-				document.adminForm.task.value = "export_account_to_xls"; 
+			case \'export_account_to_xls\':
+				document.adminForm.task.value = "export_account_to_xls";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=export_account_to_xls&Itemid='.$itemid.'";
 			break;
-			
-			case \'archive\': 
+
+			case \'archive\':
 				document.adminForm.task.value = "archive";
 				document.adminForm.action ="index.php?option=com_emundu&view='.$view.'&controller='.$view.'&task=archive&Itemid='.$itemid.'";
 			break;
-			case \'delusers\': 
+			case \'delusers\':
 				document.adminForm.task.value = "delusers";
 				if (confirm("'.JText::_("CONFIRM_DELETE").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=delusers&v='.$view.'";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
-			case \'delrefused\': 
+			case \'delrefused\':
 				document.adminForm.task.value = "delrefused";
 				if (confirm("'.JText::_("CONFIRM_DELETE").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delrefused&Itemid='.$itemid.'";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
-			case \'delincomplete\': 
+			case \'delincomplete\':
 				document.adminForm.task.value = "delincomplete";
 				if (confirm("'.JText::_("CONFIRM_INCOMPLETE").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delincomplete&Itemid='.$itemid.'";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
-			case \'delnonevaluated\': 
+			case \'delnonevaluated\':
 				document.adminForm.task.value = "delnonevaluated";
 				if (confirm("'.JText::_("CONFIRM_NON_EVALUATED").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delnonevaluated&Itemid='.$itemid.'";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
-			case \'delete_attachements\': 
+			case \'delete_attachements\':
 				document.adminForm.task.value = "delete_attachements";
 				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_ATTACHEMENTS").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_attachements&Itemid='.$itemid.'";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
-			case \'delete_comments\': 
+			case \'delete_comments\':
 				document.adminForm.task.value = "delete_comments";
 				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_COMMENTS").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_comments&Itemid='.$itemid.'";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
-			case \'add_comment\': 
+			case \'add_comment\':
 				document.adminForm.task.value = "add_comment";
 				if (confirm("'.JText::_("ADD_COMMENT").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=add_comment&Itemid='.$itemid.'";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
 			default: return false;
@@ -196,13 +196,13 @@ function OnSubmitForm() {
 
 		return $script;
 	}
-	
+
 	/*
-	** @todo : 
+	** @todo :
 	*/
-	
+
 	public static function addElement(){
-		$script = 
+		$script =
 		'function addElement() {
 			var ni = document.getElementById("myDiv");
 		  	var numi = document.getElementById("theValue");
@@ -212,32 +212,32 @@ function OnSubmitForm() {
 		  	var divIdName = "my"+num+"Div";
 		  	newdiv.setAttribute("id",divIdName);
 			newdiv.innerHTML = "<select class=\"chzn-select\" name=\"elements[]\" id=\"elements\" onChange=\"javascript:submit();\"><option value=\"\">'.JText::_("PLEASE_SELECT").'</option>';
-		$groupe =""; $i=0; 
-		$length = 50; 
+		$groupe =""; $i=0;
+		$length = 50;
 		$all_elements = EmundusHelperFilters::getElements();
-		foreach($all_elements as $elements) { 
+		foreach($all_elements as $elements) {
 			$groupe_tmp = $elements->group_label;
 			if (isset($groupe) && ($groupe != $groupe_tmp))
 			{
 				$script .= '</optgroup>';
 			}
 			$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
-			$dot_elm = strlen($elements->element_label)>=$length?'...':''; 
-			if ($groupe != $groupe_tmp) { 
+			$dot_elm = strlen($elements->element_label)>=$length?'...':'';
+			if ($groupe != $groupe_tmp) {
 				$script .= '<optgroup label=\"'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'\">';
-				$groupe = $groupe_tmp; 
-			} 
+				$groupe = $groupe_tmp;
+			}
 			$script .= '<option class=\"emundus_search_elm\" value=\"'.$elements->table_name.'.'.$elements->element_name.'\">'.substr(htmlentities($elements->element_label, ENT_QUOTES), 0, $length).$dot_elm.'</option>';
 
-			$i++; 
-		} 
+			$i++;
+		}
 		$script .= '</select>  <a href=\"#removeElement\" title=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" onclick=\"removeElement(\'"+divIdName+"\', 1)\"><span class=\"glyphicon glyphicon-trash\" id=\"add_filt\"></span></a>"; ni.appendChild(newdiv); $(".chzn-select").chosen({width:"75%"});}';
 		//die($script);
 		return $script;
 	}
-	
+
 	public static function addElementOther($tables){
-		$script = 
+		$script =
 		'function addElementOther() {
 			var ni = document.getElementById("otherDiv");
 		  	var numi = document.getElementById("theValue");
@@ -247,42 +247,42 @@ function OnSubmitForm() {
 		  	var divIdName = "other"+num+"Div";
 		  	newdiv.setAttribute("id",divIdName);
 			newdiv.innerHTML = "<select class=\"chzn-select\" name=\"elements_other[]\" id=\"elements_other\" onChange=\"javascript:submit();\"><option value=\"\">'.JText::_("PLEASE_SELECT").'</option>';
-		$groupe =""; $i=0; 
+		$groupe =""; $i=0;
 		$length = 50;
 		$elements = EmundusHelperFilters::getElementsOther($tables);
 		if(!empty($elements))
-			foreach($elements as $element) { 
+			foreach($elements as $element) {
 				$groupe_tmp = $element->group_label;
 				if (isset($groupe) && ($groupe != $groupe_tmp) )
 				{
 					$script .= '</optgroup>';
 				}
-				$dot_grp = strlen($groupe_tmp)>=$length?'...':''; 
-				$dot_elm = strlen($element->element_label)>=$length?'...':''; 
-				if ($groupe != $groupe_tmp) { 
+				$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
+				$dot_elm = strlen($element->element_label)>=$length?'...':'';
+				if ($groupe != $groupe_tmp) {
 					$script .= '<optgroup label=\"'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'\">';
-					$groupe = $groupe_tmp; 
+					$groupe = $groupe_tmp;
 				}
-				$script .= '<option class=\"emundus_search_elm_other\" value=\"'.$element->table_name.'.'.$element->element_name.'\">'.substr(htmlentities($element->element_label, ENT_QUOTES), 0, $length).$dot_elm.'</option>'; 
-				$i++; 
+				$script .= '<option class=\"emundus_search_elm_other\" value=\"'.$element->table_name.'.'.$element->element_name.'\">'.substr(htmlentities($element->element_label, ENT_QUOTES), 0, $length).$dot_elm.'</option>';
+				$i++;
 			}
-		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 2)\"><img src=\"'.JURI::base(true).'media/com_emundus/images/icones/viewmag-_16x16.png\" alt=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
+		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 2)\"><img src=\"'.JURI::base().'media/com_emundus/images/icones/viewmag-_16x16.png\" alt=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
 		return $script;
 	}
-	
+
 	public static function delayAct(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$script = 
+		$script =
 		'function delayAct(user_id, campaign_id){
 			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'#em_user_id_"+user_id+"_"+campaign_id;
 			setTimeout("document.adminForm.submit()",10) }';
 		return $script;
 	}
-	
+
 	public static function getPreferenceFilters(){
 		global $option;
 		$mainframe = JFactory::getApplication();
-		
+
 		$script = '
 		function save_filter()
 		{
@@ -311,8 +311,8 @@ function OnSubmitForm() {
 					result[i] = items[i];
 					i++;
 				}
-				return result; 
-			}	
+				return result;
+			}
 		}
 
 		function getJsonInput(name){
@@ -321,7 +321,7 @@ function OnSubmitForm() {
 			var inputs = makeArray(inputs_object);
 			var selects = makeArray(selects_object);
 			var jsonObj = [];
-			
+
 			for(var i=0;i<selects.length;i++){
 				var select = selects[i];
 				var name_s = select.id;
@@ -351,7 +351,7 @@ function OnSubmitForm() {
 				}
 				jsonObj.push({\'id\': name_i, \'value\': value_i});
 			}
-			
+
 			var jsonObjString = JSON.stringify(jsonObj); // constraints
 
 			var xhr = getXMLHttpRequest();
@@ -383,7 +383,7 @@ function OnSubmitForm() {
 			xhr.send("&constraints="+jsonObjString+"&name="+name+"&Itemid="+itemid);
 
 		}
-		
+
 		function getUrlVars() {
 			var vars = {};
 			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -394,7 +394,7 @@ function OnSubmitForm() {
 
 		function getXMLHttpRequest() {
 			var xhr = null;
-			 
+
 			if (window.XMLHttpRequest || window.ActiveXObject) {
 				if (window.ActiveXObject) {
 					try {
@@ -409,12 +409,12 @@ function OnSubmitForm() {
 				alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
 				return null;
 			}
-			 
+
 			return xhr;
 		}
 
 		function getConstraints(select){
-			var select_id = select.options[select.selectedIndex].value; 
+			var select_id = select.options[select.selectedIndex].value;
 			var xhr = getXMLHttpRequest();
 			var constraints=[];
 			// alert(select_id);
@@ -435,7 +435,7 @@ function OnSubmitForm() {
 			xhr.send("&filter_id="+select_id);
 		}
 
-		function setFilters(select, constraints) {  
+		function setFilters(select, constraints) {
 			var constraintsObj = JSON.parse(constraints);
 			var k =0;
 			for (var i = 0; i < constraintsObj.length; i++) {
@@ -446,7 +446,7 @@ function OnSubmitForm() {
 				}else if(define_type[0]==\'select-multiple\'){
 					for(j=0;j<field.length;j++) {
 						if(field[j].value == constraintsObj[i].value){
-							field[j].selected = true;							
+							field[j].selected = true;
 						}else if(!in_array(field[j].value,constraintsObj)){
 							field[j].selected = false;
 						}
@@ -465,7 +465,7 @@ function OnSubmitForm() {
 							newdiv.setAttribute("id",divIdName);
 							var valueS=constraintsObj[i].value.split(".");
 							var input ="<input type=\'hidden\' id=\'elements\' name=\'elements[]\' value=\'"+constraintsObj[i].value+"\' />";
-							k++; 
+							k++;
 						}else if(constraintsObj[i].id==\'elements_values\'){
 							newdiv.innerHTML = input+"<input type=\'hidden\' id=\'elements_values\' name=\'elements_values[]\' value=\'"+constraintsObj[i].value+"\' />";
 							ni.appendChild(newdiv);
@@ -474,7 +474,7 @@ function OnSubmitForm() {
 				}
 			}
 		}
-		
+
 		function in_array(value,tab){
 			for(var j=0;j<tab.length;j++) {
 				if(value==tab[j].value){
@@ -483,7 +483,7 @@ function OnSubmitForm() {
 			}
 			return false;
 		}
-		
+
 		function clear_filter(){
 			// delete advance filter
 			if(document.getElementById(\'myDiv\')){
@@ -495,7 +495,7 @@ function OnSubmitForm() {
 					d.removeChild(olddiv);
 				}
 			}
-			
+
 
 			var view="'.JRequest::getVar('view', null, 'GET', 'none', 0).'";
 			var xhr2 = getXMLHttpRequest();
@@ -515,7 +515,7 @@ function OnSubmitForm() {
 		//deleteFilter
 			var select_id = $(\'select_filter\').value;
 			var xhr = getXMLHttpRequest();
-			
+
 			xhr.onreadystatechange = function()
 			{
 				if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
@@ -534,14 +534,14 @@ function OnSubmitForm() {
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			xhr.send("&filter_id="+select_id);
 		}
-		
+
 		function setCookie(pLabel, pVal, psec)
 		{
 			var tExpDate=new Date();
 			tExpDate.setTime( tExpDate.getTime()+(psec*1000) );
 			document.cookie= pLabel + "=" +escape(pVal)+ ( (psec==null) ? "" : ";expires="+ tExpDate.toGMTString() );
-		}	
-		
+		}
+
 		function getCookie(c_name)
 		{
 			var c_value = document.cookie;
@@ -561,21 +561,21 @@ function OnSubmitForm() {
 			}
 			return c_value;
 		}
-		
+
 		function submitFilters(){
 			var selected = document.getElementById("select_filter");
 			var selected_id = selected.options[selected.selectedIndex].value;
 			setCookie("selected_id",selected_id,5);
 			document.getElementById(\'search_button\').click();
 		}
-				
+
 		function getLegend(){
 			var legend = document.getElementById(\'legend\');
 			var select = document.getElementById(\'select-multiple_schoolyears\');
 			var output = document.getElementById(\'lschoolyears\');
 			var text="";
 			var count=0;
-			
+
 			var options = select.options;
 			for(j=0;j<options.length;j++) {
 				if(options[j].selected){
@@ -592,7 +592,7 @@ function OnSubmitForm() {
 			document.getElementById(\'lschoolyears\').innerHTML=text;
 			return ;
 		}
-		
+
 		function setSessionFilterId(select_id){
 				var xhr3 = getXMLHttpRequest();
 				$select_id=$(\'select_filter\').value;
@@ -600,14 +600,14 @@ function OnSubmitForm() {
 				{
 					if (xhr3.readyState == 4 && (xhr3.status == 200 || xhr3.status == 0))
 					{
-					
+
 					}
 				};
 				xhr3.open("GET", "index.php?option=com_emundus&controller=users&format=raw&task=addsession", true);
 				xhr3.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr3.send("&select_id="+select_id);
 		}
-		
+
 		window.onload=function() {
 			if("'.$mainframe->getUserState($option.'select_id', 'select_id').'"!="select_id"){
 				$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
@@ -617,14 +617,14 @@ function OnSubmitForm() {
 		';
 		return $script;
 	}
-	
+
 	public static function clearAdvanceFilter(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$script = '
-		function clearAdvanceFilter(filter){	
-		
+		function clearAdvanceFilter(filter){
+
 			if(typeOf(document.getElementById("em_adv_filters"))!="null"){
-				var adv_filters = document.getElementById("em_adv_filters");	
+				var adv_filters = document.getElementById("em_adv_filters");
 				var filters = "";
 				var mydiv = adv_filters.getElementById("myDiv");
 				var searchElementAdv = mydiv.children;
@@ -655,7 +655,7 @@ function OnSubmitForm() {
 					}
 				}
 			}
-			
+
 			if(typeOf(document.getElementById("em_other_filters"))!="null"){
 				var other_filters = document.getElementById("em_other_filters");
 				var otherDiv = other_filters.getElementById("otherDiv");
@@ -688,29 +688,29 @@ function OnSubmitForm() {
 					}
 				}
 			}
-			
+
 			var xhr = getXMLHttpRequest();
 				xhr.onreadystatechange = function()
 				{
 					if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
 					{
-						
+
 					}
 				};
 				xhr.open("POST", "index.php?option=com_emundus&task=clearadvancefilter", true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-				xhr.send("&filters="+filters+"&filters_other="+filters_other);				
+				xhr.send("&filters="+filters+"&filters_other="+filters_other);
 		}';
 		return $script;
 	}
-	
+
 	public static function getTemplate(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$editor = JFactory::getEditor();
 		$script = '
 		function getXMLHttpRequest() {
 			var xhr = null;
-			 
+
 			if (window.XMLHttpRequest || window.ActiveXObject) {
 				if (window.ActiveXObject) {
 					try {
@@ -725,10 +725,10 @@ function OnSubmitForm() {
 				alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
 				return null;
 			}
-			 
+
 			return xhr;
 		}
-		
+
 		function getTemplate(select){
 			var xhr = getXMLHttpRequest();
 			var email= [];
@@ -746,7 +746,7 @@ function OnSubmitForm() {
 					email_block.getElementById("mail_from").value=tab.tmpl.emailfrom;
 					email_block.getElementById("mail_from_name").value=tab.tmpl.name;
 					//email_block.getElementById("mail_body").value=tab[1];
-					$("mail_body").value = tab[1]; 
+					$("mail_body").value = tab[1];
 					//var content = $("mail_body_ifr").contentWindow ? $("mail_body_ifr").contentWindow.document : $("mail_body_ifr").contentDocument;
 					tinyMCE.execCommand("mceSetContent", false, tab.tmpl.message);
 					//tinyMCE.execCommand("mceInsertContent", false, tab[1]);

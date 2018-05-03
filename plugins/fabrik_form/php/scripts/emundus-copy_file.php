@@ -114,7 +114,7 @@ if ($copied == 1) {
 
 // 5. Exit plugin before store
 echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
-die('<h1><img src="'.JURI::base(true).'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
+die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
 
 
 ?>

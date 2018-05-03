@@ -20,7 +20,7 @@ $profile_key = "emundus_profile.troped";
 $ordering = 5;
 
 
-$baseurl = JURI::base(true);
+$baseurl = JURI::base();
 
 $db = JFactory::getDBO();
 $query = 'SELECT count(user_id) FROM #__user_profiles WHERE user_id='.$user[0].' AND `profile_key` like "emundus_profile.troped"'; 

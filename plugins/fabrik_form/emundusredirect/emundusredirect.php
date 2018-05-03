@@ -1,0 +1,499 @@
+<?php
+/**
+ * @version 2: emundusredirect 2018-04-25 Hugo Moracchini
+ * @package Fabrik
+ * @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
+ * @license GNU/GPL, see LICENSE.php
+ * Joomla! is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ * See COPYRIGHT.php for copyright notices and details.
+ * @description Redirection et chainage des formulaires suivant le profile de l'utilisateur
+ */
+
+// No direct access
+defined('_JEXEC') or die('Restricted access');
+
+// Require the abstract plugin class
+require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+
+/**
+ * Create a Joomla user from the forms data
+ *
+ * @package     Joomla.Plugin
+ * @subpackage  Fabrik.form.juseremundus
+ * @since       3.0
+ */
+
+class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
+{
+	/**
+	 * Status field
+	 *
+	 * @var  string
+	 */
+	protected $statusfield = '';
+
+	/**
+	 * Get an element name
+	 *
+	 * @param   string  $pname  Params property name to look up
+	 * @param   bool    $short  Short (true) or full (false) element name, default false/full
+	 *
+	 * @return	string	element full name
+	 */
+	public function getFieldName($pname, $short = false)
+	{
+		$params = $this->getParams();
+
+		if ($params->get($pname) == '')
+		{
+			return '';
+		}
+
+		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
+
+		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
+	}
+
+	/**
+	 * Get the fields value regardless of whether its in joined data or no
+	 *
+	 * @param   string  $pname    Params property name to get the value for
+	 * @param   array   $data     Posted form data
+	 * @param   mixed   $default  Default value
+	 *
+	 * @return  mixed  value
+	 */
+	public function getParam($pname, $default = '')
+	{
+		$params = $this->getParams();
+
+		if ($params->get($pname) == '')
+		{
+			return $default;
+		}
+
+		return $params->get($pname);
+	}
+
+	/**
+	 * Before the record is stored, this plugin will see if it should process
+	 * and if so store the form data in the session.
+	 *
+	 * @return  bool  should the form model continue to save
+	 */
+	public function onAfterStore()
+	{
+
+		/********************************************
+		 *
+		 * Duplicate data on each applicant file for current campaigns
+		 */
+		jimport('joomla.log.log');
+		JLog::addLogger(
+			array(
+				// Sets file name
+				'text_file' => 'com_emundus.duplicate.php'
+			),
+			JLog::ALL,
+			array('com_emundus')
+		);
+
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$copy_application_form = $eMConfig->get('copy_application_form', 0);
+
+		$user 	= JFactory::getSession()->get('emundusUser');
+		$db 	= JFactory::getDBO();
+
+		include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+		$m_profile = new EmundusModelProfile();
+		$applicant_profiles = $m_profile->getApplicantsProfilesArray();
+
+		// duplication is defined
+		if ($copy_application_form == 1 && isset($user->fnum)) {
+
+			// Get some form definition
+			$table = explode('___', key($data));
+			$table_name = $table[0];
+			$table_key = $table[1];
+			$table_key_value = array_values($data)[0];
+			$fnums = $user->fnums;
+			unset($fnums[$user->fnum]);
+
+			$fabrik_repeat_group = array();
+
+			if (!empty($data['fabrik_repeat_group'])) {
+				foreach ($data['fabrik_repeat_group'] as $key => $value) {
+					$fabrik_repeat_group[] = $key;
+				}
+			}
+
+			// only repeated groups
+			$fabrik_group_rowids_key = array();
+
+			if (!empty($data['fabrik_group_rowids'])) {
+
+				foreach ($data['fabrik_group_rowids'] as $key => $value) {
+					$repeat_table_name = $table_name.'_'.$key.'_repeat';
+					$query = 'SELECT id FROM '.$repeat_table_name.' WHERE parent_id='.$data['rowid'];
+					$db->setQuery( $query );
+					$fabrik_group_rowids_key[$key] = $db->loadColumn();
+				}
+
+			}
+
+			// Only if other application files found
+			if (count($fnums) > 0) {
+
+				$query = 'SELECT * FROM '.$table_name.' WHERE id='.$data['rowid'];
+
+				$db->setQuery($query);
+				$parent_data = $db->loadAssoc();
+				unset($parent_data['fnum']);
+				unset($parent_data['id']);
+
+				// new record
+				if (isset($data['usekey_newrecord']) && $data['usekey_newrecord']==1) {
+
+					// Parent table
+					$parent_id = array();
+					foreach ($fnums as $key => $fnum) {
+
+						$query = 'INSERT INTO `'.$table_name.'` (`'.implode('`,`', array_keys($parent_data)).'`, `fnum`) VALUES ';
+						$query .= '('.implode(',', $db->Quote($parent_data)).', '.$db->Quote($key).')';
+
+						$db->setQuery($query);
+
+						try {
+
+							$db->execute();
+							$parent_id[] = $db->insertid();
+
+						} catch (Exception $e) {
+							$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+							JLog::add($error, JLog::ERROR, 'com_emundus');
+						}
+					}
+
+					// Repeated table
+					foreach ($fabrik_group_rowids_key as $key => $rowids) {
+
+						if (count($rowids) > 0) {
+
+							$repeat_table_name = $table_name.'_'.$key.'_repeat';
+
+							$query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
+
+							try {
+
+								$db->setQuery($query);
+								$repeat_data = $db->loadAssocList();
+
+							} catch (Exception $e) {
+								$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+								JLog::add($error, JLog::ERROR, 'com_emundus');
+							}
+
+							if (count($repeat_data) > 0) {
+
+								foreach ($parent_id as $parent) {
+
+									$parent_data = array();
+									foreach ($repeat_data as $key => $d) {
+										unset($d['parent_id']);
+										unset($d['id']);
+										$columns = '`'.implode('`,`', array_keys($d)).'`';
+										$parent_data[] = '('.implode(',', $db->Quote($d)).', '.$parent.')';
+									}
+									$query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', `parent_id`) VALUES ';
+									$query .= implode(',', $parent_data);
+
+									$db->setQuery($query);
+
+									try {
+
+										$db->execute();
+
+									} catch (Exception $e) {
+										$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+										JLog::add($error, JLog::ERROR, 'com_emundus');
+									}
+								}
+							}
+						}
+					}
+
+				} else {
+
+					// Parent table
+					$updated_fnum = array();
+
+					foreach ($fnums as $fnum => $f) {
+
+						$query = 'UPDATE `'.$table_name.'` SET ';
+						$parent_update = array();
+						foreach ($parent_data as $key => $value) {
+							$parent_update[] = '`'.$key.'`='.$db->Quote($value);
+						}
+						$query .= implode(',', $parent_update);
+						$query .= ' WHERE fnum like '.$db->Quote($fnum);
+
+						$db->setQuery($query);
+
+						try {
+
+							$res = $db->execute();
+							$updated_fnum[] = $fnum;
+
+						} catch (Exception $e) {
+							$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+							JLog::add($error, JLog::ERROR, 'com_emundus');
+						}
+					}
+
+					if (count($updated_fnum) > 0) {
+						$query = 'SELECT id FROM `'.$table_name.'` WHERE fnum IN ('.implode(',', $db->Quote($updated_fnum)).')';
+						$db->setQuery( $query );
+						$parent_id = $db->loadColumn();
+					}
+
+					// Repeated table
+					foreach ($fabrik_group_rowids_key as $key => $rowids) {
+
+						if (count($rowids) > 0) {
+
+							$repeat_table_name = $table_name.'_'.$key.'_repeat';
+
+							$query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
+
+							try {
+
+								$db->setQuery($query);
+								$repeat_data = $db->loadAssocList('id');
+
+							} catch (Exception $e) {
+								$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+								JLog::add($error, JLog::ERROR, 'com_emundus');
+							}
+
+							if (count($parent_id) > 0) {
+
+								$query = 'DELETE FROM `'.$repeat_table_name.'` WHERE parent_id IN ('.implode(',', $parent_id).')';
+
+								$db->setQuery($query);
+								try {
+
+									$res = $db->execute();
+
+								} catch (Exception $e) {
+									$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+									JLog::add($error, JLog::ERROR, 'com_emundus');
+								}
+
+								if (count($repeat_data) > 0) {
+
+									foreach ($parent_id as $parent) {
+
+										$parent_data = array();
+										foreach ($repeat_data as $key => $d) {
+
+											unset($d['parent_id']);
+											unset($d['id']);
+											$columns = '`'.implode('`,`', array_keys($d)).'`';
+											$parent_data[] = '('.implode(',', $db->Quote($d)).', '.$parent.')';
+
+										}
+
+										$query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', `parent_id`) VALUES ';
+										$query .= implode(',', $parent_data);
+										$db->setQuery( $query );
+
+										try {
+
+											$db->execute();
+
+										} catch (Exception $e) {
+											$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+											JLog::add($error, JLog::ERROR, 'com_emundus');
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// If the status setting is set & not at -1 then we need to change the user's status.
+		$toStatus = (Int)$this->getParam('emundusredirect_field_status', '-1');
+		if (isset($toStatus) && $toStatus != -1 && isset($user->fnum)) {
+
+			$query = $db->getQuery(true);
+
+			// Conditions for which status should be updated.
+			// We only want to update the user's status to another value if it's 0 (NOT SENT).
+			$conditions = [
+				$db->quoteName('fnum').' LIKE '.$user->fnum,
+				$db->quoteName('status').' = 0'
+			];
+
+			$query->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set([$db->quoteName('status').' = '.$toStatus])
+					->where($conditions);
+
+			try {
+
+				$db->setQuery($query);
+				$db->execute();
+
+			} catch (Exceptions $e) {
+				JLog::add('Error updating file status at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			}
+
+		}
+
+
+		/*
+		* REDIRECTION ONCE DUPLICATION IS DONE
+		*/
+
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
+		$user 	= JFactory::getSession()->get('emundusUser');
+		$jinput = JFactory::getApplication()->input;
+		$formid = $jinput->get('formid');
+
+		if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
+			$levels = JAccess::getAuthorisedViewLevels($user->id);
+
+			try {
+
+				$query = 'SELECT CONCAT(link,"&Itemid=",id)
+						FROM #__menu
+						WHERE published=1 AND menutype = "'.$user->menutype.'" AND access IN ('.implode(',', $levels).')
+						AND parent_id != 1
+						AND lft = 2+(
+								SELECT menu.lft
+								FROM `#__menu` AS menu
+								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+
+				$db->setQuery($query);
+				$link = $db->loadResult();
+
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+
+			if (empty($link)) {
+
+				try {
+
+					$query = 'SELECT CONCAT(link,"&Itemid=",id)
+						FROM #__menu
+						WHERE published=1 AND menutype = "'.$user->menutype.'"  AND access IN ('.implode(',', $levels).')
+						AND parent_id != 1
+						AND lft = 4+(
+								SELECT menu.lft
+								FROM `#__menu` AS menu
+								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+
+					$db->setQuery($query);
+					$link = $db->loadResult();
+
+				} catch (Exception $e) {
+					$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+					JLog::add($error, JLog::ERROR, 'com_emundus');
+				}
+
+				if (empty($link)) {
+					try {
+
+						$query = 'SELECT CONCAT(link,"&Itemid=",id)
+								FROM #__menu
+								WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+
+						$db->setQuery($query);
+						$link = $db->loadResult();
+
+					} catch (Exception $e) {
+						$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+						JLog::add($error, JLog::ERROR, 'com_emundus');
+					}
+				}
+			}
+
+		} else {
+
+			try {
+
+				$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
+
+				$db->setQuery($query);
+				$db_table_name = $db->loadResult();
+
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+
+			$fnum = $jinput->get($db_table_name.'___fnum');
+			$s1 = JRequest::getVar($db_table_name.'___user', null, 'POST');
+			$s2 = JRequest::getVar('sid', '', 'GET');
+			$student_id = !empty($s2)?$s2:$s1;
+
+			$sid = is_array($student_id)?$student_id[0]:$student_id;
+
+			try {
+
+				$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum);
+
+				$db->setQuery( $query );
+				$db->execute();
+
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+
+			$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
+
+			echo "<hr>";
+			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+			echo "<hr>";
+			exit;
+
+		}
+		header('Location: '.$link);
+		exit();
+	}
+
+	/**
+	 * Raise an error - depends on whether you are in admin or not as to what to do
+	 *
+	 * @param   array   &$err   Form models error array
+	 * @param   string  $field  Name
+	 * @param   string  $msg    Message
+	 *
+	 * @return  void
+	 */
+
+	protected function raiseError(&$err, $field, $msg)
+	{
+		$app = JFactory::getApplication();
+
+		if ($app->isAdmin())
+		{
+			$app->enqueueMessage($msg, 'notice');
+		}
+		else
+		{
+			$err[$field][0][] = $msg;
+		}
+	}
+}

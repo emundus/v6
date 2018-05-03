@@ -1,7 +1,7 @@
-<?php 
-JHTML::_('behavior.modal'); 
+<?php
+JHTML::_('behavior.modal');
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
-defined('_JEXEC') or die('Restricted access'); 
+defined('_JEXEC') or die('Restricted access');
 $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS;
 
 
@@ -15,10 +15,10 @@ $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS;
 
 <fieldset>
 <legend>
-<img src="<?php JURI::base(true); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>"/> 
+<img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>"/>
 <?php echo JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>
 </legend>
-<?php 
+<?php
 if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 ?>
 <table id="userlist" width="100%">
@@ -41,33 +41,28 @@ if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 	</tfoot>
 	<tbody>
 
-<?php 
-$j=0;
-foreach ($this->files as $f) { 
- if( !file_exists($path.$f->user_id.DS.$f->filename) ) { 
-	$user = JFactory::getUser($f->user_id);
+	<?php
+		$j = 0;
+		foreach ($this->files as $f) {
+		if (!file_exists($path.$f->user_id.DS.$f->filename)) {
+			$user = JFactory::getUser($f->user_id);
+	?>
 
- ?>
 	<tr class="row<?php echo $j++%2; ?>">
         <td width="80">
-		<?php echo $j; ?>
-		<input id="cb<?php echo $user->id; ?>" type="checkbox" name="ud[]" value="<?php echo $user->id; ?>"/>
-		<?php echo '#'.$f->user_id; ?>
+			<?php echo $j; ?>
+			<input id="cb<?php echo $user->id; ?>" type="checkbox" name="ud[]" value="<?php echo $user->id; ?>"/>
+			<?php echo '#'.$f->user_id; ?>
         </td>
 		<td>
-		<?php 
-        	echo $user->name;
-		?>
+			<?php echo $user->name; ?>
         </td>
 		<td>
-		<?php 
-        	//echo $f->filename;
-			echo $path.$f->user_id.DS.$f->filename;
-		?>
+			<?php echo $path.$f->user_id.DS.$f->filename; ?>
         </td>
-<?php } 
-} ?>
-</tbody>
+		<?php }
+		} ?>
+	</tbody>
 </table>
 <?php
 }
@@ -77,10 +72,10 @@ foreach ($this->files as $f) {
 
 <fieldset>
 <legend>
-<img src="<?php JURI::base(true); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_DB'); ?>"/> 
+<img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_DB'); ?>"/>
 <?php echo JText::_('FILES_NOT_FOUND_IN_DB'); ?>
 </legend>
-<?php 
+<?php
 if (count($this->listFiles)>0 && isset($this->listFiles) && is_array($this->listFiles)) {
 ?>
 <table id="userlist" width="100%">
@@ -103,40 +98,40 @@ if (count($this->listFiles)>0 && isset($this->listFiles) && is_array($this->list
 	</tfoot>
 	<tbody>
 
-<?php 
+<?php
 $j=0;
-foreach ($this->listFiles as $f) { 
+foreach ($this->listFiles as $f) {
 	$db = JFactory::getDBO();
-	$query = 'SELECT count(id)   
-			FROM #__emundus_uploads 
+	$query = 'SELECT count(id)
+			FROM #__emundus_uploads
 			WHERE filename like "'.$f["file"].'"';
 	$db->setQuery( $query );
 	$is_in_db = $db->loadResult();
 
 	$user = JFactory::getUser($f["id"]);
-	 //if( $is_in_db == 0 || $user->name == "") { 
-	 if( $is_in_db == 0 || $user->name == "") { 
+	 //if( $is_in_db == 0 || $user->name == "") {
+	 if( $is_in_db == 0 || $user->name == "") {
 	 ?>
 		<tr class="row<?php echo $j++%2; ?>">
 			<td width="80">
 			<input id="cb<?php echo $user->id; ?>" type="checkbox" name="ud[]" value="<?php echo $user->id; ?>"/>
-			<?php 
+			<?php
 				echo '#'.$f["id"];
 			?>
 			</td>
 			<td>
-			<?php 
-				
+			<?php
+
 				echo $user->name;
 			?>
 			</td>
 			<td>
-			<?php 
+			<?php
 				//echo $f->filename;
 				echo $path.$f["id"].DS.$f["file"];
 			?>
 			</td>
-	<?php } 
+	<?php }
 } ?>
 </tbody>
 </table>
@@ -164,16 +159,16 @@ function tableOrdering( order, dir, task ) {
 
 function OnSubmitForm() {
 	switch(document.pressed) {
-		case 'delete_on_db': 
+		case 'delete_on_db':
 			if (confirm("<?php echo JText::_("CONFIRM_DELETING"); ?>")) {
         		document.adminForm.action ="index.php?option=com_emundus&controller=groups&task=deleteOnDB";
-		 	} else 
+		 	} else
 		 		return false;
 		break;
-		case 'delete_on_server': 
+		case 'delete_on_server':
 			if (confirm("<?php echo JText::_("CONFIRM_DELETING"); ?>")) {
         		document.adminForm.action ="index.php?option=com_emundus&controller=groups&task=deleteOnServer";
-		 	} else 
+		 	} else
 		 		return false;
 		break;
 	}

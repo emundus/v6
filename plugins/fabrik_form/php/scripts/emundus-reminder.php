@@ -22,7 +22,7 @@ $student = & JFactory::getSession()->get('emundusUser');
 $student->candidature_posted = 1;
 
 $patterns = array ('/\[NAME]/','/\[SIGNATURE]/','/\[CANDIDATURE_START]/','/\[SITE_URL]/','/\[DEADLINE]/');
-$replacements = array ($student->id, $student->name, $student->email, JURI::base(true), strftime("%A %d %B %Y %H:%M", strtotime($student->candidature_end) ).' (GMT)');
+$replacements = array ($student->id, $student->name, $student->email, JURI::base(), strftime("%A %d %B %Y %H:%M", strtotime($student->candidature_end) ).' (GMT)');
 
 
 //delete old email alerts

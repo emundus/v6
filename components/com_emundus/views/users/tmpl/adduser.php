@@ -205,9 +205,10 @@ if ($s == '')
 											username.value = user[ldapElements[i][0]]
 											username.label = ldapElements[i][1]
 										} else if (i === 1) {
-											var mail = {}
-											mail.value = user[ldapElements[i][0]]
-											mail.label = ldapElements[i][1]
+											var mail = {};
+                                            var mails = user[ldapElements[i][0]] + "";
+                                            mail.value = mails.split(",")[0];
+                                            mail.label = ldapElements[i][1];
 										} else if (i === 2) {
 											var fname = {}
 											fname.value = user[ldapElements[i][0]]

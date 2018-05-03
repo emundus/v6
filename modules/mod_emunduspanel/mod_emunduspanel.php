@@ -101,9 +101,9 @@ if (!empty($t__)) {
 			$menu_params = json_decode($r->params, true);
 			$src = '';
 			if (empty($img[$j]) && !empty($menu_params['menu_image']) && empty($menu_params['menu-anchor_css']))
-				$src = JURI::base(true).$menu_params['menu_image'];
+				$src = JURI::base().$menu_params['menu_image'];
 			else
-				$src = JURI::base(true).$folder.''.$img[$j];
+				$src = JURI::base().$folder.''.$img[$j];
 
 			$img = '';
 			if (!empty($src)) {
@@ -169,9 +169,9 @@ if (!empty($t__)) {
 			} else {
 				$glyphicon = '';
 				if (!empty($menu_params['menu_image']))
-					$icon = '<img src="'.JURI::base(true).$menu_params['menu_image'].'" />';
+					$icon = '<img src="'.JURI::base().$menu_params['menu_image'].'" />';
 				else
-					$icon = '<img src="'.JURI::base(true).$folder.'files_grey.png" />';
+					$icon = '<img src="'.JURI::base().$folder.'files_grey.png" />';
 			}
 
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.$icon.' <br />'.$r->title.'</a>';
