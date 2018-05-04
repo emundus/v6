@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class plgHikashopCartnotify extends JPlugin
 		if(isset($this->params))
 			return;
 
-		$plugin = JPluginHelper::getPlugin('hikashop', 'cartnotifiy');
+		$plugin = JPluginHelper::getPlugin('hikashop', 'cartnotify');
 		if(!HIKASHOP_J25) {
 			jimport('joomla.html.parameter');
 			$this->params = new JParameter(@$plugin->params);

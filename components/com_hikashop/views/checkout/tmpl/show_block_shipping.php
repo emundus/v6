@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,8 +28,12 @@ if(!empty($cart->usable_methods->shipping)) {
 	foreach($cart->shipping_groups as $shipping_group_key => $group) {
 ?>
 <div class="hikashop_shipping_group">
+<?php
+		if(!empty($this->options['show_title'])) {
+?>
 	<legend><?php echo JText::_('HIKASHOP_SHIPPING_METHOD');?></legend>
 <?php
+		}
 		if(!empty($group->name) || $several_groups) {
 ?>
 	<p class="hikashop_shipping_group_name"><?php
@@ -83,6 +87,8 @@ if(!empty($cart->usable_methods->shipping)) {
 					}
 				}
 			}
+			if(!empty($this->options['read_only']) && !$selected)
+				continue;
 
 			$input_id = 'shipping_radio_'.$this->step.'_'.$this->module_position.'__'.$shipping_group_key.'__'.$shipping->shipping_type.'_'.$shipping->shipping_id;
 			$container_id = 'hikashop_checkout_shipping_'.$this->step.'_'.$this->module_position.'__'.$shipping_group_key.'__'.$shipping->shipping_id;
@@ -96,7 +102,13 @@ if(!empty($cart->usable_methods->shipping)) {
 			);
 ?>
 	<tr><td>
+<?php
+			if(empty($this->options['read_only'])){
+?>
 		<input class="hikashop_checkout_shipping_radio" type="radio" name="checkout[shipping][<?php echo $shipping_group_key; ?>][id]" id="<?php echo $input_id; ?>" data-hk-checkout="<?php echo $this->escape(json_encode($input_data)); ?>" onchange="window.checkout.shippingSelected(this);" value="<?php echo $shipping->shipping_id;?>"<?php echo ($selected ? ' checked="checked"' : ''); ?>/>
+<?php
+			}
+?>
 		<label for="<?php echo $input_id; ?>" style="cursor:pointer;">
 			<span class="hikashop_checkout_shipping_name"><?php echo $shipping->shipping_name;?></span>
 		</label>

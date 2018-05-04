@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,6 +67,14 @@ class hikashopItemType {
 	function load() {
 		$this->values = array();
 
+		jimport('joomla.filesystem.folder');
+		$product_folder = HIKASHOP_FRONT.'views'.DS.'product'.DS.'tmpl'.DS;
+		$category_folder = HIKASHOP_FRONT.'views'.DS.'category'.DS.'tmpl'.DS;
+		$files = JFolder::files($product_folder);
+		$files = array_keys(array_merge(array_flip($files), array_flip(JFolder::files($category_folder))));
+		$this->loadValues('-- '.JText::_('FROM_HIKASHOP').' --', $files);
+		$this->loadFromTemplates($files);
+
 		if(hikaInput::get()->getVar('inherit', true) == true) {
 			$config = hikashop_config();
 			$defaultParams = $config->get('default_params');
@@ -75,14 +83,6 @@ class hikashopItemType {
 				$default = ' ('.@$this->values[$defaultParams['div_item_layout_type']]->text.')';
 			$this->values[] = JHTML::_('select.option', 'inherit', JText::_('HIKA_INHERIT').$default);
 		}
-
-		jimport('joomla.filesystem.folder');
-		$product_folder = HIKASHOP_FRONT.'views'.DS.'product'.DS.'tmpl'.DS;
-		$category_folder = HIKASHOP_FRONT.'views'.DS.'category'.DS.'tmpl'.DS;
-		$files = JFolder::files($product_folder);
-		$files = array_keys(array_merge(array_flip($files), array_flip(JFolder::files($category_folder))));
-		$this->loadValues('-- '.JText::_('FROM_HIKASHOP').' --', $files);
-		$this->loadFromTemplates($files);
 	}
 
 	function display($map, $value, &$js, $option = '') {

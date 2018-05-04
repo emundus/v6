@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -255,6 +255,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$limit['unit'] = 1;
 
 			$packages = $this->getOrderPackage($order, array('weight_unit' => 'oz', 'volume_unit' => 'in', 'limit' => $limit, 'required_dimensions' => $required_dimensions));
+
 			if(empty($packages))
 				return true;
 
@@ -445,13 +446,14 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 					'<Width>'.$parcel->Width.'</Width>'.
 					'<Length>'.$parcel->Length.'</Length>'.
 					'<Height>'.$parcel->Height.'</Height>'.
-					'<Girth>'.$parcel->Girth.'</Girth>';
+					'<Girth>'.$parcel->Girth.'</Girth>'.
+					'</Package>';
+				$package_id++;
 			}
 			if($parcels[0]->Country == 'CA')
 				$request .= '<OriginZip>' . $origin_zip . '</OriginZip>';
 
-			$request .= '</Package>'.
-				'</IntlRateV2Request>';
+			$request .= '</IntlRateV2Request>';
 		}
 		else {
 			$request = '<'.'?xml version="1.0"?'.'>'.
@@ -504,13 +506,15 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			return false;
 
 		if($response_xml->Number) {
-			 $app->enqueueMessage( 'USPS error: ' . $response_xml->Number . ' ' . $response_xml->Description);
-			 $responseError = true;
+			if(!empty($rate->shipping_params->debug))
+				$app->enqueueMessage( 'USPS error: ' . $response_xml->Number . ' ' . $response_xml->Description);
+			$responseError = true;
 		}
 
 		if($response_xml->Package->Error) {
-			 $app->enqueueMessage( 'USPS error: ' . $response_xml->Package->Error->Number . ' ' . $response_xml->Package->Error->Description);
-			 $responseError = true;
+			if(!empty($rate->shipping_params->debug))
+				$app->enqueueMessage( 'USPS error: ' . $response_xml->Package->Error->Number . ' ' . $response_xml->Package->Error->Description);
+			$responseError = true;
 		}
 
 		if($isInternational) {
@@ -722,7 +726,8 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$divide = $product['z'] + ($product['x'] + $product['y']) * 2;
 				if(!$divide || $divide > $limit_value)
 					return false;
-				return (int)floor($limit_value / $divide);
+				$current_limit_value = max(0.0, $limit_value - (float)(($package['x'] + $package['y']) * 2 + $package['z']));
+				return (int)floor($current_limit_value / $divide);
 				break;
 		}
 		return parent::processPackageLimit($limit_key, $limit_value , $product, $qty, $package, $units);

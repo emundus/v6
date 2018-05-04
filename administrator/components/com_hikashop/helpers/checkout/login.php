@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,15 @@ defined('_JEXEC') or die('Restricted access');
 include_once HIKASHOP_HELPER . 'checkout.php';
 
 class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
+	protected $params = array(
+		'show_submit' =>  array(
+			'name' => 'SHOW_SUBMIT_BUTTON',
+			'type' => 'boolean',
+			'default' => 1,
+			'tooltip' => 'login_submit',
+		),
+	);
+
 	public function check(&$controller, &$params) {
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		return $checkoutHelper->isLoggedUser();
@@ -234,6 +243,8 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 				}
 			}
 			$content['params']['registration'] = false;
+			$content['params']['show_login'] = false;
+			$content['params']['waiting_validation'] = true;
 			return false;
 		}
 
@@ -333,6 +344,9 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 		$params['user_group_registration'] = $view->config->get('user_group_registration', '');
 		if(!isset($params['default_registration_view']))
 			$params['default_registration_view'] = $view->config->get('default_registration_view', '');
+		if(!isset($params['show_submit']))
+			$params['show_submit'] = 1;
+
 
 		$params['display_method'] = 0;
 		$params['registration_registration'] = true;

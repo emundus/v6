@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -371,7 +371,11 @@ class hikashopDatabaseHelper {
 				} catch(Exception $e) {
 					$ret[] = array(
 						'error',
-						$e->getMessage()
+						$table_name.': '.$e->getMessage()
+					);
+					$ret[] = array(
+						'error',
+						'<pre>'.$query.'</pre>'
 					);
 					$result = false;
 				}
@@ -399,7 +403,11 @@ class hikashopDatabaseHelper {
 				} catch(Exception $e) {
 					$ret[] = array(
 						'error',
-						$e->getMessage()
+						$table_name.': '.$e->getMessage()
+					);
+					$ret[] = array(
+						'error',
+						'<pre>'.$query.'</pre>'
 					);
 					$result = false;
 				}
@@ -502,6 +510,17 @@ class hikashopDatabaseHelper {
 			$ret[] = array(
 				'success',
 				'Product categories checked'
+			);
+		}
+
+		$query = 'UPDATE `#__hikashop_product` set product_parent_id=0 WHERE product_type=\'main\';';
+		try {
+			$this->db->setQuery($query);
+			$result = $this->db->query();
+		} catch(Exception $e) {
+			$ret[] = array(
+				'error',
+				$e->getMessage()
 			);
 		}
 

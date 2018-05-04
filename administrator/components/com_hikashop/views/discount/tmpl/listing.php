@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -138,8 +138,8 @@ defined('_JEXEC') or die('Restricted access');
 		if(!empty($row->discount_zone_id)) {
 			$restrictions[] = '<strong>'.JText::_('ZONE').'</strong>:'.$row->discount_zone_id;
 		}
-		if(!empty($row->username)) {
-			$restrictions[] = '<strong>'.JText::_('HIKA_USER').'</strong>:'.$row->username;
+		if(!empty($row->discount_user_id)) {
+			$restrictions[] = '<strong>'.JText::_('HIKA_USER').'</strong>:'.$row->discount_user_id;
 		}
 
 

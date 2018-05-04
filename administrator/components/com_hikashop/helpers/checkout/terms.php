@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,11 +11,57 @@ defined('_JEXEC') or die('Restricted access');
 include_once HIKASHOP_HELPER . 'checkout.php';
 
 class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
+	protected $params = array(
+		'article_id' => array(
+			'name' => 'HIKASHOP_CHECKOUT_TERMS',
+			'type' => 'namebox',
+			'tooltip' => 'checkout_terms',
+			'namebox' => 'article',
+			'default' => ''
+		),
+		'size' => array(
+			'name' => 'TERMS_AND_CONDITIONS_POPUP_SIZE',
+			'type' => 'group',
+			'tooltip' => 'terms_and_conditions_xy',
+			'data' => array(
+				'popup_width' => array(
+					'type' => 'text',
+					'attributes' => 'style="width:50px"',
+					'default' => 450
+				),
+				'size_separator' => array(
+					'type' => 'html',
+					'html' => ' x ',
+				),
+				'popup_height' => array(
+					'type' => 'text',
+					'attributes' => 'style="width:50px"',
+					'default' => 480
+				),
+				'size_unit' => array(
+					'type' => 'html',
+					'html' => ' px',
+				),
+			),
+		),
+		'label' => array(
+			'name' => 'FIELD_LABEL',
+			'type' => 'textarea',
+			'default' => '',
+		),
+	);
+
+	public function getParams() {
+		$this->params['label']['attributes'] = 'rows="3" cols="30" placeholder="'.JText::_('PLEASE_ACCEPT_TERMS').'"';
+		return $this->params;
+	}
+
 	public function check(&$controller, &$params) {
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
 
-		if(!empty($cart->cart_params->terms_checked))
+		$key = 'terms_checked_' . $params['src']['step'] . '_' .  $params['src']['pos'];
+		if(!empty($cart->cart_params->$key))
 			return true;
 
 		$checkoutHelper->addMessage('terms.checkfailed', array(
@@ -31,15 +77,18 @@ class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
 		$cart_id = (int)$cart->cart_id;
+		$name = 'terms_'. $params['src']['step'] . '_' .  $params['src']['pos'];
 
-		if(!isset($checkout['terms']))
-			$checkout['terms'] = 0;
+		if(!isset($checkout[$name]))
+			$checkout[$name] = 0;
 
-		if(isset($cart->cart_params->terms_checked) && (int)$cart->cart_params->terms_checked == (int)$checkout['terms']) {
-			if((int)$cart->cart_params->terms_checked)
+		$key = 'terms_checked_' . $params['src']['step'] . '_' .  $params['src']['pos'];
+
+		if(isset($cart->cart_params->$key) && (int)$cart->cart_params->$key == (int)$checkout[$name]) {
+			if((int)$cart->cart_params->$key)
 				return true;
 
-			$checkoutHelper->addMessage('terms.checkfailed', array(
+			$checkoutHelper->addMessage('terms_' . $params['src']['step'] . '_' .  $params['src']['pos'] . '.checkfailed', array(
 				JText::_('PLEASE_ACCEPT_TERMS_BEFORE_FINISHING_ORDER'),
 				'error'
 			));
@@ -47,8 +96,8 @@ class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		$cartClass = hikashop_get('class.cart');
-		if(!$cartClass->updateTerms($cart_id, (int)$checkout['terms'])) {
-			$checkoutHelper->addMessage('terms.updatefailed', array(
+		if(!$cartClass->updateTerms($cart_id, (int)$checkout[$name], $key)) {
+			$checkoutHelper->addMessage('terms_' . $params['src']['step'] . '_' .  $params['src']['pos'] . '.updatefailed', array(
 				JText::_('TERMS_AND_CONDITIONS_CHECKED_STATUS_FAILED'),
 				'error'
 			));
@@ -56,10 +105,10 @@ class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		$checkoutHelper->getCart(true);
-		if((int)$checkout['terms'])
+		if((int)$checkout[$name])
 			return true;
 
-		$checkoutHelper->addMessage('terms.checkfailed', array(
+		$checkoutHelper->addMessage('terms_' . $params['src']['step'] . '_' .  $params['src']['pos'] . '.checkfailed', array(
 			JText::_('PLEASE_ACCEPT_TERMS_BEFORE_FINISHING_ORDER'),
 			'error'
 		));
@@ -67,14 +116,23 @@ class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function display(&$view, &$params) {
-		$params['article_id'] = (int)$view->config->get('checkout_terms', 0);
-
-		$params['popup_width'] = (int)$view->config->get('terms_and_conditions_width', 450);
+		if(!isset($params['article_id']))
+			$params['article_id'] = (int)$view->config->get('checkout_terms', 0);
+		if(!isset($params['popup_width']))
+			$params['popup_width'] = (int)$view->config->get('terms_and_conditions_width', 450);
 		if($params['popup_width'] <= 0)
 			$params['popup_width'] = 450;
-
-		$params['popup_height'] = (int)$view->config->get('terms_and_conditions_height', 480);
+		if(!isset($params['popup_height']))
+			$params['popup_height'] = (int)$view->config->get('terms_and_conditions_height', 480);
 		if($params['popup_height'] <= 0)
 			$params['popup_height'] = 480;
+		if(empty($params['label']))
+			$params['label'] = JText::_('PLEASE_ACCEPT_TERMS');
+		else{
+			$key = strtoupper($params['label']);
+			$trans = JText::_($key);
+			if($trans != $key)
+				$params['label'] = $trans;
+		}
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -669,7 +669,7 @@ class ProductViewProduct extends HikaShopView {
 			}
 		}
 
-		$this->checkBackButtonRedirect($this->params->get('main_div_name').$category_selected);
+		$this->checkBackButtonRedirect($this->params->get('main_div_name') . $category_selected);
 
 		$database->setQuery($select.$query,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
 		$rows = $database->loadObjectList();
@@ -679,8 +679,9 @@ class ProductViewProduct extends HikaShopView {
 			'currency_id'=> $pageInfo->currency_id,
 			'zone_id' => $pageInfo->zone_id,
 			'load_badges' => $this->params->get('display_badges', 1),
-			'load_custom_item_fields' => $this->params->get('display_custom_item_fields', 0),
-			'price_display_type' => $pageInfo->filter->price_display_type
+			'load_custom_item_fields' => true, // the custom item fields need to be loaded all the type to kno if we need the choose options or add to cart button
+			'price_display_type' => $pageInfo->filter->price_display_type,
+			'bundle_qty' => true
 		);
 		if($this->params->get('filter_type') == 3) {
 			if(!empty($element->category_type) && $element->category_type == 'manufacturer')
@@ -1054,6 +1055,30 @@ class ProductViewProduct extends HikaShopView {
 			' ORDER BY pr.product_related_ordering ASC, pr.product_related_id ASC';
 		$database->setQuery($query);
 		$element->options = $database->loadObjectList('product_id');
+
+		if(hikashop_level(1)) {
+			$query = 'SELECT p.*, pr.product_related_quantity ' .
+				' FROM '.hikashop_table('product_related').' AS pr '.
+				' INNER JOIN '.hikashop_table('product').' AS p ON pr.product_related_id = p.product_id '.
+				' WHERE pr.product_id = ' . $product_id.' AND pr.product_related_type = ' . $database->Quote('bundle').
+				' ORDER BY pr.product_related_ordering ASC, pr.product_related_id ASC';
+			$database->setQuery($query);
+			$element->bundles = $database->loadObjectList('product_id');
+
+			if((int)$element->product_quantity < 0 && !empty($element->bundles)) {
+				$qty = null;
+				foreach($element->bundles as $bundle) {
+					$q = floor((int)$bundle->product_quantity / (int)$bundle->product_related_quantity);
+					if($q < 0)
+						continue;
+					$qty = ($qty === null) ? $q : min($qty, $q);
+					if($qty === 0)
+						break;
+				}
+				if($qty !== null)
+					$element->product_quantity = $qty;
+			}
+		}
 
 		$ids = array($product_id);
 		if(!empty($element->options))
@@ -1837,12 +1862,14 @@ class ProductViewProduct extends HikaShopView {
 		}
 		foreach($element->variants as $k => $variant) {
 			$temp = array();
-			foreach($element->characteristics as $k2 => $characteristic2) {
-				if(!empty($variant->characteristics)) {
-					foreach($variant->characteristics as $k3 => $characteristic3) {
-						if($k2 == $k3) {
-							$temp[$k3] = $characteristic3;
-							break;
+			if(!empty($element->characteristics)) {
+				foreach($element->characteristics as $k2 => $characteristic2) {
+					if(!empty($variant->characteristics)) {
+						foreach($variant->characteristics as $k3 => $characteristic3) {
+							if($k2 == $k3) {
+								$temp[$k3] = $characteristic3;
+								break;
+							}
 						}
 					}
 				}

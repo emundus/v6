@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,9 +15,12 @@ $quantity_counter = $this->cartHelper->getQuantityCounter($this);
 $id = 'hikashop_product_quantity_field_'.$quantity_counter;
 $this->last_quantity_field_id = $id;
 
+
 if(isset($this->row) && isset($this->row->product_min_per_order)) {
-	$min_quantity = max((int)$this->row->product_min_per_order, 1);
-	$max_quantity = max((int)$this->row->product_max_per_order, 0);
+	$min_quantity = ($this->row->product_min_per_order || empty($this->row->parent_product)) ? $this->row->product_min_per_order : $this->row->parent_product->product_min_per_order;
+	$max_quantity = ($this->row->product_max_per_order || empty($this->row->parent_product)) ? $this->row->product_max_per_order : $this->row->parent_product->product_max_per_order;
+	$min_quantity = max($min_quantity, 1);
+	$max_quantity = max($max_quantity, 0);
 	if($this->row->product_quantity > 0)
 		$max_quantity = min($max_quantity, $this->row->product_quantity);
 } else {

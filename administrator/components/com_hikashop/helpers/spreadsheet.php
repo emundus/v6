@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,6 +18,7 @@ class hikashopSpreadsheetHelper {
 	var $forceQuote;
 	var $progressive;
 	var $headerSent;
+	var $excelSecurity;
 
 	function __construct() {
 		$this->init();
@@ -31,6 +32,7 @@ class hikashopSpreadsheetHelper {
 		$this->forceQuote = $forceQuote;
 		$this->progressive = false;
 		$this->headerSent = false;
+		$this->excelSecurity = "'";
 
 		switch( strtolower($format) ) {
 			case 'xls':
@@ -135,6 +137,10 @@ class hikashopSpreadsheetHelper {
 			if( $this->currLine < $row )
 				$this->newLine();
 			$this->currLine = $row;
+
+			if(!empty($value) && !empty($this->excelSecurity) && in_array(substr($value, 0, 1), array('=','+','-','@')))
+				$value = "'".$value;
+
 			if( empty($value) ) {
 				$value = '""';
 			} elseif( strpos($value, '"') !== false ) {

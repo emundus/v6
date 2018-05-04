@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,28 +39,33 @@ class ProductViewProduct extends hikashopView
 		$pageInfo->limit = new stdClass();
 		$config =& hikashop_config();
 
-		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'a.ordering','cmd' );
-		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'asc',	'word' );
+		$pageInfo->filter->order->value = $app->getUserStateFromRequest($this->paramBase.".filter_order", 'filter_order', 'a.ordering', 'cmd');
+		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest($this->paramBase.".filter_order_Dir", 'filter_order_Dir', 'asc', 'word');
 		$newFilterId = hikaInput::get()->getVar('filter_id');
 		$newSearch = hikaInput::get()->getVar('search');
-		if((!empty($newSearch)&&$newSearch!=$app->getUserState($this->paramBase.".search"))||(!empty($newFilterId) && $newFilterId!=$app->getUserState($this->paramBase.".filter_id"))){
+
+		if( (!empty($newSearch) && $newSearch!=$app->getUserState($this->paramBase.".search")) || (!empty($newFilterId) && $newFilterId != $app->getUserState($this->paramBase.".filter_id", $newFilterId))) {
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
-		}else{
-			$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart', 0, 'int' );
+		} else {
+			$pageInfo->limit->start = $app->getUserStateFromRequest($this->paramBase.'.limitstart', 'limitstart', 0, 'int');
 		}
-		$pageInfo->search = $app->getUserStateFromRequest( $this->paramBase.".search", 'search', '', 'string' );
+
+		$pageInfo->search = $app->getUserStateFromRequest($this->paramBase.".search", 'search', '', 'string');
 		$pageInfo->search = JString::strtolower(trim($pageInfo->search));
 
-		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
+		$pageInfo->limit->value = $app->getUserStateFromRequest($this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int');
 		if(empty($pageInfo->limit->value)) $pageInfo->limit->value = 500;
-		$selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type',$config->get('sub_products_display_all',1),'int');
+
+		$selectedType = $app->getUserStateFromRequest($this->paramBase.".filter_type", 'filter_type', $config->get('sub_products_display_all', 1), 'int');
 		$pageInfo->selectedType = $selectedType;
-		$pageInfo->filter->filter_id = $app->getUserStateFromRequest( $this->paramBase.".filter_id",'filter_id',0,'string');
-		$pageInfo->filter->filter_product_type = $app->getUserStateFromRequest( $this->paramBase.".filter_product_type",'filter_product_type','main','word');
-		$pageInfo->filter->filter_published = $app->getUserStateFromRequest( $this->paramBase.".filter_published",'filter_published',0,'int');
-		$pageInfo->filter->filter_manufacturer = $app->getUserStateFromRequest( $this->paramBase.".filter_manufacturer",'filter_manufacturer','','string');
-		$database	= JFactory::getDBO();
+
+		$pageInfo->filter->filter_id = $app->getUserStateFromRequest($this->paramBase.".filter_id", 'filter_id', 0, 'string');
+		$pageInfo->filter->filter_product_type = $app->getUserStateFromRequest( $this->paramBase.".filter_product_type", 'filter_product_type', 'main', 'word');
+		$pageInfo->filter->filter_published = $app->getUserStateFromRequest( $this->paramBase.".filter_published", 'filter_published', 0, 'int');
+		$pageInfo->filter->filter_manufacturer = $app->getUserStateFromRequest( $this->paramBase.".filter_manufacturer", 'filter_manufacturer', '', 'string');
+
+		$database = JFactory::getDBO();
 		$filters = array();
 
 		if($pageInfo->filter->filter_published==2){
