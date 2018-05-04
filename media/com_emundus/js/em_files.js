@@ -106,9 +106,10 @@ function search() {
     });
 }
 function clearchosen(cible){
-    $(cible).val("%");
+    var num = $(cible + ' option').length;
+    $(cible)[0].sumo.unSelectAll();
     //$('#select_multiple_programmes option[value="%"]').attr('selected',true);
-    $(cible).trigger('chosen:updated');
+    //$(cible).trigger('chosen:updated');
     // $("#select_multiple_programmes").trigger("chosen:updated");
 }
 
@@ -826,7 +827,7 @@ $(document).ready(function()
         if (event.handle !== true) {
             event.handle = true;
             var id = $(this).attr('id');
-
+            
             if (id != 'elements') {
                 if ($('#' + id).attr('multiple') != undefined)
                     var multi = true;
@@ -970,12 +971,13 @@ $(document).ready(function()
 // Filter buttons action (search, clear filter, save filter)
 //
     $(document).on('click', 'button', function(e) {
-        $.ajaxQ.abortAll();
+        
         if (e.handle != true) {
             e.handle = true;
             var id = $(this).attr('id');
             switch (id) {
                 case 'save-filter':
+                    $.ajaxQ.abortAll();
                     var filName = prompt(filterName);
                     if (filName != null) {
                         $.ajax({
@@ -1013,6 +1015,7 @@ $(document).ready(function()
                     }
                     break;
                 case 'del-filter':
+                    $.ajaxQ.abortAll();
                     var id = $('#select_filter').val();
 
                     if (id != 0) {
@@ -1048,11 +1051,15 @@ $(document).ready(function()
                     }
                     break;
                 case 'add-filter':
+                    $.ajaxQ.abortAll();
                     addElement();
                     break;
-                case 'em-close-file': document.location.hash = "close";
+                case 'em-close-file': 
+                    $.ajaxQ.abortAll();
+                    document.location.hash = "close";
                     $('.alert.alert-warning').remove();
                 case 'em-mini-file':
+                    $.ajaxQ.abortAll();
                     $('#em-appli-block').remove();
                     $('.em-close-minimise').remove();
                     $('.em-open-files').remove();
@@ -1064,6 +1071,7 @@ $(document).ready(function()
                     $(".main-panel .panel.panel-default").show();
                     break;
                 case 'em-see-files':
+                    $.ajaxQ.abortAll();
                     var fnum = new Object();
                     fnum.fnum = $(this).parents('a').attr('href').split('-')[0];
                     fnum.fnum = fnum.fnum.substr(1, fnum.fnum.length);
@@ -1095,6 +1103,7 @@ $(document).ready(function()
 
                     break;
                 case 'em-delete-files':
+                    $.ajaxQ.abortAll();
                     var r = confirm(Joomla.JText._('COM_EMUNDUS_CONFIRM_DELETE_FILE'));
                     if (r == true)
                     {
@@ -1597,7 +1606,7 @@ $(document).ready(function()
                             $('#data').append('<div id="elements_detail" style="display: none">' +
                                                         '<div class="panel panel-default xclsform">' +
                                                             '<div class="panel-heading">'+
-                                                            '<table style="width:100%;"><tr>'+
+                                                            '<table id="em-table-elements" style="width:100%;"><tr>'+
                                                                 '<th><h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
                                                                  '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
@@ -1645,7 +1654,7 @@ $(document).ready(function()
 
                             $.ajax({
                                 type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
+                                url: 'index.php?option=com_emundus&controller=files&task=getprogrammes',
                                 dataType:'json',
 
                                 success: function(result) {
@@ -1653,7 +1662,7 @@ $(document).ready(function()
                                         // get export excel saved filter
                                         $.ajax({
                                             type:'get',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                            url: 'index.php?option=com_emundus&controller=files&task=getexportexcelfilter',
                                             dataType:'json',
                                             success: function (result) {
                                                 if (result.status) {
@@ -1703,7 +1712,7 @@ $(document).ready(function()
 
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
+                                                url: 'index.php?option=com_emundus&controller=files&task=getprogramcampaigns&code=' + code,
                                                 dataType:'json',
 
                                                 success: function(result) {
@@ -1913,6 +1922,7 @@ $(document).ready(function()
                                                                                 console.log(jqXHR.responseText);
                                                                             }
                                                                         });
+                                                                        
                                                                         $('.btn-success').show();
                                                                         $('#elements_detail').show();
                                                                     },
@@ -1959,7 +1969,7 @@ $(document).ready(function()
 
                                                 $.ajax({
                                                     type:'get',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getprogramcampaigns&code=' + code,
                                                     dataType:'json',
 
                                                     success: function(result) {
@@ -2522,7 +2532,7 @@ $(document).ready(function()
                                 if(id != 0){
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                        url: 'index.php?option=com_emundus&controller=files&task=getexportexcelfilter',
                                         dataType:'json',
                                         success: function (result) {
                                             if (result.status) {
@@ -2548,7 +2558,7 @@ $(document).ready(function()
 
                                                             $.ajax({
                                                                 type:'get',
-                                                                url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
+                                                                url: 'index.php?option=com_emundus&controller=files&task=getprogramcampaigns&code=' + code,
                                                                 dataType:'json',
 
                                                                 success: function(result) {
@@ -2875,7 +2885,7 @@ $(document).ready(function()
 
                 $.ajax({
                     type:'post',
-                    url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
+                    url: 'index.php?option=com_emundus&controller=files&task=getpdfprogrammes',
                     data: {checkInput : checkInput},
                     dataType:'json',
 
@@ -2919,7 +2929,7 @@ $(document).ready(function()
 
                                 $.ajax({
                                     type:'get',
-                                    url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                    url: 'index.php?option=com_emundus&controller=files&task=getpdfcampaigns&code=' + code,
                                     data: {checkInput : checkInput},
                                     dataType:'json',
 
@@ -3006,7 +3016,7 @@ $(document).ready(function()
 
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                        url: 'index.php?option=com_emundus&controller=files&task=getpdfcampaigns&code=' + code,
                                         data: {checkInput : checkInput},
                                         dataType:'json',
 
@@ -3309,7 +3319,7 @@ $(document).ready(function()
 
                 $.ajax({
                     type:'post',
-                    url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
+                    url: 'index.php?option=com_emundus&controller=files&task=getpdfprogrammes',
                     data: {checkInput : checkInput},
                     dataType:'json',
 
@@ -3345,7 +3355,7 @@ $(document).ready(function()
 
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                                url: 'index.php?option=com_emundus&controller=files&task=getpdfcampaigns&code=' + code,
                                                 data: {checkInput : checkInput},
                                                 dataType:'json',
 
@@ -3441,7 +3451,7 @@ $(document).ready(function()
 
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                        url: 'index.php?option=com_emundus&controller=files&task=getpdfcampaigns&code=' + code,
                                         data: {checkInput : checkInput},
                                         dataType:'json',
 
@@ -4351,7 +4361,7 @@ $(document).ready(function()
         if (filName != null) {
             $.ajax({
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=files&task=saveExcelFilter&Itemid=' + itemId,
+                url: 'index.php?option=com_emundus&controller=files&task=saveexcelfilter&Itemid=' + itemId,
                 dataType: 'JSON',
                 data: ({
                     params: params,
@@ -4860,6 +4870,7 @@ $(document).ready(function()
                                 '</div>');
                             }
                             setTimeout(function(){$('#em-modal-actions').modal('hide');}, 800);
+                            reloadData($('#view').val());
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             console.log(jqXHR.responseText);
@@ -5095,7 +5106,7 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showelements', function() {
-        $.ajaxQ.abortAll();
+        //$.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
 
 
@@ -5128,7 +5139,7 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showevalelements', function() {
-        $.ajaxQ.abortAll();
+        //$.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
 
 
@@ -5162,7 +5173,7 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showdecisionelements', function() {
-        $.ajaxQ.abortAll();
+        //$.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
 
             $('#showelements').empty();
@@ -5195,7 +5206,7 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showadmissionelements', function() {
-        $.ajaxQ.abortAll();
+        //$.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
 
             $('#showelements').empty();
