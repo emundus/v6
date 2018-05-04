@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,13 +18,13 @@ $inputcolumnclass = 'hkc-sm-8';
 			<div class="hkform-group control-group hikashop_registration_name_line" id="hikashop_registration_name_line">
 				<label id="namemsg" for="register_name" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USER_NAME'); ?>*</label>
 				<div class="<?php echo $inputcolumnclass;?>">
-					<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->user->name);?>" class="hkform-control" size="30" maxlength="50"/>
+					<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape(@$this->user->name);?>" class="hkform-control" size="30" maxlength="50"/>
 				</div>
 			</div>
 			<div class="hkform-group control-group hikashop_registration_username_line" id="hikashop_registration_username_line">
 				<label id="usernamemsg" for="register_username" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USERNAME'); ?>*</label>
 				<div class="<?php echo $inputcolumnclass;?>">
-					<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape($this->user->username);?>" class="hkform-control validate-username" maxlength="25" size="30" />
+					<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape(@$this->user->username);?>" class="hkform-control validate-username" maxlength="25" size="30" />
 				</div>
 			</div>
 			<div class="hkform-group control-group hikashop_registration_password_line" id="hikashop_registration_password_line">

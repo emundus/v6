@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -583,6 +583,12 @@ class hikashopUserClass extends hikashopClass {
 					$field = $fieldClass->get($fieldId);
 					if(in_array($field->field_table, array('user','address'))){
 						$variable = $field->field_table.'Data';
+						foreach($field->field_value as $key => $val) {
+							$groups = explode(',', $key);
+							foreach($groups as $group){
+								$field->field_value[$group] = $group;
+							}
+						}
 						if(isset($$variable->{$field->field_namekey})){
 							$groups = explode(',', $$variable->{$field->field_namekey});
 							$validGroups = array();
@@ -601,10 +607,10 @@ class hikashopUserClass extends hikashopClass {
 						}
 					}
 				}
+
 				if((int)$userGroupRegistration > 0)
 					$newUsertype = (int)$userGroupRegistration;
 			}
-
 			if(HIKASHOP_J16 && empty($data['groups']))
 				$data['groups'] = array(
 					$newUsertype => $newUsertype
@@ -686,7 +692,7 @@ class hikashopUserClass extends hikashopClass {
 
 			if(@$userInDB->user_cms_id) {
 				$ret['status'] = false;
-				$ret['messages'][] = array(JText::_('EMAIL_ADDRESS_ALREADY_USED'), '');
+				$ret['messages'][] = array(JText::_('EMAIL_ADDRESS_ALREADY_USED'), 'warning');
 				return $ret;
 			}
 

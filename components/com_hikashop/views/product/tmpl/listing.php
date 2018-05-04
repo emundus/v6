@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -218,8 +218,10 @@ if(hikashop_level(2) && hikaInput::get()->getVar('hikashop_front_end_main', 0) &
 	$this->setLayout('filter');
 	$htmlFilter = $this->loadTemplate();
 }
+$task = hikaInput::get()->getCmd('task', '');
+$ctrl = hikaInput::get()->getCmd('ctrl', '');
 
-if(!empty($htmlFilter) && @$_GET['task'] != 'category')
+if(!empty($htmlFilter) && $ctrl != 'category')
 	echo $htmlFilter;
 
 $filter_type = (int)$this->params->get('filter_type');
@@ -234,7 +236,7 @@ if($filter_type !== 3) {
 		echo $mainInfo;
 	if(!empty($html)){
 		if($this->module) echo $mainInfo;
-		if(!empty($htmlFilter) && @$_GET['task']=='category')
+		if(!empty($htmlFilter) && $ctrl == 'category')
 			echo $htmlFilter;
 ?>
 	<div class="hikashop_products_listing">
@@ -254,7 +256,7 @@ if($filter_type !== 3) {
 ?>
 	</div>
 <?php
-	} elseif(( !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0) ) && ((@$_REQUEST['ctrl']=='product' || @$_REQUEST['view']=='product') || (@$_REQUEST['ctrl']=='category' || @$_REQUEST['view']=='category')) && (@$_REQUEST['task']=='listing' || @$_REQUEST['layout']=='listing') && !empty($this->filters) && count($this->filters) && !empty($this->filter_set)){
+	} elseif(( !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0) ) && ($ctrl == 'product'  || $ctrl == 'category') && $task == 'listing' && !empty($this->filters) && count($this->filters) && !empty($this->filter_set)) {
 		echo JText::_('HIKASHOP_NO_RESULT');
 	}
 
@@ -308,7 +310,7 @@ if($filter_type !== 3) {
 		$this->setLayout('listing');
 		$html = $this->loadTemplate($layout_type);
 		if(!empty($html)) {
-			if(!empty($htmlFilter) && @$_GET['task']=='category')
+			if(!empty($htmlFilter) && $ctrl == 'category')
 				echo $htmlFilter;
 ?>
 	<h2><?php echo $category['category']->category_name; ?></h2>

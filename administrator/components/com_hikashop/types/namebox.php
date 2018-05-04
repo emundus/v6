@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,6 +28,14 @@ class hikashopNameboxType {
 				'tree_key' => '{ID}',
 				'onlyNode' => true
 			),
+		),
+		'article' => array(
+			'class' => 'class.article',
+			'name' => 'title',
+			'mode' => 'list',
+			'params' => array(
+			),
+			'url' => 'article&task=findList'
 		),
 		'brand' => array(
 			'class' => 'class.category',
@@ -105,6 +113,23 @@ class hikashopNameboxType {
 			'params' => array(
 				'type' => ''
 			)
+		),
+		'field' => array(
+			'class' => 'class.field',
+			'name' => 'field_realname',
+			'mode' => 'list',
+			'displayFormat' => '{field_realname} - {field_namekey} - {field_type}',
+			'params' => array(
+				'table' => ''
+			),
+			'options' => array(
+				'olist' => array(
+					'table' => array('field_realname' => 'FIELD_LABEL', 'field_namekey' => 'FIELD_COLUMN', 'field_type' => 'FIELD_TYPE' ),
+					'displayFormat' => '{field_realname} - {field_namekey} - {field_type}',
+				)
+			),
+			'url_params' => array('TABLE'),
+			'url' => 'cart&task=findList&table={TABLE}'
 		),
 		'order' => array(
 			'class' => 'class.order',
@@ -330,6 +355,10 @@ class hikashopNameboxType {
 		if(!empty($options['style']))
 			$style = ' style="' . is_array($options['style']) ? implode(' ', $options['style']) : $options['style'] . '"';
 
+		$attributes = '';
+		if(!empty($options['attributes']))
+			$attributes = ' '.trim($options['attributes']);
+
 		$lang = JFactory::getLanguage();
 		$leftOffset = ($lang->isRTL()) ? '2000px' : '-2000px';
 
@@ -344,7 +373,7 @@ class hikashopNameboxType {
 			unset($element);
 		}
 
-		$ret = '<div class="nameboxes" id="'.$id.'" onclick="window.oNameboxes[\''.$id.'\'].focus(\''.$id.'_text\');"'.$style.'>';
+		$ret = '<div class="nameboxes" id="'.$id.'" onclick="window.oNameboxes[\''.$id.'\'].focus(\''.$id.'_text\');"'.$style.$attributes.'>';
 
 		if($mode == hikashopNameboxType::NAMEBOX_SINGLE) {
 			if(!empty($values)) {

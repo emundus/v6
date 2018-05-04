@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,8 +19,12 @@ $this->checkoutHelper->displayMessages('payment');
 $cart = $this->checkoutHelper->getCart();
 
 if(!empty($cart->usable_methods->payment)) {
+	if(!empty($this->options['show_title'])) {
 ?>
 <legend><?php echo JText::_('HIKASHOP_PAYMENT_METHOD');?></legend>
+<?php
+	}
+?>
 <table style="width:100%" class="hikashop_payment_methods_table table table-bordered table-striped table-hover">
 <?php
 	foreach($cart->usable_methods->payment as $payment) {
@@ -28,6 +32,8 @@ if(!empty($cart->usable_methods->payment)) {
 		$container_id = 'hikashop_checkout_payment_'.$this->step.'_'.$this->module_position.'__'.$payment->payment_id;
 		$selected = (!empty($cart->payment) && $payment->payment_id == $cart->payment->payment_id);
 
+		if(!empty($this->options['read_only']) && !$selected)
+			continue;
 		$input_data = array(
 			'step' => $this->step,
 			'pos' => $this->module_position,
@@ -37,7 +43,13 @@ if(!empty($cart->usable_methods->payment)) {
 		);
 ?>
 <tr><td>
+<?php
+		if(empty($this->options['read_only'])){
+?>
 	<input class="hikashop_checkout_payment_radio" type="radio" name="checkout[payment][id]" id="<?php echo $input_id; ?>" data-hk-checkout="<?php echo $this->escape(json_encode($input_data)); ?>" onchange="window.checkout.paymentSelected(this);" value="<?php echo $payment->payment_id;?>"<?php echo ($selected ? ' checked="checked"' : ''); ?>/>
+<?php
+		}
+?>
 	<label for="<?php echo $input_id; ?>" style="cursor:pointer;">
 		<span class="hikashop_checkout_payment_name"><?php echo $payment->payment_name;?></span>
 	</label>
@@ -73,7 +85,7 @@ if(!empty($cart->usable_methods->payment)) {
 		}
 ?>
 <?php
-		if(!empty($payment->ask_cc)) {
+		if(empty($this->options['read_only']) && !empty($payment->ask_cc)) {
 ?>
 	<div id="<?php echo $container_id; ?>__card" class="hikashop_checkout_payment_card" style="<?php echo $selected ? '' : ' display:none;'; ?>"><?php
 			$cc_data = $this->checkoutHelper->getCreditCard($payment);
@@ -199,7 +211,7 @@ if(!empty($cart->usable_methods->payment)) {
 		}
 ?>
 <?php
-		if(!empty($payment->custom_html)) {
+		if(empty($this->options['read_only']) && !empty($payment->custom_html)) {
 ?>
 	<div id="<?php echo $container_id; ?>__custom" class="hikashop_checkout_payment_custom" style="<?php echo $selected ? '' : ' display:none;'; ?>">
 <?php

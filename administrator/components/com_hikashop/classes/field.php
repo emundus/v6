@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,6 +38,9 @@ class hikashopFieldClass extends hikashopClass {
 		}
 		if(!empty($categories['products'])){
 			$key.='_'.implode('/',$categories['products']);
+		}
+		if(!empty($categories['ids'])){
+			$key.='_'.implode('/',$categories['ids']);
 		}
 		if(isset($data[$key]))
 			return $data[$key];
@@ -87,6 +90,11 @@ class hikashopFieldClass extends hikashopClass {
 
 		$this->where[] = 'a.field_table='.$this->database->Quote($type);
 
+		if(!empty($categories['ids']) && is_array($categories['ids']) && count($categories['ids'])){
+			JArrayHelper::toInteger($categories['ids']);
+			$this->where[] =  'a.field_id IN ('.implode(',', $categories['ids']).')';
+		}
+
 		$filters = '';
 		if(!empty($categories)) {
 			$categories_filter = array('((field_with_sub_categories = 0 AND (field_categories = "all" OR field_categories = ""');
@@ -116,6 +124,7 @@ class hikashopFieldClass extends hikashopClass {
 		}
 		if(!empty($filters))
 			$filters = ' AND '.$filters;
+
 		hikashop_addACLFilters($this->where,'field_access','a');
 
 		$query = 'SELECT * FROM '.hikashop_table('field').' as a WHERE '.implode(' AND ',$this->where).' '.$filters.' ORDER BY a.`field_ordering` ASC';
@@ -696,7 +705,7 @@ foreach($results as $i => $oneResult){
 		}
 	}
 
-	function getInput($type, &$oldData, $report = true, $varname = 'data', $force = false, $area = '') {
+	function getInput($type, &$oldData, $report = true, $varname = 'data', $force = false, $area = '', $ids = null) {
 		$this->report = $report;
 		$data = null;
 
@@ -744,6 +753,10 @@ foreach($results as $i => $oneResult){
 			$area = ($app->isAdmin()) ? 'backend' : 'frontcomp';
 
 		$allCat = $this->getCategories($type, $oldData);
+
+		if(!empty($ids)){
+			$allCat['ids'] = $ids;
+		}
 
 		$fields =& $this->getData($area, $type, false, $allCat);
 
@@ -1698,6 +1711,69 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		}
 		return hikashop_table($table_name);
 	}
+
+
+	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
+		$ret = array(
+			0 => array(),
+			1 => array()
+		);
+
+		$fullLoad = false;
+		$displayFormat = !empty($options['displayFormat']) ? $options['displayFormat'] : @$typeConfig['displayFormat'];
+
+		$start = (int)@$options['start']; // TODO
+		$limit = (int)@$options['limit'];
+		$page = (int)@$options['page'];
+		if($limit <= 0)
+			$limit = 50;
+
+		$table = @$options['table'];
+
+		$select = array('f.*');
+		$where = array();
+
+		if(!empty($table)) {
+			$where['field_table'] = 'f.field_table = '.$this->db->Quote($table);
+		}
+
+		if(!empty($search)) {
+			$searchMap = array('f.field_id', 'f.field_realname', 'f.field_type');
+			if(!HIKASHOP_J30)
+				$searchVal = '\'%' . $this->db->getEscaped(JString::strtolower($search), true) . '%\'';
+			else
+				$searchVal = '\'%' . $this->db->escape(JString::strtolower($search), true) . '%\'';
+			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
+		}
+
+		$order = ' ORDER BY f.field_id DESC';
+
+		if(count($where))
+			$where = ' WHERE ' . implode(' AND ', $where);
+		else
+			$where = '';
+
+		$query = 'SELECT '.implode(', ', $select) . ' FROM ' . hikashop_table('field').' AS f' . $where . $order;
+		$this->db->setQuery($query, $page, $limit);
+
+		$ret[0] = $this->db->loadObjectList('field_id');
+
+		if(count($ret[0]) < $limit)
+			$fullLoad = true;
+
+		if(!empty($value)) {
+			if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
+				$ret[1][$value] = $ret[0][$value];
+			} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
+				foreach($value as $v) {
+					if(isset($ret[0][$v])) {
+						$ret[1][$v] = $ret[0][$v];
+					}
+				}
+			}
+		}
+		return $ret;
+	}
 }
 
 class hikashopFieldItem {
@@ -1866,7 +1942,7 @@ class hikashopFieldText extends hikashopFieldItem {
 			$message = JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname));
 		}
 
-		if ($this->report == true) {
+		if ($this->report === true) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage($message, 'error');
 		} else {
@@ -2342,7 +2418,7 @@ class hikashopFieldTextarea extends hikashopFieldItem {
 			$message = JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname));
 		}
 
-		if ($this->report == true) {
+		if ($this->report === true) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage($message, 'error');
 		} else {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -181,7 +181,7 @@ class hikashopImageHelper {
 
 	public function getImage($filename, &$extension) {
 		$types = array('gif' => 1, 'jpg' => 2, 'jpeg' => 2, 'png' => 3);
-		$data = getimagesize($filename);
+		$data = @getimagesize($filename);
 		if(@$types[$extension] != $data[2]) {
 			$extension = array_search($data[2], $types);
 		}
@@ -333,16 +333,16 @@ class hikashopImageHelper {
 			$ret['gd_tridx'] = $source['gd_tridx'];
 
 			$palletSize = imagecolorstotal($source['res']);
-			if($source['gd_tridx'] >= 0 && $source['gd_tridx'] < $palletSize) {
-				$trnprt_color = imagecolorsforindex($source['res'], $transparentIndex);
-				$color = imagecolorallocate($ret['res'], $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-				imagecolortransparent($ret['res'], $color);
-				imagefill($ret['res'], 0, 0, $color);
-			} elseif($source['ext'] == 'png') {
+			if($source['ext'] == 'png') {
 				imagealphablending($ret['res'], false);
 				$color = imagecolorallocatealpha($ret['res'], 0, 0, 0, 127);
 				imagefill($ret['res'], 0, 0, $color);
 				imagesavealpha($ret['res'], true);
+			} elseif($source['gd_tridx'] >= 0 && $source['gd_tridx'] < $palletSize) {
+				$trnprt_color = imagecolorsforindex($source['res'], $source['gd_tridx']);
+				$color = imagecolorallocate($ret['res'], $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+				imagecolortransparent($ret['res'], $color);
+				imagefill($ret['res'], 0, 0, $color);
 			}
 		} else {
 			$bgcolor = $this->GD_getBackgroundColor($source['res'], @$options['background']);

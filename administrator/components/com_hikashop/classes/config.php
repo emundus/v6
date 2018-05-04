@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -113,6 +113,9 @@ class hikashopConfigClass extends hikashopClass{
 			}
 
 			$cleaned_var = $safeHtmlFilter->clean($value, 'string');
+
+			if($namekey == 'checkout_workflow')
+				$cleaned_var = json_encode(json_decode($value));
 
 			if($namekey == 'order_number_format')
 				$cleaned_var = str_replace('&quot;}"','"}', $cleaned_var);

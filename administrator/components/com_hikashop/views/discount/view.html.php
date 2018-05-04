@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -76,9 +76,13 @@ class DiscountViewDiscount extends hikashopView {
 
 		if($pageInfo->elements->page && $extendedData){
 
-			$types = array('product','category','zone');
+			$types = array(
+				'product' => 'product_name',
+				'category'  => 'category_name',
+				'zone'  => 'zone_name_english',
+				'user' => 'user_email');
 			$productClass = hikashop_get('class.product');
-			foreach($types as $type){
+			foreach($types as $type => $name){
 				$ids = array();
 				$key = 'discount_'.$type.'_id';
 				foreach($rows as $row){
@@ -96,12 +100,11 @@ class DiscountViewDiscount extends hikashopView {
 				if(!count($ids)){
 					continue;
 				}
+
 				if($type=='zone'){
 					$primary = $type.'_namekey';
-					$name = $type.'_name_english';
 				}else{
 					$primary = $type.'_id';
-					$name = $type.'_name';
 				}
 				$query = 'SELECT * FROM '.hikashop_table($type).' WHERE '.$primary.' IN ('.implode(',',$ids).')';
 				$database->setQuery($query);
@@ -257,8 +260,8 @@ class DiscountViewDiscount extends hikashopView {
 					$element->discount_type = 'discount';
 				}
 				if($type == 'coupon') {
-				$element->discount_tax = 1;
-			}
+					$element->discount_tax = 1;
+				}
 				$element->discount_published=1;
 
 			}

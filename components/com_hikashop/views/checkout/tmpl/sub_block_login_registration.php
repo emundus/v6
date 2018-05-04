@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -176,6 +176,9 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 	</div>
 	<input type="hidden" name="data[register][id]" value="<?php echo (int)$this->mainUser->get('id');?>" />
 	<input type="hidden" name="data[register][gid]" value="<?php echo (int)$this->mainUser->get('gid');?>" />
+<?php
+	if(!empty($this->options['show_submit'])) {
+?>
 	<div class="hkform-group control-group">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
 		<div class="<?php echo $inputcolumnclass;?>">
@@ -184,6 +187,9 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			?></button>
 		</div>
 	</div>
+<?php
+	}
+?>
 </fieldset>
 <?php
 	if(!empty($this->options['js'])) {

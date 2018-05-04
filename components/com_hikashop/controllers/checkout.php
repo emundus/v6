@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -412,6 +412,16 @@ class checkoutController extends checkoutLegacyController {
 			foreach($this->workflow['steps'][$i]['content'] as $k => $content) {
 				$task = $content['task'];
 
+				if(empty($content['params']))
+					$content['params'] = array();
+
+				$content['params']['src'] = array(
+					'step' => $i+1,
+					'workflow_step' => $i,
+					'pos' => $k,
+					'context' => 'submitblock'
+				);
+
 				$ctrl = hikashop_get('helper.checkout-' . $task);
 				if(!empty($ctrl)) {
 					$ret = $ctrl->check($this, $content['params']);
@@ -527,6 +537,16 @@ class checkoutController extends checkoutLegacyController {
 		$cartClass = hikashop_get('class.cart');
 		$cartClass->cleanCartFromSession();
 
+		$order_id = hikaInput::get()->getInt('order_id');
+		if(empty($order_id)) {
+			$app = JFactory::getApplication();
+			$order_id = $app->getUserState('com_hikashop.order_id');
+		}
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->get($order_id);
+		if(hikashop_loadUser(false) != $order->order_user_id)
+			return false;
+
 		hikaInput::get()->set('layout', 'after_end');
 		return $this->display();
 	}
@@ -583,7 +603,7 @@ class checkoutController extends checkoutLegacyController {
 		if($order === false) {
 			$new_messages = $this->app->getMessageQueue();
 			if(count($new_messages) <= count($old_messages)) {
-				$this->app->enqueueMessage('A plugin cancelled the update of the order product without displaying any error message.');
+				$this->app->enqueueMessage('A plugin cancelled the update of the order creation without displaying any error message.');
 			}
 			$this->app->redirect(hikashop_completeLink('checkout&task=show&cid=' . ((int)$step + 1).$url_cart_param.'&Itemid='.$checkout_itemid, false, true));
 		}

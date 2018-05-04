@@ -23,7 +23,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '3.3.0';
+	var $version = '3.4.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -759,6 +759,12 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			try{$this->db->query();}catch(Exception $e){}
 			$this->db->setQuery("ALTER TABLE `#__hikashop_category` CHANGE `category_meta_description` `category_meta_description` text NOT NULL;");
 			try{$this->db->query();}catch(Exception $e){}
+		}
+
+		if(version_compare($this->fromVersion, '3.3.1', '<')) {
+			$this->databaseHelper->addColumns('discount', array(
+				"`discount_shipping_percent` decimal(12,3) NOT NULL DEFAULT '0.000'",
+			));
 		}
 	}
 

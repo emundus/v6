@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.3.0
+ * @version    3.4.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -837,7 +837,8 @@ var hikashop = {
 				elems = parents[i].querySelectorAll(s);
 			if(!elems || !elems.length)
 				continue;
-			this.setConsistencyHeight(elems, 'min');
+			if(this.setConsistencyHeight(elems, 'min') === false)
+				continue;
 			parents[i].setAttribute('data-consistencyheight-done', s);
 			parents[i].removeAttribute('data-consistencyheight');
 		}
@@ -851,8 +852,11 @@ var hikashop = {
 				h = parseFloat( w.getComputedStyle(elems[i], '').getPropertyValue('height') );
 				h = Math.ceil(h);
 			} catch(e) {
-				h = (elems[i].currentStyle ? elems[i].currentStyle.height : 0) || elems[i].clientHeight;
+				h = NaN;
 			}
+			if(isNaN(h))
+				h = (elems[i].currentStyle ? elems[i].currentStyle.height : elems[i].clientHeight);
+
 			if(maxHeight > 0 && h < maxHeight) {
 				cpt++;
 			} else if(h > maxHeight) {
@@ -860,6 +864,9 @@ var hikashop = {
 				cpt++;
 			}
 		}
+		if(maxHeight <= 0)
+			return false;
+
 		if(cpt <= 1)
 			return;
 		for(var i = elems.length - 1; i >= 0; i--) {

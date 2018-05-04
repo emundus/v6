@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,6 +22,11 @@ if($voteAccess == 'buyed' && !empty($user)){
 }
 $canVote = $voteAccess == 'public' || ($voteAccess == 'registered' && !empty($user)) || ($voteAccess == 'buyed' && $hasBought);
 
+if(!$canVote && $row->hikashop_vote_total_vote == '0'){
+	echo '<div class="hikashop_vote_stars">'.JText::_('HIKA_NO_VOTE').'</div>';
+	return;
+}
+
 $row->hikashop_vote_average_score = (float)hikashop_toFloat($row->hikashop_vote_average_score);
 hikaInput::get()->set("rate_rounded",$row->hikashop_vote_average_score_rounded);
 hikaInput::get()->set("nb_max_star",$row->hikashop_vote_nb_star);
@@ -38,8 +43,8 @@ if($row->hikashop_vote_total_vote == '0'){
 	if(isset($this->user_vote->vote_rating))
 		$user_rating = $this->user_vote->vote_rating;
 	$tooltip = "<span class='hikashop_vote_tooltip hikashop_vote_tooltip_average'><span class='hikashop_vote_tooltip_label'>".JText::_('VOTE_AVERAGE').": </span><span class='hikashop_vote_tooltip_value'>".$row->hikashop_vote_average_score."</span></span>";
-	$tooltip .= "<span class='hikashop_vote_tooltip hikashop_vote_tooltip_total'><span class='hikashop_vote_tooltip_label'>".JText::_('HIKA_VOTE_TOTAL').": </span><span class='hikashop_vote_tooltip_value'>".$row->hikashop_vote_total_vote."</span></span>";
-	$tooltip .= "<span class='hikashop_vote_tooltip hikashop_vote_tooltip_customer_vote'><span class='hikashop_vote_tooltip_label'>".JText::_('HIKA_VOTE_CUSTOMER_VOTE').": </span><span class='hikashop_vote_tooltip_value'>".$user_rating."</span></span>";
+	$tooltip .= "<br/><span class='hikashop_vote_tooltip hikashop_vote_tooltip_total'><span class='hikashop_vote_tooltip_label'>".JText::_('HIKA_VOTE_TOTAL').": </span><span class='hikashop_vote_tooltip_value'>".$row->hikashop_vote_total_vote."</span></span>";
+	$tooltip .= "<br/><span class='hikashop_vote_tooltip hikashop_vote_tooltip_customer_vote'><span class='hikashop_vote_tooltip_label'>".JText::_('HIKA_VOTE_CUSTOMER_VOTE').": </span><span class='hikashop_vote_tooltip_value'>".$user_rating."</span></span>";
 }
 ?>
 <div class="hikashop_vote_stars">

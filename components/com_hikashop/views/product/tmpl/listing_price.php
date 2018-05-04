@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,9 +9,6 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $config =& hikashop_config();
-if($this->params->get('show_original_price','-1')=='-1'){
-	$this->params->set('show_original_price',$config->get('show_original_price'));
-}
 if($this->params->get('show_original_price','-1')=='-1'){
 	$this->params->set('show_original_price',$config->get('show_original_price'));
 }
@@ -81,7 +78,7 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && hikaInp
 			}
 
 			if(!empty($this->row->discount)){
-				if($this->params->get('show_discount') == 1) {
+				if(in_array($this->params->get('show_discount'), array(1, 4))) {
 					echo '<span class="hikashop_product_discount">'.JText::_('PRICE_DISCOUNT_START');
 					if(bccomp($this->row->discount->discount_flat_amount, 0, 5) !== 0) {
 						echo $this->currencyHelper->format( -1 * $this->row->discount->discount_flat_amount, $price->price_currency_id);
@@ -89,7 +86,8 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && hikaInp
 						echo -1*$this->row->discount->discount_percent_amount.'%';
 					}
 					echo JText::_('PRICE_DISCOUNT_END').'</span>';
-				} elseif($this->params->get('show_discount') == 2) {
+				}
+				if(in_array($this->params->get('show_discount'), array(2, 4))) {
 					echo '<span class="hikashop_product_price_before_discount">'.JText::_('PRICE_DISCOUNT_START');
 					if($this->params->get('price_with_tax')){
 						echo $this->currencyHelper->format($price->price_value_without_discount_with_tax,$price->price_currency_id);
