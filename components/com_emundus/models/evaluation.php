@@ -236,7 +236,6 @@ class EmundusModelEvaluation extends JModelList
 
 		$jinput = JFactory::getApplication()->input;
 		$fnums = $jinput->getString('cfnums', null);
-		$h_files = new EmundusHelperFiles;
 
 		if ($session->has('filt_params'))
 		{
@@ -247,24 +246,6 @@ class EmundusModelEvaluation extends JModelList
 			if (is_array($filt_params['programme']) && count(@$filt_params['programme']) > 0) {
 				foreach ($filt_params['programme'] as $value) {
 					$groups = $this->getGroupsEvalByProgramme($value);
-					if (empty($groups)) {
-						$eval_elt_list = array();
-					} else {
-						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-						if (count($eval_elt_list)>0) {
-							foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
-    								$elements_id[] = $eel->element_id;
-							}
-						}
-					}
-				}
-			}
-			if (is_array($filt_params['campaign']) && count(@$filt_params['campaign']) > 0) {
-				foreach ($filt_params['campaign'] as $value) {
-				  $campaigns = $h_files->getCampaignByID($value);
-				
-					$groups = $this->getGroupsEvalByProgramme($campaigns['training']);
 					if (empty($groups)) {
 						$eval_elt_list = array();
 					} else {

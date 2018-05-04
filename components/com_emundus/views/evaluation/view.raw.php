@@ -95,8 +95,7 @@ class EmundusViewEvaluation extends JViewLegacy
 				$m_files = new EmundusModelFiles();
                 $m_user = new EmundusModelUsers();
 
-				$evaluation->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
-				//var_dump($evaluation);die;
+                $evaluation->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
                 //$evaluation->fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
                 // get all fnums manually associated to user
 		        $groups = $m_user->getUserGroups($this->_user->id, 'Column');
@@ -137,7 +136,6 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
-				//var_dump($defaultElements);
 				$datas = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
 				$fl = array();
 
@@ -308,7 +306,6 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				} else $datas = JText::_('NO_RESULT');
 
-			//var_dump($datas);
 
 			/* Get the values from the state object that were inserted in the model's construct function */
 		    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );

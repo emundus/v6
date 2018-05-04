@@ -27,11 +27,9 @@ function reloadActions(view) {
 
 
 function clearchosen(cible) {
-	var num = $(cible + ' option').length;
-    $(cible)[0].sumo.unSelectAll();
-	//$(cible).val("%");
+	$(cible).val("%");
 	//$('#select_multiple_programmes option[value="%"]').attr('selected',true);
-	//$(cible).trigger('chosen:updated');
+	$(cible).trigger('chosen:updated');
 	// $("#select_multiple_programmes").trigger("chosen:updated");
 }
 

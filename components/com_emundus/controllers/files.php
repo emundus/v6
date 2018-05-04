@@ -2806,7 +2806,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function getpdfprogrammes(){
+    public function getPDFProgrammes(){
         require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $html = '';
@@ -2840,7 +2840,7 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object)(array('status' => true, 'html' => $html)));
         exit;
     }
-    public function getpdfcampaigns(){
+    public function getPDFCampaigns(){
         require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $html = '';
@@ -2878,14 +2878,14 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
 
-    public function getprogrammes(){
+    public function getProgrammes(){
         require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         $html = '';
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');
 
         $h_files = new EmundusHelperFiles;
-        $programmes = $h_files->getprogrammes($filt_params['programme']);
+        $programmes = $h_files->getProgrammes($filt_params['programme']);
 
         $nbprg = count($programmes);
         if (empty($filt_params)){
@@ -2903,7 +2903,7 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
         exit;
     }
-    public function getprogramcampaigns(){
+    public function getProgramCampaigns(){
         $html = '';
 
         $h_files = new EmundusHelperFiles;
@@ -2924,7 +2924,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function saveexcelfilter()
+    public function saveExcelFilter()
     {
         $db = JFactory::getDBO();
         $jinput         = JFactory::getApplication()->input;
@@ -2951,7 +2951,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
 
     }
-    public function getexportexcelfilter(){
+    public function getExportExcelFilter(){
         $db = JFactory::getDBO();
         $user_id   = JFactory::getUser()->id;
 
