@@ -259,7 +259,7 @@ class EmundusModelEvaluation extends JModelList
 					}
 				}
 			}
-			if (is_array($filt_params['campaign']) && count(@$filt_params['campaign']) > 0) {
+			if (!empty($filt_params['campaign']) && is_array($filt_params['campaign']) && count(@$filt_params['campaign']) > 0) {
 				foreach ($filt_params['campaign'] as $value) {
 					$campaign = $h_files->getCampaignByID($value);
 					$groups = $this->getGroupsEvalByProgramme($campaign['training']);
