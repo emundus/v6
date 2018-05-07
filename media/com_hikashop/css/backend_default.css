@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.3.0
+ * @version    3.4.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -84,7 +84,7 @@
 }
 
 .hikashop_main_content .radio input[type="radio"], .hikashop_main_content .checkbox input[type="checkbox"] {
-    float: none;
+	float: none;
 }
 
 .hikashop_menu_top {
@@ -738,6 +738,280 @@ table.widget_table td.data {
 }
 
 .widget_table{border-collapse:collapse}
+.checkout_edition_add_step{padding: 10px;}
+.checkout_content_block dt {margin: 5px;}
+.checkout_content_step_delete:hover {background-color: #d9fddd;}
+
+[data-checkout="content"]:hover a {background-color: #f1f1f1;}
+.checkout_content_block:hover{background-color: #FAFAFA;}
+.checkout_content_new_block:hover{background-color: #c9edcd;}
+
+div#checkworkflow_config_checkout_workflow_container .checkout_step_block {margin: 0px;}
+span.checkout_content_block_title.checkout_content_new_block_title {border-bottom: 1px solid #87b58c;}
+
+.checkout_content_block:hover .checkout_content_block_main a.checkout_content_block_delete:hover {background-color: #d9fddd;}
+.checkout_step_block:hover {background-color: #f1f1f1;}
+.checkout_step_content.clearfix {background-color: #fff;}
+
+a.checkout_content_block_nav.checkout_content_block_up:after {left: -7px;}
+a.checkout_content_block_nav.checkout_content_block_down:after {right: -7px;}
+a.checkout_content_block_nav.checkout_content_block_next:after {bottom: -7px;}
+a.checkout_content_block_nav:hover:after {background-color: #d9fddd;}
+
+#checkworkflow_config_checkout_workflow_container span.checkout_step_title {
+	top: -2px;
+	position: relative;
+}
+span.checkout_content_block_no_options {
+	color: #a5a5a5;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 1.1em;
+	margin-left: 28%;
+}
+
+.checkout_content_block:hover .checkout_content_block_nav,
+.checkout_content_block:hover .checkout_content_block_delete {
+	display:block;
+}
+
+.checkout_content_block.fields div.nameboxes div.namebox {
+	display: block;
+	float: none;
+	width: 190px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.checkout_content_block_title {
+	font-size: 1.4em;
+	line-height: 1em;
+	margin-bottom: 2px;
+	padding-bottom: 0.4em;
+	line-height: 1em;
+	margin-bottom: 0.4em;
+	padding-bottom: 0.4em;
+}
+.checkout_content_block {
+	float: left;
+	border: #CCC 1px solid;
+	background-color: white;
+
+
+	padding: 5px;
+	position: relative;
+}
+.checkout_content_new_block{
+	border: #87b58c 2px dashed;
+	padding: 4px;
+	background-color: #d9fddd;
+}
+.checkout_content_new_block_title{
+	color: #87b58c;
+	display: block;
+	margin-bottom: 10px;
+	font-weight: bold;
+	text-align: center;
+	border-bottom: 1px solid #87b58c;
+}
+.checkout_content_add_block{
+	text-align: center;
+	margin-top: 10px;
+}
+.checkout_step_block {
+	margin: 5px;
+	padding: 5px;
+
+	border-bottom: 1px solid #d4d4d4;
+}
+a.checkout_content_block_nav:hover {
+	background-color: #d9fddd;
+	z-index: 1;
+	position: absolute;
+}
+.checkout_content_block_main {
+	min-width: 200px;
+	margin: 12px;
+}
+.checkout_content_block_main span.checkout_content_block_title {
+	font-weight: bold;
+	text-align: center;
+	display: block;
+	border-bottom: 1px solid #d1d1d1;
+}
+.checkout_step_title {
+	font-size: 1.5em;
+	font-weight: bold;
+}
+.checkout_content_block_delete {
+	top: 12px;
+	right: 12px;
+	width: 14px;
+	height: 14px;
+	background: url(../images/delete2.png) center center no-repeat;
+	z-index: 2;
+}
+.checkout_content_step_delete {
+	background: url(../images/delete.png) center center no-repeat;
+	width: 12px;
+	height: 15px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 0px 5px 11px 5px;
+	margin: 0px;
+	position: relative;
+	margin-left: 8px;
+	top: 6.5px;
+}
+.checkout_content_block .checkout_content_block_up {
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	width: 12px;
+}
+.checkout_content_block  .checkout_content_block_down {
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	width: 12px;
+}
+.checkout_content_block  .checkout_content_block_previous {
+	top: 0px;
+	left: 0px;
+	right: 0px;
+}
+.checkout_content_block_down::after {
+	right: 0px;
+	top: 50%;
+}
+.checkout_content_block_up::after {
+	top: 50%;
+	-moz-transform: scaleX(-1);
+	-o-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+}
+.checkout_content_block_next {
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	height: 12px;
+}
+.checkout_content_block_next::after {
+	left: 50%;
+	bottom: 5%;
+	-moz-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+.checkout_content_block_previous {
+	left: 22px;
+	right: 22px;
+	height: 12px;
+}
+a.checkout_content_block_nav.checkout_content_block_previous::after {
+	left: 50%;
+	top: -7px;
+	-moz-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+}
+.checkout_content_block_nav::after {
+	content: "";
+	background: url(../images/go.png) center center no-repeat;
+	height: 14px;
+	width: 14px;
+	position: absolute;
+	z-index: 1;
+	padding: 1px;
+	border: 1px solid #d1d1d1;
+	background-color: #fff;
+	border-radius: 4px;
+}
+
+.checkout_content_block_nav, .checkout_content_block_delete {
+	display:none;
+	position: absolute;
+}
+
+@media only screen and (max-width: 1024px) {
+	.checkout_content_block .checkout_content_block_nav, 
+	.checkout_content_block .checkout_content_block_delete {
+		display: block;
+	}
+	[data-checkout="content"] a {
+		background-color: #f1f1f1;
+	}
+	a.checkout_content_block_nav.checkout_content_block_down:after {
+		right: 0px;
+	}
+	a.checkout_content_block_nav.checkout_content_block_up:after {
+		left: 0px;
+	}
+	a.checkout_content_block_nav.checkout_content_block_previous::after {
+		top: 0px;
+	}
+	a.checkout_content_block_nav.checkout_content_block_next:after {
+		bottom: 0px;
+	}
+	[data-checkout="content"] a:active {
+		background-color: #d9fddd;
+	}
+}
+@media only screen and (max-width: 595px) {
+	.checkout_content_block {
+		width: 97%;
+	}
+	.checkout_block_params {
+		text-align: center;
+	}
+	span.checkout_content_block_no_options {
+		margin-left: 0%;
+	}
+	.checkout_content_block_main .chzn-container.chzn-container-single {
+		margin-left: 25%;
+	}
+	.checkout_content_block_main select {
+		margin-left: 15%;
+	}
+	.checkout_content_block.fields div.nameboxes div.namebox {
+		width: 90%;
+	}
+	.checkout_content_block {
+		min-height: 110px !important;
+	}
+	.checkout_content_block.checkout_content_new_block {
+		min-height: 150px !important;
+	}
+	.checkout_content_block.payment,
+	.checkout_content_block.text {
+		min-height: 180px !important;
+	}
+	.checkout_content_block.terms {
+		min-height: 300px !important;
+	}
+	.checkout_content_block.address, 
+	.checkout_content_block.shipping {
+		min-height: 230px !important;
+	}
+	.checkout_content_block.fields {
+		min-height: 270px !important;
+	}
+}
+@media only screen and (max-width: 330px) {
+	.checkout_content_block.checkout_content_new_block select {
+		margin: 5px;
+	}
+	.checkout_block_params label {
+		padding: 4px;
+	}
+	.checkout_block_params dd {
+		margin: 0px;
+	}
+}
 
 
 
@@ -1184,7 +1458,7 @@ ul.hikaGallery li.hikaGalleryItem:hover div.hikaGalleryCommand {
 	table#hikashop_modules_selection_listing th:nth-child(1),
 	table#hikashop_modules_selection_listing tbody td:nth-last-child(1),
 	table#hikashop_modules_selection_listing th:nth-last-child(1),
-	.leftmenu-container   {display: none;}
+	.leftmenu-container {display: none;}
 	.rightconfig-container {margin-left: auto !important;}
 }
 
@@ -1241,7 +1515,7 @@ ul.hikaGallery li.hikaGalleryItem:hover div.hikaGalleryCommand {
 	table#hikashop_zone_selection_listing td:nth-child(6),
 	table#hikashop_zone_selection_listing th:nth-child(6),
 	table#hikashop_modules_selection_listing td:nth-child(3),
-	table#hikashop_modules_selection_listing th:nth-child(3)   {display: none;}
+	table#hikashop_modules_selection_listing th:nth-child(3) {display: none;}
 
 	.expand-filters {width:100% !important; float:none !important; }
 }
@@ -1251,7 +1525,7 @@ ul.hikaGallery li.hikaGalleryItem:hover div.hikaGalleryCommand {
 	table#hikashop_shipping_manual_listing th:nth-child(5), 	table#hikashop_zone_selection_listing td:nth-child(7),
 	table#hikashop_zone_selection_listing th:nth-child(7),
 	table#hikashop_zone_selection_listing td:nth-child(8),
-	table#hikashop_zone_selection_listing th:nth-child(8)   {display: none;}
+	table#hikashop_zone_selection_listing th:nth-child(8) {display: none;}
 }
 
 .hikashop_main_content .input-append {
@@ -2395,7 +2669,7 @@ img.hikashop_menu_block_img_selected {
 	padding: 4px 5px 5px 5px;
 	background-image: linear-gradient(white, #ededed);
 	display: inline-block;
-    margin-left: 5px;
+	margin-left: 5px;
 }
 #hikashop_product_backend_page_edition th a img {
 	margin-bottom: 0px;
@@ -2707,15 +2981,15 @@ div.hikashop_starter_adv {
 img.upgrade_hikashop_starter_adv {
 	max-height:280px;
 	filter: alpha(opacity=50);
-    opacity: .5;
-    transition: opacity .5s ease-out;
-    -moz-transition: opacity .5s ease-out;
-    -webkit-transition: opacity .5s ease-out;
-    -o-transition: opacity .5s ease-out;
+	opacity: .5;
+	transition: opacity .5s ease-out;
+	-moz-transition: opacity .5s ease-out;
+	-webkit-transition: opacity .5s ease-out;
+	-o-transition: opacity .5s ease-out;
 }
 img.upgrade_hikashop_starter_adv:hover {
 	filter: alpha(opacity=100);
-    opacity: 1;
+	opacity: 1;
 }
 
 

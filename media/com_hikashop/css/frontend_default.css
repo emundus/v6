@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.3.0
+ * @version    3.4.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -461,6 +461,64 @@ span.hikashop_option_info {
 	background-color:#ffffff !important;
 }
 
+div.hikashop_carousel .hikashop_subcontainer_border span,
+div.hikashop_carousel .hikashop_carousel_item span {
+	text-align: center;
+	display: block;
+}
+
+div.hikashop_carousel .owl-nav .owl-prev,
+div.hikashop_carousel .owl-nav .owl-next {
+	border: 1px solid #ddd;
+    background: #ddd;
+}
+div.hikashop_carousel .owl-nav .owl-prev:hover,
+div.hikashop_carousel .owl-nav .owl-next:hover {
+	color: #aaa;
+    background-color: #fff;
+}
+div.hikashop_carousel_parent_div div.owl-controls div.owl-dot {
+    border: 1px solid #ddd;
+    padding: 1px 5px;
+    margin-top: 5px;
+	color: #000;
+}
+div.hikashop_carousel_parent_div div.hikashop_carousel,
+div.hikashop_carousel_parent_div .owl-controls {
+    margin: 5px;
+}
+div.hikashop_carousel_parent_div div.owl-controls div.owl-dot:hover {
+    border: 1px solid #aaa;
+}
+div.hikashop_carousel_parent_div.numbers div.owl-controls div.owl-dot {
+    background-color: #ddd;
+	color: #fff;
+}
+div.hikashop_carousel_parent_div.numbers div.owl-controls div.owl-dot:hover {
+    background-color: #fff;
+	color: #aaa;
+}
+div.hikashop_carousel_parent_div div.owl-controls  div.owl-dot.active {
+    font-weight: bold;
+	border: 1px solid #aaa;
+	color: #333;
+	background:none;
+}
+div.hikashop_carousel_parent_div.thumbnails div.owl-controls  div.owl-dot {
+    margin: 5px;
+	border: 1px solid #eee;
+}
+div.hikashop_carousel_parent_div.rounds div.owl-controls div.owl-dot {
+	border: 0px;
+}
+
+.hikashop_carousel .hikashop_subcontainer_border,
+.hikashop_categories_listing_main  .hikashop_subcontainer.hikashop_subcontainer_border,
+.hikashop_category_information   .hikashop_subcontainer.hikashop_subcontainer_border {
+	border: 1px solid #ddd;
+	padding: 5px;
+}
+
 .hikashop_product_image,
 .hk_product_image {
 	text-align:center;
@@ -515,9 +573,6 @@ span.hikashop_option_info {
 
 .hikashop_checkout_coupon_field{
 	margin: 3px;
-}
-.hikashop_fields_button_line{
-	display: none;
 }
 
 .hikashop_cart_bar{
@@ -1132,7 +1187,9 @@ tr.hika_show_cart_total_text_2 {
 	}
 	.hikashop_checkout_cart table tr { border: 1px solid #ccc; }
 	.hikashop_checkout_cart table tr.margin { border: 0px solid #ccc; }
+
 	.hikashop_checkout_cart table td {
+		min-height: 25px;
 		border: none;
 		border-bottom: 1px solid #eee;
 		position: relative;

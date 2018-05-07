@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -395,7 +395,9 @@ class hikashopCartClass extends hikashopClass {
 		}
 
 		if(!isset($element->cart_ip) && empty($element->cart_id)) {
-			$element->cart_ip = hikashop_getIP();
+			$config = hikashop_config();
+			if($config->get('cart_ip', 1))
+				$element->cart_ip = hikashop_getIP();
 		}
 
 		$element->cart_modified = time();
@@ -980,16 +982,16 @@ class hikashopCartClass extends hikashopClass {
 				$mainCharacteristics = array();
 				foreach($characteristics as $characteristic) {
 					if($product->product_id == $characteristic->variant_product_id) {
-						if(empty($mainCharacteristics[$product->product_id]))
-							$mainCharacteristics[$product->product_id] = array();
-						if(empty($mainCharacteristics[$product->product_id][$characteristic->characteristic_parent_id]))
-							$mainCharacteristics[$product->product_id][$characteristic->characteristic_parent_id] = array();
-						$mainCharacteristics[$product->product_id][$characteristic->characteristic_parent_id][$characteristic->characteristic_id] = $characteristic;
-
 						if($product->product_type === 'variant') {
 							if(empty($product->characteristics))
 								$product->characteristics = array();
 							$product->characteristics[] = $characteristic;
+						} else {
+							if(empty($mainCharacteristics[$product->product_id]))
+								$mainCharacteristics[$product->product_id] = array();
+							if(empty($mainCharacteristics[$product->product_id][$characteristic->characteristic_parent_id]))
+								$mainCharacteristics[$product->product_id][$characteristic->characteristic_parent_id] = array();
+							$mainCharacteristics[$product->product_id][$characteristic->characteristic_parent_id][$characteristic->characteristic_id] = $characteristic;
 						}
 					}
 					if(!empty($product->options)) {
@@ -1013,7 +1015,7 @@ class hikashopCartClass extends hikashopClass {
 				$dispatcher = JDispatcher::getInstance();
 				$dispatcher->trigger('onAfterProductCharacteristicsLoad', array( &$product, &$mainCharacteristics, &$characteristics ) );
 
-				if(!empty($element->variants)) {
+				if(!empty($product->variants)) {
 					$this->addCharacteristics($product, $mainCharacteristics, $characteristics);
 				}
 
@@ -1248,6 +1250,12 @@ class hikashopCartClass extends hikashopClass {
 		} else {
 			$cart->cart_shipping_ids = '';
 			$cart->usable_methods->shipping_valid = true;
+		}
+
+		if(hikashop_level(1) && !empty($cart->cart_coupon)){
+			if(empty($discountClass))
+				$discountClass = hikashop_get('class.discount');
+			$discountClass->afterShippingProcessing($cart);
 		}
 
 		$before_additional = !empty($cart->additional);
@@ -1805,7 +1813,7 @@ class hikashopCartClass extends hikashopClass {
 		return $this->save($cart);
 	}
 
-	public function updateTerms($cart_id, $value) {
+	public function updateTerms($cart_id, $value, $key = 'terms_checked') {
 		$cart = $this->get($cart_id);
 		if($cart === false)
 			return false;
@@ -1815,10 +1823,10 @@ class hikashopCartClass extends hikashopClass {
 		if(empty($cart->cart_params))
 			$cart->cart_params = new stdClass();
 
-		if(isset($cart->cart_params->terms_checked) && $cart->cart_params->terms_checked == $value)
+		if(isset($cart->cart_params->$key) && $cart->cart_params->$key == $value)
 			return true;
 
-		$cart->cart_params->terms_checked = $value;
+		$cart->cart_params->$key = $value;
 		return $this->save($cart);
 	}
 
@@ -2411,6 +2419,7 @@ class hikashopCartClass extends hikashopClass {
 		$now = time();
 		$wishlist = (!empty($cart->cart_type) && $cart->cart_type == 'wishlist');
 		$limits = array('min' => false, 'max' => false);
+		$b_ids = array();
 
 		$filters = array(
 			'product_id' => 'p.product_id IN (' . implode(',', $ids) . ')',
@@ -2453,6 +2462,8 @@ class hikashopCartClass extends hikashopClass {
 				$product['data']->product_name = trim($product['data']->parent_product_name .' '. $product['data']->product_name);
 		}
 		unset($product);
+
+		unset($b_ids);
 
 		foreach($products as $k => &$product) {
 			if(!empty($product['pid'])) {
@@ -2702,9 +2713,10 @@ class hikashopCartClass extends hikashopClass {
 			return $ret;
 		}
 
-		$dispatcher->trigger('onBeforeCheckCartQuantities', array(&$cart, $parent_products) );
-
 		$wishlist = (!empty($cart->cart_type) && $cart->cart_type == 'wishlist');
+
+
+		$dispatcher->trigger('onBeforeCheckCartQuantities', array(&$cart, $parent_products) );
 
 		$limits = array('min' => false, 'max' => false);
 		$notUsable = array();
@@ -2770,17 +2782,17 @@ class hikashopCartClass extends hikashopClass {
 					$cart->messages[] = array('msg' => JText::sprintf('PRODUCT_NOT_AVAILABLE', $errorMessagesProductNames[$cart_product_id]), 'product_id' => $product->product_id, 'type' => 'notice');
 					continue;
 				}
-				if((int)$product->product_quantity == -1 && (int)$parent_product->product_quantity == 0) {
+				if(!$wishlist && (int)$product->product_quantity == -1 && (int)$parent_product->product_quantity == 0) {
 					$notUsable[$cart_product_id] = array('id' => $cart_product_id, 'qty' => 0);
 					$cart->messages[] = array('msg' => JText::sprintf('NOT_ENOUGH_STOCK_FOR_PRODUCT', $errorMessagesProductNames[$cart_product_id]), 'product_id' => $product->product_id, 'type' => 'notice');
 					continue;
 				}
-				if(empty($product->product_sale_start) && (int)$parent_product->product_sale_start > 0 && (int)$parent_product->product_sale_start > time()) {
+				if(!$wishlist && empty($product->product_sale_start) && (int)$parent_product->product_sale_start > 0 && (int)$parent_product->product_sale_start > time()) {
 					$notUsable[$cart_product_id] = array('id' => $cart_product_id, 'qty' => 0);
 					$cart->messages[] = array('msg' => JText::sprintf('PRODUCT_NOT_YET_ON_SALE', $errorMessagesProductNames[$cart_product_id]), 'product_id' => $product->product_id, 'type' => 'notice');
 					continue;
 				}
-				if(empty($product->product_sale_end) && (int)$parent_product->product_sale_end > 0 && (int)$parent_product->product_sale_end < time()) {
+				if(!$wishlist && empty($product->product_sale_end) && (int)$parent_product->product_sale_end > 0 && (int)$parent_product->product_sale_end < time()) {
 					$notUsable[$cart_product_id] = array('id' => $cart_product_id, 'qty' => 0);
 					$cart->messages[] = array('msg' => JText::sprintf('PRODUCT_NOT_SOLD_ANYMORE', $errorMessagesProductNames[$cart_product_id]), 'product_id' => $product->product_id, 'type' => 'notice');
 					continue;
@@ -2970,14 +2982,13 @@ class hikashopCartClass extends hikashopClass {
 					$product->characteristics[$k]->default = end($mainCharacteristics[$product->product_id][$k]);
 			}
 		}
-		if(empty($element->variants))
+		if(empty($product->variants))
 			return;
 
 		foreach($characteristics as $characteristic) {
 			foreach($product->variants as $k => $variant) {
 				if((int)$variant->product_id != (int)$characteristic->variant_product_id)
 					continue;
-				$product->variants[$k]->characteristics[$characteristic->characteristic_parent_id] = $characteristic;
 				$product->characteristics[$characteristic->characteristic_parent_id]->values[$characteristic->characteristic_id] = $characteristic;
 			}
 		}

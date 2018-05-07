@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -137,7 +137,12 @@ if(!empty($this->products)) {
 		$users = array();
 		if(!empty($product->prices)) {
 			foreach($product->prices as $price) {
-				$values[] = $price->price_value;
+				$floatValue = (float)hikashop_toFloat($price->price_value);
+				if($floatValue == (int)$floatValue)
+					$price_value = (int)$floatValue;
+				else
+					$price_value = number_format($floatValue, 5, '.', '');
+				$values[] = $price_value;
 				$codes[] = $this->currencies[$price->price_currency_id]->currency_code;
 				$qtys[] = $price->price_min_quantity;
 				$accesses[] = $price->price_access;

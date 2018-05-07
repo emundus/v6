@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,9 +39,11 @@ defined('_JEXEC') or die('Restricted access');
 					</td>
 					<td>
 						<?php
-						 if(!empty($row->username)){
-						 	echo $row->name.' ( '.$row->username.' )</a><br/>';
-						 }
+						if(isset($row->user_cms_id)) {
+							$customer = JFactory::getUser($row->user_cms_id);
+							if(!empty($customer->username) && !empty($customer->name))
+								echo $customer->name.' ( '.$customer->username.' )</a><br/>';
+						}
 						 $url = hikashop_completeLink('user&task=edit&cid[]='.$row->user_id);
 						 echo $row->user_email.'<a href="'.$url.'"><img src="'.HIKASHOP_IMAGES.'edit.png" alt="edit"/></a>';
 						 ?>

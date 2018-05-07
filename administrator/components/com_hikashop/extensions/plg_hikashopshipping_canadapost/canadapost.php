@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -581,7 +581,8 @@ function checkAllBox(id, type) {
 				$divide = $product['x'] + $product['y'] + $product['z'];
 				if(!$divide || $divide > $limit_value)
 					return false;
-				return (int)floor($limit_value / $divide);
+				$current_limit_value = max(0.0, $limit_value - (float)($package['z'] + $package['y'] + $package['x']));
+				return (int)floor($current_limit_value / $divide);
 				break;
 			case 'length_girth':
 				$max_qty = (($limit_value - $product['z']) / 2 - $product['y']) / $product['x'];

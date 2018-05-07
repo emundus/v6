@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -101,7 +101,7 @@ if(invalid_field)
 	if($this->options['show_login']) {
 		$classLogin = '';
 		$classRegistration = 'hikashop_hidden_checkout';
-		$defaultSelection = $this->options['default_registration_view'];
+		$defaultSelection = @$this->options['default_registration_view'];
 	}
 
 	if($this->options['display_method'] == 0) {
@@ -147,7 +147,7 @@ if(invalid_field)
 ?>
 			</div>
 <?php
-		} else {
+		} else if(empty($this->options['waiting_validation'])) {
 			echo JText::_('REGISTRATION_NOT_ALLOWED');
 		}
 
@@ -240,7 +240,9 @@ function displayRegistration(el) {
 			registration_div.className="";
 
 		d.getElementById("hika_registration_type").innerHTML = "<?php echo JText::_('HIKA_REGISTRATION',true); ?>";
-		d.getElementById("hikashop_register_form_button").firstChild.data = "<?php echo JText::_('HIKA_REGISTER',true); ?>";
+		var submit_button = d.getElementById("hikashop_register_form_button");
+		if(submit_button)
+			submit_button.firstChild.data = "<?php echo JText::_('HIKA_REGISTER',true); ?>";
 
 <?php if(!empty($this->options['registration_not_allowed'])){
 		echo '
@@ -296,7 +298,9 @@ function displayRegistration(el) {
 			registration_div.className = '';
 
 		d.getElementById("hika_registration_type").innerHTML = "<?php echo JText::_('GUEST',true); ?>";
-		d.getElementById("hikashop_register_form_button").firstChild.data = "<?php echo JText::_('HIKA_NEXT',true); ?>";
+		var submit_button = d.getElementById("hikashop_register_form_button");
+		if(submit_button)
+			submit_button.firstChild.data = "<?php echo JText::_('HIKA_NEXT',true); ?>";
 
 		if(name) name.style.display = "none";
 		if(username) username.style.display = "none";
@@ -330,7 +334,7 @@ function displayRegistration(el) {
 ?>
 			</div>
 <?php
-		} else {
+		} else if(empty($this->options['waiting_validation'])) {
 			echo JText::_('REGISTRATION_NOT_ALLOWED');
 		}
 		if(empty($this->options['current_login']) && !empty($this->options['show_login'])) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -49,6 +49,12 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		'98'=>"Server unavailable network routing further request",
 		'99'=>"Incident field initiator"
 	);
+	var $bank_request = array(
+		'default_test' => 'https://payment-webinit.simu.sips-atos.com/paymentInit',
+		'default_prod' => 'https://payment-webinit.sips-atos.com/paymentInit',
+		'bnp_test' => '	https://payment-webinit.simu.mercanet.bnpparibas.net',
+		'bnp_prod' => 'https://payment-webinit.mercanet.bnpparibas.net'
+	);
 
 	var $sync_currencies = array(
 		'EUR'=>'978','USD'=>'840','GBP'=>'826','JPY'=>'392','CAD'=>'124','AUD'=>'036','CHF'=>'756',
@@ -62,11 +68,16 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		'TWD','SEK','DKK','KRW','SGD','XAF'
 	);
 
+
 	var $pluginConfig = array(
 		'merchantID' => array("MERCHANT_ID",'input'),
 		'secretKey'=>array("Secret Key",'input'),
 		'keyVersion'=>array('Key Version','input'),
 		'notification'=>array("ALLOW_NOTIFICATIONS_FROM_X",'boolean','0'),
+		'bank' =>array('Bank', 'list', array(
+			'default' => 'Default',
+			'bnp' => 'Bnp Paribas (Mercanet)'
+		)),
 		'testmode'=>array('TEST_MODE', 'boolean','0'),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'return_url' => array('RETURN_URL', 'input'),
@@ -96,21 +107,23 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		}
 
 		$PostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&lang='.$this->locale . $this->url_itemid;
-		$userPostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&user_return=1&lang='.$this->locale . $this->url_itemid;
+		$userPostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&user_return=1&lang='.$this->url_itemid;
 
-		if ($this->payment_params->testmode == true) {
-			$url = 'https://payment-webinit.simu.sips-atos.com/paymentInit';
+		if (empty($this->payment_params->bank)) {
+			$this->payment_params->bank = 'default';
 		}
-		else {
-			$url = 'https://payment-webinit.sips-atos.com/paymentInit';
-		}
+
+		$bank = $this->payment_params->bank;
+		$environnement = ($this->payment_params->testmode == 0)? 'prod': 'test';
+
+		$url = @$this->bank_request[$bank.'_'.$environnement];
 
 		$vars0 = array(
 			"currencyCode" => @$this->sync_currencies[$this->currency->currency_code],
 			"merchantId" => trim($this->payment_params->merchantID),
 			"normalReturnUrl" => $userPostUrl,
 			"amount" => str_replace(array('.',','),'',round($order->cart->full_total->prices[0]->price_value_with_tax,2)*100),
-			"transactionReference" => $order->order_number,
+			"transactionReference" => $order->order_id,
 			"keyVersion" => trim ($this->payment_params->keyVersion),
 			"automaticResponseUrl" => $PostUrl,
 			"orderId" => $order->order_id,
@@ -144,6 +157,8 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		{
 			$this->writeToLog("Data sent to Atos Sips: \n\n\n");
 			$this->writeToLog(print_r($vars,true));
+			$this->writeToLog("payment server url : \n\n\n");
+			$this->writeToLog($url,true);
 		}
 
 		$this->vars = $vars;

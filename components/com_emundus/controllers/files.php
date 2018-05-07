@@ -915,7 +915,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function getfnuminfos() {
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
+        $fnum = $jinput->get->getString('fnum', null);
         $res = false;
         $fnumInfos = null;
 

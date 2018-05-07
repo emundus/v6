@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,7 @@ class hikashopProductsyncType{
 			$defaultParams = $config->get('default_params');
 			$default = '';
 			if(isset($defaultParams['product_synchronize']))
-				$default = ' ('.$this->values[$defaultParams['product_synchronize']]->text.')';
+				$default = ' ('.$this->values[(int)$defaultParams['product_synchronize']]->text.')';
 			$this->values[4] = JHTML::_('select.option', 4, JText::_('HIKA_INHERIT').$default);
 		}
 	}

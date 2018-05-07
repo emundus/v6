@@ -233,7 +233,7 @@ class EmundusModelEvaluation extends JModelList
 	public function getEvaluationElements($show_in_list_summary=1, $hidden=0)
 	{
 		$session = JFactory::getSession();
-
+		$h_files = new EmundusHelperFiles;
 		$jinput = JFactory::getApplication()->input;
 		$fnums = $jinput->getString('cfnums', null);
 
@@ -246,6 +246,23 @@ class EmundusModelEvaluation extends JModelList
 			if (is_array($filt_params['programme']) && count(@$filt_params['programme']) > 0) {
 				foreach ($filt_params['programme'] as $value) {
 					$groups = $this->getGroupsEvalByProgramme($value);
+					if (empty($groups)) {
+						$eval_elt_list = array();
+					} else {
+						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+						if (count($eval_elt_list)>0) {
+							foreach ($eval_elt_list as $eel) {
+                                if(isset($eel->element_id) && !empty($eel->element_id))
+    								$elements_id[] = $eel->element_id;
+							}
+						}
+					}
+				}
+			}
+			if (!empty($filt_params['campaign']) && is_array($filt_params['campaign']) && count(@$filt_params['campaign']) > 0) {
+				foreach ($filt_params['campaign'] as $value) {
+					$campaign = $h_files->getCampaignByID($value);
+					$groups = $this->getGroupsEvalByProgramme($campaign['training']);
 					if (empty($groups)) {
 						$eval_elt_list = array();
 					} else {
@@ -287,7 +304,7 @@ class EmundusModelEvaluation extends JModelList
                     if (empty($groups)) {
                         $eval_elt_list = array();
                     } else {
-						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden, $time_date);
+						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
 						//var_dump($eval_elt_list);die;
                         if (count($eval_elt_list)>0) {
                             foreach ($eval_elt_list as $eel) {
@@ -306,7 +323,7 @@ class EmundusModelEvaluation extends JModelList
 						if (empty($groups)) {
 							$eval_elt_list = array();
 						} else {
-							$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden, $time_date);
+							$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
 							if (count($eval_elt_list)>0) {
 								foreach ($eval_elt_list as $eel) {
 									if(isset($eel->element_id) && !empty($eel->element_id))
@@ -1269,12 +1286,10 @@ class EmundusModelEvaluation extends JModelList
 					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
-
-		if ((EmundusHelperAccess::isExpert($current_user->id) && $evaluators_can_see_other_eval == 0) ||
-			(EmundusHelperAccess::isEvaluator($current_user->id) && $evaluators_can_see_other_eval == 0))  {
-			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
-		} else
+		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1))
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
+		else
+			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
 
 		if (!empty($leftJoin))
 			$query .= $leftJoin;

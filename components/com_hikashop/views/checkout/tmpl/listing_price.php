@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -61,7 +61,7 @@ if(empty($this->row->prices)){
 		}
 		echo '</span> ';
 
-		if(!empty($this->row->discount)) {
+		if(!empty($this->row->discount) && isset($price->price_value_without_discount_with_tax)) {
 			if($this->params->get('show_discount', 3) == 3) {
 				$defaultParams = $config->get('default_params');
 				$this->params->set('show_discount', $defaultParams['show_discount']);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,48 @@ defined('_JEXEC') or die('Restricted access');
 include_once HIKASHOP_HELPER . 'checkout.php';
 
 class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
+	protected $params = array(
+		'read_only' =>  array(
+			'name' => 'READ_ONLY',
+			'type' => 'boolean',
+			'default' => 0
+		),
+		'address_selector' => array(
+			'name' => 'HIKASHOP_CHECKOUT_ADDRESS_SELECTOR',
+			'type' => 'radio',
+			'tooltip' => 'checkout_address_selector',
+			'default' => 1,
+			'showon' => array(
+				'key' => 'read_only',
+				'values' => array(0)
+			)
+		),
+		'type' => array(
+			'name' => 'HIKASHOP_ADDRESS_TYPE',
+			'type' => 'radio',
+			'default' => 'both',
+		),
+	);
+
+	public function getParams() {
+		$config = hikashop_config();
+		$values = array(
+			JHTML::_('select.option', 1, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_LIST')),
+			JHTML::_('select.option', 2, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_DROPDOWN'))
+		);
+		$selector = $config->get('checkout_address_selector',0);
+		if($config->get('checkout_legacy', 0))
+			$values[] = JHTML::_('select.option', 0, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_POPUP'));
+		$this->params['address_selector']['values'] = $values;
+
+		$this->params['type']['values'] = array(
+			JHTML::_('select.option', 'billing', JText::_('HIKASHOP_BILLING_ADDRESS')),
+			JHTML::_('select.option', 'shipping', JText::_('HIKASHOP_SHIPPING_ADDRESS')),
+			JHTML::_('select.option', 'both', JText::_('WIZARD_BOTH'))
+		);
+		return $this->params;
+	}
+
 	public function check(&$controller, &$params) {
 		if(!empty($params['read_only']))
 			return true;
@@ -73,7 +115,7 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		if(empty($address)) {
 			$error_messages = $fieldClass->messages;
 			foreach($error_messages as $i => $err) {
-				$checkoutHelper->addMessage('address.error_'.$i, $err);
+				$checkoutHelper->addMessage('address.error_'.$i, array($err, 'error'));
 			}
 			$ret = false;
 		}
@@ -217,10 +259,23 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		$params['show_billing'] = true;
 		$params['show_shipping'] = $checkoutHelper->isShipping();
 
+		if(!in_array(@$params['type'], array('billing', 'both', ''))) {
+			$params['show_billing'] = false;
+		}
+		if(!in_array(@$params['type'], array('shipping', 'both', ''))) {
+			$params['show_shipping'] = false;
+		}
+
 
 		$params['display'] = $checkoutHelper->isLoggedUser() && ($params['show_billing'] || $params['show_shipping']);
 
-		$params['address_selector'] = (int)$view->config->get('checkout_address_selector', 0);
+		if(!isset($params['readonly']))
+			$params['readonly'] = false;
+
+		if(!isset($params['address_selector']))
+			$params['address_selector'] = (int)$view->config->get('checkout_address_selector', 0);
+		if(empty($params['address_selector']))
+			$params['address_selector'] = 1;
 
 		if(empty($params['read_only']) && $params['display'] == true) {
 			$addresses = $checkoutHelper->getAddresses();

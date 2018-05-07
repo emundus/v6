@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,7 +54,18 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 	}
 
 	public function termsandconditions() {
-		$terms_article = $this->config->get('checkout_terms', 0);
+
+		$step = hikaInput::get()->getInt('step', 0)-1;
+		$pos = hikaInput::get()->getInt('pos', 0);
+
+		$checkoutHelper = hikashopCheckoutHelper::get();
+		$this->workflow = $checkoutHelper->checkout_workflow;
+		$block = @$this->workflow['steps'][$step]['content'][$pos];
+		if(!empty($block) && $block['task'] == 'terms' && !empty($block['params']['article_id']))
+			$terms_article = $block['params']['article_id'];
+
+		if(empty($terms_article))
+			$terms_article = $this->config->get('checkout_terms', 0);
 
 		if (empty($terms_article))
 			return;
@@ -330,7 +341,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$order = null;
 		if(!empty($order_id)) {
 			$orderClass = hikashop_get('class.order');
-			$order = $orderClass->loadFullOrder($order_id,false,false);
+			$order = $orderClass->loadFullOrder($order_id, false, true);
 		}
 
 		$this->assignRef('order',$order);
@@ -346,7 +357,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$order = null;
 		if(!empty($order_id)) {
 			$orderClass = hikashop_get('class.order');
-			$order = $orderClass->loadFullOrder($order_id, false, false);
+			$order = $orderClass->loadFullOrder($order_id, false, true);
 		}
 
 		JPluginHelper::importPlugin('hikashoppayment');

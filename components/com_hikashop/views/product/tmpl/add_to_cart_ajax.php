@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -48,6 +48,22 @@ $product_available = ($end_date <= 0 || $end_date >= $now) && ($start_date <= 0 
 $add_to_cart = !$catalogue_mode && $in_stock && (!$is_free || $display_free_cart) && $product_available;
 $add_to_wishlist = $enable_wishlist && (!$is_free || $display_free_wishlist);
 $extra_div_name = $this->params->get('extra_div_name', '');
+
+if($end_date > 0 && $end_date < $now) {
+?>
+<span class="hikashop_product_sale_end"><?php
+	echo JText::_('ITEM_NOT_SOLD_ANYMORE');
+?></span>
+<?php
+}
+
+if($start_date > 0 && $start_date > $now) {
+?>
+<span class="hikashop_product_sale_start"><?php
+	echo JText::sprintf('ITEM_SOLD_ON_DATE', hikashop_getDate($start_date, $this->params->get('date_format', '%d %B %Y')));
+?></span>
+<?php
+}
 ?>
 <span class="hikashop_product_stock_count">
 <?php

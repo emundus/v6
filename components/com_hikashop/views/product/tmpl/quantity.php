@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -73,7 +73,6 @@ if($end_date > 0 && $end_date < $now) {
 		echo JText::_('ITEM_NOT_SOLD_ANYMORE');
 	?></span>
 <?php
-	return;
 }
 
 if($start_date > 0 && $start_date > $now) {
@@ -82,7 +81,6 @@ if($start_date > 0 && $start_date > $now) {
 		echo JText::sprintf('ITEM_SOLD_ON_DATE', hikashop_getDate($start_date, $this->params->get('date_format', '%d %B %Y')));
 	?></span>
 <?php
-	return;
 }
 
 $stock_class = ($stock != 0) ? "" : " hikashop_product_no_stock";

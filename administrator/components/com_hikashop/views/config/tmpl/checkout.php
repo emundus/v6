@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ echo $this->leftmenu(
 	array(
 		'#checkout_workflow' => JText::_('CHECKOUT_FLOW'),
 		'#checkout_checkout' => JText::_('CHECKOUT'),
-		'#checkout_shipping' => JText::_('SHIPPING_PAYMENT'),
+		'#checkout_shipping' => JText::_('ADDRESS_SHIPPING'),
 		'#checkout_login' => JText::_('LOGIN_REGISTRATION')
 	)
 );
@@ -25,7 +25,13 @@ echo $this->leftmenu(
 	<div class="hikashop_tile_block"><div>
 		<div class="hikashop_tile_title"><?php echo JText::_('CHECKOUT_FLOW'); ?></div>
 <?php
+	$checkout_workflow = $this->config->get('checkout_workflow', '');
+	if(empty($checkout_workflow))
+		$checkout_workflow = $this->config->get('checkout');
+	if((int)$this->config->get('checkout_legacy', 0) == 1) {
 		echo $this->checkout_workflow->displayLegacy('config[checkout]', $this->config->get('checkout'));
+	} else
+	echo $this->checkout_workflow->display('config[checkout_workflow]', $checkout_workflow);
 ?>
 	</div></div>
 </div>
@@ -62,6 +68,9 @@ echo $this->leftmenu(
 			<input name="config[continue_shopping]" type="text" value="<?php echo $this->config->get('continue_shopping');?>" />
 		</td>
 	</tr>
+<?php
+	if((int)$this->config->get('checkout_legacy', 0) == 1) {
+?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('checkout_cart_delete');?>><?php echo JText::_('CHECKOUT_SHOW_CART_DELETE'); ?></td>
 		<td><?php
@@ -73,37 +82,37 @@ echo $this->leftmenu(
 		<td>
 			<input class="inputbox" id="checkout_terms" name="config[checkout_terms]" type="text" size="20" value="<?php echo $this->config->get('checkout_terms'); ?>" onchange="showTermsPopupSize(this.value);" >
 <?php
-	if(!HIKASHOP_J16) {
-		$link = 'index.php?option=com_content&amp;task=element&amp;tmpl=component&amp;object=checkout';
-		$js = '
+		if(!HIKASHOP_J16) {
+			$link = 'index.php?option=com_content&amp;task=element&amp;tmpl=component&amp;object=checkout';
+			$js = '
 function jSelectArticle(id, title, object) {
 	document.getElementById(object+"_terms").value = id;
 	window.top.hikashop.closeBox();
 }
 ';
-		$this->doc->addScriptDeclaration($js);
-	} else {
-		$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;function=jSelectArticle_checkout';
-		$js = '
+			$this->doc->addScriptDeclaration($js);
+		} else {
+			$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;function=jSelectArticle_checkout';
+			$js = '
 function jSelectArticle_checkout(id, title, catid, object) {
 	document.getElementById("checkout_terms").value = id;
 	hikashop.closeBox();
 }
 ';
-		$this->doc->addScriptDeclaration($js);
-	}
-	echo $this->popup->display(
-		'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
-		'TERMS_AND_CONDITIONS_SELECT_ARTICLE',
-		$link,
-		'checkout_terms_link',
-		760, 480, '', '', 'link'
-	);
+			$this->doc->addScriptDeclaration($js);
+		}
+		echo $this->popup->display(
+			'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
+			'TERMS_AND_CONDITIONS_SELECT_ARTICLE',
+			$link,
+			'checkout_terms_link',
+			760, 480, '', '', 'link'
+		);
 ?>
 		</td>
 	</tr>
 <?php
-$js = '
+		$js = '
 function showTermsPopupSize(value) {
 	if(value != "") {
 		jQuery("#checkout_terms_size").css("display", "table-row");
@@ -116,7 +125,7 @@ jQuery(document).ready(function(){
 	showTermsPopupSize(checkoutTerms);
 });
 ';
-$this->doc->addScriptDeclaration($js);
+		$this->doc->addScriptDeclaration($js);
 ?>
 	<tr id="checkout_terms_size">
 		<td class="hk_tbl_key"<?php echo $this->docTip('terms_and_conditions_xy');?>><?php echo JText::_('TERMS_AND_CONDITIONS_POPUP_SIZE'); ?></td>
@@ -127,20 +136,27 @@ $this->doc->addScriptDeclaration($js);
 			px
 		</td>
 	</tr>
-
+<?php
+	}
+?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('display_checkout_bar');?>><?php echo JText::_('DISPLAY_CHECKOUT_BAR'); ?></td>
 		<td><?php
 			echo $this->checkout->display('config[display_checkout_bar]', $this->config->get('display_checkout_bar'));
 		?></td>
 	</tr>
+<?php
+	if((int)$this->config->get('checkout_legacy', 0) == 1) {
+?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('show_cart_image');?>><?php echo JText::_('SHOW_IMAGE'); ?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[show_cart_image]','',$this->config->get('show_cart_image'));
 		?></td>
 	</tr>
-
+<?php
+	}
+?>
 </table>
 	</div></div>
 </div>
@@ -148,7 +164,7 @@ $this->doc->addScriptDeclaration($js);
 <!-- CHECKOUT - SHIPPING/PAYMENT -->
 <div id="checkout_shipping" class="hikashop_backend_tile_edition">
 	<div class="hikashop_tile_block"><div>
-		<div class="hikashop_tile_title"><?php echo JText::_('SHIPPING_PAYMENT'); ?></div>
+		<div class="hikashop_tile_title"><?php echo JText::_('ADDRESS_SHIPPING'); ?></div>
 <table class="hk_config_table table" style="width:100%">
 
 	<tr>
@@ -157,6 +173,9 @@ $this->doc->addScriptDeclaration($js);
 			echo JHTML::_('hikaselect.booleanlist', 'config[force_shipping]', '', $this->config->get('force_shipping', 0));
 		?></td>
 	</tr>
+<?php
+	if((int)$this->config->get('checkout_legacy', 0) == 1) {
+?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('checkout_address_selector');?>><?php echo JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR'); ?></td>
 		<td><?php
@@ -172,6 +191,9 @@ $this->doc->addScriptDeclaration($js);
 			echo JHTML::_('hikaselect.radiolist',  $values, 'config[checkout_address_selector]', '', 'value', 'text', $selector );
 		?></td>
 	</tr>
+<?php
+	}
+?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('mini_address_format');?>><?php echo JText::_('MINI_ADDRESS_FORMAT'); ?></td>
 		<td>

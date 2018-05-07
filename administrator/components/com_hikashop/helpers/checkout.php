@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,9 +53,9 @@ class hikashopCheckoutHelper {
 	protected function loadWorkflow() {
 		$this->checkout_workflow = $this->config->get('checkout_workflow', '');
 		if(!empty($this->checkout_workflow))
-			$this->checkout_workflow = json_decode($this->checkout_workflow, false);
+			$this->checkout_workflow = json_decode($this->checkout_workflow, true);
 
-		if(empty($this->checkout_workflow))
+		if(empty($this->checkout_workflow) || (int)$this->config->get('checkout_workflow_legacy', 0) == 1)
 			$this->loadWorkflowLegacy();
 
 		$this->shop_closed = false;
@@ -297,6 +297,30 @@ class hikashopCheckoutHelper {
 		return $ret;
 	}
 
+	public function completeLink($task, $url, $ajax = false, $redirect = false, $js = false, $Itemid = 0) {
+		$config = hikashop_config();
+		$menuClass = hikashop_get('class.menu');
+
+		$config_itemid = (int)$config->get('checkout_itemid', 0);
+
+		$setCtrl = true;
+		$setTask = true;
+		$checkout_itemid = !empty($checkout_itemid) ? $checkout_itemid : $Itemid;
+
+		$valid_menu = $menuClass->loadAMenuItemId('checkout', '', $checkout_itemid);
+		if(!empty($valid_menu)) {
+			$setCtrl = false;
+			$setTask = ($task == 'show' || $task == 'step');
+		} else {
+			$valid_menu = $menuClass->loadAMenuItemId('', '', $checkout_itemid);
+		}
+
+		$link = 'index.php?option=' . HIKASHOP_COMPONENT . ($setCtrl ? '&ctrl=checkout' : '') . ($setTask ? '&task=' . $task : '') . (!empty($url) ? '&'.$url : '') . '&Itemid=' . $checkout_itemid . ($ajax ? '&tmpl=raw' : '');
+		$ret = JRoute::_($link, !$redirect);
+		if($js) return str_replace('&amp;', '&', $ret);
+		return $ret;
+	}
+
 	public function getRedirectUrl() {
 		if(!empty($this->redirect_url))
 			return $this->redirect_url;
@@ -528,6 +552,11 @@ class hikashopCheckoutHelper {
 }
 
 class hikashopCheckoutHelperInterface {
+	protected $params = array();
+
+	public function getParams() {
+		return $this->params;
+	}
 
 	public function check(&$controller, &$params) {
 		return true;

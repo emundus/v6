@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,24 @@ defined('_JEXEC') or die('Restricted access');
 include_once HIKASHOP_HELPER . 'checkout.php';
 
 class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
+	protected $params = array(
+		'read_only' =>  array(
+			'name' => 'READ_ONLY',
+			'type' => 'boolean',
+			'default' => 0
+		),
+		'show_title' =>  array(
+			'name' => 'SHOW_TITLE',
+			'type' => 'boolean',
+			'default' => 1
+		),
+		'show_shipping_products' => array(
+			'name' => 'MULTI_GROUP_PRODUCT_DISPLAY',
+			'type' => 'boolean',
+			'default' => 1
+		),
+	);
+
 	public function check(&$controller, &$params) {
 		if(!empty($params['read_only']))
 			return true;
@@ -30,6 +48,9 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function validate(&$controller, &$params, $data = array()) {
+		if(!empty($params['read_only']))
+			return true;
+
 		if(empty($data))
 			$data = hikaInput::get()->get('checkout', array(), 'array');
 		if(empty($data['shipping']))
@@ -115,7 +136,12 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function display(&$view, &$params) {
-		$params['show_shipping_products'] = true;
+		if(!isset($params['show_shipping_products']))
+			$params['show_shipping_products'] = true;
+		if(!isset($params['read_only']))
+			$params['read_only'] = false;
+		if(!isset($params['show_title']))
+			$params['show_title'] = true;
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		if(!$checkoutHelper->isMessages('shipping')) {

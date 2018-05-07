@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1803141115]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1804261416]
 		</td>
 	</tr>
 	<tr>
@@ -240,6 +240,12 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('print_cart');?>><?php echo JText::_('ALLOW_USERS_TO_PRINT_CART'); ?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[print_cart]', '', $this->config->get('print_cart', 0));
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('cart_ip');?>><?php echo JText::_('LOG_IP_ADDRESS'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[cart_ip]', '', $this->config->get('cart_ip', 1));
 		?></td>
 	</tr>
 
@@ -497,6 +503,12 @@ echo $this->leftmenu(
 			x
 			<input class="inputbox" type="text" name="config[image_y]" value="<?php echo $this->config->get('image_y'); ?>" />
 		</td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('keep_category_product_images');?>><?php echo JText::_('KEEP_IMAGES_AFTER_DELETE'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', "config[keep_category_product_images]" , '',$this->config->get('keep_category_product_images', 0));
+		?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('watermark');?>><?php echo JText::_('WATERMARK_ON_IMAGES'); ?></td>

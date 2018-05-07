@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -93,34 +93,36 @@ class hikashopFileClass extends hikashopClass {
 			}
 
 			if(!empty($tempData)) {
-				switch($type){
-					case 'category':
-						$query = 'SELECT file_path FROM '.hikashop_table(end($this->tables)).' WHERE file_ref_id = '.$pkey.' AND file_type=\'category\'';
-						$this->database->setQuery($query);
-						if(!HIKASHOP_J25){
-							$oldEntries = $this->database->loadResultArray();
-						} else {
-							$oldEntries = $this->database->loadColumn();
-						}
-
-						if(!empty($oldEntries)) {
-							$oldEntriesQuoted = array();
-							foreach($oldEntries as $old) {
-								$oldEntriesQuoted[] = $this->database->Quote($old);
-							}
-							$query = 'SELECT file_path FROM '.hikashop_table('file').' WHERE file_path IN ('.implode(',',$oldEntriesQuoted).') AND file_ref_id != '.$pkey;
+				if(!$config->get('keep_category_product_images', 0)) {
+					switch($type){
+						case 'category':
+							$query = 'SELECT file_path FROM '.hikashop_table(end($this->tables)).' WHERE file_ref_id = '.$pkey.' AND file_type=\'category\'';
 							$this->database->setQuery($query);
 							if(!HIKASHOP_J25){
-								$keepEntries = $this->database->loadResultArray();
+								$oldEntries = $this->database->loadResultArray();
 							} else {
-								$keepEntries = $this->database->loadColumn();
+								$oldEntries = $this->database->loadColumn();
 							}
-							foreach($oldEntries as $old) {
-								if((empty($keepEntries) || !in_array($old,$keepEntries)) && JFile::exists($uploadPath . $old))
-									JFile::delete($uploadPath . $old);
+
+							if(!empty($oldEntries)) {
+								$oldEntriesQuoted = array();
+								foreach($oldEntries as $old) {
+									$oldEntriesQuoted[] = $this->database->Quote($old);
+								}
+								$query = 'SELECT file_path FROM '.hikashop_table('file').' WHERE file_path IN ('.implode(',',$oldEntriesQuoted).') AND file_ref_id != '.$pkey;
+								$this->database->setQuery($query);
+								if(!HIKASHOP_J25){
+									$keepEntries = $this->database->loadResultArray();
+								} else {
+									$keepEntries = $this->database->loadColumn();
+								}
+								foreach($oldEntries as $old) {
+									if((empty($keepEntries) || !in_array($old,$keepEntries)) && JFile::exists($uploadPath . $old))
+										JFile::delete($uploadPath . $old);
+								}
 							}
-						}
-						break;
+							break;
+					}
 				}
 
 				foreach($tempData as $id => $file_path) {
@@ -206,7 +208,8 @@ class hikashopFileClass extends hikashopClass {
 			} else {
 				$stillUsed = $this->database->loadColumn();
 			}
-			if(!$ignoreFile){
+			$config = hikashop_config();
+			if(!$ignoreFile && !$config->get('keep_category_product_images', 0)){
 				jimport('joomla.filesystem.folder');
 				$thumbnail_folders = JFolder::folders($uploadPath);
 				if(JFolder::exists($uploadPath.'thumbnails')) {
@@ -489,7 +492,7 @@ class hikashopFileClass extends hikashopClass {
 			$extension = strtolower(substr($filename, strrpos($filename, '.') + 1));
 			if(in_array($extension, array('jpg','jpeg','png','gif'))) {
 				if(!ini_get('safe_mode')) {
-					set_time_limit(0);
+					@set_time_limit(0);
 				}
 
 				$imageHelper = hikashop_get('helper.image');
@@ -547,7 +550,7 @@ class hikashopFileClass extends hikashopClass {
 		$fp = fopen($filename, 'rb');
 		fseek($fp, $seek_start);
 		if(!ini_get('safe_mode')) {
-			set_time_limit(0);
+			@set_time_limit(0);
 		}
 
 		while(!feof($fp)) {

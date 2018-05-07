@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,52 @@ defined('_JEXEC') or die('Restricted access');
 include_once HIKASHOP_HELPER . 'checkout.php';
 
 class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
+
+	public function getParams() {
+		if(!hikashop_level(2))
+			return '<span style="color:red">'.JText::_('ONLY_FROM_HIKASHOP_BUSINESS').'</span>';
+
+		$type = hikashop_get('type.namebox');
+		$this->params = array(
+			'read_only' =>  array(
+				'name' => 'READ_ONLY',
+				'type' => 'boolean',
+				'default' => 0
+			),
+			'show_title' =>  array(
+				'name' => 'SHOW_TITLE',
+				'type' => 'boolean',
+				'default' => 1
+			),
+			'show_submit' =>  array(
+				'name' => 'SHOW_SUBMIT_BUTTON',
+				'type' => 'boolean',
+				'default' => 0,
+				'showon' => array(
+					'key' => 'read_only',
+					'values' => array(0)
+				)
+			),
+			'fields' => array(
+				'name' => 'FIELDS',
+				'type' => 'namebox',
+				'namebox' => 'field',
+				'default' => '',
+				'select' => hikashopNameboxType::NAMEBOX_MULTIPLE,
+				'namebox_params' => array(
+					'delete' => true,
+					'returnOnEmpty' => false,
+					'table' => 'order',
+					'default_text' => '<em>'.JText::_('HIKA_ALL').'</em>',
+					'url_params' => array(
+						'TABLE' => 'order',
+					),
+				),
+			),
+		);
+		return $this->params;
+	}
+
 	public function check(&$controller, &$params) {
 		if(!hikashop_level(2))
 			return true;
@@ -22,7 +68,8 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 	public function validate(&$controller, &$params, $data = array()) {
 		if(!hikashop_level(2))
 			return true;
-
+		if(!empty($params['read_only']))
+			return true;
 		if(empty($data))
 			$data = hikaInput::get()->get('checkout', array(), 'array');
 		if(empty($data['fields']))
@@ -36,8 +83,10 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 		$old = new stdClass();
 		$old->products = $cart->products;
 
+		if(!empty($params['fields']) && is_string($params['fields']))
+			$params['fields'] = explode(',',$params['fields']);
 		$fieldClass = hikashop_get('class.field');
-		$orderData = $fieldClass->getInput('order', $old, 'msg', $data['fields']);
+		$orderData = $fieldClass->getInput('order', $old, 'msg', $data['fields'], false, '', @$params['fields']);
 
 		if($orderData === false) {
 			$messages = $fieldClass->messages;
@@ -72,13 +121,18 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 		if(!hikashop_level(2))
 			return;
 
+		if(!isset($params['show_title']))
+			$params['show_title'] = true;
+		if(!isset($params['show_submit']))
+			$params['show_submit'] = false;
+		if(!isset($params['read_only']))
+			$params['read_only'] = false;
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
 
 		if(empty($cart->order_fields))
 			return;
-
 		$params['js'] = '';
 
 		if(empty($view->fieldClass))
