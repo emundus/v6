@@ -13,8 +13,7 @@ if(!class_exists('FPDF'))
 {
 define('FPDF_VERSION','1.53');
 
-class FPDF
-{
+class FPDF {
 //Private properties
 var $page;               //current page number
 var $n;                  //current object number
@@ -75,7 +74,7 @@ var $PDFVersion;         //PDF version number
 *                               Public methods                                 *
 *                                                                              *
 *******************************************************************************/
-function FPDF($orientation='P',$unit='mm',$format='A4')
+function __construct($orientation='P',$unit='mm',$format='A4')
 {
 	//Some checks
 	$this->_dochecks();
@@ -119,57 +118,58 @@ function FPDF($orientation='P',$unit='mm',$format='A4')
 	else
 		$this->Error('Incorrect unit: '.$unit);
 	//Page format
-	if(is_string($format))
+	if (is_string($format))
 	{
-		$format=strtolower($format);
-		if($format=='a3')
-			$format=array(841.89,1190.55);
-		elseif($format=='a4')
-			$format=array(595.28,841.89);
-		elseif($format=='a5')
-			$format=array(420.94,595.28);
-		elseif($format=='letter')
-			$format=array(612,792);
-		elseif($format=='legal')
-			$format=array(612,1008);
+		$format = strtolower($format);
+		if ($format == 'a3')
+			$format = array(841.89,1190.55);
+		elseif ($format == 'a4')
+			$format = array(595.28,841.89);
+		elseif ($format == 'a5')
+			$format = array(420.94,595.28);
+		elseif ($format == 'letter')
+			$format = array(612,792);
+		elseif ($format == 'legal')
+			$format = array(612,1008);
 		else
 			$this->Error('Unknown page format: '.$format);
-		$this->fwPt=$format[0];
-		$this->fhPt=$format[1];
+		$this->fwPt = $format[0];
+		$this->fhPt = $format[1];
 	}
 	else
 	{
-		$this->fwPt=$format[0]*$this->k;
-		$this->fhPt=$format[1]*$this->k;
+		$this->fwPt = $format[0]*$this->k;
+		$this->fhPt = $format[1]*$this->k;
 	}
-	$this->fw=$this->fwPt/$this->k;
-	$this->fh=$this->fhPt/$this->k;
+	$this->fw = $this->fwPt/$this->k;
+	$this->fh = $this->fhPt/$this->k;
 	//Page orientation
 	$orientation=strtolower($orientation);
-	if($orientation=='p' || $orientation=='portrait')
+	if ($orientation == 'p' || $orientation == 'portrait')
 	{
-		$this->DefOrientation='P';
-		$this->wPt=$this->fwPt;
-		$this->hPt=$this->fhPt;
+		$this->DefOrientation = 'P';
+		$this->wPt = $this->fwPt;
+		$this->hPt = $this->fhPt;
 	}
-	elseif($orientation=='l' || $orientation=='landscape')
+	elseif ($orientation == 'l' || $orientation == 'landscape')
 	{
-		$this->DefOrientation='L';
-		$this->wPt=$this->fhPt;
-		$this->hPt=$this->fwPt;
+		$this->DefOrientation = 'L';
+		$this->wPt = $this->fhPt;
+		$this->hPt = $this->fwPt;
 	}
 	else
 		$this->Error('Incorrect orientation: '.$orientation);
+
 	$this->CurOrientation=$this->DefOrientation;
-	$this->w=$this->wPt/$this->k;
-	$this->h=$this->hPt/$this->k;
+	$this->w = $this->wPt / $this->k;
+	$this->h = $this->hPt / $this->k;
 	//Page margins (1 cm)
-	$margin=28.35/$this->k;
+	$margin = 28.35 / $this->k;
 	$this->SetMargins($margin,$margin);
 	//Interior cell margin (1 mm)
-	$this->cMargin=$margin/10;
+	$this->cMargin = $margin / 10;
 	//Line width (0.2 mm)
-	$this->LineWidth=.567/$this->k;
+	$this->LineWidth = .567 / $this->k;
 	//Automatic page break
 	$this->SetAutoPageBreak(true,2*$margin);
 	//Full width display mode
@@ -177,7 +177,7 @@ function FPDF($orientation='P',$unit='mm',$format='A4')
 	//Enable compression
 	$this->SetCompression(true);
 	//Set default PDF version number
-	$this->PDFVersion='1.3';
+	$this->PDFVersion = '1.3';
 }
 
 function SetMargins($left,$top,$right=-1)
@@ -463,47 +463,45 @@ function AddFont($family,$style='',$file='')
 {
 	//Add a TrueType or Type1 font
 	$family=strtolower($family);
-	if($file=='')
+	if ($file=='')
 		$file=str_replace(' ','',$family).strtolower($style).'.php';
-	if($family=='arial')
+	if ($family=='arial')
 		$family='helvetica';
 	$style=strtoupper($style);
-	if($style=='IB')
+	if ($style=='IB')
 		$style='BI';
 	$fontkey=$family.$style;
-	if(isset($this->fonts[$fontkey]))
+	if (isset($this->fonts[$fontkey]))
 		$this->Error('Font already added: '.$family.' '.$style);
 	include($this->_getfontpath().$file);
-	if(!isset($name))
+	if (!isset($name))
 		$this->Error('Could not include font definition file');
-	$i=count($this->fonts)+1;
-	$this->fonts[$fontkey]=array('i'=>$i,'type'=>$type,'name'=>$name,'desc'=>$desc,'up'=>$up,'ut'=>$ut,'cw'=>$cw,'enc'=>$enc,'file'=>$file);
-	if($diff)
+	$i = count($this->fonts) + 1;
+	$this->fonts[$fontkey] = array('i'=>$i,'type'=>$type,'name'=>$name,'desc'=>$desc,'up'=>$up,'ut'=>$ut,'cw'=>$cw,'enc'=>$enc,'file'=>$file);
+	if ($diff)
 	{
 		//Search existing encodings
 		$d=0;
 		$nb=count($this->diffs);
-		for($i=1;$i<=$nb;$i++)
+		for ($i =1 ; $i <= $nb; $i++)
 		{
-			if($this->diffs[$i]==$diff)
+			if ($this->diffs[$i] == $diff)
 			{
 				$d=$i;
 				break;
 			}
 		}
-		if($d==0)
-		{
+		if ($d == 0) {
 			$d=$nb+1;
 			$this->diffs[$d]=$diff;
 		}
 		$this->fonts[$fontkey]['diff']=$d;
 	}
-	if($file)
-	{
-		if($type=='TrueType')
-			$this->FontFiles[$file]=array('length1'=>$originalsize);
+	if ($file) {
+		if ($type == 'TrueType')
+			$this->FontFiles[$file] = array('length1' => $originalsize);
 		else
-			$this->FontFiles[$file]=array('length1'=>$size1,'length2'=>$size2);
+			$this->FontFiles[$file] = array('length1' => $size1,'length2' => $size2);
 	}
 }
 
