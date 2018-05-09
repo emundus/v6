@@ -34,9 +34,9 @@ try {
 }
 
 // If the person is a doctorant then they are only going inbound to UPVD.
-// UPVD ID = 108
+// UPVD ID = 49
 if ($user->profile == 1008) {
-    $institution_ids[] = 108;
+    $institution_ids[] = 49;
 } else {
 
     $query = 'SELECT host_institution FROM #__emundus_mobility
