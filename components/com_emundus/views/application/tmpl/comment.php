@@ -56,7 +56,7 @@ JFactory::getSession()->set('application_layout', 'comment');
                                         <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
                                     </div>
                                 </div>
-                                <div class="comment-text"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div class="comment-text"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>
                                 <textarea style="display: none;" class="ctext"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></textarea>
 								<?php if ($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) :?>
                                 <div class="action">
@@ -195,7 +195,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
 									'</div>'+
 								'</div>'+
-								'<div class="comment-text">'+escapeHtml(comment)+'</div>'+
+								'<div class="comment-text">'+escapeHtml(comment).replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>'+
                                 '<textarea style="display: none;" class="ctext">'+escapeHtml(comment)+'</textarea>'+
                                 '<div class="action">'+
                                     '<div class="edit-comment-container">'+
@@ -262,7 +262,7 @@ $(document).on('click', '.edit-comment', function (e) {
     comment.tinput.val(comment.title.text());
     comment.tinput.show();
     comment.body.hide();
-    comment.binput.val(comment.body.text());
+    comment.binput.val(comment.body.html().replace(/<br\s*[\/]?>/gi, "\n"));
     comment.binput.show();
     comment.actions.show();
     comment.edit.hide();
@@ -340,7 +340,7 @@ $(document).on('click', '.confirm-edit-comment', function (e) {
 
                 // The information is updated on the page. The date and user are also modified on the front-end.
                 comment.title.text(escapeHtml(comment.tinput.val()));
-                comment.body.text(escapeHtml(comment.binput.val()));
+                comment.body.html(escapeHtml(comment.binput.val()).replace(/(?:\r\n|\r|\n)/g, '<br>'));
                 comment.date.html('<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>');
 
             } else {
