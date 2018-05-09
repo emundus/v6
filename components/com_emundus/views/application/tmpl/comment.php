@@ -56,10 +56,8 @@ JFactory::getSession()->set('application_layout', 'comment');
                                         <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
                                     </div>
                                 </div>
-                                <div class="comment-text">
-                                    <?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?>
-                                </div>
-                                <input style="display: none;" name="ctext" type="text" value="<?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="comment-text"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></div>
+                                <textarea style="display: none;" class="ctext"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></textarea>
 								<?php if ($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) :?>
                                 <div class="action">
                                     <div class="edit-comment-container">
@@ -71,9 +69,11 @@ JFactory::getSession()->set('application_layout', 'comment');
                                     <div class="actions-edit-comment" style="display: none">
                                         <button type="button" class="btn btn-danger btn-xs cancel-edit-comment" title="<?php echo JText::_('CANCEL');?>" >
                                             <span class="glyphicon glyphicon-remove"></span>
+                                            <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                         <button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >
                                             <span class="glyphicon glyphicon-ok"></span>
+                                            <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                     </div>
 								</div>
@@ -159,7 +159,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 		var comment = $('#comment-body').val();
 	    var title = $('#comment-title').val();
 
-	    if (comment.length == 0) {
+	    if (comment.length === 0) {
 	        $('#comment-body').attr('style', 'height:250px !important;width:100% !important; border-color: red !important; background-color:pink !important;');
 	        return;
 	    }
@@ -196,7 +196,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 									'</div>'+
 								'</div>'+
 								'<div class="comment-text">'+escapeHtml(comment)+'</div>'+
-                                '<input style="display: none;" name="ctext" type="text" value="'+escapeHtml(comment)+'">'+
+                                '<textarea style="display: none;" class="ctext">'+escapeHtml(comment)+'</textarea>'+
                                 '<div class="action">'+
                                     '<div class="edit-comment-container">'+
                                         '<button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
@@ -207,9 +207,11 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                     '<div class="actions-edit-comment" style="display: none">'+
                                         '<button type="button" class="btn btn-danger btn-xs cancel-edit-comment" title="<?php echo JText::_('CANCEL');?>" >'+
                                             '<span class="glyphicon glyphicon-remove"></span>'+
+                                            '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
                                         '<button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
                                             '<span class="glyphicon glyphicon-ok"></span>'+
+                                            '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
                                     '</div>'+
                                 '</div>'+
@@ -240,21 +242,27 @@ $(document).off('click', '.edit-comment');
 $(document).on('click', '.edit-comment', function (e) {
 
     // Comment ID value is hidden in a div in the button for easier access.
-    var button = $(this);
+    // We then find the comment global element which has an ID matching that one.
+    var id = $($(this).find('.cid')[0]).text();
+
     var comment  = {
-        title : $(button.parent().parent().parent().find('.comment-name')[0]),
-        tinput : $(button.parent().parent().parent().find('input[name=cname]')[0]),
-        body : $(button.parent().parent().parent().find('.comment-text')[0]),
-        binput : $(button.parent().parent().parent().find('input[name=ctext]')[0]),
-        actions : $(button.parent().parent().find('.actions-edit-comment')[0]),
-        edit: $(button.parent())
+        element: $('#' + id)
     };
+
+    comment.title   = $(comment.element.find('.comment-name')[0]);
+    comment.tinput  = $(comment.element.find('input[name=cname]')[0]);
+    comment.body    = $(comment.element.find('.comment-text')[0]);
+    comment.binput  = $(comment.element.find('.ctext')[0]);
+    comment.actions = $(comment.element.find('.actions-edit-comment')[0]);
+    comment.edit    = $(comment.element.find('.edit-comment-container')[0]);
 
     // We've hidden some inputs in the comment, we just need to display them and hide the text.
     // We also need to show / hide the buttons.
     comment.title.hide();
+    comment.tinput.val(comment.title.text());
     comment.tinput.show();
     comment.body.hide();
+    comment.binput.val(comment.body.text());
     comment.binput.show();
     comment.actions.show();
     comment.edit.hide();
@@ -265,18 +273,20 @@ $(document).on('click', '.edit-comment', function (e) {
 $(document).off('click', '.cancel-edit-comment');
 $(document).on('click', '.cancel-edit-comment', function (e) {
 
-    // We are using the 'edit comment' button as a central point of reference.
-    // This helps make the code easier to understand and repeat.
-    var button = $($(this).parent().parent().find('.edit-comment')[0]);
+    // We are using the 'id' as a central point of reference.
+    // We need to get the ID hidden in the edit button.
+    var id = $($(this).find('.cid')[0]).text();
 
     var comment  = {
-        title : $(button.parent().parent().parent().find('.comment-name')[0]),
-        tinput : $(button.parent().parent().parent().find('input[name=cname]')[0]),
-        body : $(button.parent().parent().parent().find('.comment-text')[0]),
-        binput : $(button.parent().parent().parent().find('input[name=ctext]')[0]),
-        actions : $(button.parent().parent().find('.actions-edit-comment')[0]),
-        edit: $(button.parent())
+        element: $('#' + id)
     };
+
+    comment.title   = $(comment.element.find('.comment-name')[0]);
+    comment.tinput  = $(comment.element.find('input[name=cname]')[0]);
+    comment.body    = $(comment.element.find('.comment-text')[0]);
+    comment.binput  = $(comment.element.find('.ctext')[0]);
+    comment.actions = $(comment.element.find('.actions-edit-comment')[0]);
+    comment.edit    = $(comment.element.find('.edit-comment-container')[0]);
 
     // We need to clear and hide the fields as well as the buttons.
     comment.title.show();
@@ -293,19 +303,20 @@ $(document).on('click', '.cancel-edit-comment', function (e) {
 $(document).off('click', '.confirm-edit-comment');
 $(document).on('click', '.confirm-edit-comment', function (e) {
 
-    // This helps make the code easier to understand and repeat.
-    var button = $($(this).parent().parent().find('.edit-comment')[0]);
+    // We are using the 'id' as a central point of reference.
+    var id = $($(this).find('.cid')[0]).text();
 
     var comment  = {
-        id : $(button.find('.cid')[0]).text(),
-        title : $(button.parent().parent().parent().find('.comment-name')[0]),
-        tinput : $(button.parent().parent().parent().find('input[name=cname]')[0]),
-        body : $(button.parent().parent().parent().find('.comment-text')[0]),
-        binput : $(button.parent().parent().parent().find('input[name=ctext]')[0]),
-        actions : $(button.parent().parent().find('.actions-edit-comment')[0]),
-        edit: $(button.parent()),
-        date: $(button.parent().parent().parent().find('.comment-date')[0])
+        element: $('#' + id)
     };
+
+    comment.title   = $(comment.element.find('.comment-name')[0]);
+    comment.tinput  = $(comment.element.find('input[name=cname]')[0]);
+    comment.body    = $(comment.element.find('.comment-text')[0]);
+    comment.binput  = $(comment.element.find('.ctext')[0]);
+    comment.actions = $(comment.element.find('.actions-edit-comment')[0]);
+    comment.edit    = $(comment.element.find('.edit-comment-container')[0]);
+    comment.date    = $(comment.element.find('.comment-date')[0]);
 
     // Now we post the info in order to edit the comment.
     $.ajax({
@@ -313,7 +324,7 @@ $(document).on('click', '.confirm-edit-comment', function (e) {
         url:'index.php?option=com_emundus&controller=application&task=editcomment&format=raw',
         dataType: 'json',
         data: ({
-            id: comment.id,
+            id: id,
             title: comment.tinput.val(),
             text: comment.binput.val()
         }),
@@ -333,7 +344,7 @@ $(document).on('click', '.confirm-edit-comment', function (e) {
                 comment.date.html('<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>');
 
             } else {
-                button.append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+                comment.element.append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
             }
 
             // Show the new updated titles and clear the inputs.
@@ -347,7 +358,7 @@ $(document).on('click', '.confirm-edit-comment', function (e) {
             console.log(jqXHR.responseText);
 
             // Reset everything back to the way it was and display an error.
-            button.append('<p class="text-danger"><strong><?php echo JText::_('ERROR'); ?></strong></p>');
+            comment.element.append('<p class="text-danger"><strong><?php echo JText::_('ERROR'); ?></strong></p>');
             comment.title.show();
             comment.tinput.val('');
             comment.tinput.hide();
