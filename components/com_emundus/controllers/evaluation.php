@@ -582,42 +582,176 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 
     public function updatestate() {
-        $jinput = JFactory::getApplication()->input;
-        $fnums  = $jinput->getString('fnums', null);
-        $state  = $jinput->getInt('state', null);
 
-        $fnums = (array) json_decode(stripslashes($fnums));
+	    $app    = JFactory::getApplication();
+	    $jinput = $app->input;
+	    $fnums  = $jinput->getString('fnums', null);
+	    $state  = $jinput->getInt('state', null);
 
-        $m_files = $this->getModel('Files');
+	    $email_from_sys = $app->getCfg('mailfrom');
+	    $fnums = (array) json_decode(stripslashes($fnums));
 
-        if (is_array($fnums)) {
+	    $m_files = $this->getModel('Files');
+	    $validFnums = array();
 
-            $validFnums = array();
-            foreach ($fnums as $fnum) {
-                if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
-                    $validFnums[] = $fnum;
-            }
-            $res =  $m_files->updateState($validFnums, $state);
+	    if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+		    $fnums = $m_files->getAllFnums();
 
-        } else {
+	    foreach ($fnums as $fnum) {
+		    if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
+			    $validFnums[] = $fnum;
+	    }
 
-            $fnums = $m_files->getAllFnums();
-            $validFnums = array();
-            foreach ($fnums as $fnum) {
-                if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
-                    $validFnums[] = $fnum;
-            }
-            $res = $m_files->updateState($validFnums, $state);
+	    $fnumsInfos = $m_files->getFnumsInfos($validFnums);
+	    $res        = $m_files->updateState($validFnums, $state);
+	    $msg = '';
 
-        }
+	    if ($res !== false) {
+		    $m_application = $this->getModel('application');
+		    $status = $m_files->getStatus();
+		    // Get all codes from fnum
+		    $code = array();
+		    foreach ($fnumsInfos as $fnum) {
+			    $code[] = $fnum['training'];
+			    $row = [
+			    	'applicant_id' => $fnum['applicant_id'],
+	                 'user_id' => $this->_user->id,
+	                 'reason' => JText::_('STATUS'),
+	                 'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
+	                 'fnum' => $fnum['fnum']
+			    ];
+			    $m_application->addComment($row);
+		    }
+		    //*********************************************************************
+		    // Get triggered email
+		    include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+		    $m_email = new EmundusModelEmails;
+		    $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
 
-        if ($res !== false)
-            $msg = JText::_('STATE_SUCCESS');
-        else
-            $msg = JText::_('STATE_ERROR');
+		    if (count($trigger_emails) > 0) {
 
-        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
-        exit;
+			    foreach ($trigger_emails as $key => $trigger_email) {
+
+				    // Manage with default recipient by programme
+				    foreach ($trigger_email as $code => $trigger) {
+
+					    if ($trigger['to']['to_applicant'] == 1) {
+
+						    // Manage with selected fnum
+						    foreach ($fnumsInfos as $file) {
+							    $mailer = JFactory::getMailer();
+
+							    $post = array('FNUM' => $file['fnum']);
+							    $tags = $m_email->setTags($file['applicant_id'], $post);
+
+							    $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
+							    $from_id    = 62;
+							    $fromname   = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
+							    $to         = $file['email'];
+							    $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
+							    $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
+							    $body       = $m_email->setTagsFabrik($body, array($file['fnum']));
+
+							    // If the email sender has the same domain as the system sender address.
+							    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+								    $mail_from_address = $from;
+							    else
+								    $mail_from_address = $email_from_sys;
+
+							    // Set sender
+							    $sender = [
+								    $mail_from_address,
+								    $fromname
+							    ];
+
+							    $mailer->setSender($sender);
+							    $mailer->addReplyTo($from, $fromname);
+							    $mailer->addRecipient($to);
+							    $mailer->setSubject($subject);
+							    $mailer->isHTML(true);
+							    $mailer->Encoding = 'base64';
+							    $mailer->setBody($body);
+
+							    $send = $mailer->Send();
+							    if ($send !== true) {
+								    $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
+								    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+							    } else {
+								    $message = array(
+									    'user_id_from' => $from_id,
+									    'user_id_to' => $file['applicant_id'],
+									    'subject' => $subject,
+									    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+								    );
+								    $m_email->logEmail($message);
+								    $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
+								    JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
+							    }
+						    }
+					    }
+
+					    foreach ($trigger['to']['recipients'] as $key => $recipient) {
+						    $mailer = JFactory::getMailer();
+
+						    $post = array();
+						    $tags = $m_email->setTags($recipient['id'], $post);
+
+						    $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
+						    $from_id    = 62;
+						    $fromname   = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
+						    $to         = $recipient['email'];
+						    $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
+						    $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
+						    $body       = $m_email->setTagsFabrik($body, $validFnums);
+
+						    // If the email sender has the same domain as the system sender address.
+						    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+							    $mail_from_address = $from;
+						    else
+							    $mail_from_address = $email_from_sys;
+
+						    // Set sender
+						    $sender = [
+							    $mail_from_address,
+							    $fromname
+						    ];
+
+						    $mailer->setSender($sender);
+						    $mailer->addReplyTo($from, $fromname);
+						    $mailer->addRecipient($to);
+						    $mailer->setSubject($subject);
+						    $mailer->isHTML(true);
+						    $mailer->Encoding = 'base64';
+						    $mailer->setBody($body);
+
+						    $send = $mailer->Send();
+						    if ($send !== true) {
+							    $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
+							    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+							    //die();
+						    } else {
+							    $message = [
+								    'user_id_from' => $from_id,
+								    'user_id_to' => $recipient['id'],
+								    'subject' => $subject,
+								    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+							    ];
+							    $m_email->logEmail($message);
+							    $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
+							    JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
+						    }
+					    }
+				    }
+			    }
+		    }
+		    //
+		    //***************************************************
+
+		    $msg .= JText::_('STATE_SUCCESS');
+	    } else $msg .= JText::_('STATE_ERROR');
+
+	    echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+	    exit;
     }
 
     public function unlinkevaluators() {
