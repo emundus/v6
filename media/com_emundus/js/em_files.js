@@ -106,10 +106,7 @@ function search() {
     });
 }
 function clearchosen(cible){
-    $(cible).val("%");
-    //$('#select_multiple_programmes option[value="%"]').attr('selected',true);
-    $(cible).trigger('chosen:updated');
-    // $("#select_multiple_programmes").trigger("chosen:updated");
+    $(cible)[0].sumo.unSelectAll();
 }
 
 function getCookie(cname) {
