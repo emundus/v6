@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,8 +26,7 @@ if(!empty($this->options['display'])) {
 	if(empty($this->addressClass))
 		$this->addressClass = hikashop_get('class.address');
 	$cart = $this->checkoutHelper->getCart();
-	if(empty($this->options['read_only']))
-		$this->cart_addresses = $this->checkoutHelper->getAddresses();
+	$this->cart_addresses = $this->checkoutHelper->getAddresses();
 
 	if(empty($this->options['edit_address']) && !empty($this->options['show_billing']) && !empty($this->options['show_shipping'])) {
 ?>
@@ -65,12 +64,10 @@ if(!empty($this->options['display'])) {
 ?>
 
 	<div class="hkform-group control-group hikashop_checkout_address_<?php echo $fieldname;?>" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_'.$fieldname; ?>">
-		<label id="usernamemsg" for="register_username" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title="">
 <?php
-			$classname = $labelcolumnclass.' hkcontrol-label';
-			echo $this->fieldClass->getFieldName($field, true, $classname);
+		$classname = $labelcolumnclass.' hkcontrol-label';
+		echo $this->fieldClass->getFieldName($field, true, $classname);
 ?>
-		</label>
 		<div class="<?php echo $inputcolumnclass;?>">
 <?php
 			$onWhat = ($field->field_type == 'radio') ? 'onclick' : 'onchange';
@@ -191,6 +188,7 @@ if(!empty($this->options['display'])) {
 			<fieldset class="hika_address_field hikashop_checkout_shipping_address_block">
 				<legend><?php echo JText::_('HIKASHOP_SHIPPING_ADDRESS'); ?></legend>
 <?php
+			$shipping_address_id = (int)$cart->cart_shipping_address_ids;
 			if(!empty($shippingAddress_override)) {
 ?>
 				<span class="hikashop_checkout_shipping_address_info"><?php
@@ -198,10 +196,8 @@ if(!empty($this->options['display'])) {
 				?></span>
 <?php
 			} elseif(!empty($this->options['read_only'])) {
-				echo $this->addressClass->displayAddress($addresses['fields'], $cart->shipping_address, 'address');
+				echo $this->addressClass->displayAddress($this->cart_addresses['fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
 			} elseif($this->options['address_selector'] == 2) {
-				$shipping_address_id = (int)$cart->cart_shipping_address_ids;
-
 				$values = array();
 				foreach($this->cart_addresses['data'] as $k => $address) {
 					$addr = $this->addressClass->miniFormat($address);
@@ -226,7 +222,6 @@ if(!empty($this->options['display'])) {
 				</div>
 <?php
 			} else {
-				$shipping_address_id = (int)$cart->cart_shipping_address_ids;
 				foreach($this->cart_addresses['data'] as $k => $address) {
 					$update_url = 'address&task=edit&cid='.(int)$address->address_id;
 					$delete_url = 'address&task=delete&cid='.(int)$address->address_id;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -419,7 +419,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		if(hikashop_acl('product/edit/description')) {
-			$product->product_description = hikaInput::get()->getRaw('product_description', '');
+			$product->product_description = trim(hikaInput::get()->getRaw('product_description', ''));
 
 			$product->product_description_raw = hikaInput::get()->getRaw('product_description_raw', null);
 			$default_description_type = $config->get('default_description_type', '');
@@ -877,7 +877,7 @@ class hikashopProductClass extends hikashopClass{
 		unset($product->bundle);
 
 		if(hikashop_acl('product/variant/description')) {
-			$product->product_description = hikaInput::get()->getRaw('product_variant_description', '');
+			$product->product_description = trim(hikaInput::get()->getRaw('product_variant_description', ''));
 
 			$product->product_description_raw = hikaInput::get()->getRaw('product_variant_description_raw', null);
 			$default_description_type = $config->get('default_description_type', '');
@@ -1710,6 +1710,8 @@ class hikashopProductClass extends hikashopClass{
 			$options['group_by_category'] = false;
 		if(!isset($options['price_display_type']))
 			$options['price_display_type'] = 'inherit';
+		if(!isset($options['bundle_qty']))
+			$options['bundle_qty'] = true;
 
 		$ids = array();
 		foreach($rows as $key => $row) {
@@ -1829,105 +1831,6 @@ class hikashopProductClass extends hikashopClass{
 				$badgeClass->loadBadges($rows[$k]);
 			}
 		}
-
-		if(!hikashop_level(1))
-			return true;
-
-		if($options['load_custom_product_fields']) {
-			$fieldsClass = hikashop_get('class.field');
-			$this->productFields = $fieldsClass->getFields($options['load_custom_product_fields'], $rows, 'product', 'checkout&task=state');
-		}
-
-		if(!hikashop_level(2))
-			return true;
-
-		if(!$options['load_custom_item_fields'])
-			return true;
-
-		if(empty($fieldsClass))
-			$fieldsClass = hikashop_get('class.field');
-
-		$this->itemFields = $fieldsClass->getFields('frontcomp', $rows, 'item', 'checkout&task=state');
-		if(empty($this->itemFields))
-			return true;
-
-		$cats = $fieldsClass->getCategories('item', $rows);
-
-		$item_keys = array('field_categories', 'field_products');
-		foreach($this->itemFields as &$itemField) {
-			foreach($item_keys as $k) {
-				if(is_string($itemField->$k) && strpos($itemField->$k, ',') !== false) {
-					$itemField->$k = explode(',', trim($itemField->$k, ','));
-					JArrayHelper::toInteger($itemField->$k);
-				} elseif(!is_array($itemField->$k) && !empty($itemField->$k) && is_numeric($itemField->$k)) {
-					$itemField->$k = array( (int)$itemField->$k );
-				} elseif(empty($itemField->$k)) {
-					$itemField->$k = array();
-				}
-			}
-
-			$item_cats = array();
-			if(!empty($itemField->field_with_sub_categories) && is_array($itemField->field_categories)) {
-				foreach($itemField->field_categories as $c) {
-					$item_cats[] = $c;
-					foreach($cats['children'] as $k => $v) {
-						if(in_array($c, $v))
-							$item_cats[] = $k;
-					}
-				}
-				array_unique($item_cats);
-			}
-
-			$isListingField = $options['load_custom_item_fields'] && (strpos($itemField->field_display, ';front_product_listing=1;') !== false);
-
-			if(!$isListingField && empty($itemField->field_required))
-				continue;
-
-			$product_restriction = !empty($itemField->field_products) && count($itemField->field_products);
-			$category_restriction = !empty($itemField->field_categories) && $itemField->field_categories != 'all';
-
-			foreach($rows as &$row) {
-				if(!isset($row->itemFields))
-					$row->itemFields = array();
-
-				if($product_restriction && in_array((int)$row->product_id, $itemField->field_products)) {
-					$row->itemFields[$itemField->field_namekey] =& $itemField;
-					if(!$isListingField)
-						$row->has_options = true;
-					$row->has_required_item_field = true;
-					continue;
-				}
-
-				if($category_restriction) {
-					$prod_cats = array_keys($row->categories);
-
-					if(empty($item_cats)) {
-						$tmp = array_intersect($itemField->field_categories, $prod_cats);
-					} else {
-						$tmp = array_intersect($item_cats, $prod_cats);
-					}
-
-					if(!empty($tmp)){
-						$row->itemFields[$itemField->field_namekey] =& $itemField;
-						if(!$isListingField)
-							$row->has_options = true;
-						$row->has_required_item_field = true;
-
-						continue;
-					}
-				}
-
-				if(!$product_restriction && !$category_restriction) {
-					$row->itemFields[$itemField->field_namekey] =& $itemField;
-					if(!$isListingField)
-						$row->has_options = true;
-					$row->has_required_item_field = true;
-				}
-			}
-			unset($row);
-		}
-		unset($itemField);
-		unset($prod_cats);
 	}
 
 
@@ -3008,39 +2911,42 @@ class hikashopProductClass extends hikashopClass{
 			$toBeRemovedFiles = $this->database->loadColumn();
 		}
 		if(!empty($toBeRemovedFiles)){
-			$fileClass = hikashop_get('class.file');
-			$uploadPath = $fileClass->getPath($file_type);
-			$oldFiles = array();
-			foreach($toBeRemovedFiles as $old){
-				$oldFiles[] = $this->database->Quote($old);
-			}
+			$config = hikashop_config();
+			if(!$config->get('keep_category_product_images', 0)) {
+				$fileClass = hikashop_get('class.file');
+				$uploadPath = $fileClass->getPath($file_type);
+				$oldFiles = array();
+				foreach($toBeRemovedFiles as $old){
+					$oldFiles[] = $this->database->Quote($old);
+				}
 
-			$filter = '';
-			if(!empty($element->$type) && count($element->$type))
-				$filter = ' OR file_id IN ('.implode(',',$element->$type).')';
-			$query = 'SELECT file_path FROM '.hikashop_table('file').' WHERE file_path IN ('.implode(',',$oldFiles).') AND (file_ref_id != '.$status.$filter.')';
-			$this->database->setQuery($query);
-			if(!HIKASHOP_J25){
-				$keepFiles = $this->database->loadResultArray();
-			} else {
-				$keepFiles = $this->database->loadColumn();
-			}
-			foreach($toBeRemovedFiles as $old){
-				if((empty($keepFiles) || !in_array($old,$keepFiles)) && JFile::exists( $uploadPath . $old)){
-					JFile::delete( $uploadPath . $old );
-					jimport('joomla.filesystem.folder');
-					$thumbnail_folders = JFolder::folders($uploadPath);
-					if(JFolder::exists($uploadPath.'thumbnails'.DS)) {
-						$other_thumbnail_folders = JFolder::folders($uploadPath.'thumbnails');
-						foreach($other_thumbnail_folders as $other_thumbnail_folder) {
-							$thumbnail_folders[] = 'thumbnails'.DS.$other_thumbnail_folder;
+				$filter = '';
+				if(!empty($element->$type) && count($element->$type))
+					$filter = ' OR file_id IN ('.implode(',',$element->$type).')';
+				$query = 'SELECT file_path FROM '.hikashop_table('file').' WHERE file_path IN ('.implode(',',$oldFiles).') AND (file_ref_id != '.$status.$filter.')';
+				$this->database->setQuery($query);
+				if(!HIKASHOP_J25){
+					$keepFiles = $this->database->loadResultArray();
+				} else {
+					$keepFiles = $this->database->loadColumn();
+				}
+				foreach($toBeRemovedFiles as $old){
+					if((empty($keepFiles) || !in_array($old,$keepFiles)) && JFile::exists( $uploadPath . $old)){
+						JFile::delete( $uploadPath . $old );
+						jimport('joomla.filesystem.folder');
+						$thumbnail_folders = JFolder::folders($uploadPath);
+						if(JFolder::exists($uploadPath.'thumbnails'.DS)) {
+							$other_thumbnail_folders = JFolder::folders($uploadPath.'thumbnails');
+							foreach($other_thumbnail_folders as $other_thumbnail_folder) {
+								$thumbnail_folders[] = 'thumbnails'.DS.$other_thumbnail_folder;
+							}
 						}
-					}
-					foreach($thumbnail_folders as $thumbnail_folder){
-						if($thumbnail_folder != 'thumbnail' && substr($thumbnail_folder, 0, 9) != 'thumbnail' && substr($thumbnail_folder, 0, 11) != ('thumbnails'.DS))
-							continue;
-						if(!in_array($file_type,array('file','watermark')) && JFile::exists(  $uploadPath .$thumbnail_folder.DS. $old)){
-							JFile::delete( $uploadPath .$thumbnail_folder.DS. $old );
+						foreach($thumbnail_folders as $thumbnail_folder){
+							if($thumbnail_folder != 'thumbnail' && substr($thumbnail_folder, 0, 9) != 'thumbnail' && substr($thumbnail_folder, 0, 11) != ('thumbnails'.DS))
+								continue;
+							if(!in_array($file_type,array('file','watermark')) && JFile::exists(  $uploadPath .$thumbnail_folder.DS. $old)){
+								JFile::delete( $uploadPath .$thumbnail_folder.DS. $old );
+							}
 						}
 					}
 				}

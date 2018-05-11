@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -171,7 +171,7 @@ defined('_JEXEC') or die('Restricted access');
 		</div>
 		<dl class="hika_options">
 <?php
-		if((!isset($this->product->product_type) || in_array($this->product->product_type, array('main', 'template'))) && hikashop_acl('product/edit/tax')) {
+		if((!isset($this->product->product_type) || $this->product->product_type != 'variant') && hikashop_acl('product/edit/tax')) {
 ?>
 			<dt class="hikashop_product_tax"><label for="dataproductproduct_tax_id"><?php echo JText::_('PRODUCT_TAXATION_CATEGORY'); ?></label></dt>
 			<dd class="hikashop_product_tax"><?php
@@ -214,7 +214,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 <?php } ?>
 
 <?php
-	if(!isset($this->product->product_type) || $this->product->product_type == 'main') {
+	if(!isset($this->product->product_type) || $this->product->product_type != 'variant') {
 ?>
 	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_meta"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_meta_title"><?php

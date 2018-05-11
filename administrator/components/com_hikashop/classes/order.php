@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -762,24 +762,22 @@ class hikashopOrderClass extends hikashopClass {
 			}
 		}
 
-		if(!empty($cart->coupon) && !empty($cart->coupon->total->prices[0]->price_value_without_discount_with_tax)) {
-			$order->order_discount_price = $cart->coupon->total->prices[0]->price_value_without_discount_with_tax - @$cart->coupon->total->prices[0]->price_value_with_tax;
-			if(!empty($cart->coupon->total->prices[0]->price_value_with_tax) && !empty($cart->coupon->total->prices[0]->price_value)) {
-				$order->order_discount_tax = (@$cart->coupon->total->prices[0]->price_value_without_discount_with_tax - @$cart->coupon->total->prices[0]->price_value_without_discount) - (@$cart->coupon->total->prices[0]->price_value_with_tax - @$cart->coupon->total->prices[0]->price_value);
-				if(!empty($cart->coupon->taxes)) {
-					foreach($cart->coupon->taxes as $tax) {
-						if(isset($order->order_tax_info[$tax->tax_namekey])) {
-							$order->order_tax_info[$tax->tax_namekey]->tax_amount_for_coupon = $tax->tax_amount;
-						} else {
-							$order->order_tax_info[$tax->tax_namekey] = $tax;
-							$order->order_tax_info[$tax->tax_namekey]->tax_amount_for_coupon = $order->order_tax_info[$tax->tax_namekey]->tax_amount;
-							$order->order_tax_info[$tax->tax_namekey]->tax_amount = 0;
-						}
+
+		if(!empty($cart->coupon) && isset($cart->coupon->discount_value)) {
+			$order->order_discount_price = $cart->coupon->discount_value;
+			if(!empty($cart->coupon->taxes)) {
+				$order->order_discount_tax = $cart->coupon->discount_value - $cart->coupon->discount_value_without_tax;
+				foreach($cart->coupon->taxes as $tax) {
+					if(isset($order->order_tax_info[$tax->tax_namekey])) {
+						$order->order_tax_info[$tax->tax_namekey]->tax_amount_for_coupon = $tax->tax_amount;
+					} else {
+						$order->order_tax_info[$tax->tax_namekey] = $tax;
+						$order->order_tax_info[$tax->tax_namekey]->tax_amount_for_coupon = $order->order_tax_info[$tax->tax_namekey]->tax_amount;
+						$order->order_tax_info[$tax->tax_namekey]->tax_amount = 0;
 					}
 				}
 			}
 		}
-
 		if(hikashop_level(2) && !empty($cart->order_fields)) {
 			foreach($cart->order_fields as $k => $v) {
 				if(isset($cart->cart_fields->$k))
@@ -1470,7 +1468,7 @@ class hikashopOrderClass extends hikashopClass {
 						}
 					}
 
-					if(!empty($products[$k]->files) || empty($product->product_parent_id))
+					if(!empty($products[$k]->images) || empty($product->product_parent_id))
 						continue;
 					foreach($images as $image) {
 						if($product->product_parent_id == $image->file_ref_id) {

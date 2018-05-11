@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('affiliate_partner_key_name');?>><?php echo JText::_('PARTNER_KEY'); ?></td>
 		<td>
-			<input class="inputbox" type="text" name="params[system][hikashopaffiliate][partner_key_name]" value="<?php echo @$this->escape($this->affiliate_params['partner_key_name']); ?>" />
+			<input class="inputbox" type="text" name="params[system][hikashopaffiliate][partner_key_name]" value="<?php echo $this->escape(@$this->affiliate_params['partner_key_name']); ?>" />
 		</td>
 	</tr>
 	<tr>

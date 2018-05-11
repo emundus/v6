@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,8 +43,19 @@ defined('_JEXEC') or die('Restricted access');
 		<dt><label for="discount_percent_amount"><?php
 			echo JText::_('DISCOUNT_PERCENT_AMOUNT');
 		?></label></dt>
-		<dd class="input_large">
-			<input type="text" name="data[discount][discount_percent_amount]" id="discount_percent_amount" class="inputbox" value="<?php echo $this->escape(@$this->element->discount_percent_amount); ?>" />
+		<dd>
+			<input type="text" name="data[discount][discount_percent_amount]" id="discount_percent_amount" class="inputbox" value="<?php echo $this->escape(@$this->element->discount_percent_amount); ?>" />%
+		</dd>
+		<dt data-discount-display="coupon"><label for="discount_shipping_percent"><?php
+			echo JText::_('DISCOUNT_SHIPPING_PERCENTAGE');
+		?></label></dt>
+		<dd data-discount-display="coupon">
+<?php if(hikashop_level(1)) { ?>
+			<input type="text" name="data[discount][discount_shipping_percent]" id="discount_shipping_percent" class="inputbox" value="<?php echo $this->escape(@$this->element->discount_shipping_percent); ?>" />%
+<?php } else {
+		echo hikashop_getUpgradeLink('essential');
+}?>
+
 		</dd>
 		<dt data-discount-display="coupon"><label><?php
 			echo JText::_('AUTOMATIC_TAXES');
@@ -62,7 +73,7 @@ defined('_JEXEC') or die('Restricted access');
 		<dt><label for="discount_used_times"><?php
 			echo JText::_('DISCOUNT_USED_TIMES');
 		?></label></dt>
-		<dd class="input_large">
+		<dd>
 			<input type="text" name="data[discount][discount_used_times]" id="discount_used_times" class="inputbox" value="<?php echo $this->escape(@$this->element->discount_used_times); ?>" />
 		</dd>
 

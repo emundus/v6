@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -103,6 +103,7 @@ class hikashopViewClass extends hikashopClass {
 		if($obj->type == 'plugin') {
 			$obj->folder = rtrim(JPATH_PLUGINS,DS).DS.$obj->type_name.DS;
 		} else {
+			$layout_mode = false;
 			if($obj->type_name == HIKASHOP_COMPONENT) {
 				switch($obj->client_id){
 					case 0:
@@ -124,6 +125,8 @@ class hikashopViewClass extends hikashopClass {
 					foreach($pluginViews as $pluginView) {
 						if($pluginView['client_id'] == $obj->client_id && $pluginView['component'] == $obj->type_name) {
 							$view = $pluginView['view'];
+							if(!empty($pluginView['layout']))
+								$layout_mode = true;
 							$obj->type_pretty_name = $pluginView['name'];
 							break;
 						}
@@ -134,6 +137,8 @@ class hikashopViewClass extends hikashopClass {
 				}
 			}
 			$obj->folder = $view.$obj->view.DS.'tmpl'.DS;
+			if($layout_mode)
+				$obj->folder = $view;
 		}
 		$obj->path = $obj->folder.$obj->filename;
 

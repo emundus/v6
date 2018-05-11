@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -195,7 +195,11 @@ defined('_JEXEC') or die('Restricted access');
 								<?php } ?>
 							</td>
 							<td><?php
-								echo $this->currencyHelper->displayPrices(@$row->prices);
+								$field = 'price_value';
+								if($this->config->get('floating_tax_prices')){
+									$field = 'price_value_with_tax';
+								}
+								echo $this->currencyHelper->displayPrices(@$row->prices, $field);
 							?></td>
 							<td><?php
 								echo ($row->product_quantity==-1?JText::_('UNLIMITED'):$row->product_quantity);

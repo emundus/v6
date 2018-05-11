@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -329,14 +329,6 @@ class productController extends hikashopController {
 			return $this->show();
 
 		$config = hikashop_config();
-		if($config->get('catalogue')) {
-			if(in_array($tmpl, array('ajax', 'raw'))) {
-				echo '{ret:0}';
-				exit;
-			}
-			return false;
-		}
-
 		$app = JFactory::getApplication();
 		$cartClass = hikashop_get('class.cart');
 
@@ -374,6 +366,15 @@ class productController extends hikashopController {
 		}
 
 		if($cart_id === false) {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
+				echo '{ret:0}';
+				exit;
+			}
+			return false;
+		}
+
+
+		if($cart_type != 'wishlist' && $config->get('catalogue')) {
 			if(in_array($tmpl, array('ajax', 'raw'))) {
 				echo '{ret:0}';
 				exit;

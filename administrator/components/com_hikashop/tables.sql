@@ -199,6 +199,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_discount` (
 	`discount_site_id` varchar(255) NULL DEFAULT '',
 	`discount_user_id` varchar(255) NOT NULL DEFAULT '',
 	`discount_tax` tinyint(3) unsigned DEFAULT '0',
+	`discount_shipping_percent` decimal(12,3) NOT NULL DEFAULT '0.000',
 	PRIMARY KEY (`discount_id`),
 	UNIQUE KEY `discount_code` (`discount_code`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;

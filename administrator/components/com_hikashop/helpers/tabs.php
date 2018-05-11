@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -147,6 +147,7 @@ class hikashopTabsHelper {
 				var expire = new Date(); expire.setDate(expire.getDate() + 5);
 				document.cookie = "hikashop-lastTab-"+id+"="+escape(jQuery(e.target).attr("id"))+"; expires="+expire;
 			}
+			window.hikashop.checkConsistency();
 		});
 		var lastTab = null;
 		if(localStorage) {

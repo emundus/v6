@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -57,10 +57,11 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 	public function processPackageLimit($limit_key, $limit_value, $product, $qty, $package, $units) {
 		switch ($limit_key) {
 			case 'dimension':
-				$divide = (float)(($product['z'] + $product['y']) * 2 + $product['x']);
+				$divide = (float)(($product['x'] + $product['y']) * 2 + $product['z']);
 				if(empty($divide) || $divide > $limit_value)
 					return false;
-				return (int)floor($limit_value / $divide);
+				$current_limit_value = max(0.0, $limit_value - (float)(($package['x'] + $package['y']) * 2 + $package['z']));
+				return (int)floor($current_limit_value / $divide);
 				break;
 		}
 		return parent::processPackageLimit($limit_key, $limit_value , $product, $qty, $package, $units);

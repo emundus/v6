@@ -65,11 +65,11 @@ if ($interviewed) {
 		$db->execute();
 
 		// Get the email reminding the candidate to login and book an interview.
-		$query = 'SELECT id, subject, emailfrom, name, message
+		/*$query = 'SELECT id, subject, emailfrom, name, message
 					FROM #__emundus_setup_emails
 					WHERE lbl = "book_interview_reminder"';
 		$db->setQuery($query);
-		$obj = $db->loadObject();
+		$obj = $db->loadObject(); */
 
 	} catch (Exception $e) {
 		JLog::add('Error in plugin evaluation-ESA on query : '.$query, JLog::ERROR, 'com_emundus');

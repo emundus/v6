@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,8 @@ class plgHikashoppaymentPayplug extends hikashopPaymentPlugin
 	var $pluginConfig = array(
 		'email' => array('HIKA_EMAIL', 'input'),
 		'password' => array('HIKA_PASSWORD', 'input'),
-		'debug' => array('DEBUG', 'boolean','0'),
+		'debug' => array('DEBUG', 'boolean', '0'),
+		'sandbox' => array('SANDBOX', 'boolean', '0'),
 		'cancel_url' => array('CANCEL_URL', 'input'),
 		'return_url' => array('RETURN_URL', 'input'),
 		'invalid_status' => array('INVALID_STATUS', 'orderstatus'),
@@ -156,7 +157,7 @@ class plgHikashoppaymentPayplug extends hikashopPaymentPlugin
 		}else{
 			require_once(dirname(__FILE__).'/lib/payplug.php');
 			try{
-				$parameters = Payplug::loadParameters($element->payment_params->email, $element->payment_params->password);
+				$parameters = Payplug::loadParameters($element->payment_params->email, $element->payment_params->password, (int)$element->payment_params->sandbox);
 				$parameters->saveInFile(HIKASHOP_MEDIA."payplug_parameters.json");
 			}catch(Exception $e){
 				$msg = $e->getMessage();

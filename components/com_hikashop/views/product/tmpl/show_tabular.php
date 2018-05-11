@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -212,17 +212,21 @@ if(!empty($this->fields)){
 </form>
 <?php
 	$description = trim(JHTML::_('content.prepare',preg_replace('#<hr *id="system-readmore" */>#i','',$this->element->product_description)));
+	$selected = '';
 ?>
 <div id="hikashop_product_bottom_part" class="hikashop_product_bottom_part show_tabular">
 	<div id="hikashop_tabs_div">
 		<ul class="hikashop_tabs_ul">
-<?php if(!empty($description)) { ?>
+<?php if(!empty($description) || !empty ($this->element->product_url)) {
+		if(empty($selected)) $selected = 'hikashop_show_tabular_description'; ?>
 			<li id="hikashop_show_tabular_description_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_DESCRIPTION');?></li>
 <?php } ?>
-<?php if(!empty($specif_tab_content)) { ?>
+<?php if(!empty($specif_tab_content)) {
+		if(empty($selected)) $selected = 'hikashop_show_tabular_specification'; ?>
 			<li id="hikashop_show_tabular_specification_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('SPECIFICATIONS');?></li>
 <?php } ?>
-<?php if(in_array($status_vote, array('comment', 'two', 'both'))) { ?>
+<?php if(in_array($status_vote, array('comment', 'two', 'both'))) {
+		if(empty($selected)) $selected = 'hikashop_show_tabular_comment'; ?>
 			<li id="hikashop_show_tabular_comment_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_COMMENT');?></li>
 			<li id="hikashop_show_tabular_new_comment_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_NEW_COMMENT');?></li>
 <?php } ?>
@@ -231,6 +235,7 @@ if(!empty($this->fields)){
 	if(!empty($this->element->extraData->bottomBegin))
 		echo implode("\r\n",$this->element->extraData->bottomBegin);
 ?>
+<?php if(!empty($description) || !empty ($this->element->product_url)) { ?>
 		<div class="hikashop_tabs_content" id="hikashop_show_tabular_description">
 <?php if(!empty($description)) { ?>
 			<div id="hikashop_product_description_main" class="hikashop_product_description_main" itemprop="description"><?php
@@ -243,6 +248,7 @@ if(!empty($this->fields)){
 				}
 			?></span>
 		</div>
+<?php } ?>
 <?php if(!empty($specif_tab_content)) { ?>
 		<div class="hikashop_tabs_content" id="hikashop_show_tabular_specification"><?php
 				echo $specif_tab_content;
@@ -266,7 +272,7 @@ if(!empty($this->fields)){
 			</div>
 		</form>
 <?php } ?>
-<input type="hidden" name="selected_tab" id="selected_tab" value="hikashop_show_tabular_description"/>
+<input type="hidden" name="selected_tab" id="selected_tab" value="<?php echo $selected; ?>"/>
 <?php
 	if(!empty($this->element->extraData->bottomEnd))
 		echo implode("\r\n",$this->element->extraData->bottomEnd);

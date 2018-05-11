@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.3.0
+ * @version	3.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -453,6 +453,61 @@ class hikashopDiscountClass extends hikashopClass {
 			hikaInput::get()->set('coupon_error_message',$couponErrorMessage);
 		}
 		return $coupon2;
+	}
+
+	public function afterShippingProcessing(&$cart){
+		if(empty($cart->coupon))
+			return;
+		if(empty($cart->coupon->discount_shipping_percent) || bccomp($cart->coupon->discount_shipping_percent, 0, 5) === 0)
+			return;
+		if(empty($cart->shipping))
+			return;
+
+		$currencyClass = hikashop_get('class.currency');
+		$round = $currencyClass->getRounding(@$cart->full_total->prices[0]->price_currency_id,true);
+		$shipping_price = 0.0;
+		$shipping_price_with_tax = 0.0;
+		$taxes = array();
+		foreach($cart->shipping as &$shipping) {
+			if(empty($shipping->shipping_price_with_tax) || bccomp($shipping->shipping_price_with_tax, 0, 5) === 0)
+				continue;
+
+			$shipping_price_with_tax += $currencyClass->round($cart->coupon->discount_shipping_percent * $shipping->shipping_price_with_tax / 100, $round);
+			$shipping_price += $currencyClass->round($cart->coupon->discount_shipping_percent * $shipping->shipping_price / 100, $round);
+			if(!empty($shipping->taxes)) {
+				foreach($shipping->taxes as $tax){
+					$tax->tax_amount = $currencyClass->round($cart->coupon->discount_shipping_percent * $tax->tax_amount / 100, $round);
+					if(isset($taxes[$tax->tax_namekey]))
+						$taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
+					else
+						$taxes[$tax->tax_namekey] = clone($tax);
+				}
+			}
+		}
+
+		if($shipping_price_with_tax == 0.0)
+			return;
+
+		$cart->coupon->discount_value_without_tax += $shipping_price;
+		$cart->coupon->discount_value += $shipping_price_with_tax;
+		if(!isset($cart->coupon->taxes))
+			$cart->coupon->taxes = array();
+		foreach($taxes as $tax) {
+			if(isset($cart->coupon->taxes[$tax->tax_namekey]))
+				$cart->coupon->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
+			else
+				$cart->coupon->taxes[$tax->tax_namekey] = clone($tax);
+		}
+
+		$cart->full_total->prices[0]->price_value -= $shipping_price;
+		$cart->full_total->prices[0]->price_value_with_tax -= $shipping_price_with_tax;
+		foreach($taxes as $tax) {
+			$tax->tax_amount = -$tax->tax_amount;
+			if(isset($cart->full_total->prices[0]->taxes[$tax->tax_namekey]))
+				$cart->full_total->prices[0]->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
+			else
+				$cart->full_total->prices[0]->taxes[$tax->tax_namekey]->tax_amount = clone($tax);
+		}
 	}
 
 	function copyStandardPrices($prices) {
