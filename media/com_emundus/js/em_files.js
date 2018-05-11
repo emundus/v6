@@ -3743,6 +3743,7 @@ $(document).ready(function()
                 });
 
                 break;
+
             // Status
             case 13:
                 $('#can-val').empty();
@@ -3756,7 +3757,7 @@ $(document).ready(function()
                 //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getstate';
                 $.ajax({
                     type:'get',
-                    url:url,
+                    url: url,
                     dataType:'json',
                     success: function(result)
                     {
@@ -3766,7 +3767,7 @@ $(document).ready(function()
 
                         for (var i in result.states)
                         {
-                            if(isNaN(parseInt(i)))
+                            if (isNaN(parseInt(i)))
                                 break;
                             status += '<option value="'+result.states[i].step+'" >'+result.states[i].value+'</option>';
                         }
@@ -3782,9 +3783,9 @@ $(document).ready(function()
                 });
 
                 break;
+
             // tags
             case 14:
-
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
                                     '<button id="success-ok" style="margin-left:5px;" type="button" class="btn btn-success" disabled="disabled">'+Joomla.JText._('OK')+'</button>');
@@ -4789,7 +4790,7 @@ $(document).ready(function()
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
-                url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=updatestate';
+                url = 'index.php?option=com_emundus&controller=files&task=updatestate';
                 $.ajax(
                     {
                         type:'POST',
