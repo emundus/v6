@@ -99,25 +99,24 @@ function search() {
                 reloadData($('#view').val());
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
+        error: function(jqXHR) {
             console.log(jqXHR.responseText);
         }
 
     });
 }
 function clearchosen(cible){
-    $(cible).val("%");
-    //$('#select_multiple_programmes option[value="%"]').attr('selected',true);
-    $(cible).trigger('chosen:updated');
-    // $("#select_multiple_programmes").trigger("chosen:updated");
+    $(cible)[0].sumo.unSelectAll();
 }
 
 function getCookie(cname) {
-    var name = cname + "=";
+    var name = cname + '=';
     var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
+    for (var i=0; i<ca.length; i++) {
         var c = ca[i].trim();
-        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
     }
     return "";
 }
@@ -3649,8 +3648,6 @@ $(document).ready(function()
                         $('#exp-opt').hide();
                 });
 
-
-
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
 
@@ -3663,6 +3660,7 @@ $(document).ready(function()
                 $('#em-modal-actions .modal').show();
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
                 break;
+
             // Mail applicants
             case 9:
 
