@@ -124,6 +124,7 @@ class EmundusHelperExport
 
 	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
         if(!empty($files)){
+            $i = 0;
             foreach($files as $file) {
                 if (strrpos($file->filename, 'application_form') === false) {
                     $exFileName = explode('.', $file->filename);
@@ -131,7 +132,7 @@ class EmundusHelperExport
                     
                     if(file_exists($filePath)) {
                         if (strtolower($exFileName[1]) != 'pdf') {
-                            $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
+                            $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid, $i);
                             $exports[] = $fn;
                             $tmpArray[] = $fn;
                         } else {
@@ -139,11 +140,11 @@ class EmundusHelperExport
                             echo "<pre>";
                 var_dump($prop); die();*/
                             if (EmundusHelperExport::isEncrypted($filePath)) { 
-                                $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
+                                $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid, $i);
                                 $exports[] = $fn;
                                 $tmpArray[] = $fn;
                             } else{
-                                $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
+                                $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid, $i);
                                 $exports[] = $fn;
                                 $tmpArray[] = $fn;
                                 $exports[] = $filePath;
@@ -154,6 +155,7 @@ class EmundusHelperExport
                     }
                        
                 }
+                $i = $i + 1;
             }
         }
 		
@@ -254,7 +256,7 @@ class EmundusHelperExport
         return $tmpName;
     }
 
-	public static function makePDF($fileName, $ext, $aid)
+	public static function makePDF($fileName, $ext, $aid, $i=0)
 	{
         require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
         include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -263,6 +265,14 @@ class EmundusHelperExport
 		$pdf->SetCreator(PDF_CREATOR);
 		$pdf->SetAuthor('eMundus');
         $pdf->SetTitle($fileName);
+
+        $m_profile      = new EmundusModelProfile;
+        $profile = $m_profile->getProfileByApplicant($aid);
+        if($i === 0){
+            $title = JText::_('APPLICANT').' : '.$profile['firstname'].' '.$profile['lastname'];
+            $pdf->SetHeaderData('', '', $title, PDF_HEADER_STRING);
+        }
+        
 		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
@@ -271,17 +281,11 @@ class EmundusHelperExport
 		$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 		$pdf->SetFont('helvetica', '', 8);
-		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
         $pdf->AddPage();
         
         
-        $m_profile      = new EmundusModelProfile;
-        $profile = $m_profile->getProfileByApplicant($aid);
-
-        $htmlData = '<i><h3>'.JText::_('APPLICANT').' : '.$profile['firstname'].' '.$profile['lastname'].'</h3></i><br/><br/>';
 		if (in_array(strtolower($ext), $imgExt)) {
            
-			
 			$pdf->setJPEGQuality(75);
 			if ($ext == 'svg')
 				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
