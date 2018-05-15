@@ -1028,7 +1028,7 @@ class EmundusHelperFiles
         // Quick filter
         $quick = '<div id="filters">
                     <div id="quick" class="form-group">
-                        <label for="input-tags" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</label>
+                        <label for="input-tags" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'"></label>
                             <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">'.
                         
                     '</div>
