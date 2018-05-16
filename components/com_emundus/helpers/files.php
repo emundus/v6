@@ -1706,7 +1706,7 @@ class EmundusHelperFiles
         $filters .='<fieldset>
                             <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
                             <table><tr><td style="width:95%; padding-right: 5px">
-                                <select class="chzn-select" id="select_filter" name="select_filter" > 
+                                <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
                                 <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
@@ -1717,7 +1717,7 @@ class EmundusHelperFiles
             }
         }
         $filters .= '</select></td>';
-        $filters .=' <td> <button class="btn btn-sm" id="del-filter" title="'.JText::_('DELETE').'"><i class="icon-trash"></i></button></td></tr></table>
+        $filters .=' <td> <button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="icon-trash"></i></button></td></tr></table>
                                 <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                     <strong>'.JText::_('FILTER_SAVED').'</strong>
@@ -1735,6 +1735,7 @@ class EmundusHelperFiles
         $filters .= '</fieldset>';
         $filters .= '<script>
                         $(document).ready(function() {
+
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
                             $(".testSelAll").SumoSelect({selectAll:true,search:true, searchText: "'.JText::_('ENTER_HERE').'"});
 
@@ -1742,6 +1743,8 @@ class EmundusHelperFiles
                                 $("#em_adv_filters").show();
                             else
                                 $("#em_adv_filters").hide();
+                            
+                            $("#select_filter").chosen({width:"95%"});
             
                         });
                     </script>';
