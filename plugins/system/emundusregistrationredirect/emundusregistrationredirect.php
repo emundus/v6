@@ -26,9 +26,10 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 		$app = JFactory::getApplication();
 		$jinput = $app->input;
 
-		if ($app->isAdmin()) return true;
+		if ($app->isAdmin())
+			return true;
 
-		if (($jinput->get('option', '') == 'com_user' && $jinput->get('view', '') == 'register') || ($jinput->get('option', '') == 'com_users' && $jinput->get('option', '') == 'registration' && !in_array($jinput->get('task', ''), ['remind.remind','reset.request','reset.confirm','reset.complete']))) {
+		if (($jinput->get('option', '') == 'com_user' && $jinput->get('view', '') == 'register') || ($jinput->get('option', '') == 'com_users' && $jinput->get('view', '') == 'registration')) {
 
 			if (!defined('DS'))
 				define('DS', DIRECTORY_SEPARATOR);
@@ -40,12 +41,6 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 			// If the itemID is not found in params, look for it elsewhere.
 			if (empty($Itemid)) {
 				global $Itemid;
-				if (empty($Itemid)) {
-					$urlItemid = $jinput->get->getInt('Itemid');
-					if ($urlItemid) {
-						$Itemid = $urlItemid;
-					}
-				}
 			}
 
 			// If the URL to registration is not found, don't redirect.
