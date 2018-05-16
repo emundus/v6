@@ -1027,10 +1027,13 @@ class EmundusHelperFiles
         
         // Quick filter
         $quick = '<div id="filters">
+                    <div class="buttons">
+                        <input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="'.JText::_('SEARCH_BTN').'"/>&ensp;
+                        <input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"/>&ensp;
+                        <button class="btn btn-warning" id="save-filter" style="width: 50px;" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/>
+                    </div>
                     <div id="quick" class="form-group">
-                        <label for="input-tags" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'"></label>
-                            <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">'.
-                        
+                        <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">'.
                     '</div>
                 </div>';
        
@@ -1685,10 +1688,6 @@ class EmundusHelperFiles
        
         // Buttons
         $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br>';
-        $filters .='<br/><div class="buttons">
-                     <input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="'.JText::_('SEARCH_BTN').'"/>';
-        $filters .=' <input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"/>';
-        $filters .=' <button class="btn btn-warning" id="save-filter" style="width: 50px;" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/></div>';
         $filters .=' </fieldset>';
         $filters .= '<script>
                             $( "#showhide" ).click(function() {
