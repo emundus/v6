@@ -95,10 +95,13 @@ class EmundusModelEmails extends JModelList
                 // default recipients
                 if (isset($trigger->profile_id) && !empty($trigger->profile_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+
                 if (isset($trigger->group_id) && !empty($trigger->group_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
+
                 if (isset($trigger->user_id) && !empty($trigger->user_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
+
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
             }
@@ -128,7 +131,7 @@ class EmundusModelEmails extends JModelList
                         $as_where = true;
                     }
 
-                    if($as_where) {
+                    if ($as_where) {
                         $query = 'SELECT u.id, u.name, u.email, eu.university_id
                                     FROM #__users as u
                                     LEFT JOIN #__emundus_users as eu on eu.user_id=u.id

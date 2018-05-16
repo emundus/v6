@@ -731,10 +731,14 @@ class EmundusControllerFiles extends JControllerLegacy
             $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
 
             if (count($trigger_emails) > 0) {
+
                 foreach ($trigger_emails as $key => $trigger_email) {
-                    // Manage with default recipient by programme
+
+                	// Manage with default recipient by programme
                     foreach ($trigger_email as $code => $trigger) {
-                        if ($trigger['to']['to_applicant'] == 1) {
+
+                    	if ($trigger['to']['to_applicant'] == 1) {
+
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
                                 $mailer = JFactory::getMailer();
@@ -787,6 +791,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
                             }
                         }
+
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
                             $mailer = JFactory::getMailer();
 
@@ -1248,8 +1253,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         if (count($fnums) == 0)
             $fnums = array($session->get('application_fnum'));
-
-
 
         $jinput     = JFactory::getApplication()->input;
         $file       = $jinput->getVar('file', null, 'STRING');

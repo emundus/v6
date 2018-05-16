@@ -1033,11 +1033,12 @@ class EmundusHelperFiles
         
         // Quick filter
         $quick = '<div id="filters">
-                    <div id="quick" class="form-group">
-                        <label for="input-tags" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'"></label>
+                    <div>
+                        <div id="quick" class="form-group">
                             <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">'.
+                        '</div>
                         
-                    '</div>
+                    </div>
                 </div>';
        
         $filters .= $quick;
@@ -1701,12 +1702,9 @@ class EmundusHelperFiles
         }
        
         // Buttons
-        $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br>';
-        $filters .='<br/><div class="buttons">
-                     <input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="'.JText::_('SEARCH_BTN').'"/>';
-        $filters .=' <input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"/>';
-        $filters .=' <button class="btn btn-warning" id="save-filter" style="width: 50px;" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/></div>';
         $filters .=' </fieldset>';
+        $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br><br>';
+
         $filters .= '<script>
                             $( "#showhide" ).click(function() {
                                 if($("#showhide i").hasClass("icon-chevron-up")){
@@ -1725,7 +1723,7 @@ class EmundusHelperFiles
         $filters .='<fieldset>
                             <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
                             <table><tr><td style="width:95%; padding-right: 5px">
-                                <select class="chzn-select" id="select_filter" name="select_filter" > 
+                                <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
                                 <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
@@ -1736,7 +1734,7 @@ class EmundusHelperFiles
             }
         }
         $filters .= '</select></td>';
-        $filters .=' <td> <button class="btn btn-sm" id="del-filter" title="'.JText::_('DELETE').'"><i class="icon-trash"></i></button></td></tr></table>
+        $filters .=' <td> <button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="icon-trash"></i></button></td></tr></table>
                                 <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                     <strong>'.JText::_('FILTER_SAVED').'</strong>
@@ -1754,6 +1752,7 @@ class EmundusHelperFiles
         $filters .= '</fieldset>';
         $filters .= '<script>
                         $(document).ready(function() {
+
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
                             $(".testSelAll").SumoSelect({selectAll:true,search:true, searchText: "'.JText::_('ENTER_HERE').'"});
 
@@ -1761,6 +1760,8 @@ class EmundusHelperFiles
                                 $("#em_adv_filters").show();
                             else
                                 $("#em_adv_filters").hide();
+                            
+                            $("#select_filter").chosen({width:"95%"});
             
                         });
                     </script>';
