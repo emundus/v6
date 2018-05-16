@@ -146,15 +146,6 @@ function reloadData(view)
 
 }
 
-/*fixed head js*/
-function fixedHead(){
-    var falseTable = document.getElementById("false-table");
-    var mainTable = document.getElementById("em-data");
-    var clonedElement = mainTable.cloneNode(true);
-    clonedElement.id = "";
-    falseTable.appendChild(clonedElement);
-}
-
 /*
 // load Filter
 function reloadFilter(view)
