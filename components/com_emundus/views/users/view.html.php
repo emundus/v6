@@ -9,9 +9,9 @@
 
 // no direct access
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
-jimport( 'joomla.application.component.view');
+jimport('joomla.application.component.view');
 
 /**
  * User view
@@ -99,7 +99,7 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
 		$edit = JFactory::getApplication()->input->getInt('edit', null);
 
-		if($edit == 1)
+		if ($edit == 1)
 		{
 			$uid = JFactory::getApplication()->input->getInt('user', null);
 			$user  		= $m_users->getUserInfos($uid);
@@ -178,7 +178,7 @@ class EmundusViewUsers extends JViewLegacy
 	    JHTML::script( 'media/com_emundus/js/em_user.js');
 	    JHtml::stylesheet( 'media/com_emundus/css/emundus_files.css');
 
-	    if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+	    if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 	    {
 			die("ACCESS_DENIED");
 		}
@@ -186,7 +186,7 @@ class EmundusViewUsers extends JViewLegacy
 
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
-		switch  ($layout)
+		switch ($layout)
 		{
 			case 'user':
 				$this->_loadData();
@@ -215,26 +215,25 @@ class EmundusViewUsers extends JViewLegacy
 			    $actions = $m_users->getActions("19,20,21,22,23,24,25,26");
 
 			    $acts = array('user' => array(), 'group' => array());
-			    if(!empty($actions))
+			    if (!empty($actions))
 			    {
 				    foreach ($actions as $key => $action)
 				    {
-					    if(preg_match('/.*_user/', $action['name']) === 1 )
+					    if (preg_match('/.*_user/', $action['name']) === 1 )
 					    {
 						    $acts['user'][] = $action;
 					    }
-					    elseif(preg_match('/.*_group/', $action['name']) === 1)
+					    elseif (preg_match('/.*_group/', $action['name']) === 1)
 					    {
 						    $acts['group'][] = $action;
 					    }
 					    else
 					    {
-						    if($action['name'] != 'user')
+						    if ($action['name'] != 'user')
 						    {
 							    $acts['other'][] = $action;
 						    }
 					    }
-
 				    }
 			    }
 			    $this->assignRef('actions', $acts);
@@ -244,8 +243,8 @@ class EmundusViewUsers extends JViewLegacy
 		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 
-        $this->assignRef('itemId', @JFactory::getApplication()->input->getInt('Itemid', null));
-
+		$itemId = JFactory::getApplication()->input->getInt('Itemid', null);
+        $this->assignRef('itemId',$itemId);
 
 		parent::display($tpl);
     }
