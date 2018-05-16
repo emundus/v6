@@ -164,6 +164,25 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     $( document ).ready(function() {
         $('td').css('vertical-align', 'inherit');
     });
+    
+    /*$(document).on('click', '#em-modal-actions', function(e)
+    {
+        var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
+        $.ajax({
+            type:'get',
+            url:url,
+            dataType:'html',
+            success: function(result)
+            {
+                $('#em-appli-block').empty();
+                $('#em-appli-block').append(result);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR.responseText);
+            }
+        });
+    });*/
 
     $(document).on('click', '#em_application_attachments_all', function(e)
     {

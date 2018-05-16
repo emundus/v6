@@ -148,15 +148,6 @@ function reloadData(view)
 
 }
 
-/*fixed head js*/
-function fixedHead(){
-    var falseTable = document.getElementById("false-table");
-    var mainTable = document.getElementById("em-data");
-    var clonedElement = mainTable.cloneNode(true);
-    clonedElement.id = "";
-    falseTable.appendChild(clonedElement);
-}
-
 /*
 // load Filter
 function reloadFilter(view)
@@ -969,12 +960,13 @@ $(document).ready(function()
 // Filter buttons action (search, clear filter, save filter)
 //
     $(document).on('click', 'button', function(e) {
-        $.ajaxQ.abortAll();
+        //$.ajaxQ.abortAll();
         if (e.handle != true) {
             e.handle = true;
             var id = $(this).attr('id');
             switch (id) {
                 case 'save-filter':
+                    $.ajaxQ.abortAll();
                     var filName = prompt(filterName);
                     if (filName != null) {
                         $.ajax({
@@ -1012,6 +1004,7 @@ $(document).ready(function()
                     }
                     break;
                 case 'del-filter':
+                    $.ajaxQ.abortAll();
                     var id = $('#select_filter').val();
 
                     if (id != 0) {
@@ -1047,11 +1040,13 @@ $(document).ready(function()
                     }
                     break;
                 case 'add-filter':
+                    $.ajaxQ.abortAll();
                     addElement();
                     break;
-                case 'em-close-file': document.location.hash = "close";
+                case 'em-close-file': $.ajaxQ.abortAll(); document.location.hash = "close";
                     $('.alert.alert-warning').remove();
                 case 'em-mini-file':
+                    $.ajaxQ.abortAll();
                     $('#em-appli-block').remove();
                     $('.em-close-minimise').remove();
                     $('.em-open-files').remove();
@@ -1063,6 +1058,7 @@ $(document).ready(function()
                     $(".main-panel .panel.panel-default").show();
                     break;
                 case 'em-see-files':
+                    $.ajaxQ.abortAll();
                     var fnum = new Object();
                     fnum.fnum = $(this).parents('a').attr('href').split('-')[0];
                     fnum.fnum = fnum.fnum.substr(1, fnum.fnum.length);
@@ -1094,6 +1090,7 @@ $(document).ready(function()
 
                     break;
                 case 'em-delete-files':
+                    $.ajaxQ.abortAll();
                     var r = confirm(Joomla.JText._('COM_EMUNDUS_CONFIRM_DELETE_FILE'));
                     if (r == true)
                     {
@@ -5094,9 +5091,7 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showelements', function() {
-        $.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
-
 
             $('#showevalelements').empty();
             $('#showevalelements').removeAttr('class').addClass("btn btn-info btn-xs");
@@ -5127,10 +5122,7 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showevalelements', function() {
-        $.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
-
-
 
             $('#showelements').empty();
             $('#showelements').removeAttr('class').addClass("btn btn-info btn-xs");
@@ -5161,7 +5153,6 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showdecisionelements', function() {
-        $.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
 
             $('#showelements').empty();
@@ -5194,7 +5185,6 @@ $(document).ready(function()
         }
     });
     $(document).on('click', '#showadmissionelements', function() {
-        $.ajaxQ.abortAll();
         if ($(this).hasClass("btn-info")) {
 
             $('#showelements').empty();
