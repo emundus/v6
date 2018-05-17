@@ -2153,7 +2153,7 @@ class EmundusHelperFiles
         }
 
         // Get information from the applicant form filled out by the coordinator
-        $element_id     = $m_admission->getAllAdmissionElements(0, $fnumInfo['training']);
+        $element_id     = $m_admission->getAllAdmissionElements(1, $fnumInfo['training']);
         $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
 
@@ -2216,18 +2216,20 @@ class EmundusHelperFiles
         }
 
         // Get information from application form filled out by the student
-        $element_id     = $m_admission->getAllApplicantAdmissionElements(0, $fnumInfo['training']);
+        $element_id     = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
         $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
-
+        
 
         foreach ($admissions as $adm) {
+           
             $str = '<br><hr>';
             $str .= '<h1>Student Admission</h1>';
             if (isset($name))
                 $str .= '<h2>'.$name.'</h2>';
-            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
+            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+           
             foreach ($elements as $element){
                 $k = $element->tab_name.'___'.$element->element_name;
 
@@ -2264,7 +2266,7 @@ class EmundusHelperFiles
                 $str = str_replace('&nbsp;', ' ', $str);
                 $str = strip_tags($str, '<h1>');
             }
-
+            
             $data[$adm['fnum']][1] = $str;
         }
 

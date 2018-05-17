@@ -124,13 +124,31 @@ $htmldata .=
 .sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
 .birthday { display: block; margin: 0 0 0 20px; padding:0;}
 
-.label		   {white-space:nowrap; color:white; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
-.label-default {background-color:#999999;} 
-.label-primary {background-color:#337ab7;} 
-.label-success {background-color:#5cb85c;} 
-.label-info    {background-color:#033c73;} 
-.label-warning {background-color:#dd5600;} 
-.label-danger  {background-color:#c71c22;} 
+.label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+.label-default {background-color:#999999;}
+.label-primary {background-color:#337ab7;}
+.label-success {background-color:#5cb85c;}
+.label-info    {background-color:#033c73;}
+.label-warning {background-color:#dd5600;}
+.label-danger  {background-color:#c71c22;}
+.label-lightpurple { background-color: #DCC6E0 }
+.label-purple { background-color: #947CB0 }
+.label-darkpurple {background-color: #663399 }
+.label-lightblue { background-color: #6bb9F0 }
+.label-blue { background-color: #19B5FE }
+.label-darkblue { background-color: #013243 }
+.label-lightgreen { background-color: #00E640 }
+.label-green { background-color: #3FC380 }
+.label-darkgreen { background-color: #1E824C }
+.label-lightyellow { background-color: #FFFD7E }
+.label-yellow { background-color: #FFFD54 }
+.label-darkyellow { background-color: #F7CA18 }
+.label-lightorange { background-color: #FABE58 }
+.label-orange { background-color: #E87E04 }
+.label-darkorange {background-color: #D35400 }
+.label-lightred { background-color: #EC644B }
+.label-red { background-color: #CF000F }
+.label-darkred { background-color: #96281B }
 </style>';
 
 if ( ! function_exists( 'exif_imagetype' ) ) {

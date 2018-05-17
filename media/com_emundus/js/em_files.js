@@ -569,7 +569,8 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                     elts: eltJson,
                     objs: objJson,
                     opts: options,
-                    objclass: objclass
+                    objclass: objclass,
+                    excelfilename:json.excelfilename
                 },
                 success: function (result) {
                     var json = result.json;
@@ -589,7 +590,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                     type: 'post',
                                     url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
                                     dataType: 'JSON',
-                                    data: {csv: file, nbcol: nbcol, start: start},
+                                    data: {csv: file, nbcol: nbcol, start: start, excelfilename: result.json.excelfilename},
                                     success: function (result) {
                                         if (result.status) {
                                             $('#loadingimg').empty();
@@ -3171,6 +3172,11 @@ $(document).ready(function()
                         $('#felts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
                         $('#felts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
                     }
+                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
                 });
 
                 $('#em-ex-attachment').click(function(e){
@@ -3183,8 +3189,36 @@ $(document).ready(function()
                         $('[id^=aelts-]').show();
                         $('#aelts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
                         $('#aelts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                       
+                    }
+                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
                     }
 
+                });
+
+                $('#em-ex-assessment').click(function(e){
+                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
+                });
+                $('#em-ex-decision').click(function(e){
+                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
+                });
+                $('#em-ex-admission').click(function(e){
+                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
                 });
 
                 $('#felts').click(function(e){
@@ -3199,6 +3233,7 @@ $(document).ready(function()
 
                 });
 
+                
 
                 $('#em-add-header').click(function(e){
                     if ($("#em-add-header").is(":checked"))
@@ -4436,6 +4471,18 @@ $(document).ready(function()
                 var i = 0;
                 var objclass = [];
 
+                var code = $("#em-export-prg").val();
+                var year = "";
+
+                if($("#em-export-camp").val() != "0"){
+                    var campaign = $("#em-export-camp :selected").text();
+                    year = campaign.indexOf("(") + 1;
+                    year = campaign.slice(year, -1)
+                }
+                    
+              
+                var excel_file_name = code+'_'+year;
+
                 $('[class^="emundusitem"]:checkbox:checked').each(function() {
                     if($(this).attr('class') == "emundusitem_evaluation otherForm"){
                         objclass.push($(this).attr('class'));
@@ -4508,8 +4555,8 @@ $(document).ready(function()
                                                 var start = 0;
                                                 var limit = 100;
                                                 var file = result.file;
-                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'"}');
-
+                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'","excelfilename":"'+excel_file_name+'"}');
+                                                
                                                 if ((methode == 0) && ($('#view').val()!="evaluation"))
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
                                                 else

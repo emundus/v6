@@ -19,6 +19,7 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
+jimport( 'joomla.user.helper' );
 
 /**
  * eMundus Component Controller
@@ -1262,7 +1263,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $opts       = $jinput->getString('opts', null);
         $methode    = $jinput->getString('methode', null);
         $objclass   = $jinput->getVar('objclass', null);
+        $excel_file_name = $jinput->getVar('excelfilename', null);
 
+        //var_dump($elts); die();
 
         $opts = $this->getcolumn($opts);
 
@@ -1539,8 +1542,8 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $start = $i;
-
-        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
+        
+        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file, 'excelfilename'=>$excel_file_name );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
         exit();
@@ -1718,7 +1721,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     if ($forms || !empty($forms_to_export))
                         $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
 
-                 }
+                }
 
                 if ($attachment || !empty($attachids)) {
                     $tmpArray = array();
@@ -1732,9 +1735,11 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                     if ($attachment || !empty($attachment_to_export)){
                         $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
+                        if($options[0] != "0"){
+                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, null, $options);
+                        }
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
-
                 }
 
                 if ($assessment)
@@ -1746,6 +1751,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 if ($admission)
                     $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+                
+                if(($forms != 1) && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
+                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, null, $options);
+
             }
 
         }
@@ -1806,6 +1815,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $csv = $jinput->getVar('csv', null);
         $nbcol = $jinput->getVar('nbcol', 0);
         $nbrow = $jinput->getVar('start', 0);
+        $excel_file_name = $jinput->getVar('excelfilename', null);
         $objReader = PHPExcel_IOFactory::createReader('CSV');
         $objReader->setDelimiter("\t");
         $objPHPExcel = new PHPExcel();
@@ -1894,10 +1904,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
 
-
+        $randomString = JUserHelper::genRandomPassword(20);
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
-        $link = JFactory::getUser()->id.'_extraction.xls';
+        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.$excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xls');
+        $link = $excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xls';
         if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
             $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
             echo json_encode((object) $result);
@@ -2319,6 +2329,8 @@ class EmundusControllerFiles extends JControllerLegacy
                     if ($admission)
                         $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
+                    if(($forms != 1) && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
+                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, null, $options);
 
                     if (count($files_list) > 0) {
                         // all PDF in one file
