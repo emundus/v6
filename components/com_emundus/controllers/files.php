@@ -1736,7 +1736,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     if ($attachment || !empty($attachment_to_export)){
                         $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
                         if($options[0] != "0"){
-                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, null, $options);
+                            $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
                         }
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
@@ -1751,9 +1751,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 if ($admission)
                     $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
-                
-                if(($forms != 1) && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
-                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, null, $options);
+
+                if(($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
+                    $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
 
             }
 
@@ -2329,8 +2329,6 @@ class EmundusControllerFiles extends JControllerLegacy
                     if ($admission)
                         $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
-                    if(($forms != 1) && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
-                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, null, $options);
 
                     if (count($files_list) > 0) {
                         // all PDF in one file

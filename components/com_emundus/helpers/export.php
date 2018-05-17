@@ -27,7 +27,7 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport
 {
 	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null ) {
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null ) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
         
 		if (!file_exists($file)) {
@@ -44,9 +44,34 @@ class EmundusHelperExport
 		
 		require_once($file);
         
-		application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
+        application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
+        
+       
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
-	}
+    }
+    public static function buildHeaderPDF($fnumInfos, $sid, $fnum, $options = null) {
+		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
+        
+		if (!file_exists($file)) {
+			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+			$application_header_pdf = 'application_header_pdf';
+		} else {
+			$application_header_pdf = 'application_header_pdf_'.str_replace('-', '_', $fnumInfos['training']);
+		}
+		
+		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
+			mkdir(EMUNDUS_PATH_ABS.$sid);
+			chmod(EMUNDUS_PATH_ABS.$sid, 0755);
+		}
+		
+		require_once($file);
+        
+        application_header_pdf($sid, $fnum, false, $options);
+        
+       
+		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_header.pdf';
+    }
+    
 
     /**
      * Check whether pdf is encrypted or password protected.

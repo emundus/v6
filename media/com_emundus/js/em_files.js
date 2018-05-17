@@ -3172,7 +3172,7 @@ $(document).ready(function()
                         $('#felts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
                         $('#felts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
                     }
-                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
                         $('#exp-options').show();
                     }else{
                         $('#exp-options').hide();
@@ -3191,7 +3191,7 @@ $(document).ready(function()
                         $('#aelts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
                        
                     }
-                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
                         $('#exp-options').show();
                     }else{
                         $('#exp-options').hide();
@@ -3200,21 +3200,21 @@ $(document).ready(function()
                 });
 
                 $('#em-ex-assessment').click(function(e){
-                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
                         $('#exp-options').show();
                     }else{
                         $('#exp-options').hide();
                     }
                 });
                 $('#em-ex-decision').click(function(e){
-                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
                         $('#exp-options').show();
                     }else{
                         $('#exp-options').hide();
                     }
                 });
                 $('#em-ex-admission').click(function(e){
-                    if ($('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
                         $('#exp-options').show();
                     }else{
                         $('#exp-options').hide();
@@ -3224,6 +3224,12 @@ $(document).ready(function()
                 $('#felts').click(function(e){
                     if ($(".em-ex-check").is(":checked"))
                         $('#em-ex-forms').attr('checked', false);
+                    
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
 
                 });
 
