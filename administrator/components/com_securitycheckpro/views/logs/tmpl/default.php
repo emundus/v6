@@ -52,8 +52,6 @@ $lang2->load('plg_system_securitycheckpro');
 $vulnerable_array = array(JHtml::_('select.option','Si', JText::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')),
 			JHtml::_('select.option','No', JText::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
 
-JHtml::_('formbehavior.chosen', 'select');
-
 // Cargamos el comportamiento modal para mostrar las ventanas para exportar
 JHtml::_('behavior.modal');
 
@@ -64,8 +62,6 @@ $arrHead = $document->getHeadData();
 unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
 unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
 $document->setHeadData($arrHead);
-
-JHtml::_('formbehavior.chosen', 'select');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
@@ -80,8 +76,14 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -115,41 +117,37 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				<div class="card-body">
 				
 					<div id="filter-bar" class="btn-toolbar">
-						<div class="filter-search btn-group pull-left">
+						<div class="filter-search btn-group pull-left" style="margin-bottom: 10px;">
 							<input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
 						</div>
-						<div class="btn-group pull-left">
+						<div class="btn-group pull-left" style="margin-bottom: 10px;">
 							<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 							<button class="btn tip" type="button" onclick="document.getElementById('filter_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 						</div>
-						<div class="filter-search btn-group pull-left hidden-phone">
+						<div class="filter-search btn-group pull-left hidden-phone" style="margin-left: 10px;">
 							<?php echo JHTML::_('calendar', $this->getModel()->getState('datefrom',''), 'datefrom', 'datefrom', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
 						</div>
-						<div class="filter-search btn-group pull-left hidden-phone">
+						<div class="filter-search btn-group pull-left hidden-phone" style="margin-left: 10px; margin-bottom: 10px;">
 							<?php echo JHTML::_('calendar', $this->getModel()->getState('dateto',''), 'dateto', 'dateto', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
-						</div>
-						<div class="btn-group pull-left">
-							<select name="filter_description" class="inputbox" onchange="this.form.submit()">
+						</div>						
+						<div class="btn-group">
+							<select name="filter_leido" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
+								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_MARKED_DESCRIPTION');?></option>
+								<?php echo JHtml::_('select.options', $leido_array, 'value', 'text', $this->state->get('filter.leido'));?>
+							</select>
+							<select name="filter_type" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
+								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
+								<?php echo JHtml::_('select.options', $type_array, 'value', 'text', $this->state->get('filter.type'));?>
+							</select>
+							<select name="filter_description" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
 								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_DESCRIPTION');?></option>
 								<?php echo JHtml::_('select.options', $description_array, 'value', 'text', $this->state->get('filter.description'));?>
 							</select>
 						</div>
-						<div class="btn-group pull-left">
-							<select name="filter_type" class="inputbox" onchange="this.form.submit()">
-								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
-								<?php echo JHtml::_('select.options', $type_array, 'value', 'text', $this->state->get('filter.type'));?>
-							</select>
-						</div>
-						<div class="btn-group pull-left">
-							<select name="filter_leido" class="inputbox" onchange="this.form.submit()">
-								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_MARKED_DESCRIPTION');?></option>
-								<?php echo JHtml::_('select.options', $leido_array, 'value', 'text', $this->state->get('filter.leido'));?>
-							</select>
-						</div>
-						</div>
+					</div>
 					</div>				
 						<div style="width: 100%; overflow-y: auto; _overflow: auto;	margin: 0 0 1em; font-size: 12px;">
-							<table class="table table-responsive table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+							<table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
 								<thead>
 									<tr>
 										<th class="logs text-center">
@@ -297,7 +295,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 							if ( !empty($this->items) ) {		
 						?>
 						<div style="margin-left: 10px;">
-							<?php echo $this->pagination->getListFooter(); echo $this->pagination->getLimitBox(); ?>
+							<?php echo $this->pagination->getListFooter(); echo $this->pagination->getLimitBox(); ?>							
 						</div>							
 						<?php }	?>						
 						

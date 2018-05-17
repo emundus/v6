@@ -1,12 +1,12 @@
 DROP TABLE IF EXISTS `#__securitycheckpro`;
 CREATE TABLE `#__securitycheckpro` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`Product` VARCHAR(35) NOT NULL,
+`Product` VARCHAR(100) NOT NULL,
 `sc_type` VARCHAR(35),
 `Installedversion` VARCHAR(30) DEFAULT '---',
 `Vulnerable` VARCHAR(10) NOT NULL DEFAULT 'No',
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_dynamic_blacklist`;
 CREATE TABLE `#__securitycheckpro_dynamic_blacklist` (
@@ -14,7 +14,7 @@ CREATE TABLE `#__securitycheckpro_dynamic_blacklist` (
 `timeattempt` DATETIME NOT NULL,
 `counter` INT NOT NULL DEFAULT 1,
 PRIMARY KEY (`ip`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_vuln_components`;
 CREATE TABLE `#__securitycheckpro_vuln_components` (
@@ -22,14 +22,14 @@ CREATE TABLE `#__securitycheckpro_vuln_components` (
 `Product` VARCHAR(35) NOT NULL,
 `vuln_id` INT(11) UNSIGNED NOT NULL,
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_db`;
 CREATE TABLE `#__securitycheckpro_db` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `Product` VARCHAR(35) NOT NULL,
 `vuln_type` VARCHAR(35),
-`Vulnerableversion` VARCHAR(10) DEFAULT '---',
+`Vulnerableversion` VARCHAR(40) DEFAULT '---',
 `modvulnversion` VARCHAR(2) DEFAULT '==',
 `Joomlaversion` VARCHAR(30) DEFAULT 'Notdefined',
 `modvulnjoomla` VARCHAR(20) DEFAULT '==',
@@ -40,7 +40,7 @@ CREATE TABLE `#__securitycheckpro_db` (
 `solution_type` VARCHAR(35) DEFAULT '???',
 `solution` VARCHAR(70),
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,`modvulnversion`,`Joomlaversion`,
 `modvulnjoomla`,`description`,`vuln_class`,`published`,`vulnerable`,`solution_type`,`solution`) VALUES 
 ('Joomla!','core','3.0.0','==','3.0.0','==','Joomla! XSS Vulnerability','Typographical error','Oct 09 2012','Joomla! 3.0.0','update','3.0.1'),
@@ -396,33 +396,43 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_biblestudy','component','9.1.1','<=','3.0.0','>=','Proclaim Component','Arbitrary file upload Vulnerability','Feb 27 2018','Version 9.1.1 and previous','update','9.1.2'),
 ('com_socialpinboard','component','2.0','==','3.0.0','>=','Joomla! Pinterest Clone Social Pinboard Component','Sql Injection Vulnerability','Feb 28 2018','Version 2.0','none','No details'),
 ('com_osproperty','component','3.12.8','<=','3.0.0','>=','OS Property Component','Sql Injection Vulnerability','Feb 28 2018','Version 3.12.8 and previous','update','3.12.9'),
-('com_realpin','component','1.5.04','<=','3.0.0','>=','Realpin Component','Sql Injection Vulnerability','Apr 01 2018','Version 1.5.04 and previous','none','No details'),
-('com_media_library','component','4.0.12','<=','3.0.0','>=','Media Library Free Component','Sql Injection Vulnerability','Apr 01 2018','Version 4.0.12 and previous','none','No details'),
-('com_jsautoz','component','1.0.9','<=','3.0.0','>=','JS Autoz Component','Sql Injection Vulnerability','Apr 03 2018','Version 1.0.9 and previous','none','No details'),
-('com_jticketing','component','2.0.16','<=','3.0.0','>=','Jticketing Component','Sql Injection Vulnerability','Apr 03 2018','Version 2.0.16 and previous','update','2.0.18'),
-('com_invitex','component','3.0.5','<=','3.0.0','>=','InviteX Component','Sql Injection Vulnerability','Apr 03 2018','Version 3.0.5 and previous','update','3.0.6'),
-('com_abook','component','3.1.3','<=','3.0.0','>=','Alexandria Book Library Component','Sql Injection Vulnerability','Apr 05 2018','Version 3.1.3 and previous','none','No details'),
-('com_jmsmusic','component','1.1.1','<=','3.0.0','>=','JM Music Component','Sql Injection Vulnerability','Apr 05 2018','Version 1.1.1 and previous','none','No details'),
-('com_formmaker','component','3.6.14','<=','3.0.0','>=','Form Maker Component','Sql Injection Vulnerability','Apr 05 2018','Version 3.6.14 and previous','update','3.6.15'),
-('com_jgive','component','2.0.9','<=','3.0.0','>=','JGive Component','Sql Injection Vulnerability','Apr 05 2018','Version 2.0.9 and previous','update','2.0.11'),
-('com_ekrishta','component','2.9','<=','3.0.0','>=','Ek Rishta Component','Sql Injection Vulnerability','Apr 07 2018','Version 2.9 and previous','none','No details'),
-('com_prayercenter','component','3.0.2','<=','3.0.0','>=','PrayerCenter Component','Sql Injection Vulnerability','Apr 07 2018','Version 3.0.2 and previous','none','No details'),
-('com_cwtags','component','2.0.8','<=','3.0.0','>=','CW Tags Component','Sql Injection Vulnerability','Apr 07 2018','Version 2.0.8 and previous','none','No details'),
-('com_squadmanagement','component','1.0.3','<=','3.0.0','>=','SquadManagement Component','Sql Injection Vulnerability','Apr 07 2018','Version 1.0.3 and previous','none','No details'),
-('com_neorecruit','component','4.2.1','<=','3.0.0','>=','NeoRecruit Component','Sql Injection Vulnerability','Apr 07 2018','Version 4.2.1 and previous','update','4.2.2'),
-('com_checklist','component','1.1.1.003','<=','3.0.0','>=','Checklist Component','Sql Injection Vulnerability','Apr 07 2018','Version 1.1.1.003 and previous','update','1.1.1.004'),
-('com_simplecalendar','component','3.1.9','<=','3.0.0','>=','Simple Calendar Component','Sql Injection Vulnerability','Apr 08 2018','Version 3.1.9 and previous','none','No details'),
-('com_bookpro','component','2.3','==','3.0.0','>=','JB Bus Component','Sql Injection Vulnerability','Apr 08 2018','Version 2.3','none','No details'),
-('com_dtracker','component','3.0','==','3.0.0','>=','File Download Tracker Component','Sql Injection Vulnerability','Apr 08 2018','Version 3.0','none','No details'),
-('com_jquickcontact','component','1.3.2.3','<=','3.0.0','>=','JQuickContact Component','Sql Injection Vulnerability','Apr 08 2018','Version 1.3.2.3 and previous','update','1.3.2.4'),
-('com_fastball','component','10.0.0','<=','3.0.0','>=','Fastball Component','Sql Injection Vulnerability','Apr 08 2018','All versions','none','No details'),
-('com_dtregister','component','3.2.7','<=','3.0.0','>=','DT REgister Component','Sql Injection Vulnerability','Apr 08 2018','Version 3.2.7 and previous','none','No details'),
-('com_jomestate','component','3.7','<=','3.0.0','>=','JomEstate Component','Sql Injection Vulnerability','Apr 13 2018','Version 3.7 and previous','update','3.8'),
-('Joomla!','core','3.8.5','<=','3.0.0','>=','Joomla! Sql Injection vulnerability','Lack of type casting of a variable in SQL statement of user Notes','Apr 13 2018','Joomla!  versions 3.5.0 through 3.8.5','update','3.8.6'),
-('com_kunena','component','5.0.13','<=','3.0.0','>=','Kunena Component','Other Vulnerability','Apr 14 2018','Version 5.0.13 and previous','update','5.0.14'),
-('com_gmap','component','4.2.3','<=','3.0.0','>=','Google Map Landkarten Component','Sql Injection Vulnerability','Apr 20 2018','Version 4.2.3 and previous','none','No details'),
-('com_attachments','component','3.2.5','<=','3.0.0','>=','Attachments Component','Sql Injection Vulnerability','Apr 20 2018','Version 3.2.5 and previous','none','No details'),
-('com_visualcalendar','component','3.1.5','<=','3.0.0','>=','Visual Calendar Component','Sql Injection Vulnerability','Apr 20 2018','Version 3.1.5 and previous','update','3.1.6');
+('com_realpin','component','1.5.04','<=','3.0.0','>=','Realpin Component','Sql Injection Vulnerability','Mar 01 2018','Version 1.5.04 and previous','none','No details'),
+('com_media_library','component','4.0.12','<=','3.0.0','>=','Media Library Free Component','Sql Injection Vulnerability','Mar 01 2018','Version 4.0.12 and previous','none','No details'),
+('com_jsautoz','component','1.0.9','<=','3.0.0','>=','JS Autoz Component','Sql Injection Vulnerability','Mar 03 2018','Version 1.0.9 and previous','none','No details'),
+('com_jticketing','component','2.0.16','<=','3.0.0','>=','Jticketing Component','Sql Injection Vulnerability','Mar 03 2018','Version 2.0.16 and previous','update','2.0.18'),
+('com_invitex','component','3.0.5','<=','3.0.0','>=','InviteX Component','Sql Injection Vulnerability','Mar 03 2018','Version 3.0.5 and previous','update','3.0.6'),
+('com_abook','component','3.1.3','<=','3.0.0','>=','Alexandria Book Library Component','Sql Injection Vulnerability','Mar 05 2018','Version 3.1.3 and previous','none','No details'),
+('com_jmsmusic','component','1.1.1','<=','3.0.0','>=','JM Music Component','Sql Injection Vulnerability','Mar 05 2018','Version 1.1.1 and previous','none','No details'),
+('com_formmaker','component','3.6.14','<=','3.0.0','>=','Form Maker Component','Sql Injection Vulnerability','Mar 05 2018','Version 3.6.14 and previous','update','3.6.15'),
+('com_jgive','component','2.0.9','<=','3.0.0','>=','JGive Component','Sql Injection Vulnerability','Mar 05 2018','Version 2.0.9 and previous','update','2.0.11'),
+('com_ekrishta','component','2.9','<=','3.0.0','>=','Ek Rishta Component','Sql Injection Vulnerability','Mar 07 2018','Version 2.9 and previous','none','No details'),
+('com_prayercenter','component','3.0.2','<=','3.0.0','>=','PrayerCenter Component','Sql Injection Vulnerability','Mar 07 2018','Version 3.0.2 and previous','none','No details'),
+('com_cwtags','component','2.0.8','<=','3.0.0','>=','CW Tags Component','Sql Injection Vulnerability','Mar 07 2018','Version 2.0.8 and previous','none','No details'),
+('com_squadmanagement','component','1.0.3','<=','3.0.0','>=','SquadManagement Component','Sql Injection Vulnerability','Mar 07 2018','Version 1.0.3 and previous','none','No details'),
+('com_neorecruit','component','4.2.1','<=','3.0.0','>=','NeoRecruit Component','Sql Injection Vulnerability','Mar 07 2018','Version 4.2.1 and previous','update','4.2.2'),
+('com_checklist','component','1.1.1.003','<=','3.0.0','>=','Checklist Component','Sql Injection Vulnerability','Mar 07 2018','Version 1.1.1.003 and previous','update','1.1.1.004'),
+('com_simplecalendar','component','3.1.9','<=','3.0.0','>=','Simple Calendar Component','Sql Injection Vulnerability','Mar 08 2018','Version 3.1.9 and previous','none','No details'),
+('com_bookpro','component','2.3','==','3.0.0','>=','JB Bus Component','Sql Injection Vulnerability','Mar 08 2018','Version 2.3','none','No details'),
+('com_dtracker','component','3.0','==','3.0.0','>=','File Download Tracker Component','Sql Injection Vulnerability','Mar 08 2018','Version 3.0','none','No details'),
+('com_jquickcontact','component','1.3.2.3','<=','3.0.0','>=','JQuickContact Component','Sql Injection Vulnerability','Mar 08 2018','Version 1.3.2.3 and previous','update','1.3.2.4'),
+('com_fastball','component','10.0.0','<=','3.0.0','>=','Fastball Component','Sql Injection Vulnerability','Mar 08 2018','All versions','none','No details'),
+('com_dtregister','component','3.2.7','<=','3.0.0','>=','DT REgister Component','Sql Injection Vulnerability','Mar 08 2018','Version 3.2.7 and previous','none','No details'),
+('com_jomestate','component','3.7','<=','3.0.0','>=','JomEstate Component','Sql Injection Vulnerability','Mar 13 2018','Version 3.7 and previous','update','3.8'),
+('Joomla!','core','3.8.5','<=','3.0.0','>=','Joomla! Sql Injection vulnerability','Lack of type casting of a variable in SQL statement of user Notes','Mar 13 2018','Joomla!  versions 3.5.0 through 3.8.5','update','3.8.6'),
+('com_kunena','component','5.0.13','<=','3.0.0','>=','Kunena Component','Other Vulnerability','Mar 14 2018','Version 5.0.13 and previous','update','5.0.14'),
+('com_gmap','component','4.2.3','<=','3.0.0','>=','Google Map Landkarten Component','Sql Injection Vulnerability','Mar 20 2018','Version 4.2.3 and previous','none','No details'),
+('com_attachments','component','3.2.5','<=','3.0.0','>=','Attachments Component','Sql Injection Vulnerability','Mar 20 2018','Version 3.2.5 and previous','none','No details'),
+('com_visualcalendar','component','3.1.5','<=','3.0.0','>=','Visual Calendar Component','Sql Injection Vulnerability','Mar 20 2018','Version 3.1.5 and previous','update','3.1.6'),
+('com_cpeventcalendar','component','3.0.2','<=','3.0.0','>=','CP Event Calendar Component','Sql Injection Vulnerability','Mar 26 2018','Version 3.0.2 and previous','update','3.0.3'),
+('com_acymailing','component','5.9.5','<=','3.0.0','>=','Acymailing Component','Csv Injection Vulnerability','Mar 26 2018','Version 5.9.5 and previous','update','5.9.5'),
+('com_acysms','component','3.5.0','<=','3.0.0','>=','Acysms Component','Csv Injection Vulnerability','Mar 29 2018','Version 3.5.0 and previous','update','3.5.1'),
+('com_jsjobs','component','1.2.0','<=','3.0.0','>=','Js Jobs Component','Cross site scripting Vulnerability','Mar 31 2018','Version 1.2.0 and previous','update','1.2.1'),
+('com_prayercenter','component','3.0.2','<=','3.0.0','>=','Prayercenter Component','Sql injection Vulnerability','Mar 31 2018','Version 3.0.2 and previous','update','3.0.3'),
+('com_virtuemart','component','3.2.12','<=','3.0.0','>=','Virtuemart Component','Cross site scripting Vulnerability','Apr 07 2018','Version 3.2.12 and previous','update','3.2.14'),
+('com_gridbox','component','2.4.0','<=','3.0.0','>=','Gridbox Component','Multiple Vulnerabilities','Apr 10 2018','Version 2.4.0 and previous','none','No details'),
+('com_jdownloads','component','3.2.58','<=','3.0.0','>=','JDownloads Component','Cross site scripting Vulnerability','Apr 10 2018','Version 3.2.58 and previous','update','3.2.59'),
+('com_cwtags','component','2.0.8','<=','3.0.0','>=','CW Tags Component','Sql injection Vulnerability','Apr 10 2018','Version 2.0.8 and previous','update','2.1.1'),
+('com_convertforms','component','2.0.3','<=','3.0.0','>=','Convert Forms Component','Csv Injection Vulnerability','Apr 13 2018','Version 2.0.3 and previous','update','2.0.4');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -439,7 +449,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
 `marked` TINYINT(1) DEFAULT 0,
 `original_string` VARCHAR(700),
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_own_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_own_logs` (
@@ -447,7 +457,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_own_logs` (
 `time` DATETIME NOT NULL,
 `description` VARCHAR(1200) NOT NULL,
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
@@ -457,7 +467,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
 `ip` VARCHAR(26) NOT NULL,
 `user_agent` VARCHAR(300) NOT NULL,
 PRIMARY KEY (`userid`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_emails`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_emails` (
@@ -465,7 +475,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_emails` (
 `envoys` TINYINT(3) DEFAULT 0,
 `send_date` DATE DEFAULT '2012-01-01',
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO `#__securitycheckpro_emails` (`envoys`,`send_date`) VALUES 
 ('0','2012-01-01');
 
@@ -494,25 +504,23 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_file_manager` (
 `online_checked_hashes` INT(4) DEFAULT 0,
 `last_check_database` DATETIME,
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO `#__securitycheckpro_file_manager` (`estado`,`estado_integrity`,`estado_cambio_permisos`,`estado_clear_data`,`estado_malwarescan`) VALUES 
 ('ENDED','ENDED','ENDED','DELETING_ENTRIES','ENDED');
 
-DROP TABLE IF EXISTS `#__securitycheckpro_storage`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
 `storage_key` varchar(255) NOT NULL,
 `storage_value` longtext NOT NULL,
 PRIMARY KEY (`storage_key`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0;
 
-DROP TABLE IF EXISTS `#__securitycheckpro_rules`;
-CREATE TABLE `#__securitycheckpro_rules` (
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `group_id` INT(10),
 `rules_applied` TINYINT(1) DEFAULT 0,
 `last_change` DATETIME,
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_rules_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules_logs` (
@@ -522,7 +530,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules_logs` (
 `last_entry` DATETIME,
 `reason` VARCHAR(300),
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_online_checks`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_online_checks` (
@@ -533,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_online_checks` (
 `scan_date` DATETIME,
 `infected_files` VARCHAR(300) DEFAULT NULL,
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_update_database`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
@@ -542,8 +550,8 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `last_check` DATETIME,
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.6');
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.12');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
@@ -551,7 +559,7 @@ CREATE TABLE `#__securitycheckpro_users_control` (
 `users` VARCHAR(100) NOT NULL,
 `contador` INT(3) UNSIGNED NOT NULL,
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_url_inspector_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
@@ -561,11 +569,11 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `forbidden_words` VARCHAR(300) NOT NULL,
 `date_added` DATETIME,
 PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions` (
 `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-`message` TEXT NOT NULL DEFAULT '',
+`message` TEXT,
 `log_date` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
 `extension` VARCHAR(50) NOT NULL DEFAULT '',
 `user_id` INT(11) NOT NULL DEFAULT '0',

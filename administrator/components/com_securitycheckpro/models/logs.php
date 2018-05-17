@@ -9,6 +9,8 @@
 // Chequeamos si el archivo está incluído en Joomla!
 defined('_JEXEC') or die();
 jimport('joomla.html.pagination');
+
+
 /**
 * Modelo Vulninfo
 */
@@ -132,9 +134,10 @@ function checkIsAValidDate($myDateString){
 
 /* Función para cambiar el estado de un array de logs de no leído a leído */
 function mark_read(){
-	$uids = JRequest::getVar('cid', 0, '', 'array');
+	$jinput = JFactory::getApplication()->input;
+	$uids = $jinput->get('cid', 0,'array');
 	
-	JArrayHelper::toInteger($uids, array());
+	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 	
 	$db = $this->getDbo();
 	foreach($uids as $uid) {
@@ -146,25 +149,25 @@ function mark_read(){
 
 /* Función para cambiar el estado de un array de logs de leído a no leído */
 function mark_unread(){
-	$uids = JRequest::getVar('cid', 0, '', 'array');
+	$jinput = JFactory::getApplication()->input;
+	$uids = $jinput->get('cid', 0,'array');
 	
-	JArrayHelper::toInteger($uids, array());
-	
+	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
+		
 	$db = $this->getDbo();
 	foreach($uids as $uid) {
-		if ( is_int($uid) ) {
-			$sql = "UPDATE `#__securitycheckpro_logs` SET marked=0 WHERE id='{$uid}'";
-			$db->setQuery($sql);
-			$db->execute();	
-		}
+		$sql = "UPDATE `#__securitycheckpro_logs` SET marked=0 WHERE id='{$uid}'";
+		$db->setQuery($sql);
+		$db->execute();			
 	}
 }
 
 /* Función para borrar un array de logs */
 function delete(){
-	$uids = JRequest::getVar('cid', 0, '', 'array');
+	$jinput = JFactory::getApplication()->input;
+	$uids = $jinput->get('cid', 0,'array');
 	
-	JArrayHelper::toInteger($uids, array());
+	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 	
 	$db = $this->getDbo();
 	foreach($uids as $uid) {
@@ -224,8 +227,9 @@ function add_to_blacklist() {
 	$db = JFactory::getDBO();
 	
 	// Obtenemos los valores de las IPs que serán introducidas en la lista negra
-	$uids = JRequest::getVar('cid', 0, '', 'array');
-	JArrayHelper::toInteger($uids, array());
+	$jinput = JFactory::getApplication()->input;
+	$uids = $jinput->get('cid', 0,'array');
+	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 	
 	// Número de elementos del array
 	$array_size = count($uids);
@@ -373,8 +377,9 @@ function add_to_whitelist() {
 	$db = JFactory::getDBO();
 	
 	// Obtenemos los valores de las IPs que serán introducidas en la lista negra
-	$uids = JRequest::getVar('cid', 0, '', 'array');
-	JArrayHelper::toInteger($uids, array());
+	$jinput = JFactory::getApplication()->input;
+	$uids = $jinput->get('cid', 0,'array');
+	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 	
 	// Número de elementos del array
 	$array_size = count($uids);

@@ -22,8 +22,15 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -61,21 +68,21 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 							<div id="j-main-container">
 								<div id="editcell">
 								<div class="accordion-group">
-								<table class="table table-striped">
-								<caption style="font-weight:bold;font-size:10pt",align="center"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></caption>
+								<div style="font-weight:bold; font-size:10pt; text-align:center;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
+								<table class="table table-striped">								
 								<thead>
 									<tr>
-										<td><span class="label label-warning"> </span>
+										<td><span class="badge badge-warning"> </span>
 										</td>
 										<td>
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_ADMINISTRATOR_GROUP' ); ?>
 										</td>
-										<td><span class="label label-important"> </span>
+										<td><span class="badge badge-danger"> </span>
 										</td>
 										<td>
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_SUPER_USERS_GROUP' ); ?>
 										</td>
-										<td><span class="label"> </span>
+										<td><span class="badge badge-default"> </span>
 										</td>
 										<td>
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_OTHER_GROUPS' ); ?>
@@ -138,7 +145,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													<td>
 														<?php 
 														$icono = null;
-														JEventDispatcher::getInstance()->trigger('onLogMessagePrepare', array (&$item->message, $item->extension, &$icono)); 
+														 \JFactory::getApplication()->triggerEvent('onLogMessagePrepare', array (&$item->message, $item->extension, &$icono)); 
 														echo $icono;
 														echo $this->escape($item->message); ?>
 													</td>
@@ -153,12 +160,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 														$user_object = JUser::getInstance($item->user_id);
 														// El usuario pertenece al grupo Super users
 														if ( array_search(8,$user_object->groups) !== false ) {									
-															$span = '<span class="label label-important">';
+															$span = '<span class="badge badge-danger">';
 														// El usuario pertenece al grupo Administrators
 														} else if ( array_search(7,$user_object->groups) !== false ) {
-															$span = '<span class="label label-warning">';
+															$span = '<span class="badge badge-warning">';
 														} else {
-															$span = '<span class="label">';
+															$span = '<span class="badge badge-default">';
 														}
 														echo $span . $user_object->name . "</span>";
 														?>

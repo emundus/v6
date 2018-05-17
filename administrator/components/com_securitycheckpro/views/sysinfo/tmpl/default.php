@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 // Load plugin language
 $lang2 = JFactory::getLanguage();
@@ -35,8 +35,14 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -83,7 +89,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			
 			<div class="card mb-3" style="margin-left: 10px;">
 				<div class="card-header">
-				  <i class="fa fa-table"></i>
+				  <i class="fapro fa-table"></i>
 					<?php echo JText::_( 'COM_SECURITYCHECKPRO_SYSTEM_INFORMATION' ); ?>
 				</div>
 				<div class="card-body">
@@ -114,18 +120,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 										<?php echo JText::_( 'COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS' ); ?>
 									</div>
 								<div class="card-body">
+									<div class="progress">
 									<?php 
 										if ( $this->system_info['overall_joomla_configuration'] <=50 ) {
-											$div = "<div class=\"progress progress-danger\">";
+											$div = "<div class=\"progress-bar bg-danger\"";
 										} else if ( ($this->system_info['overall_joomla_configuration'] >50) && ($this->system_info['overall_joomla_configuration'] <=70) ) {
-											$div = "<div class=\"progress progress-warning\">";
+											$div = "<div class=\"progress-bar bg-warning\"";
 										} else {
-											$div = "<div class=\"progress progress-success\">";
+											$div = "<div class=\"progress-bar bg-success\"";
 										}
 									?>					
-									<?php echo $div . "<div class=\"bar\" style=\"width: " . $this->system_info['overall_joomla_configuration'] ."%\">" . $this->system_info['overall_joomla_configuration']; ?>
+									<?php echo $div . " role=\"progressbar\" style=\"width: " . $this->system_info['overall_joomla_configuration'] ."%\">" . $this->system_info['overall_joomla_configuration']; ?>
 										</div>						
 									</div>
+									<br/>
 									
 									 <div class="row">
 									
@@ -136,18 +144,18 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['kickstart_exists'] ) {
-														$span = "<span class=\"label label-important\">" . JText::_("COM_SECURITYCHECKPRO_YES");
+														$span = "<span class=\"badge badge-danger\">" . JText::_("COM_SECURITYCHECKPRO_YES");
 													} else {								
-														$span = "<span class=\"label label-success\">" . JText::_("COM_SECURITYCHECKPRO_NO");
+														$span = "<span class=\"badge badge-success\">" . JText::_("COM_SECURITYCHECKPRO_NO");
 													}
 												?>						
 												</span>
 												<div>							
 													<?php 
 														if ( !$this->system_info['kickstart_exists'] ) {
-															echo "<span class=\"label label-success\">OK</span>";
+															echo "<span class=\"badge badge-success\">OK</span>";
 														} else {
-															echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+															echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 													?>
 														
 													<!-- Modal Akeeba restoration -->
@@ -169,7 +177,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>								
-														<a href="#modal_akeeba_restoration" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+														<a href="#modal_akeeba_restoration" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 													<?php }	?>														
 												</div>							
 											</li>
@@ -183,9 +191,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( version_compare($this->system_info['coreinstalled'],$this->system_info['corelatest'],'==') ) {
-														$span = "<span class=\"label label-success\">";
+														$span = "<span class=\"badge badge-success\">";
 													} else {
-														$span = "<span class=\"label label-important\">";
+														$span = "<span class=\"badge badge-danger\">";
 													}
 												?>
 												<?php echo $span . $this->system_info['coreinstalled']; ?>
@@ -193,9 +201,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div>							
 													<?php 
 														if ( version_compare($this->system_info['coreinstalled'],$this->system_info['corelatest'],'==') ) {
-															echo "<span class=\"label label-success\">OK</span>";
+															echo "<span class=\"badge badge-success\">OK</span>";
 														} else {
-															echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+															echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 													?>
 														<button class="btn btn-info btn-mini" type="button" onclick="GoToJoomlaUpdate();"><i class="icon-wrench icon-white"></i></button>
 													<?php }	?>														
@@ -211,9 +219,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['vuln_extensions'] == 0 ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['vuln_extensions'] ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['vuln_extensions'] ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToVuln')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal vuln extensions -->
@@ -235,7 +243,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>
-													<a href="#modal_vuln_extensions" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_vuln_extensions" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -248,9 +256,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['suspicious_files'] == 0 ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['suspicious_files'] ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['suspicious_files'] ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToMalware')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal malware found -->
@@ -272,7 +280,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_malware_found" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_malware_found" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -285,9 +293,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['files_with_bad_integrity'] == 0 ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['files_with_bad_integrity']) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['files_with_bad_integrity']) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToIntegrity')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal file integrity -->
@@ -309,7 +317,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_files_with_bad_integrity" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_files_with_bad_integrity" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -322,9 +330,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['files_with_incorrect_permissions'] == 0 ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['files_with_incorrect_permissions'] ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['files_with_incorrect_permissions'] ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToPermissions')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal file permissions -->
@@ -346,7 +354,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>												
-													<a href="#modal_file_permissions" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_file_permissions" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -359,9 +367,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['backend_protection'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal Hide backend -->
@@ -383,7 +391,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_hide_backend" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_hide_backend" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -396,9 +404,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['firewall_options']['forbid_new_admins'] == 1 ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="SetActiveTab('session_protection'); Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal forbid new admins -->
@@ -420,7 +428,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_forbid_new_admins" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_forbid_new_admins" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -433,9 +441,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['twofactor_enabled'] == 1 ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="GoToJoomlaPlugins();" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal two factor -->
@@ -457,7 +465,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_two_factor_enabled" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_two_factor_enabled" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -475,18 +483,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 										<?php echo JText::_( 'COM_SECURITYCHECKPRO_EXTENSION_STATUS' ); ?>
 									</div>
 								<div class="card-body">
+									<div class="progress">
 									<?php 
 										if ( $this->system_info['overall_web_firewall'] <=50 ) {
-											$div = "<div class=\"progress progress-danger\">";
+											$div = "<div class=\"progress-bar bg-danger\"";
 										} else if ( ($this->system_info['overall_web_firewall'] >50) && ($this->system_info['overall_web_firewall'] <=70) ) {
-											$div = "<div class=\"progress progress-warning\">";
+											$div = "<div class=\"progress-bar bg-warning\"";
 										} else {
-											$div = "<div class=\"progress progress-success\">";
+											$div = "<div class=\"progress-bar bg-success\"";
 										}
-									?>					
-									<?php echo $div . "<div class=\"bar\" style=\"width: " . $this->system_info['overall_web_firewall'] ."%\">" . $this->system_info['overall_web_firewall']; ?>
+									?>	
+									<?php echo $div . " role=\"progressbar\" style=\"width: " . $this->system_info['overall_web_firewall'] ."%\">" . $this->system_info['overall_web_firewall']; ?>
 										</div>						
 									</div>
+									<br/>
 									
 									<div class="row">
 									
@@ -497,9 +507,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['firewall_plugin_enabled'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToCpanel')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
@@ -521,7 +531,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_firewall_plugin_enabled" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_firewall_plugin_enabled" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -534,12 +544,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( $this->system_info['firewall_options']['dynamic_blacklist'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallLists')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
@@ -561,7 +571,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_dynamic_blacklist" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_dynamic_blacklist" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -574,11 +584,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else 	if ( $this->system_info['firewall_options']['logs_attacks'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallLogs')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
@@ -600,7 +610,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_logs_attacks" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_logs_attacks" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -613,12 +623,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else 	if ( $this->system_info['firewall_options']['second_level'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallSecondLevel')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
@@ -640,7 +650,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_second_level" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_second_level" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -653,11 +663,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( $this->system_info['firewall_options']['exclude_exceptions_if_vulnerable'] ) {
-														echo "<span class=\"label label-success\">OK</span>";										
+														echo "<span class=\"badge badge-success\">OK</span>";										
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal exceptions -->
@@ -679,7 +689,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_exclude_exceptions_if_vulnerable" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_exclude_exceptions_if_vulnerable" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -692,11 +702,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else 	if ( !(strstr($this->system_info['firewall_options']['strip_tags_exceptions'],'*')) ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal xss filter -->
@@ -718,7 +728,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_strip_tags_exceptions" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_strip_tags_exceptions" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -731,11 +741,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( !(strstr($this->system_info['firewall_options']['sql_pattern_exceptions'],'*')) ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal SQL filter -->
@@ -757,7 +767,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_sql_pattern_exceptions" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_sql_pattern_exceptions" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -770,11 +780,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( !(strstr($this->system_info['firewall_options']['lfi_exceptions'],'*')) ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal LFI filter -->
@@ -796,7 +806,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_lfi_exceptions" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_lfi_exceptions" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -813,11 +823,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													$shared_session_enabled = $params->get('shared_session');
 					
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( ($this->system_info['firewall_options']['session_protection_active']) && (!$shared_session_enabled) ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal Session protection -->
@@ -839,7 +849,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_session_protection_active" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_session_protection_active" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -856,11 +866,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													$shared_session_enabled = $params->get('shared_session');
 													
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( ($this->system_info['firewall_options']['session_hijack_protection']) && (!$shared_session_enabled) ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal Session hijack -->
@@ -882,7 +892,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_session_hijack_protection" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_session_hijack_protection" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -895,12 +905,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( $this->system_info['firewall_options']['upload_scanner_enabled'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToUploadScanner')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal upload scanner -->
@@ -922,7 +932,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_upload_scanner_enabled" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_upload_scanner_enabled" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -935,12 +945,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( !$this->system_info['firewall_plugin_enabled'] ) {	
-														echo "<span class=\"label label-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+														echo "<span class=\"badge badge-warning\">" . JText::_( 'COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
 													} else if ( $this->system_info['firewall_options']['upload_scanner_enabled'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToCpanel')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal cron enabled -->
@@ -962,7 +972,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_cron_enabled" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_cron_enabled" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -981,18 +991,18 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													(int) $interval = $now->diff($last_check)->format("%a");
 																						
 													if ( $interval < 2 ) {
-														$span = "<span class=\"label label-success\">";
+														$span = "<span class=\"badge badge-success\">";
 													} else {
-														$span = "<span class=\"label label-warning\">";
+														$span = "<span class=\"badge badge-warning\">";
 													}
 												?>
 													<?php echo $span . $this->system_info['last_check']; ?>
 													</span>
 													<?php 
 														if ( $interval < 2 ) {
-															echo "<span class=\"label label-success\">OK</span>";
+															echo "<span class=\"badge badge-success\">OK</span>";
 														} else {
-															echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+															echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 													?>											
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToPermissions')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal last filemanager -->
@@ -1014,7 +1024,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_last_check" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_last_check" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1033,18 +1043,18 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													(int) $interval = $now->diff($last_check_integrity)->format("%a");
 																						
 													if ( $interval < 2 ) {
-														$span = "<span class=\"label label-success\">";
+														$span = "<span class=\"badge badge-success\">";
 													} else {
-														$span = "<span class=\"label label-warning\">";
+														$span = "<span class=\"badge badge-warning\">";
 													}
 												?>
 													<?php echo $span . $this->system_info['last_check_integrity']; ?>
 													</span>
 													<?php 
 														if ( $interval < 2 ) {
-															echo "<span class=\"label label-success\">OK</span>";
+															echo "<span class=\"badge badge-success\">OK</span>";
 														} else {
-															echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+															echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 													?>											
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToIntegrity')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal last fileintegrity -->
@@ -1066,7 +1076,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_last_check_integrity" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_last_check_integrity" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1079,9 +1089,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['spam_protection_plugin_enabled'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToCpanel')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal spam protection -->
@@ -1103,7 +1113,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_spam_protection_enabled" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_spam_protection_enabled" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1118,9 +1128,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['prevent_access'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal htaccess protection -->
@@ -1142,7 +1152,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_prevent_access" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_prevent_access" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1155,9 +1165,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['prevent_unauthorized_browsing'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal unauthorized browsing -->
@@ -1179,7 +1189,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_prevent_unauthorized_browsing" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_prevent_unauthorized_browsing" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1192,9 +1202,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['file_injection_protection'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal file injection -->
@@ -1216,7 +1226,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_file_injection_protection" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_file_injection_protection" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1229,9 +1239,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['self_environ'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal self environ -->
@@ -1253,7 +1263,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_self_environ" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_self_environ" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1266,9 +1276,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['xframe_options'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal xframe options -->
@@ -1290,7 +1300,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_xframe_options" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_xframe_options" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1303,9 +1313,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['prevent_mime_attacks'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal mime attacks -->
@@ -1327,7 +1337,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_prevent_mime_attacks" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_prevent_mime_attacks" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1340,9 +1350,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['default_banned_list'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal default banned list -->
@@ -1364,7 +1374,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_default_banned_list" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_default_banned_list" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1377,9 +1387,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['disable_server_signature'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal disable server signature -->
@@ -1401,7 +1411,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_disable_server_signature" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_disable_server_signature" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1414,9 +1424,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['disallow_php_eggs'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal disallow php eggs -->
@@ -1438,7 +1448,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_disallow_php_eggs" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_disallow_php_eggs" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>
@@ -1451,9 +1461,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											<li class="list-group-item">
 												<?php 
 													if ( $this->system_info['htaccess_protection']['disallow_php_eggs'] ) {
-														echo "<span class=\"label label-success\">OK</span>";
+														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
-														echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
 													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal disallow sensible files -->
@@ -1475,7 +1485,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 															</div>
 														  </div>
 														</div>											
-													<a href="#modal_disallow_sensible_files_access" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+													<a href="#modal_disallow_sensible_files_access" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>

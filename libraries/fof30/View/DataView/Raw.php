@@ -160,7 +160,7 @@ class Raw extends View implements DataViewInterface
 	/**
 	 * Returns the internal list of useful variables to the benefit of header fields.
 	 *
-	 * @return array
+	 * @return \stdClass
 	 */
 	public function getLists()
 	{

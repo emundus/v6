@@ -11,6 +11,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
 
+use Joomla\Utilities\ArrayHelper;
 
 /**
 * Modelo Securitycheck
@@ -36,7 +37,7 @@ function __construct()
 	
 	// Obtenemos las variables de paginación de la petición
 	$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-	$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+	$limitstart = $mainframe->input->get('limitstart', 0, 'int');
 
 	// En el caso de que los límites hayan cambiado, los volvemos a ajustar
 	$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -115,7 +116,7 @@ function load()
 	}
 	
 	// Volvemos a construir la consulta
-	$query->select('a.*');
+	$query->select('a.id, a.lft, a.rgt, a.parent_id, a.title, b.rules_applied, b.last_change');
 	$query->from($db->quoteName('#__usergroups') . ' AS a');
 		
 	// Añadimos los niveles de cada grupo...
@@ -124,7 +125,7 @@ function load()
 		->group('a.id, a.lft, a.rgt, a.parent_id, a.title, b.rules_applied, b.last_change');
 	
 	// ... y si las reglas han de aplicarse
-	$query->select('b.*')
+	$query->select('b.group_id, b.rules_applied, b.last_change')
 		->join('LEFT OUTER', $db->quoteName('#__securitycheckpro_rules') . ' AS b ON a.id = b.group_id');
 		
 	// Filtramos los comentarios de las búsquedas si existen
@@ -161,21 +162,21 @@ function apply_rules()
 {
 	$resultado = true;
 	
-	$uids = JRequest::getVar('cid', 0, '', 'array');
+	$jinput = JFactory::getApplication()->input;
+	$uids = $jinput->getVar('cid', '', 'array');
 	
 	// Timestamp
 	$formatted_date = JFactory::getDate()->format("Y-m-d H:i:s");
 	
-	JArrayHelper::toInteger($uids, array());
+	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 		
 	$db = $this->getDbo();
 	foreach($uids as $uid) {
-		$sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=1,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
-		$db->setQuery($sql);
-		$db->execute();
-		
-		if ($db->getErrorNum()) {
-			$this->setError(JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $db->getErrorNum(), $db->getErrorMsg()));
+		try {
+			$sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=1,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
+			$db->setQuery($sql);
+			$db->execute();	
+		} catch (Exception $e){
 			$resultado = false;
 			break(1);
 		}
@@ -191,24 +192,25 @@ function not_apply_rules()
 {
 	$resultado = true;
 	
-	$uids = JRequest::getVar('cid', 0, '', 'array');
+	$jinput = JFactory::getApplication()->input;
+	$uids = $jinput->getVar('cid', '', 'array');
 	
 	// Timestamp
 	$formatted_date = JFactory::getDate()->format("Y-m-d H:i:s");
 	
-	JArrayHelper::toInteger($uids, array());
+	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 		
 	$db = $this->getDbo();
 	foreach($uids as $uid) {
-		$sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=0,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
-		$db->setQuery($sql);
-		$db->execute();
-		
-		if ($db->getErrorNum()) {
-			$this->setError(JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $db->getErrorNum(), $db->getErrorMsg()));
+		try {
+			$sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=0,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
+			$db->setQuery($sql);
+			$db->execute();
+		}	catch (Exception $e){
 			$resultado = false;
 			break(1);
 		}
+		
 		
 	}
 

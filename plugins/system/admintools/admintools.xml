@@ -6,8 +6,8 @@
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2010-2018 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU General Public License version 3, or later</license>
-	<creationDate>2018-02-26</creationDate>
-	<version>5.0.2</version>
+	<creationDate>2018-05-10</creationDate>
+	<version>5.1.0</version>
 	<description>
 		Handles all the system-wide features provided by Admin Tools Core
 	</description>

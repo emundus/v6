@@ -28,4 +28,13 @@ interface CompilerInterface
 	 * @return mixed
 	 */
 	public function compile($path, array $forceParams = array());
+
+	/**
+	 * Returns the file extension supported by this compiler
+	 *
+	 * @return  string
+	 *
+	 * @since   3.3.1
+	 */
+	public function getFileExtension();
 }

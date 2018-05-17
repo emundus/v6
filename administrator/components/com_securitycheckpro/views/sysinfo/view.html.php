@@ -31,9 +31,9 @@ class SecuritycheckprosViewsysinfo extends JViewLegacy
 		$trackactions_plugin_exists = $model->PluginStatus(8);
 								
 		// Ponemos los datos y la paginación en el template
-		$this->assignRef('system_info',$system_info);
-		$this->assignRef('logs_pending', $logs_pending);
-		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+		$this->system_info = $system_info;
+		$this->logs_pending = $logs_pending;
+		$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 							
 		parent::display($tpl);
 	}

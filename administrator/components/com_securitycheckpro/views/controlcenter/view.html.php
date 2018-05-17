@@ -37,8 +37,8 @@ $items= $model->getControlCenterConfig();
 // Información para la barra de navegación
 $logs_pending = $model->LogsPending();
 $trackactions_plugin_exists = $model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 // Extraemos los elementos que nos interesan...
 $control_center_enabled= null;
@@ -54,8 +54,8 @@ if ( !is_null($items['secret_key']) ) {
 }
 
 // ... y los ponemos en el template
-$this->assignRef('control_center_enabled',$control_center_enabled);
-$this->assignRef('secret_key',$secret_key);
+$this->control_center_enabled = $control_center_enabled;
+$this->secret_key = $secret_key;
 
 
 parent::display($tpl);

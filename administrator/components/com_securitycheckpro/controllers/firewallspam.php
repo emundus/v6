@@ -24,7 +24,8 @@ class SecuritycheckprosControllerFirewallSpam extends SecuritycheckproController
 public function save()
 {
 	$model = $this->getModel('firewallspam');
-	$data = JRequest::get('post');
+	$jinput = JFactory::getApplication()->input;
+	$data = $jinput->get('post');
 	if ( !is_numeric($data['spammer_limit']) ) {
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_INVALID_VALUE'),'error');
 	} else {
