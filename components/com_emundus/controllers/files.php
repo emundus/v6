@@ -2389,6 +2389,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                             }
                                                 
                                         }
+                                    }elseif(empty($files)){
+                                        foreach($setup_attachments as $att){
+                                            $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+                                        }
                                     }
                                 }
                             }elseif(!empty($files)){
