@@ -2811,6 +2811,20 @@ die();*/
             throw $e;
         }
     }
+    public function getSetupAttachmentsById($ids)
+    {
+        $dbo = $this->getDbo();
+        $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';
+        try
+        {
+            $dbo->setQuery($query);
+            return $dbo->loadAssocList();
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
 
     /**
      * @param $idFabrik

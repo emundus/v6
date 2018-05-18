@@ -1344,10 +1344,10 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 			$htmldata .='</ol></div>';
 		}
 	}
-
+	
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
 
-
+	
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
@@ -1368,7 +1368,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 			//$output?'FI':'F'
 			$name = 'application_header_'.date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
-            $attachment = $m_application->getAttachmentByLbl("_application_header");
+            $attachment = $m_application->getAttachmentByLbl("_application_form");
 			$keys 	= array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum' );
 			$values = array($item->user_id, $attachment['id'], $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
 			$data 	= array('key' => $keys, 'value' => $values);

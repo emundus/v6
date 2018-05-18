@@ -3317,7 +3317,6 @@ $(document).ready(function()
                         '</div><br/>');
 
                         $('#data').append('<div style="padding-left:30px" id="em-options">'+
-
                             '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked/>&ensp;' +
                             '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
                             '<div style="padding-left:30px;" id="exp-opt">'+

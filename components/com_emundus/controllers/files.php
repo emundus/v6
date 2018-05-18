@@ -2360,7 +2360,53 @@ class EmundusControllerFiles extends JControllerLegacy
                         $fnum = explode(',', $fnum);
                         if ($attachment || !empty($attachment_to_export)) {
                             $files = $m_files->getFilesByFnums($fnum, $attachment_to_export);
-                            if(!empty($files)){
+                            $file_ids = array();
+
+                            foreach($files as $key => $file)
+                                $file_ids[] = $file['attachment_id'];
+
+                            $setup_attachments = $m_files->getSetupAttachmentsById($attachment_to_export);
+                            if(!empty($setup_attachments) && !empty($files)){
+                                foreach($setup_attachments as $att){
+                                    if(!empty($files)){
+                                        foreach($files as $key => $file){
+                                            if($file['attachment_id'] == $att['id']){
+                                                $filename = $application_form_name . DS . $file['filename'];
+                                                $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+                                                if(file_exists($dossier . $file['filename'])){
+                                                    if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+                                                        continue;
+                                                    }
+                                                }else{
+                                                    $zip->addFromString($filename."-missing.txt", '');
+                                                }
+                                            }else{
+                                                if(!in_array($att['id'], $file_ids))
+                                                    $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+                                            }
+                                                
+                                        }
+                                    }
+                                }
+                            }elseif(!empty($files)){
+                                foreach ($files as $key => $file) {
+                                    $filename = $application_form_name . DS . $file['filename'];
+                                    $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+                                    if(file_exists($dossier . $file['filename'])){
+                                        if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+                                            continue;
+                                        }
+                                    }else{
+                                        $zip->addFromString($filename."-missing.txt", '');
+                                    }
+
+                                }
+                            }elseif(empty($files)){
+                                foreach($setup_attachments as $att){
+                                    $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+                                }
+                            }
+                            /*if(!empty($files)){
                                 foreach ($files as $key => $file) {
                                     $filename = $application_form_name . DS . $file['filename'];
                                     $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
@@ -2375,8 +2421,11 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
 
                             }else{
-                                $zip->addFromString($application_form_name . DS .$file['filename']."-NotFound.txt", '');
-                            }
+                                $notfound = $m_files->getSetupAttachmentsById($attachment_to_export);
+                                if(!empty($notfound))
+                                    foreach($notfound as $nf)
+                                        $zip->addFromString($application_form_name . DS .$nf['value']."-missing.txt", '');
+                            }*/
                         }
 
                     }
