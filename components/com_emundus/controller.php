@@ -851,7 +851,7 @@ class EmundusController extends JControllerLegacy {
                         WHERE attachment_id=
                                 (SELECT id
                                     FROM #__emundus_setup_attachments
-                                    WHERE lbl="_photo"
+                                    WHERE lbl like "_photo"
                                 )
                                 AND user_id='.$user->id. '
                                 AND fnum like '.$db->Quote($fnum);
