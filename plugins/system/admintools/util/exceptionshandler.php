@@ -1003,10 +1003,16 @@ HTML;
 	 */
 	private function logSecurityExceptionToFile($reason, $extraLogInformation, $txtReason, $tokens)
 	{
+		// Write to the log file only if we're told to
+		if (!$this->cparams->getValue('logfile', 0))
+		{
+			return;
+		}
+
 		// Get the log filename
 		$config = $this->container->platform->getConfig();
 		$logpath = $config->get('log_path');
-		$fname = $logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log';
+		$fname = $logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.php';
 
 		// -- Check the file size. If it's over 1Mb, archive and start a new log.
 		if (@file_exists($fname))
@@ -1015,14 +1021,50 @@ HTML;
 
 			if ($fsize > 1048756)
 			{
-				if (@file_exists($fname . '.1'))
+				$altFile = substr($fname, 0, -4) . '.1.php';
+
+				if (@file_exists($altFile))
 				{
-					unlink($fname . '.1');
+					unlink($altFile);
 				}
 
-				@copy($fname, $fname . '.1');
+				@copy($fname, $altFile);
 				@unlink($fname);
 			}
+		}
+
+		// If the main log file does not exist yet create a new one.
+		if (!file_exists($fname))
+		{
+			$content = <<< END
+php
+/**
+ * =====================================================================================================================
+ * Admin Tools debug log file
+ * =====================================================================================================================
+ *
+ * This file contains a dump of the requests which were blocked by Admin Tools. By definition, this file does contain
+ * a lot of "hacking signatures" since this is what the Admin Tools component is designed to stop and this is the file
+ * logging all these hacking attempts.
+ *
+ * You can disable the creation of this file by going to Components, Admin Tools, Web Application Firewall, Configure
+ * WAF and setting the "Keep a debug log file" option to NO. This is the recommended setting. You should only set this
+ * option to YES if you are troubleshooting an issue (Admin Tools is blocking access to your site).
+ *
+ * Some hosts will mistakenly report this file as suspicious or hacked. As a result they might issue an automated
+ * warning and / or block access to your site. Should that happen please ask your host to look in this file and read
+ * this header. This file is SAFE since the only executable statement is die() below which prevents the file from being
+ * executed at all. If your host does not understand that this file is safe or does not know how to add an exception in
+ * their automated scanner to exempt Joomla's log files (all files under this directory) from being flagged as hacked /
+ * suspicious we strongly recommend going to a different host that understands how PHP works. It will be safer for you
+ * as well. 
+ */
+ 
+die();
+END;
+			$content = "?$content?";
+			$content .= ">\n\n";
+			file_put_contents($fname, '<' . $content);
 		}
 
 		// -- Log the exception

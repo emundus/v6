@@ -50,7 +50,7 @@ defined('_JEXEC') or die();
 				</div>		
 			  </div>
 				<div class="modal-footer">
-					<button class="btn btn-primary" id="buttonwrapper" type="button" onclick="hideElement('buttonwrapper'); hideElement('buttonclose'); clear_data_button();"><i class="fa fa-fw fa-fire"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_CLEAR_DATA_CLEAR_BUTTON' ); ?></button>
+					<button class="btn btn-primary" id="buttonwrapper" type="button" onclick="hideElement('buttonwrapper'); hideElement('buttonclose'); clear_data_button();"><i class="fapro fa-fw fa-fire"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_CLEAR_DATA_CLEAR_BUTTON' ); ?></button>
 					<button type="button" id="buttonclose" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
 				</div>			  
 			</div>
@@ -60,14 +60,14 @@ defined('_JEXEC') or die();
   <div class="fixed2-nav" id="page-top">
   <!-- Navigation-->
   <nav class="navbar2 navbar2-expand-lg navbar2-dark fixed-top" id="mainNav">
-     <button class="navbar2-toggler bg-dark navbar2-toggler-right" type="button" data-toggle="collapse2" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+     <!--button class="navbar2-toggler bg-dark navbar2-toggler-right" type="button" data-toggle="collapse2" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar2-toggler-icon"></span>
-    </button>
+    </button-->
     <div class="collapse2 navbar2-collapse2" id="navbarResponsive">
       <ul class="navbar2-nav navbar2-sidenav" id="contentbar">
         <li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?>">
           <a class="nav2-link" href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro' );?>">
-            <i class="fa fa-fw fa-home"></i>
+            <i class="fapro fa-fw fa-home"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></span>
           </a>
         </li>
@@ -75,30 +75,30 @@ defined('_JEXEC') or die();
 		<li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_SYSINFO_TEXT'); ?>">
           <a class="nav2-link" href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1' );
 	?>">
-            <i class="fa fa-fw fa-info-square"></i>
+            <i class="fapro fa-fw fa-info-square"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_SYSINFO_TEXT'); ?></span>
           </a>
         </li>
 		
         <li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CHECK_VULNERABILITIES_TEXT'); ?>">
           <a class="nav2-link" href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1' );?>">
-            <i class="fa fa-fw fa-check-circle"></i>
+            <i class="fapro fa-fw fa-check-circle"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CHECK_VULNERABILITIES_TEXT'); ?></span>
           </a>
         </li>
 		
 		 <li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS'); ?>">
           <a class="nav2-link" href="<?php echo 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs'?>">
-            <i class="fa fa-fw fa-eye"></i>
+            <i class="fapro fa-fw fa-eye"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS'); ?></span>
 			<?php	
 				if ($this->logs_pending >= 99){
 					$this->logs_pending = "+99";
 				}
 				if ($this->logs_pending == 0){ ?>
-				<span class="label label-success">
+				<span class="badge badge-success">
 			<?php 	} else{ ?>
-				<span class="label label-warning">
+				<span class="badge badge-warning">
 			<?php	}
 				echo $this->logs_pending;
 			?>
@@ -111,7 +111,7 @@ defined('_JEXEC') or die();
 		?>
 			 <li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_TRACKACTIONS_LOGS'); ?>">
 			  <a class="nav2-link" href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=trackactions_logs' );?>">
-				<i class="fa fa-fw fa-binoculars"></i>
+				<i class="fapro fa-fw fa-binoculars"></i>
 				<span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_TRACKACTIONS_LOGS'); ?></span>
 			  </a>
 			</li>
@@ -121,7 +121,7 @@ defined('_JEXEC') or die();
 		
 		<li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_OPTIONS'); ?>">
           <a class="nav2-link nav2-link-collapse2 collapsed" data-toggle="collapse2" href="#cpaneloptions" data-parent="#contentbar">
-            <i class="fa fa-fw fa-list"></i>
+            <i class="fapro fa-fw fa-list"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_OPTIONS'); ?></span>
           </a>
           <ul class="sidenav2-second-level collapse2" id="cpaneloptions">
@@ -134,7 +134,7 @@ defined('_JEXEC') or die();
 				?>	
 				 <li>
 					<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filemanager&'. JSession::getFormToken() .'=1' );
-	?>"><i class="fa fa-fw fa-circle"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT'); ?></a>
+	?>"><i class="fapro fa-fw fa-circle"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT'); ?></a>
 				</li>
 				<?php } ?>
 			<?php 
@@ -145,12 +145,12 @@ defined('_JEXEC') or die();
 					if ( $exists_filemanager ) {						
 				?>	
 				<li>
-				  <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1' );?>"><i class="fa fa-fw fa-file-check"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT'); ?></a>
+				  <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1' );?>"><i class="fapro fa-fw fa-file-check"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT'); ?></a>
 				</li>
 				<?php } ?>		
 					
             <li>
-              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1' );?>"><i class="fa fa-fw fa-file-alt"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'); ?></a>
+              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1' );?>"><i class="fapro fa-fw fa-file-alt"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'); ?></a>
             </li>
 			
 			<?php 
@@ -161,7 +161,7 @@ defined('_JEXEC') or die();
 				if ( $exists_filemanager ) {						
 				?>
 				<li>
-					<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=malwarescan&'. JSession::getFormToken() .'=1' );?>"><i class="fa fa-fw fa-bug"></i><?php echo JText::_('COM_SECURITYCHECKPRO_MALWARESCAN'); ?></a>
+					<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=malwarescan&'. JSession::getFormToken() .'=1' );?>"><i class="fapro fa-fw fa-bug"></i><?php echo JText::_('COM_SECURITYCHECKPRO_MALWARESCAN'); ?></a>
 				</li>				
 				<?php } ?>			
           </ul>
@@ -169,58 +169,58 @@ defined('_JEXEC') or die();
 		
         <li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CONFIGURATION'); ?>">
           <a class="nav2-link nav2-link-collapse2 collapsed" data-toggle="collapse2" href="#cpanelconfiguration" data-parent="#contentbar">
-            <i class="fa fa-fw fa-wrench"></i>
+            <i class="fapro fa-fw fa-wrench"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CONFIGURATION'); ?></span>
           </a>
           <ul class="sidenav2-second-level collapse2" id="cpanelconfiguration">	
 			<li>
-              <a href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(JURI::getInstance()->toString()) ?>"><i class="fa fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_GLOBAL_CONFIGURATION'); ?></a>
+              <a href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(JURI::getInstance()->toString()) ?>"><i class="fapro fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_GLOBAL_CONFIGURATION'); ?></a>
             </li>
 			<li>
-              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. JSession::getFormToken() .'=1' );?>"><i class="fa fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_WAF_CONFIG'); ?></a>
+              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. JSession::getFormToken() .'=1' );?>"><i class="fapro fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_WAF_CONFIG'); ?></a>
             </li>
             <li>
-              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=cron&view=cron&'. JSession::getFormToken() .'=1' );?>"><i class="fa fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
+              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=cron&view=cron&'. JSession::getFormToken() .'=1' );?>"><i class="fapro fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
             </li>
 			<li>
               <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=rules&view=rules&'. JSession::getFormToken() .'=1' );
-	?>"><i class="fa fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'); ?></a>
+	?>"><i class="fapro fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'); ?></a>
             </li>
 			<li>
               <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=controlcenter&view=controlcenter&'. JSession::getFormToken() .'=1' );
-	?>"><i class="fa fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'); ?></a>
+	?>"><i class="fapro fa-fw fa-wrench"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'); ?></a>
             </li>
           </ul>         
         </li>
         <li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_TASKS'); ?>">
           <a class="nav2-link nav2-link-collapse2 collapsed" data-toggle="collapse2" href="#cpaneltasks" data-parent="#contentbar">
-            <i class="fa fa-fw fa-tasks"></i>
+            <i class="fapro fa-fw fa-tasks"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_TASKS'); ?></span>
           </a>
           <ul class="sidenav2-second-level collapse2" id="cpaneltasks">			 
             <li>
-				<a href="#initialize_data" data-toggle="modal" data-target="#initialize_data"><i class="fa fa-fw fa-undo"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_INITIALIZE_DATA'); ?></a>
+				<a href="#initialize_data" data-toggle="modal" data-target="#initialize_data"><i class="fapro fa-fw fa-undo"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_INITIALIZE_DATA'); ?></a>
             </li>
             <li>
-              <a href="#" onclick="Joomla.submitbutton('Export_config');"><i class="fa fa-fw fa-download"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_EXPORT_CONFIG'); ?></a>
+              <a href="#" onclick="Joomla.submitbutton('Export_config');"><i class="fapro fa-fw fa-download"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_EXPORT_CONFIG'); ?></a>
             </li>
 			<li>
-              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=upload&'. JSession::getFormToken() .'=1' );?>"><i class="fa fa-fw fa-upload"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_IMPORT_CONFIG'); ?></a>
+              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=upload&'. JSession::getFormToken() .'=1' );?>"><i class="fapro fa-fw fa-upload"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_IMPORT_CONFIG'); ?></a>
             </li>
           </ul>
         </li>
 			
         <li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_PERFORMANCE'); ?>">
           <a class="nav2-link nav2-link-collapse2 collapsed" data-toggle="collapse2" href="#performance" data-parent="#contentbar">
-            <i class="fa fa-fw fa-cogs"></i>
+            <i class="fapro fa-fw fa-cogs"></i>
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_PERFORMANCE'); ?></span>
           </a>
           <ul class="sidenav2-second-level collapse2" id="performance">
             <li>			 
-              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=dbcheck&view=dbcheck&'. JSession::getFormToken() .'=1' );?>"><i class="fa fa-fw fa-database"></i><?php echo JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?></a>
+              <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=dbcheck&view=dbcheck&'. JSession::getFormToken() .'=1' );?>"><i class="fapro fa-fw fa-database"></i><?php echo JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?></a>
             </li>
             <li>
-              <a href="#purge_sessions" data-toggle="modal" data-target="#purgesessions"><i class="fa fa-fw fa-user-times"></i><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></a>
+              <a href="#purge_sessions" data-toggle="modal" data-target="#purgesessions"><i class="fapro fa-fw fa-user-times"></i><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></a>
             </li>            
           </ul>
         </li>        
@@ -228,7 +228,7 @@ defined('_JEXEC') or die();
       <ul class="navbar2-nav sidenav2-toggler">
         <li class="nav2-item">
           <a class="nav2-link text-center" id="sidenavToggler">
-            <i class="fa fa-fw fa-angle-left"></i>
+            <i class="fapro fa-fw fa-angle-left"></i>
           </a>
         </li>
       </ul>     

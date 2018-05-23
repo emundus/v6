@@ -1115,4 +1115,268 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	} else
 		$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'F');
 }
+
+function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
+	jimport( 'joomla.html.parameter' );
+	set_time_limit(0);
+	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+	$config = JFactory::getConfig();
+	$offset = $config->get('offset');
+
+	$m_profile 		= new EmundusModelProfile;
+	$m_application 	= new EmundusModelApplication;
+	$m_files		= new EmundusModelFiles;
+
+	$db 			= JFactory::getDBO();
+	$app 			= JFactory::getApplication();
+	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
+	$current_user 	= JFactory::getUser();
+	$user 			= $m_profile->getEmundusUser($user_id);
+	$fnum 			= empty($fnum)?$user->fnum:$fnum;
+
+	//$export_pdf = $eMConfig->get('export_pdf');
+	//$user_profile = $m_users->getCurrentUserProfile($user_id);
+
+	$infos = $m_profile->getFnumDetails($fnum);
+	$campaign_id = $infos['campaign_id'];
+
+	// Get form HTML
+	$htmldata = '';
+	
+	// Create PDF object
+	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+	
+	$pdf->SetCreator(PDF_CREATOR);
+	$pdf->SetAuthor('Decision Publique');
+	$pdf->SetTitle('Application Form');
+
+	try {
+
+		// Users informations
+		$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
+					LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = '.$campaign_id.'
+					LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = '.EMUNDUS_PHOTO_AID.' AND a.fnum like '.$db->Quote($fnum).'
+					LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
+					LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like '.$db->Quote($fnum).'
+					LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like '.$db->Quote($fnum).'
+					WHERE ecc.fnum like '.$db->Quote($fnum).'
+					ORDER BY esc.id DESC';
+		$db->setQuery($query);
+		$item = $db->loadObject();
+
+	} catch (Exception $e) {
+		JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+	}
+//die(str_replace("#_", "jos", $query));
+
+
+	//get logo
+    $template 	= $app->getTemplate(true);
+    $params     = $template->params;
+
+    $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+    $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
+    // manage logo by programme
+    $ext = substr($logo, -3);
+    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
+    if (is_file($logo_prg))
+    	$logo = $logo_prg;
+
+	//get title
+	$title = $config->get('sitename');
+	if (is_file($logo))
+		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+
+
+
+	unset($logo);
+	unset($title);
+
+	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
+	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	$pdf->SetFont('helvetica', '', 10);
+	$pdf->AddPage();
+	$dimensions = $pdf->getPageDimensions();
+
+
+	/*** Applicant   ***/
+	$htmldata .=
+	'<style>
+	.card  { border: none; display:block; line-height:80%;}
+	.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
+	.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
+	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
+	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
+	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
+
+	.label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+	.label-default {background-color:#999999;}
+	.label-primary {background-color:#337ab7;}
+	.label-success {background-color:#5cb85c;}
+	.label-info    {background-color:#033c73;}
+	.label-warning {background-color:#dd5600;}
+	.label-danger  {background-color:#c71c22;}
+	.label-lightpurple { background-color: #DCC6E0 }
+	.label-purple { background-color: #947CB0 }
+	.label-darkpurple {background-color: #663399 }
+	.label-lightblue { background-color: #6bb9F0 }
+	.label-blue { background-color: #19B5FE }
+	.label-darkblue { background-color: #013243 }
+	.label-lightgreen { background-color: #00E640 }
+	.label-green { background-color: #3FC380 }
+	.label-darkgreen { background-color: #1E824C }
+	.label-lightyellow { background-color: #FFFD7E }
+	.label-yellow { background-color: #FFFD54 }
+	.label-darkyellow { background-color: #F7CA18 }
+	.label-lightorange { background-color: #FABE58 }
+	.label-orange { background-color: #E87E04 }
+	.label-darkorange {background-color: #D35400 }
+	.label-lightred { background-color: #EC644B }
+	.label-red { background-color: #CF000F }
+	.label-darkred { background-color: #96281B }
+
+	</style>';
+	//var_dump($options[0]);die;
+	if(!empty($options) && $options[0] != "" && $options[0] != "0"){
+		$htmldata .= '<div class="card">
+					<table width="100%"><tr>';
+		if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
+			$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
+		elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
+			$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
+		
+		$htmldata .= '
+		<td width="80%">
+
+		<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
+
+		if (isset($item->maiden_name))
+			$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+
+		$date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+
+		// create a $dt object with the UTC timezone
+		$dt = new DateTime('NOW', new DateTimeZone('UTC'));
+		// change the timezone of the object without changing it's time
+		$dt->setTimezone(new DateTimeZone($offset));
+
+		//var_dump($options);
+	
+		if(in_array("aid", $options)){
+			$htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>';
+		}
+		if(in_array("afnum", $options)){
+			$htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
+		}
+		if(in_array("aemail", $options)){
+			$htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
+		}
+		if(in_array("aapp-sent", $options)){
+			$htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
+		}
+		if(in_array("adoc-print", $options)){
+			$htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
+		}
+		if(in_array("status", $options)){
+			$status = $m_files->getStatusByFnums(explode(',', $fnum));
+			$htmldata .= '<div class="sent">'.JText::_('PDF_STATUS').' : '.$status[$fnum]['value'].'</div>';
+		}
+		if(in_array("tags", $options)){
+			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
+			$htmldata .='<br/><table><tr><td style="display: inline;"> ';
+			foreach($tags as $tag){
+				$htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+			}
+			$htmldata .='</td></tr></table>';
+		}
+		$htmldata .= '</td></tr></table></div>';
+	}elseif($options[0] == "0"){
+		$htmldata .= '';
+	}
+	
+	/**  END APPLICANT   ****/
+
+	// Listes des fichiers chargés
+	if(!empty($options)){
+		if(in_array("upload", $options)){
+			$uploads = $m_application->getUserAttachmentsByFnum($fnum);
+			$nbuploads=0;
+			foreach ($uploads as $upload) {
+				if (strrpos($upload->filename, "application_form") === false) {
+					$nbuploads++;
+				}
+			}
+			$titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
+
+			$htmldata .='
+			<h2>'.$titleupload.' : '.$nbuploads.'</h2>';
+
+			$htmldata .='<div class="file_upload">';
+			$htmldata .= '<ol>';
+			foreach ($uploads as $upload){
+				if (strrpos($upload->filename,"application_form")=== false) {
+					$path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
+					$htmldata .= '<li><b>' . $upload->value . '</b>';
+					$htmldata .= '<ul>';
+					$htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+					$htmldata .= '</ul>';
+					$htmldata .= '</li>';
+
+				}
+
+			}
+			$htmldata .='</ol></div>';
+		}
+	}
+	
+	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
+
+	
+	if (!empty($htmldata)) {
+		$pdf->startTransaction();
+		$start_y = $pdf->GetY();
+		$start_page = $pdf->getPage();
+		$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
+		$htmldata = '';
+	}
+
+	if (!file_exists(EMUNDUS_PATH_ABS.@$item->user_id)) {
+		mkdir(EMUNDUS_PATH_ABS.$item->user_id, 0777, true);
+		chmod(EMUNDUS_PATH_ABS.$item->user_id, 0777);
+	}
+
+
+	@chdir('tmp');
+	if ($output) {
+		if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
+			//$output?'FI':'F'
+			$name = 'application_header_'.date('Y-m-d_H-i-s').'.pdf';
+			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
+            $attachment = $m_application->getAttachmentByLbl("_application_form");
+			$keys 	= array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum' );
+			$values = array($item->user_id, $attachment['id'], $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
+			$data 	= array('key' => $keys, 'value' => $values);
+			$m_application->uploadAttachment($data);
+
+		} else
+			$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_header.pdf', 'FI');
+	} else
+		$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_header.pdf', 'F');
+}
 ?>

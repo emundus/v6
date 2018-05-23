@@ -57,19 +57,18 @@ $common_model = new SecuritycheckproModel();
 
 $logs_pending = $common_model->LogsPending();
 $trackactions_plugin_exists = $common_model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);	
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;	
 
 //  Parámetros del componente
 $items= $this->get('Items');
 $this->pagination = $this->get('Pagination');
 
 // ... y los ponemos en el template
-$this->assignRef('items',$items);
+$this->items = $items;
 
 if ( !empty($items) ) {
-	$pagination = $this->get('Pagination');
-	$this->assignRef('pagination', $pagination);	
+	$this->pagination = $this->get('Pagination');		
 	
 }
 

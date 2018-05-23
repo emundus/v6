@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 $kind_array = array(JHtml::_('select.option',JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FILE'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FILE')),
 			JHtml::_('select.option',JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FOLDER'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FOLDER')));
@@ -42,8 +42,14 @@ JHTML::stylesheet($media_url);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -301,7 +307,7 @@ if ( strstr($server,"iis") ) { ?>
 							</div>						
 						</div>						
 						<div id="button_start_scan" class="card-footer">
-							<button class="btn btn-primary" type="button" onclick="hideElement('button_start_scan'); hideElement('container_resultado'); hideElement('container_repair'); hideElement('completed_message2'); boton_filenamager();"><i class="fa fa-fw fa-fire"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
+							<button class="btn btn-primary" type="button" onclick="hideElement('button_start_scan'); hideElement('container_resultado'); hideElement('container_repair'); hideElement('completed_message2'); boton_filenamager();"><i class="fapro fa-fw fa-fire"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
 						</div>						
 					</div>
 				</div>
@@ -407,12 +413,12 @@ if ( strstr($server,"iis") ) { ?>
 									<button class="btn tip" type="button" onclick="document.getElementById('filter_filemanager_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 								</div>
 								
-								<div class="btn-group pull-left">
-										<select name="filter_filemanager_kind" class="inputbox" onchange="this.form.submit()">
+								<div class="btn-group pull-left" style="margin-left: 10px;">
+										<select name="filter_filemanager_kind" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
 											<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_KIND_DESCRIPTION');?></option>
 											<?php echo JHtml::_('select.options', $kind_array, 'value', 'text', $this->state->get('filter.filemanager_kind'));?>
 										</select>
-										<select name="filter_filemanager_permissions_status" class="inputbox" onchange="this.form.submit()">
+										<select name="filter_filemanager_permissions_status" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
 											<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_PERMISSIONS_STATUS_DESCRIPTION');?></option>
 											<?php echo JHtml::_('select.options', $status_array, 'value', 'text', $this->state->get('filter.filemanager_permissions_status'));?>
 										</select>
@@ -452,17 +458,17 @@ if ( strstr($server,"iis") ) { ?>
 									<table class="table table-striped" style="margin-top: 30px;">
 										<thead>
 											<tr>
-												<td><span class="label label-success"> </span>
+												<td><span class="badge badge-success"> </span>
 												</td>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_GREEN_COLOR' ); ?>
 												</td>
-												<td><span class="label label-warning"> </span>
+												<td><span class="badge badge-warning"> </span>
 												</td>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_YELLOW_COLOR' ); ?>
 												</td>
-												<td><span class="label label-important"> </span>
+												<td><span class="badge badge-important"> </span>
 												</td>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RED_COLOR' ); ?>
@@ -479,11 +485,11 @@ if ( strstr($server,"iis") ) { ?>
 								<div id="permissions_buttons" class="btn-toolbar">
 									<div class="pull-right">
 										<button class="btn btn-success" style="margin-right: 5px;" onclick="Joomla.submitbutton('addfile_exception')" href="#">
-											<i class="fa fa-fw fa-plus"> </i>
+											<i class="fapro fa-fw fa-plus"> </i>
 											<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_AS_EXCEPTION'); ?>
 										</button>									
 										<button class="btn btn-primary" onclick="Joomla.submitbutton('repair');" href="#">
-											<i class="fa fa-fw fa-wrench"> </i>
+											<i class="fapro fa-fw fa-wrench"> </i>
 											<?php echo JText::_('COM_SECURITYCHECKPRO_FILE_STATUS_REPAIR'); ?>
 										</button>
 									</div>
@@ -504,7 +510,7 @@ if ( strstr($server,"iis") ) { ?>
 								<div>
 									<span class="badge" style="background-color: #CEA0EA; padding: 10px 10px 10px 10px;"><?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_ANALYZED_FILES');?></span>
 								</div>
-								<div class="table-responsive" style="overflow-x: scroll;">									
+								<div class="table-responsive" style="overflow-x: scroll; margin-top: 10px;">									
 									<table id="filesstatus_table" class="table table-bordered table-hover">
 									<thead>
 										<tr>
@@ -571,11 +577,11 @@ if ( strstr($server,"iis") ) { ?>
 										<?php 
 											$safe = $row['safe'];
 											if ( $safe == '0' ) {
-												echo "<td style=\"text-align: center;\"><span class=\"label label-important\">";
+												echo "<td style=\"text-align: center;\"><span class=\"badge badge-important\">";
 											} else if ( $safe == '1' ) {
-												echo "<td style=\"text-align: center;\"><span class=\"label label-success\">";
+												echo "<td style=\"text-align: center;\"><span class=\"badge badge-success\">";
 											} else if ( $safe == '2' ) {
-												echo "<td style=\"text-align: center;\"><span class=\"label label-warning\">";
+												echo "<td style=\"text-align: center;\"><span class=\"badge badge-warning\">";
 											} ?>
 											<?php echo $row['permissions']; ?>
 										</td>

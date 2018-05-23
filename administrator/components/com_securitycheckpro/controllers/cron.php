@@ -30,7 +30,9 @@ function redireccion()
 public function save()
 {
 	$model = $this->getModel('cron');
-	$data = JRequest::get('post');
+	$jinput = JFactory::getApplication()->input;
+	$data = $jinput->getArray($_POST);
+		
 	$model->saveConfig($data, 'cron_plugin');
 
 	$this->setRedirect('index.php?option=com_securitycheckpro&view=cron&'. JSession::getFormToken() .'=1',JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));

@@ -206,7 +206,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 		// R�cup�ration des donn�es du mail
 		$query = 'SELECT id, subject, emailfrom, name, message
 						FROM #__emundus_setup_emails
-						WHERE lbl="assessors_set"';
+						WHERE lbl like "assessors_set"';
 		$db->setQuery( $query );
 		$db->query();
 		$obj=$db->loadObjectList();

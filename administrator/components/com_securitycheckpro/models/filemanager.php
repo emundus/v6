@@ -257,7 +257,8 @@ function __construct($config = array()) {
  
 	// Obtenemos las variables de paginación de la petición
 	$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-	$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+	$jinput = JFactory::getApplication()->input;
+	$limitstart = $jinput->get('limitstart', 0, 'int');
 
 	// En el caso de que los límites hayan cambiado, los volvemos a ajustar
 	$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -337,13 +338,22 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 				$last_part = explode(DIRECTORY_SEPARATOR,$file);
 				$excludedFiles[] = end($last_part);
 			}
+		} else if ( $opcion == "malwarescan" ) {
+			$exceptions = $this->skipDirsIntegrity;
+			if ( !$this->use_filemanager_exceptions ) {
+				$exceptions = $this->skipDirsMalwarescan;
+			} 
+			foreach($exceptions as $file) {
+				$last_part = explode(DIRECTORY_SEPARATOR,$file);
+				$excludedFiles[] = end($last_part);
+			}
 		}
 		
 		/* Comprobamos si tenemos que escanear todos los archivos o sólo los ejecutables */
 		if ( $scan_executables_only ) {
 			$files_name = JFolder::files($root,'.',true,true,$excludedFiles,$excludedExtensions);			
 		} else {
-			$files_name = JFolder::files($root,'',true,true);
+			$files_name = JFolder::files($root,'',true,true,$excludedFiles);
 			// Buscamos si existe el archivo .htaccess en la ruta a escanear (sólo lo buscamos en la ruta base, no en subdirectorios)
 			if ( file_exists($root . DIRECTORY_SEPARATOR . ".htaccess") ) {
 				$files_name[] = $root . DIRECTORY_SEPARATOR . ".htaccess";
@@ -990,8 +1000,9 @@ public function getDirectories($root = null, $include_exceptions, $recursive, $o
 	
 	jimport('joomla.filesystem.folder');
 	
-	$folders_name = JFolder::folders($root,'.',true,true);
 	if ( $opcion == "permissions" ) {
+		$folders_name = JFolder::folders($root,'.',true,true,$this->skipDirsPermissions);
+		
 		$this->files_scanned += count($folders_name);
 		
 		//Inicializamos el porcentaje de ficheros escaneados
@@ -2241,8 +2252,8 @@ function getPagination()
 {
 // Cargamos el contenido si es que no existe todavía
 if (empty($this->_pagination)) {
-	jimport('joomla.html.pagination');
-$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit') );
+	jimport('joomla.html.pagination');	
+	$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit') );		
 }
 return $this->_pagination;
 }

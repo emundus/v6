@@ -10,7 +10,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 // Load library
 require_once(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php');
 
-$controller = JRequest::getWord('controller');
+$jinput = JFactory::getApplication()->input;
+$controller = $jinput->get('controller','cpanel','word');
 
 // Require el controlador específico si es requerido
 if($controller) {
@@ -30,6 +31,6 @@ if($controller) {
 $classname = 'SecuritycheckprosController'.$controller;
 $controller = new $classname( );
 // Realizamos la tarea requerida
-$controller->execute(JRequest::getCmd('task','display'));
+$controller->execute($jinput->get('task','display','cmd'));
 // Redirección si es establecida por el controlador
 $controller->redirect();

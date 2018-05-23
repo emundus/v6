@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 // Cargamos el comportamiento modal para mostrar las ventanas para exportar
 JHtml::_('behavior.modal');
@@ -31,8 +31,14 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -43,7 +49,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
  <!-- Cpanel styles -->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet">
 
-<form enctype="multipart/form-data" method="post" style="margin-top: -18px;" name="adminForm" id="adminForm" class="form-horizontal">
+<form enctype="multipart/form-data" method="post" style="margin-top: -18px;" name="adminForm" id="adminForm">
 
 			<?php 
 			// Cargamos la navegación
@@ -60,21 +66,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			
 			<div class="card mb-6">
 				<div class="card-body">
-					<div class="alert alert-warn">
+					<div class="alert alert-warning">
 						<?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_SETTINGS_ALERT'); ?>
 					</div>
 					
-					<fieldset class="uploadform">
+					<fieldset class="uploadform form-inline">
 						<legend><?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_SETTINGS'); ?></legend>
-						<div class="control-group">
-							<label for="install_package" class="control-label"><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_EXPORTED_FILE'); ?></label>
-							<div class="controls">
-								<input class="input_box" id="file_to_import" name="file_to_import" type="file" size="57" />
-							</div>
-							</div>
-							<div class="form-actions">
-								<input class="btn btn-primary" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" onclick="Joomla.submitbutton('read_file')" />
-						</div>
+						
+						<label class="custom-file">
+						  <input type="file" id="file_to_import" name="file_to_import" class="custom-file-input" onchange="$(this).next().after().text($(this).val().split('\\').slice(-1)[0])">
+						  <span class="custom-file-control"></span>
+						</label>
+						
+						<input class="btn btn-primary" style="margin-left: 20px;" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" onclick="Joomla.submitbutton('read_file')" />
+						
 					</fieldset>
 				</div>
 			</div>

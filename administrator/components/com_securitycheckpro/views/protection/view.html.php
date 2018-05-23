@@ -49,10 +49,10 @@ $config = $model->getConfig();
 // ... y la que hemos aplicado en el fichero .htaccess existente
 $config_applied = $model->GetconfigApplied();
 
-$this->assign('protection_config', $config);
-$this->assign('config_applied', $config_applied);
-$this->assign('ExistsHtaccess',	$model->ExistsFile('.htaccess'));
-$this->assignRef('server', $server);
+$this->protection_config = $config;
+$this->config_applied = $config_applied;
+$this->ExistsHtaccess = $model->ExistsFile('.htaccess');
+$this->server = $server;
 
 // Extraemos información necesaria 
 require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
@@ -60,8 +60,8 @@ $common_model = new SecuritycheckproModel();
 
 $logs_pending = $common_model->LogsPending();
 $trackactions_plugin_exists = $common_model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);	
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 parent::display($tpl);
 }

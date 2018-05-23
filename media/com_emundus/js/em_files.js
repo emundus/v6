@@ -571,7 +571,8 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                     elts: eltJson,
                     objs: objJson,
                     opts: options,
-                    objclass: objclass
+                    objclass: objclass,
+                    excelfilename:json.excelfilename
                 },
                 success: function (result) {
                     var json = result.json;
@@ -591,7 +592,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                     type: 'post',
                                     url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
                                     dataType: 'JSON',
-                                    data: {csv: file, nbcol: nbcol, start: start},
+                                    data: {csv: file, nbcol: nbcol, start: start, excelfilename: result.json.excelfilename},
                                     success: function (result) {
                                         if (result.status) {
                                             $('#loadingimg').empty();
@@ -1638,10 +1639,11 @@ $(document).ready(function()
                                                         '</div>' +
                                                     '</div>');
 
-
+                            var checkInput = getUserCheck();
                             $.ajax({
-                                type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
+                                type:'post',
+                                url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
+                                data: {checkInput : checkInput},
                                 dataType:'json',
 
                                 success: function(result) {
@@ -1674,11 +1676,14 @@ $(document).ready(function()
 
                                         $('#em-export-prg').append(result.html);
                                         $('#em-export-prg').trigger("chosen:updated");
+                                        nbprg = $('#em-export-prg option').size();
 
-                                        var code = $('#em-export-prg').val();
+                                       
+                                        if (nbprg == 2) {
+                                            $('#em-export-prg option:eq(1)').attr('selected', true);
+                                            $('#em-export-prg').trigger("chosen:updated");
+                                            var code = $('#em-export-prg').val();
 
-                                        nbprg = result.nbprg;
-                                        if (nbprg == 1) {
                                             $.ajax({
                                                 type:'get',
                                                 url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
@@ -1701,7 +1706,7 @@ $(document).ready(function()
                                                 type:'get',
                                                 url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
                                                 dataType:'json',
-
+                                               
                                                 success: function(result) {
                                                     if (result.status) {
                                                         $('#em-export-camp').append(result.html);
@@ -2535,6 +2540,7 @@ $(document).ready(function()
                                                         var camp = filter.camp;
 
                                                         if (code != 0) { //for programmes
+                                                            
                                                             html = '<option value="'+code+'">'+proglabel+'</option>';
                                                             if($("#em-export-prg option[value="+code+"]").length == 0){
                                                                 $('#em-export-prg').append(html);// add option to list
@@ -3173,6 +3179,11 @@ $(document).ready(function()
                         $('#felts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
                         $('#felts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
                     }
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
                 });
 
                 $('#em-ex-attachment').click(function(e){
@@ -3185,13 +3196,47 @@ $(document).ready(function()
                         $('[id^=aelts-]').show();
                         $('#aelts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
                         $('#aelts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                       
+                    }
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
                     }
 
+                });
+
+                $('#em-ex-assessment').click(function(e){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
+                });
+                $('#em-ex-decision').click(function(e){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
+                });
+                $('#em-ex-admission').click(function(e){
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
                 });
 
                 $('#felts').click(function(e){
                     if ($(".em-ex-check").is(":checked"))
                         $('#em-ex-forms').attr('checked', false);
+                    
+                    if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")){
+                        $('#exp-options').show();
+                    }else{
+                        $('#exp-options').hide();
+                    }
 
                 });
 
@@ -3201,6 +3246,7 @@ $(document).ready(function()
 
                 });
 
+                
 
                 $('#em-add-header').click(function(e){
                     if ($("#em-add-header").is(":checked"))
@@ -3278,7 +3324,6 @@ $(document).ready(function()
                         '</div><br/>');
 
                         $('#data').append('<div style="padding-left:30px" id="em-options">'+
-
                             '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked/>&ensp;' +
                             '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
                             '<div style="padding-left:30px;" id="exp-opt">'+
@@ -4438,6 +4483,18 @@ $(document).ready(function()
                 var i = 0;
                 var objclass = [];
 
+                var code = $("#em-export-prg").val();
+                var year = "";
+
+                if($("#em-export-camp").val() != "0"){
+                    var campaign = $("#em-export-camp :selected").text();
+                    year = campaign.indexOf("(") + 1;
+                    year = campaign.slice(year, -1)
+                }
+                    
+              
+                var excel_file_name = code+'_'+year;
+
                 $('[class^="emundusitem"]:checkbox:checked').each(function() {
                     if($(this).attr('class') == "emundusitem_evaluation otherForm"){
                         objclass.push($(this).attr('class'));
@@ -4510,8 +4567,8 @@ $(document).ready(function()
                                                 var start = 0;
                                                 var limit = 100;
                                                 var file = result.file;
-                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'"}');
-
+                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'","excelfilename":"'+excel_file_name+'"}');
+                                                
                                                 if ((methode == 0) && ($('#view').val()!="evaluation"))
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
                                                 else

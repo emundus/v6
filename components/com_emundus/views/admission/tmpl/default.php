@@ -22,10 +22,10 @@ JHTML::_('behavior.tooltip');
 		<div class="col-md-3 side-panel">
 			<div class="panel panel-info" id="em-files-filters">
 				<div class="panel-heading" style="height:55px">
-					<div style="float:left">
+					<div style="float:left; position:absolute">
 						<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 					</div>
-					<div class="buttons" style="padding-left:53%">
+					<div class="buttons" style="float:right; margin-top:0px">
 						<input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="<?php echo JText::_('SEARCH_BTN');?>"/>&ensp;
 						<input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>&ensp;
 						<button class="btn btn-sm btn-warning" id="save-filter" style="width:50px;" title="<?php echo JText::_('SAVE_FILTER');?>"><i class="ui save icon"></i></button><br/><br/>

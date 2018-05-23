@@ -7,7 +7,7 @@
 */
 
 defined('_JEXEC') or die('Restricted access'); 
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 // Load plugin language
 $lang2 = JFactory::getLanguage();
@@ -199,10 +199,6 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 		}
 	}
 	
-	function hideElement(Id) {
-		document.getElementById(Id).innerHTML = '';
-	}
-	
 	window.onload = function() {
 		ActiveTab = getStoredValue('active');
 		if (ActiveTab) {
@@ -324,8 +320,14 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 		
 </script>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -492,7 +494,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 									<!-- Lists tab -->
 									<div class="card mb-3">	
 										<div class="card-header">
-											<i class="fa fa-bars"></i>
+											<i class="fapro fa-bars"></i>
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_LISTS_MANAGEMENT' ); ?>
 										</div>
 										<div class="card-body">
@@ -500,7 +502,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													<div class="filter-search btn-group pull-left">
 														<input type="text" name="filter_lists_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.lists_search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
 													</div>
-													<div class="btn-group pull-left">
+													<div class="btn-group pull-left" style="margin-left: 10px;">
 														<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 														<button class="btn tip" type="button" onclick="document.getElementById('filter_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 													</div>
@@ -519,7 +521,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													  </li>
 													</ul>
 																								
-													<div id="pagination">
+													<div id="pagination" style="margin-bottom: 30px;">
 														<?php				
 															if ( isset($this->pagination) ) {									
 														?>
@@ -601,27 +603,27 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 																		<p>
 																		<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_IP_CURRENT'); ?>
 																		<code><?php echo $current_ip; ?></code>	
-																		<button class="btn-mini btn-success" onclick="setOwnIP(); Joomla.submitbutton('addip_whitelist');" href="#">
+																		<button type="button" class="btn btn-sm btn-success" onclick="setOwnIP(); Joomla.submitbutton('addip_whitelist');" href="#">
 																			<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_TO_WHITELIST'); ?>
 																		</button>
 																		</p>
 																</div>
 																
-																<div id="blacklist_buttons" class="btn-toolbar">
+																<div id="blacklist_buttons">
 																	<div class="btn-group pull-left">
 																		<input type="text" name="blacklist_add_ip" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP'); ?>" id="blacklist_add_ip" value="" title="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP_LABEL'); ?>" />
 																	</div>
-																	<div class="btn-group pull-left">
+																	<div class="btn-group pull-left" style="margin-left: 10px; margin-bottom: 20px;">
 																		<button class="btn btn-success" onclick="Joomla.submitbutton('addip_blacklist')" href="#">
-																			<i class="icon-new icon-white"> </i>
+																			<i class="fapro fa-plus-octagon"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_ADD'); ?>
 																		</button>
 																	</div>
-																	<div class="btn-group pull-left">
-																		<a href="#select_blacklist_file_to_upload" role="button" class="btn" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_IMPORT_IPS' ); ?></a>								
+																	<div class="btn-group pull-left" style="margin-left: 10px;">
+																		<a href="#select_blacklist_file_to_upload" role="button" class="btn btn-secondary" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_IMPORT_IPS' ); ?></a>								
 																	</div>
-																	<div class="btn-group pull-left">
-																		<button class="btn btn-inverse" onclick="Joomla.submitbutton('Export_blacklist');" href="#">
+																	<div class="btn-group pull-left" style="margin-left: 10px;">
+																		<button class="btn btn-info" onclick="Joomla.submitbutton('Export_blacklist');" href="#">
 																			<i class="icon-new icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_EXPORT_IPS'); ?>
 																		</button>
@@ -674,7 +676,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 																	<p><?php echo JText::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_DESCRIPTION'); ?></p>
 																</div>
 
-																<div id="dynamic_blacklist_buttons" class="btn-toolbar">
+																<div id="dynamic_blacklist_buttons">
 																	<div class="btn-group pull-right" style="margin-bottom: 5px;">
 																		<button class="btn btn-danger" onclick="Joomla.submitbutton('deleteip_dynamic_blacklist')" href="#">
 																			<i class="icon-trash icon-white"> </i>
@@ -767,28 +769,28 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 																		</ol>
 																		<p>
 																		<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_IP_CURRENT'); ?>
-																		<code><?php echo $current_ip; ?></code>							
-																		<button class="btn-mini btn-success" onclick="setOwnIP(); Joomla.submitbutton('addip_whitelist');" href="#">
+																		<code><?php echo $current_ip; ?></code>		
+																		<button type="button" class="btn btn-sm btn-success" onclick="setOwnIP(); Joomla.submitbutton('addip_whitelist');" href="#">
 																			<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_TO_WHITELIST'); ?>
 																		</button>
 																		</p>
 																	</div>
 
-																<div id="blacklist_buttons" class="btn-toolbar">
+																<div id="blacklist_buttons">
 																	<div class="btn-group pull-left">
 																		<input type="text" name="whitelist_add_ip" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP'); ?>" id="whitelist_add_ip" value="" title="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP_LABEL'); ?>" />
 																	</div>
-																	<div class="btn-group pull-left">
+																	<div class="btn-group pull-left" style="margin-left: 10px; margin-bottom: 20px;">
 																		<button class="btn btn-success" onclick="Joomla.submitbutton('addip_whitelist')" href="#">
-																			<i class="icon-new icon-white"> </i>
+																			<i class="fapro fa-plus-octagon"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_ADD'); ?>
 																		</button>
 																	</div>
-																	<div class="btn-group pull-left">
-																		<a href="#select_whitelist_file_to_upload" role="button" class="btn" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_IMPORT_IPS' ); ?></a>								
+																	<div class="btn-group pull-left" style="margin-left: 10px;">
+																		<a href="#select_whitelist_file_to_upload" role="button" class="btn btn-secondary" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_IMPORT_IPS' ); ?></a>								
 																	</div>
-																	<div class="btn-group pull-left">
-																		<button class="btn btn-inverse" onclick="Joomla.submitbutton('Export_whitelist');" href="#">
+																	<div class="btn-group pull-left" style="margin-left: 10px;">
+																		<button class="btn btn-info" onclick="Joomla.submitbutton('Export_whitelist');" href="#">
 																			<i class="icon-new icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_EXPORT_IPS'); ?>
 																		</button>
@@ -800,6 +802,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 																		</button>
 																	</div>						
 																</div>
+																
 																<table class="table table-striped table-bordered bootstrap-datatable datatable">
 																		<thead>
 																			<tr>
@@ -854,7 +857,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo methodslist('methods', array(), $this->methods); ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_METHODS_INSPECTED_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_METHODS_INSPECTED_DESCRIPTION') ?></small></footer></blockquote>												
 											</div>
 										</div>										
 									</div>
@@ -878,7 +881,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo mode('mode', array(), $this->mode) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_MODE_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_MODE_DESCRIPTION') ?></small></footer></blockquote>												
 											</div>
 										</div>										
 									</div>
@@ -902,25 +905,32 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('logs_attacks', array(), $this->logs_attacks) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LOG_ATTACKS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LOG_ATTACKS_DESCRIPTION') ?></small></footer></blockquote>
 												
+												<h4 class="card-title"><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_DELETE_PERIOD'); ?></h4>						
+												<div class="controls">
+													<input type="text" size="4" maxlength="4" id="scp_delete_period" name="scp_delete_period" value="<?php echo $this->scp_delete_period ?>" title="" />	
+												</div>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_DELETE_PERIOD_DESC') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LOG_LIMITS_PER_IP_AND_DAY_LABEL'); ?></h4>					
 												<div class="controls">
 													<input type="text" size="4" maxlength="4" id="log_limits_per_ip_and_day" name="log_limits_per_ip_and_day" value="<?php echo $this->log_limits_per_ip_and_day ?>" title="" />		
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_COUNTER_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_COUNTER_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_ADD_GEOBLOCK_LOGS_LABEL'); ?></h4>					
 												<div class="controls">
 													<?php echo booleanlist('add_geoblock_logs', array(), $this->add_geoblock_logs) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_ADD_GEOBLOCK_LOGS_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_ADD_GEOBLOCK_LOGS_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_ADD_ACCESS_ATTEMPTS_LOGS_LABEL'); ?></h4>					
 												<div class="controls">
 													<?php echo booleanlist('add_access_attempts_logs', array(), $this->add_access_attempts_logs) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_ADD_ACCESS_ATTEMPTS_LOGS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_ADD_ACCESS_ATTEMPTS_LOGS_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>										
 									</div>
@@ -944,26 +954,35 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('redirect_after_attack', array(), $this->redirect_after_attack) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_AFTER_ATTACK_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_AFTER_ATTACK_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_LABEL'); ?></h4>
 												<div class="controls" id="redirect_options">
 													<?php echo redirectionlist('redirect_options', array(), $this->redirect_options) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_DESCRIPTION') ?></small></p></blockquote>
-																								
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_DESCRIPTION') ?></small></footer></blockquote>
+																																				
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_TEXT'); ?></h4>
-												<div class="controls controls-row">
-													<div class="input-prepend">
-														<span class="add-on" style="background-color: #8EBBFF;"><?php echo $site_url ?></span>
-														<input class="input-large" type="text" name="redirect_url" id="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
-													</div>						
-												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_EXPLAIN') ?></small></p></blockquote>
-												
+												<?php 
+													if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
+												?>
+													<div class="controls controls-row">
+														<div class="input-prepend">
+															<span class="add-on" style="background-color: #8EBBFF;"><?php echo $site_url ?></span>
+															<input class="input-large" type="text" name="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
+														</div>						
+													</div>
+												<?php } else {	?>
+													<div class="input-group">
+														<span class="input-group-addon" style="background-color: #8EBBFF;"><?php echo $site_url ?></span>
+														<input type="text" class="form-control" name="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
+													</div>											
+												<?php } ?>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_EXPLAIN') ?></small></footer></blockquote>
+																								
 												<div class="control-group">
 													<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_EDITOR_TEXT'); ?></h4>
-													<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_EDITOR_EXPLAIN') ?></small></p></blockquote>
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_EDITOR_EXPLAIN') ?></small></footer></blockquote>													
 													<?php 
 													// IMPORT EDITOR CLASS
 													jimport( 'joomla.html.editor' );
@@ -993,7 +1012,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													);
 
 													// DISPLAY THE EDITOR (name, html, width, height, columns, rows, bottom buttons, id, asset, author, params)
-													echo $editor->display('custom_code', $this->custom_code, '400', '400', '20', '20', true, null, null, null, $params);
+													echo $editor->display('custom_code', $this->custom_code, '600', '200', '10', '10', true, null, null, null, $params);
 													?>													
 												</div>
 											</div>
@@ -1018,19 +1037,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('second_level', array(), $this->second_level) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_IF_PATTERN_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo secondredirectlist('second_level_redirect', array(), $this->second_level_redirect) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_IF_PATTERN_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECT_IF_PATTERN_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LIMIT_WORDS_LABEL'); ?></h4>
 												<div class="controls">
 													<input type="text" size="2" maxlength="2" id="second_level_limit_words" name="second_level_limit_words" value="<?php echo $this->second_level_limit_words ?>" title="" />		
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LIMIT_WORDS_DESCRIPTION') ?></small></p></blockquote>												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LIMIT_WORDS_DESCRIPTION') ?></small></footer></blockquote>
+																							
 											</div>
 										</div>										
 										<div class="col-xl-6 mb-6">
@@ -1042,7 +1062,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<textarea cols="35" rows="3" name="second_level_words" style="width: 560px; height: 340px;"><?php echo $this->second_level_words ?></textarea>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_WORDS_DESCRIPTION') ?></small></p></blockquote>											
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_WORDS_DESCRIPTION') ?></small></footer></blockquote>
+																							
 											</div>
 										</div>
 									</div>
@@ -1065,19 +1086,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('email_active', array(), $this->email_active) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_ACTIVE_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_ACTIVE_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_SUBJECT_LABEL'); ?></h4>
 												<div class="controls">
 													<input type="text" size="30" name="email_subject" value="<?php echo $this->email_subject ?>" title="" />		
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_SUBJECT_DESCRIPTION') ?></small></p></blockquote>
-																			
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_SUBJECT_DESCRIPTION') ?></small></footer></blockquote>
+																															
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_BODY_LABEL'); ?></h4>
 												<div class="controls">
 													<textarea cols="35" rows="3" name="email_body" ><?php echo $this->email_body ?></textarea>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_BODY_DESCRIPTION') ?></small></p></blockquote>											
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_BODY_DESCRIPTION') ?></small></footer></blockquote>
+																						
 											</div>
 										</div>	
 											
@@ -1090,20 +1112,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<input type="text" size="30" id="email_to" name="email_to" value="<?php echo $this->email_to ?>" title="" />		
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_TO_DESCRIPTION') ?></small></p></blockquote>											
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_TO_DESCRIPTION') ?></small></footer></blockquote>											
 												
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_DOMAIN_LABEL'); ?></h4>
 												<div class="controls">
 													<input type="text" size="30" id="email_from_domain" name="email_from_domain" value="<?php echo $this->email_from_domain ?>" title="" />		
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_DOMAIN_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_DOMAIN_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_NAME_LABEL'); ?></h4>
 												<div class="controls">
 													<input type="text" size="30" name="email_from_name" value="<?php echo $this->email_from_name ?>" title="" />		
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_NAME_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_NAME_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<div class="controls">
 													<input class="btn btn-primary" type="button" id="boton_test_email" value="<?php echo JText::_('COM_SECURITYCHECKPRO_SEND_EMAIL_TEST'); ?>" onclick= "Joomla.submitbutton('send_email_test');" />		
 												</div>												
@@ -1119,13 +1141,13 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('email_add_applied_rule', array(), $this->email_add_applied_rule) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_ADD_APPLIED_RULE_DESCRIPTION') ?></small></p></blockquote>											
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_ADD_APPLIED_RULE_DESCRIPTION') ?></small></footer></blockquote>
+																							
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_MAX_NUMBER_LABEL'); ?></h4>
 												<div class="controls">
 													<input type="text" size="3" maxlength="3" id="email_max_number" name="email_max_number" value="<?php echo $this->email_max_number ?>" title="" />		
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_MAX_NUMBER_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_MAX_NUMBER_DESCRIPTION') ?></small></footer></blockquote>
 											</div>
 										</div>
 									</div>
@@ -1148,8 +1170,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('exclude_exceptions_if_vulnerable', array(), $this->exclude_exceptions_if_vulnerable) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_EXCLUDE_EXCEPTIONS_IF_VULNERABLE_DESCRIPTION') ?></small></p></blockquote>
-
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_EXCLUDE_EXCEPTIONS_IF_VULNERABLE_DESCRIPTION') ?></small></footer></blockquote>
+												
 												<ul class="nav nav-tabs" role="tablist" id="ExceptionsTabs">
 													<li class="nav-item" onclick="SetActiveTabExceptions('header_referer');">
 														<a class="nav-link active" href="#header_referer" data-toggle="tab" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_HEADER_REFERER_LABEL'); ?></a>
@@ -1177,92 +1199,97 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 														<div class="controls">
 															<?php echo booleanlist('check_header_referer', array(), $this->check_header_referer) ?>
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_HEADER_REFERER_DESCRIPTION') ?></small></p></blockquote>
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_HEADER_REFERER_DESCRIPTION') ?></small></footer></blockquote>												
 													</div>
 													<div class="tab-pane" id="base64" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_BASE64_LABEL'); ?></h4>
 														<div class="controls">
 															<?php echo booleanlist('check_base_64', array(), $this->check_base_64) ?>
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_BASE64_DESCRIPTION') ?></small></p></blockquote>
-														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_BASE64_DESCRIPTION') ?></small></footer></blockquote>
+																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_BASE64_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="base64_exceptions" style="width: 560px; height: 140px;"><?php echo $this->base64_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_BASE64_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_BASE64_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>											
 													</div>
 													<div class="tab-pane" id="xss" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_ALL_TAGS_LABEL'); ?></h4>
 														<div class="controls" id="strip_all_tags">
 															<?php echo booleanlist_js('strip_all_tags', array(), $this->strip_all_tags) ?>
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_ALL_TAGS_DESCRIPTION') ?></small></p></blockquote>
-														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_ALL_TAGS_DESCRIPTION') ?></small></footer></blockquote>
+																												
 														<div class="control-group" id="tags_to_filter_div">
 															<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_TAGS_TO_FILTER_LABEL'); ?></h4>
 															<div class="controls">
 																<textarea cols="35" rows="3" name="tags_to_filter" style="width: 560px; height: 140px;"><?php echo $this->tags_to_filter ?></textarea>								
 															</div>
-															<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_TAGS_TO_FILTER_DESCRIPTION') ?></small></p></blockquote>
+															<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_TAGS_TO_FILTER_DESCRIPTION') ?></small></footer></blockquote>
+															
 														</div>
 														
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_TAGS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="strip_tags_exceptions" style="width: 560px; height: 140px;"><?php echo $this->strip_tags_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_TAGS_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_TAGS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+														
 													</div>
 													<div class="tab-pane" id="sql" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_DUPLICATE_BACKSLASHES_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="duplicate_backslashes_exceptions" style="width: 560px; height: 140px;"><?php echo $this->duplicate_backslashes_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DUPLICATE_BACKSLASHES_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
-														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DUPLICATE_BACKSLASHES_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+																											
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LINE_COMMENTS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="line_comments_exceptions" style="width: 560px; height: 140px;"><?php echo $this->line_comments_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LINE_COMMENTS_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
-														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LINE_COMMENTS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SQL_PATTERN_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="sql_pattern_exceptions" style="width: 560px; height: 140px;"><?php echo $this->sql_pattern_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SQL_PATTERN_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
-														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SQL_PATTERN_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_IF_STATEMENT_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="if_statement_exceptions" style="width: 560px; height: 140px;"><?php echo $this->if_statement_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_IF_STATEMENT_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
-														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_IF_STATEMENT_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_USING_INTEGERS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="using_integers_exceptions" style="width: 560px; height: 140px;"><?php echo $this->using_integers_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_USING_INTEGERS_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
-														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_USING_INTEGERS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_ESCAPE_STRINGS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="escape_strings_exceptions" style="width: 560px; height: 140px;"><?php echo $this->escape_strings_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_ESCAPE_STRINGS_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_ESCAPE_STRINGS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+														
 													</div>
 													<div class="tab-pane" id="lfi" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LFI_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="lfi_exceptions" style="width: 560px; height: 140px;"><?php echo $this->lfi_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LFI_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>														
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LFI_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+																											
 													</div>
 													<div class="tab-pane" id="secondlevel" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
 															<textarea cols="35" rows="3" name="second_level_exceptions" style="width: 560px; height: 140px;"><?php echo $this->second_level_exceptions ?></textarea>								
 														</div>
-														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_EXCEPTIONS_DESCRIPTION') ?></small></p></blockquote>
+														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
+														
 													</div>
 												</div>												
 											</div>									
@@ -1294,14 +1321,14 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('session_protection_active', array(), $this->session_protection_active) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_PROTECTION_ACTIVE_LABEL') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_PROTECTION_ACTIVE_LABEL') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_HIJACK_PROTECTION_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo booleanlist('session_hijack_protection', array(), $this->session_hijack_protection) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_HIJACK_PROTECTION_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_HIJACK_PROTECTION_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_PROTECTION_GROUPS_LABEL'); ?></h4>
 												<div class="controls">
 													<?php
@@ -1316,13 +1343,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													echo JHTML::_('select.genericlist', $options, 'session_protection_groups[]', 'class="chosen-select-no-single" multiple="multiple"', 'value', 'text',  $this->session_protection_groups); 												
 													?>					
 												</div>
-												
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_PROTECTION_GROUPS_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_PROTECTION_GROUPS_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<?php
 													} else {
-												?>
-														<blockquote id="launch_time_alert"><p class="text-info"><small><span style="color: red;"><?php echo JText::_('PLG_SECURITYCHECKPRO_SHARED_SESSIONS_EANBLED') ?></span></small></p></blockquote>
+												?>	
+														<blockquote class="blockquote" id="launch_time_alert"><footer class="blockquote-footer"><span style="color: red;"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SHARED_SESSIONS_EANBLED') ?></span></small></footer></blockquote>														
 												<?php		
 													}
 												?>
@@ -1338,31 +1364,26 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('track_failed_logins', array(), $this->track_failed_logins) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_TRACK_FAILED_LOGINS_LABEL') ?></small></p></blockquote>											
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_TRACK_FAILED_LOGINS_LABEL') ?></small></footer></blockquote>
+																							
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LOGINS_TO_MONITORIZE_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo email_actions('logins_to_monitorize', array(), $this->logins_to_monitorize) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LOGINS_TO_MONITORIZE_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LOGINS_TO_MONITORIZE_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_WRITE_LOG_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo booleanlist('write_log', array(), $this->write_log) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_WRITE_LOG_DESCRIPTION') ?></small></p></blockquote>
-												
-												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_INCLUDE_PASSWORD_IN_LOG_LABEL'); ?></h4>
-												<div class="controls">
-													<?php echo booleanlist('include_password_in_log', array(), $this->include_password_in_log) ?>
-												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_INCLUDE_PASSWORD_IN_LOG_DESCRIPTION') ?></small></p></blockquote>
-																			
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_WRITE_LOG_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_UPLOADSCANNER_ACTIONS_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo actions_failed_login('actions_failed_login', array(), $this->actions_failed_login) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_UPLOADSCANNER_ACTIONS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_UPLOADSCANNER_ACTIONS_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>
 										
@@ -1375,19 +1396,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('email_on_admin_login', array(), $this->email_on_admin_login) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_ON_BACKEND_LOGIN_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_ON_BACKEND_LOGIN_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_FORBID_ADMIN_FRONTEND_LOGIN_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo booleanlist('forbid_admin_frontend_login', array(), $this->forbid_admin_frontend_login) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_FORBID_ADMIN_FRONTEND_LOGIN_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_FORBID_ADMIN_FRONTEND_LOGIN_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo booleanlist('forbid_new_admins', array(), $this->forbid_new_admins) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_FORBID_NEW_ADMINS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_FORBID_NEW_ADMINS_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>
 									</div>
@@ -1519,13 +1541,14 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('upload_scanner_enabled', array(), $this->upload_scanner_enabled) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_CHECK_MULTIPLE_EXTENSIONS_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo booleanlist('check_multiple_extensions', array(), $this->check_multiple_extensions) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_CHECK_MULTIPLE_EXTENSIONS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_CHECK_MULTIPLE_EXTENSIONS_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>
 										
@@ -1538,13 +1561,14 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<textarea cols="35" rows="3" name="extensions_blacklist" style="width: 260px; height: 140px;"><?php echo $this->extensions_blacklist ?></textarea>								
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_EXTENSIONS_BLACKLIST_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_EXTENSIONS_BLACKLIST_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_DELETE_FILES_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo booleanlist('delete_files', array(), $this->delete_files) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_DELETE_FILES_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_DELETE_FILES_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>
 										
@@ -1557,7 +1581,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo actions('actions_upload_scanner', array(), $this->actions_upload_scanner) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_ACTIONS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_ACTIONS_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>
 									</div>
@@ -1582,19 +1607,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													<div class="controls">
 														<?php echo booleanlist('check_if_user_is_spammer', array(), $this->check_if_user_is_spammer) ?>
 													</div>
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_IF_USER_IS_SPAMMER_DESCRIPTION') ?></small></p></blockquote>
-													
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_IF_USER_IS_SPAMMER_DESCRIPTION') ?></small></footer></blockquote>
+																										
 													<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_ACTION_LABEL'); ?></h4>
 													<div class="controls">
 														<?php echo spammer_action('spammer_action', array(), $this->spammer_action) ?>
 													</div>
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_ACTION_DESCRIPTION') ?></small></p></blockquote>
-													
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_ACTION_DESCRIPTION') ?></small></footer></blockquote>
+																										
 													<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_WRITE_LOG_LABEL'); ?></h4>
 													<div class="controls">
 														<?php echo booleanlist('spammer_write_log', array(), $this->spammer_write_log) ?>
 													</div>
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_WRITE_LOG_DESCRIPTION') ?></small></p></blockquote>
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_WRITE_LOG_DESCRIPTION') ?></small></footer></blockquote>
+													
 												</div>
 											</div>
 											
@@ -1615,14 +1641,14 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 														echo JHTML::_('select.genericlist', $options_spam, 'spammer_what_to_check[]', 'class="chosen-select-no-single" multiple="multiple"', 'text', 'text',  $this->spammer_what_to_check);												
 														?>					
 													</div>
-													
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_WHAT_TO_CHECK_DESCRIPTION') ?></small></p></blockquote>
-													
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_WHAT_TO_CHECK_DESCRIPTION') ?></small></footer></blockquote>
+																										
 													<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_LIMIT_LABEL'); ?></h4>
 													<div class="controls">
 														<input type="text" size="3" maxlength="3" id="spammer_limit" name="spammer_limit" value="<?php echo $this->spammer_limit ?>" title="" />	
 													</div>
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_LIMIT_DESCRIPTION') ?></small></p></blockquote>
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_LIMIT_DESCRIPTION') ?></small></footer></blockquote>
+													
 												</div>
 											</div>
 										</div>
@@ -1663,19 +1689,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<?php echo booleanlist('write_log_inspector', array(), $this->write_log_inspector) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_WRITE_LOG_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_WRITE_LOG_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_ACTIONS_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo action('action_inspector', array(), $this->action_inspector) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_ACTION_DESCRIPTION') ?></small></p></blockquote>
-												
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_ACTION_DESCRIPTION') ?></small></footer></blockquote>
+																								
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_SEND_EMAIL_LABEL'); ?></h4>
 												<div class="controls">
 													<?php echo booleanlist('send_email_inspector', array(), $this->send_email_inspector) ?>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_SEND_EMAIL_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_SEND_EMAIL_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>
 										
@@ -1689,7 +1716,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 												<div class="controls">
 													<textarea cols="35" rows="3" name="inspector_forbidden_words" style="width: 560px; height: 340px;"><?php echo $this->inspector_forbidden_words ?></textarea>
 												</div>
-												<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_FORBIDDEN_WORDS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_FORBIDDEN_WORDS_DESCRIPTION') ?></small></footer></blockquote>
+												
 											</div>
 										</div>
 									</div>
@@ -1714,13 +1742,13 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 													<div class="controls">
 														<input type="text" size="3" maxlength="3" id="delete_period" name="delete_period" value="<?php echo $this->delete_period ?>" title="" />	
 													</div>
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_DELETE_PERIOD_DESC') ?></small></p></blockquote>
-													
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_DELETE_PERIOD_DESC') ?></small></footer></blockquote>
+																										
 													<h4 class="card-title"><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_IP_LOGGING'); ?></h4>
 													<div class="controls">
 														<?php echo booleanlist('ip_logging', array(), $this->ip_logging) ?>
 													</div>
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_IP_LOGGING_DESC') ?></small></p></blockquote>
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_IP_LOGGING_DESC') ?></small></footer></blockquote>
 												</div>
 											</div>
 											
@@ -1742,8 +1770,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 														}
 														echo JHTML::_('select.genericlist', $options_trackactions, 'loggable_extensions[]', 'class="chosen-select-no-single" multiple="multiple"', 'value', 'text',  $this->loggable_extensions); 												
 														?>					
-													</div>													
-													<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_EXTENSIONS_DESC') ?></small></p></blockquote>
+													</div>	
+													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_EXTENSIONS_DESC') ?></small></footer></blockquote>												
 												</div>
 											</div>
 										</div>

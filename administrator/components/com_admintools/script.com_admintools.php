@@ -144,6 +144,16 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_admintools/View/Redirections/tmpl/form.default.xml',
             'administrator/components/com_admintools/View/Redirections/Form.php',
 
+            // Replace jQplot with Chart.js
+            'administrator/components/com_admintools/media/css/jquery.jqplot.min.css',
+            'administrator/components/com_admintools/media/js/jquery.jqplot.min.js',
+            'administrator/components/com_admintools/media/js/jqplot.highlighter.min.js',
+            'administrator/components/com_admintools/media/js/jqplot.dateAxisRenderer.min.js',
+            'administrator/components/com_admintools/media/js/jqplot.barRenderer.min.js',
+            'administrator/components/com_admintools/media/js/jqplot.pieRenderer.min.js',
+            'administrator/components/com_admintools/media/js/jqplot.hermite.min.js',
+            'administrator/components/com_admintools/media/js/cpanelgraphs.min.js',
+
 		),
 		'folders' => array(
 			// Obsolete folders from AT 1.x, 2.x and 3.x
@@ -293,28 +303,18 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 		}
 
 		/**
-		 * If this is an update disable the "Monitor Super User accounts" feature. It only happens ONCE. This will
-		 * prevent people from complaining about this feature doing exactly what it's supposed to do.
+		 * Code to execute only on updates
 		 */
+
 		if (!defined('ADMINTOOLS_THIS_IS_INSTALLATION_FROM_SCRATCH'))
         {
-	        if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
-	        {
-		        @include_once $parent->getParent()->getPath('source') . '/backend/Helper/Storage.php';
-	        }
+	        $this->_upgradeDisableMonitorSuperUsers($parent);
 
-	        if (class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
-	        {
-		        $params = new \Akeeba\AdminTools\Admin\Helper\Storage();
-		        $params->load();
-		        $mustDisable = $params->getValue('disabled_superuserslist', 0) == 0;
+	        $this->_upgradeRemoveObsoleteLoginSecurityLogEntries($parent);
 
-		        if ($mustDisable)
-                {
-	                $params->setValue('superuserslist', 0, false);
-	                $params->setValue('disabled_superuserslist', 1, true);
-                }
-	        }
+	        $this->_upgradeDeleteTextLogfiles();
+
+
         }
 	}
 
@@ -609,6 +609,118 @@ HTML;
 			{
 				// Do not fail in this case
 			}
+		}
+	}
+
+	/**
+	 * If this is an update, disable the "Monitor Super User accounts" feature. It only happens ONCE. This will
+	 * prevent people from complaining about this feature doing exactly what it's supposed to do.
+     *
+	 * @param   JInstallerAdapterComponent  $parent
+     *
+     * @return  void
+     *
+     * @since   5.0.0
+	 */
+	private function _upgradeDisableMonitorSuperUsers($parent)
+	{
+		if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
+		{
+			@include_once $parent->getParent()->getPath('source') . '/backend/Helper/Storage.php';
+		}
+
+		if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
+        {
+            return;
+        }
+
+		$params = new \Akeeba\AdminTools\Admin\Helper\Storage();
+		$params->load();
+
+
+		if ($params->getValue('disabled_superuserslist', 0) != 0)
+        {
+            return;
+        }
+
+		$params->setValue('superuserslist', 0, false);
+		$params->setValue('disabled_superuserslist', 1, true);
+	}
+
+	/**
+	 * If this is an update, find the security exception logs for failed logins which may have contained failed
+	 * login passwords and remove them from the database.
+     *
+	 * @param   JInstallerAdapterComponent  $parent
+     *
+     * @return  void
+	 *
+	 * @since   5.1.0
+	 */
+	private function _upgradeRemoveObsoleteLoginSecurityLogEntries($parent)
+	{
+		if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
+		{
+			@include_once $parent->getParent()->getPath('source') . '/backend/Helper/Storage.php';
+		}
+
+		if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
+        {
+            return;
+        }
+
+		$params = new \Akeeba\AdminTools\Admin\Helper\Storage();
+		$params->load();
+
+		if ($params->getValue('showpwonloginfailure', 0) != 1)
+        {
+            return;
+        }
+
+		// Delete existing records
+        $db = JFactory::getDbo();
+		$query = $db->getQuery(true)
+            ->delete($db->qn('#__admintools_log'))
+            ->where($db->qn('reason') . ' = ' . $db->q('loginfailure'));
+
+		try
+        {
+		    $db->setQuery($query)->execute();
+        }
+        catch (Exception $e)
+        {
+            // Don't die if that fails
+        }
+
+		$params->setValue('showpwonloginfailure', 0, false);
+	}
+
+	/**
+	 * Delete the old style Admin Tools text log files with a .log extension
+	 *
+	 * @since   5.1.0
+	 */
+	private function _upgradeDeleteTextLogfiles()
+	{
+		$logpath = JFactory::getConfig()->get('log_path');
+		$files   = [
+			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log',
+			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log.1'
+		];
+
+		foreach ($files as $file)
+		{
+			if (!@file_exists($file))
+			{
+				continue;
+			}
+
+			if (@unlink($file))
+			{
+				continue;
+			}
+
+			JFile::delete($file);
 		}
 	}
 

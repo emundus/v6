@@ -69,40 +69,43 @@ if ( (!is_null($items['whitelist'])) && ($items['whitelist'] != '') ) {
 // Información para la barra de navegación
 $logs_pending = $model->LogsPending();
 $trackactions_plugin_exists = $model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
-$this->assignRef('blacklist_elements',$blacklist_elements);
-$this->assignRef('dynamic_blacklist_elements',$dynamic_blacklist_elements);
-$this->assignRef('whitelist_elements',$whitelist_elements);
-$this->assignRef('dynamic_blacklist',$items['dynamic_blacklist']);
-$this->assignRef('dynamic_blacklist_time',$items['dynamic_blacklist_time']);
-$this->assignRef('dynamic_blacklist_counter',$items['dynamic_blacklist_counter']);
-$this->assignRef('blacklist_email',$items['blacklist_email']);
-$this->assignRef('priority1',$items['priority1']);
-$this->assignRef('priority2',$items['priority2']);
-$this->assignRef('priority3',$items['priority3']);
-$this->assignRef('priority4',$items['priority4']);
+$this->blacklist_elements = $blacklist_elements;
+$this->dynamic_blacklist_elements = $dynamic_blacklist_elements;
+$this->whitelist_elements = $whitelist_elements;
+$this->dynamic_blacklist = $items['dynamic_blacklist'];
+$this->dynamic_blacklist_time = $items['dynamic_blacklist_time'];
+$this->dynamic_blacklist_counter = $items['dynamic_blacklist_counter'];
+$this->blacklist_email = $items['blacklist_email'];
+$this->priority1 = $items['priority1'];
+$this->priority2 = $items['priority2'];
+$this->priority3 = $items['priority3'];
+$this->priority4 = $items['priority4'];
 
 // Pestaña methods
 $methods= null;
 if ( !is_null($items['methods']) ) {
-	$methods = $items['methods'];
+	$this->methods = $items['methods'];
 }
-$this->assignRef('methods',$methods);
 
 // Pestaña Mode
 $mode= null;
 if ( !is_null($items['mode']) ) {
-	$mode = $items['mode'];	}
-
-$this->assignRef('mode',$mode);
+	$this->mode = $items['mode'];
+}
 
 // Pestaña Logs
 $logs_attacks= 1;
+$scp_delete_period= 60;
 $log_limits_per_ip_and_day = null;
 $add_geoblock_logs = null;
 $add_access_attempts_logs = null;
+
+if ( !is_null($items['scp_delete_period']) ) {
+	$scp_delete_period = $items['scp_delete_period'];	
+}
 
 if ( !is_null($items['logs_attacks']) ) {
 	$logs_attacks = $items['logs_attacks'];	
@@ -120,10 +123,11 @@ if ( !is_null($items['add_access_attempts_logs']) ) {
 	$add_access_attempts_logs = $items['add_access_attempts_logs'];	
 }
 
-$this->assignRef('logs_attacks',$logs_attacks);
-$this->assignRef('log_limits_per_ip_and_day',$log_limits_per_ip_and_day);
-$this->assignRef('add_geoblock_logs',$add_geoblock_logs);
-$this->assignRef('add_access_attempts_logs',$add_access_attempts_logs);
+$this->logs_attacks = $logs_attacks;
+$this->scp_delete_period = $scp_delete_period;
+$this->log_limits_per_ip_and_day = $log_limits_per_ip_and_day;
+$this->add_geoblock_logs = $add_geoblock_logs;
+$this->add_access_attempts_logs = $add_access_attempts_logs;
 
 // Pestaña Redirection
 $redirect_after_attack= null;
@@ -144,10 +148,10 @@ if ( is_null($custom_code) ) {
 	$custom_code = "<h1 style=\"text-align:center;\">" . JText::_('COM_SECURITYCHECKPRO_403_ERROR') . "</h1>";
 }
 
-$this->assignRef('redirect_after_attack',$redirect_after_attack);
-$this->assignRef('redirect_options',$redirect_options);
-$this->assignRef('redirect_url',$redirect_url);
-$this->assignRef('custom_code',$custom_code);
+$this->redirect_after_attack = $redirect_after_attack;
+$this->redirect_options = $redirect_options;
+$this->redirect_url = $redirect_url;
+$this->custom_code = $custom_code;
 
 // Pestaña Second level
 $second_level= null;
@@ -171,10 +175,10 @@ if ( !is_null($items['second_level_words']) ) {
 	$second_level_words = $items['second_level_words'];	
 }
 
-$this->assignRef('second_level',$second_level);
-$this->assignRef('second_level_redirect',$second_level_redirect);
-$this->assignRef('second_level_limit_words',$second_level_limit_words);
-$this->assignRef('second_level_words',$second_level_words);
+$this->second_level = $second_level;
+$this->second_level_redirect = $second_level_redirect;
+$this->second_level_limit_words = $second_level_limit_words;
+$this->second_level_words = $second_level_words;
 
 // Pestaña Email notifications
 $email_active= null;
@@ -218,14 +222,14 @@ if ( !is_null($items['email_max_number']) ) {
 	$email_max_number = $items['email_max_number'];	
 }
 
-$this->assignRef('email_active',$email_active);
-$this->assignRef('email_subject',$email_subject);
-$this->assignRef('email_body',$email_body);
-$this->assignRef('email_add_applied_rule',$email_add_applied_rule);
-$this->assignRef('email_to',$email_to);
-$this->assignRef('email_from_domain',$email_from_domain);
-$this->assignRef('email_from_name',$email_from_name);
-$this->assignRef('email_max_number',$email_max_number);
+$this->email_active = $email_active;
+$this->email_subject = $email_subject;
+$this->email_body = $email_body;
+$this->email_add_applied_rule = $email_add_applied_rule;
+$this->email_to = $email_to;
+$this->email_from_domain = $email_from_domain;
+$this->email_from_name = $email_from_name;
+$this->email_max_number = $email_max_number;
 
 // Pestaña filter exceptions
 $check_header_referer= null;
@@ -292,8 +296,6 @@ if ( !is_null($items['second_level_exceptions']) ) {
 	$second_level_exceptions = $items['second_level_exceptions'];	
 }
 
-$exclude_exceptions_if_vulnerable = $items['exclude_exceptions_if_vulnerable'];	
-
 if ( !is_null($items['strip_all_tags']) ) {
 	$strip_all_tags = $items['strip_all_tags'];	
 }
@@ -302,21 +304,21 @@ if ( !is_null($items['tags_to_filter']) ) {
 	$tags_to_filter = $items['tags_to_filter'];	
 }
 				
-$this->assignRef('check_header_referer',$items['check_header_referer']);
-$this->assignRef('check_base_64',$items['check_base_64']);
-$this->assignRef('base64_exceptions',$items['base64_exceptions']);
-$this->assignRef('strip_tags_exceptions',$items['strip_tags_exceptions']);
-$this->assignRef('duplicate_backslashes_exceptions',$items['duplicate_backslashes_exceptions']);
-$this->assignRef('line_comments_exceptions',$items['line_comments_exceptions']);
-$this->assignRef('sql_pattern_exceptions',$items['sql_pattern_exceptions']);
-$this->assignRef('if_statement_exceptions',$items['if_statement_exceptions']);
-$this->assignRef('using_integers_exceptions',$items['using_integers_exceptions']);
-$this->assignRef('lfi_exceptions',$items['lfi_exceptions']);
-$this->assignRef('escape_strings_exceptions',$items['escape_strings_exceptions']);
-$this->assignRef('second_level_exceptions',$items['second_level_exceptions']);
-$this->assignRef('exclude_exceptions_if_vulnerable',$items['exclude_exceptions_if_vulnerable']);
-$this->assignRef('strip_all_tags',$items['strip_all_tags']);
-$this->assignRef('tags_to_filter',$items['tags_to_filter']);
+$this->check_header_referer = $check_header_referer;
+$this->check_base_64 = $check_base_64;
+$this->base64_exceptions = $base64_exceptions;
+$this->strip_tags_exceptions = $strip_tags_exceptions;
+$this->duplicate_backslashes_exceptions = $duplicate_backslashes_exceptions;
+$this->line_comments_exceptions = $line_comments_exceptions;
+$this->sql_pattern_exceptions = $sql_pattern_exceptions;
+$this->if_statement_exceptions = $if_statement_exceptions;
+$this->using_integers_exceptions = $using_integers_exceptions;
+$this->lfi_exceptions = $lfi_exceptions;
+$this->escape_strings_exceptions = $escape_strings_exceptions;
+$this->second_level_exceptions = $second_level_exceptions;
+$this->exclude_exceptions_if_vulnerable = $exclude_exceptions_if_vulnerable;
+$this->strip_all_tags = $strip_all_tags;
+$this->tags_to_filter = $tags_to_filter;
 
 // Pestaña user session protection
 $session_protection_active= null;
@@ -324,7 +326,6 @@ $session_hijack_protection = null;
 $track_failed_logins = null;
 $write_log = null;
 $logins_to_monitorize = null;
-$include_password_in_log = null;
 $actions_failed_login = null;
 $email_on_admin_login = null;
 $forbid_admin_frontend_login = null;
@@ -350,10 +351,6 @@ if ( !is_null($items['logins_to_monitorize']) ) {
 	$logins_to_monitorize = $items['logins_to_monitorize'];	
 }
 
-if ( !is_null($items['include_password_in_log']) ) {
-	$include_password_in_log = $items['include_password_in_log'];	
-}
-
 if ( !is_null($items['actions_failed_login']) ) {
 	$actions_failed_login = $items['actions_failed_login'];	
 }
@@ -370,17 +367,16 @@ if ( !is_null($items['forbid_new_admins']) ) {
 	$forbid_new_admins = $items['forbid_new_admins'];	
 }
 
-$this->assignRef('session_protection_active',$session_protection_active);
-$this->assignRef('session_hijack_protection',$session_hijack_protection);
-$this->assignRef('track_failed_logins',$track_failed_logins);
-$this->assignRef('include_password_in_log',$include_password_in_log);
-$this->assignRef('write_log',$write_log);
-$this->assignRef('logins_to_monitorize',$logins_to_monitorize);
-$this->assignRef('actions_failed_login',$actions_failed_login);
-$this->assignRef('session_protection_groups',$items['session_protection_groups']);
-$this->assignRef('email_on_admin_login',$email_on_admin_login);
-$this->assignRef('forbid_admin_frontend_login',$forbid_admin_frontend_login);
-$this->assignRef('forbid_new_admins',$forbid_new_admins);
+$this->session_protection_active = $session_protection_active;
+$this->session_hijack_protection = $session_hijack_protection;
+$this->track_failed_logins = $track_failed_logins;
+$this->write_log = $write_log;
+$this->logins_to_monitorize = $logins_to_monitorize;
+$this->actions_failed_login = $actions_failed_login;
+$this->session_protection_groups = $items['session_protection_groups'];
+$this->email_on_admin_login = $email_on_admin_login;
+$this->forbid_admin_frontend_login = $forbid_admin_frontend_login;
+$this->forbid_new_admins = $forbid_new_admins;
 
 // Pestaña Geoblock
 $allContinents = array(
@@ -471,11 +467,11 @@ if ( (!is_null($items_geoblock)) && ($items_geoblock['geoblockcontinents'] != ''
 	}
 }
 
-$this->assign('countries',		$countries);
-$this->assign('continents',		$continents);
-$this->assign('allContinents',		$allContinents);
-$this->assign('allCountries',		$allCountries);
-$this->assign('geoip_database_update',$geoip_database_update);
+$this->countries = 	$countries;
+$this->continents = $continents;
+$this->allContinents = $allContinents;
+$this->allCountries = $allCountries;
+$this->geoip_database_update = $geoip_database_update;
 
 // Pestaña upload scanner
 $upload_scanner_enabled = 0;
@@ -490,11 +486,11 @@ $extensions_blacklist = $items['extensions_blacklist'];
 $delete_files = $items['delete_files'];
 $actions_upload_scanner = $items['actions_upload_scanner'];
 
-$this->assignRef('upload_scanner_enabled',$upload_scanner_enabled);
-$this->assignRef('check_multiple_extensions',$check_multiple_extensions);
-$this->assignRef('extensions_blacklist',$extensions_blacklist);
-$this->assignRef('delete_files',$delete_files);
-$this->assignRef('actions_upload_scanner',$actions_upload_scanner);
+$this->upload_scanner_enabled = $upload_scanner_enabled;
+$this->check_multiple_extensions = $check_multiple_extensions;
+$this->extensions_blacklist = $extensions_blacklist;
+$this->delete_files = $delete_files;
+$this->actions_upload_scanner = $actions_upload_scanner;
 
 // Pestaña spam protection
 $check_if_user_is_spammer= null;
@@ -522,12 +518,12 @@ if ( !is_null($items['spammer_what_to_check']) ) {
 	$spammer_what_to_check = $items['spammer_what_to_check'];	
 }
 
-$this->assignRef('check_if_user_is_spammer',$check_if_user_is_spammer);
-$this->assignRef('spammer_action',$spammer_action);
-$this->assignRef('spammer_write_log',$spammer_write_log);
-$this->assignRef('spammer_limit',$spammer_limit);
-$this->assignRef('plugin_installed',$plugin_installed);
-$this->assignRef('spammer_what_to_check',$spammer_what_to_check);
+$this->check_if_user_is_spammer = $check_if_user_is_spammer;
+$this->spammer_action = $spammer_action;
+$this->spammer_write_log = $spammer_write_log;
+$this->spammer_limit = $spammer_limit;
+$this->plugin_installed = $plugin_installed;
+$this->spammer_what_to_check = $spammer_what_to_check;
 
 // Pestaña url inspector
 // Esta el plugin habilitado?
@@ -555,11 +551,11 @@ if ( !is_null($items['send_email_inspector']) ) {
 	$send_email_inspector = $items['send_email_inspector'];	
 }
 
-$this->assignRef('inspector_forbidden_words',$inspector_forbidden_words);
-$this->assignRef('write_log_inspector',$write_log_inspector);
-$this->assignRef('action_inspector',$action_inspector);
-$this->assignRef('send_email_inspector',$send_email_inspector);
-$this->assignRef('url_inspector_enabled',$url_inspector_enabled);
+$this->inspector_forbidden_words = $inspector_forbidden_words;
+$this->write_log_inspector = $write_log_inspector;
+$this->action_inspector = $action_inspector;
+$this->send_email_inspector = $send_email_inspector;
+$this->url_inspector_enabled = $url_inspector_enabled;
 
 // Pestaña track actions
 $delete_period= 0;
@@ -580,10 +576,10 @@ if ( !is_null($items['loggable_extensions']) ) {
 	$loggable_extensions = $items['loggable_extensions'];	
 }
 
-$this->assignRef('delete_period',$delete_period);
-$this->assignRef('ip_logging',$ip_logging);
-$this->assignRef('plugin_trackactions_installed',$plugin_trackactions_installed);
-$this->assignRef('loggable_extensions',$loggable_extensions);
+$this->delete_period = $delete_period;
+$this->ip_logging = $ip_logging;
+$this->plugin_trackactions_installed = $plugin_trackactions_installed;
+$this->loggable_extensions = $loggable_extensions;
 
 
 // Cargamos las librerías para extraer información de las ips
@@ -594,7 +590,7 @@ $ipmodel = new SecuritycheckProsModelIP;
 // Extraemos la geolocalización de las distintas listas...
 $blacklist_elements_geolocation= array();
 $whitelist_elements_geolocation= array();
-$dymanic_elements_geolocation= array();
+$dynamic_elements_geolocation= array();
 
 if ( !is_null($blacklist_elements) ) {
 	foreach($blacklist_elements as $element) {
@@ -645,22 +641,22 @@ if ( !is_null($dynamic_blacklist_elements) ) {
 }
 
 // Añadimos la información
-$this->assignRef('blacklist_elements_geolocation',$blacklist_elements_geolocation);
-$this->assignRef('whitelist_elements_geolocation',$whitelist_elements_geolocation);
-$this->assignRef('dynamic_elements_geolocation',$dynamic_elements_geolocation);
+$this->blacklist_elements_geolocation = $blacklist_elements_geolocation;
+$this->whitelist_elements_geolocation = $whitelist_elements_geolocation;
+$this->dynamic_elements_geolocation = $dynamic_elements_geolocation;
 
 
 // Añadimos también la paginación (comparamos las dos paginaciones y asignamos la mayor)
 if ( (!is_null($pagination_blacklist)) && (!is_null($pagination_whitelist)) ) {
-	if ( ($pagination_blacklist->get('total')) > ($pagination_whitelist->get('total')) ) {
-		$this->assignRef('pagination', $pagination_blacklist);
+	if ( ($blacklist_elements) > ($whitelist_elements) ) {
+		$this->pagination = $pagination_blacklist;
 	} else {
-		$this->assignRef('pagination', $pagination_whitelist);				
+		$this->pagination = $pagination_whitelist;				
 	}
 } else if ( !is_null($pagination_blacklist) ) {
-	$this->assignRef('pagination', $pagination_blacklist);	
+	$this->pagination = $pagination_blacklist;	
 } else if ( !is_null($pagination_whitelist) ) {
-	$this->assignRef('pagination', $pagination_whitelist);	
+	$this->pagination = $pagination_whitelist;	
 }
 
 parent::display($tpl);

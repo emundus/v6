@@ -223,14 +223,15 @@ function tarea_comprobacion() {
 		}
 		
 		// Si el 'Download ID' está vacío, intentamos extraerlo de SCP
-		if ( empty($downloadid) ) {
+		if ( empty($downloadid) ) {			
 			$app = JComponentHelper::getParams('com_securitycheckpro');
-			$downloadid = $app->get('downloadid');
+			$downloadid = $app->get('downloadid');			
+		}
+		
+		if ( empty($downloadid) ) {	
 			// Si el 'Download ID' está vacío, escribimos una entrada en el campo 'message' y no realizamos ninguna acción
-			if ( empty($downloadid) ) {
-				$this->set_campo_bbdd('message', 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY');
-				$result = false;
-			}
+			$this->set_campo_bbdd('message', 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY');
+			$result = false;			
 		} else {
 			
 			// Url que contendrá el fichero xml (debe contener el Download ID del usuario para poder acceder a ella)
@@ -259,10 +260,7 @@ function tarea_comprobacion() {
 					if ( $redirection === false ) {
 						// No hay etiqueta; leemos el contenido del archivo xml
 						$xml = simplexml_load_string($xmlresponse);
-					} else {
-						// Hay etiqueta; intentamos extraer los datos usando el método nativo de Joomla
-						$xml = JFactory::getXML($xmlfile,true);
-					}
+					} 
 					
 				}				
 				// Cerramos el manejador
@@ -271,11 +269,6 @@ function tarea_comprobacion() {
 				JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));
 			}
 			
-			// Si hay algún fallo a la hora de leer el fichero lo intentamos con otro método
-			if ( empty($xml) ) {				
-				$xml = JFactory::getXML($xmlfile,true);				
-			}
-						
 			// Comprobamos que hemos leido el archivo xml (esta variable será FALSE, por ejemplo, si no puede conectar con el servidor)
 			if ( $xml ) {				
 								

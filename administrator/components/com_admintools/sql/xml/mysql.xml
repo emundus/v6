@@ -510,7 +510,7 @@ VALUES('criticalfiles', '*', 'Critical file modified on [SITENAME]', '<div style
 <p>We would like to notify you that one or more critical files have been modified on your site, [SITENAME]. The list of files modified on your site is as follows:</p>
 [INFO]
 <h3>Should I be worried?</h3>
-<p>Critical files, in the context of this email, are the files most usually targeted by hackers upon successful hacking of a site. These files can also be modified for legitimate reasons, for example when you save your site's Global Configuration or when you update Joomla! or one of its templates.</p>
+<p>Critical files, in the context of this email, are the files most usually targeted by hackers upon successful hacking of a site. These files can also be modified for legitimate reasons, for example when you save your site\'s Global Configuration or when you update Joomla! or one of its templates.</p>
 <p>You should NOT worry if you received this email after you, or another administrator you trust, performed any of the following changes on your site:</p>
 <ul>
 	<li>Restored the site from a backup</li>
@@ -579,7 +579,7 @@ VALUES('rescueurl', '*', 'Rescue URL requested on [SITENAME] for [USER]', '<div 
 <h3>I have no idea why I''m receiving this email</h3>
 <p>Look under "What is the Rescue URL" further down. You <strong>DO NOT</strong> need to take any action and you <strong>DO NOT</strong> need to worry.</p>
 <h3>Who requested the Rescue URL?</h3>
-<p>Username: [USER]<br />IP Address: <a href="[LOOKUP]" rel="alternate">[IP]<br /></a>Country: [COUNTRY]<br />Continent: [CONTINENT]<br />User Agent: [UA]</p>
+<p>Username: [USER]<br />IP Address: [IP] ([LOOKUP])</a><br />Country: [COUNTRY]<br />Continent: [CONTINENT]<br />User Agent: [UA]</p>
 <p> </p>
 <h3>What is the Rescue URL?</h3>
 <p>Sometimes an overzealous Admin Tools configuration can result in accidentally blocking you, a Super User from the site. Normally that would require you to rename the file of Admin Tools'' system plugin to unblock yourself. This is a bit complicated and susceptible to errors.</p>
@@ -609,5 +609,26 @@ ALTER TABLE `#__admintools_log` CHANGE `url` `url` varchar(10240) DEFAULT NULL;
 			]]></query>
 		</action>
 
+
+		<!-- WAF Email Template for Critical Files Monitoring-->
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="equals" value="0"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_waftemplates` WHERE `reason` = 'criticalfiles_global';
+			]]></condition>
+			<query><![CDATA[
+INSERT INTO `#__admintools_waftemplates`
+(`reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
+VALUES('criticalfiles_global', '*', 'Critical file modified on [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
+<div style="background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;">
+<p>Hello,</p>
+<p>We would like to notify you that one or more critical files that you decided to monitor have been modified on your site, [SITENAME]. The list of files modified on your site is as follows:</p>
+[INFO]
+<p>If this message was not sent to you as the result of such a desirable and expected change please review your site immediately as this would be an indication of hacking activity.</p>
+<p>Best regards,</p>
+<p>The [SITENAME] team</p>
+</div>
+</div>', 1, 0, 0, '', '2017-04-05 13:15:00', 800, '2017-04-05 13:15:00', 800);
+			]]></query>
+		</action>
 	</sql>
 </schema>

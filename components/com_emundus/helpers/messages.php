@@ -36,7 +36,7 @@ class EmundusHelperMessages {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl='.$db->Quote($lbl);
+		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl like '.$db->Quote($lbl);
 		$db->setQuery( $query );
 		return $db->loadObject();
 

@@ -1,4 +1,19 @@
 <?php die() ?>
+Admin Tools 5.1.0
+================================================================================
++ Added feature to manually unblock a specific IP
++ Added option to choose if Admin Tools should write the log file or not (required by GDPR)
++ Added option to allow only specific email domains during user registration
++ Added feature to check if user password is inside any dictionary of leaked passwords. This feature is disabled by default.
+- Removed the option to log failed passwords. This could be a security risk since the information is stored unencrypted in the security exceptions database table.
+~ Changed the debug log file type to .php. READ THE DOCUMENTATION. This may have implications on your host.
+# [HIGH] .htaccess Maker does not block access to static media files for front-end directories which are not listed under "Frontend directories where file type exceptions are allowed"
+# [MEDIUM] Critical Files Monitor feature was not enabled due to a SQL error
+# [MEDIUM] Missing reason for Critical Files Monitor inside WAF Email Templates configuration
+# [MEDIUM] Fixed blocking non authorized IPs in Emergency Offline Mode
+# [LOW] Fixed default values for 404 Shield feature
+# [LOW] Copy doesn't work in Redirect URL
+
 Admin Tools 5.0.2
 ================================================================================
 # [HIGH] .htaccess Maker causes 500 error on Apache 2.4 if mod_filter is not loaded and you enable the "Automatically compress static resources" feature

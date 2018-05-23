@@ -61,6 +61,7 @@ private $defaultConfig = array(
 	'methods'			=> 'GET,POST,REQUEST',
 	'mode'			=> 1,
 	'logs_attacks'			=> 1,
+	'scp_delete_period'			=> 60,	
 	'log_limits_per_ip_and_day'			=> 0,
 	'redirect_after_attack'			=> 1,
 	'redirect_options'			=> 1,
@@ -106,8 +107,7 @@ private $defaultConfig = array(
 	'exclude_exceptions_if_vulnerable'	=>	1,
 	'track_failed_logins'	=>	1,
 	'write_log'	=>	1,
-	'logins_to_monitorize'	=>	2,
-	'include_password_in_log'	=>	0,
+	'logins_to_monitorize'	=>	2,	
 	'actions_failed_login'	=>	1,
 	'session_protection_groups'	=> array('0' => '8'),
 	'backend_exceptions'	=>	'',
@@ -139,17 +139,19 @@ function __construct()
 	global $mainframe, $option;
 		
 	$mainframe = JFactory::getApplication();
+	$jinput = $mainframe->input;
  
 	// Obtenemos las variables de paginación de la petición
 	$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-	$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+	
+	$data = $jinput->get('post');
+	$limitstart = $jinput->get('limitstart', 0, 'int');
 	
 	// En el caso de que los límites hayan cambiado, los volvemos a ajustar
 	$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 	
 	$this->setState('limit', $limit);
-	$this->setState('limitstart', $limitstart);	
-	
+	$this->setState('limitstart', $limitstart);		
 }
 
 protected function populateState()

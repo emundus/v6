@@ -9,6 +9,8 @@
 defined('_JEXEC') or die();
 jimport('joomla.filesystem.folder');
 
+use Joomla\Component\Joomlaupdate\Administrator\Model\UpdateModel;
+
 class SecuritycheckProsModelJson extends SecuritycheckproModel
 {
 
@@ -253,6 +255,19 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			
 		return $res;
 	}
+	
+	/* Función que verifica una fecha */
+	public function verifyDate($date, $strict = true)
+	{
+		$dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $date);
+		if ($strict) {
+			$errors = DateTime::getLastErrors();
+			if (!empty($errors['warning_count'])) {
+				return false;
+			}
+		}
+		return $dateTime !== false;
+	}
 
 	/* Función que devuelve el estado de la extensión remota  */
 	public function getStatus($opcion=true) {
@@ -351,8 +366,13 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$this->getBackupInfo();	
 			
 		// Verificamos si el core está actualizado (obviando la caché) 
-		require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';
-		$updatemodel = new JoomlaupdateModelDefault();
+		if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+			require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';
+			$updatemodel = new JoomlaupdateModelDefault();
+		} else {
+			require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/Model/UpdateModel.php';
+			$updatemodel = new UpdateModel();
+		}
 		$updatemodel->refreshUpdates(true);
 		$coreInformation = $updatemodel->getUpdateInformation();
 										
@@ -407,6 +427,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			
 		}	
 		
+		// Si no hay backup establecemos la fecha actual para evitar un error en la bbdd al insertar el valor
+		$is_valid_date = $this->verifyDate($this->backupinfo['latest']);
+		if ( !$is_valid_date ) {
+			$this->backupinfo['latest'] = "0000-00-00 00:00:00";
+		}
+				
 		$this->data = array(
 			'vuln_extensions'		=> $vuln_extensions,
 			'logs_pending'	=> $logs_pending,
@@ -782,8 +808,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$result = array();
 		
 		// Cargamos las librerías necesarias
-		require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';
-		
+		if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+			require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';			
+		} else {
+			require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/Model/UpdateModel.php';			
+		}
+				
 		// Instanciamos el modelo de la librería anteriormente cargada		
 		$model = new JoomlaupdateModelDefault();
 				
@@ -846,12 +876,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		// Load installer plugins for assistance if required:
 		JPluginHelper::importPlugin('installer');
-		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher =  \JFactory::getApplication();
 
 		$package = null;
 
 		// This event allows an input pre-treatment, a custom pre-packing or custom installation (e.g. from a JSON description)
-		$results = $dispatcher->trigger('onInstallerBeforeInstallation', array($this, &$package));
+		$results = $dispatcher->triggerEvent('onInstallerBeforeInstallation', array($this, &$package));
 
 		if (in_array(true, $results, true))
 		{
@@ -891,7 +921,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 
 		// This event allows a custom installation of the package or a customization of the package:
-		$results = $dispatcher->trigger('onInstallerBeforeInstaller', array($this, &$package));
+		$results = $dispatcher->triggerEvent('onInstallerBeforeInstaller', array($this, &$package));
 
 		if (in_array(true, $results, true))
 		{
@@ -938,7 +968,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 
 		// This event allows a custom a post-flight:
-		$dispatcher->trigger('onInstallerAfterInstaller', array($this, &$package, $installer, &$result, &$msg));
+		$dispatcher->triggerEvent('onInstallerAfterInstaller', array($this, &$package, $installer, &$result, &$msg));
 
 		// Set some model state values
 		$app	= JFactory::getApplication();
@@ -1323,7 +1353,6 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$this->info = array();
 			$version = new JVersion;
-			$platform = new JPlatform;
 			$db = JFactory::getDbo();
 
 			if (isset($_SERVER['SERVER_SOFTWARE']))
@@ -1342,7 +1371,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$this->info['server']		= $sf;
 			$this->info['sapi_name']	= php_sapi_name();
 			$this->info['version']		= $version->getLongVersion();
-			$this->info['platform']		= $platform->getLongVersion();
+			//$this->info['platform']		= $platform->getLongVersion();
+			$this->info['platform']		= "Not defined";
 			$this->info['useragent']	= isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "";
 		}
 	}

@@ -8,6 +8,7 @@
 namespace FOF30\Container;
 
 use FOF30\Autoloader\Autoloader;
+use FOF30\Encrypt\EncryptService;
 use FOF30\Factory\FactoryInterface;
 use FOF30\Inflector\Inflector;
 use FOF30\Params\Params;
@@ -16,9 +17,7 @@ use FOF30\Render\RenderInterface;
 use FOF30\Template\Template;
 use FOF30\TransparentAuthentication\TransparentAuthentication as TransparentAuth;
 use FOF30\View\Compiler\Blade;
-use JDatabaseDriver;
 use Joomla\Registry\Registry;
-use JSession;
 
 defined('_JEXEC') or die;
 
@@ -70,6 +69,7 @@ defined('_JEXEC') or die;
  * @property-read  \FOF30\Template\Template            $template           The template helper
  * @property-read  TransparentAuth                     $transparentAuth    Transparent authentication handler
  * @property-read  \FOF30\Toolbar\Toolbar              $toolbar            The component's toolbar
+ * @property-read  EncryptService                      $crypto             The component's data encryption service
  */
 class Container extends ContainerBase
 {
@@ -513,7 +513,7 @@ END;
 		{
 			$this['blade'] = function (Container $c)
 			{
-				return new Blade();
+				return new Blade($c);
 			};
 		}
 
@@ -673,6 +673,15 @@ END;
 		if (!isset($this['mediaVersion']))
 		{
 			$this['mediaVersion'] = $this->getDefaultMediaVersion();
+		}
+
+		// Encryption / cryptography service
+		if (!isset($this['crypto']))
+		{
+			$this['crypto'] = function (Container $c)
+			{
+				return new EncryptService($c);
+			};
 		}
 	}
 

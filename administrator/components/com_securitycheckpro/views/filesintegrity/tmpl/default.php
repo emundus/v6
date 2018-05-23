@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 $kind_array = array(JHtml::_('select.option',JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FILE'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FILE')),
 			JHtml::_('select.option',JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FOLDER'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FOLDER')));
@@ -34,16 +34,21 @@ JHTML::stylesheet($media_url);
 
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
+<!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -87,7 +92,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					hideElement('button_start_scan');
 					hideElement('task_status');
 					document.getElementById('task_error').style.display = "block";					
-					document.getElementById('error_message').className = 'alert alert-error';
+					document.getElementById('error_message').className = 'alert alert-danger';
 					document.getElementById('error_message').innerHTML = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_TASK_FAILURE' ); ?>';			
 				}						
 			},
@@ -187,7 +192,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					hideElement('backup-progress');
 					hideElement('task_status');	
 					document.getElementById('warning_message2').innerHTML = '';
-					document.getElementById('error_message').className = 'alert alert-error';
+					document.getElementById('error_message').className = 'alert alert-danger';
 					document.getElementById('error_message').innerHTML = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_FAILURE' ); ?>';
 					document.getElementById('error_button').innerHTML = '<?php echo ('<button class="btn btn-primary" type="button" onclick="window.location.reload();">' . JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_REFRESH_BUTTON' ) . '</button>');?>';
 				}
@@ -270,7 +275,7 @@ if ( empty($this->files_status) ) {
 							</div>							
 						</div>						
 						<div id="button_start_scan" class="card-footer">
-							<button class="btn btn-primary" type="button" onclick="hideElement('button_start_scan'); hideElement('container_resultado'); hideElement('container_repair'); hideElement('completed_message2'); runButton();"><i class="fa fa-fw fa-fire"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
+							<button class="btn btn-primary" type="button" onclick="hideElement('button_start_scan'); hideElement('container_resultado'); hideElement('container_repair'); hideElement('completed_message2'); runButton();"><i class="fapro fa-fw fa-fire"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
 						</div>						
 					</div>
 				</div>
@@ -367,8 +372,8 @@ if ( empty($this->files_status) ) {
 									<button class="btn tip" type="button" onclick="document.getElementById('filter_fileintegrity_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 								</div>
 								
-								<div class="btn-group pull-left">
-									<select name="filter_fileintegrity_status" class="inputbox" onchange="this.form.submit()">
+								<div class="btn-group pull-left" style="margin-left: 10px;">
+									<select name="filter_fileintegrity_status" class="custom-select" onchange="this.form.submit()">
 										<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_FILEINTEGRITY_STATUS_DESCRIPTION');?></option>
 										<?php echo JHtml::_('select.options', $status_array, 'value', 'text', $this->state->get('filter.fileintegrity_status'));?>
 									</select>				
@@ -377,19 +382,19 @@ if ( empty($this->files_status) ) {
 											
 						<?php if (!$this->items == null) { ?>
 							<?php if ( ($this->files_with_bad_integrity > 0 ) && ( empty($this->items) ) ) { ?>
-							<div class="alert alert-error">
+							<div class="alert alert-danger">
 								<?php echo JText::_('COM_SECURITYCHECKPRO_EMPTY_ITEMS'); ?>
 							</div>							
 							<?php } ?>
 
 							<?php if ( $this->database_error == "DATABASE_ERROR" ) { ?>
-							<div class="alert alert-error">
+							<div class="alert alert-danger">
 								<?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_DATABASE_ERROR'); ?>
 							</div>							
 							<?php } ?>
 
 							<?php if ( $this->files_with_bad_integrity >3000 ) { ?>
-							<div class="alert alert-error">
+							<div class="alert alert-danger">
 								<?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_ALERT'); ?>
 							</div>							
 							<?php } ?>
@@ -408,17 +413,17 @@ if ( empty($this->files_status) ) {
 									<table class="table table-striped" style="margin-top: 30px;">
 										<thead>
 											<tr>
-												<td><span class="label label-success"> </span>
+												<td><span class="badge badge-success"> </span>
 												</td>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEINTEGRITY_GREEN_COLOR' ); ?>
 												</td>
-												<td><span class="label label-warning"> </span>
+												<td><span class="badge badge-warning"> </span>
 												</td>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEINTEGRITY_YELLOW_COLOR' ); ?>
 												</td>
-												<td><span class="label label-important"> </span>
+												<td><span class="badge badge-danger"> </span>
 												</td>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEINTEGRITY_RED_COLOR' ); ?>
@@ -435,7 +440,7 @@ if ( empty($this->files_status) ) {
 								<div id="permissions_buttons" class="btn-toolbar">
 									<div class="pull-right">
 										<button class="btn btn-success" style="margin-right: 5px;" onclick="Joomla.submitbutton('addfile_exception');" href="#">
-											<i class="fa fa-fw fa-plus"> </i>
+											<i class="fapro fa-fw fa-plus"> </i>
 											<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_AS_EXCEPTION'); ?>
 										</button>										
 									</div>
@@ -456,7 +461,7 @@ if ( empty($this->files_status) ) {
 								<div>
 									<span class="badge" style="background-color: #66ADDD; padding: 10px 10px 10px 10px;"><?php echo JText::_('COM_SECURITYCHECKPRO_FILEINTEGRITY_CHECKED_FILES');?></span>
 								</div>
-								<div class="table-responsive" style="overflow-x: scroll;">
+								<div class="table-responsive" style="overflow-x: scroll; margin-top: 10px;">
 									<table id="filesintegritystatus_table" class="table table-bordered table-hover">
 									<thead>
 										<tr>
@@ -503,7 +508,7 @@ if ( empty($this->files_status) ) {
 										</td>
 										<?php 
 											if ( $safe_integrity == '0' ) {
-												echo "<td style=\"text-align: center;\"><span class=\"badge badge-important\">";
+												echo "<td style=\"text-align: center;\"><span class=\"badge badge-danger\">";
 											} else {
 												echo "<td style=\"text-align: center;\">";
 											} 
@@ -515,11 +520,11 @@ if ( empty($this->files_status) ) {
 										</td>
 										<?php 
 											if ( $safe_integrity == '0' ) {
-												echo "<td style=\"text-align: center;\"><span class=\"label label-important\">";
+												echo "<td style=\"text-align: center;\"><span class=\"badge badge-danger\">";
 											} else if ( $safe_integrity == '1' ) {
-												echo "<td style=\"text-align: center;\"><span class=\"label label-success\">";
+												echo "<td style=\"text-align: center;\"><span class=\"badge badge-success\">";
 											} else if ( $safe_integrity == '2' ) {
-												echo "<td style=\"text-align: center;\"><span class=\"label label-warning\">";
+												echo "<td style=\"text-align: center;\"><span class=\"badge badge-warning\">";
 											} ?>
 											<?php echo $row['notes']; ?>
 										</span>
