@@ -2883,7 +2883,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('checkInput', null);
         $fnums = (array) json_decode(stripslashes($fnums));
 
-        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all"){
+        if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all"){
              $fnums = $m_files->getAllFnums();
         }
 
@@ -2919,7 +2919,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('checkInput', null);
         $fnums = (array) json_decode(stripslashes($fnums));
 
-        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all")
             $fnums = $m_files->getAllFnums();
 
         $m_campaigns = new EmundusModelCampaign;
