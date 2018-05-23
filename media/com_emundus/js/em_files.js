@@ -1637,10 +1637,11 @@ $(document).ready(function()
                                                         '</div>' +
                                                     '</div>');
 
-
+                            var checkInput = getUserCheck();
                             $.ajax({
-                                type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
+                                type:'post',
+                                url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
+                                data: {checkInput : checkInput},
                                 dataType:'json',
 
                                 success: function(result) {
@@ -1673,11 +1674,14 @@ $(document).ready(function()
 
                                         $('#em-export-prg').append(result.html);
                                         $('#em-export-prg').trigger("chosen:updated");
+                                        nbprg = $('#em-export-prg option').size();
 
-                                        var code = $('#em-export-prg').val();
+                                       
+                                        if (nbprg == 2) {
+                                            $('#em-export-prg option:eq(1)').attr('selected', true);
+                                            $('#em-export-prg').trigger("chosen:updated");
+                                            var code = $('#em-export-prg').val();
 
-                                        nbprg = result.nbprg;
-                                        if (nbprg == 1) {
                                             $.ajax({
                                                 type:'get',
                                                 url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
@@ -1700,7 +1704,7 @@ $(document).ready(function()
                                                 type:'get',
                                                 url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
                                                 dataType:'json',
-
+                                               
                                                 success: function(result) {
                                                     if (result.status) {
                                                         $('#em-export-camp').append(result.html);
@@ -2534,6 +2538,7 @@ $(document).ready(function()
                                                         var camp = filter.camp;
 
                                                         if (code != 0) { //for programmes
+                                                            
                                                             html = '<option value="'+code+'">'+proglabel+'</option>';
                                                             if($("#em-export-prg option[value="+code+"]").length == 0){
                                                                 $('#em-export-prg').append(html);// add option to list
