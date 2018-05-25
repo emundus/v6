@@ -1940,7 +1940,32 @@ if (JFactory::getUser()->id == 655)
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+	}
+	
+	public function delevaluation($id) {
+      	try {
+
+            $query = 'DELETE FROM #__emundus_evaluations WHERE id='.$id;
+            $this->_db->setQuery($query);
+            return $this->_db->Query();
+
+        } catch (Exception $e) {
+            JLog::add('Error in model/evaluation at query: '.$query, JLog::ERROR, 'com_emundus');
+        }
+	}
+	
+	function getEvaluationById($id) {
+        try {
+	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.id = ' . $id;
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+
+		} catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
     }
+
 
 
 }

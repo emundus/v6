@@ -61,13 +61,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 					<?php if($key != 0): ?>
 						<tr>
 							<?php foreach ($line as $k => $value):?>
-							<?php if($k != 'evaluation_id'): ?>
+							<?php if($k): ?>
 
 								<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
 									<div class="em-cell" >
 										<?php if($k == 'check'): ?>
 											<label for = "<?php echo $line['fnum']->val ?>_check">
-												<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+												<input type="checkbox" data-evalid="<?php echo $line['evaluation_id']->val ?>" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
 												<?php
 													$tab = explode('-', $key);
 													echo ($tab[1] + 1 + $this->pagination->limitstart);
