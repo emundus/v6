@@ -869,13 +869,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $m_evaluation = $this->getModel('evaluation');
         foreach($ids as $id)
         {
+            $eval =   $m_evaluation->getEvaluationById($id);
             if(EmundusHelperAccess::asAccessAction(5 ,'d', JFactory::getUser()->id, $fnum)){
                 $m_evaluation->delevaluation($id);
                 $res->status = true;
             }else{
                 $eval =   $m_evaluation->getEvaluationById($id);
-                if($eval['user'] == JFactory::getUser()->id){
-                    die('coco');
+                if($eval->user == JFactory::getUser()->id){
                     $m_evaluation->delevaluation($id);
                     $res->status = true;
                 }else{

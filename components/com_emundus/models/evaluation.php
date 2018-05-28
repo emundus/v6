@@ -1958,7 +1958,7 @@ if (JFactory::getUser()->id == 655)
         try {
 	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.id = ' . $id;
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+            return $this->_db->loadObject();
 
 		} catch (Exception $e) {
             echo $e->getMessage();
