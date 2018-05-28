@@ -1,4 +1,14 @@
 <?php die() ?>
+Admin Tools 5.1.2
+================================================================================
+! .htaccess Maker's front-end protection causes 403 errors (regression introduced in 5.1.1)
+
+Admin Tools 5.1.1
+================================================================================
+# [HIGH] .htaccess Maker's front-end protection breaks sites using SEF URLs without URL rewrite, causing all URLs to report a 403 Forbidden error
+# [MEDIUM] Fixed file scanning when file is inaccessible due to open_basedir restrictions
+# [LOW] Grant access to robots.txt file when .htaccess Maker is used
+
 Admin Tools 5.1.0
 ================================================================================
 + Added feature to manually unblock a specific IP
