@@ -439,6 +439,7 @@ class EmundusController extends JControllerLegacy {
 
         //JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
         $this->setRedirect($redirect);
+        //$this->setRedirect('index.php?option=com_fabrik&view=form&formid=275&Itemid=2724');
     }
 
      // *****************switch profile controller************

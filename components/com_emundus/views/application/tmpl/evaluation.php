@@ -23,7 +23,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
 <div class="row">
     <div class="panel panel-default widget">
         <div class="panel-heading">
-            <h3 class="panel-title">
+            <h3 class="panel-title" style="display:inline-block">
             <span class="glyphicon glyphicon-check"></span>
                 <?php echo JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)):?>
@@ -36,7 +36,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
             <?php endif;?>
             <?php 
-                if (EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
+                if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) {
                     echo '<div style="display:inline-block"><button class="btn btn-danger btn-xs btn-attach" title="' . JText::_('DELETE_SELECTED_EVALUATIONS') . '" id="em_delete_evals" name="em_delete_evals" link="/index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant='. $this->student->id.'&fnum='.$this->fnum . '">
                     <span class="glyphicon glyphicon-trash"></span></button></div> ';
                 }

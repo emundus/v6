@@ -61,7 +61,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 					<?php if($key != 0): ?>
 						<tr>
 							<?php foreach ($line as $k => $value):?>
-							<?php if($k): ?>
+							<?php if($k != 'evaluation_id'): ?>
 
 								<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
 									<div class="em-cell" >

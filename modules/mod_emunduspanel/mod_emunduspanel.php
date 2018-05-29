@@ -116,7 +116,7 @@ if (!empty($t__)) {
 
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.'</a>';
 			if($is_text == '1')
-				$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
+				$str .= '<br/><a class="text" href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$r->title.'</a>';
 			$tab[] = $str;
 			$j++;
 		}
