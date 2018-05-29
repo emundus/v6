@@ -113,14 +113,58 @@ JHTML::_('behavior.tooltip');
 	                  '<?php echo JText::_('COMMENT_SENT')?>'];
 	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>';
 	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>';
+
+	function checkurl() {
+        var url = $(location).attr('href');
+        url = url.split("#");
+        $('.alert.alert-warning').remove();
+        if (url[1] != null && url[1].length >= 20) {
+            url = url[1].split("|");
+            var fnum = new Object();
+            fnum.fnum = url[0];
+            if (fnum != null && fnum.fnum != "close") {
+                addDimmer();
+                $.ajax({
+                    type:'get',
+                    url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                    dataType:"json",
+                    data:({fnum: fnum.fnum}),
+                    success: function(result)
+                    {
+                        if (result.status && result.fnumInfos != null)
+                        {
+                            console.log(result);
+                            var fnumInfos = result.fnumInfos;
+                            fnum.name = fnumInfos.name;
+                            fnum.label = fnumInfos.label;
+                            openFiles(fnum);
+                        } else {
+                            console.log(result);
+                            $('.em-dimmer').remove();
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        $('.em-dimmer').remove();
+                        $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        console.log(jqXHR.responseText);
+                    }
+                })
+            }
+        }
+	}
+	
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
-        refreshFilter();
+		checkurl();
+		refreshFilter();
+		reloadActions();
+		
         //search();
         //reloadData('evaluation');
-		reloadActions();
-
+	
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
@@ -131,4 +175,5 @@ JHTML::_('behavior.tooltip');
 		});
 		
 	})
+
 </script>
