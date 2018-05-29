@@ -755,6 +755,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
                                 $body       = $m_email->setTagsFabrik($body, array($file['fnum']));
 
+                                // Add the email template model.
+	                            if (!empty($trigger['tmpl']['template']))
+	                                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger['tmpl']['template']);
+
                                 // If the email sender has the same domain as the system sender address.
                                 if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
                                     $mail_from_address = $from;

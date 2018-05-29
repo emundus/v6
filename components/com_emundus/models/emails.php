@@ -71,7 +71,8 @@ class EmundusModelEmails extends JModelList
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0)
     {
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id
+
+        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template
                   FROM #__emundus_setup_emails_trigger as eset
                   LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
@@ -79,6 +80,7 @@ class EmundusModelEmails extends JModelList
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
+                  LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
                   WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
@@ -91,6 +93,9 @@ class EmundusModelEmails extends JModelList
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
+
+                // This is the email template model, the HTML structure that makes the email look good.
+                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
 
                 // default recipients
                 if (isset($trigger->profile_id) && !empty($trigger->profile_id))
