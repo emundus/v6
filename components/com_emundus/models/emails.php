@@ -503,8 +503,7 @@ class EmundusModelEmails extends JModelList
         if (count($fnums) == 0) {
             $fnums = $jinput->get('fnums', null, 'RAW');
             $fnumsArray = (array) json_decode(stripslashes($fnums));
-        }
-        else {
+        } else {
             $fnumsArray = $fnums;
         }
         
@@ -513,42 +512,34 @@ class EmundusModelEmails extends JModelList
         $idFabrik = array();
         $setupTags = array();
 
-        if(count($tags) > 0) {
+        if (count($tags) > 0) {
             
-            foreach($tags as $i => $val)
-            {
+            foreach ($tags as $i => $val) {
                 $tag = strip_tags($val);
-                if(is_numeric($tag))
-                {
+                if (is_numeric($tag))
                     $idFabrik[] = $tag;
-                }
                 else
-                {
                     $setupTags[] = $tag;
-                }
             }
         }
 
-        if(count($idFabrik) > 0) {
+        if (count($idFabrik) > 0) {
             $fabrikElts = $file->getValueFabrikByIds($idFabrik);
             $fabrikValues = array();
             foreach ($fabrikElts as $elt) {
-                $params = json_decode($elt['params']);
+
+            	$params = json_decode($elt['params']);
                 $groupParams = json_decode($elt['group_params']);
                 $isDate = ($elt['plugin'] == 'date');
                 $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                    $fabrikValues[$elt['id']] = $file->getFabrikValueRepeat($elt, $fnumsArray, $params,
-                        @$groupParams->repeat_group_button == 1);
+                    $fabrikValues[$elt['id']] = $file->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
                 } else {
-                    if ($isDate) {
-                        $fabrikValues[$elt['id']] =
-                            $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'],
-                                $params->date_form_format);
-                    } else {
-                        $fabrikValues[$elt['id']] =
-                            $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
-                    }
+                    if ($isDate)
+                        $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                    else
+                        $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                 }
                 
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
@@ -557,8 +548,16 @@ class EmundusModelEmails extends JModelList
                         $val = explode(',', $val["val"]);
                         
                         foreach ($val as $k => $v) {
-                            $index = array_search(trim($v), $params->sub_options->sub_values);
-                            $val[$k] = $params->sub_options->sub_labels[$index];
+
+                        	// If the value is empty then we do not get the label, this avoids '--- Please Select ---' from appearing.
+	                        // is_numeric allows for the variable to be equal to 0, 0.0 or '0' (the empty function considers those to be null).
+                        	if (!empty($v) || is_numeric($v)) {
+		                        $index = array_search(trim($v), $params->sub_options->sub_values);
+		                        $val[$k] = $params->sub_options->sub_labels[$index];
+	                        } else {
+                        		$val[$k] = '';
+	                        }
+
                         }
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                     }

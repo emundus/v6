@@ -496,7 +496,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         foreach ($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
             {
                 $validFnums[] = $fnum;
             }
@@ -528,26 +528,27 @@ class EmundusControllerFiles extends JControllerLegacy
 
         foreach ($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
             {
-                if(!in_array($fnum, $validFnums))
+                if (!in_array($fnum, $validFnums))
                     $validFnums[] = $fnum;
             }
-            if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
             {
-                if(!in_array($fnum, $validFnums))
+                if (!in_array($fnum, $validFnums))
                     $validFnums[] = $fnum;
             }
         }
 
         unset($fnums);
-        if(!empty($tags))
-            $res    = $m_files->deletetags($validFnums, $tags);
-        else
-            die("No tags ...");
 
-        $tagged = $m_files->getTaggedFile($tag);
-            echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
+        if (!empty($tags))
+            $res = $m_files->deletetags($validFnums, $tags);
+        else
+            die ("No tags ...");
+
+        $tagged = $m_files->getTaggedFile($tags);
+        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
         exit;
     }
 
