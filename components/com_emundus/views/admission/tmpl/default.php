@@ -97,9 +97,6 @@ JHTML::_('behavior.tooltip');
 </div>
 
 
-
-
-
 <script type="text/javascript">
 
 	var itemId = <?php echo $this->itemId;?>;

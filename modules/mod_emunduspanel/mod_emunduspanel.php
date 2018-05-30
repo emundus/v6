@@ -33,7 +33,7 @@ $current_user = JFactory::getuser();
 $user = JFactory::getSession()->get('emundusUser');
 
 $app = JFactory::getApplication();
-//$fnum = $app->input->getString('fnum', null);
+$fnum = $app->input->getString('fnum', null);
 
 $m_users = new EmundusModelUsers;
 $applicant_profiles = $m_users->getApplicantProfiles();

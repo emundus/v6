@@ -208,7 +208,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
             }
         }
 
-    }*/
+	}*/
     $(document).ready(function(){
         //checkurl();
         $('#rt-mainbody-surround').children().addClass('mainemundus');
