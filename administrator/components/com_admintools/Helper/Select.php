@@ -124,6 +124,8 @@ class Select
 			$options[] = JHtml::_('FEFHelper.select.option', 'ipautoban', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_IPAUTOBAN'));
 			$options[] = JHtml::_('FEFHelper.select.option', 'configmonitor', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_CONFIGMONITOR'));
 			$options[] = JHtml::_('FEFHelper.select.option', 'rescueurl', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_RESCUEURL'));
+			$options[] = JHtml::_('FEFHelper.select.option', 'criticalfiles', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_CRITICALFILES'));
+			$options[] = JHtml::_('FEFHelper.select.option', 'criticalfiles_global', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_CRITICALFILES_GLOBAL'));
 
 			unset($attribs['misc']);
 		}

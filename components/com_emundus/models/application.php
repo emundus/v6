@@ -187,7 +187,7 @@ class EmundusModelApplication extends JModelList
                 LEFT JOIN #__users u ON u.id = ec.user_id
                 WHERE ec.fnum like '.$this->_db->Quote($fnum).'
                 ORDER BY ec.date ASC ';
-        $this->_db->setQuery( $query );
+        $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
     }
 

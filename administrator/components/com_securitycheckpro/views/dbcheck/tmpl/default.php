@@ -9,7 +9,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 // Cargamos el comportamiento modal para mostrar las ventanas para exportar
 JHtml::_('behavior.modal');
@@ -34,8 +34,14 @@ JHTML::stylesheet($opa_icons);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -193,12 +199,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				 <div class="col-lg-12">
 					<div class="card mb-3">
 						<div class="card-header">
-							<i class="fa fa-database"></i>
+							<i class="fapro fa-database"></i>
 							<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?>
 						</div>
 						<div class="card-body">
 							<div id="buttondatabase" class="text-center">
-								<button class="btn btn-primary" type="button" onclick="StartDbCheck();"><i class="fa fa-fw fa-fire"> </i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
+								<button class="btn btn-primary" type="button" onclick="StartDbCheck();"><i class="fapro fa-fw fa-fire"> </i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
 							</div>
 							
 							<div id="securitycheck-bootstrap-main-content">		

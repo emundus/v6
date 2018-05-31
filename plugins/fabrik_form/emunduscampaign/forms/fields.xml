@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emunduscampaign" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_FIELDS">
+
+			<field name="emunduscampaign_redirect_url" type="field" default="index.php" description="PLG_FABRIK_FORM_EMUNDUSREDIRECT_REDIRECT_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUSREDIRECT_REDIRECT_URL_LABEL" />
+
+		</fieldset>
+	</fields>
+</form>

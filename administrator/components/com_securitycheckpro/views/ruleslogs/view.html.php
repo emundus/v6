@@ -43,15 +43,14 @@ JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECU
 
 	$logs_pending = $common_model->LogsPending();
 	$trackactions_plugin_exists = $common_model->PluginStatus(8);
-	$this->assignRef('logs_pending', $logs_pending);
-	$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+	$this->logs_pending = $logs_pending;
+	$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 	
 	// Ponemos los datos y la paginación en el template
-	$this->assignRef('log_details',$log_details);
+	$this->log_details = $log_details;
 		
 	if ( !empty($log_details) ) {
-		$pagination = $this->get('Pagination');
-		$this->assignRef('pagination', $pagination);
+		$this->pagination = $this->get('Pagination');	
 	}
 
 parent::display($tpl);

@@ -811,7 +811,7 @@ class DataController extends Controller
 	 */
 	public function cancel()
 	{
-		$model = $this->getModel()->savestate(false);
+		$model = $this->getModel()->tmpInstance()->savestate(false);
 
 		if (!$model->getId())
 		{

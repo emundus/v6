@@ -10,6 +10,26 @@ defined('_JEXEC') or die();
 				jQuery(this).remove();
 			});
 		}, 3000);
+		
+		//Change file-text-o class to file-alt	
+		//$('.fa-file-text-o').replaceWith('<span class="fa-fw fa fa-file-alt"></span>');	
+		
+		$( "#toolbar" ).after( '<div style="margin-top: 10px; margin-left: 40px;"><button id="button_responsive" class="navbar2-toggler bg-dark navbar2-toggler-right" type="button" data-toggle="collapse2" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar2-toggler-icon"></span></button></div>');
+		if ($(window).width() < 960) {
+			jQuery("#button_responsive").show();
+		  }
+		 else {
+			jQuery("#button_responsive").hide();
+		 }
+		
+		$(window).resize(function() {
+		  if ($(window).width() < 960) {
+			jQuery("#button_responsive").show();
+		  }
+		 else {
+			jQuery("#button_responsive").hide();
+		 }
+		});		
 	});	
 	
 	function muestra_progreso_purge(){
@@ -27,7 +47,7 @@ defined('_JEXEC') or die();
 	var url_initialize = '';
 	var request_initialize = '';
 	var ended_string_initialize = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_ENDED' ); ?>';
-	
+		
 	function clear_data_button() {
 		if ( cont_initialize == 0 ){							
 			document.getElementById('loading-container').innerHTML = '<?php echo ('<img src="../media/com_securitycheckpro/images/loading.gif" title="' . JText::_( 'loading' ) .'" alt="' . JText::_( 'loading' ) .'">'); ?>';

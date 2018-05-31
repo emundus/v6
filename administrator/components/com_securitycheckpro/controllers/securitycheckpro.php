@@ -25,15 +25,16 @@ class SecuritycheckprosControllerSecuritycheckpro extends SecuritycheckproContro
 function __construct()
 {
 parent::__construct();
-
+	$jinput = JFactory::getApplication()->input;
 }
 /**
 * Muestra los componentes de la BBDD
 */
 function mostrar()
 {
-	JRequest::setVar( 'view', 'vulninfo' );
-		
+	$jinput = JFactory::getApplication()->input;
+	$jinput->set('view', 'vulninfo');
+			
 	parent::display();
 }
 
@@ -47,9 +48,9 @@ if(!$model->buscar()) {
 	$msg = JText::_( 'COM_SECURITYCHECKPRO_CHECK_FAILED' );
 	JError::errorNotice(500,$msg);
 } else {
-	$eliminados = JRequest::getVar('comp_eliminados');
-	$core_actualizado = JRequest::getVar('core_actualizado');
-	$comps_actualizados = JRequest::getVar('componentes_actualizados');
+	$eliminados = $jinput->get('comp_eliminados',0,int);
+	$core_actualizado = $jinput->get('core_actualizado',0,int);
+	$comps_actualizados = $jinput->get('componentes_actualizados',0,int);	
 	$comp_ok = JText::_( 'COM_SECURITYCHECKPRO_CHECK_OK ');
 	$msg = JText::_( $eliminados ."</li><li>" .$core_actualizado ."</li><li>" .$comps_actualizados ."</li><li>" .$comp_ok );
 }
@@ -59,7 +60,9 @@ $this->setRedirect( 'index.php?option=com_securitycheckpro&controller=securitych
 /* Ver los logs almacenados por el plugin */
 function view_logs()
 {
-	JRequest::setVar( 'view', 'logs' );
+	$jinput = JFactory::getApplication()->input;
+	$jinput->set('view', 'logs');
+
 	parent::display(); 
 }
 
@@ -93,8 +96,10 @@ function search()
  */
 function view()
 {
-	JRequest::setVar( 'view', 'securitycheckpro' );
-	JRequest::setVar( 'layout', 'form'  );	
+	$jinput->set('view', 'securitycheckpro');
+	$jinput->set('layout', 'form');
+	/*JRequest::setVar( 'view', 'securitycheckpro' );
+	JRequest::setVar( 'layout', 'form'  );*/	
 
 	parent::display();
 }
@@ -221,7 +226,8 @@ function add_to_whitelist()
 /* Añadir Ip(s) a la lista blanca */
 function filter_vulnerable_extension()
 {
-	$product = JRequest::getVar('product');
+	//$product = JRequest::getVar('product');
+	$product = $jinput->get('product','','string');
 	$model = $this->getModel('securitycheckpros');
 	$vuln_extensions = $model->filter_vulnerable_extension($product);
 		

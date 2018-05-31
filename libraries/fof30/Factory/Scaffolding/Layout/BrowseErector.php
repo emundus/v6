@@ -306,8 +306,8 @@ class BrowseErector extends BaseErector implements ErectorInterface
 					$this->applyIntegerField($model, $headerSet, $fieldSet, $fieldName);
 					break;
 
-				case 'Numeric':
-					$this->applyNumericField($model, $headerSet, $fieldSet, $fieldName);
+				case 'Number':
+					$this->applyNumberField($model, $headerSet, $fieldSet, $fieldName);
 					break;
 
 				case 'GenericList':
@@ -475,9 +475,9 @@ class BrowseErector extends BaseErector implements ErectorInterface
 		));
 	}
 
-	private function applyNumericField(DataModel $model, \SimpleXMLElement &$headerSet, \SimpleXMLElement &$fieldSet, $fieldName)
+	private function applyNumberField(DataModel $model, \SimpleXMLElement &$headerSet, \SimpleXMLElement &$fieldSet, $fieldName)
 	{
-		$this->applyFieldOfType($model, $headerSet, $fieldSet, $fieldName, 'Searchable', 'Numeric', array(
+		$this->applyFieldOfType($model, $headerSet, $fieldSet, $fieldName, 'Searchable', 'Number', array(
 			'sortable' => 'true'
 		));
 	}
@@ -601,7 +601,7 @@ class BrowseErector extends BaseErector implements ErectorInterface
 	private function applyModelField(DataModel $model, \SimpleXMLElement &$headerSet, \SimpleXMLElement &$fieldSet, $fieldName, $modelName)
 	{
 		// This will fail if the model is invalid, e.g. we have example_foobar_id but no #__example_foobars table. The
-		// error will balloon up the stack and the field will be rendered as simple numeric field instead of a Model
+		// error will balloon up the stack and the field will be rendered as simple number field instead of a Model
 		// field.
 		/** @var DataModel $foreignModel */
 		$foreignModel = $model->getContainer()->factory->model($modelName);

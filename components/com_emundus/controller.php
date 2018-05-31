@@ -161,7 +161,7 @@ class EmundusController extends JControllerLegacy {
 
         $current_user = JFactory::getSession()->get('emundusUser');
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+            die (JText::_('RESTRICTED_ACCESS'));
 
         $jinput = JFactory::getApplication()->input;
         $fnums_post     = $jinput->getVar('fnums', null);
@@ -178,10 +178,10 @@ class EmundusController extends JControllerLegacy {
         } else {
             $fnums = array();
             foreach ($fnums_post as $key => $value) {
-                $fnums[]=$value->fnum;
+                $fnums[] = $value->fnum;
             }
         }
-        $validFnums  = array();
+        $validFnums = array();
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;
@@ -212,8 +212,8 @@ class EmundusController extends JControllerLegacy {
         $pdf = new ConcatPdf();
         $pdf->setFiles($files_list);
         $pdf->concat();
-        if(isset($tmpArray)) {
-            foreach($tmpArray as $fn) {
+        if (isset($tmpArray)) {
+            foreach ($tmpArray as $fn) {
                 unlink($fn);
             }
         }
@@ -851,7 +851,7 @@ class EmundusController extends JControllerLegacy {
                         WHERE attachment_id=
                                 (SELECT id
                                     FROM #__emundus_setup_attachments
-                                    WHERE lbl="_photo"
+                                    WHERE lbl like "_photo"
                                 )
                                 AND user_id='.$user->id. '
                                 AND fnum like '.$db->Quote($fnum);

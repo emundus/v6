@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 function booleanlist( $name, $attribs = null, $selected = null, $id=false )
 {
@@ -40,8 +40,14 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -133,14 +139,25 @@ var Password = {
 									<?php echo booleanlist('control_center_enabled', array(), $this->control_center_enabled) ?>				
 								</div>
 								<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENABLED_EXPLAIN') ?></small></p></blockquote>										
-								<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_TEXT'); ?></h4>										
-								<div class="input-prepend">
-									<input class="input-xlarge" type="text" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>
-								</div>
-												
-								<div class="input-append">
-									<input type='button' class="btn btn-primary" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("secret_key").value = Password.generate(32)' />
-								</div>
+								<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_TEXT'); ?></h4>
+								<?php 
+									if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
+								?>
+									<div class="input-prepend">
+										<input class="input-xlarge" type="text" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>
+									</div>
+													
+									<div class="input-append">
+										<input type='button' class="btn btn-primary" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("secret_key").value = Password.generate(32)' />
+									</div>
+								<?php } else {	?>
+									<div class="input-group">
+									  <input type="text" class="form-control input-xlarge" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>
+									  <span class="input-group-btn">
+										<button class="btn btn-primary" type="button" onclick='document.getElementById("secret_key").value = Password.generate(32)'><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?></button>
+									  </span>
+									</div>																								
+								<?php } ?>								
 								<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_EXPLAIN') ?></small></p></blockquote>
 							</div>
 						</div>

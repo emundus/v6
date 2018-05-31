@@ -47,7 +47,7 @@ $attachment_order           = $eMConfig->get('attachment_order', null);
 $application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
 $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
 $export_path                = $eMConfig->get('export_path', null);
-$scholarship_document 	    = $eMConfig->get('scholarship_document_id', NULL);
+$scholarship_document       = $eMConfig->get('scholarship_document_id', NULL);
 
 $m_application  = new EmundusModelApplication;
 $m_files        = new EmundusModelFiles;
@@ -128,7 +128,7 @@ if ($export_pdf == 1) {
         // Break up the file array and get the attachement files
         foreach ($files as $file) {
             $tmpArray = array();
-            EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $file, $fnumsInfo[$fnum]['applicant_id']);
+            EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $file, $fnumInfo['applicant_id']);
         }
     }
 
@@ -146,7 +146,7 @@ if ($export_pdf == 1) {
         }
 
         // Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
-        $post = array('FNUM' => $fnum);
+        $post = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'],);
         $tags = $m_emails->setTags($student->id, $post);
         $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
         $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
@@ -166,9 +166,16 @@ if ($export_pdf == 1) {
 
         // If export path is defined
         if (!empty($export_path)) {
-            if (!file_exists(JPATH_BASE.DS.$export_path)) {
-                mkdir(JPATH_BASE.DS.$export_path);
-                chmod(JPATH_BASE.DS.$export_path, 0755);
+            $export_path = preg_replace($tags['patterns'], $tags['replacements'], $export_path);
+            $export_path = $m_emails->setTagsFabrik($export_path, array($fnum));
+            $directories = explode('/', $export_path);
+            $d = '';
+            foreach ($directories as $dir) {
+                $d .= $dir.'/';
+                if (!file_exists(JPATH_BASE.DS.$d)) {
+                    mkdir(JPATH_BASE.DS.$d);
+                    chmod(JPATH_BASE.DS.$d, 0755);
+                }
             }
             if (file_exists(JPATH_BASE.DS.$export_path.$application_form_name.".pdf")) {
                 unlink(JPATH_BASE.DS.$export_path.$application_form_name.".pdf");

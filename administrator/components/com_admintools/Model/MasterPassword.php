@@ -47,6 +47,7 @@ class MasterPassword extends Model
         'ImportAndExport'            => 'COM_ADMINTOOLS_TITLE_EXPORT_SETTINGS',
         'ScanAlerts'                 => 'COM_ADMINTOOLS_TITLE_SCANALERTS_MASTERPW',
         'SecurityExceptions'         => 'COM_ADMINTOOLS_TITLE_LOG',
+        'UnlockIP'			         => 'COM_ADMINTOOLS_TITLE_UNLOCKIP',
     ];
 
     /**

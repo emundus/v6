@@ -24,7 +24,8 @@ class SecuritycheckprosControllerUploadScanner extends SecuritycheckproControlle
 public function save()
 {
 	$model = $this->getModel('uploadscanner');
-	$data = JRequest::get('post');
+	$jinput = JFactory::getApplication()->input;
+	$data = $jinput->get('post');
 	$model->saveConfig($data, 'pro_plugin');
 
 	$this->setRedirect('index.php?option=com_securitycheckpro&view=uploadscanner&'. JSession::getFormToken() .'=1',JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));

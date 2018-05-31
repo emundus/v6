@@ -54,11 +54,12 @@ function __construct()
 
 	global $mainframe, $option;
 		
-	$mainframe = JFactory::getApplication();
+	$mainframe = JFactory::getApplication();	
+	$jinput = $mainframe->input;
  
 	// Obtenemos las variables de paginación de la petición
-	$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-	$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+	$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');	
+	$limitstart = $jinput->get('limitstart',0,'int');
 
 	// En el caso de que los límites hayan cambiado, los volvemos a ajustar
 	$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -443,6 +444,9 @@ Compara la BBDD #_securitycheckpro con #_extensions para eliminar componentes de
 figuran en #_securitycheckpro se pasan como variable */
 function eliminar_componentes_desinstalados()
 {
+$mainframe = JFactory::getApplication();	
+$jinput = $mainframe->input;
+	
 $db = JFactory::getDBO();
 $query = 'SELECT * FROM #__securitycheckpro';
 $db->setQuery( $query );
@@ -469,7 +473,8 @@ foreach ($regs_securitycheck as $indice){
 } 
 if ( $comp_eliminados > 0) {
 	$mensaje_eliminados = JText::_('COM_SECURITYCHECKPRO_DELETED_COMPONENTS');
-	JRequest::setVar('comp_eliminados', $mensaje_eliminados .$comp_eliminados);
+	$jinput->set('comp_eliminados', $mensaje_eliminados .$comp_eliminados);
+	
 }
 
 }
@@ -497,7 +502,7 @@ if ( $buscar_componente ){
 	 /* Si la versión instalada en el sistema es distinta de la de la bbdd, actualizamos la bbdd. Esto sucede cuando se actualiza la versión de Joomla */
 	 $resultado_update = $this->actualizar_registro('Joomla!', 'securitycheckpro', 'Product', $joomla_version, 'InstalledVersion');
 	 $mensaje_actualizados = JText::_('COM_SECURITYCHECKPRO_CORE_UPDATED');
-	 JRequest::setVar('core_actualizado', $mensaje_actualizados);	 
+	 $jinput->set('core_actualizado', $mensaje_actualizados);	 
 	}
 } else {  /* Hacemos un insert en la base de datos con el nombre y la versión del componente */
 $resultado_insert = $this->insertar_registro( 'Joomla!', $joomla_version, 'core' );
@@ -537,7 +542,9 @@ foreach ($registros as $extension){
 
 if ($componentes_actualizados > 0){
 	$mensaje_actualizados = JText::_('COM_SECURITYCHECKPRO_COMPONENTS_UPDATED');
-	JRequest::setVar('componentes_actualizados', $mensaje_actualizados .$componentes_actualizados);	 
+		
+	$jinput = JFactory::getApplication()->input;
+	$jinput->set('componentes_actualizados', $mensaje_actualizados .$componentes_actualizados);
 }
 
 /* Chequeamos si existe algún componente el la BBDD que haya sido desinstalado. Esto se comprueba comparando el número de registros en #_securitycheckpro ($dbrows) y el de #_extensions  ($registros)*/
@@ -560,6 +567,8 @@ Busca los componentes instaladas en el equipo.
  */
 function buscar()
 {
+$jinput = JFactory::getApplication()->input;
+
 $db = JFactory::getDBO();
 $query = 'SELECT * FROM #__extensions WHERE (state=0) AND ( (type="component") OR (type="module") OR (type="plugin") )' ;
 $db->setQuery( $query );
@@ -567,14 +576,14 @@ $db->execute();
 $num_rows = $db->getNumRows();
 $result = $db->loadObjectList();
 $this->actualizarbbdd( $result );
-$eliminados = JRequest::getVar('comp_eliminados');
-JRequest::setVar('eliminados', $eliminados);
-$core_actualizado = JRequest::getVar('core_actualizado');
-JRequest::setVar('core_actualizado', $core_actualizado);
-$comps_actualizados = JRequest::getVar('componentes_actualizados');
-JRequest::setVar('comps_actualizados', $comps_actualizados);
+$eliminados = $jinput->get('comp_eliminados',0,'int');
+$jinput->set('eliminados', $eliminados);
+$core_actualizado = $jinput->get('core_actualizado',0,'int');
+$jinput->set('core_actualizado', $core_actualizado);
+$comps_actualizados = $jinput->get('componentes_actualizados',0,'int');
+$jinput->set('comps_actualizados', $comps_actualizados);
 $comp_ok = JText::_( 'COM_SECURITYCHECKPRO_CHECK_OK' );
-JRequest::setVar('comp_ok', $comp_ok);
+$jinput->set('comp_ok', $comp_ok);
 return true;
 }
 

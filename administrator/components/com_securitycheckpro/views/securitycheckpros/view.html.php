@@ -26,6 +26,8 @@ function display($tpl = null)
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | '.JText::_('COM_SECURITYCHECKPRO_VULNERABILITIES'), 'securitycheckpro' );
 JToolBarHelper::custom( 'mostrar', 'database', 'database', 'COM_SECURITYCHECKPRO_LIST' );
 
+$jinput = JFactory::getApplication()->input;
+
 // Obtenemos los datos del modelo...
 $model = $this->getModel();
 $update_database_plugin_enabled = $model->PluginStatus(3);
@@ -40,7 +42,7 @@ if ( $update_database_plugin_exists ) {
 	$plugin_id = $model->get_plugin_id(1);
 	$last_update = $model->get_last_update();	
 } else {
-	$last_update = 'Mar 22 2018';
+	$last_update = 'May 12 2018';
 }
 
 // Filtro por tipo de extensión
@@ -49,37 +51,32 @@ $type= $this->state->get('filter.extension_type');
 $vulnerable= $this->state->get('filter.vulnerable');
 
 if ( ($type == '') && ($vulnerable == '') ) { //No hay establecido ningún filtro de búsqueda
-			$items = $this->get('Data');
-			$pagination = $this->get('Pagination');
+			$this->items = $this->get('Data');
+			$this->pagination = $this->get('Pagination');
 		} else {			
-			$items = $this->get('FilterData');
-			$pagination = $this->get('FilterPagination');
+			$this->items = $this->get('FilterData');
+			$this->pagination = $this->get('FilterPagination');
 		}
 
 // Obtenemos los datos del modelo (junto con '$items' y '$pagination' obtenidos anteriormente)
-$eliminados = JRequest::getVar('comp_eliminados');
-$core_actualizado = JRequest::getVar('core_actualizado');
-$comps_actualizados = JRequest::getVar('componentes_actualizados');
-$comp_ok = JRequest::getVar('comp_ok');
+$this->eliminados = $jinput->get('comp_eliminados','0','string');
+$this->core_actualizado = $jinput->get('core_actualizado','0','string');
+$this->comps_actualizados = $jinput->get('componentes_actualizados','0','string');
+$this->comp_ok = $jinput->get('comp_ok','0','string');
 
 // Ponemos los datos y la paginación en el template
-$this->assignRef('items', $items);
-$this->assignRef('pagination', $pagination);
-$this->assignRef('eliminados', $eliminados);
-$this->assignRef('core_actualizado', $core_actualizado);
-$this->assignRef('comps_actualizados', $comps_actualizados);
-$this->assignRef('comp_ok', $comp_ok);
-$this->assignRef('update_database_plugin_exists', $update_database_plugin_exists);
-$this->assignRef('update_database_plugin_enabled', $update_database_plugin_enabled);
-$this->assignRef('last_check', $last_check);
-$this->assignRef('database_version', $database_version);
-$this->assignRef('database_message', $database_message);
-$this->assignRef('last_update', $last_update);
+$this->update_database_plugin_exists = $update_database_plugin_exists;
+$this->update_database_plugin_enabled = $update_database_plugin_enabled;
+$this->last_check = $last_check;
+$this->database_version = $database_version;
+$this->database_message = $database_message;
+$this->last_update = $last_update;
+
 if ( $update_database_plugin_exists ) {
-	$this->assignRef('plugin_id', $plugin_id);
+	$this->plugin_id = $plugin_id;
 }
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 parent::display($tpl);
 }

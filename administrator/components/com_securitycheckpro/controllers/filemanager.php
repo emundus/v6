@@ -22,18 +22,21 @@ class SecuritycheckprosControllerFileManager extends SecuritycheckproController
 public function  __construct() {
 		parent::__construct();	
 		
-		$view = JFactory::getApplication()->input->get('view', null);
-		$task = JFactory::getApplication()->input->get('task', null);
+		$jinput = JFactory::getApplication()->input;
+		
+		$view = $jinput->get('view', null);
+		$task = $jinput->get('task', null);
+		$model = $this->getModel("filemanager");
 								
 		if ( $view == "filesintegrity") {
 			$view = $this->getView( 'filesintegrity', 'html' );
-			$view->setModel( $this->getModel( 'filemanager' ) );			
+			$view->setModel($model);			
 		} else if ( $view == "filemanager") {			
 			$view = $this->getView( 'filemanager', 'html' );
-			$view->setModel( $this->getModel( 'filemanager' ) );
+			$view->setModel($model);
 		} else if ( $view == "malwarescan") {			
 			$view = $this->getView( 'malwarescan', 'html' );
-			$view->setModel( $this->getModel( 'filemanager' ) );
+			$view->setModel($model);
 			if ( $task != "view_file") {
 				$mainframe = JFactory::getApplication();
 				// Si la tarea es distinta a "view_file" inicializamos la variable de estado 'contenido'
@@ -46,26 +49,19 @@ public function  __construct() {
 /* Mostramos el Panel de Control del Gestor de archivos */
 public function display($cachable = false, $urlparams = Array())
 {
-	$view = JFactory::getApplication()->input->get('view', 'filemanager');
+	$jinput = JFactory::getApplication()->input;
+	$view = $jinput->get('view', 'filemanager');
 	if ( $view == "filesintegrity") {
-		JRequest::setVar( 'view', 'filesintegrity' );
+		$jinput->set('view', 'filesintegrity');
 	} else if ( $view == "filemanager") {
-		JRequest::setVar( 'view', 'filemanager' );
+		$jinput->set('view', 'filemanager');		
 	} else if ( $view == "malwarescan") {
-		JRequest::setVar( 'view', 'malwarescan' );
+		$jinput->set('view', 'malwarescan');		
 	}
 	
 	parent::display();
 }
 
-/* Función que nos permite establecer la vista 'malwarescan' y usar el modelo 'filemanager' conjuntamente 
-public function malwarescan_panel()
-{
-$view = $this->getView( 'malwarescan', 'html' );
-$view->setModel( $this->getModel( 'filemanager' ) );
-$view->display();
-
-}*/
 	
 /* Redirecciona las peticiones al Panel de Control */
 function redireccion_control_panel()
@@ -98,7 +94,7 @@ function redireccion_control_panel_y_borra_log()
 /* Mostramos información de la integridad de los archivos analizados */
 public function view_files_integrity()
 {
-	JRequest::setVar( 'view', 'filesintegritystatus' );
+	$jinput->set('view', 'filesintegritystatus');
 	
 	parent::display();
 } 
@@ -106,24 +102,21 @@ public function view_files_integrity()
 /* Mostramos los permisos de los archivos analizados */
 public function view_file_permissions()
 {
-	JRequest::setVar( 'view', 'filesstatus' );
-	
+	$jinput->set('view', 'filesstatus');
 	parent::display();
 }
 
 /* Mostramos información sobre los archivos sospechosos de contener malware */
 public function view_files_malwarescan()
 {
-	JRequest::setVar( 'view', 'filemanager' );
-	
+	$jinput->set('view', 'filemanager');
 	parent::display();
 } 
 
 /* Mostramos el Panel para borrar los datos de la BBDD  */
 public function initialize_data()
 {
-	JRequest::setVar( 'view', 'initialize_data' );
-	
+	$jinput->set('view', 'initialize_data');
 	parent::display();
 }
 
@@ -406,8 +399,9 @@ function deletefile_exception()
 	$model = $this->getModel("filemanager");
 	// Obtenemos el valor del campo "table" del formulario, que indicará de qué pantalla venimos  y qué tabla queremos modificar
 	$table = $this->input->post->get("table",null);
-	if ( empty($table) ) {
-		Jerror::raiseWarning(null, JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'));
+	
+	if ( empty($table) ) {		
+		JFactory::getApplication()->enqueueMessage(JText::_('SOME_ERROR_OCCURRED'), 'error');
 	} else {
 		$model->deletefile_exception($table);
 	}
@@ -507,7 +501,7 @@ function online_check_files()
 	if ( !$error ) {
 		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
 	} else {
-		JRequest::setVar( 'view', 'malwarescan' );
+		$jinput->set('view', 'malwarescan');
 	
 		parent::display();
 	}
@@ -524,8 +518,7 @@ function online_check_hashes()
 	if ( !$error ) {
 		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
 	} else {
-		JRequest::setVar( 'view', 'malwarescan' );
-	
+		$jinput->set('view', 'malwarescan');
 		parent::display();
 	}
 }
@@ -542,7 +535,7 @@ function restore_quarantined_file()
 	$model = $this->getModel("filemanager");
 	$model->quarantined_file('restore');
 	
-	JRequest::setVar( 'view', 'malwarescan' );
+	$jinput->set('view', 'malwarescan');
 	
 	parent::display();
 }
@@ -553,7 +546,7 @@ function delete_quarantined_file()
 	$model = $this->getModel("filemanager");
 	$model->quarantined_file('delete');
 	
-	JRequest::setVar( 'view', 'malwarescan' );
+	$jinput->set('view', 'malwarescan');
 	
 	parent::display();
 }
@@ -601,7 +594,7 @@ function delete_file()
 	$mainframe = JFactory::getApplication();	
 	$mainframe->setUserState('contenido', "vacio");
 	
-	JRequest::setVar( 'view', 'malwarescan' );
+	$jinput->set('view', 'malwarescan');
 	parent::display();	
 }
 

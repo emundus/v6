@@ -113,13 +113,37 @@ class file_fefInstallerScript
 		}
 
 		// In case of an update, discovery etc I need to check if I am an update
-		if (($type != 'install') && !$this->amIAnUpdate($parent))
+		if (($type == 'update') && !$this->amIAnUpdate($parent))
 		{
 			$msg = "<p>You have a newer version of Akeeba Frontend Framework installed. If you want to downgrade please uninstall Akeeba Frontend Framework and install the older version.</p>";
 
 			JLog::add($msg, JLog::WARNING, 'jerror');
 
 			return false;
+		}
+
+		// Delete obsolete font files and folders
+		if ($type == 'update')
+		{
+			// Use pathnames relative to your site's root
+			$removeFiles = [
+				'files'   => [
+					// Non-WOFF fonts are not shipped as of 1.0.1 since all modern browsers we target use WOFF
+					'media/fef/fonts/akeeba/Akeeba-Products.eot',
+					'media/fef/fonts/akeeba/Akeeba-Products.svg',
+					'media/fef/fonts/akeeba/Akeeba-Products.ttf',
+					'media/fef/fonts/Ionicon/ionicons.eot',
+					'media/fef/fonts/Ionicon/ionicons.svg',
+					'media/fef/fonts/Ionicon/ionicons.ttf',
+				],
+				'folders' => [
+					// The beta had this folder uppercase, then we moved it to lowercase
+					'media/fef/fonts/Akeeba'
+				],
+			];
+
+			// Remove obsolete files and folders
+			$this->removeFilesAndFolders($removeFiles);
 		}
 
 		return true;
@@ -188,6 +212,46 @@ class file_fefInstallerScript
 
 		JLoader::import('joomla.filesystem.folder');
 		JFolder::delete(JPATH_SITE . '/media/fef');
+	}
+
+	/**
+	 * Removes obsolete files and folders
+	 *
+	 * @param   array $removeList The files and directories to remove
+	 */
+	protected function removeFilesAndFolders($removeList)
+	{
+		// Remove files
+		if (isset($removeList['files']) && !empty($removeList['files']))
+		{
+			foreach ($removeList['files'] as $file)
+			{
+				$f = JPATH_ROOT . '/' . $file;
+
+				if (!is_file($f))
+				{
+					continue;
+				}
+
+				JFile::delete($f);
+			}
+		}
+
+		// Remove folders
+		if (isset($removeList['folders']) && !empty($removeList['folders']))
+		{
+			foreach ($removeList['folders'] as $folder)
+			{
+				$f = JPATH_ROOT . '/' . $folder;
+
+				if (!is_dir($f))
+				{
+					continue;
+				}
+
+				JFolder::delete($f);
+			}
+		}
 	}
 
 

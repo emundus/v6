@@ -160,7 +160,7 @@ class Raw extends View implements DataViewInterface
 	/**
 	 * Returns the internal list of useful variables to the benefit of header fields.
 	 *
-	 * @return array
+	 * @return \stdClass
 	 */
 	public function getLists()
 	{
@@ -299,7 +299,27 @@ class Raw extends View implements DataViewInterface
 		/** @var DataModel $model */
 		$model = $this->getModel();
 
-		$this->item = $model->reset(true, true);
+		/**
+		 * The model is pushed into the View by the Controller. As you can see in DataController::add() it is possible
+		 * to push both default values (defaultsForAdd) as well as data from the state (e.g. when saving a new record
+		 * failed for some reason and the user needs to edit it). That's why we populate defaultFields from $model. We
+		 * still do a full reset on a clone of the Model to get a clean object and merge default values (instead of null
+		 * values) with the data pushed by the controller.
+		 */
+		$defaultFields = $model->getData();
+		$this->item    = $model->getClone()->reset(true, true);
+
+		foreach ($defaultFields as $k => $v)
+		{
+			try
+			{
+				$this->item->setFieldValue($k, $v);
+			}
+			catch (\Exception $e)
+			{
+				// Suppress errors in field assignments at this stage
+			}
+		}
 	}
 
 	/**
@@ -313,7 +333,7 @@ class Raw extends View implements DataViewInterface
 		// It seems that I can't edit records, maybe I can edit only this one due asset tracking?
 		if (!$this->permissions->edit || !$this->permissions->editown)
 		{
-			if($model)
+			if ($model)
 			{
 				// Ok, record is tracked, let's see if I can this record
 				if ($model->isAssetsTracked())

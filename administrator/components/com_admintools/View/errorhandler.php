@@ -184,7 +184,14 @@ if (!$isFrontend)
 if (!include_once (JPATH_ADMINISTRATOR . '/components/com_admin/models/sysinfo.php')) return;
 $model = new AdminModelSysInfo();
 $directories = $model->getDirectory();
-$extensions = $model->getExtensions();
+try
+{
+	$extensions = $model->getExtensions();
+}
+catch (Exception $e)
+{
+    $extension = [];
+}
 $phpSettings = $model->getPhpSettings();
 $hasPHPInfo = $model->phpinfoEnabled();
 ?>

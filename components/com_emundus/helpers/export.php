@@ -274,7 +274,7 @@ class EmundusHelperExport
 	public static function makePDF($fileName, $ext, $aid, $i=0)
 	{
         require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
-        include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		$imgExt = array('jpeg', 'jpg', 'png', 'gif', 'svg');
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 		$pdf->SetCreator(PDF_CREATOR);

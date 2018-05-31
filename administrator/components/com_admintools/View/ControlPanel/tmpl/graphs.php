@@ -34,22 +34,24 @@ $graphDayFrom = gmdate('Y-m-d', time() - 30 * 24 * 3600);
         </div>
     </div>
 
-    <div id="admintoolsExceptionsLineChart">
+    <div class="akeeba-graph">
         <span id="akthrobber" class="akion-load-a"></span>
+        <canvas id="admintoolsExceptionsLineChart" width="400" height="200"></canvas>
 
-        <p id="admintoolsExceptionsLineChartNoData" style="display:none">
-            <?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?>
-        </p>
+        <div id="admintoolsExceptionsLineChartNoData" style="display:none" class="akeeba-block--success small">
+            <p><?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?></p>
+        </div>
     </div>
 
     <div class="clearfix"></div>
 
     <h3><?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_EXCEPTSTATS'); ?></h3>
-    <div id="admintoolsExceptionsPieChart">
+    <div class="akeeba-graph">
         <span id="akthrobber2" class="akion-load-a"></span>
+        <canvas id="admintoolsExceptionsPieChart" width="400" height="200"></canvas>
 
-        <p id="admintoolsExceptionsPieChartNoData" style="display:none">
-            <?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?>
-        </p>
+        <div id="admintoolsExceptionsPieChartNoData" style="display:none" class="akeeba-block--success small">
+            <p><?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?></p>
+        </div>
     </div>
 </div>

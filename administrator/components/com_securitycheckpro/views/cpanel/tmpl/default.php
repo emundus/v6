@@ -18,14 +18,14 @@ $lang2 = JFactory::getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 
 $review = sprintf( $lang->_('COM_SECURITYCHECKPRO_REVIEW'), '<a href="http://extensions.joomla.org/extensions/extension/access-a-security/site-security/securitycheck-pro" target="_blank">', '</a>' );
-$translator_name = $lang->_('COM_SECURITYCHECKPRO_TRANSLATOR_NAME');
-$firewall_plugin_status = $lang->_('COM_SECURITYCHECKPRO_FIREWALL_PLUGIN_STATUS');
-$cron_plugin_status = $lang->_('COM_SECURITYCHECKPRO_CRON_PLUGIN_STATUS');
-$update_database_plugin_status = $lang->_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_PLUGIN_STATUS');
-$spam_protection_plugin_status = $lang->_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_PLUGIN_STATUS');
+$translator_name = $lang2->_('COM_SECURITYCHECKPRO_TRANSLATOR_NAME');
+$firewall_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_FIREWALL_PLUGIN_STATUS');
+$cron_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_CRON_PLUGIN_STATUS');
+$update_database_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_PLUGIN_STATUS');
+$spam_protection_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_PLUGIN_STATUS');
 $logs_status = $lang->_('COM_SECURITYCHECKPRO_LOGS_STATUS');
-$autoupdate_status = $lang->_('COM_SECURITYCHECKPRO_AUTOUPDATE_STATUS');
-$translator_url = $lang->_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
+$autoupdate_status = $lang2->_('COM_SECURITYCHECKPRO_AUTOUPDATE_STATUS');
+$translator_url = $lang2->_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
 
 // Cargamos el comportamiento modal para mostrar las ventanas para exportar
 JHtml::_('behavior.modal');
@@ -144,6 +144,20 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			}
 		});
 	}
+	var ActiveTab = "lists"; 
+		
+	function SetActiveTab($value) {
+		ActiveTab = $value;
+		storeValue('active', ActiveTab);
+	}
+	
+	function storeValue(key, value) {
+		if (localStorage) {
+			localStorage.setItem(key, value);
+		} else {
+			$.cookies.set(key, value);
+		}
+	}
 		
 </script>
 <?php 
@@ -184,13 +198,21 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 	
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+
+<?php } ?>
+ <!-- Custom styles for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
+
   
 <form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro');?>" method="post" name="adminForm" id="adminForm">
 
@@ -208,7 +230,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				<span class="tammano-18"><?php echo JText::_('COM_SECURITYCHECKPRO_GEOIPV2_NEEDS_UPDATE'); ?></span><br/><br/>	
 			  </div>
 				<div class="modal-footer" id="div_boton_subida">
-					<button class="btn btn-inverse" type="button" onclick="Joomla.submitbutton('go_to_geoblock');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_GO_TO_GEOBLOCK' ); ?></button>
+					<button class="btn btn-dark" type="button" onclick="Joomla.submitbutton('go_to_geoblock');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_GO_TO_GEOBLOCK' ); ?></button>
 					<button class="btn btn-info" type="button" onclick="oculta_popup(); Joomla.submitbutton('automatic_updates_geoblock');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_AUTOMATIC_UPDATES_GEOBLOCK' ); ?></button>
 				</div>			  
 			</div>
@@ -284,9 +306,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				<div>
 				<?php
 						if ($enabled){ ?>
-							<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
+							<span class="badge badge-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
 				<?php 	}else{ ?>
-							<span class="label label-important"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
+							<span class="badge badge-danger"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
 				<?php	}  ?>
 				</div>
 				<div style="margin-top: 10px;">
@@ -294,7 +316,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					if ($enabled){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_firewall')" href="#">
-						<i class="fa fa-fw fa-power-off"> </i>
+						<i class="fapro fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php 	}else{ ?>
@@ -330,9 +352,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				<div>
 				<?php
 						if ($enabled){ ?>
-							<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
+							<span class="badge badge-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
 				<?php 	}else{ ?>
-							<span class="label label-important"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
+							<span class="badge badge-danger"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
 				<?php	}  ?>
 				</div>
 				<div style="margin-top: 10px;">
@@ -340,7 +362,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					if ($enabled){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_cron')" href="#">
-						<i class="fa fa-fw fa-power-off"> </i>
+						<i class="fapro fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php 	}else{ ?>
@@ -383,12 +405,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				<div>
 				<?php
 						if (!$exists) { ?>
-							<span class="label label-inverse"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' )); ?></span>
+							<span class="badge badge-dark"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' )); ?></span>
 							
 				<?php  } else if ($enabled && $exists) { ?>
-							<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
+							<span class="badge badge-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
 				<?php 	}else if (!$enabled && $exists) { ?>
-							<span class="label label-important"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
+							<span class="badge badge-danger"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
 				<?php	}  ?>
 				</div>
 				<div style="margin-top: 10px;">
@@ -396,7 +418,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					if ($enabled && $exists ){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_update_database')" href="#">
-						<i class="fa fa-fw fa-power-off"> </i>
+						<i class="fapro fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php } else if (!$enabled && $exists ) { ?>
@@ -441,12 +463,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				<div>
 				<?php
 						if (!$exists) { ?>
-							<span class="label label-inverse"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' )); ?></span>
+							<span class="badge badge-dark"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' )); ?></span>
 							
 				<?php  } else if ($enabled && $exists) { ?>
-							<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
+							<span class="badge badge-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' )); ?></span>
 				<?php 	}else if (!$enabled && $exists) { ?>
-							<span class="label label-important"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
+							<span class="badge badge-danger"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' )); ?></span>
 				<?php	}  ?>
 				</div>
 				<div style="margin-top: 10px;">
@@ -454,7 +476,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					if ($enabled && $exists ){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_spam_protection')" href="#">
-						<i class="fa fa-fw fa-power-off"> </i>
+						<i class="fapro fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php } else if (!$enabled && $exists ) { ?>
@@ -476,7 +498,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
         <!-- Statistics-->
 			<div class="card mb-3">
 				<div class="card-header">
-					<i class="fa fa-bars"></i>
+					<i class="fapro fa-bars"></i>
 					<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_STATISTICS'); ?>
 				</div>
 				<div class="card-body">
@@ -650,15 +672,15 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 									<td>
 										<?php
 											if ( ($black-1) >= 0 ) { ?>
-												<span class="label label-important"><?php echo $this->blacklist_elements[$black-1]; ?></span>
+												<span class="badge badge-danger"><?php echo $this->blacklist_elements[$black-1]; ?></span>
 										<?php } ?>
 										<?php
 											if ( ($black-2) >= 0 ) { ?>
-												<span class="label label-important"><?php echo $this->blacklist_elements[$black-2]; ?></span>
+												<span class="badge badge-danger"><?php echo $this->blacklist_elements[$black-2]; ?></span>
 										<?php } ?>										
 										<?php
 											if ( ($black-3) >= 0 ) { ?>
-												<span class="label label-important"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
+												<span class="badge badge-danger"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
 										<?php } ?>
 									</td>
 									<td>											
@@ -679,15 +701,15 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 									<td>
 										<?php
 											if ( ($dynamic-1) >= 0 ) { ?>
-												<span class="label label-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-1]; ?></span>
+												<span class="badge badge-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-1]; ?></span>
 										<?php } ?>
 										<?php
 											if ( ($dynamic-2) >= 0 ) { ?>
-												<span class="label label-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-2]; ?></span>
+												<span class="badge badge-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-2]; ?></span>
 										<?php } ?>
 										<?php
 											if ( ($dynamic-3) >= 0 ) { ?>
-												<span class="label label-warning"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
+												<span class="badge badge-warning"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
 										<?php } ?>										
 									</td>
 									<td>											
@@ -708,15 +730,15 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 									<td>
 										<?php
 											if ( ($white-1) >= 0 ) { ?>
-												<span class="label label-success"><?php echo $this->whitelist_elements[$white-1]; ?></span>
+												<span class="badge badge-success"><?php echo $this->whitelist_elements[$white-1]; ?></span>
 										<?php } ?>
 										<?php
 											if ( ($white-2) >= 0 ) { ?>
-												<span class="label label-success"><?php echo $this->whitelist_elements[$white-2]; ?></span>
+												<span class="badge badge-success"><?php echo $this->whitelist_elements[$white-2]; ?></span>
 										<?php } ?>
 										<?php
 											if ( ($white-3) >= 0 ) { ?>
-												<span class="label label-success"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
+												<span class="badge badge-success"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
 										<?php } ?>										
 									</td>
 									<td>											
@@ -726,7 +748,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 						</table>
 						<div id="dynamic_blacklist_buttons" class="btn-toolbar">
 							<div class="btn-group" style="margin-bottom: 5px;">
-								<button class="btn btn-info" onclick="Joomla.submitbutton('manage_lists')" href="#">
+								<button class="btn btn-info" onclick="SetActiveTab('lists'); Joomla.submitbutton('manage_lists');" href="#">
 									<i class="icon-wrench icon-white"> </i>
 										<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_MANAGE_LISTS'); ?>
 								</button>
@@ -747,7 +769,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			<!-- Overall status -->
 			<div class="card mb-3">
 				<div class="card-header">
-					<i class="fa fa-chart-pie"></i>
+					<i class="fapro fa-chart-pie"></i>
 					<?php echo JText::_( 'COM_SECURITYCHECKPRO_SECURITY_OVERALL_SECURITY_STATUS' ); ?>
 				</div>
 				<div class="card-body">
@@ -787,7 +809,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			<!-- Subscription status -->
 			<div class="card mb-3">
 				<div class="card-header">
-					<i class="fa fa-ellipsis-v-alt"></i>
+					<i class="fapro fa-ellipsis-v-alt"></i>
 					<a href="#" id="subscriptions_status" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS_EXPLAINED' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS' ); ?></a>
 				</div>
 				<div class="card-body">
@@ -798,45 +820,45 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 						$exists_trackactions = $this->trackactions_plugin_exists;						
 						
 						if ( !$exists ) {
-							$span_update_database = "Securitycheck Pro Update Database<br/><span class=\"label label-inverse\">";
+							$span_update_database = "Securitycheck Pro Update Database<br/><span class=\"badge badge-dark\">";
 							$scp_update_database_subscription_status = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' );
 						} else {
 							$scp_update_database_subscription_status = $mainframe->getUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
 							$span_update_database = "Securitycheck Pro Update Database<br/>(<span id=\"update_database_version\" data-toggle=\"tooltip\" title=\"" . JText::_( 'COM_SECURITYCHECKPRO_VERSION_INSTALLED' ) . ":&nbsp;" . $this->version_update_database . "\" class=\"badge badge-info\">" . $this->version_update_database . "</span>)&nbsp;&nbsp;";
 							if ( $scp_update_database_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
-								$span_update_database .= "<span class=\"label label-success\">";								
+								$span_update_database .= "<span class=\"badge badge-success\">";								
 							} else if ( $scp_update_database_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
-								$span_update_database .= "<span class=\"label label-important\">";
+								$span_update_database .= "<span class=\"badge badge-danger\">";
 								$expired = true;
 							} else {
-								$span_update_database .= "<span class=\"label label-inverse\">";
+								$span_update_database .= "<span class=\"badge badge-dark\">";
 							}
 						}
 						
 						if ( !$exists_trackactions ) {
-							$span_trackactions = "Track Actions<br/><span class=\"label label-inverse\">";
+							$span_trackactions = "Track Actions<br/><span class=\"badge badge-dark\">";
 							$trackactions_subscription_status = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' );
 						} else {
 							$trackactions_subscription_status = $mainframe->getUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
 							$span_trackactions = "Track Actions<br/>(<span id=\"trackactions_version\" data-toggle=\"tooltip\" title=\"" . JText::_( 'COM_SECURITYCHECKPRO_VERSION_INSTALLED' ) . ":&nbsp;" . $this->version_trackactions . "\" class=\"badge badge-info\">" . $this->version_trackactions . "</span>)&nbsp;&nbsp;";
 							if ( $trackactions_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
-								$span_trackactions .= "<span class=\"label label-success\">";								
+								$span_trackactions .= "<span class=\"badge badge-success\">";								
 							} else if ( $trackactions_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
-								$span_trackactions .= "<span class=\"label label-important\">";
+								$span_trackactions .= "<span class=\"badge badge-danger\">";
 								$expired = true;
 							} else {
-								$span_trackactions .= "<span class=\"label label-inverse\">";
+								$span_trackactions .= "<span class=\"badge badge-dark\">";
 							}
 						}
 						
 						$scp_subscription_status = $mainframe->getUserState("scp_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
 						if ( $scp_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
-							$span_scp = "<span class=\"label label-success\">";								
+							$span_scp = "<span class=\"badge badge-success\">";								
 						} else if ( $scp_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
-							$span_scp = "<span class=\"label label-important\">";	
+							$span_scp = "<span class=\"badge badge-danger\">";	
 							$expired = true;
 						} else {
-							$span_scp = "<span class=\"label label-inverse\">";					
+							$span_scp = "<span class=\"badge badge-dark\">";					
 						}												
 					?>
 					<p>Securitycheck Pro<br/>(<span id="scp_version" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_VERSION_INSTALLED' ); ?>:&nbsp;<?php echo $this->version_scp; ?>" class="badge badge-info"><?php echo $this->version_scp ?></span>)&nbsp;&nbsp;<?php echo $span_scp ?><?php echo $scp_subscription_status ?> </span></p>
@@ -851,7 +873,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			<!-- Easy config -->
 			<div class="card mb-3">
 				<div class="card-header">
-					<i class="fa fa-cog"></i>
+					<i class="fapro fa-cog"></i>
 					<?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG' ); ?>
 				</div>
 				<div class="card-body text-center">
@@ -859,9 +881,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					<div><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG_STATUS' ); ?></div>
 					<?php
 							if ($easy_config_applied){ ?>
-								<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLIED' )); ?></span>
+								<span class="badge badge-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLIED' )); ?></span>
 					<?php 	}else{ ?>
-								<span class="label label-info"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_NOT_APPLIED' )); ?></span>
+								<span class="badge badge-info"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_NOT_APPLIED' )); ?></span>
 					<?php	}  ?>
 					<br/>
 					<br/>
@@ -878,10 +900,10 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			<!-- Help us -->
 			<div class="card bg-light mb-3">
 				<div class="card-body text-center">
-					<h3 class="card-title"><i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?></h3>
+					<h3 class="card-title"><i class="fapro fa-thumbs-up"></i>&nbsp;&nbsp;<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?></h3>
 					<p class="card-text">
 						<?php echo($review); ?><br/><br/>
-						<i class="fa fa-info-square"></i>&nbsp;&nbsp;<?php echo('<a href="' . $translator_url . '" target="_blank">' . $translator_name . '</a>'); ?>
+						<i class="fapro fa-info-square"></i>&nbsp;&nbsp;<?php echo('<a href="' . $translator_url . '" target="_blank">' . $translator_name . '</a>'); ?>
 					</p>
 				</div>
 			</div>
@@ -891,7 +913,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 	
 	<!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#isisJsData">
-      <i class="fa fa-angle-up"></i>
+      <i class="fapro fa-angle-up"></i>
     </a>
 	
 <!-- End Main panel -->	

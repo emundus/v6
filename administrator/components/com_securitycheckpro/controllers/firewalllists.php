@@ -74,7 +74,8 @@ function deleteip_dynamic_blacklist()
 public function save()
 {
 	$model = $this->getModel('firewalllists');
-	$data = JRequest::get('post');
+	$jinput = JFactory::getApplication()->input;
+	$data = $jinput->get('post');
 	$model->saveConfig($data, 'pro_plugin');
 
 	$this->setRedirect('index.php?option=com_securitycheckpro&view=firewalllists&'. JSession::getFormToken() .'=1');	

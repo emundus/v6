@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.1" method="upgrade">
+<extension type="component" version="3.6" method="upgrade">
 <name>Securitycheck Pro</name>
-<creationDate>22-03-2018</creationDate>
+<creationDate>16-05-2018</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>http://www.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>3.0.1</version>
+<version>3.1.0</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description> 
 
-<!-- Public front end files -->
+<!-- Public front end files  -->
 <files folder="frontend">
 	<filename>index.html</filename>
 	<filename>securitycheckpro.php</filename>
@@ -18,37 +18,19 @@
 	<folder>models</folder>
 </files>
 
-<!-- Runs on install/uninstall/update; New in 1.6 -->
-	<scriptfile>install.php</scriptfile>
-
-<install>
-<sql>
-<file charset="utf8" driver="mysql">sql/install.sql</file>
-</sql>
-</install>
-<uninstall>
-<sql>
-<file charset="utf8" driver="mysql">sql/uninstall.sql</file>
-</sql>
-</uninstall>
-<update>
-	<schemas>
-		<schemapath type="mysql">sql/updates</schemapath>
-	</schemas>
-</update>
-
 <media destination="com_securitycheckpro" folder="media">
 	<filename>index.html</filename>
 	<folder>images</folder>
 	<folder>stylesheets</folder>
 	<folder>fonts</folder>	
 	<folder>new</folder>
-</media>
+</media> 
 
 <administration>
 <!-- Administration Menu Section -->
-<menu img="../media/com_securitycheckpro/images/tick_16x16.png">COM_SECURITYCHECKPRO_MENU</menu>
-	<submenu>
+<menu view="cpanel"	img="../media/com_securitycheckpro/images/tick_16x16.png">Securitycheck Pro</menu>
+
+<submenu>
         <menu link="option=com_securitycheckpro">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</menu>
 		<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_vulnerabilities()">COM_SECURITYCHECKPRO_VULNERABILITIES</menu>
 		<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_filemanager()">COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT</menu>
@@ -59,7 +41,7 @@
 	</submenu>
 
 <!-- Administration Main File Copy Section -->
-<files folder="admin">
+<files folder="backend">
 <filename>securitycheckpro.php</filename>
 <filename>index.html</filename>
 <filename>config.xml</filename>
@@ -77,7 +59,7 @@
 </files>
 
 <!-- Languages Section -->
-<languages folder="admin">
+<languages folder="backend">
 	<language tag="en-GB">language/en-GB/en-GB.com_securitycheckpro.ini</language>
 	<language tag="en-GB">language/en-GB/en-GB.com_securitycheckpro.sys.ini</language>
 	<language tag="es-ES">language/es-ES/es-ES.com_securitycheckpro.ini</language>
@@ -110,7 +92,10 @@
 	<language tag="bs-BA">language/bs-BA/bs-BA.com_securitycheckpro.sys.ini</language>
 	<language tag="pt-PT">language/pt-PT/pt-PT.com_securitycheckpro.ini</language>
 	<language tag="pt-PT">language/pt-PT/pt-PT.com_securitycheckpro.sys.ini</language>
+	<language tag="hu-HU">language/hu-HU/hu-HU.com_securitycheckpro.ini</language>
+	<language tag="hu-HU">language/hu-HU/hu-HU.com_securitycheckpro.sys.ini</language>
 </languages>
+
 </administration>
 
 <plugins>
@@ -118,9 +103,29 @@
 	   <plugin folder="plugins/system" plugin="securitycheckpro_cron" name="System - Securitycheck Pro Cron" group="system" />	  
 	   <plugin folder="plugins/system" plugin="url_inspector" name="System - url inspector" group="system" />
 	   <plugin folder="plugins/installer" plugin="securitycheckpro_installer" name="Installer - Securitycheck Pro" group="installer" />
-</plugins>
+</plugins> 
 	
 <updateservers>
 	<server type="extension" priority="1" name="Securitycheck Pro Update Site"><![CDATA[http://securitycheck.protegetuordenador.com/update/updates_securitycheckpro.xml]]></server>	
 </updateservers>
+
+<!-- Runs on install/uninstall/update -->
+<scriptfile>install.php</scriptfile>
+
+<install>
+<sql>
+<file charset="utf8" driver="mysql">sql/install.sql</file>
+</sql>
+</install>
+<uninstall>
+<sql>
+<file charset="utf8" driver="mysql">sql/uninstall.sql</file>
+</sql>
+</uninstall>
+<update>
+	<schemas>
+		<schemapath type="mysql">sql/updates</schemapath>
+	</schemas>
+</update>
+
 </extension>

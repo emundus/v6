@@ -463,7 +463,7 @@ VALUES('rescueurl', '*', 'Rescue URL requested on [SITENAME] for [USER]', '<div 
 <h3>I have no idea why I''m receiving this email</h3>
 <p>Look under "What is the Rescue URL" further down. You <strong>DO NOT</strong> need to take any action and you <strong>DO NOT</strong> need to worry.</p>
 <h3>Who requested the Rescue URL?</h3>
-<p>Username: [USER]<br />IP Address: <a href="[LOOKUP]" rel="alternate">[IP]<br /></a>Country: [COUNTRY]<br />Continent: [CONTINENT]<br />User Agent: [UA]</p>
+<p>Username: [USER]<br />IP Address: [IP] ([LOOKUP])</a><br />Country: [COUNTRY]<br />Continent: [CONTINENT]<br />User Agent: [UA]</p>
 <p> </p>
 <h3>What is the Rescue URL?</h3>
 <p>Sometimes an overzealous Admin Tools configuration can result in accidentally blocking you, a Super User from the site. Normally that would require you to rename the file of Admin Tools'' system plugin to unblock yourself. This is a bit complicated and susceptible to errors.</p>

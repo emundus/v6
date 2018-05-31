@@ -33,18 +33,30 @@ class AkeebaFEFHelper
 	 */
 	public static $tag = null;
 
+	/**
+	 * Is FEF already loaded?
+	 *
+	 * @var  bool
+	 */
 	public static $loaded = false;
 
 	/**
 	 * Loads Akeeba Frontend Framework, both CSS and JS
 	 *
-	 * @return void
+	 * @param   bool  $withReset  Should I also load the CSS reset for the FEF container?
+	 *
+	 * @return  void
 	 */
-	public static function load()
+	public static function load($withReset = true)
 	{
 		if (self::$loaded)
 		{
 			return;
+		}
+
+		if ($withReset)
+		{
+			self::loadCSS('fef/reset.min.css');
 		}
 
 		self::loadCSS('fef/style.min.css');

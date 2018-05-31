@@ -32,7 +32,8 @@ function __construct()
 public function apply_rules()
 {
 	// Inicializamos las variables.
-	$ids	= JRequest::getVar('cid', array(), '', 'array');
+	$jinput = JFactory::getApplication()->input;
+	$ids	=$jinput->getVar('cid', '', 'array');
 	
 	if (empty($ids)) {
 		JError::raiseWarning(500, JText::_('COM_SECURITYCHECKPRO_RULES_NO_GROUPS_SELECTED'));
@@ -55,7 +56,8 @@ public function apply_rules()
 public function not_apply_rules()
 {
 	// Inicializamos las variables.
-	$ids	= JRequest::getVar('cid', array(), '', 'array');
+	$jinput = JFactory::getApplication()->input;
+	$ids	=$jinput->getVar('cid', '', 'array');
 	
 	if (empty($ids)) {
 		JError::raiseWarning(500, JText::_('COM_SECURITYCHECKPRO_RULES_NO_GROUPS_SELECTED'));
@@ -77,7 +79,8 @@ public function not_apply_rules()
 /* Muestra las entradas de confianza */
 function rules_logs()
 {
-	JRequest::setVar( 'view', 'ruleslogs' );
+	$jinput = JFactory::getApplication()->input;
+	$jinput->set( 'view', 'ruleslogs' );
 	
 	parent::display();
 }

@@ -495,7 +495,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         foreach ($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
             {
                 $validFnums[] = $fnum;
             }
@@ -527,26 +527,27 @@ class EmundusControllerFiles extends JControllerLegacy
 
         foreach ($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
             {
-                if(!in_array($fnum, $validFnums))
+                if (!in_array($fnum, $validFnums))
                     $validFnums[] = $fnum;
             }
-            if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
             {
-                if(!in_array($fnum, $validFnums))
+                if (!in_array($fnum, $validFnums))
                     $validFnums[] = $fnum;
             }
         }
 
         unset($fnums);
-        if(!empty($tags))
-            $res    = $m_files->deletetags($validFnums, $tags);
-        else
-            die("No tags ...");
 
-        $tagged = $m_files->getTaggedFile($tag);
-            echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
+        if (!empty($tags))
+            $res = $m_files->deletetags($validFnums, $tags);
+        else
+            die ("No tags ...");
+
+        $tagged = $m_files->getTaggedFile($tags);
+        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
         exit;
     }
 
@@ -731,10 +732,14 @@ class EmundusControllerFiles extends JControllerLegacy
             $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
 
             if (count($trigger_emails) > 0) {
+
                 foreach ($trigger_emails as $key => $trigger_email) {
-                    // Manage with default recipient by programme
+
+                	// Manage with default recipient by programme
                     foreach ($trigger_email as $code => $trigger) {
-                        if ($trigger['to']['to_applicant'] == 1) {
+
+                    	if ($trigger['to']['to_applicant'] == 1) {
+
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
                                 $mailer = JFactory::getMailer();
@@ -749,6 +754,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
                                 $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
                                 $body       = $m_email->setTagsFabrik($body, array($file['fnum']));
+
+                                // Add the email template model.
+	                            if (!empty($trigger['tmpl']['template']))
+	                                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger['tmpl']['template']);
 
                                 // If the email sender has the same domain as the system sender address.
                                 if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
@@ -787,6 +796,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
                             }
                         }
+
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
                             $mailer = JFactory::getMailer();
 
@@ -1248,8 +1258,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         if (count($fnums) == 0)
             $fnums = array($session->get('application_fnum'));
-
-
 
         $jinput     = JFactory::getApplication()->input;
         $file       = $jinput->getVar('file', null, 'STRING');

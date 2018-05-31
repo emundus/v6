@@ -22,9 +22,13 @@ function read_file()
 	$res = true;
 	$secret_key = "";
 	
+	jimport('joomla.filesystem.file');
+	$jinput = JFactory::getApplication()->input;
+	
 	// Get the uploaded file information
-	$userfile = JRequest::getVar('file_to_import', null, 'files', 'array');
-		
+	$userfile = $jinput->files->get('file_to_import');
+	
+	
 	// Make sure that file uploads are enabled in php
 	if (!(bool) ini_get('file_uploads'))
 	{
@@ -46,7 +50,7 @@ function read_file()
 	}
 
 	// Check if there was a problem uploading the file.
-	if ($userfile['error'] || $userfile['size'] < 1)
+	if ( $userfile['error'] || $userfile['size'] < 1 || !($userfile['type'] == "text/plain") )
 	{
 		JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'));
 		return false;
@@ -58,7 +62,6 @@ function read_file()
 	$tmp_src	= $userfile['tmp_name'];
 
 	// Move uploaded file
-	jimport('joomla.filesystem.file');
 	$upload_res = JFile::upload($tmp_src, $tmp_dest);
 	
 	// El fichero se ha subido correctamente

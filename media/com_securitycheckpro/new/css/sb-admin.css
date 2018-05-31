@@ -4,6 +4,10 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-sb-admin/blob/master/LICENSE)
  */
 
+.fapro {
+	margin-right: 5px;
+}
+ 
 /* Sobreescribimos alguna clase del template isis */
 .subhead-collapse {
 	margin-bottom: 0px;

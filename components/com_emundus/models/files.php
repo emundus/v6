@@ -448,19 +448,19 @@ class EmundusModelFiles extends JModelLegacy
 
         $db = JFactory::getDBO();
 
-        if(!is_numeric(@$params['published']) || is_null(@$params['published']))
+        if (!is_numeric(@$params['published']) || is_null(@$params['published']))
             $params['published'] = 1;
 
         $query = array('q' => '', 'join' => '');
-        if(!empty($params))
+        if (!empty($params))
         {
-            foreach($params as $key => $value)
+            foreach ($params as $key => $value)
             {
 
                 switch ($key)
                 {
                     case 'elements':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
                             foreach ($value as $k => $v)
                             {
@@ -468,9 +468,9 @@ class EmundusModelFiles extends JModelLegacy
 
                                 if (count($tab)>1)
                                 {
-                                    if(!empty($v))
+                                    if (!empty($v))
                                     {
-                                        if($tab[0] == 'jos_emundus_training')
+                                        if ($tab[0] == 'jos_emundus_training')
                                         {
                                             $query['q'] .= ' AND ';
                                             $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
@@ -483,29 +483,30 @@ class EmundusModelFiles extends JModelLegacy
                                             $db->setQuery($sql);
                                             $join_from_table = $db->loadResult();
                                         
-                                            if (!empty($join_from_table)) {
+                                            if (!empty($join_from_table))
+                                            {
                                                 $table = $join_from_table;
                                                 $table_join = $tab[0];
 
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
                                                 
-                                                if(!isset($query[$table]))
+                                                if (!isset($query[$table]))
                                                 {
                                                     $query[$table] = true;
                                                     if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias))
                                                         $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                 }
                                                 
-                                                if(!isset($query[$table_join]))
+                                                if (!isset($query[$table_join]))
                                                 {
                                                     $query[$table_join] = true;
-                                                    try{
+                                                    try {
                                                         $db->setQuery('SELECT parent_id FROM '.$table_join);
                                                         $col_exists = $db->loadResult();
 
                                                         if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
                                                             $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
-                                                    }catch(Exception $e){
+                                                    } catch(Exception $e) {
                                                         if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
                                                             $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                     }
@@ -516,12 +517,12 @@ class EmundusModelFiles extends JModelLegacy
                                                 $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
                                                 $db->setQuery($sql);
                                                 $res = $db->loadResult();
-                                                if($res == "radiobutton" || $res == "dropdown")
+                                                if ($res == "radiobutton" || $res == "dropdown")
                                                     $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
                                                 else
                                                     $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
 
-                                                if(!isset($query[$tab[0]]))
+                                                if (!isset($query[$tab[0]]))
                                                 {
                                                     $query[$tab[0]] = true;
                                                     if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)){
@@ -538,19 +539,19 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         break;
                     case 'elements_other':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
-                            if(!empty($value))
+                            if (!empty($value))
                             {
                                 foreach ($value as $k => $v)
                                 {
-                                    if(!empty($value))
+                                    if (!empty($value))
                                     {
-                                        if(!empty($v))
+                                        if (!empty($v))
                                         {
                                             $tab = explode('.', $k);
                                             if (count($tab)>1) {
-                                                if($tab[0]=='jos_emundus_training')
+                                                if ($tab[0]=='jos_emundus_training')
                                                 {
                                                     $query['q'] .= ' AND ';
                                                     $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
@@ -560,7 +561,7 @@ class EmundusModelFiles extends JModelLegacy
                                                     $query['q'] .= ' AND ';
                                                     $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
 
-                                                    if(!isset($query[$tab[0]]))
+                                                    if (!isset($query[$tab[0]]))
                                                     {
                                                         $query[$tab[0]] = true;
                                                         if (!array_key_exists($tab[0], $tableAlias))
@@ -574,14 +575,15 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
+
                     case 's':
                         if (!empty($value))
                         {
                             $q = $this->_buildSearch($value, $tableAlias);
-                            foreach($q['q'] as $v)
+                            foreach ($q['q'] as $v)
                                 $query['q'] .= $v;
 
-                            foreach($q['join'] as $u)
+                            foreach ($q['join'] as $u)
                                 $query['join'] .= $u;
 
                             if (isset($q['users']))
@@ -595,11 +597,12 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
+
                     case 'finalgrade':
                         if (!empty($value))
                         {
                             $query['q'] .= ' and fg.final_grade like "%' . $value . '%"';
-                            if(!isset($query['final_g']))
+                            if (!isset($query['final_g']))
                             {
                                 $query['final_g'] = true;
                                 if (!array_key_exists('jos_emundus_final_grade', $tableAlias))
@@ -607,6 +610,7 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
+
                     case 'schoolyear':
                         if (!empty($value))
                         {
@@ -624,8 +628,9 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
+
                     case 'programme':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
                             if ($value[0] == "%" || empty($value[0]))
                                 $query['q'] .= ' ';
@@ -644,6 +649,7 @@ class EmundusModelFiles extends JModelLegacy
 
                         }
                         break;
+
                     case 'campaign':
                         if ($value)
                         {
@@ -657,12 +663,13 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
+
                     case 'groups':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
                             $query['q'] .= ' and  (ge.group_id=' . $db->Quote($value) . ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .$db->Quote($value) . ')) ';
 
-                            if(!isset($query['group_eval']))
+                            if (!isset($query['group_eval']))
                             {
                                 $query['group_eval'] = true;
                                 if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
@@ -671,13 +678,14 @@ class EmundusModelFiles extends JModelLegacy
 
                         }
                         break;
+
                     case 'user':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
                             $query['q'] .= ' and (ge.user_id=' . $db->Quote($value) .
                                 ' OR ge.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id=' .
                                 $db->Quote($value) . '))';
-                            if(!isset($query['group_eval']))
+                            if (!isset($query['group_eval']))
                             {
                                 $query['group_eval'] = true;
                                 if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
@@ -706,16 +714,18 @@ class EmundusModelFiles extends JModelLegacy
                                 $query['join'] .= ' left join #__emundus_setup_profiles as spro on spro.id = ue.profile ';
                         }
                         break;*/
+
                     case 'missing_doc':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
                             $query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
                             if (!array_key_exists('jos_emundus_uploads', $tableAlias))
                                 $query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = jos_emundus_campaign_candidature.applicant_id ';
                         }
                         break;
+
                     case 'complete':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
                             if ($value == 1)
                                 $query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
@@ -723,8 +733,9 @@ class EmundusModelFiles extends JModelLegacy
                                 $query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
                         }
                         break;
+
                     case 'validate':
-                        if(!empty($value))
+                        if (!empty($value))
                         {
                             if ($value == 1)
                                 $query['q'] .= ' and #__emundus_declaration.validated = 1 ';
@@ -732,14 +743,15 @@ class EmundusModelFiles extends JModelLegacy
                                 $query['q'] .= ' and #__emundus_declaration.validated = 0 ';
                         }
                         break;
+
                     case 'status':
                         if ($value)
                         {
                             $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
 
                             // session filter is empty
-                            if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
-                                if ( !$filt_menu_defined )
+                            if ($value[0] == "%" || !isset($value[0]) || $value[0] == '') {
+                                if (!$filt_menu_defined)
                                     $query['q'] .= ' ';
                                 else
                                     $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
@@ -758,6 +770,7 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
+
                     case 'tag':
                         if ($value)
                         {
@@ -769,6 +782,7 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
+
                     case 'published':
                         if ($value == "-1") {
                             $query['q'] .= ' and jos_emundus_campaign_candidature.published=-1 ';
@@ -792,7 +806,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
             $sql_code = '1=1';
-        } elseif(isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+        } elseif (isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
         } else {
             // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
@@ -800,7 +814,7 @@ class EmundusModelFiles extends JModelLegacy
             $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
         }
         $sql_fnum = '';
-        if(count($this->fnum_assoc)>0)
+        if (count($this->fnum_assoc)>0)
             $sql_fnum = ' OR jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 
         $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
@@ -817,7 +831,7 @@ class EmundusModelFiles extends JModelLegacy
         $q = array('q' => array(), 'join' => array());
         $all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
         
-        foreach($str_array as $str){
+        foreach ($str_array as $str) {
            
             $val = explode(': ', $str);
             
@@ -1545,7 +1559,7 @@ if (JFactory::getUser()->id == 63)
                         $db->setQuery( $query );
                         $cpt = $db->loadResult();
 
-                        if($cpt == 0)
+                        if ($cpt == 0)
                             $query = 'INSERT INTO #__emundus_group_assoc (group_id, action_id, c, r, u, d, fnum) values ('.$group.', '.implode(',', $ac).', '.$db->Quote($fnum).')';
                         else
                             $query = 'UPDATE #__emundus_group_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].'
@@ -1564,7 +1578,7 @@ if (JFactory::getUser()->id == 63)
         }
         catch (Exception $e)
         {
-            $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+            $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
 
             return false;
@@ -1746,13 +1760,14 @@ if (JFactory::getUser()->id == 63)
         {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
+          
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id, applicant_id) VALUES ";
             if(!empty($fnums) && !empty($tags)){
                 foreach ($fnums as $fnum)
                 {
                     $aid = $this->getFnumInfos($fnum)['applicant_id'];
                     foreach($tags as $tag)
-                        $query .= '("'.$fnum.'", '.$tag.','.$user.','.$aid.'),';
+                        $query .= '("'.$fnum.'", '.$tag.','.$user.','.$aid.'),';    
                 }
             }
            
@@ -1800,24 +1815,22 @@ if (JFactory::getUser()->id == 63)
     public function getTaggedFile($tag = null)
     {
         $db = $this->getDbo();
-        $query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where';
+        $query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where ';
         $user = JFactory::getUser()->id;
         
-        if(is_null($tag))
+        if (is_null($tag))
         {
             $query .= ' t.user_id = ' . $user;
-            try
-            {
+            try {
                 $db->setQuery($query);
                 return $db->loadAssocList('fnum');
-            }
-            catch(Exception $e)
-            {
+
+            } catch (Exception $e) {
                 throw $e;
             }
-        }
-        else
-        {
+
+        } else {
+
             $user = JFactory::getUser()->id;
 
             if (is_array($tag))
@@ -1825,18 +1838,13 @@ if (JFactory::getUser()->id == 63)
             else
                 $query .= ' t.id_tag = '.$tag. ' and t.user_id = ' . $user;
 
-            try
-            {
+            try {
                 $db->setQuery($query);
                 return $db->loadAssocList();
-            }
-            catch(Exception $e)
-            {
+            } catch (Exception $e) {
                 throw $e;
             }
         }
-        
-
 
     }
 
@@ -2177,143 +2185,132 @@ where 1 order by ga.fnum asc, g.title';
     */
     public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1)
     {
-        try
-        {
-            $db = $this->getDbo();
-            $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
-            $leftJoin = '';
-            $leftJoinMulti = '';
-            $tableAlias = array('jos_emundus_setup_campaigns' => 'esc',
-                                'jos_emundus_campaign_candidature' => 'c',
-                                'jos_emundus_setup_programmes' => 'sp',
-                                'jos_users' => 'u',
-                                'jos_emundus_tag_assoc' => 'eta');
-            $lastTab = array();
+        $db = $this->getDbo();
+        $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+        $leftJoin = '';
+        $leftJoinMulti = '';
+        $tableAlias = [
+        	'jos_emundus_setup_campaigns' => 'esc',
+            'jos_emundus_campaign_candidature' => 'c',
+            'jos_emundus_setup_programmes' => 'sp',
+            'jos_users' => 'u',
+            'jos_emundus_tag_assoc' => 'eta'
+        ];
+        $lastTab = array();
 
-            foreach ($elements as $elt)
-            {
-                $params_group = json_decode($elt->group_attribs);
+        foreach ($elements as $elt) {
+            $params_group = json_decode($elt->group_attribs);
 
-                if (!array_key_exists($elt->tab_name, $tableAlias))
-                {
+            if (!array_key_exists($elt->tab_name, $tableAlias)) {
 
-                    $tableAlias[$elt->tab_name] = $elt->tab_name;
+                $tableAlias[$elt->tab_name] = $elt->tab_name;
 
-                    if(!isset($lastTab))
-                    {
-                        $lastTab = array();
-                    }
+                if (!isset($lastTab))
+                    $lastTab = array();
 
-                    if(!in_array($elt->tab_name, $lastTab))
-                    {
-                        $leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum = c.fnum ';
-                    }
+                if (!in_array($elt->tab_name, $lastTab))
+                    $leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum = c.fnum ';
 
-                    $lastTab[] = $elt->tab_name;
-                }
+                $lastTab[] = $elt->tab_name;
+            }
 
-                if ($params_group->repeat_group_button == 1) {
-                    if ($methode == 1) {
-                        $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
-                        if(!in_array($elt->table_join, $lastTab)) {
-                            $leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
-                        }
-                        $lastTab[] = $elt->table_join;
-                    }
-                    else {
-                        if($elt->element_plugin == 'databasejoin') {
-                            $element_attribs = json_decode($elt->element_attribs);
+            if ($params_group->repeat_group_button == 1) {
+                if ($methode == 1) {
+                    $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
+                    if (!in_array($elt->table_join, $lastTab))
+                        $leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                    $lastTab[] = $elt->table_join;
+                } else {
+                    if ($elt->element_plugin == 'databasejoin') {
 
-                            if($element_attribs->database_join_display_type=="checkbox"){
-                                $t = $elt->table_join.'_repeat_'.$elt->element_name;
-                                $select = '(
-                                    SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
-                                    FROM '.$t.'
-                                    WHERE '.$t.'.parent_id='.$elt->table_join.'.id
-                                  ) ';
-                            }
-                            else {
-                                $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
-
-                                $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-                                    FROM '.$tableAlias[$elt->tab_name].'
-                                    LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
-                                    LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
-                                    WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
-                            }
-
-                            $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
-                        }
-                        else {
-                            $query .= ', (
-                                        SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
-                                        FROM '.$elt->table_join.'
-                                        WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
-                                      ) AS '. $elt->table_join.'___'.$elt->element_name;
-                        }
-                    }
-                }
-                else {
-                    //$select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
-                    $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
-                    $if = array();
-                    $endif = '';
-                    if ($raw == 1) {
-                        $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name.'_raw';
-                    }
-
-                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
                         $element_attribs = json_decode($elt->element_attribs);
-                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
-                            $endif .= ')';
-                            //$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
-                        }
-                        $select = implode(',', $if).','.$select.$endif;
-                    }
-                    elseif ($elt->element_plugin == 'databasejoin') {
-                        $element_attribs = json_decode($elt->element_attribs);
-                        //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
 
-                        if($element_attribs->database_join_display_type=="checkbox"){
-                            $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
+                        if ($element_attribs->database_join_display_type == "checkbox") {
+                            $t = $elt->table_join.'_repeat_'.$elt->element_name;
                             $select = '(
                                 SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
                                 FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
-                              )';
-                        }
-                        else {
+                                WHERE '.$t.'.parent_id='.$elt->table_join.'.id
+                              ) ';
+                        } else {
                             $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
                             $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-                                FROM '.$element_attribs->join_db_name.' as t
-                                WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                                FROM '.$tableAlias[$elt->tab_name].'
+                                LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                                LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
+                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
                         }
+
+                        $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
+                    } else {
+                        $query .= ', (
+                                    SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
+                                    FROM '.$elt->table_join.'
+                                    WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                                  ) AS '. $elt->table_join.'___'.$elt->element_name;
                     }
-
-                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
                 }
-            }
-            $query .= ' from #__emundus_campaign_candidature as c
-                        left join #__users as u on u.id = c.applicant_id
-                        left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
-                        left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
+            } else {
+                //$select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
+                $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
+                $if = array();
+                $endif = '';
 
-            $query .= $leftJoin. ' '. $leftJoinMulti;
+                if ($raw == 1)
+                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name.'_raw';
 
-            $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
-            if ($pas !=0 ) {
-                $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
+                if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                    $element_attribs = json_decode($elt->element_attribs);
+                    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                        $if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
+                        $endif .= ')';
+                        //$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
+                    }
+                    $select = implode(',', $if).','.$select.$endif;
+                }
+                elseif ($elt->element_plugin == 'databasejoin') {
+                    $element_attribs = json_decode($elt->element_attribs);
+                    //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
+
+                    if ($element_attribs->database_join_display_type == "checkbox") {
+                        $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
+                        $select = '(
+                            SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
+                            FROM '.$t.'
+                            WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                          )';
+                    } else {
+                        $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
+
+                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                            FROM '.$element_attribs->join_db_name.' as t
+                            WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                    }
+                }
+
+                $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
             }
+        }
+        $query .= ' from #__emundus_campaign_candidature as c
+                    left join #__users as u on u.id = c.applicant_id
+                    left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
+                    left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
+
+        $query .= $leftJoin. ' '. $leftJoinMulti;
+
+        $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
+
+        if ($pas !=0 )
+            $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
+
 /*echo str_replace("#_", "jos", $query);
 die();*/
+		try {
             $db->setQuery($query);
             return $db->loadAssocList();
-        }
-        catch(Exception $e)
-        {
-            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage().' :: '.$query;
+        } catch (Exception $e) {
+            $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage().' :: '.$query;
             JLog::add($error, JLog::ERROR, 'com_emundus');
             JFactory::getApplication()->enqueueMessage($error, 'error');
 

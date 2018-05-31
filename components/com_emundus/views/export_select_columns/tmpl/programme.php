@@ -15,11 +15,12 @@ $session = JFactory::getSession();
 $s_elements = $session->get('s_elements');
 $comments = $session->get('comments');
 
-if(!empty($s_elements))
-foreach($s_elements as $s){
-	$t = explode('.',$s);
-	$table_name[] = $t[0];
-	$element_name[] = $t[1];
+if (!empty($s_elements)) {
+	foreach ($s_elements as $s) {
+		$t = explode('.', $s);
+		$table_name[] = $t[0];
+		$element_name[] = $t[1];
+	}
 }
 ?>
 <style>
@@ -66,13 +67,13 @@ foreach($s_elements as $s){
 
 	<?php
 
-    if (count($this->elements)>0) {
+    if (count($this->elements) > 0) {
 
         echo '<div id="emundus_elements">';
         $tbl_tmp='';
 		$grp_tmp='';
 
-		foreach($this->elements as $t){
+		foreach ($this->elements as $t) {
 			if ($tbl_tmp == '') {
 				echo '<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
 						<div class="panel-heading"><legend>';
@@ -110,8 +111,7 @@ foreach($s_elements as $s){
 		}
 		echo '</div></div></div></div>';
 		echo '</div>';
-    }
-    else {
+    } else {
         echo JText::_('NO_FORM_DEFINED');
     }
 ?>
