@@ -1746,12 +1746,13 @@ if (JFactory::getUser()->id == 63)
         {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
-            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id, applicant_id) VALUES ";
             if(!empty($fnums) && !empty($tags)){
                 foreach ($fnums as $fnum)
                 {
+                    $aid = $this->getFnumInfos($fnum)['applicant_id'];
                     foreach($tags as $tag)
-                        $query .= '("'.$fnum.'", '.$tag.','.$user.'),';
+                        $query .= '("'.$fnum.'", '.$tag.','.$user.','.$aid.'),';
                 }
             }
            

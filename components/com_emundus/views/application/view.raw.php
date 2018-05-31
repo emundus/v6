@@ -287,7 +287,9 @@ class EmundusViewApplication extends JViewLegacy
 
 						$m_files = new EmundusModelFiles();
 						$tags = $m_files->getTagsByFnum(array($fnum));
+						$alltags = $m_files->getAllTags();
 						$this->assignRef('tags', $tags);
+						$this->assignRef('alltags', $alltags);
 						$this->assignRef('fnum', $fnum);
 
 					} else {
