@@ -48,11 +48,6 @@ if (isset($user->profile) && $user->profile > 0) {
     <?php
     if(!in_array($user->profile, $applicant_profiles) || $user->fnum){
         foreach ($tab as $t) {
-            $t = str_replace("?view=files","",$t);
-            $t = str_replace("?view=evaluation","",$t);
-            $t = str_replace("?view=decision","",$t);
-            $t = str_replace("?view=admission","",$t);
-
             echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
         }
     }
