@@ -486,7 +486,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $tag    = $jinput->getVar('tag', null);
         //var_dump($fnums);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
-
         $m_files = $this->getModel('Files');
 
         if ($fnums == "all")

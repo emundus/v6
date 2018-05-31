@@ -33,7 +33,7 @@ $current_user = JFactory::getuser();
 $user = JFactory::getSession()->get('emundusUser');
 
 $app = JFactory::getApplication();
-//$fnum = $app->input->getString('fnum', null);
+$fnum = $app->input->getString('fnum', null);
 
 $m_users = new EmundusModelUsers;
 $applicant_profiles = $m_users->getApplicantProfiles();
@@ -116,7 +116,7 @@ if (!empty($t__)) {
 
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.'</a>';
 			if($is_text == '1')
-				$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
+				$str .= '<br/><a class="text" href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$r->title.'</a>';
 			$tab[] = $str;
 			$j++;
 		}

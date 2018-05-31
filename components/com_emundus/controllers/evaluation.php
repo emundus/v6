@@ -993,11 +993,44 @@ class EmundusControllerEvaluation extends JControllerLegacy
         exit();
     }
 
+    function delevaluation(){
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', null);
+        $ids = $jinput->getString('ids', null);
+        $ids = json_decode(stripslashes($ids));
+        $res = new stdClass();
+        
+        $m_evaluation = $this->getModel('evaluation');
+        foreach($ids as $id)
+        {
+            $eval =   $m_evaluation->getEvaluationById($id);
+            if(EmundusHelperAccess::asAccessAction(5 ,'d', JFactory::getUser()->id, $fnum)){
+                $m_evaluation->delevaluation($id);
+                $res->status = true;
+            }else{
+                $eval =   $m_evaluation->getEvaluationById($id);
+                if($eval->user == JFactory::getUser()->id){
+                    $m_evaluation->delevaluation($id);
+                    $res->status = true;
+                }else{
+                    $res->status = false;
+                    $res->msg = JText::_("ACCESS_DENIED");
+                }
+                
+            }
+            
+            
+        }
+        echo json_encode($res);
+        exit();
+
+    }
+
     function pdf_decision(){
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
         $student_id = $jinput->getString('student_id', null);
-
+        
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('RESTRICTED_ACCESS'));
 

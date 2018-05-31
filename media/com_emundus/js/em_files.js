@@ -1550,6 +1550,7 @@ $(document).ready(function()
 
         url = url.fmt({ fnums: fnums, fnum: fnum, applicant_id: sid, campaign_id: cid, view: view, controller: view, Itemid: itemId, formid: formid });
         url +='&action_id='+id;
+
         switch (id) {
             // 1:new application file
             // 4:attachments
