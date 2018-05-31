@@ -78,7 +78,7 @@ class DateDecorator extends Date
 	public function add($interval)
 	{
 		// Note to self: ignore phpStorm; we must NOT use a typehint for $interval
-		return $this->decorated->sub($interval);
+		return $this->decorated->add($interval);
 	}
 
 	public function modify($modify)

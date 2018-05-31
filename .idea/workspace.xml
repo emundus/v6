@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/attach_needed.php" afterPath="$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/attach_needed.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC-confirm_post.php" afterPath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC-confirm_post.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-confirm_post.php" afterPath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-confirm_post.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/rt_afterburner2/index.php" afterPath="$PROJECT_DIR$/templates/rt_afterburner2/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/opt_attach.php" afterPath="$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/opt_attach.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -20,46 +14,114 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="ComposerSettings" doNotAsk="true">
+    <pharConfigPath>$PROJECT_DIR$/libraries/composer.json</pharConfigPath>
+  </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="DaemonCodeAnalyzer">
-    <disable_hints />
-  </component>
   <component name="DatabaseView">
-    <option name="FLATTEN" value="false" />
-    <option name="GROUP_BY_TYPE" value="false" />
-    <option name="SORT_CHILDREN" value="false" />
-    <option name="SHOW_TABLE_CONSTRAINTS" value="true" />
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="UPVD" type="feb32156:DbDataSourceImpl" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="UPVD" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="UPVD" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="emundus_upvd: schema" type="c314c289:MysqlImplModel$Schema" />
+      </path>
+    </expand>
+    <select />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="sorbonnev3" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="console.sql" pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/77a9c266-b43e-40f0-86bd-cc3313e50b21/console.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret line="23" column="60" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="93" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="emundusregistrationredirect.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="307">
+              <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="43" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="emundusregistrationredirect.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="432">
+              <caret line="12" column="53" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="53" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>getUsers</find>
+      <find>_buildWhere</find>
+      <find>getElementsByGroups</find>
+      <find>edit-comment</find>
+      <find>clearCho</find>
+      <find>getFileCo</find>
+      <find>editc</find>
+      <find>javas</find>
+      <find>clearA</find>
+      <find>javascript</find>
+      <find>removeElement</find>
+      <find>clearchosen</find>
+      <find>javasc</find>
+      <find>originalsize</find>
+      <find>case 8</find>
+      <find>export_pdf</find>
+      <find>update</find>
+      <find>getEmailT</find>
+      <find>$</find>
+      <find>updatest</find>
+      <find>updatestate</find>
+      <find>updateS</find>
+      <find>case 13</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Hugo Moracchini &lt;hugo4400@gmail.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/media/com_emundus/js/em_user.js" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/users/tmpl/user.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/users/view.html.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controller.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/emundus.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/attachment.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/application.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/application/view.raw.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/evaluation.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/evaluation.php" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-final_grade.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/view.html.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/files/view.html.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/admission/view.html.php" />
@@ -72,23 +134,17 @@
         <option value="$PROJECT_DIR$/components/com_emundus/models/decision.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/export_select_columns/tmpl/default.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/controllers/decision.php" />
-        <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
         <option value="$PROJECT_DIR$/libraries/emundus/pdf_evaluation.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/helpers/export.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
         <option value="$PROJECT_DIR$/libraries/emundus/pdf_decision.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php" />
         <option value="$PROJECT_DIR$/plugins/fabrik_form/juseremundus/juseremundus.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/emails.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/files.php" />
         <option value="$PROJECT_DIR$/plugins/user/emundus/emundus.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/thesis/tmpl/default.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/helpers/filters.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/jobs/tmpl/default_filter.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/controllers/thesiss.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default_filter.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/helpers/files.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/models/thesis.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/controllers/thesis.php" />
@@ -97,27 +153,99 @@
         <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC_new_thesis_to_validate.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/thesiss/view.html.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/models/thesiss.php" />
+        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/77a9c266-b43e-40f0-86bd-cc3313e50b21/console.sql" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-evaluation_ESA.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/application.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controllers/application.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/application/view.raw.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/comment.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/helpers/files.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controller.php" />
+        <option value="$PROJECT_DIR$/libraries/emundus/fpdf.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/emails.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/users/view.html.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/emundus.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/evaluation.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controllers/evaluation.php" />
+        <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/files.php" />
+        <option value="$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.xml" />
+        <option value="$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.php" />
       </list>
     </option>
   </component>
+  <component name="JoomlaConfiguration" enabled="true">
+    <joomlaConfigPath>$PROJECT_DIR$/configuration.php</joomlaConfigPath>
+    <joomlaPath>$PROJECT_DIR$</joomlaPath>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsGruntFileManager">
     <initial>false</initial>
   </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/libraries/emundus/selectize/package.json" />
+      <path value="$PROJECT_DIR$/libraries/emundus/sumoselect/package.json" />
+      <path value="$PROJECT_DIR$/media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/package.json" />
+      <path value="$PROJECT_DIR$/media/com_emundus/lib/Semantic-UI-CSS-master/package.json" />
+      <path value="$PROJECT_DIR$/media/com_jcrm/js/angular-file-upload/package.json" />
+      <path value="$PROJECT_DIR$/plugins/fabrik_element/digsig/libs/signature-pad-master/package.json" />
+    </packageJsonPaths>
   </component>
   <component name="PhpDebugGeneral" xdebug_force_break_when_no_path_mapping="false" xdebug_force_break_when_outside_project="false" />
   <component name="PhpServers">
     <servers>
-      <server host="http://sorbonnev3.local/" name="sorbonne" />
+      <server host="http://localhost/" id="afdbbbfd-3adc-47ac-845f-9b063b9e9404" name="localhost" port="8888" />
     </servers>
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="Apache, PHP, Xdebug versions" />
-  <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1096" />
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP">
+    <include_path>
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/application" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/input" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/event" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/ldap" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/composer" />
+      <path value="$PROJECT_DIR$/libraries/vendor/phpmailer/phpmailer" />
+      <path value="$PROJECT_DIR$/libraries/vendor/ircmaxell/password-compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/libraries/vendor/paragonie/sodium_compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/phpoffice/phpword" />
+      <path value="$PROJECT_DIR$/libraries/vendor/phpoffice/common" />
+      <path value="$PROJECT_DIR$/libraries/vendor/leafo/lessphp" />
+      <path value="$PROJECT_DIR$/libraries/vendor/zendframework/zend-escaper" />
+      <path value="$PROJECT_DIR$/libraries/vendor/zendframework/zend-validator" />
+      <path value="$PROJECT_DIR$/libraries/vendor/zendframework/zend-stdlib" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/image" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/data" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/registry" />
+      <path value="$PROJECT_DIR$/libraries/vendor/pclzip/pclzip" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/di" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/string" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/archive" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php55" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/session" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/uri" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-util" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/utilities" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php56" />
+      <path value="$PROJECT_DIR$/libraries/vendor/simplepie/simplepie" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/filter" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/filesystem" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/yaml" />
+    </include_path>
+  </component>
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="2560" />
+    <option name="height" value="1440" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -141,597 +269,102 @@
       </profile-state>
     </entry>
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
-    <OptionsSetting value="true" id="Add" />
-    <OptionsSetting value="true" id="Remove" />
-    <OptionsSetting value="true" id="Checkout" />
-    <OptionsSetting value="true" id="Update" />
-    <OptionsSetting value="true" id="Status" />
-    <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="0" id="Add" />
-    <ConfirmationsSetting value="0" id="Remove" />
-  </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
-      <flattenPackages />
-      <showMembers />
-      <showModules />
-      <showLibraryContents />
-      <hideEmptyPackages />
-      <abbreviatePackageNames />
-      <autoscrollToSource />
-      <autoscrollFromSource />
-      <sortByType />
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="user" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="user" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fabrik_form" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fabrik_form" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="php" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fabrik_form" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="php" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="media" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="media" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="media" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="users" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="users" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tmpl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thesiss" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thesiss" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tmpl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thesis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thesis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tmpl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="helpers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v6.1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com_emundus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
+          <expand>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+              <item name="system" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+              <item name="system" type="462c0819:PsiDirectoryNode" />
+              <item name="emundusregistrationredirect" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
         </subPane>
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../psev3" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="File.Encoding" />
-    <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="options.splitter.details.proportions" value="0.2" />
-    <property name="recentsLimit" value="5" />
-    <property name="restartRequiresConfirmation" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="SearchEverywhereHistoryKey" value="evaluation_&#9;FILE&#9;file:///Users/emundus/Documents/v6/plugins/fabrik_form/php/scripts/emundus-evaluation_ESA.php" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.database.dataSource.DataSourceTemplate" value="MySQL" />
+    <property name="database.console.LAST_STATE" value="true" />
     <property name="dynamic.classpath" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="LESS" />
+    <property name="options.lastSelected" value="File.Encoding" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="recentsLimit" value="5" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/plugins/system/emundusregistrationredirect" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\wamp\www\sorbonnev3\" />
     </key>
   </component>
-  <component name="RunManager" selected="PHP Web Application.Sorbonne">
-    <configuration default="false" name="syncs.php" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://sorbonnev3.local/components/com_jcrm/models/syncs.php">
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="PHP Web Page.localhost">
+    <configuration name="syncs.php" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://sorbonnev3.local/components/com_jcrm/models/syncs.php">
       <RunnerSettings RunnerId="JavascriptDebugRunner" />
       <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
-      <method />
     </configuration>
-    <configuration default="false" name="syncs.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/models/syncs.php">
+    <configuration name="syncs.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/models/syncs.php">
       <RunnerSettings RunnerId="PhpScriptDebugRunner" />
       <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
-      <method />
     </configuration>
-    <configuration default="false" name="view.html.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/views/syncs/view.html.php">
+    <configuration name="view.html.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/views/syncs/view.html.php">
       <RunnerSettings RunnerId="PhpScriptDebugRunner" />
       <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
+    </configuration>
+    <configuration default="true" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="local" start_url="http://sorbonnev3.local/index.php?option=com_jcrm&amp;view=syncs&amp;Itemid=1427" />
+    <configuration name="localhost" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="localhost" start_url="http://localhost:8888/index.php/en/evaluations?view=evaluation">
+      <RunnerSettings RunnerId="PhpRunner" />
+      <RunnerSettings RunnerId="PhpWebAppDebugRunner" />
+      <ConfigurationWrapper RunnerId="PhpRunner" />
+      <ConfigurationWrapper RunnerId="PhpWebAppDebugRunner" />
+    </configuration>
+    <configuration default="true" type="AppEnginePhpConfigurationType" factoryName="App Engine for PHP">
       <method />
     </configuration>
-    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
-      <TestRunner />
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server">
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="local" start_url="http://sorbonnev3.local/index.php?option=com_jcrm&amp;view=syncs&amp;Itemid=1427">
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpHttpRequestRunConfigurationType" factoryName="PHP HTTP Request">
-      <method />
-    </configuration>
-    <configuration default="true" type="ChromiumRemoteDebugType" factoryName="Chromium Remote">
-      <option name="name" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" server_id="c93daa6d-2736-42e5-98de-c95251e6cc7c" server_name="apache_wamp">
       <method />
     </configuration>
     <configuration default="true" type="com.intellij.database.run.ConsoleRunConfigurationType" factoryName="Query Language Console">
@@ -740,50 +373,28 @@
       <option name="CONTEXT_PROVIDER" />
       <method />
     </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
-      <BehatRunner />
-      <method />
-    </configuration>
-    <configuration default="true" type="AppEnginePhpConfigurationType" factoryName="App Engine for PHP">
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" server_id="c93daa6d-2736-42e5-98de-c95251e6cc7c" server_name="apache_wamp">
-      <method />
-    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
       <node-options />
       <gulpfile />
       <tasks />
       <arguments />
       <pass-parent-envs>true</pass-parent-envs>
-      <envs />
-      <method />
     </configuration>
-    <configuration default="false" name="Sorbonne" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="sorbonne" start_url="http://sorbonne.local/index.php?option=com_emundus&amp;view=files&amp;Itemid=542">
-      <RunnerSettings RunnerId="PhpRunner" />
-      <RunnerSettings RunnerId="PhpWebAppDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpRunner" />
-      <ConfigurationWrapper RunnerId="PhpWebAppDebugRunner" />
-      <method />
-    </configuration>
-    <list size="4">
-      <item index="0" class="java.lang.String" itemvalue="PHP Web Application.Sorbonne" />
-      <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.syncs.php" />
-      <item index="2" class="java.lang.String" itemvalue="PHP Script.syncs.php" />
-      <item index="3" class="java.lang.String" itemvalue="PHP Script.view.html.php" />
+    <list>
+      <item itemvalue="PHP Web Page.localhost" />
+      <item itemvalue="JavaScript Debug.syncs.php" />
+      <item itemvalue="PHP Script.syncs.php" />
+      <item itemvalue="PHP Script.view.html.php" />
     </list>
     <recent_temporary>
-      <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="PHP Script.view.html.php" />
-        <item index="1" class="java.lang.String" itemvalue="PHP Script.syncs.php" />
-        <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.syncs.php" />
+      <list>
+        <item itemvalue="PHP Script.view.html.php" />
+        <item itemvalue="PHP Script.syncs.php" />
+        <item itemvalue="JavaScript Debug.syncs.php" />
       </list>
     </recent_temporary>
   </component>
-  <component name="ShelveChangesManager" show_recycled="false" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -792,9 +403,29 @@
       <changelist id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="" />
       <created>1428572965237</created>
       <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
       <updated>1428572965237</updated>
+      <workItem from="1525440311827" duration="4403000" />
+      <workItem from="1525678789978" duration="197000" />
+      <workItem from="1525679005709" duration="15040000" />
+      <workItem from="1525851834970" duration="607000" />
+      <workItem from="1525853433436" duration="10287000" />
+      <workItem from="1526025191086" duration="3208000" />
+      <workItem from="1526460821704" duration="1353000" />
+      <workItem from="1526472700422" duration="4163000" />
     </task>
+    <task id="LOCAL-00001" summary="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog.">
+      <created>1525445467750</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1525445467750</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="39258000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -817,30 +448,36 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
-    <editor active="false" />
+    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32987553" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32987553" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32987553" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3608742" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18230277" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.3805889" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" x="10" y="629" width="1680" height="349" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31955308" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.38860103" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Grunt" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5474373" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.11015625" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32987553" />
+      <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" x="10" y="629" width="1680" height="349" id="Event Log" order="8" side_tool="true" type="FLOATING" weight="0.3805889" />
+      <window_info anchor="right" id="Database" order="3" weight="0.123046875" />
+      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.5474373" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" order="12" weight="0.32987553" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.52040815" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Changes" order="7" weight="0.32987553" />
+      <window_info anchor="bottom" id="Application Servers" order="11" />
+      <window_info anchor="bottom" id="Grunt" order="10" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info active="true" anchor="bottom" id="Database Console" order="9" visible="true" weight="0.1260933" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.31955308" />
     </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -854,12 +491,11 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="myTodoPanelSettings">
-      <TodoPanelSettings />
-    </option>
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
+    <MESSAGE value="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -919,8 +555,18 @@
           <line>37</line>
           <option name="timeStamp" value="59" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php</url>
+          <line>192</line>
+          <option name="timeStamp" value="75" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php</url>
+          <line>115</line>
+          <option name="timeStamp" value="76" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="70" />
+      <option name="time" value="79" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PhpWebAppRunConfigurationType">
@@ -933,461 +579,338 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/attachment.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6403118" vertical-offset="3743" max-vertical-offset="4641">
-          <caret line="265" column="84" selection-start-line="265" selection-start-column="84" selection-end-line="265" selection-end-column="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.763637" vertical-offset="2566" max-vertical-offset="3434">
-          <caret line="189" column="10" selection-start-line="189" selection-start-column="10" selection-end-line="189" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-final_grade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.63516486" vertical-offset="0" max-vertical-offset="910">
-          <caret line="34" column="2" selection-start-line="34" selection-start-column="2" selection-end-line="34" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/evaluation.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31438127" vertical-offset="1911" max-vertical-offset="25840">
-          <caret line="140" column="71" selection-start-line="140" selection-start-column="71" selection-end-line="140" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/evaluation.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.56856185" vertical-offset="221" max-vertical-offset="1700">
-          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/application.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.91750276" vertical-offset="1503" max-vertical-offset="8755">
-          <caret line="45" column="2" selection-start-line="45" selection-start-column="2" selection-end-line="45" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/view.raw.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5760369" vertical-offset="2577" max-vertical-offset="5321">
-          <caret line="186" column="152" selection-start-line="186" selection-start-column="133" selection-end-line="186" selection-end-column="152" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6923077" vertical-offset="50" max-vertical-offset="986">
-          <caret line="47" column="10" selection-start-line="47" selection-start-column="10" selection-end-line="47" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.26923" vertical-offset="0" max-vertical-offset="1020">
-          <caret line="38" column="10" selection-start-line="38" selection-start-column="10" selection-end-line="38" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.5636363" vertical-offset="1479" max-vertical-offset="4284">
-          <caret line="112" column="0" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/decision/tmpl/filters.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16813187" vertical-offset="0" max-vertical-offset="910">
-          <caret line="9" column="20" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/decision/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.7101449" vertical-offset="1806" max-vertical-offset="2737">
-          <caret line="16" column="58" selection-start-line="16" selection-start-column="58" selection-end-line="16" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/decision/view.html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-22.23077" vertical-offset="0" max-vertical-offset="833">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/decision/tmpl/default.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
-          <caret line="4" column="65" selection-start-line="4" selection-start-column="41" selection-end-line="4" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/decision/tmpl/data.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.92727274" vertical-offset="374" max-vertical-offset="3434">
-          <caret line="25" column="42" selection-start-line="25" selection-start-column="37" selection-end-line="25" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/decision/view.raw.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.345454" vertical-offset="1462" max-vertical-offset="4284">
-          <caret line="120" column="75" selection-start-line="120" selection-start-column="64" selection-end-line="120" selection-end-column="75" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/export_select_columns/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.290909" vertical-offset="594" max-vertical-offset="3400">
-          <caret line="65" column="0" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.275862" vertical-offset="11313" max-vertical-offset="47940">
-          <caret line="683" column="85" selection-start-line="683" selection-start-column="73" selection-end-line="683" selection-end-column="85" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/decision.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="17714" max-vertical-offset="25942">
-          <caret line="1079" column="9" selection-start-line="1075" selection-start-column="8" selection-end-line="1079" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf_evaluation.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="2720">
-          <caret line="2" column="76" selection-start-line="2" selection-start-column="46" selection-end-line="2" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/evaluation.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="13171" max-vertical-offset="28033">
-          <caret line="827" column="78" selection-start-line="827" selection-start-column="7" selection-end-line="827" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/decision.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39626783" vertical-offset="11267" max-vertical-offset="28033">
-          <caret line="691" column="60" selection-start-line="691" selection-start-column="60" selection-end-line="691" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7277717" vertical-offset="23222" max-vertical-offset="41378">
-          <caret line="1412" column="71" selection-start-line="1412" selection-start-column="71" selection-end-line="1412" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/export.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.10867179" vertical-offset="2944" max-vertical-offset="4454">
-          <caret line="190" column="41" selection-start-line="190" selection-start-column="27" selection-end-line="190" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf_decision.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="2822">
-          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/emundus.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32307693" vertical-offset="1236" max-vertical-offset="2958">
-          <caret line="96" column="32" selection-start-line="96" selection-start-column="15" selection-end-line="96" selection-end-column="32" />
+        <state>
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/tmpl/adduser.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32218507" vertical-offset="1241" max-vertical-offset="2635">
+        <state>
           <caret line="95" column="45" selection-start-line="95" selection-start-column="37" selection-end-line="95" selection-end-column="45" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3639" max-vertical-offset="5899">
+        <state>
           <caret line="246" column="61" selection-start-line="246" selection-start-column="61" selection-end-line="246" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="708" max-vertical-offset="3519">
-          <caret line="70" column="91" selection-start-line="70" selection-start-column="91" selection-end-line="70" selection-end-column="91" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/juseremundus/juseremundus.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.07912088" vertical-offset="5589" max-vertical-offset="17986">
+        <state>
           <caret line="333" column="29" selection-start-line="333" selection-start-column="29" selection-end-line="333" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/emails.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22742476" vertical-offset="3468" max-vertical-offset="10302">
-          <caret line="224" column="51" selection-start-line="224" selection-start-column="51" selection-end-line="224" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/view.html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2550" max-vertical-offset="4318">
-          <caret line="156" column="37" selection-start-line="156" selection-start-column="21" selection-end-line="156" selection-end-column="37" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/view.raw.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.08461539" vertical-offset="2949" max-vertical-offset="3859">
+        <state>
           <caret line="185" column="38" selection-start-line="185" selection-start-column="23" selection-end-line="185" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/files.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="10020" max-vertical-offset="45883">
-          <caret line="618" column="58" selection-start-line="618" selection-start-column="58" selection-end-line="618" selection-end-column="58" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plugins/user/emundus/emundus.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41694537" vertical-offset="4556" max-vertical-offset="7344">
+        <state>
           <caret line="297" column="64" selection-start-line="297" selection-start-column="64" selection-end-line="297" selection-end-column="64" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesis/view.html.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.34395605" vertical-offset="840" max-vertical-offset="1751">
+        <state>
           <caret line="37" column="30" selection-start-line="37" selection-start-column="19" selection-end-line="37" selection-end-column="30" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default_filter.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.68202764" vertical-offset="105" max-vertical-offset="986">
+        <state>
           <caret line="41" column="197" selection-start-line="41" selection-start-column="197" selection-end-line="41" selection-end-column="197" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/jobs/tmpl/default_filter.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37362638" vertical-offset="0" max-vertical-offset="910">
-          <caret line="20" column="17" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="17" />
+        <state>
+          <caret line="20" column="17" selection-start-line="20" selection-end-line="20" selection-end-column="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/filters.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.2545457" vertical-offset="6851" max-vertical-offset="16422">
+        <state>
           <caret line="431" column="25" selection-start-line="431" selection-start-column="13" selection-end-line="431" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/files.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="8.68254" vertical-offset="28053" max-vertical-offset="31535">
-          <caret line="1629" column="21" selection-start-line="1629" selection-start-column="12" selection-end-line="1629" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/models/thesis.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.490909" vertical-offset="3056" max-vertical-offset="5899">
+        <state>
           <caret line="210" column="45" selection-start-line="210" selection-start-column="45" selection-end-line="210" selection-end-column="45" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/thesiss.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.037321623" vertical-offset="0" max-vertical-offset="911">
+        <state>
           <caret line="2" column="17" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesis/tmpl/default.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.032293987" vertical-offset="624" max-vertical-offset="2329">
+        <state>
           <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/thesis.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.5784852" vertical-offset="1683" max-vertical-offset="3842">
+        <state>
           <caret line="74" column="81" selection-start-line="74" selection-start-column="81" selection-end-line="74" selection-end-column="81" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/models/thesiss.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4895719" vertical-offset="4484" max-vertical-offset="7888">
+        <state>
           <caret line="290" column="2" selection-start-line="290" selection-start-column="2" selection-end-line="290" selection-end-column="2" />
-          <folding>
-            <marker date="1445431098030" expanded="true" signature="-1:-1" placeholder="SELECT etc.t..#__emundus_thesis_candidat..." />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesiss/view.html.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="1564">
+        <state>
           <caret line="36" column="44" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="45" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.66258353" vertical-offset="1870" max-vertical-offset="4114">
+        <state>
           <caret line="151" column="69" selection-start-line="151" selection-start-column="69" selection-end-line="151" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.54454345" vertical-offset="12006" max-vertical-offset="13770">
-          <caret line="742" column="0" selection-start-line="742" selection-start-column="0" selection-end-line="742" selection-end-column="0" />
-          <folding>
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="SELECT u.id ..#__users..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="SELECT stude..#__emundus_final_grade..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="SELECT u.id ..#__users..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="UPDATE #__em..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="SELECT MAX(i..#__emundus_filters..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="SELECT const..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="select f.id,..#__emundus_filters..." />
-            <marker date="1446460993860" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
-          </folding>
+        <state>
+          <caret line="742" selection-start-line="742" selection-end-line="742" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC_new_thesis_to_validate.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.75740945" vertical-offset="2183" max-vertical-offset="3094">
+        <state>
           <caret line="169" column="49" selection-start-line="169" selection-start-column="49" selection-end-line="169" selection-end-column="49" />
-          <folding>
-            <marker date="1443170017309" expanded="true" signature="-1:-1" placeholder="SELECT eu.fi..#__users..." />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC_new_thesis_validated.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5784852" vertical-offset="357" max-vertical-offset="1887">
+        <state>
           <caret line="52" column="48" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="48" />
-          <folding>
-            <marker date="1441029942921" expanded="true" signature="-1:-1" placeholder="SELECT eu.fi..#__users..." />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/models/users.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.75389755" vertical-offset="25452" max-vertical-offset="26350">
+        <state>
           <caret line="1546" column="71" selection-start-line="1546" selection-start-column="71" selection-end-line="1546" selection-end-column="71" />
-          <folding>
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT id, l..#__emundus_setup_profiles..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..#__emundus_setup_profiles..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT eup.p..#__emundus_users_profiles..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT eu.pr..#__emundus_users..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT c.id,..#__categories..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT esg.i..#__emundus_setup_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT sc.id..#__emundus_setup_campaigns..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..#__emundus_setup_campaigns..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..#__emundus_setup_campaigns..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..#__emundus_campaign_candidature..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT cc.ap..#__emundus_campaign_candidature..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT cc.ap..#__emundus_campaign_candidature..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT cc.ap..#__emundus_campaign_candidature..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT COUNT..#__emundus_setup_campaigns..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT sc.id..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT sp.co..#__emundus_setup_programmes..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT user_..#__user_profiles..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT esg.i..#__emundus_setup_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT ege.i..#__emundus_groups_eval..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT eg.us..#__emundus_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT eg.us..#__emundus_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT year ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT title..#__usergroups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT acl_a..#__emundus_setup_profiles..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_group_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_users_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_group_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_users_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_users_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_group_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_acl..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT disti..#__emundus_setup_actions..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="insert into ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="insert into ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="insert into ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="UPDATE #__us..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="UPDATE #__em..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="UPDATE #__em..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="select eu.us..#__emundus_users..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="insert into ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="select u.use..#__users..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT esg.i..#__emundus_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT esg.i..#__emundus_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT esc.t..#__emundus_users_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..#__emundus_users_assoc..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="select esc.i..#__emundus_setup_campaigns..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="UPDATE #__em..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="delete from ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="delete from ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="SELECT campa..#__emundus_campaign_candidature..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="select prg.i..#__emundus_setup_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="select esa.l..#__emundus_acl..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="select esa.l..#__emundus_acl..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="select eu.* ..#__emundus_groups..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="UPDATE #__us..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="UPDATE #__us..." />
-            <marker date="1445884727253" expanded="true" signature="-1:-1" placeholder="UPDATE #__us..." />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3924">
+          <caret line="115" selection-start-line="115" selection-end-line="115" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="409">
+          <caret line="95" column="90" selection-start-line="95" selection-start-column="90" selection-end-line="95" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-evaluation_ESA.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2556">
+          <caret line="71" column="36" selection-start-line="71" selection-start-column="36" selection-end-line="71" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/evaluation.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="602">
+          <caret line="29" column="173" selection-start-line="29" selection-start-column="173" selection-end-line="29" selection-end-column="173" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/application.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="679">
+          <caret line="189" column="37" lean-forward="true" selection-start-line="189" selection-start-column="37" selection-end-line="189" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/application.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="411">
+          <caret line="244" column="63" selection-start-line="244" selection-start-column="63" selection-end-line="244" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/view.raw.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="152" column="33" selection-start-line="152" selection-start-column="33" selection-end-line="152" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/comment.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="498">
+          <caret line="47" column="87" lean-forward="true" selection-start-line="47" selection-start-column="87" selection-end-line="47" selection-end-column="87" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/javascript.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="427">
+          <caret line="268" column="79" selection-start-line="268" selection-start-column="66" selection-end-line="268" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7016">
+          <caret line="1091" column="47" lean-forward="true" selection-start-line="1091" selection-start-column="47" selection-end-line="1091" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/emundus/fpdf.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="11" column="2" selection-start-line="11" selection-start-column="2" selection-end-line="11" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/dompdf/dompdf.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2640" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/emails.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4500">
+          <caret line="133" column="23" selection-start-line="133" selection-start-column="23" selection-end-line="133" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/view.html.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="623">
+          <caret line="238" column="51" lean-forward="true" selection-start-line="238" selection-start-column="51" selection-end-line="238" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controller.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="227" selection-start-line="227" selection-end-line="227" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/emundus.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="305" lean-forward="true" selection-start-line="305" selection-end-line="305" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/evaluation.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="773">
+          <caret line="1531" column="24" selection-start-line="1531" selection-start-column="24" selection-end-line="1531" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/evaluation.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26316">
+          <caret line="737" column="34" selection-start-line="737" selection-start-column="34" selection-end-line="737" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="172548">
+          <caret line="4793" column="23" selection-start-line="4793" selection-start-column="23" selection-end-line="4793" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="897">
+          <caret line="855" column="13" selection-start-line="688" selection-start-column="8" selection-end-line="855" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="551">
+          <caret line="831" column="95" selection-start-line="831" selection-start-column="95" selection-end-line="831" selection-end-column="95" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/77a9c266-b43e-40f0-86bd-cc3313e50b21/console.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="23" column="60" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/language/en-GB/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/language/en-GB/en-GB.plg_system_dsconstant.ini">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/system/dsconstant/dsconstant.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/system/emundus_period/emundus_period.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/system/emundus_ametys/emundus_ametys.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="12" column="53" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="43" selection-end-column="13" />
         </state>
       </provider>
     </entry>

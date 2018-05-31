@@ -486,7 +486,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $tag    = $jinput->getVar('tag', null);
         //var_dump($fnums);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
-
         $m_files = $this->getModel('Files');
 
         if ($fnums == "all")
@@ -496,7 +495,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         foreach ($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
             {
                 $validFnums[] = $fnum;
             }
@@ -528,26 +527,27 @@ class EmundusControllerFiles extends JControllerLegacy
 
         foreach ($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
             {
-                if(!in_array($fnum, $validFnums))
+                if (!in_array($fnum, $validFnums))
                     $validFnums[] = $fnum;
             }
-            if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
+            if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
             {
-                if(!in_array($fnum, $validFnums))
+                if (!in_array($fnum, $validFnums))
                     $validFnums[] = $fnum;
             }
         }
 
         unset($fnums);
-        if(!empty($tags))
-            $res    = $m_files->deletetags($validFnums, $tags);
-        else
-            die("No tags ...");
 
-        $tagged = $m_files->getTaggedFile($tag);
-            echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
+        if (!empty($tags))
+            $res = $m_files->deletetags($validFnums, $tags);
+        else
+            die ("No tags ...");
+
+        $tagged = $m_files->getTaggedFile($tags);
+        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
         exit;
     }
 
@@ -754,6 +754,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
                                 $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
                                 $body       = $m_email->setTagsFabrik($body, array($file['fnum']));
+
+                                // Add the email template model.
+	                            if (!empty($trigger['tmpl']['template']))
+	                                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger['tmpl']['template']);
 
                                 // If the email sender has the same domain as the system sender address.
                                 if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))

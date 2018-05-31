@@ -9,11 +9,19 @@ JFactory::getSession()->set('application_layout', 'tag');
     <div class="row">
         <div class="panel panel-default widget">
             <div class="panel-heading">
-                <h3 class="panel-title">
+                <h3 class="panel-title" style="display:inline-block">
                     <span class="glyphicon glyphicon-tags"></span> 
                     <?php echo JText::_('TAGS'); ?> 
-                    <span class="label label-info"><?php echo count($this->tags); ?></span>
-                </h3>
+                    <span class="label label-info" style="float:unset"><?php echo count($this->tags); ?></span>
+                </h3>&ensp;&ensp;
+                <select class="chzn-select" multiple id="mytags">
+                    <?php  foreach($this->alltags as $alltag){ ?>
+                        <option value="<?php echo $alltag['id']; ?>"><?php echo $alltag['label']; ?></option>
+                    <?php } ?>
+                </select>&ensp;&ensp;
+                <button class="btn btn-success btn-xs" id="add-tags">
+                    <?php echo JText::_('ADD'); ?> 
+                </button>
                
             </div>
             <div class="panel-body">
@@ -32,7 +40,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                                             </div>
                                         </div>
                                         <div class="comment-text">
-                                            <h2><span class="label <?php echo $tag['class']; ?>"><?php echo $tag['label']; ?></span>
+                                            <h2><span class="label <?php echo $tag['class']; ?>" style="float:unset"><?php echo $tag['label']; ?></span>
                                                 <?php if($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)):?>
                                                         <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
                                                             <span class="glyphicon glyphicon-trash"></span>
@@ -97,5 +105,51 @@ JFactory::getSession()->set('application_layout', 'tag');
                 }
             });
         }
+    });
+    $(document).ready(function()
+	{
+        $('.chzn-select').chosen({placeholder_text_multiple: Joomla.JText._('PLEASE_SELECT_TAG'),
+            width:'50%'});
+        $('.chzn-select').trigger("chosen:updated");
+    })
+
+     $(document).on('click', '#add-tags', function(e)
+    {
+        if(e.handle === true) {
+            e.handle = false;
+            var tags = $("#mytags").val();
+        
+            url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=tagfile';
+            $.ajax(
+                {
+                    type:'POST',
+                    url:url,
+                    dataType:'json',
+                    data:({fnums:'{"1":"<?php echo $this->fnum; ?>"}', tag: tags}),
+                    success: function(result) {
+                        if (result.status) {
+                            var url = "index.php?option=com_emundus&view=application&format=raw&layout=tag&fnum=<?php echo $this->fnum; ?>";
+                            $.ajax({
+                                type:'get',
+                                url:url,
+                                dataType:'html',
+                                success: function(result)
+                                {
+                                    $('#em-appli-block').empty();
+                                    $('#em-appli-block').append(result);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown)
+                                {
+                                    console.log(jqXHR.responseText);
+                                }
+                                
+                            });
+                        } 
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+            }
     });
 </script>

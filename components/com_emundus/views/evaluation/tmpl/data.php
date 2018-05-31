@@ -67,7 +67,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<div class="em-cell" >
 										<?php if($k == 'check'): ?>
 											<label for = "<?php echo $line['fnum']->val ?>_check">
-												<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+												<input type="checkbox" data-evalid="<?php echo $line['evaluation_id']->val ?>" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
 												<?php
 													$tab = explode('-', $key);
 													echo ($tab[1] + 1 + $this->pagination->limitstart);
@@ -168,7 +168,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 </div>
 <script type="text/javascript">
     //refreshFilter();
-    function checkurl() {
+    /*function checkurl() {
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
@@ -208,7 +208,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
             }
         }
 
-    }
+	}*/
     $(document).ready(function(){
         //checkurl();
         $('#rt-mainbody-surround').children().addClass('mainemundus');

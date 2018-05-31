@@ -208,16 +208,11 @@ class EmundusModelApplication extends JModelList
     }
 
     public function deleteComment($id){
-        $query = 'SELECT user_id FROM #__emundus_comments WHERE id="'.$id.'"';
-        $this->_db->setQuery( $query );
-        $result=$this->_db->loadResult();
-        if($result==$this->_user->id){
-            $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
-            $this->_db->setQuery($query);
-            return $this->_db->Query();
-        }else{
-            return -1;
-        }
+       
+        $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
+        $this->_db->setQuery($query);
+        return $this->_db->Query();
+       
     }
 
     public function deleteTag($id_tag, $fnum){

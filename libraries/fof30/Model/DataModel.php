@@ -380,10 +380,12 @@ class DataModel extends Model implements \JTableInterface
 			$this->_trackAssets = true;
 		}
 
+		/**
 		if ($this->_trackAssets && array_key_exists($access_field, $this->knownFields) && !($this->getState($access_field, null)))
 		{
-			// $this->$access_field = (int) $this->container->platform->getConfig()->get('access');
+			$this->$access_field = (int) $this->container->platform->getConfig()->get('access');
 		}
+		/**/
 
 		$assetKey = $this->container->componentName . '.' . strtolower($container->inflector->singularize($this->getName()));
 		$this->setAssetKey($assetKey);
