@@ -194,13 +194,13 @@ class BaseErector implements ErectorInterface
 			case 'integer':
 			case 'bigint':
 				// Because the Integer field is rendered in Joomla! as a drop-down list. Ugh!!!
-				$detectedType = 'Numeric';
+				$detectedType = 'Number';
 				break;
 
 			case 'float':
 			case 'double':
 			case 'currency':
-				$detectedType = 'Numeric';
+				$detectedType = 'Number';
 				break;
 
 			case 'enum':

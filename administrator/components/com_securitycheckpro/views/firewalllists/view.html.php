@@ -68,17 +68,17 @@ if ( (!is_null($items['whitelist'])) && ($items['whitelist'] != '') ) {
 
 
 // ... y los ponemos en el template
-$this->assignRef('blacklist_elements',$blacklist_elements);
-$this->assignRef('dynamic_blacklist_elements',$dynamic_blacklist_elements);
-$this->assignRef('whitelist_elements',$whitelist_elements);
-$this->assignRef('dynamic_blacklist',$items['dynamic_blacklist']);
-$this->assignRef('dynamic_blacklist_time',$items['dynamic_blacklist_time']);
-$this->assignRef('dynamic_blacklist_counter',$items['dynamic_blacklist_counter']);
-$this->assignRef('blacklist_email',$items['blacklist_email']);
-$this->assignRef('priority1',$items['priority1']);
-$this->assignRef('priority2',$items['priority2']);
-$this->assignRef('priority3',$items['priority3']);
-$this->assignRef('priority4',$items['priority4']);
+$this->blacklist_elements = $blacklist_elements;
+$this->dynamic_blacklist_elements = $dynamic_blacklist_elements;
+$this->whitelist_elements = $whitelist_elements;
+$this->dynamic_blacklist = $items['dynamic_blacklist'];
+$this->dynamic_blacklist_time = $items['dynamic_blacklist_time'];
+$this->dynamic_blacklist_counter = $items['dynamic_blacklist_counter'];
+$this->blacklist_email = $items['blacklist_email'];
+$this->priority1 = $items['priority1'];
+$this->priority2 = $items['priority2'];
+$this->priority3 = $items['priority3'];
+$this->priority4 = $items['priority4'];
 
 // Cargamos las librerías para extraer información de las ips
 require_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/ip.php';
@@ -139,22 +139,22 @@ if ( !is_null($dynamic_blacklist_elements) ) {
 }
 
 // Añadimos la información
-$this->assignRef('blacklist_elements_geolocation',$blacklist_elements_geolocation);
-$this->assignRef('whitelist_elements_geolocation',$whitelist_elements_geolocation);
-$this->assignRef('dynamic_elements_geolocation',$dynamic_elements_geolocation);
+$this->blacklist_elements_geolocation = $blacklist_elements_geolocation;
+$this->whitelist_elements_geolocation = $whitelist_elements_geolocation;
+$this->dynamic_elements_geolocation = $dynamic_elements_geolocation;
 
 
 // Añadimos también la paginación (comparamos las dos paginaciones y asignamos la mayor)
 if ( (!is_null($pagination_blacklist)) && (!is_null($pagination_whitelist)) ) {
 	if ( ($pagination_blacklist->get('total')) > ($pagination_whitelist->get('total')) ) {
-		$this->assignRef('pagination', $pagination_blacklist);
+		$this->pagination = $pagination_blacklist;
 	} else {
-		$this->assignRef('pagination', $pagination_whitelist);				
+		$this->pagination = $pagination_whitelist;				
 	}
 } else if ( !is_null($pagination_blacklist) ) {
-	$this->assignRef('pagination', $pagination_blacklist);	
+	$this->pagination = $pagination_blacklist;	
 } else if ( !is_null($pagination_whitelist) ) {
-	$this->assignRef('pagination', $pagination_whitelist);	
+	$this->pagination = $pagination_whitelist;	
 }
 
 parent::display($tpl);

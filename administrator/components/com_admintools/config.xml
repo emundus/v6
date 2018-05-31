@@ -61,6 +61,7 @@
 
 		<field name="updatedb" type="hidden" default="" label=""/>
 		<field name="detected_exceptions_from_private_network" type="hidden" default="0" label=""/>
+		<field name="default_super_user_groups" type="hidden" default=""/>
 	</fieldset>
 
 	<fieldset name="frontend" label="COM_ADMINTOOLS_JCONFIG_FRONTEND_LABEL"

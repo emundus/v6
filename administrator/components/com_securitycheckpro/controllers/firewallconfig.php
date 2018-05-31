@@ -68,7 +68,13 @@ function deleteip_dynamic_blacklist()
 public function save()
 {
 	$model = $this->getModel('firewallconfig');
-	$data = JRequest::get('post');
+	$jinput = JFactory::getApplication()->input;
+	
+	//El campo 'custom_code' tendrá un formato raw
+	$custom_code = $jinput->get("custom_code",null,'raw');
+	
+	$data = $jinput->getArray($_POST);
+	
 	
 	$data['base64_exceptions'] = $model->clearstring($data['base64_exceptions'], 2);
 	$data['strip_tags_exceptions'] = $model->clearstring($data['strip_tags_exceptions'], 2);
@@ -80,6 +86,7 @@ public function save()
 	$data['escape_strings_exceptions'] = $model->clearstring($data['escape_strings_exceptions'], 2);	
 	$data['lfi_exceptions'] = $model->clearstring($data['lfi_exceptions'], 2);
 	$data['second_level_exceptions'] = $model->clearstring($data['second_level_exceptions'], 2);
+	$data['custom_code'] = $custom_code;
 	
 	// Look for super users groups
 	$db = JFactory::getDBO();

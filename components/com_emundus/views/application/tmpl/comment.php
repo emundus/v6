@@ -37,32 +37,45 @@ JFactory::getSession()->set('application_layout', 'comment');
                 <ul class="list-group">
                 <?php
 				if (count($this->userComments) > 0) {
-					$i=0;
+					$i = 0;
 					foreach ($this->userComments as $comment) { ?>
                     <li class="list-group-item" id="<?php echo $comment->id; ?>">
                         <div class="row">
                             <div class="col-xs-10 col-md-11">
+	                            <?php if ($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)) :?>
+                                <div class="action" style="float: right;">
+                                    <button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </div>
+	                            <?php endif; ?>
                                 <div>
-                                    <a href="#"><?php echo htmlspecialchars($comment->reson, ENT_QUOTES, 'UTF-8'); ?></a>
-                                    <div class="mic-info">
+                                    <a href="#" class="comment-name"><?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    <input style="display: none;" name="cname" type="text" value="<?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="mic-info comment-date">
                                         <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
                                     </div>
                                 </div>
-                                <div class="comment-text">
-                                    <?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?>
-                                </div>
-                                <?php if($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)):?>
+                                <div class="comment-text"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>
+                                <textarea style="display: none;" class="ctext"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></textarea>
+								<?php if ($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) :?>
                                 <div class="action">
-                                    <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
-                                        <span class="glyphicon glyphicon-trash"></span>
-                                    </button>
-								</div>
-								<?php endif; ?>
-								<?php if($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)):?>
-                                <div class="action">
-									<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="<?php echo $comment->id; ?>" data-cname="<?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?>" data-ctext="<?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?>">
-                                        <span class="glyphicon glyphicon-edit"></span>
-									</button>
+                                    <div class="edit-comment-container">
+                                        <button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >
+                                            <span class="glyphicon glyphicon-edit"></span>
+                                            <div class="hidden cid"><?php echo $comment->id; ?></div>
+                                        </button>
+                                    </div>
+                                    <div class="actions-edit-comment" style="display: none">
+                                        <button type="button" class="btn btn-danger btn-xs cancel-edit-comment" title="<?php echo JText::_('CANCEL');?>" >
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                            <div class="hidden cid"><?php echo $comment->id; ?></div>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >
+                                            <span class="glyphicon glyphicon-ok"></span>
+                                            <div class="hidden cid"><?php echo $comment->id; ?></div>
+                                        </button>
+                                    </div>
 								</div>
 								<?php endif; ?>
                             </div>
@@ -76,37 +89,9 @@ JFactory::getSession()->set('application_layout', 'comment');
                 </ul>
 			</div>
 
-			<div class="modal fade" id="edit-comment" tabindex="-1" role="dialog" aria-labelledby="editCommentLabel" style="z-index:100000">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="editCommentLabel"><?php echo JText::_('EDIT_COMMENT'); ?></h4>
-					</div>
-					<div class="modal-body">
-						<form>
-							<input type="hidden" id="edit-comment-id">
-						<div class="form-group">
-							<label for="edit-comment-title" class="control-label"><?php echo JText::_('COMMENT_REASON'); ?></label>
-							<input type="text" class="form-control" id="edit-comment-title">
-						</div>
-						<div class="form-group">
-							<label for="edit-comment-text" class="control-label"><?php echo JText::_('COMMENT_TEXT'); ?></label>
-							<textarea class="form-control" id="edit-comment-text"></textarea>
-						</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('CANCEL'); ?></button>
-						<button type="button" class="btn btn-primary" id="editCommentBtn"><?php echo JText::_('EDIT_COMMENT'); ?></button>
-					</div>
-					</div>
-				</div>
-			</div>
-
-	        <?php if(EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)):?>
+	        <?php if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)): ?>
 	            <div class="form" id="form"></div>
-	        <?php endif;?>
+	        <?php endif; ?>
 
         </div>
     </div>
@@ -123,36 +108,35 @@ function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
  }
 
-$(document).off('click', '.comments .btn.btn-danger.btn-xs');
-$(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
-{
+$(document).off('click', '.comments .delete-comment');
+$(document).on('click', '.comments .delete-comment', function(e) {
+
 	if (e.handle === true) {
+
 		e.handle = false;
 		url = 'index.php?option=com_emundus&controller=application&task=deletecomment';
 		var id = $(this).parents('li').attr('id');
-	    $.ajax({
+
+		$.ajax({
 	            type:'GET',
 	            url:url,
 	            dataType:'json',
 	            data:({comment_id:id}),
-	            success: function(result)
-	            {
-	                if(result.status)
-	                {
+	            success: function(result) {
+
+	                if (result.status) {
 
 	                    $('.comments li#'+id).empty();
 	                    $('.comments li#'+id).append(result.msg);
 		                var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
 		                nbCom--;
 		                $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
-	                }
-	                else
-	                {
+
+	                } else {
 	                    $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
 	                }
 	            },
-	            error: function (jqXHR, textStatus, errorThrown)
-	            {
+	            error: function (jqXHR, textStatus, errorThrown) {
 	                console.log(jqXHR.responseText);
 	            }
 		});
@@ -162,22 +146,24 @@ $(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
 var textArea = '<hr><div id="form">' +
                     '<input placeholder="<?php echo JText::_('TITLE');?>" class="form" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>' +
                     '<textarea placeholder="<?php echo JText::_('ENTER_COMMENT');?>" class="form" style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>' +
-                '<button type="button" class="btn btn-success"><?php echo JText::_('ADD_COMMENT');?></button></div>';
+                '<button type="button" class="btn btn-success"> <?php echo JText::_('ADD_COMMENT');?> </button></div>';
 
 $('#form').append(textArea);
 
-//$(document).off('click', '#form .btn.btn-success');
-$(document).on('click', '#form .btn.btn-success', function(f)
-{
+$(document).off('click', '#form .btn.btn-success');
+$(document).on('click', '#form .btn.btn-success', function(f) {
+
 	if (f.handle === true) {
+
 		f.handle = false;
 		var comment = $('#comment-body').val();
 	    var title = $('#comment-title').val();
-	    if (comment.length == 0)
-	    {
+
+	    if (comment.length === 0) {
 	        $('#comment-body').attr('style', 'height:250px !important;width:100% !important; border-color: red !important; background-color:pink !important;');
 	        return;
 	    }
+
 	    $('.modal-body').empty();
 	    $('.modal-body').append('<div>' +'<p>'+Joomla.JText._('COMMENT_SENT')+'</p>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
 	    url = 'index.php?option=com_emundus&controller=files&task=addcomment';
@@ -187,102 +173,201 @@ $(document).on('click', '#form .btn.btn-success', function(f)
 			url:url,
 			dataType:'json',
 			data:({id:1, fnums:'{"i":"'+$('#application_fnum').val()+'"}', title: title, comment:comment}),
-			success: function(result)
-			{
-				$('#form').empty();
-				if(result.status)
-				{
-					$('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
+
+			success: function(result) {
+
+			    $('#form').empty();
+				if (result.status) {
+
+				    $('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
 					var li = ' <li class="list-group-item" id="'+result.id+'">'+
 						'<div class="row">'+
 							'<div class="col-xs-10 col-md-11">'+
+                            '<div class="action" style="float: right;">'+
+                                '<button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">'+
+                                    '<span class="glyphicon glyphicon-trash"></span>'+
+                                '</button>'+
+                            '</div>'+
 								'<div>'+
-									'<a href="#">'+escapeHtml(title)+'</a>'+
-									'<div class="mic-info">'+
+									'<a href="#" class="comment-name">'+escapeHtml(title)+'</a>'+
+                                    '<input style="display: none;" name="cname" type="text" value="'+escapeHtml(title)+'">'+
+									'<div class="mic-info comment-date">'+
 										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
 									'</div>'+
 								'</div>'+
-								'<div class="comment-text">'+escapeHtml(comment)+'</div>'+
-								'<div class="action">'+
-									'<button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">'+
-										'<span class="glyphicon glyphicon-trash"></span>'+
-									'</button>'+
-								'</div>'+
-								'<div class="action">'+
-									'<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="'+result.id+'" data-cname="'+escapeHtml(title)+'" data-ctext="'+escapeHtml(comment)+'">'+
-                                        '<span class="glyphicon glyphicon-edit"></span>'+
-									'</button>'+
-								'</div>'+
+								'<div class="comment-text">'+escapeHtml(comment).replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>'+
+                                '<textarea style="display: none;" class="ctext">'+escapeHtml(comment)+'</textarea>'+
+                                '<div class="action">'+
+                                    '<div class="edit-comment-container">'+
+                                        '<button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
+                                            '<span class="glyphicon glyphicon-edit"></span>'+
+                                            '<div class="hidden cid">'+result.id+'</div>'+
+                                        '</button>'+
+                                    '</div>'+
+                                    '<div class="actions-edit-comment" style="display: none">'+
+                                        '<button type="button" class="btn btn-danger btn-xs cancel-edit-comment" title="<?php echo JText::_('CANCEL');?>" >'+
+                                            '<span class="glyphicon glyphicon-remove"></span>'+
+                                            '<div class="hidden cid">'+result.id+'</div>'+
+                                        '</button>'+
+                                        '<button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
+                                            '<span class="glyphicon glyphicon-ok"></span>'+
+                                            '<div class="hidden cid">'+result.id+'</div>'+
+                                        '</button>'+
+                                    '</div>'+
+                                '</div>'+
 							'</div>'+
 						'</div>'+
 					'</li>';
+
 					$('.comments .list-group').append(li);
 					var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
 					nbCom++;
 					$('.panel-default .panel-heading .label.label-info').html(nbCom);
-				}
-				else
-				{
+
+				} else {
 					$('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
 				}
 
 				$('#form').append(textArea);
 			},
-			error: function (jqXHR, textStatus, errorThrown)
-			{
+			error: function (jqXHR, textStatus, errorThrown) {
 				console.log(jqXHR.responseText);
 			}
 		});
 	}
 });
 
-$('#edit-comment').on('show.bs.modal', function (event) {
+// Open the edition fields.
+$(document).off('click', '.edit-comment');
+$(document).on('click', '.edit-comment', function (e) {
 
-  	var button = $(event.relatedTarget),
-  		id = button.data('cid'),
-  		title = button.data('cname'),
-  		comment = button.data('ctext');
+    // Comment ID value is hidden in a div in the button for easier access.
+    // We then find the comment global element which has an ID matching that one.
+    var id = $($(this).find('.cid')[0]).text();
 
-  	$('#editCommentLabel').text('<?php echo JText::_('EDITING_COMMENT'); ?>' + title);
-  	$('#edit-comment-id').val(id);
-  	$('#edit-comment-title').val(title);
-	$('#edit-comment-text').val(comment);
+    var comment  = {
+        element: $('#' + id)
+    };
+
+    comment.title   = $(comment.element.find('.comment-name')[0]);
+    comment.tinput  = $(comment.element.find('input[name=cname]')[0]);
+    comment.body    = $(comment.element.find('.comment-text')[0]);
+    comment.binput  = $(comment.element.find('.ctext')[0]);
+    comment.actions = $(comment.element.find('.actions-edit-comment')[0]);
+    comment.edit    = $(comment.element.find('.edit-comment-container')[0]);
+
+    // We've hidden some inputs in the comment, we just need to display them and hide the text.
+    // We also need to show / hide the buttons.
+    comment.title.hide();
+    comment.tinput.val(comment.title.text());
+    comment.tinput.show();
+    comment.body.hide();
+    comment.binput.val(comment.body.html().replace(/<br\s*[\/]?>/gi, "\n"));
+    comment.binput.show();
+    comment.actions.show();
+    comment.edit.hide();
 
 });
 
+// Close the edition fields.
+$(document).off('click', '.cancel-edit-comment');
+$(document).on('click', '.cancel-edit-comment', function (e) {
 
-$(document).on('click', '#editCommentBtn', function editComment() {
+    // We are using the 'id' as a central point of reference.
+    // We need to get the ID hidden in the edit button.
+    var id = $($(this).find('.cid')[0]).text();
 
-	var id 		= $('#edit-comment-id').val(),
- 		title 	= $('#edit-comment-title').val(),
-		text 	= $('#edit-comment-text').val();
+    var comment  = {
+        element: $('#' + id)
+    };
 
-	$.ajax({
-		type:'POST',
-		url:'index.php?option=com_emundus&controller=application&task=editcomment&format=raw',
-		dataType: 'json',
-		data: ({
-			id: id,
-			title: title,
-			text: text
-		}),
-		success: function(result) {
-			if (result.status) {
-				$('#edit-comment .close').click();
-				$('.comments li#'+id).empty();
-				$('.comments li#'+id).append('<div class="row"><div class="col-xs-10 col-md-11"><div><a href="#">'+escapeHtml(title)+'</a><div class="mic-info">'+
-										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
-									'</div></div>'+
-				'<div class="comment-text">'+escapeHtml(text)+'</div>'+
-				'<div class="action"><button type="button" class="btn btn-danger btn-xs" title="Delete"> <span class="glyphicon glyphicon-trash"> </span></button> </div>'+
-				'<div class="action"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="Edit" data-cid="'+id+'" data-cname="'+escapeHtml(title)+'" data-ctext="'+escapeHtml(text)+'"> <span class="glyphicon glyphicon-edit"> </span></button> </div></div></div>');
-			} else {
-				$('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
-			}
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			console.log(jqXHR.responseText);
-		}
-	});
+    comment.title   = $(comment.element.find('.comment-name')[0]);
+    comment.tinput  = $(comment.element.find('input[name=cname]')[0]);
+    comment.body    = $(comment.element.find('.comment-text')[0]);
+    comment.binput  = $(comment.element.find('.ctext')[0]);
+    comment.actions = $(comment.element.find('.actions-edit-comment')[0]);
+    comment.edit    = $(comment.element.find('.edit-comment-container')[0]);
+
+    // We need to clear and hide the fields as well as the buttons.
+    comment.title.show();
+    comment.tinput.val('');
+    comment.tinput.hide();
+    comment.body.show();
+    comment.binput.val('');
+    comment.binput.hide();
+    comment.actions.hide();
+    comment.edit.show();
+
+});
+
+$(document).off('click', '.confirm-edit-comment');
+$(document).on('click', '.confirm-edit-comment', function (e) {
+
+    // We are using the 'id' as a central point of reference.
+    var id = $($(this).find('.cid')[0]).text();
+
+    var comment  = {
+        element: $('#' + id)
+    };
+
+    comment.title   = $(comment.element.find('.comment-name')[0]);
+    comment.tinput  = $(comment.element.find('input[name=cname]')[0]);
+    comment.body    = $(comment.element.find('.comment-text')[0]);
+    comment.binput  = $(comment.element.find('.ctext')[0]);
+    comment.actions = $(comment.element.find('.actions-edit-comment')[0]);
+    comment.edit    = $(comment.element.find('.edit-comment-container')[0]);
+    comment.date    = $(comment.element.find('.comment-date')[0]);
+
+    // Now we post the info in order to edit the comment.
+    $.ajax({
+        type:'POST',
+        url:'index.php?option=com_emundus&controller=application&task=editcomment&format=raw',
+        dataType: 'json',
+        data: ({
+            id: id,
+            title: comment.tinput.val(),
+            text: comment.binput.val()
+        }),
+        success: function(result) {
+
+            // Hide the inputs and swap buttons.
+            comment.binput.hide();
+            comment.tinput.hide();
+            comment.actions.hide();
+            comment.edit.show();
+
+            if (result.status) {
+
+                // The information is updated on the page. The date and user are also modified on the front-end.
+                comment.title.text(escapeHtml(comment.tinput.val()));
+                comment.body.html(escapeHtml(comment.binput.val()).replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                comment.date.html('<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>');
+
+            } else {
+                comment.element.append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+            }
+
+            // Show the new updated titles and clear the inputs.
+            comment.title.show();
+            comment.body.show();
+            comment.tinput.val('');
+            comment.binput.val('');
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText);
+
+            // Reset everything back to the way it was and display an error.
+            comment.element.append('<p class="text-danger"><strong><?php echo JText::_('ERROR'); ?></strong></p>');
+            comment.title.show();
+            comment.tinput.val('');
+            comment.tinput.hide();
+            comment.body.show();
+            comment.binput.val('');
+            comment.binput.hide();
+            comment.actions.hide();
+            comment.edit.show();
+        }
+    });
 });
 </script>

@@ -99,7 +99,7 @@ function search() {
                 reloadData($('#view').val());
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
+        error: function(jqXHR) {
             console.log(jqXHR.responseText);
         }
 
@@ -110,11 +110,13 @@ function clearchosen(cible){
 }
 
 function getCookie(cname) {
-    var name = cname + "=";
+    var name = cname + '=';
     var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
+    for (var i=0; i<ca.length; i++) {
         var c = ca[i].trim();
-        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
     }
     return "";
 }
@@ -3689,8 +3691,6 @@ $(document).ready(function()
                         $('#exp-opt').hide();
                 });
 
-
-
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
 
@@ -3703,6 +3703,7 @@ $(document).ready(function()
                 $('#em-modal-actions .modal').show();
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
                 break;
+
             // Mail applicants
             case 9:
 
@@ -3785,6 +3786,7 @@ $(document).ready(function()
                 });
 
                 break;
+
             // Status
             case 13:
                 $('#can-val').empty();
@@ -3798,7 +3800,7 @@ $(document).ready(function()
                 //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getstate';
                 $.ajax({
                     type:'get',
-                    url:url,
+                    url: url,
                     dataType:'json',
                     success: function(result)
                     {
@@ -3808,7 +3810,7 @@ $(document).ready(function()
 
                         for (var i in result.states)
                         {
-                            if(isNaN(parseInt(i)))
+                            if (isNaN(parseInt(i)))
                                 break;
                             status += '<option value="'+result.states[i].step+'" >'+result.states[i].value+'</option>';
                         }
@@ -3824,9 +3826,9 @@ $(document).ready(function()
                 });
 
                 break;
+
             // tags
             case 14:
-
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
                                     '<button id="success-ok" style="margin-left:5px;" type="button" class="btn btn-success" disabled="disabled">'+Joomla.JText._('OK')+'</button>');
@@ -4843,7 +4845,7 @@ $(document).ready(function()
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
-                url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=updatestate';
+                url = 'index.php?option=com_emundus&controller=files&task=updatestate';
                 $.ajax(
                     {
                         type:'POST',

@@ -36,17 +36,17 @@ $model = $this->getModel();
 $items= $model->load();
 
 // ... y los ponemos en el template
-$this->assignRef('items',$items);
+$this->items = $items;
 
 // Información para la barra de navegación
 $logs_pending = $model->LogsPending();
 $trackactions_plugin_exists = $model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 if ( !empty($items) ) {
 	$pagination = $this->get('Pagination');
-	$this->assignRef('pagination', $pagination);	
+	$this->pagination = $pagination;	
 }
 
 parent::display($tpl);

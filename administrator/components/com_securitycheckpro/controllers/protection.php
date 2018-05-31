@@ -31,7 +31,6 @@ parent::__construct();
 /* Guarda los cambios y redirige al cPanel */
 public function apply()
 {
-	//JRequest::checkToken() or die('Invalid Token');
 	$model = $this->getModel('protection');
 	
 	// Obtenemos los valores del formulario; hemos de especificar cada uno de ellos porque el campo 'own_code' ha de contener datos en bruto
@@ -140,6 +139,8 @@ function redireccion_system_info()
 /* Guarda las modificaciones a los user-agents por defecto */
 function save_default_user_agent()
 {
+	jimport('joomla.filesystem.file');
+	
 	$jinput = JFactory::getApplication()->input;
 	$new_user_agents_blacklist = $jinput->get("file_info",null,'raw');
 	// Escribimos el nuevo contenido en el fichero 'user_agent_blacklist.inc'

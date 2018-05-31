@@ -7,8 +7,17 @@
 
 namespace FOF30\Utils\FEFHelper;
 
-use FOF30\Container\Container;
+defined('_JEXEC') or die;
 
+use FOF30\View\DataView\DataViewInterface;
+use JHtml;
+
+/**
+ * Interim FEF helper which was used in FOF 3.2. This is deprecated. Please use the FEFHelper.browse JHtml helper
+ * instead. The implementation of this class should be a good hint on how you can do that.
+ *
+ * @deprecated 4.0
+ */
 abstract class Html
 {
 	/**
@@ -20,28 +29,7 @@ abstract class Html
 	 */
 	public static function jsOrderingBackend($order)
 	{
-		$escapedOrder = addslashes($order);
-		$js = <<< JS
-
-;// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
-// due to missing trailing semicolon and/or newline in their code.
-Joomla.orderTable = function () {
-	var table = document.getElementById("sortTable");
-	var direction = document.getElementById("directionTable");
-	var order = table.options[table.selectedIndex].value;
-	if (order != '$escapedOrder')
-	{
-		var dirn = 'asc';
-	}
-	else
-	{
-		var dirn = direction.options[direction.selectedIndex].value;
-	}
-	Joomla.tableOrdering(order, dirn, '');
-}
-
-JS;
-		return $js;
+		return JHtml::_('FEFHelper.browse.orderjs', $order, true);
 	}
 
 	/**
@@ -56,56 +44,26 @@ JS;
 	 */
 	public static function selectOrderingBackend($pagination, $sortFields, $order, $order_Dir)
 	{
-		$searchLimit	= \JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC');
-		$orderingDescr 	= \JText::_('JFIELD_ORDERING_DESC');
-		$orderingAsc	= \JText::_('JGLOBAL_ORDER_ASCENDING');
-		$orderingDesc	= \JText::_('JGLOBAL_ORDER_DESCENDING');
-		$sortBy			= \JText::_('JGLOBAL_SORT_BY');
-		$sortOptions	= \JHtml::_('select.options', $sortFields, 'value', 'text', $order);
+		return
+			'<div class="akeeba-filter-bar akeeba-filter-bar--right">' .
+			JHtml::_('FEFHelper.browse.orderheader', null, $sortFields, $pagination, $order, $order_Dir) .
+			'</div>';
+	}
 
-		$ascSelected	= ($order_Dir == 'asc') ? 'selected="selected"' : "";
-		$descSelected	= ($order_Dir == 'desc') ? 'selected="selected"' : "";
-
-		$html = <<<HTML
-		<div class="akeeba-filter-bar akeeba-filter-bar--right">
-			<div class="akeeba-filter-element akeeba-form-group">
-				<label for="limit" class="element-invisible">
-					{$searchLimit}
-				</label>
-				{$pagination->getLimitBox()}
-			</div>
-
-			<div class="akeeba-filter-element akeeba-form-group">
-				<label for="directionTable" class="element-invisible">
-					{$orderingDescr}
-				</label>
-				<select name="directionTable" id="directionTable" class="input-medium custom-select" onchange="Joomla.orderTable()">
-					<option value="">
-						{$orderingDescr}
-					</option>
-					<option value="asc" {$ascSelected}>
-						{$orderingAsc}
-					</option>
-					<option value="desc" {$descSelected}>
-						{$orderingDesc}
-					</option>
-				</select>
-			</div>
-
-			<div class="akeeba-filter-element akeeba-form-group">
-				<label for="sortTable" class="element-invisible">
-					{$sortBy}
-				</label>
-				<select name="sortTable" id="sortTable" class="input-medium custom-select" onchange="Joomla.orderTable()">
-					<option value="">
-						{$sortBy}
-					</option>
-					{$sortOptions}
-				</select>
-			</div>
-		</div>
-HTML;
-
-		return $html;
+	/**
+	 * Returns the drag'n'drop reordering field for Browse views
+	 *
+	 * @param DataViewInterface $view          The DataView you're rendering against
+	 * @param string            $orderingField The name of the field you're ordering by
+	 * @param string            $order         The order value of the current row
+	 * @param string            $class         CSS class for the ordering value INPUT field
+	 * @param string            $icon          CSS class for the d'n'd handle icon
+	 * @param string            $inactiveIcon  CSS class for the d'n'd disabled icon
+	 *
+	 * @return string
+	 */
+	public static function dragDropReordering(DataViewInterface $view, $orderingField, $order, $class = 'input-sm', $icon = 'akion-drag', $inactiveIcon = 'akion-android-more-vertical')
+	{
+		return JHtml::_('FEFHelper.browse.order', $orderingField, $order, $class, $icon, $inactiveIcon, $view);
 	}
 }

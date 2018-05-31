@@ -77,11 +77,11 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$version_scp = $model->get_version('securitycheckpro');
 		if ($update_database_plugin_exists) {
 			$version_update_database = $model->get_version('databaseupdate');
-			$this->assignRef('version_update_database', $version_update_database);
+			$this->version_update_database =  $version_update_database;
 		}
 		if ($trackactions_plugin_exists) {
 			$version_trackactions = $model->get_version('trackactions');
-			$this->assignRef('version_trackactions', $version_trackactions);
+			$this->version_trackactions = $version_trackactions;
 		}
 				
 		// Obtenemos el status de la seguridad
@@ -101,35 +101,35 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		}
 		
 		// Ponemos los datos en el template
-		$this->assignRef('firewall_plugin_enabled', $firewall_plugin_enabled);
-		$this->assignRef('cron_plugin_enabled', $cron_plugin_enabled);
-		$this->assignRef('update_database_plugin_enabled', $update_database_plugin_enabled);
-		$this->assignRef('update_database_plugin_exists', $update_database_plugin_exists);
-		$this->assignRef('spam_protection_plugin_enabled', $spam_protection_plugin_enabled);
-		$this->assignRef('spam_protection_plugin_exists', $spam_protection_plugin_exists);
-		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
-		$this->assignRef('logs_pending', $logs_pending);
-		$this->assignRef('scpro_plugin_id', $scpro_plugin_id);
-		$this->assignRef('scprocron_plugin_id', $scprocron_plugin_id);
-		$this->assignRef('server', $server);
-		$this->assignRef('last_year_logs', $last_year_logs);
-		$this->assignRef('this_year_logs', $this_year_logs);
-		$this->assignRef('last_month_logs', $last_month_logs);
-		$this->assignRef('this_month_logs', $this_month_logs);
-		$this->assignRef('last_7_days', $last_7_days);
-		$this->assignRef('yesterday', $yesterday);
-		$this->assignRef('today', $today);
-		$this->assignRef('total_firewall_rules', $total_firewall_rules);
-		$this->assignRef('total_blocked_access', $total_blocked_access);
-		$this->assignRef('total_user_session_protection', $total_user_session_protection);
-		$this->assignRef('easy_config_applied', $easy_config_applied);
-		$this->assignRef('overall', $overall);
-		$this->assignRef('blacklist_elements',$blacklist_elements);
-		$this->assignRef('dynamic_blacklist_elements',$dynamic_blacklist_elements);
-		$this->assignRef('whitelist_elements',$whitelist_elements);
-		$this->assignRef('geoip_database_update',$geoip_database_update);
-		$this->assignRef('geolite_automatic_updates',$geolite_automatic_updates);
-		$this->assignRef('version_scp', $version_scp);
+		$this->firewall_plugin_enabled =  $firewall_plugin_enabled;
+		$this->cron_plugin_enabled =  $cron_plugin_enabled;
+		$this->update_database_plugin_enabled =  $update_database_plugin_enabled;
+		$this->update_database_plugin_exists =  $update_database_plugin_exists;		
+		$this->spam_protection_plugin_enabled =  $spam_protection_plugin_enabled;
+		$this->spam_protection_plugin_exists =  $spam_protection_plugin_exists;
+		$this->trackactions_plugin_exists =  $trackactions_plugin_exists;
+		$this->logs_pending =  $logs_pending;
+		$this->scpro_plugin_id =  $scpro_plugin_id;
+		$this->scprocron_plugin_id =  $scprocron_plugin_id;
+		$this->server =  $server;
+		$this->last_year_logs =  $last_year_logs;
+		$this->this_year_logs =  $this_year_logs;
+		$this->last_month_logs =  $last_month_logs;		
+		$this->this_month_logs =  $this_month_logs;
+		$this->last_7_days =  $last_7_days;
+		$this->yesterday =  $yesterday;
+		$this->today =  $today;
+		$this->total_firewall_rules =  $total_firewall_rules;
+		$this->total_blocked_access =  $total_blocked_access;
+		$this->total_user_session_protection =  $total_user_session_protection;
+		$this->easy_config_applied =  $easy_config_applied;
+		$this->overall =  $overall;
+		$this->blacklist_elements =  $blacklist_elements;
+		$this->dynamic_blacklist_elements =  $dynamic_blacklist_elements;		
+		$this->whitelist_elements =  $whitelist_elements;
+		$this->geoip_database_update =  $geoip_database_update;
+		$this->geolite_automatic_updates =  $geolite_automatic_updates;
+		$this->version_scp =  $version_scp;
 				
 		parent::display();
 	}

@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 // Load plugin language
 $lang2 = JFactory::getLanguage();
@@ -35,7 +35,6 @@ unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
 $document->setHeadData($arrHead);
 
 ?>
-
   <!-- Bootstrap core JavaScript -->
 <script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
 
@@ -44,8 +43,14 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -76,7 +81,9 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					<?php $local_joomla_branch = explode(".",JVERSION); 
 					// Construimos la cabecera de la versión de Joomla para la que se muestran vulnerabilidades según la versión instalada
 					if ( $local_joomla_branch[0] == "3" ) {
-						$joomla_version_header = "<img src=\"../media/com_securitycheckpro/images/compat_icon_3_x.png\" title=\"Joomla 3.x\" alt=\"Joomla 3.x\">";
+						$joomla_version_header = "<i class=\"fa fa-fw icon-joomla\"> 3</i>";
+					} else {
+						$joomla_version_header = "<i class=\"fa fa-fw icon-joomla\"> 4</i>";
 					}
 					?>
 					<span class="badge" style="background-color: #C68C51; padding: 10px 10px 10px 10px; float:right;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_VULNERABILITY_LIST' ); echo $joomla_version_header; ?></span>

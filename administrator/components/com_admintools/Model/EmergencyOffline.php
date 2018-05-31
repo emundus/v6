@@ -244,7 +244,7 @@ ENDHTML;
 		$htaccess = <<<ENDHTACCESS
 RewriteEngine On
 $rewriteBase
-RewriteCond %{REMOTE_HOST}        !$ip
+RewriteCond %{REMOTE_ADDR}        !$ip
 RewriteCond %{REQUEST_URI}        !offline\.html
 RewriteCond %{REQUEST_URI}        !(\.png|\.jpg|\.gif|\.jpeg|\.bmp|\.swf|\.css|\.js)$
 RewriteRule (.*)                  offline.html    [R=307,L]

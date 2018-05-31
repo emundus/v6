@@ -68,16 +68,17 @@ class EmundusViewExport_select_columns extends JViewLegacy
         $m_admission = new EmundusModelAdmission;
         $m_eval = new EmundusModelEvaluation;
         
-        //@TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
+        //TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
+	    // To fix this : Get all campaigns, get profile, get menu, check form IDs, for each unique ID: make an array containing the code below (or some variety of it).
+	    // When displaying the results: make tabs or panels separating the different forms for the programme.
+
+
         if ($form == "decision")
             $elements = $m_admission->getAdmissionElementsName(0, 0, $code);
         elseif ($form == "admission")
             $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
-        elseif ($form == "evaluation"){
+        elseif ($form == "evaluation")
             $elements = $m_eval->getEvaluationElementsName(0, 0, $code);
-            //var_dump($elements);
-        }
-            
         else
 		    $elements = EmundusHelperFiles::getElements($code, $camps);
         

@@ -48,13 +48,13 @@ $last_check_database = $model->get_campo_filemanager("last_check_database");
 
 $logs_pending = $model->LogsPending();
 $trackactions_plugin_exists = $model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 $this->supported = $this->get('IsSupported');
 $this->tables 	 = $this->get('Tables');
-$this->assignRef('show_tables', $show_tables);
-$this->assignRef('last_check_database', $last_check_database);
+$this->show_tables = $show_tables;
+$this->last_check_database = $last_check_database;
 
 parent::display($tpl);
 }

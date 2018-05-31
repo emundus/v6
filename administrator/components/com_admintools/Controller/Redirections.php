@@ -22,22 +22,45 @@ class Redirections extends DataController
 		$this->csrfProtection();
 
 		/** @var \Akeeba\AdminTools\Admin\Model\Redirections $model */
-		$model = $this->getModel();
-		$item = $model->find();
+		$model = $this->getModel()->savestate(false);
+		$ids = $this->getIDsFromRequest($model, true);
 
-		$data = array('published' => 0);
-
-		$url = 'index.php?option=com_admintools&view=Redirections';
+		$error = null;
 
 		try
 		{
-			$item->copy($data);
+			$status = true;
 
-			$this->setRedirect($url);
+			foreach ($ids as $id)
+			{
+				$model->find($id);
+				$model->copy([
+					'published' => 0
+				]);
+			}
 		}
 		catch (\Exception $e)
 		{
-			$this->setRedirect($url, $e->getMessage(), 'error');
+			$status = false;
+			$error = $e->getMessage();
+		}
+
+		// Redirect
+		if ($customURL = $this->input->getBase64('returnurl', ''))
+		{
+			$customURL = base64_decode($customURL);
+		}
+
+		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->container->componentName . '&view=' . $this->container->inflector->pluralize($this->view) . $this->getItemidURLSuffix();
+
+		if (!$status)
+		{
+			$this->setRedirect($url, $error, 'error');
+		}
+		else
+		{
+			$textKey = strtoupper($this->container->componentName . '_LBL_' . $this->container->inflector->singularize($this->view) . '_COPIED');
+			$this->setRedirect($url, \JText::_($textKey));
 		}
 	}
 

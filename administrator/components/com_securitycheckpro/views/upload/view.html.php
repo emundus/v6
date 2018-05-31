@@ -29,8 +29,8 @@ class SecuritycheckprosViewUpload extends JViewLegacy
 
 		$logs_pending = $common_model->LogsPending();
 		$trackactions_plugin_exists = $common_model->PluginStatus(8);
-		$this->assignRef('logs_pending', $logs_pending);
-		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+		$this->logs_pending = $logs_pending;
+		$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 		
 		parent::display($tpl);
 	}

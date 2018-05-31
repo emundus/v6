@@ -41,15 +41,15 @@ $scan_executables_only = $params->get('scan_executables_only',0);
 // Información para la barra de navegación
 $logs_pending = $model->LogsPending();
 $trackactions_plugin_exists = $model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 // Ponemos los datos en el template
-$this->assignRef('last_check_integrity', $last_check_integrity);
-$this->assignRef('files_scanned_integrity', $files_scanned_integrity);
-$this->assignRef('hash_alg', $hash_alg); 
-$this->assignRef('files_with_bad_integrity', $files_with_bad_integrity); 
-$this->assignRef('scan_executables_only', $scan_executables_only);
+$this->last_check_integrity = $last_check_integrity;
+$this->files_scanned_integrity = $files_scanned_integrity;
+$this->hash_alg = $hash_alg; 
+$this->files_with_bad_integrity = $files_with_bad_integrity; 
+$this->scan_executables_only = $scan_executables_only;
 
 // Filesstatus
 
@@ -70,13 +70,13 @@ $show_all = $this->state->get('showall',0);
 $database_error = $model->get_campo_filemanager("estado_integrity");
 
 // Ponemos los datos en el template
-$this->assignRef('items', $items);
-$this->assignRef('show_all', $show_all);
-$this->assignRef('database_error', $database_error);
+$this->items = $items;
+$this->show_all = $show_all;
+$this->database_error = $database_error;
 
 if ( !empty($items) ) {
 	$pagination = $model->getPagination();
-	$this->assignRef('pagination', $pagination);
+	$this->pagination = $pagination;
 	JToolBarHelper::custom('mark_all_unsafe_files_as_safe','flag-2','flag-2','COM_SECURITYCHECKPRO_FILEINTEGRITY_MARK_ALL_UNSAFE_FILES_AS_SAFE');
 	JToolBarHelper::custom('mark_checked_files_as_safe','flag','flag','COM_SECURITYCHECKPRO_FILEINTEGRITY_MARK_CHECKED_FILES_AS_SAFE');
 	JToolBarHelper::custom('export_logs_integrity', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_INFO_CSV', false);
