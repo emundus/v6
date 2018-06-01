@@ -66,7 +66,7 @@ $m_checklist 		= new EmundusModelChecklist;
 
 // show application files if applicant profile like current profile and nothing if not
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
-if (in_array($user->profile, $applicant_profiles)) {
+//if (in_array($user->profile, $applicant_profiles)) {
 
 	if (isset($user->fnum) && !empty($user->fnum)) {
 		$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
@@ -122,5 +122,5 @@ if (in_array($user->profile, $applicant_profiles)) {
 	$is_app_sent 		 = ($user->status != 0)? true : false;
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $params->get('layout', 'default'));
-}
+//}
 

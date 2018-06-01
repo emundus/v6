@@ -4914,6 +4914,7 @@ $(document).ready(function()
                                 '</div>');
                             }
                             setTimeout(function(){$('#em-modal-actions').modal('hide');}, 800);
+                            reloadData($('#view').val());
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             console.log(jqXHR.responseText);

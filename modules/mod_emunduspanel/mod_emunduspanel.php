@@ -83,12 +83,9 @@ if (!empty($t__)) {
 
 	if (count($res > 0)) {
 		$tab = array();
+		$link = $res[0]->link.'&Itemid='.$res[0]->id;
 
 		if ($user->applicant == 1) {
-			$link = $res[0]->link.'&Itemid='.$res[0]->id;
-			if (!empty($fnum)) {
-				$app->redirect( $link );
-			}
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
 		}
 		else {
@@ -147,14 +144,10 @@ if (!empty($t__)) {
 	if (count($res > 0)) {
 		$tab = array();
 		$tab_temp = array();
+		$link = $res[0]->link.'&Itemid='.$res[0]->id;
 
 		if ($user->applicant == 1){
 			$module_title = $show_title;
-			$link = $res[0]->link.'&Itemid='.$res[0]->id;
-			if (!empty($fnum)) {
-				$app->redirect( $link );
-				exit();
-			}
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
 		} else {
 			$module_title = '';
@@ -181,6 +174,9 @@ if (!empty($t__)) {
 		$col = count($tab);
 	}
 
+}
+if (!empty($fnum)) {
+	$app->redirect( $link );
 }
 
 if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
