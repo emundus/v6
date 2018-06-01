@@ -12,16 +12,25 @@ defined('_JEXEC') or die;
 class modemundusApplicationsHelper
 {
 	// get users sorted by activation date
-	static function getApplications($params)
+	static function getApplications($layout)
 	{
-		$user 	= JFactory::getUser();
-		$db		= JFactory::getDbo();
+		$user = JFactory::getUser();
+		$db	= JFactory::getDbo();
 
-		$query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class
-					FROM #__emundus_campaign_candidature AS ecc
+		$query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class ';
+
+		// Hesam layout needs to get the title from the information about the project.
+		if ($layout == '_:hesam')
+			$query .= ', pro.titre ';
+
+		$query .= ' FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
-					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
-					WHERE ecc.applicant_id ='.$user->id.'
+					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status ';
+
+		if ($layout == '_:hesam')
+			$query .= ' LEFT JOIN #__emundus_projet AS pro ON pro.fnum=ecc.fnum ';
+
+		$query .= ' WHERE ecc.applicant_id ='.$user->id.'
 					ORDER BY esc.end_date DESC';
 //echo str_replace('#_', 'jos', $query);
 		$db->setQuery($query);
