@@ -123,10 +123,16 @@ legend {
 }
 
 .need_missing {
-	background: url(../images/icones/publish_x.png) 0 0 no-repeat;
+	background: url(../images/icones/incomplete.png) 0 0 no-repeat;
+	background-size: 16px;
 	list-style: none;
 	padding: 1px 0px 4px 20px;
 	text-align: left;
+}
+
+.need_missing.active {
+	background: url(../images/icones/ongoing-active.png) 0 0 no-repeat;
+	background-size: 16px;
 }
 
 .need_missing a.blink {
@@ -142,6 +148,12 @@ p.need_missing {
 	list-style: none;
 	padding: 1px 0px 4px 20px;
 	text-align: left;
+	background-size: 16px;
+}
+
+.need_ok.active {
+	background: url(../images/icones/tick-active.png) 0 0 no-repeat;
+	background-size: 16px;
 }
 
 p.need_ok {
@@ -159,7 +171,8 @@ p.need_missing_fac {
 }
 
 .need_missing_fac {
-	background: url(../images/icones/publish_x-grey.png) 0 0 no-repeat;
+	background: url(../images/icones/incomplete-optional.png) 0 0 no-repeat;
+	background-size: 16px;
 	list-style: none;
 	padding: 1px 0px 4px 20px;
 	text-align: left;
