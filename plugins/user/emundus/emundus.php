@@ -233,14 +233,16 @@ class plgUserEmundus extends JPlugin
         // The most common use of this routine would be logging the user into a third party application
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
-
+        $session = JFactory::getSession();
         $app = JFactory::getApplication();
 
+        $previouspage = $session->get('registry')->get('users')->login->form->return;
         if (!$app->isAdmin()) {
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 
             $m_profile = new EmundusModelProfile;
             $m_profile->initEmundusSession();
+            $app->redirect($previouspage);
         }
         return true;
     }
