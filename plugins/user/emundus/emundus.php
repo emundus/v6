@@ -217,6 +217,7 @@ class plgUserEmundus extends JPlugin
         }
     }
 
+   
     /**
      * This method should handle any login logic and report back to the subject
      *
@@ -235,14 +236,16 @@ class plgUserEmundus extends JPlugin
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
         $session = JFactory::getSession();
         $app = JFactory::getApplication();
-
-        $previouspage = $session->get('registry')->get('users')->login->form->return;
+        $jinput = JFactory::getApplication()->input;
+   
+        $return_url = $jinput->POST->getVar('return');
+        $previous_url = base64_decode($url);
+       
         if (!$app->isAdmin()) {
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-
             $m_profile = new EmundusModelProfile;
             $m_profile->initEmundusSession();
-            $app->redirect($previouspage);
+            $app->redirect($previous_url);
         }
         return true;
     }
