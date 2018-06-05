@@ -239,7 +239,7 @@ class plgUserEmundus extends JPlugin
         $jinput = JFactory::getApplication()->input;
    
         $return_url = $jinput->POST->getVar('return');
-        $previous_url = base64_decode($url);
+        $previous_url = base64_decode($return_url);
        
         if (!$app->isAdmin()) {
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
