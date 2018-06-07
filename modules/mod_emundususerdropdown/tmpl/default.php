@@ -84,7 +84,7 @@ defined('_JEXEC') or die;
         }
     };
 
-    $(document).click(function (e) {
+    document.onclick = function (e) {
         e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
@@ -93,6 +93,6 @@ defined('_JEXEC') or die;
             dropdown.removeClass('open');
             icon.removeClass('active');
         }
-    })
+    };
 </script>
 
