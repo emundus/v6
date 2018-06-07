@@ -1771,7 +1771,6 @@ if (JFactory::getUser()->id == 63)
             }
            
             $query = substr_replace($query, ";", -1);
-
             $db->setQuery($query);
             $db->execute();
             
@@ -1785,26 +1784,6 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
-    public function deletetags($fnums, $tags)
-    {
-        try
-        {
-            $db = $this->getDbo();
-            $user = JFactory::getUser()->id;
-            $query ="DELETE from `#__emundus_tag_assoc` WHERE fnum IN (".implode(',', $fnums).") AND id_tag IN (".implode(',', $tags).") AND user_id = ".$user ;
-            //die($query);
-            $db->setQuery($query);
-            $db->execute();
-            
-            return true;
-        }
-        catch (Exception $e)
-        {
-            error_log($e->getMessage());
-            error_log($query);
-            return false;
-        }
-    }
 
     /**
      * @param null $tag
@@ -2691,6 +2670,26 @@ die();*/
         {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
+
+    public function getTagsByIdFnumUser($tid, $fnum, $user_id)
+    {
+        $dbo = $this->getDbo();
+        $query = 'SELECT * FROM #__emundus_tag_assoc 
+                    WHERE id_tag = '.$tid.' AND fnum LIKE "'.$fnum.'" AND user_id = '.$user_id;
+        try
+        {
+            $dbo->setQuery($query);
+            $res = $dbo->loadAssocList();
+            if(count($res) > 0)
+                return true;
+            else
+                return false;
         }
         catch(Exception $e)
         {

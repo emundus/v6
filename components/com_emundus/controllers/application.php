@@ -286,7 +286,7 @@ class EmundusControllerApplication extends JControllerLegacy
             $result = $m_application->deleteComment($comment_id);
             $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
         }else{
-            if(EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum']) && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
+            if(EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum'])){
                 $result = $m_application->deleteComment($comment_id);
                 $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
             }else{
@@ -321,20 +321,30 @@ class EmundusControllerApplication extends JControllerLegacy
         $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
 
         $m_application = $this->getModel('application');
+        $m_files = $this->getModel('files');
 
-        if( !EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
-        {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        }
-        else
-        {
+        $tags = $m_files->getTagsByIdFnumUser($id_tag, $fnum, $user->id);
+        if($tags){
             $result = $m_application->deleteTag($id_tag, $fnum);
             if($result!=1 && $result!=true)
                 $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
             else
                 $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
+        }else{
+            if(EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
+            {
+                $result = $m_application->deleteTag($id_tag, $fnum);
+                if($result!=1 && $result!=true)
+                    $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
+                else
+                    $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
+            } else{
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
         }
+       
+       
         echo json_encode((object)$tab);
         exit;
     }
