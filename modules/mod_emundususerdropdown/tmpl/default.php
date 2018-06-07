@@ -26,11 +26,11 @@ defined('_JEXEC') or die;
 </style>
 
 <!-- Button which opens up the dropdown menu. -->
-<div class='dropdown' id="userDropdown">
+<div class='dropdown' id="userDropdown" style="float: right;">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <i class="big circular user outline icon" style="background-color: #<?php echo $icon_color; ?>; border: solid 1px white"></i>
     </div>
-    <ul class="dropdown-menu" aria-labelledby="userDropdownLabel">
+    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownLabel">
         <li class="dropdown-header"><?php echo $user->name; ?></li>
         <li class="dropdown-header"><?php echo $user->email; ?></li>
         <?php if (!empty($list)) :?>
