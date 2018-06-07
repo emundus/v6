@@ -17,7 +17,9 @@ $user = JFactory::getSession()->get('emundusUser');
 // Here we get the menu which is defined in the params
 $jooomla_menu_name = $params->get('menu_name', 0);
 
-$icon_color = $params->get('icon_color', 'ECF0F1');
+$primary_color = $params->get('primary_color', 'ECF0F1');
+$secondary_color = $params->get('secondary_color', 'F89406');
+
 
 $document = JFactory::getDocument();
 $document->addStyleSheet('/media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');

@@ -28,12 +28,27 @@ defined('_JEXEC') or die;
         left: auto;
     }
 
+    #userDropdownIcon {
+        background-color: #<?php echo $primary_color; ?>;
+        border: solid 1px white;
+        color: #<?php echo $secondary_color; ?>;
+    }
+
+    #userDropdownIcon:hover,
+    #userDropdownIcon.active {
+        border: 1px solid;
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
+        outline-color: rgba(255, 255, 255, 0);
+        outline-offset: 15px;
+        background-color: #<?php echo $secondary_color; ?>;
+        color: #fff;
+    }
 </style>
 
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown" style="float: right;">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <i class="big circular user outline icon" style="background-color: #<?php echo $icon_color; ?>; border: solid 1px white"></i>
+        <i class="big circular user outline icon" id="userDropdownIcon"></i>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownLabel">
         <li class="dropdown-header"><?php echo $user->name; ?></li>
@@ -58,18 +73,26 @@ defined('_JEXEC') or die;
         e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
 
-        if (dropdown.hasClass('open'))
+        var icon = document.getElementById('userDropdownIcon');
+
+        if (dropdown.hasClass('open')) {
             dropdown.removeClass('open');
-        else
+            icon.removeClass('active');
+        } else {
             dropdown.addClass('open');
+            icon.addClass('active');
+        }
     };
 
     $(document).click(function (e) {
         e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
-        
-        if (dropdown.hasClass('open'))
+        var icon = document.getElementById('userDropdownIcon');
+
+        if (dropdown.hasClass('open')) {
             dropdown.removeClass('open');
+            icon.removeClass('active');
+        }
     })
 </script>
 

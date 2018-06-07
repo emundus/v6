@@ -22,7 +22,8 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field name="menu_name" type="text" default="0" size="5" label="COM_EMUNDUS_USERDROPDOWN_MENU_NAME" description="COM_EMUNDUS_USERDROPDOWN_MENU_NAME_DESC" />
-				<field name="icon_color" type="text" default="ECF0F1" size="5" label="COM_EMUNDUS_USERDROPDOWN_ICON_COLOR" description="COM_EMUNDUS_USERDROPDOWN_ICON_COLOR_DESC" />
+				<field name="primary_color" type="text" default="ECF0F1" size="5" label="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR_DESC" />
+				<field name="secondary_color" type="text" default="F89406" size="5" label="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR_DESC" />
 			</fieldset>
 		</fields>
 	</config>
