@@ -43,6 +43,14 @@ defined('_JEXEC') or die;
         color: #fff;
     }
 
+    #userDropdownMenu .divider {
+        height: 1px;
+        margin: 9px 1px;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        border-bottom: 1px solid #fff;
+    }
+
     #userDropdownMenu li>a:hover,
     #userDropdownMenu .active>a {
         background: #<?php echo $secondary_color; ?>; none;
