@@ -12,6 +12,19 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 ?>
 
+<style>
+
+    .dropdown-header {
+        display: block;
+        padding: 3px 20px;
+        font-size: 12px;
+        line-height: 1.42857143;
+        color: #777;
+        white-space: nowrap;
+    }
+
+</style>
+
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
