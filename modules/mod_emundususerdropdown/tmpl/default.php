@@ -23,6 +23,11 @@ defined('_JEXEC') or die;
         white-space: nowrap;
     }
 
+    .dropdown-menu-right {
+        right: 0;
+        left: auto;
+    }
+
 </style>
 
 <!-- Button which opens up the dropdown menu. -->
