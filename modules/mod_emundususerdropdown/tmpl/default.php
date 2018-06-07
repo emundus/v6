@@ -13,7 +13,6 @@ defined('_JEXEC') or die;
 ?>
 
 <style>
-
     .dropdown-header {
         display: block;
         padding: 3px 20px;
@@ -43,6 +42,11 @@ defined('_JEXEC') or die;
         background-color: #<?php echo $secondary_color; ?>;
         color: #fff;
     }
+
+    #userDropdownMenu li>a:hover,
+    #userDropdownMenu .active>a {
+        background: #<?php echo $secondary_color; ?>; none;
+    }
 </style>
 
 <!-- Button which opens up the dropdown menu. -->
@@ -50,7 +54,7 @@ defined('_JEXEC') or die;
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <i class="big circular user outline icon" id="userDropdownIcon"></i>
     </div>
-    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownLabel">
+    <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <li class="dropdown-header"><?php echo $user->name; ?></li>
         <li class="dropdown-header"><?php echo $user->email; ?></li>
         <?php if (!empty($list)) :?>
@@ -72,7 +76,6 @@ defined('_JEXEC') or die;
     document.getElementById('userDropdownLabel').onclick = function(e) {
         e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
-
         var icon = document.getElementById('userDropdownIcon');
 
         if (dropdown.hasClass('open')) {
