@@ -31,6 +31,7 @@ $document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jq
 
 $app 						= JFactory::getApplication();
 $Itemid 					= $app->input->getInt('Itemid', null, 'int');
+$layout                     = $params->get('layout', 'default');
 
 $eMConfig 					= JComponentHelper::getParams('com_emundus');
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
@@ -50,7 +51,9 @@ $show_progress_color 		= $params->get('show_progress_color', '#EA5012');
 $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
 
-$applications		= modemundusApplicationsHelper::getApplications($params);
+// We send the layout as a param because Hesam needs different information.
+$applications = modemundusApplicationsHelper::getApplications($layout);
+
 $linknames 			= $params->get('linknames', 0);
 $moduleclass_sfx 	= htmlspecialchars($params->get('moduleclass_sfx'));
 $user 				= JFactory::getSession()->get('emundusUser');
@@ -121,6 +124,7 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 	$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))? true : false;
 	$is_app_sent 		 = ($user->status != 0)? true : false;
 
-	require JModuleHelper::getLayoutPath('mod_emundus_applications', $params->get('layout', 'default'));
-//}
+	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
+}
+
 
