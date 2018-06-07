@@ -492,16 +492,18 @@ class EmundusControllerFiles extends JControllerLegacy
             $fnums = $m_files->getAllFnums();
 
         $validFnums = array();
-
+       
         foreach ($fnums as $fnum)
-        {
-            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-            {
-                $validFnums[] = $fnum;
+        {   
+            if($fnum != 'em-check-all'){
+                if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
+                {
+                    $validFnums[] = $fnum;
+                }
             }
+            
         }
         unset($fnums);
-
         $res    = $m_files->tagFile($validFnums, $tag);
         $tagged = $m_files->getTaggedFile($tag);
 
@@ -519,35 +521,31 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
 
         $m_files = $this->getModel('Files');
+        $m_application = $this->getModel('application');
 
         if ($fnums == "all")
             $fnums = $m_files->getAllFnums();
 
-        $validFnums = array();
-
         foreach ($fnums as $fnum)
         {
-            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-            {
-                if (!in_array($fnum, $validFnums))
-                    $validFnums[] = $fnum;
-            }
-            if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
-            {
-                if (!in_array($fnum, $validFnums))
-                    $validFnums[] = $fnum;
+            if($fnum != 'em-check-all'){
+                foreach ($tags as $tag){
+                    $hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
+                    if($hastags){
+                        $result = $m_application->deleteTag($tag, $fnum);
+                    }else{
+                        if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
+                        {
+                            $result = $m_application->deleteTag($tag, $fnum);
+                        }
+                    }
+                }
             }
         }
-
         unset($fnums);
+        unset($tags);
 
-        if (!empty($tags))
-            $res = $m_files->deletetags($validFnums, $tags);
-        else
-            die ("No tags ...");
-
-        $tagged = $m_files->getTaggedFile($tags);
-        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
+        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'))));
         exit;
     }
 

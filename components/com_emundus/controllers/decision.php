@@ -435,44 +435,40 @@ class EmundusControllerDecision extends JControllerLegacy
         exit;
     }
 
+    
     public function deletetags()
     {
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
         $tags    = $jinput->getVar('tag', null);
-        
+
         //var_dump($fnums);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
 
         $m_files = $this->getModel('Files');
+        $m_application = $this->getModel('application');
 
         if ($fnums == "all")
             $fnums = $m_files->getAllFnums();
 
-        $validFnums = array();
-        
         foreach ($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-            {
-                if(!in_array($fnum, $validFnums))
-                    $validFnums[] = $fnum;
-            }
-            if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
-            {
-                if(!in_array($fnum, $validFnums))
-                    $validFnums[] = $fnum;
+            foreach ($tags as $tag){
+                $hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
+                if($hastags){
+                    $result = $m_application->deleteTag($tag, $fnum);
+                }else{
+                    if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
+                    {
+                        $result = $m_application->deleteTag($tag, $fnum);
+                    }
+                }
             }
         }
-        
         unset($fnums);
-        if(!empty($tags))
-            $res    = $m_files->deletetags($validFnums, $tags);
-        else   
-            die("No tags ...");
-            
-        $tagged = $m_files->getTaggedFile($tag);
-            echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'), 'tagged' => $tagged)));
+        unset($tags);
+
+        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'))));
         exit;
     }
 
