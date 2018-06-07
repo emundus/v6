@@ -55,6 +55,7 @@ defined('_JEXEC') or die;
 <script>
     // This counters all of the issues linked to using BootstrapJS.
     document.getElementById('userDropdownLabel').onclick = function(e) {
+        e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
 
         if (dropdown.hasClass('open'))
@@ -62,5 +63,13 @@ defined('_JEXEC') or die;
         else
             dropdown.addClass('open');
     };
+
+    $(document).click(function (e) {
+        e.stopPropagation();
+        var dropdown = document.getElementById('userDropdown');
+        
+        if (dropdown.hasClass('open'))
+            dropdown.removeClass('open');
+    })
 </script>
 
