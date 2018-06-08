@@ -1430,7 +1430,7 @@ class hikashopOrderClass extends hikashopClass {
 					}
 				}
 			}
-			$filters = array('a.file_ref_id IN ('.implode(',',$product_ids).')','a.file_type=\'file\'');
+			$filters = array('a.file_ref_id IN ('.implode(',',$product_ids).')','a.file_type=\'file\'','a.file_free_download=0');
 			$query = 'SELECT b.*, a.* FROM '.hikashop_table('file').' AS a '.
 				' LEFT JOIN '.hikashop_table('download').' AS b ON b.order_id='.$order->order_id.' AND a.file_id = b.file_id '.
 				' WHERE ('.implode(') AND (',$filters).')'.

@@ -345,6 +345,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		}
 
 		$this->assignRef('order',$order);
+		$this->_orderURL($order);
 	}
 
 	public function after_end() {
@@ -363,7 +364,21 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
 		$this->assignRef('order', $order);
+		$this->_orderURL($order);
 	}
+
+	protected function _orderURL(&$order){
+		$user = JFactory::getUser();
+		global $Itemid;
+		$url_itemid = (!empty($Itemid)) ? '&Itemid='.$Itemid : '';
+		if(!$user->guest){
+			$url = hikashop_completeLink('order&task=show&cid='.@$order->order_id.$url_itemid);
+		}else{
+			$url = hikashop_completeLink('order&task=show&cid='.@$order->order_id.'&order_token='.@$order->order_token.$url_itemid);
+		}
+		$this->assignRef('url', $url);
+	}
+
 
 	 public function shop_closed() {
 		$checkoutHelper = hikashopCheckoutHelper::get();

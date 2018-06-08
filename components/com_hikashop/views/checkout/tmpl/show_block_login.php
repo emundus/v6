@@ -239,7 +239,9 @@ function displayRegistration(el) {
 		if(registration_div)
 			registration_div.className="";
 
-		d.getElementById("hika_registration_type").innerHTML = "<?php echo JText::_('HIKA_REGISTRATION',true); ?>";
+		var title = d.getElementById("hika_registration_type");
+		if(title)
+			title.innerHTML = "<?php echo JText::_('HIKA_REGISTRATION',true); ?>";
 		var submit_button = d.getElementById("hikashop_register_form_button");
 		if(submit_button)
 			submit_button.firstChild.data = "<?php echo JText::_('HIKA_REGISTER',true); ?>";

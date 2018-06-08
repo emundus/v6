@@ -793,13 +793,14 @@ class hikashopCurrencyClass extends hikashopClass{
 							case 'all':
 								$found = array();
 								foreach($matches as $j => $match){
-									if(in_array($match->price_value,$found)) continue;
+									if(isset($found[$match->price_value])) continue;
 									$found[]=$match->price_value;
 									$round = $this->getRounding($match->price_currency_id,true);
-									$matches[$j]->price_value_with_tax = $this->getTaxedPrice($match->price_value, $zone_id, $element->product_tax_id, $round);
-									$matches[$j]->taxes = $this->taxRates;
+									$match->price_value_with_tax = $this->getTaxedPrice($match->price_value, $zone_id, $element->product_tax_id, $round);
+									$match->taxes = $this->taxRates;
+									$found[$match->price_value]=$match;
 								}
-								$rows[$k]->prices = $matches;
+								$rows[$k]->prices = array_values($found);
 								break;
 							case 'cheapest':
 								$min=0;
@@ -890,7 +891,7 @@ class hikashopCurrencyClass extends hikashopClass{
 				$cids[$currency_id] = $currency_id;
 			if(empty($cids[$main_currency]))
 				$cids[$main_currency] = $main_currency;
-
+			JArrayHelper::toInteger($cids);
 			$query = 'SELECT * FROM '.hikashop_table('currency').' WHERE currency_id IN ('.implode(',',$cids).')';
 			$this->database->setQuery($query);
 			$currencies = $this->database->loadObjectList('currency_id');

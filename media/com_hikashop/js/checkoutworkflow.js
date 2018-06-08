@@ -275,7 +275,7 @@ window.checkoutWorkflowEditor = {
 			return false;
 		window.Oby.xRequest(window.checkoutWorflowUrls.addstep, {mode:'POST', data:'num='+num}, function(xhr){
 			var div = document.createElement('div');
-			scripts = t.updateElem(div, xhr.responseText);
+			scripts = t.updateElem(div, window.Oby.trim(xhr.responseText));
 			lastStep.parentNode.insertBefore(div.childNodes[0], lastStep);
 			lastStep.setAttribute('data-checkout-step', num + 1);
 			var cpt = lastStep.querySelector('[data-checkout="num"]');
@@ -322,7 +322,7 @@ window.checkoutWorkflowEditor = {
 
 		window.Oby.xRequest(window.checkoutWorflowUrls.addblock, {mode:'POST', data:'name='+list.value}, function(xhr){
 			var div = document.createElement('div');
-			scripts = t.updateElem(div, xhr.responseText);
+			scripts = t.updateElem(div, window.Oby.trim(xhr.responseText));
 			el.parentNode.insertBefore(div.childNodes[0], el);
 			t.resetConsistency( el.parentNode );
 			t.setShowOn(el);

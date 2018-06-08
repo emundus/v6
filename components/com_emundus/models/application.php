@@ -2316,31 +2316,31 @@ td {
     public function getHikashopOrder($fnumInfos, $sent=false)
     {
         $dbo = $this->getDbo();
-        try {
 
-            if ($sent) {
+        if ($sent) {
 
-                $query = 'SELECT ho.*, hu.user_cms_id
-                    FROM #__hikashop_order ho
-                    LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                    WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                    AND ho.order_status like "created" AND (ho.order_payment_method like "banktransfer" OR ho.order_payment_method like "check")
-                    AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
-                    ORDER BY ho.order_created desc';
+            $query = 'SELECT ho.*, hu.user_cms_id
+                FROM #__hikashop_order ho
+                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                AND ho.order_status like "created" AND (ho.order_payment_method like "banktransfer" OR ho.order_payment_method like "check")
+                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
+                AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                ORDER BY ho.order_created desc';
 
-            } else {
+        } else {
 
-                $query = 'SELECT ho.*, hu.user_cms_id
-                    FROM #__hikashop_order ho
-                    LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                    WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                    AND ho.order_status like "confirmed"
-                    AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
-                    ORDER BY ho.order_created desc';
-            }
+            $query = 'SELECT ho.*, hu.user_cms_id
+                FROM #__hikashop_order ho
+                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                AND ho.order_status like "confirmed"
+                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
+                AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                ORDER BY ho.order_created desc';
+        }
 
+	    try {
 
             $dbo->setQuery($query);
             return $dbo->loadObject();

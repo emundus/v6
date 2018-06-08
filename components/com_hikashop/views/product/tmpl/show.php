@@ -343,7 +343,9 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 	</div>
 <?php
 		}
-
+?>
+	<div id="hikashop_product_files_<?php echo $variant_name; ?>" style="display:none;">
+<?php
 		if(!empty($variant->files)) {
 			$freeDownload = false;
 			foreach($variant->files as $file) {
@@ -354,7 +356,6 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 			}
 			if($freeDownload) {
 ?>
-	<div id="hikashop_product_files_<?php echo $variant_name; ?>" style="display:none;">
 		<fieldset class="hikashop_product_files_fieldset">
 			<legend><?php echo JText::_('DOWNLOADS'); ?></legend>
 <?php
@@ -370,10 +371,12 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 				}
 ?>
 		</fieldset>
-	</div>
 <?php
 			}
 		}
+?>
+	</div>
+<?php
 	}
 }
 

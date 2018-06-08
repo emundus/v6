@@ -361,7 +361,7 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_jimtawl','component','2.2.6','==','3.0.0','>=','Jimtawl Component','Arbitrary File upload Vulnerability','Feb 23 2018','Version 2.2.6','none','No details'),
 ('com_zhgooglemap','component','8.4.0.0','<=','3.0.0','>=','ZH GoogleMap Component','Sql Injection Vulnerability','Feb 23 2018','Version 8.4.0.0 and previous','update','8.4.1.0'),
 ('com_zhyandexmap','component','6.2.1.0','<=','3.0.0','>=','ZH YandexMap Component','Sql Injection Vulnerability','Feb 23 2018','Version 6.2.1.0 and previous','update','6.3.1.0'),
-('com_zhbaidumap','component','3.0.0.1','<=','3.0.0','>=','ZH BaiduMap Component','Sql Injection Vulnerability','Feb 23 2018','Version 3.0.0.1 and previous','update','3.0.1.0')
+('com_zhbaidumap','component','3.0.0.1','<=','3.0.0','>=','ZH BaiduMap Component','Sql Injection Vulnerability','Feb 23 2018','Version 3.0.0.1 and previous','update','3.0.1.0'),
 ('com_jsptickets','component','1.1','<=','3.0.0','>=','JSP Tickets Component','Sql Injection Vulnerability','Feb 23 2018','Version 1.1 and previous','update','1.2'),
 ('com_solidres','component','2.5','<=','3.0.0','>=','Solidres Component','Sql Injection Vulnerability','Feb 25 2018','Version 2.5 and previous','update','2.5.1'),
 ('com_timetable','component','1.6','<=','3.0.0','>=','Timetable Responsive Schedule Component','Sql Injection Vulnerability','Feb 25 2018','Version 1.6 and previous','update','1.7'),
