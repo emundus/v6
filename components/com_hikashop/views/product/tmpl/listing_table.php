@@ -74,8 +74,8 @@ if((int)$this->config->get('show_quantity_field') >= 2) {
 		}
 		$productFields = $usefulFields;
 
-		if(!empty($this->productFields)) {
-			foreach($this->productFields as $field) {
+		if(!empty($productFields)) {
+			foreach($productFields as $field) {
 				$columns++;
 ?>
 					<th class="hikashop_product_field title hk_center"><?php

@@ -214,8 +214,13 @@ class plgHikashoppaymentMoneybookers extends hikashopPaymentPlugin
 			}
 			return false;
 		 }
+		if($vars['status'] == 2) {
+			$status = $element->payment_params->verified_status;
+		} else {
+			$status = $element->payment_params->pending_status;
+		}
 
-		$this->modifyOrder($order_id, $vars['status'],true,true);
+		$this->modifyOrder($order_id, $status,true,true);
 
 		return true;
 	}

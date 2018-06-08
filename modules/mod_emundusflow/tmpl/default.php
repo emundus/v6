@@ -58,7 +58,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
       <i class="large add to cart icon"></i>
     <?php endif; ?>
     <div class="content">
-      <?php if (!isset($sentOrder) || $sentOrder->order_payment_method != 'paybox') :?>
+      <?php if (!isset($sentOrder) || $sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check') :?>
         <?php if (isset($scholarship) && $scholarship) :?>
           <div class="description"> <?php echo JText::_('HAS_SCHOLARSHIP'); ?> </div>
         <?php else: ?>
@@ -67,9 +67,9 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
       <?php else :?>
         <div class="description"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('PAID_VIA_CARD'); ?> </div>
       <?php endif; ?>
-      <div class="description"> <?php echo  ($paid==0 && count($sentOrder)>0 && $sentOrder->order_payment_method != 'paybox')?JText::_('AWAITING_PAYMENT'):'' ?> </div>
+      <div class="description"> <?php echo  ($paid==0 && count($sentOrder)>0 && ($sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check'))?JText::_('AWAITING_PAYMENT'):'' ?> </div>
       <div class="description">
-        <?php echo  ($paid==0 && count($sentOrder)>0 && $sentOrder->order_payment_method == 'paybox')?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
+        <?php echo  ($paid==0 && count($sentOrder)>0)?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
         <?php echo  ($paid==0 && count($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled && !isset($scholarship))?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
         <?php echo  ($paid==0 && count($sentOrder)==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?>
       </div>

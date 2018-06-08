@@ -36,7 +36,7 @@ defined('_JEXEC') or die('Restricted access');
 		</tfoot>
 		<tr>
 			<td width="130px" height="100%" style="width:130px;vertical-align:top;">
-				<div style="width:130px;height:100%;overflow:auto;position:fixed;">
+				<div style="width:130px;height:100%;overflow:auto;">
 <?php
 echo $this->treeContent;
 ?>

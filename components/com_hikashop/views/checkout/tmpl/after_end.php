@@ -10,10 +10,5 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 $app = JFactory::getApplication();
 $app->enqueueMessage( JText::_('THANK_YOU_FOR_PURCHASE') );
-$user = JFactory::getUser();
-if(!$user->guest){
-	$url = hikashop_completeLink('order&task=show&cid='.$this->order->order_id);
-}else{
-	$url = hikashop_completeLink('order&task=show&cid='.$this->order->order_id.'&order_token='.$this->order->order_token);
-}
-$app->enqueueMessage(JText::sprintf('YOU_CAN_NOW_ACCESS_YOUR_ORDER_HERE',$url));
+if(!empty($this->url))
+	$app->enqueueMessage(JText::sprintf('YOU_CAN_NOW_ACCESS_YOUR_ORDER_HERE',$this->url));

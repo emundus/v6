@@ -138,6 +138,13 @@ class plgSearchHikashop_products extends JPlugin{
 			$fields = explode(',',$fields);
 		}
 
+		if($multi) {
+			$reference_fields = array();
+			foreach($fields as $f){
+				$reference_fields[] = $db->Quote($f);
+			}
+		}
+
 		switch($phrase){
 			case 'exact':
 				$text		= $db->Quote( '%'.hikashop_getEscaped( $text, true ).'%', false );
@@ -147,7 +154,7 @@ class plgSearchHikashop_products extends JPlugin{
 				}
 
 				if($multi){
-					$filters2[] = "b.value LIKE ".$text;
+					$filters2[] = "b.reference_field IN (" . implode(',', $reference_fields) . ") AND b.value LIKE " . $text;
 				}
 				break;
 			case 'all':
@@ -163,7 +170,7 @@ class plgSearchHikashop_products extends JPlugin{
 						$subWordFiltersX[$i][] = "a.".$f." LIKE ".$word;
 					}
 					if($multi){
-						$wordFilters2[] = "b.value LIKE ".$word;
+						$wordFilters2[] = "b.reference_field IN (" . implode(',', $reference_fields) . ") AND b.value LIKE ".$word;
 					}
 				}
 				foreach($subWordFiltersX as $i => $subWordFilters){

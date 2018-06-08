@@ -2874,7 +2874,7 @@ class hikashopCartClass extends hikashopClass {
 				if(empty($product->product_max_per_order) && !empty($product->product_parent_id) && isset($counts[ (int)$product->product_parent_id ]))
 					$qty_max = $counts[ (int)$product->product_parent_id ];
 
-				if($qty_min < $min || ($max > $min && $qty_max > $max) || ($max > 0 && $min > $max)) {
+				if($qty_min < $min || ($max >= $min && $qty_max > $max) || ($max > 0 && $min > $max)) {
 					$notUsable[$cart_product_id] = array('id' => $cart_product_id, 'qty' => 0);
 
 					$msg = ($qty_min < $min) ? 'NOT_ENOUGH_QTY_FOR_PRODUCT' : (($qty_max > $max) ? 'TOO_MUCH_QTY_FOR_PRODUCT' : 'INVALID_MIN_MAX_FOR_PRODUCT');
