@@ -3325,7 +3325,7 @@ $(document).ready(function()
                         '</div><br/>');
 
                         $('#data').append('<div style="padding-left:30px" id="em-options">'+
-                            '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked/>&ensp;' +
+                            '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked />&ensp;' +
                             '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
                             '<div style="padding-left:30px;" id="exp-opt">'+
                             '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
@@ -3340,6 +3340,7 @@ $(document).ready(function()
                                 '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
                             '</select>'+
                         '</div></div><br/>' );
+                        $('chzn-select').trigger("chosen:updated");
 
                         $('#em-export-opt').chosen({width:'80%'});
 
