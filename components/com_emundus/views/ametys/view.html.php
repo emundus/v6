@@ -59,7 +59,7 @@ class EmundusViewAmetys extends JViewLegacy
 		//$document->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.js" );
 
 		// overide css
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
 

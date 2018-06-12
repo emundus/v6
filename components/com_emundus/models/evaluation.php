@@ -48,7 +48,7 @@ class EmundusModelEvaluation extends JModelList
 
 		// Get current menu parameters
 		//$current_user = JFactory::getUser();
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 
 		/*
@@ -635,7 +635,7 @@ class EmundusModelEvaluation extends JModelList
 		$miss_doc = $this->getState('missing_doc');
 		$validate_application = $this->getState('validate');
 
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		$this->validate_details = @EmundusHelperList::getElementsDetailsByID($menu_params->get('em_validate_id'));

@@ -44,7 +44,7 @@ class EmundusModelAdmission extends JModelList
 		$mainframe = JFactory::getApplication();
 
 		// Get current menu parameters
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 
 		/*
@@ -416,7 +416,7 @@ class EmundusModelAdmission extends JModelList
 
 	public function _buildContentOrderBy() {
 
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
@@ -614,7 +614,7 @@ class EmundusModelAdmission extends JModelList
 		$miss_doc 				= $this->getState('missing_doc');
 		$validate_application 	= $this->getState('validate');
 
-		$menu 			= @JSite::getMenu();
+		$menu 			= @JFactory::getApplication()->getMenu();
 		$current_menu 	= $menu->getActive();
 		$menu_params 	= $menu->getParams($current_menu->id);
 

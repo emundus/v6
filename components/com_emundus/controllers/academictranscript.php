@@ -28,7 +28,7 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 			JRequest::setVar('view', $default );
 		}
 		$user = JFactory::getUser();
-		$menu = JSite::getMenu()->getActive();
+		$menu = JFactory::getApplication()->getMenu()->getActive();
 		$access = !empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			parent::display();
@@ -39,7 +39,7 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 	function update() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$user = JFactory::getUser();
-		$menu = JSite::getMenu()->getActive();
+		$menu = JFactory::getApplication()->getMenu()->getActive();
 		$access = !empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
@@ -73,7 +73,7 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 	function validate() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
+		$menu=JFactory::getApplication()->getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
@@ -103,7 +103,7 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 	function unvalidate() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
+		$menu=JFactory::getApplication()->getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");

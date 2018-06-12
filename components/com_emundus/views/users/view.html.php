@@ -56,7 +56,7 @@ class EmundusViewUsers extends JViewLegacy
 	}
 
     private function _loadFilter() {
-		$menu 		= JSite::getMenu()->getActive();
+		$menu 		= JFactory::getApplication()->getMenu()->getActive();
 		$access 	= !empty($menu)?$menu->access : 0;
 		$state 		= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)  ? '' : NULL;
 		$session 	= JFactory::getSession();

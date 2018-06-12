@@ -920,7 +920,7 @@ class EmundusControllerDecision extends JControllerLegacy
 
     public function getcolumnSup($objs) {
 
-        /* $menu = @JSite::getMenu();
+        /* $menu = @JFactory::getApplication()->getMenu();
          $current_menu  = $menu->getActive();
          $menu_params = $menu->getParams($current_menu->id);
          $columnSupl = explode(',', $menu_params->get('em_actions'));*/
@@ -1290,7 +1290,7 @@ class EmundusControllerDecision extends JControllerLegacy
         $fnumsArray = $model->getFnumArray($fnums, $elements);
         $status = $model->getStatusByFnums($fnums);
 
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
         $columnSupl = explode(',', $menu_params->get('em_actions'));
