@@ -121,7 +121,7 @@ echo $this->table->intro;
 			foreach($this->rows[0] as $k=>$v){
 				foreach ($this->headings as $key => $val) {
 					if(array_key_exists($key, $v->data)){
-						if($v->data->$key == "1")
+						if(strcasecmp($v->data->$key , "oui") == 0)
 							$data[$i][$val] = $v->data->$key;
 						else
 							$data[$i][$key] = $v->data->$key;		
@@ -169,12 +169,12 @@ echo $this->table->intro;
 							$department = $d['data_departements___departement_nom'];
 							$chercheur 	= strtolower($d['jos_emundus_setup_profiles___label']);
 
-							if(count(array_keys($d, "1")) > 1){
-								$cherches  	= implode(",", array_keys($d, "1"));
-								$cherches 	= strtolower(str_replace(","," et ", $cherches));	
+							if(count(array_keys($d, "oui")) > 1){
+								$cherches  	= implode(",", array_keys($d, "oui"));
+								$cherches 	= strtolower(str_replace(","," </b></i>et<i><b> ", $cherches));	
 
 							}else{
-								$cherches	= strtolower(array_search("1", $d));
+								$cherches	= strtolower(array_search("oui", $d));
 							}
 								$themes     = $d['jos_emundus_projet_620_repeat___themes'];
 							echo '<tr>
