@@ -88,6 +88,7 @@ echo $this->table->intro;
 	.fabrikButtonsContainer{
 		background-color:#d6d6d6;
 		border-radius:3px;
+		height:40px
 	}
 	
 
