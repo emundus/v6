@@ -39,7 +39,7 @@ class EmundusController extends JControllerLegacy {
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
         if (!JRequest::getCmd('view')) {
-            if ($this->_user->usertype == "Registered") {
+            if (!empty($this->_user->usertype) && $this->_user->usertype == "Registered") {
                 $checklist = $this->getView( 'checklist', 'html' );
                 $checklist->setModel( $this->getModel( 'checklist'), true );
                 $checklist->display();
