@@ -338,11 +338,13 @@ $name = $app->input->get('view', '', 'WORD');
 
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
     $controller->execute($app->input->get('task', '', 'WORD'));
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme') {
+} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else {
-    // Perform the Request task
-    $controller->execute($app->input->get('task', '', 'WORD'));
+    if($name != 'search_engine'){
+       // Perform the Request task
+       $controller->execute($app->input->get('task', '', 'WORD'));
+    }
 }
 // Redirect if set by the controller
 $controller->redirect();
