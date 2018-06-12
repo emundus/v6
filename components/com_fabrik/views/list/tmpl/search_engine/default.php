@@ -118,12 +118,21 @@ echo $this->table->intro;
 			}
 			.fabrikDataContainer{
 				padding-bottom:500px;
+				background-color:#f7f7f7;
+				padding-bottom:100%;
+				border-radius:5px
 			}
 			.filtertable{
 				border: 1px solid #b9b9b9f5; 
 				border-radius: 5px;
 				border-style: hidden; 
 				box-shadow: 0 0 10px 0 #a22727
+			}
+			.form-search{
+				background-color:#d6d6d6;
+				box-shadow:5px 10px 5px grey;
+				border:1px solid #f1eded;
+				border-radius:5px
 			}
 		</style>
 
