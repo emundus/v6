@@ -955,8 +955,11 @@ class EmundusModelApplication extends JModelList
                                     $forms .= '<tr>';
                                     $j = 0;
                                     foreach ($r_element as $key => $r_elt) {
-                                        $params = json_decode($elements[$j]->params);
-                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+
+                                    	if (!empty($elements[$j]))
+                                            $params = json_decode($elements[$j]->params);
+
+                                    	if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $elt = date($params->date_form_format, strtotime($r_elt));
@@ -965,13 +968,13 @@ class EmundusModelApplication extends JModelList
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt>0) {
                                                 $format = 'Y-n-j';
                                                 $d = DateTime::createFromFormat($format, $r_elt);
-                                                if($d && $d->format($format) == $r_elt)
+                                                if ($d && $d->format($format) == $r_elt)
                                                     $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
                                                 else
                                                     $elt = $r_elt;
                                             }
 
-                                            elseif($elements[$j]->plugin == 'databasejoin') {
+                                            elseif ($elements[$j]->plugin == 'databasejoin') {
                                                 $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
