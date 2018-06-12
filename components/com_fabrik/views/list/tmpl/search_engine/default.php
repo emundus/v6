@@ -40,8 +40,60 @@ endif;
 echo $this->table->intro;
 
 ?>
-<form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+<style>
+	table {
+		font-family: Arial, sans-serif;
+		width: 100%;
+		float: right;
+		margin-bottom:50px;
+	}
+	td, th {
+		text-align: left;
+		padding: 10px;
+	}
+	p {
+		font-size: 16px;
+		color:black;
+	}
+	.em-search-engine-div-data {
+		width:95%; 
+		height:100px; 
+		text-align:justify;
+		border: 1px solid;
+		border-radius:5px;
+		padding: 10px;
+		box-shadow: 5px 10px #a22727;
+	}
+	.em-search-engine-filters {
+		width:60%;
+		float:left;
+		position:absolute;
+		
+	}
+	.em-search-engine-data {
+		width:68%;
+		float:right;
+		position:relative
+	}
+	.fabrikDataContainer{
+		border-radius:5px;
+		padding-bottom:500px;
+	}
+	.filtertable{
+		border: 1px solid #b9b9b9f5; 
+		border-radius: 5px;
+		border-style: hidden; 
+		box-shadow: 0 0 10px 0 #a22727
+	}
+	.fabrikButtonsContainer{
+		background-color:#d6d6d6;
+		border-radius:3px;
+	}
+	
 
+</style>
+<form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+	
 	<?php
 	if ($this->hasButtons):
 		echo $this->loadTemplate('buttons');
@@ -68,7 +120,7 @@ echo $this->table->intro;
 			foreach($this->rows[0] as $k=>$v){
 				foreach ($this->headings as $key => $val) {
 					if(array_key_exists($key, $v->data)){
-						if(strcasecmp($v->data->$key , "oui") == 0)
+						if($v->data->$key == "1")
 							$data[$i][$val] = $v->data->$key;
 						else
 							$data[$i][$key] = $v->data->$key;		
@@ -81,62 +133,8 @@ echo $this->table->intro;
 		//var_dump($data);die;
 
 		?>												
-		<style>
-			table {
-				font-family: Arial, sans-serif;
-				width: 100%;
-				float: right;
-				margin-bottom:50px;
-			}
-			td, th {
-				text-align: left;
-				padding: 10px;
-			}
-			p {
-				font-size: 16px;
-				color:black;
-			}
-			.em-search-engine-div-data {
-				width:95%; 
-				height:100px; 
-				text-align:justify;
-				border: 1px solid;
-				border-radius:5px;
-    			padding: 10px;
-    			box-shadow: 5px 10px #a22727;
-			}
-			.em-search-engine-filters {
-				width:52%;
-				float:left;
-				position:absolute;
-				
-			}
-			.em-search-engine-data {
-				width:68%;
-				float:right;
-				position:relative
-			}
-			.fabrikDataContainer{
-				padding-bottom:500px;
-				background-color:#f7f7f7;
-				padding-bottom:100%;
-				border-radius:5px
-			}
-			.filtertable{
-				border: 1px solid #b9b9b9f5; 
-				border-radius: 5px;
-				border-style: hidden; 
-				box-shadow: 0 0 10px 0 #a22727
-			}
-			.form-search{
-				background-color:#d6d6d6;
-				box-shadow:5px 10px 5px grey;
-				border:1px solid #f1eded;
-				border-radius:5px
-			}
-		</style>
 
-		<div class="em-search-engine-filters well" >
+		<div class="em-search-engine-filters" >
 			<?php
 				if ($this->showFilters && $this->bootShowFilters) :
 					echo $this->layoutFilters();
@@ -166,15 +164,16 @@ echo $this->table->intro;
 						$gCounter = 0;
 
 						foreach($data as $d){
-									
 							$region 	= $d['data_regions___name'];
 							$department = $d['data_departements___departement_nom'];
 							$chercheur 	= strtolower($d['jos_emundus_setup_profiles___label']);
-							if(count(array_keys($d, "Oui")) > 1){
-								$cherches  	= implode(",", array_keys($d, "Oui"));
+
+							if(count(array_keys($d, "1")) > 1){
+								$cherches  	= implode(",", array_keys($d, "1"));
 								$cherches 	= strtolower(str_replace(","," et ", $cherches));	
+
 							}else{
-								$cherches	= strtolower(array_search("Oui", $d));
+								$cherches	= strtolower(array_search("1", $d));
 							}
 								$themes     = $d['jos_emundus_projet_620_repeat___themes'];
 							echo '<tr>
@@ -219,6 +218,5 @@ echo $this->table->intro;
 		<?php print_r($this->hiddenFields);?>
 	</div>
 </form>
-
 
 
