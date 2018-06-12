@@ -117,7 +117,7 @@ class EmundusViewChecklist extends JViewLegacy
 	        $document->addStyleSheet("media/com_emundus/css/emundus_application.css" );
 
 			//$greeting = $this->get('Greeting');
-	        $menu 			= @JSite::getMenu();
+	        $menu 			= @JFactory::getApplication()->getMenu();
 	        $current_menu   = $menu->getActive();
 	        $menu_params    = $menu->getParams(@$current_menu->id);
 

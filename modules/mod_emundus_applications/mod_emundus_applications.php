@@ -117,12 +117,14 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 	    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 	    $now = $dateTime->format('Y-m-d H:i:s');
 	    //echo "::".$this->now;
-	} catch(Exception $e) {
+	} catch (Exception $e) {
 	    echo $e->getMessage() . '<br />';
 	}
 
-	$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))? true : false;
-	$is_app_sent 		 = ($user->status != 0)? true : false;
+	if (!empty($user->end_date))
+		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
+	if (!empty($user->status))
+		$is_app_sent = ($user->status != 0)? true : false;
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 //}

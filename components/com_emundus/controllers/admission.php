@@ -803,7 +803,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
     public function getcolumnSup($objs) {
 
-        /* $menu = @JSite::getMenu();
+        /* $menu = @JFactory::getApplication()->getMenu();
          $current_menu  = $menu->getActive();
          $menu_params = $menu->getParams($current_menu->id);
          $columnSupl = explode(',', $menu_params->get('em_actions'));*/
@@ -1180,7 +1180,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fnumsArray         = $m_files->getFnumArray($fnums, $elements);
         $status             = $m_files->getStatusByFnums($fnums);
 
-        $menu           = @JSite::getMenu();
+        $menu           = @JFactory::getApplication()->getMenu();
         $current_menu   = $menu->getActive();
         $menu_params    = $menu->getParams($current_menu->id);
         $columnSupl     = explode(',', $menu_params->get('em_actions'));

@@ -38,7 +38,7 @@ class EmundusViewUsers extends JViewLegacy
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
 
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu   = $menu->getActive();
         $menu_params    = $menu->getParams(@$current_menu->id);
 
@@ -192,7 +192,7 @@ class EmundusViewUsers extends JViewLegacy
 				break;
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
-				$menu = JSite::getMenu();
+				$menu = JFactory::getApplication()->getMenu();
 				$current_menu  = $menu->getActive();
 				$params = $menu->getParams($current_menu->id);
 

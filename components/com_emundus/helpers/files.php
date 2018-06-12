@@ -73,7 +73,7 @@ class EmundusHelperFiles
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
         $current_user   = JFactory::getUser();
-        $menu           = @JSite::getMenu();
+        $menu           = @JFactory::getApplication()->getMenu();
         $current_menu   = $menu->getActive();
         $Itemid         = JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
         $menu_params    = $menu->getParams($Itemid);
@@ -1852,7 +1852,7 @@ class EmundusHelperFiles
         $m_users = new EmundusModelUsers();
 
 
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         // If no active menu, use default
         $active = ($menu->getActive()) ? $menu->getActive() : $menu->getDefault();
 

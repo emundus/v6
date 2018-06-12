@@ -45,7 +45,7 @@ class EmundusModelDecision extends JModelList
 		$mainframe = JFactory::getApplication();
 
 		// Get current menu parameters
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		/*
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
@@ -311,7 +311,7 @@ class EmundusModelDecision extends JModelList
 	public function _buildContentOrderBy()
     {
 
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
@@ -519,7 +519,7 @@ class EmundusModelDecision extends JModelList
 		$miss_doc = $this->getState('missing_doc');
 		$validate_application = $this->getState('validate');
 
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		$this->validate_details = @EmundusHelperList::getElementsDetailsByID($menu_params->get('em_validate_id'));

@@ -35,7 +35,7 @@ class EmundusViewEmailalert extends JViewLegacy{
 	
 	function display($tpl = null)
 	{	
-		$menu=JSite::getMenu()->getActive();
+		$menu=JFactory::getApplication()->getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) 
 			die("You are not allowed to access to this page.");

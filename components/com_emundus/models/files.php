@@ -65,7 +65,7 @@ class EmundusModelFiles extends JModelLegacy
 
         // Get current menu parameters
         $current_user = JFactory::getUser();
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
 
         $h_files = new EmundusHelperFiles;
@@ -279,7 +279,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function _buildContentOrderBy()
     {
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));

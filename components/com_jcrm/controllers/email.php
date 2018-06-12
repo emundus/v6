@@ -85,7 +85,7 @@ class JcrmControllerEmail extends JcrmController {
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_JCRM_ITEM_SAVED_SUCCESSFULLY'));
-            $menu = & JSite::getMenu();
+            $menu = & JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else {
@@ -132,7 +132,7 @@ class JcrmControllerEmail extends JcrmController {
             }
 
             // Redirect to the list screen.
-            $menu = & JSite::getMenu();
+            $menu = & JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else {

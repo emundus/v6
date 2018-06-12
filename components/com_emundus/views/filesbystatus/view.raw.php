@@ -92,7 +92,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 			case 'menuactions':
 				$fnum = $app->input->getString("fnum", "0");
 				$display = $app->input->getString('display', 'none'); 
-				$menu = @JSite::getMenu();
+				$menu = @JFactory::getApplication()->getMenu();
 				$current_menu  = $menu->getActive();
 				if(isset($current_menu) && !empty($current_menu)) {
 					$params = $menu->getParams($current_menu->id);
@@ -162,7 +162,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 			break;
 			// get list of application files
 			default :
-			    $menu = @JSite::getMenu();
+			    $menu = @JFactory::getApplication()->getMenu();
 			    $current_menu  = $menu->getActive();
 			    $menu_params = $menu->getParams($current_menu->id);
 

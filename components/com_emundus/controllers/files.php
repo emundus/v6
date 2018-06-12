@@ -1221,7 +1221,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function getcolumnSup($objs) {
 
-       /* $menu = @JSite::getMenu();
+       /* $menu = @JFactory::getApplication()->getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
         $columnSupl = explode(',', $menu_params->get('em_actions'));*/
@@ -1313,7 +1313,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $pictures = array();
                         foreach ($photos as $photo) {
 
-                            $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
+                            $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
 
                             $link = '=HYPERLINK("'.JURI::base(). $folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
                             $pictures[$photo['fnum']] = $link;
@@ -1332,7 +1332,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $formsProgress[$fnum] = $m_application->getFormsProgress($aid, $pid, $fnum);
                     }
-                    $colOpt['forms'] = $formsProgress;
+                    if (!empty($formsProgress))
+                        $colOpt['forms'] = $formsProgress;
                     break;
                 case "attachment":
                     foreach ($fnums as $fnum) {
@@ -1341,7 +1342,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $attachmentProgress[$fnum] = $m_application->getAttachmentsProgress($aid, $pid, $fnum);
                     }
-                    $colOpt['attachment'] = $attachmentProgress;
+	                if (!empty($attachmentProgress))
+                        $colOpt['attachment'] = $attachmentProgress;
                     break;
                 case "assessment":
                     $colOpt['assessment'] = $h_files->getEvaluation('text', $fnums);
@@ -1827,14 +1829,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
         // Excel colonne
         $colonne_by_id = array();
-        for ($i=ord("A");$i<=ord("Z");$i++) {
+        for ($i = ord("A"); $i <= ord("Z"); $i++) {
             $colonne_by_id[]=chr($i);
         }
 
-        for ($i=ord("A");$i<=ord("Z");$i++) {
-            for ($j=ord("A");$j<=ord("Z");$j++) {
+        for ($i = ord("A"); $i <= ord("Z"); $i++) {
+            for ($j = ord("A"); $j <= ord("Z"); $j++) {
                 $colonne_by_id[]=chr($i).chr($j);
-                if(count($colonne_by_id) == $nbrow) break;
+                if (count($colonne_by_id) == $nbrow) break;
             }
         }
 
@@ -1907,18 +1909,17 @@ class EmundusControllerFiles extends JControllerLegacy
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         }
 
-
-
         $randomString = JUserHelper::genRandomPassword(20);
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.$excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xls');
+        $objWriter->save(JPATH_BASE . DS . 'tmp' . DS . $excel_file_name . '_' . $nbrow . 'rows_' . $randomString . '.xls');
         $link = $excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xls';
         if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
             $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
             echo json_encode((object) $result);
             exit();
         }
-        $session     = JFactory::getSession();
+
+        $session = JFactory::getSession();
         $session->clear('fnums_export');
         $result = array('status' => true, 'link' => $link);
         echo json_encode((object) $result);
@@ -1960,7 +1961,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnumsArray = $m_files->getFnumArray($fnums, $elements, $methode);
         $status     = $m_files->getStatusByFnums($fnums);
 
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
 
@@ -2885,7 +2886,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('checkInput', null);
         $fnums = (array) json_decode(stripslashes($fnums));
 
-        if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all"){
+        if (!is_array($fnums) || count($fnums) == 0 || (!empty($fnums[0]) && $fnums[0] == "all")){
              $fnums = $m_files->getAllFnums();
         }
 

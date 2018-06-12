@@ -28,7 +28,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 			JRequest::setVar('view', $default );
 		}
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
+		$menu=JFactory::getApplication()->getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			parent::display();
@@ -41,7 +41,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$Itemid=JSite::getMenu()->getActive()->id;
+		$Itemid=JFactory::getApplication()->getMenu()->getActive()->id;
 		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 	}
 
@@ -49,7 +49,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function setAssessor($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
+		$menu=JFactory::getApplication()->getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
@@ -107,7 +107,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function unsetAssessor($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
+		$menu=JFactory::getApplication()->getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
@@ -175,7 +175,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function defaultEmail($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$menu = JSite::getMenu()->getActive();
+		$menu = JFactory::getApplication()->getMenu()->getActive();
 		$access =! empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
@@ -306,7 +306,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function customEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$menu = JSite::getMenu()->getActive();
+		$menu = JFactory::getApplication()->getMenu()->getActive();
 		$access = !empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
