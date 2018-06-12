@@ -64,17 +64,20 @@ echo $this->table->intro;
 
 		$data = array();
 		$i = 0;
-			//if($key == $group[0]->data->$key)
-		foreach($this->rows[0] as $k=>$v){
-			foreach ($this->headings as $key => $val) {
-				if(array_key_exists($key, $v->data))
-					if(strcasecmp($v->data->$key , "oui") == 0)
-						$data[$i][$val] = $v->data->$key;
-					else
-						$data[$i][$key] = $v->data->$key;		
+		if(!empty($this->rows[0])){
+			foreach($this->rows[0] as $k=>$v){
+				foreach ($this->headings as $key => $val) {
+					if(array_key_exists($key, $v->data)){
+						if(strcasecmp($v->data->$key , "oui") == 0)
+							$data[$i][$val] = $v->data->$key;
+						else
+							$data[$i][$key] = $v->data->$key;		
+					}
+				}
+				$i = $i + 1;
 			}
-			$i = $i + 1;
 		}
+		
 		//var_dump($data);die;
 
 		?>												
@@ -85,16 +88,10 @@ echo $this->table->intro;
 				float: right;
 				margin-bottom:50px;
 			}
-
 			td, th {
 				text-align: left;
 				padding: 10px;
 			}
-			
-
-			/*tr:nth-child(even) {
-				border-bottom-left-radius: 10px;
-			}*/
 			p {
 				font-size: 16px;
 				color:black;
@@ -128,7 +125,6 @@ echo $this->table->intro;
 				border-style: hidden; 
 				box-shadow: 0 0 10px 0 #a22727
 			}
-			
 		</style>
 
 		<div class="em-search-engine-filters well" >
@@ -143,7 +139,7 @@ echo $this->table->intro;
 			<table>
 				<thead>
 					<tr>
-						<td><h3>RESULTAT DE LA RECHERCHE ACTIVE</h3></td>
+						<td><h3>RESULTAT DE LA RECHERCHE</h3></td>
 					</tr>
 				</thead>
 				<tfoot>
@@ -175,7 +171,7 @@ echo $this->table->intro;
 							echo '<tr>
 									<td>
 										<div class="em-search-engine-div-data">
-											<p>En région '.$region.', dans le département '.$department.', un '.$chercheur.' cherche '.$cherches.' sur le thème '.$themes.'</p>
+											<p>En région <i><b>'.$region.'</b></i>, dans le département <i><b>'.$department.'</b></i>, un <i><b>'.$chercheur.'</b></i> cherche <i><b>'.$cherches.'</b></i> sur le thème <i><b>'.$themes.'</b></i></p>
 											<a class="em-search-engine-learn-more" href="#">Connectez-vous pour en savoir plus</a>
 										</div>
 									</td>

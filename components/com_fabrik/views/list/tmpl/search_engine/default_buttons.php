@@ -29,7 +29,7 @@ if ($this->showToggleCols) :
 	echo $this->loadTemplate('togglecols');
 endif;
 
-/*if ($this->canGroupBy) :
+if ($this->canGroupBy) :
 
 	$displayData = new stdClass;
 	$displayData->icon = FabrikHelperHTML::icon('icon-list-view');
@@ -42,7 +42,7 @@ endif;
 	$layout = $this->getModel()->getLayout('fabrik-nav-dropdown');
 	echo $layout->render($displayData);
 	?>
-<?php endif;*/
+<?php endif;
 
 if (($this->showClearFilters && (($this->filterMode === 3 || $this->filterMode === 4))  || $this->bootShowFilters == false)) :
 	$clearFiltersClass = $this->gotOptionalFilters ? "clearFilters hasFilters" : "clearFilters";
@@ -85,9 +85,9 @@ if ($this->showCSVImport || $this->showCSV) :?>
 	$displayData->icon = FabrikHelperHTML::icon('icon-upload');
 	$displayData->label = FText::_('COM_FABRIK_CSV');
 	$displayData->links = array();
-	/*if ($this->showCSVImport) :
+	if ($this->showCSVImport) :
 		$displayData->links[] = '<a href="' . $this->csvImportLink . '" class="csvImportButton">' . FabrikHelperHTML::icon('icon-download', FText::_('COM_FABRIK_IMPORT_FROM_CSV'))  . '</a>';
-	endif;*/
+	endif;
 	if ($this->showCSV) :
 		$displayData->links[] = '<a href="#" class="csvExportButton">' . FabrikHelperHTML::icon('icon-upload', FText::_('COM_FABRIK_EXPORT_TO_CSV')) . '</a>';
 	endif;
@@ -110,7 +110,7 @@ if ($this->showPDF) :?>
 				<?php echo FabrikHelperHTML::icon('icon-file', FText::_('COM_FABRIK_PDF'));?>
 			</a></li>
 <?php endif;
-/*if ($this->emptyLink) :?>
+if ($this->emptyLink) :?>
 		<li>
 			<a href="<?php echo $this->emptyLink?>" class="doempty">
 			<?php echo $this->buttons->empty;?>
@@ -118,7 +118,7 @@ if ($this->showPDF) :?>
 			</a>
 		</li>
 <?php
-endif;*/
+endif;
 ?>
 </ul>
 <?php if (array_key_exists('all', $this->filters) || $this->filter_action != 'onchange') {
