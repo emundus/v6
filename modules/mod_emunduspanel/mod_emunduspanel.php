@@ -81,7 +81,7 @@ if (!empty($t__)) {
 	$res = $db->loadObjectList();
 
 
-	if (count($res > 0)) {
+	if (!empty($res)) {
 		$tab = array();
 		$link = $res[0]->link.'&Itemid='.$res[0]->id;
 
@@ -141,7 +141,7 @@ if (!empty($t__)) {
 	$db->setQuery($query);
 	$res = $db->loadObjectList();
 
-	if (count($res > 0)) {
+	if (!empty($res)) {
 		$tab = array();
 		$tab_temp = array();
 		$link = $res[0]->link.'&Itemid='.$res[0]->id;
@@ -179,7 +179,7 @@ if (!empty($fnum)) {
 	$app->redirect( $link );
 }
 
-if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+if (!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
 }
 

@@ -2922,16 +2922,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('checkInput', null);
         $fnums = (array) json_decode(stripslashes($fnums));
 
-        if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all")
+        if (!is_array($fnums) || count($fnums) == 0 || (isset($fnums[0]) && $fnums[0] == "all"))
             $fnums = $m_files->getAllFnums();
 
         $m_campaigns = new EmundusModelCampaign;
         $nbcamp = 0;
-        if(!empty($fnums)){
+        if (!empty($fnums)) {
 
-            foreach($fnums as $fnum){
+            foreach ($fnums as $fnum) {
                 $campaign  = $m_campaigns->getCampaignByFnum($fnum);
-                if($campaign->training == $code){
+                if ($campaign->training == $code) {
                     $nbcamp += 1;
                     $option = '<option value="'.$campaign->id.'">'.$campaign->label.' ('.$campaign->year.')</option>';
                     if (strpos($html, $option) === false) {
