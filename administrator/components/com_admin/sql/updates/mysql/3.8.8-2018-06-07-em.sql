@@ -10,14 +10,14 @@ CREATE TABLE `jos_emundus_log` (
   `message` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `jos_emundus_log` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `user_id_to`;
-
 ALTER TABLE `jos_emundus_log`
   ADD PRIMARY KEY (`id`);
 
 
 ALTER TABLE `jos_emundus_log`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `jos_emundus_log` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `user_id_to`;
 
 
 ALTER TABLE `jos_emundus_log`
