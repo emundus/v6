@@ -1,6 +1,6 @@
 
 -- This table is used for logging actions done on a User or an fnum.
-CREATE TABLE `jos_emundus_log` (
+CREATE TABLE `jos_emundus_logs` (
   `id` int(11) NOT NULL,
   `user_id_from` int(11) NOT NULL,
   `user_id_to` int(11) DEFAULT NULL,
