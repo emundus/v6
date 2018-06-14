@@ -125,6 +125,6 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 	$is_app_sent 		 = ($user->status != 0)? true : false;
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
-}
+//}
 
 
