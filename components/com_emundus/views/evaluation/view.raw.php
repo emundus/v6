@@ -268,7 +268,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 							}
 
-						} if (count(@$colsSup) > 0) {
+						} if (isset($colsSup) && is_array($colsSup) && count(@$colsSup) > 0) {
 
 							foreach ($colsSup as $key => $obj) {
 

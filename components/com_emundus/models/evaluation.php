@@ -98,7 +98,7 @@ class EmundusModelEvaluation extends JModelList
 		$show_in_list_summary = 1;
         $hidden = 0;
 		$elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden);
-		if (count($elements_eval)) {
+		if (is_array($elements_eval) && count($elements_eval)) {
 			$this->elements_id .= implode(',', $elements_eval);
 		}
 
@@ -194,11 +194,11 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		if (count($col_elt) == 0)
+		if (empty($col_elt))
 			$col_elt = array();
-		if (count($col_other) == 0)
+		if (empty($col_other))
 			$col_other = array();
-		if (count(@$this->_elements_default_name) == 0)
+		if (empty(@$this->_elements_default_name))
 			$this->_elements_default_name = array();
 
 		$this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
@@ -267,9 +267,9 @@ class EmundusModelEvaluation extends JModelList
 						$eval_elt_list = array();
 					} else {
 						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-						if (count($eval_elt_list)>0) {
+						if (is_array($eval_elt_list) && count($eval_elt_list) > 0) {
 							foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
+                                if (isset($eel->element_id) && !empty($eel->element_id))
     								$elements_id[] = $eel->element_id;
 							}
 						}

@@ -235,11 +235,11 @@ class EmundusModelFiles extends JModelLegacy
         if (in_array('overall', $em_other_columns))
             $this->_elements_default[] = ' AVG(ee.overall) as overall ';
 
-        if (count($col_elt) == 0)
+        if (empty($col_elt))
             $col_elt = array();
-        if (count($col_other) == 0)
+        if (empty($col_other))
             $col_other = array();
-        if (count(@$this->_elements_default_name) == 0)
+        if (empty(@$this->_elements_default_name))
             $this->_elements_default_name = array();
 
         $this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
@@ -763,7 +763,7 @@ class EmundusModelFiles extends JModelLegacy
                                 if (is_array($value) && $filt_menu_defined) 
                                     $diff = array_diff($value, $filt_menu['status']);
                                 
-                                if ( count($diff) == 0 )
+                                if (count($diff) == 0)
                                     $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
                                 else
                                     $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
@@ -772,14 +772,11 @@ class EmundusModelFiles extends JModelLegacy
                         break;
 
                     case 'tag':
-                        if ($value)
-                        {
+                        if ($value) {
                             if ( $value[0] == "%" || !isset($value[0]) )
                                 $query['q'] .= ' ';
                             else
-                            {
                                 $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
-                            }
                         }
                         break;
 
@@ -797,10 +794,7 @@ class EmundusModelFiles extends JModelLegacy
         }
 
          // force menu filter
-        if (count($filt_menu['status'])>0 &&
-            isset($filt_menu['status'][0]) &&
-            !empty($filt_menu['status'][0]) &&
-            $filt_menu['status'][0] != "%") {
+        if ((is_array($filt_menu['status']) && count($filt_menu['status']) > 0) && isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
             $query['q'] .= ' AND jos_emundus_campaign_candidature.status IN ("' . implode('","', $filt_menu['status']) . '") ';
         }
 

@@ -2679,7 +2679,7 @@ $q=2;
 
     /**
      * Check if iframe can be used
-     * @param $url             String     url to check
+     * @param $url String url to check
      * @return bool
      */
     function allowEmbed($url) {
@@ -2695,5 +2695,33 @@ $q=2;
 
         // Everything passed? Return true!
         return true;
+    }
+
+    /**
+     * Gets the first page of the application form. Used for opening a file.
+     * @return String The URL to the form.
+     * @since 3.8.8
+     */
+    function getFirstPage() {
+
+    	$user = JFactory::getSession()->get('emundusUser');
+    	$db = JFactory::getDBo();
+
+    	if (empty($user->menutype))
+    		return 'index.php';
+
+    	$query = $db->getQuery(true);
+    	$query->select(['id','link'])
+		    ->from($db->quoteName('#__menu'))
+	        ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"');
+
+	    try {
+		    $db->setQuery($query);
+		    $res = $db->loadObject();
+		    return $res->link.'&Itemid='.$res->id;
+	    } catch (Exception $e) {
+	    	JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	    }
+
     }
 }

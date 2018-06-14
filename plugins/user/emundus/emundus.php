@@ -238,9 +238,13 @@ class plgUserEmundus extends JPlugin
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
    
-        $return_url = $jinput->POST->getVar('return');
-        $previous_url = base64_decode($return_url);
-       
+        parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
+        $previous_url = base64_decode($return_url['return']);
+        if(empty($previous_url)){
+            $return_url = $jinput->POST->getVar('return');
+            $previous_url = base64_decode($return_url);
+        }
+        
         if (!$app->isAdmin()) {
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
             $m_profile = new EmundusModelProfile;
