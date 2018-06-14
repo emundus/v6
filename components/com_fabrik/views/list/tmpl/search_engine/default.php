@@ -163,7 +163,7 @@ echo $this->table->intro;
 					<?php  
 						$region=""; $department=""; $chercheur=""; $cherches=""; $themes="";
 						$gCounter = 0;
-
+						//var_dump($data);die;
 						foreach($data as $d){
 							$region 	= $d['data_regions___name'];
 							$department = $d['data_departements___departement_nom'];
@@ -181,7 +181,7 @@ echo $this->table->intro;
 									<td>
 										<div class="em-search-engine-div-data">
 											<p>En région <i><b>'.$region.'</b></i>, dans le département <i><b>'.$department.'</b></i>, un <i><b>'.$chercheur.'</b></i> cherche <i><b>'.$cherches.'</b></i> sur le thème <i><b>'.$themes.'</b></i></p>
-											<a class="em-search-engine-learn-more" href="#">Connectez-vous pour en savoir plus</a>
+											<a class="em-search-engine-learn-more" >'.$d['fabrik_actions'].' Connectez-vous pour en savoir plus</a>
 										</div>
 									</td>
 								</tr>';
@@ -219,5 +219,3 @@ echo $this->table->intro;
 		<?php print_r($this->hiddenFields);?>
 	</div>
 </form>
-
-
