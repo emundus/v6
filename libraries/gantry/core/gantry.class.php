@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantry.class.php 30566 2017-04-28 10:24:41Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -1040,7 +1040,7 @@ class Gantry
 
 		// get an md5 sum of any passed in options
 		$tmp_options = $options;
-		array_walk($tmp_options, create_function('&$v,$k', '$v = " * @".$k." = " .$v;'));
+		array_walk($tmp_options, function (&$val, $key) { $val = ' * @' . $key . ' = ' . $val; });
 		$options_string = implode($tmp_options, "\n");
 		$options_md5    = md5($options_string . (string)$this->get('less-compression', true));
 
@@ -1154,7 +1154,7 @@ class Gantry
 					if (count($new_cache['files']) > 1) {
 						$included_files = array_keys($new_cache['files']);
 						unset($included_files[0]);
-						array_walk($included_files, create_function('&$v,$k', 'global $gantry;$v=" * ".$gantry->convertToUrl($v);'));
+						array_walk($included_files, function(&$v) { global $gantry; $v = ' * ' . $gantry->convertToUrl($v); });
 						$header .= sprintf("\n * Included Files : \n%s", implode("\n", str_replace(JURI::root(true), '', $included_files)));
 					}
 					$header .= "\n */\n";

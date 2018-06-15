@@ -1,8 +1,8 @@
 <?php
 /**
- * @version        4.1.34 November 29, 2017
+ * @version        4.1.35 June 14, 2018
  * @author         RocketTheme http://www.rockettheme.com
- * @copyright      Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright      Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -389,7 +389,7 @@ class plgSystemGantry extends JPlugin
 
 		$document = JFactory::getDocument();
 		$doctype  = $document->getType();
-		$messages = JFactory::getSession()->get('application.queue');
+		$messages = (array)JFactory::getSession()->get('application.queue', array());
 
 		if ($doctype == 'html') {
 			$buffer      = "";

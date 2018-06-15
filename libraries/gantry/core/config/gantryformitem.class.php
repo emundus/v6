@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantryformitem.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -435,7 +435,7 @@ abstract class GantryFormItem
 				$gantry_name = $name;
 			} else {
 				$groups = explode('.', $group);
-				if (count($groups > 0)) {
+				if (count($groups) > 0) {
 					//array_shift($groups);
 					$groups[]    = $name;
 					$gantry_name = implode('-', $groups);

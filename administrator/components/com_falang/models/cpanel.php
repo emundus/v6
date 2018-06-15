@@ -9,9 +9,7 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/model.php';
-
-class CPanelModelCPanel extends LegacyModel
+class CPanelModelCPanel extends JModelLegacy
 {
 	protected $_modelName = 'cpanel';
 
