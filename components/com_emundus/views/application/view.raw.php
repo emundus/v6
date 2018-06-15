@@ -24,6 +24,7 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
 
 class EmundusViewApplication extends JViewLegacy
@@ -302,6 +303,8 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'form':
 						if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+
+							EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r');
 							$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
 							$formsProgress = $m_application->getFormsProgress($fnumInfos['applicant_id'], $pid, $fnum);
