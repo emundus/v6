@@ -86,12 +86,12 @@ defined('_JEXEC') or die;
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
 
-        if (dropdown.hasClass('open')) {
-            dropdown.removeClass('open');
-            icon.removeClass('active');
+        if (dropdown.classList.contains('open')) {
+            dropdown.classList.remove('open');
+            icon.classList.remove('active');
         } else {
-            dropdown.addClass('open');
-            icon.addClass('active');
+            dropdown.classList.add('open');
+            icon.classList.add('open');
         }
     };
 
@@ -100,9 +100,9 @@ defined('_JEXEC') or die;
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
 
-        if (dropdown.hasClass('open')) {
-            dropdown.removeClass('open');
-            icon.removeClass('active');
+        if (dropdown.classList.contains('open')) {
+            dropdown.classList.remove('open');
+            icon.classList.remove('active');
         }
     };
 </script>
