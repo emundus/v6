@@ -117,6 +117,7 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'attachment':
 					if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $fnum)) {
+						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 4, 'r', 'Access applicants  attachemnts from backoffice');
 						$expert_document_id = $params->get('expert_document_id', '36');
 
 						$userAttachments = $m_application->getUserAttachmentsByFnum($fnum);
@@ -163,10 +164,9 @@ class EmundusViewApplication extends JViewLegacy
 							if (count($myEval) > 0) {
 
 								if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum))
-	                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
-
+									$this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
 	                            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum))
-	                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
+		                            $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
 
 							} else {
 
@@ -304,7 +304,7 @@ class EmundusViewApplication extends JViewLegacy
 				case 'form':
 						if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 
-							EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r');
+							EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'Access applicants form from backoffice.');
 							$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
 							$formsProgress = $m_application->getFormsProgress($fnumInfos['applicant_id'], $pid, $fnum);

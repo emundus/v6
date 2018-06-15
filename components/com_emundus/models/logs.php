@@ -34,6 +34,9 @@ class EmundusModelLogs extends JModelList {
 	 */
 	static function log($user_from, $user_to, $fnum, $action, $crud, $message = '') {
 
+		if (empty($user_to))
+			$user_to = '';
+
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
