@@ -40,14 +40,14 @@ $scan_executables_only = $params->get('scan_executables_only',0);
 // Información para la barra de navegación
 $logs_pending = $model->LogsPending();
 $trackactions_plugin_exists = $model->PluginStatus(8);
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 // Ponemos los datos en el template
-$this->assignRef('last_check', $last_check);
-$this->assignRef('files_scanned', $files_scanned);
-$this->assignRef('incorrect_permissions', $incorrect_permissions);
-$this->assignRef('scan_executables_only', $scan_executables_only);
+$this->last_check = $last_check;
+$this->files_scanned = $files_scanned;
+$this->incorrect_permissions = $incorrect_permissions;
+$this->scan_executables_only = $scan_executables_only;
 
 /* Filesstatus */
 
@@ -77,23 +77,21 @@ $show_all = $this->state->get('showall',0);
 $database_error = $model->get_campo_filemanager("estado");
 
 // Ponemos los datos en el template
-$this->assignRef('items_permissions', $items_permissions);
-$this->assignRef('files_with_incorrect_permissions', $files_with_incorrect_permissions);
-$this->assignRef('show_all', $show_all);
-$this->assignRef('database_error', $database_error);
+$this->items_permissions = $items_permissions;
+$this->files_with_incorrect_permissions = $files_with_incorrect_permissions;
+$this->show_all = $show_all;
+$this->database_error = $database_error;
 
 if ( !empty($items_permissions) ) {
-	$pagination = $this->get('Pagination');
-	$this->assignRef('pagination', $pagination);	
+	$this->pagination = $this->get('Pagination');	
 }
 
 $mainframe = JFactory::getApplication();
 $repair_launched = $mainframe->getUserState("repair_launched",null);
-$this->assignRef('repair_launched', $repair_launched);
+$this->repair_launched = $repair_launched;
 
 if ( !empty($repair_launched) ) {
-	$repair_log = $model->get_repair_log();
-	$this->assignRef('repair_log', $repair_log);
+	$this->repair_log = $model->get_repair_log();	
 }
 
 parent::display($tpl);

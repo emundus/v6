@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopArticleClass extends hikashopClass{
+class hikashopArticleClass extends hikashopClass {
 
 	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
 		$ret = array(
@@ -53,14 +53,19 @@ class hikashopArticleClass extends hikashopClass{
 		if(count($ret[0]) < $limit)
 			$fullLoad = true;
 
-		if(!empty($value)) {
-			if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
-				$ret[1][$value] = $ret[0][$value];
-			} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
-				foreach($value as $v) {
-					if(isset($ret[0][$v])) {
-						$ret[1][$v] = $ret[0][$v];
-					}
+		if(empty($value))
+			return $ret;
+
+		if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
+			$ret[1][$value] = $ret[0][$value];
+		} elseif($mode == hikashopNameboxType::NAMEBOX_SINGLE) {
+			$query = 'SELECT '.implode(', ', $select) . ' FROM ' . implode(' ', $table) . ' WHERE c.id = '.(int)$value;
+			$this->db->setQuery($query);
+			$ret[1][$value] = $this->db->loadObject();
+		} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
+			foreach($value as $v) {
+				if(isset($ret[0][$v])) {
+					$ret[1][$v] = $ret[0][$v];
 				}
 			}
 		}

@@ -73,7 +73,7 @@ class EmundusHelperFiles
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
         $current_user   = JFactory::getUser();
-        $menu           = @JSite::getMenu();
+        $menu           = @JFactory::getApplication()->getMenu();
         $current_menu   = $menu->getActive();
         $Itemid         = JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
         $menu_params    = $menu->getParams($Itemid);
@@ -175,40 +175,43 @@ class EmundusHelperFiles
             $filts_details['status'] = $fd_with_param;
         }
         */
+		if (is_array($filts_details['group'])) {
+			if (count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
+				$fd_with_param          = $params['group'] + $filts_details['group'];
+				$params['group']        = $filts_details['group'];
+				$filts_details['group'] = $fd_with_param;
+			}
+		}
 
-        if (count($filts_details['group'])>0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
-            $fd_with_param = $params['group'] + $filts_details['group'];
-            $params['group'] = $filts_details['group'];
-            $filts_details['group'] = $fd_with_param;
-        }
-
-        if (count($filts_details['institution'])>0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
-            $fd_with_param = $params['institution'] + $filts_details['institution'];
-            $params['institution'] = $filts_details['institution'];
-            $filts_details['institution'] = $fd_with_param;
-        }
+	    if (is_array($filts_details['institution'])) {
+	        if (count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
+	            $fd_with_param = $params['institution'] + $filts_details['institution'];
+	            $params['institution'] = $filts_details['institution'];
+	            $filts_details['institution'] = $fd_with_param;
+	        }
+	    }
 
         // Else statement is present due to the fact that programmes are group limited
-        if (count($filts_details['programme']) > 0 && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
+        if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
             $fd_with_param = $params['programme'] + $filts_details['programme'];
             $params['programme'] = $filts_details['programme'];
             $filts_details['programme'] = $fd_with_param;
         } else {
             // ONLY FILES LINKED TO MY GROUP
-            if (count($filts_details['programme']) > 0)
-                $programme = count($m_files->code)>0?$m_files->code:'';
+            if (is_array($filts_details['programme']) && count($filts_details['programme']) > 0)
+                $programme = !empty($m_files->code) ? $m_files->code:'';
             else
-                $programme = count($m_files->code)>0?$m_files->code:null;
+                $programme = !empty($m_files->code) ? $m_files->code:null;
             //////////////////////////////////////////
             //var_dump($params['programme']);
-            if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
+            if ((is_array($filts_details['programme']) && count(@$params['programme']) == 0) || @$params['programme'][0] == '%') {
                 $params['programme'] = $programme;
                 $filts_details['programme'] = $programme;
-            } elseif (count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
+            } elseif ((is_array($filts_details['programme']) && count($filts_details['programme']) == 0) || empty($filts_details['programme'])) {
                 $filts_details['programme'] = $programme;
             }
             $codes = $m_files->getAssociatedProgrammes($current_user->id);
-            if (count($codes)>0 && isset($code)) {
+            if ((is_array($codes) && count($codes)) > 0 && isset($code)) {
                 $params['programme'] = array_merge($params['programme'], $codes);
                 $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
             }
@@ -332,11 +335,11 @@ class EmundusHelperFiles
        
         if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
             $where = '1=1';
-        } elseif (count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+        } elseif ((is_array($filt_menu['programme']) && count($filt_menu['programme']) > 0) && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $where = ' training IN ("'.implode('","', $filt_menu['programme']).'") ';
         } else {
 
-            if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0) && $params['programme'][0] != '%') {
+            if (!empty($params) && !empty($params['programme']) && (is_array($params['programme']) && count($params['programme']) > 0) && $params['programme'][0] != '%') {
                 $code = implode('","', $params['programme']);
                 $where = 'training IN ("'.$code.'")';
             } else
@@ -1033,11 +1036,12 @@ class EmundusHelperFiles
         
         // Quick filter
         $quick = '<div id="filters">
-                    <div id="quick" class="form-group">
-                        <label for="input-tags" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</label>
+                    <div>
+                        <div id="quick" class="form-group">
                             <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">'.
+                        '</div>
                         
-                    '</div>
+                    </div>
                 </div>';
        
         $filters .= $quick;
@@ -1701,12 +1705,9 @@ class EmundusHelperFiles
         }
        
         // Buttons
-        $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br>';
-        $filters .='<br/><div class="buttons">
-                     <input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="'.JText::_('SEARCH_BTN').'"/>';
-        $filters .=' <input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="'.JText::_('CLEAR_BTN').'"/>';
-        $filters .=' <button class="btn btn-warning" id="save-filter" style="width: 50px;" title="'.JText::_('SAVE_FILTER').'"><i class="ui save icon"></i></button><br/><br/></div>';
         $filters .=' </fieldset>';
+        $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br><br>';
+
         $filters .= '<script>
                             $( "#showhide" ).click(function() {
                                 if($("#showhide i").hasClass("icon-chevron-up")){
@@ -1725,7 +1726,7 @@ class EmundusHelperFiles
         $filters .='<fieldset>
                             <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
                             <table><tr><td style="width:95%; padding-right: 5px">
-                                <select class="chzn-select" id="select_filter" name="select_filter" > 
+                                <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
                                 <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
@@ -1736,7 +1737,7 @@ class EmundusHelperFiles
             }
         }
         $filters .= '</select></td>';
-        $filters .=' <td> <button class="btn btn-sm" id="del-filter" title="'.JText::_('DELETE').'"><i class="icon-trash"></i></button></td></tr></table>
+        $filters .=' <td> <button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="icon-trash"></i></button></td></tr></table>
                                 <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                     <strong>'.JText::_('FILTER_SAVED').'</strong>
@@ -1754,6 +1755,7 @@ class EmundusHelperFiles
         $filters .= '</fieldset>';
         $filters .= '<script>
                         $(document).ready(function() {
+
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
                             $(".testSelAll").SumoSelect({selectAll:true,search:true, searchText: "'.JText::_('ENTER_HERE').'"});
 
@@ -1761,6 +1763,8 @@ class EmundusHelperFiles
                                 $("#em_adv_filters").show();
                             else
                                 $("#em_adv_filters").hide();
+                            
+                            $("#select_filter").chosen({width:"95%"});
             
                         });
                     </script>';
@@ -1851,7 +1855,7 @@ class EmundusHelperFiles
         $m_users = new EmundusModelUsers();
 
 
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         // If no active menu, use default
         $active = ($menu->getActive()) ? $menu->getActive() : $menu->getDefault();
 
@@ -2169,7 +2173,7 @@ class EmundusHelperFiles
         }
 
         // Get information from the applicant form filled out by the coordinator
-        $element_id     = $m_admission->getAllAdmissionElements(0, $fnumInfo['training']);
+        $element_id     = $m_admission->getAllAdmissionElements(1, $fnumInfo['training']);
         $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
 
@@ -2232,18 +2236,20 @@ class EmundusHelperFiles
         }
 
         // Get information from application form filled out by the student
-        $element_id     = $m_admission->getAllApplicantAdmissionElements(0, $fnumInfo['training']);
+        $element_id     = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
         $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
-
+        
 
         foreach ($admissions as $adm) {
+           
             $str = '<br><hr>';
             $str .= '<h1>Student Admission</h1>';
             if (isset($name))
                 $str .= '<h2>'.$name.'</h2>';
-            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
+            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+           
             foreach ($elements as $element){
                 $k = $element->tab_name.'___'.$element->element_name;
 
@@ -2280,7 +2286,7 @@ class EmundusHelperFiles
                 $str = str_replace('&nbsp;', ' ', $str);
                 $str = strip_tags($str, '<h1>');
             }
-
+            
             $data[$adm['fnum']][1] = $str;
         }
 

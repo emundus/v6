@@ -29,7 +29,6 @@ public function &getInfo()
 	if (is_null($this->info)){
 		$this->info = array();
 		$version = new JVersion;
-		$platform = new JPlatform;
 		$db = JFactory::getDBO();
 						
 		// Obtenemos el tamaño de la variable 'max_allowed_packet' de Mysql
@@ -66,7 +65,8 @@ public function &getInfo()
 						
 		$this->info['phpversion']	= phpversion();
 		$this->info['version']		= $version->getLongVersion();
-		$this->info['platform']		= $platform->getLongVersion();
+		//$this->info['platform']		= $platform->getLongVersion();
+		$this->info['platform']		= "Not defined";
 		$this->info['max_allowed_packet']		= $tamanno_max_allowed_packet;
 		$this->info['memory_limit']		= $memory_limit;
 		//Security

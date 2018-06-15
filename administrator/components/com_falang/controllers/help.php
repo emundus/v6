@@ -9,13 +9,11 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/controller.php';
-
 /**
- * The JoomFish Tasker manages the general tasks within the Joom!Fish admin interface
+ * The Falang Tasker manages the general tasks within the Falang admin interface
  *
  */
-class HelpController extends LegacyController  {
+class HelpController extends JControllerLegacy  {
 	/**
 	 * Joom!Fish Controler for the Control Panel
 	 * @param array		configuration

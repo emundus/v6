@@ -399,7 +399,10 @@ class EmundusModelProfile extends JModelList
 	* @return  	string The greeting to be displayed to the user
 	*/
     function getProfileIDByCampaign($campaign_id) {
-        if (count($campaign_id)>0) {
+
+	    $res = false;
+
+        if (!empty($campaign_id)) {
             if (in_array('%', $campaign_id))
                 $where = '';
             else
@@ -408,19 +411,14 @@ class EmundusModelProfile extends JModelList
             $query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc '.$where;
 
-            try
-	        {
-	            $this->_db->setQuery( $query );
+            try {
+	            $this->_db->setQuery($query);
             	$res = $this->_db->loadColumn();
-	        }
-	        catch(Exception $e)
-	        {
+	        } catch(Exception $e) {
 	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             	JError::raiseError(500, $e->getMessage());
 	        }
         }
-        else
-            $res = false;
 
         return $res;
     }
@@ -432,26 +430,20 @@ class EmundusModelProfile extends JModelList
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
 					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
 					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-		try
-        {
+		try {
             $this->_db->setQuery( $query );
 			$res = $this->_db->loadAssoc();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             $query = 'SELECT ecc.*, esc.*, ess.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
 					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
 					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-			try
-	        {
+			try {
 	            $this->_db->setQuery( $query );
 				$res = $this->_db->loadAssoc();
-	        }
-	        catch(Exception $e)
-	        {
+	        } catch(Exception $e) {
 	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
 	            JError::raiseError(500, $e->getMessage());
 	        }
@@ -467,14 +459,11 @@ class EmundusModelProfile extends JModelList
 	function isApplicationDeclared($aid) {
 		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$aid;
 
-		try
-        {
+		try {
 			$this->_db->setQuery( $query );
 			$res = $this->_db->loadResult();
 			return $res>0?true:false;
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $e->getMessage());
         }
@@ -501,13 +490,10 @@ class EmundusModelProfile extends JModelList
         $query .= (!empty($start_date))?' AND esc.start_date<='.$db->Quote($start_date):'';
         $query .= (!empty($end_date))?' AND esc.end_date>='.$db->Quote($end_date):'';
 
-        try
-        {
+        try {
             $db->setQuery($query);
             return $db->loadObjectList('fnum');
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: fct : getAttachmentsById :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
         }
     }
@@ -520,13 +506,13 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/admission.php');
 
-		$m_users 			= new EmundusModelUsers;
-		$m_admission	= new EmundusModelAdmission;
-		$current_user 	= JFactory::getUser();
+		$m_users 	    = new EmundusModelUsers;
+		$m_admission    = new EmundusModelAdmission;
+		$current_user   = JFactory::getUser();
 		$session        = JFactory::getSession();
-		$app			= JFactory::getApplication();
+		$app            = JFactory::getApplication();
 
-		$profile 		= $this->getProfileByApplicant($current_user->id);
+		$profile = $this->getProfileByApplicant($current_user->id);
 		
 		$emundusSession = new stdClass();
 
@@ -546,13 +532,12 @@ class EmundusModelProfile extends JModelList
 
 		$profile = $this->getCurrentProfile($current_user->id);
 
-		if(in_array($profile['profile'], $profile_array)){
+		if (in_array($profile['profile'], $profile_array)) {
 			
 			// Get the current user profile
 			
 			// If the profile number is 8 that means he has been admitted
 			// This means that regardless of his other applications he must be considered admitted
-			
 
 			//var_dump($profile_array);die;
 			if ($profile['profile'] != 8) {
@@ -637,12 +622,13 @@ class EmundusModelProfile extends JModelList
 
 		$profiles = $m_users->getApplicantProfiles();
 		$profile_array = array();
-		foreach($profiles as $pf)
+		foreach ($profiles as $pf) {
 			array_push($profile_array, $pf->id);
+		}
 
 		$profile = $this->getCurrentProfile($current_user->id);
 
-		if(in_array($profile['profile'], $profile_array)){
+		if (in_array($profile['profile'], $profile_array)) {
 			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
 			$p 			= $this->isProfileUserSet($current_user->id);
@@ -661,7 +647,7 @@ class EmundusModelProfile extends JModelList
 			$emundus_user->candidature_start      = $profile["start_date"];
 			$emundus_user->candidature_end        = $profile["end_date"];
 			$emundus_user->candidature_posted     = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
-			$emundus_user->candidature_incomplete = (count($incomplete)==0)?0:1;
+			$emundus_user->candidature_incomplete = (!is_array($incomplete) || count($incomplete) == 0)?0:1;
 			$emundus_user->schoolyear             = $profile["year"];
 			$emundus_user->code                   = $profile["training"];
 			$emundus_user->campaign_id            = $campaign["id"];

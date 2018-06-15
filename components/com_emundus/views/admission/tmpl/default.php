@@ -21,8 +21,15 @@ JHTML::_('behavior.tooltip');
 	<div class="row">
 		<div class="col-md-3 side-panel">
 			<div class="panel panel-info" id="em-files-filters">
-				<div class="panel-heading">
-					<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3>
+				<div class="panel-heading" style="height:55px">
+					<div style="float:left; position:absolute">
+						<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
+					</div>
+					<div class="buttons" style="float:right; margin-top:0px">
+						<input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="<?php echo JText::_('SEARCH_BTN');?>"/>&ensp;
+						<input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>&ensp;
+						<button class="btn btn-sm btn-warning" id="save-filter" style="width:50px;" title="<?php echo JText::_('SAVE_FILTER');?>"><i class="ui save icon"></i></button><br/><br/>
+					</div>
 				</div>
 				<div class="panel-body">
 					<?php echo @$this->filters ?>
@@ -90,9 +97,6 @@ JHTML::_('behavior.tooltip');
 </div>
 
 
-
-
-
 <script type="text/javascript">
 
 	var itemId = <?php echo $this->itemId;?>;
@@ -105,13 +109,60 @@ JHTML::_('behavior.tooltip');
 	                  '<?php echo JText::_('COMMENT_SENT')?>'];
 	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>';
 	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>';
+	
+	function checkurl() {
+        var url = $(location).attr('href');
+        url = url.split("#");
+        $('.alert.alert-warning').remove();
+        if (url[1] != null && url[1].length >= 20) {
+            url = url[1].split("|");
+            var fnum = new Object();
+            fnum.fnum = url[0];
+            if (fnum != null && fnum.fnum != "close") {
+                addDimmer();
+                $.ajax({
+                    type:'get',
+                    url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                    dataType:"json",
+                    data:({fnum: fnum.fnum}),
+                    success: function(result)
+                    {
+                        if (result.status && result.fnumInfos != null)
+                        {
+                            console.log(result);
+                            var fnumInfos = result.fnumInfos;
+                            fnum.name = fnumInfos.name;
+                            fnum.label = fnumInfos.label;
+                            openFiles(fnum);
+                        } else {
+                            console.log(result);
+                            $('.em-dimmer').remove();
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        $('.em-dimmer').remove();
+                        $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        console.log(jqXHR.responseText);
+                    }
+                })
+            }
+        }
+
+	}
+	
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
-        refreshFilter();
+
+			checkurl();
+			refreshFilter();
+			reloadActions();
+		
         //search();
         //reloadData('evaluation');
-		reloadActions();
+	
 
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
@@ -122,4 +173,5 @@ JHTML::_('behavior.tooltip');
 		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("CANCEL")?></button></div></div>');
 		});
 	})
+
 </script>

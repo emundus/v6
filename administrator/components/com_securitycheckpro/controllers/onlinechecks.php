@@ -38,7 +38,8 @@ function delete_files()
 {
 	$model = $this->getModel("onlinechecks");
 	$model->delete_files();	
-	JRequest::setVar( 'view', 'onlinechecks' );
+	$jinput = JFactory::getApplication()->input;
+	$jinput->set('view', 'onlinechecks');
 	
 	parent::display();	
 }
@@ -49,7 +50,8 @@ function download_log_file()
 	$model = $this->getModel("onlinechecks");	
 	$model->download_log_file();
 		
-	JRequest::setVar( 'view', 'onlinechecks' );
+	$jinput = JFactory::getApplication()->input;
+	$jinput->set('view', 'onlinechecks');
 		
 	parent::display();	
 		

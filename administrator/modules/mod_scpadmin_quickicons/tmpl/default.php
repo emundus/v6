@@ -7,18 +7,27 @@
 
 defined('_JEXEC') or die;
 
-// Securitycheck Pro Info Module Iconmoon fonts
-/*$iconmoon_css = DIRECTORY_SEPARATOR . "media" . DIRECTORY_SEPARATOR . "com_securitycheckpro" . DIRECTORY_SEPARATOR . "fonts" . DIRECTORY_SEPARATOR . "style.css";
-$document = JFactory::getDocument();
-$document->addStyleSheet($iconmoon_css);*/
-
 $html = JHtml::_('icons.buttons', $buttons);
 ?>
-<?php if (!empty($html)): ?>
-	<div class="j-links-groups">
-		<h2 class="nav-header">Securitycheck Pro Info Module</h2>
-			<ul class="j-links-group nav nav-list">
-				<?php echo $html;?>
-			</ul>
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
+	<?php if (!empty($html)): ?>
+		<div class="j-links-groups">
+			<h2 class="nav-header">Securitycheck Pro Info Module</h2>
+				<ul class="j-links-group nav nav-list">
+					<?php echo $html;?>
+				</ul>
+		</div>
+	<?php endif;?>
+<?php } else { ?>
+	<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
+	
+	<?php if (!empty($html)) : ?>
+	<div class="quick-icons">
+		<?php echo $html; ?>
 	</div>
-<?php endif;?>
+	<?php endif; ?>
+<?php } ?>
+

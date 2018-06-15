@@ -48,9 +48,13 @@ class Buffer
 		{
 			static::$canRegisterWrapper = false;
 
-			// Check for Suhosin
-			$hasSuhosin = false;
+			// Maybe the host has disabled registering stream wrappers altogether?
+			if (!function_exists('stream_wrapper_register'))
+			{
+				return false;
+			}
 
+			// Check for Suhosin
 			if (function_exists('extension_loaded'))
 			{
 				$hasSuhosin = extension_loaded('suhosin');
@@ -134,7 +138,7 @@ class Buffer
 	public function stream_open($path, $mode, $options, &$opened_path)
 	{
 		$url            = parse_url($path);
-		$this->name     = $url['host'];
+		$this->name     = $url['host'] . $url['path'];
 		$this->position = 0;
 
 		if (!isset(static::$buffers[ $this->name ]))

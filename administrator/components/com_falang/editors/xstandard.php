@@ -19,6 +19,10 @@ defined('_JEXEC') or die;
 					srcEl = document.getElementById("original_value_"+value);
 					innerHTML = srcEl.innerHTML;
 				}
+                if (action=="translate") {
+                    srcEl = document.getElementById("original_value_"+value);
+                    innerHTML = translateService(srcEl.innerHTML);
+                }
 				editorobj = document.getElementById("editor_"+value);
 				editorobj.value = innerHTML;
 			}

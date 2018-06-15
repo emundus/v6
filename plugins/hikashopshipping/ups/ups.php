@@ -764,8 +764,8 @@ function checkAllBox(id, type){
 		<ShipmentServiceOptions />
 	</Shipment>
 </RatingServiceSelectionRequest>';
-
-		if(@$rate->shipping_params->debug)
+		$ctrl = hikaInput::get()->getString('ctrl','');
+		if(@$rate->shipping_params->debug && $ctrl == 'checkout')
 			echo '<!-- '. $xml. ' -->'."\r\n"; // THIS LINE IS FOR DEBUG PURPOSES ONLY-IT WILL SHOW IN HTML COMMENTS
 
 		$session = curl_init("https://onlinetools.ups.com/ups.app/xml/Rate");
@@ -789,7 +789,7 @@ function checkAllBox(id, type){
 			return false;
 		}
 
-		if(@$rate->shipping_params->debug)
+		if(@$rate->shipping_params->debug && $ctrl == 'checkout')
 			echo '<!-- '. $result. ' -->'; // THIS LINE IS FOR DEBUG PURPOSES ONLY-IT WILL SHOW IN HTML COMMENTS
 
 		$xml_data = strstr($result, '<?');

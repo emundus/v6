@@ -33,7 +33,7 @@ $current_user = JFactory::getuser();
 $user = JFactory::getSession()->get('emundusUser');
 
 $app = JFactory::getApplication();
-//$fnum = $app->input->getString('fnum', null);
+$fnum = $app->input->getString('fnum', null);
 
 $m_users = new EmundusModelUsers;
 $applicant_profiles = $m_users->getApplicantProfiles();
@@ -81,14 +81,11 @@ if (!empty($t__)) {
 	$res = $db->loadObjectList();
 
 
-	if (count($res > 0)) {
+	if (!empty($res)) {
 		$tab = array();
+		$link = $res[0]->link.'&Itemid='.$res[0]->id;
 
 		if ($user->applicant == 1) {
-			$link = $res[0]->link.'&Itemid='.$res[0]->id;
-			if (!empty($fnum)) {
-				$app->redirect( $link );
-			}
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
 		}
 		else {
@@ -116,7 +113,7 @@ if (!empty($t__)) {
 
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.'</a>';
 			if($is_text == '1')
-				$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
+				$str .= '<br/><a class="text" href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$r->title.'</a>';
 			$tab[] = $str;
 			$j++;
 		}
@@ -144,17 +141,13 @@ if (!empty($t__)) {
 	$db->setQuery($query);
 	$res = $db->loadObjectList();
 
-	if (count($res > 0)) {
+	if (!empty($res)) {
 		$tab = array();
 		$tab_temp = array();
+		$link = $res[0]->link.'&Itemid='.$res[0]->id;
 
 		if ($user->applicant == 1){
 			$module_title = $show_title;
-			$link = $res[0]->link.'&Itemid='.$res[0]->id;
-			if (!empty($fnum)) {
-				$app->redirect( $link );
-				exit();
-			}
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
 		} else {
 			$module_title = '';
@@ -182,8 +175,11 @@ if (!empty($t__)) {
 	}
 
 }
+if (!empty($fnum)) {
+	$app->redirect( $link );
+}
 
-if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+if (!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
 }
 

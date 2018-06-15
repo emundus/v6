@@ -41,7 +41,8 @@ function __construct()
  
 	// Obtenemos las variables de paginación de la petición
 	$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-	$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+	$jinput = JFactory::getApplication()->input;
+	$limitstart = $jinput->set('limitstart', 0, 'int');
 
 	// En el caso de que los límites hayan cambiado, los volvemos a ajustar
 	$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);

@@ -49,7 +49,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
-	    $menu = @JSite::getMenu();
+	    $menu = @JFactory::getApplication()->getMenu();
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 
@@ -268,7 +268,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 							}
 
-						} if (count(@$colsSup) > 0) {
+						} if (isset($colsSup) && is_array($colsSup) && count(@$colsSup) > 0) {
 
 							foreach ($colsSup as $key => $obj) {
 

@@ -1035,7 +1035,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1804261416] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1806011004] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -2843,8 +2843,12 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 
 		$this->locale = strtolower(substr($lang->get('tag'), 0, 2));
 
+		$this->url_itemid = '';
+		if(empty($order->customer->user_cms_id))
+			$this->url_itemid = '&order_token='.$order->order_token;
+
 		global $Itemid;
-		$this->url_itemid = empty($Itemid) ? '' : '&Itemid=' . $Itemid;
+		$this->url_itemid .= empty($Itemid) ? '' : '&Itemid=' . $Itemid;
 
 		$billing_address = $this->app->getUserState(HIKASHOP_COMPONENT.'.billing_address');
 		if(isset($order->cart_billing_address_id))

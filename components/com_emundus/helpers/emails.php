@@ -362,7 +362,7 @@ class EmundusHelperEmails
 
 	function getEmail($lbl)
 	{
-		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl='.$this->_db->Quote($lbl);
+		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl like '.$this->_db->Quote($lbl);
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}

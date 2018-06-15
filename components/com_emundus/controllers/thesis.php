@@ -168,7 +168,7 @@ class EmundusControllerThesis extends EmundusController {
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
-            $menu = & JSite::getMenu();
+            $menu = & JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);
@@ -209,7 +209,7 @@ class EmundusControllerThesis extends EmundusController {
             }
 
             // Redirect to the list screen.
-            $menu = & JSite::getMenu();
+            $menu = & JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);

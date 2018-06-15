@@ -679,6 +679,7 @@ class ConfigController extends hikashopController {
 		$name = hikaInput::get()->get('name', '');
 		if(empty($name))
 			exit;
+		hikashop_cleanBuffers();
 		$checkout_workflowType = hikashop_get('type.checkout_workflow');
 		echo $checkout_workflowType->newBlock($name);
 		exit;
@@ -688,6 +689,7 @@ class ConfigController extends hikashopController {
 		$num = hikaInput::get()->getInt('num', -1);
 		if($num < 0)
 			exit;
+		hikashop_cleanBuffers();
 		$checkout_workflowType = hikashop_get('type.checkout_workflow');
 		echo $checkout_workflowType->newStep($num);
 		exit;

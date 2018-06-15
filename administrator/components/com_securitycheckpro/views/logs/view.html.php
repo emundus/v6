@@ -51,16 +51,10 @@ $listDirn = $this->state->get('list.direction');
 $listOrder = $this->state->get('list.ordering');
 
 //  Parámetros del componente
-$items= $this->get('Items');
-$this->pagination = $this->get('Pagination');
+$this->items= $this->get('Items');
 
-// ... y los ponemos en el template
-$this->assignRef('items',$items);
-
-if ( !empty($items) ) {
-	$pagination = $this->get('Pagination');
-	$this->assignRef('pagination', $pagination);	
-	
+if ( !empty($this->items) ) {
+	$this->pagination = $this->get('Pagination');	
 }
 		
 // Obtenemos los parámetros del plugin...
@@ -80,9 +74,9 @@ if ( !is_null($config['logs_attacks']) ) {
 }
 				
 // ... y los ponemos en el template
-$this->assignRef('logs_attacks',$logs_attacks);	
-$this->assignRef('logs_pending', $logs_pending);
-$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);					
+$this->logs_attacks = $logs_attacks;	
+$this->logs_pending = $logs_pending;
+$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
 parent::display($tpl);
 }

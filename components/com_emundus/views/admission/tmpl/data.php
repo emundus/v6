@@ -208,7 +208,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 </div>
 <script type="text/javascript">
     //refreshFilter();
-    function checkurl() {
+    /*function checkurl() {
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
@@ -248,7 +248,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
             }
         }
 
-    }
+    }*/
     $(document).ready(function(){
         //checkurl();
         $('#rt-mainbody-surround').children().addClass('mainemundus');

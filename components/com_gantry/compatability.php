@@ -2,7 +2,7 @@
 /**
  * @version   $Id: compatability.php 8556 2013-03-20 00:26:23Z steph $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('_JEXEC') or die('Restricted access');
@@ -10,7 +10,6 @@ defined('_JEXEC') or die('Restricted access');
 if (!class_exists('GantryLegacyJView', false)) {
     $jversion = new JVersion();
     if (version_compare($jversion->getShortVersion(), '2.5.5', '>')) {
-	{
 		class GantryLegacyJView extends JViewLegacy
 		{
 		}

@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 function booleanlist( $name, $attribs = null, $selected = null, $id=false )
 {
@@ -48,16 +48,21 @@ $site_url = JURI::base();
 
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
+<!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -156,7 +161,7 @@ function getStoredValue(key) {
 window.onload = function() {
 	hideIt();
 	ActiveTabHtaccess = getStoredValue('active_htaccess');
-			
+				
 	if (ActiveTabHtaccess) {
 		$('.nav-tabs a[href="#' + ActiveTabHtaccess + '"]').parent().addClass('active');
 		$('.nav-tabs a[href="#' + ActiveTabHtaccess + '"]').tab('show');
@@ -210,6 +215,10 @@ function hideIt(){
 		jQuery("#menu_hide_backend_2").hide();
 		jQuery("#menu_hide_backend_3").hide();
 		jQuery("#menu_hide_backend_4").hide();
+		jQuery("#block").hide();
+		jQuery("#block2").hide();
+		jQuery("#block3").hide();
+		jQuery("#block4").hide();
 		document.getElementById("hide_backend_url").value = "";
 		document.getElementById("backend_exceptions").value = "";		
 		document.getElementById("backend_protection_applied").value = "1";
@@ -218,6 +227,10 @@ function hideIt(){
 		jQuery("#menu_hide_backend_2").show();
 		jQuery("#menu_hide_backend_3").show();
 		jQuery("#menu_hide_backend_4").show();
+		jQuery("#block").show();
+		jQuery("#block2").show();
+		jQuery("#block3").show();
+		jQuery("#block4").show();
 		document.getElementById("backend_protection_applied").value = "0";
 	}	
 }
@@ -243,10 +256,10 @@ function hideIt(){
 			<?php
 				if ( ($this->server == 'apache') || ($this->server == 'iis') ){
 			?>
-			<div class="alert alert-warn">
+			<div class="alert alert-warning">
 				<?php echo JText::_('COM_SECURITYCHECKPRO_USER_AGENT_INTRO'); ?>
 			</div>
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				<?php echo JText::_('COM_SECURITYCHECKPRO_USER_AGENT_WARN'); ?>	
 			</div>
 			<div class="alert alert-info">
@@ -259,7 +272,7 @@ function hideIt(){
 			<?php
 				} else if ($this->server == 'nginx'){
 			?>
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				<?php echo JText::_('COM_SECURITYCHECKPRO_NGINX_SERVER'); ?>	
 			</div>
 			<?php
@@ -267,7 +280,7 @@ function hideIt(){
 			?>
 			
 			<!-- Contenido principal -->			
-			<div>	
+			<div style="overflow-x: auto;">	
 				<ul class="nav nav-tabs" role="tablist" id="protectionTab">
 					<li class="nav-item" onclick="SetActiveTabHtaccess('autoprotection');">
 						<a class="nav-link active" href="#autoprotection" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_PROTECTION_AUTOPROTECTION_TEXT'); ?></a>
@@ -289,7 +302,7 @@ function hideIt(){
 					</li>					
 				</ul>
 				
-				<div class="tab-content">
+				<div class="tab-content" style="overflow: auto;">
 					<div class="tab-pane show active" id="autoprotection" role="tabpanel">
 						<div class="control-group">
 							<label for="own_banned_list" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_TEXT'); ?></label>
@@ -297,12 +310,13 @@ function hideIt(){
 								<?php echo booleanlist('prevent_access', array(), $this->protection_config['prevent_access']) ?>
 								<?php if ( $this->config_applied['prevent_access'] ) {?>
 									<span class="help-inline">
-									<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+									<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-						<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN') ?></footer></blockquote>
+						
 						
 						<div class="control-group">
 							<label for="own_banned_list" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_TEXT'); ?></label>
@@ -310,12 +324,12 @@ function hideIt(){
 								<?php echo booleanlist('prevent_unauthorized_browsing', array(), $this->protection_config['prevent_unauthorized_browsing']) ?>
 								<?php if ( $this->config_applied['prevent_unauthorized_browsing'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-						<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
 							<label for="own_banned_list" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_TEXT'); ?></label>
@@ -323,12 +337,12 @@ function hideIt(){
 								<?php echo booleanlist('file_injection_protection', array(), $this->protection_config['file_injection_protection']) ?>
 								<?php if ( $this->config_applied['file_injection_protection'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-						<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
 							<label for="own_banned_list" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_TEXT'); ?></label>
@@ -336,17 +350,17 @@ function hideIt(){
 								<?php echo booleanlist('self_environ', array(), $this->protection_config['self_environ']) ?>
 								<?php if ( $this->config_applied['self_environ'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-						<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN') ?></small></p></blockquote>
 						</div>	
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN') ?></footer></blockquote>
 					<!-- autoprotection tab end -->
 					</div>
 					
 					<div class="tab-pane" id="headers_protection" role="tabpanel">
-						<div class="alert alert-error">
+						<div class="alert alert-danger">
 							<?php echo JText::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_EXPLAIN'); ?>	
 						</div>
 						
@@ -356,24 +370,25 @@ function hideIt(){
 								<?php echo xframeoptions('xframe_options', array(), $this->protection_config['xframe_options']) ?>
 								<?php if ( $this->config_applied['xframe_options'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN') ?></footer></blockquote>
+						
 						<div class="control-group">
 							<label for="prevent_mime_attacks" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_TEXT'); ?></label>
 							<div class="controls controls-row">
 								<?php echo booleanlist('prevent_mime_attacks', array(), $this->protection_config['prevent_mime_attacks']) ?>
 								<?php if ( $this->config_applied['prevent_mime_attacks'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN') ?></footer></blockquote>
 					<!-- headers_protection tab end -->
 					</div>
 						
@@ -411,13 +426,13 @@ function hideIt(){
 								<?php echo booleanlist('default_banned_list', array(), $this->protection_config['default_banned_list']) ?>
 								<?php if ( $this->config_applied['default_banned_list'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-						<input class="btn btn-primary" style="margin-bottom: 10px;" type="button" id="boton_deafult_user_agent" value="<?php echo JText::_('COM_SECURITYCHECKPRO_EDIT_DEFAULT_USER_AGENTS'); ?>" onclick= "muestra_default_user_agent();" />				
-						<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<input class="btn btn-primary" style="margin-bottom: 10px;" type="button" id="boton_default_user_agent" value="<?php echo JText::_('COM_SECURITYCHECKPRO_EDIT_DEFAULT_USER_AGENTS'); ?>" onclick= "muestra_default_user_agent();" />
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
 							<label for="own_banned_list" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_TEXT'); ?></label>
@@ -425,30 +440,30 @@ function hideIt(){
 								<textarea rows="5" cols="55" name="own_banned_list" id="own_banned_list"><?php echo $this->protection_config['own_banned_list'] ?></textarea>
 								<?php if ( $this->config_applied['own_banned_list'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-						<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
 							<label for="own_code" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_OWN_CODE_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_OWN_CODE_TEXT'); ?></label>
 							<div class="controls controls-row">
-								<textarea rows="5" cols="110" name="own_code" id="own_code"><?php echo $this->protection_config['own_code'] ?></textarea>
+								<textarea rows="5" cols="60" name="own_code" id="own_code"><?php echo $this->protection_config['own_code'] ?></textarea>
 								<?php if ( $this->config_applied['own_code'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-						<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_OWN_CODE_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_OWN_CODE_EXPLAIN') ?></footer></blockquote>
 					<!-- headers_protection tab end -->
 					</div>						
 		
 					<div class="tab-pane" id="fingerprinting" role="tabpanel">
-						<div class="alert alert-error">
+						<div class="alert alert-danger">
 							<?php echo JText::_('COM_SECURITYCHECKPRO_FINGERPRINTING_EXPLAIN'); ?>	
 						</div>
 						<div class="control-group">
@@ -457,24 +472,26 @@ function hideIt(){
 								<?php echo booleanlist('disable_server_signature', array(), $this->protection_config['disable_server_signature']) ?>
 								<?php if ( $this->config_applied['disable_server_signature'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN') ?></footer></blockquote>
+						
 						<div class="control-group">
 							<label for="disallow_php_eggs" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_TEXT'); ?></label>
 							<div class="controls controls-row">
 								<?php echo booleanlist('disallow_php_eggs', array(), $this->protection_config['disallow_php_eggs']) ?>
 								<?php if ( $this->config_applied['disallow_php_eggs'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>				
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN') ?></footer></blockquote>
+						
 						<div class="control-group">
 							<label for="disallow_sensible_files_access" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_TEXT'); ?></label>
 							<div class="controls controls-row">
@@ -484,98 +501,130 @@ function hideIt(){
 								<textarea rows="5" cols="110" name="disallow_sensible_files_access" id="disallow_sensible_files_access"><?php echo $this->protection_config['disallow_sensible_files_access'] ?></textarea>
 								<?php if ( $this->config_applied['disallow_sensible_files_access'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_EXPLAIN') ?></small></p></blockquote>
 						</div>	
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_EXPLAIN') ?></footer></blockquote>
 					<!-- fingerprinting tab end -->
 					</div>
 										
 					<div class="tab-pane" id="backend_protection" role="tabpanel">
 						<div class="control-group">
+						
 							<label for="hide_backend_url" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_TEXT'); ?></label>
 							<div class="controls controls-row">
 								<input id="backend_protection_applied" name="backend_protection_applied" type="checkbox" onchange="hideIt();" <?php if ($this->protection_config['backend_protection_applied']) { ?> checked <?php } ?> />
 							</div>
-							<blockquote><p class="text-info" style="margin-bottom: 10px;"><small><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_EXPLAIN') ?></footer></blockquote>
 						
-						<div id="menu_hide_backend_1" class="alert alert-error">
+						<div id="menu_hide_backend_1" class="alert alert-danger">
 							<?php echo JText::_('COM_SECURITYCHECKPRO_BACKEND_PROTECTION_EXPLAIN'); ?>	
 						</div>
 						
 						<div id="menu_hide_backend_2" class="control-group">
 							<label for="hide_backend_url" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_TEXT'); ?></label>
 							<div class="controls controls-row">
-								<div class="input-prepend">
-									<span class="add-on" style="background-color: #FFBF60;"><?php echo $site_url ?>?</span>
-									<input class="input-large" type="text" name="hide_backend_url" id="hide_backend_url" value="<?php echo $this->protection_config['hide_backend_url']?>" placeholder="<?php echo $this->protection_config['hide_backend_url'] ?>">
-								</div>
-								<?php
-								// Obtenemos la longitud de la clave que tenemos que generar
-								$params = JComponentHelper::getParams('com_securitycheckpro');
-								$size = $params->get('secret_key_length',20);				
+								<?php 
+									if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
 								?>
-								<input type='button' class="btn btn-primary" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("hide_backend_url").value = Password.generate(<?php echo $size; ?>)' />				
+									<div class="input-prepend">
+										<span class="add-on" style="background-color: #FFBF60;"><?php echo $site_url ?>?</span>
+										<input class="input-large" type="text" name="hide_backend_url" id="hide_backend_url" value="<?php echo $this->protection_config['hide_backend_url']?>" placeholder="<?php echo $this->protection_config['hide_backend_url'] ?>">
+								<?php } else {	?>
+									<div class="input-group">
+										<span class="input-group-addon" style="background-color: #FFBF60;"><?php echo $site_url ?>?</span>
+										<input class="input-large" type="text" name="hide_backend_url" id="hide_backend_url" value="<?php echo $this->protection_config['hide_backend_url']?>" placeholder="<?php echo $this->protection_config['hide_backend_url'] ?>">									
+																									
+								<?php } ?>
+								<?php
+										// Obtenemos la longitud de la clave que tenemos que generar
+										$params = JComponentHelper::getParams('com_securitycheckpro');
+										$size = $params->get('secret_key_length',20);				
+										?>
+										<input type='button' class="btn btn-primary" style="margin-left: 10px;" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("hide_backend_url").value = Password.generate(<?php echo $size; ?>)' />
+								</div>
 								<?php if ( $this->config_applied['hide_backend_url'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>				
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_EXPLAIN') ?></small></p></blockquote>				
 						</div>
+						<blockquote class="blockquote" id="block2"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_EXPLAIN') ?></footer></blockquote>
 						
 						<div id="menu_hide_backend_3" class="control-group">
 							<label for="hide_backend_url_redirection" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_TEXT'); ?></label>
 							<div class="controls controls-row">
-								<div class="input-prepend">
-									<span class="add-on" style="background-color: #D0F5A9;"><?php echo "/" ?></span>
-									<input class="input-large" type="text" name="hide_backend_url_redirection" id="hide_backend_url_redirection" value="<?php echo $this->protection_config['hide_backend_url_redirection']?>" placeholder="not_found">
+								<?php 
+									if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
+								?>
+									<div class="input-prepend">
+										<span class="add-on" style="background-color: #D0F5A9;"><?php echo "/" ?></span>
+										<input class="input-large" type="text" name="hide_backend_url_redirection" id="hide_backend_url_redirection" value="<?php echo $this->protection_config['hide_backend_url_redirection']?>" placeholder="not_found">
+								<?php } else {	?>
+									<div class="input-group">
+										<span class="input-group-addon" style="background-color: #D0F5A9;"><?php echo "/" ?></span>
+										<input class="input-large" type="text" name="hide_backend_url_redirection" id="hide_backend_url_redirection" value="<?php echo $this->protection_config['hide_backend_url_redirection']?>" placeholder="not_found">
+								<?php } ?>
 								</div>							
 								<?php if ( $this->config_applied['hide_backend_url_redirection'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>				
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_EXPLAIN') ?></small></p></blockquote>	
 						</div>
+						<blockquote class="blockquote" id="block3"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_EXPLAIN') ?></footer></blockquote>
 						
 						<div id="menu_hide_backend_4" class="control-group">
 							<label for="add_exception" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_EXCEPTIONS') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_EXCEPTIONS'); ?></label>
-							<div class="controls controls-row">
-								<textarea readonly rows="5" cols="110" name="backend_exceptions" id="backend_exceptions"><?php echo $this->protection_config['backend_exceptions'] ?></textarea>
-								<div class="input-append">
-									<input class="span8" type="text" name="exception" id="exception" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_YOUR_EXCEPTION_HERE') ?>">
-									<div class="btn-group">
-										<button class="btn dropdown-toggle" data-toggle="dropdown">
-											<?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?>
-											<span class="caret"></span>
-										</button>
-										<ul class="dropdown-menu">
-											<li>
-												<a href="#backend_exceptions" onclick="add_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
-											</li>							
-											<li>
-												<a href="#backend_exceptions" onclick="delete_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>
-											</li>
-											<li>
-												<a href="#backend_exceptions" onclick="delete_all();"><?php echo JText::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>
-											</li>
-										</ul>						
+							<div class="row">
+								<div class="col-lg-3">
+									<textarea readonly rows="5" cols="30" name="backend_exceptions" id="backend_exceptions"><?php echo $this->protection_config['backend_exceptions'] ?></textarea>							
+								</div>
+								<div class="col-lg-3" style="margin-left: 60px; margin-top: 50px;">
+									<div class="input-group">
+									  <input class="span8" type="text" name="exception" id="exception" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_YOUR_EXCEPTION_HERE') ?>">
+										<div class="input-group-btn">
+											<?php 
+												if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+											?>
+												<div class="btn-group">
+													<button class="btn dropdown-toggle" data-toggle="dropdown">
+														<?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?>
+														<span class="caret"></span>
+													</button>
+													<ul class="dropdown-menu">
+														<li>
+															<a href="#backend_exceptions" onclick="add_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
+														</li>							
+														<li>
+															<a href="#backend_exceptions" onclick="delete_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>
+														</li>
+														<li>
+															<a href="#backend_exceptions" onclick="delete_all();"><?php echo JText::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>
+														</li>
+													</ul>						
+												</div>
+												<?php } else {	?>
+													<button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													  <?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?>
+													</button>
+													<div class="dropdown-menu dropdown-menu-right">
+														<a class="dropdown-item" href="#backend_exceptions" onclick="add_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
+														<a class="dropdown-item" href="#backend_exceptions" onclick="delete_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>
+														<a class="dropdown-item" href="#backend_exceptions" onclick="delete_all();"><?php echo JText::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>									  
+													</div>
+												<?php	} 	?>
+										</div>
 									</div>
-									<?php if ( $this->config_applied['backend_exceptions'] ) {?>
-										<span class="help-inline">
-											<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
-										</span>
-									<?php } ?>									
-								</div>				
-							</div>		
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_EXPLAIN') ?></small></p></blockquote>
+								</div>
+							</div>
 						</div>
+						<blockquote class="blockquote" id="block4"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_EXPLAIN') ?></footer></blockquote>
 					<!-- backend_protection tab end -->
 					</div>
 					
@@ -586,12 +635,12 @@ function hideIt(){
 								<?php echo booleanlist('optimal_expiration_time', array(), $this->protection_config['optimal_expiration_time']) ?>
 								<?php if ( $this->config_applied['optimal_expiration_time'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_OPTIMAL_EXPIRATION_TIME_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_OPTIMAL_EXPIRATION_TIME_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
 							<label for="compress_content" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_TEXT'); ?></label>
@@ -599,12 +648,12 @@ function hideIt(){
 								<?php echo booleanlist('compress_content', array(), $this->protection_config['compress_content']) ?>
 								<?php if ( $this->config_applied['compress_content'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_EXPLAIN') ?></small></p></blockquote>
 						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
 							<label for="redirect_to_www" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_TEXT'); ?></label>
@@ -612,12 +661,12 @@ function hideIt(){
 								<?php echo booleanlist('redirect_to_www', array(), $this->protection_config['redirect_to_www']) ?>
 								<?php if ( $this->config_applied['redirect_to_www'] ) {?>
 									<span class="help-inline">
-										<span class="badge badge-success"><i class="fa fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
 									</span>
 								<?php } ?>
 							</div>
-							<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_EXPLAIN') ?></small></p></blockquote>
-						</div>					
+						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_EXPLAIN') ?></footer></blockquote>						
 					<!-- performance tab end -->
 					</div>
 				<!-- tab-content end -->

@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
 // Load plugin language
 $lang2 = JFactory::getLanguage();
@@ -43,8 +43,14 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<?php 
+if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<?php } else { ?>
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
+<?php } ?>
 <!-- Custom fonts for this template-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
@@ -111,18 +117,18 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			<div class="card mb-3">
 					<div class="card-body">
 						<?php if ( ($this->update_database_plugin_exists) && ($this->update_database_plugin_enabled) && ($this->database_message == "PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED") ) { ?>						
-						<div class="label label-success">
+						<div class="badge badge-success">
 							<h4><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME_UPDATES' ); ?></h4>
 							<p><strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_DATABASE_VERSION' ); ?></strong><?php echo($this->database_version); ?></p>
 							<p><strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_CHECK' ); ?></strong><?php echo($this->last_check); ?></p>
 						</div>
 						<?php } else if ( ($this->update_database_plugin_exists) && ($this->update_database_plugin_enabled) && (is_null($this->database_message)) ) { ?>
-							<div class="label label-success">
+							<div class="badge badge-success">
 								<h4><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME_UPDATES' ); ?></h4>
 								<p><strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_LAUNCHED' ); ?></strong></p>						
 							</div>
 						<?php } else if ( ($this->update_database_plugin_exists) && ($this->update_database_plugin_enabled) && ( !($this->database_message == "PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED") && !(is_null($this->database_message) )) ) { ?>							
-							<div class="label label-important">
+							<div class="badge badge-important">
 								<h4><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_PROBLEM' ); ?></h4>
 								<p><strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_DATABASE_MESSAGE' ); ?></strong><?php echo JText::_( $this->database_message ); ?></p>
 								<?php
@@ -135,12 +141,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 										
 							</div>	
 						<?php } else if ( ($this->update_database_plugin_exists) && (!$this->update_database_plugin_enabled) ) { ?>
-							<div class="label label-warning">
+							<div class="badge badge-warning">
 								<h4><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME' ); ?></h4>
 								<p><strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_DISABLED' ); ?></strong></p>						
 							</div>
 						<?php } else if ( !($this->update_database_plugin_exists) ) { ?>
-							<div class="label label-info">
+							<div class="badge badge-info">
 								<h4><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_INSTALLED' ); ?></h4>
 								<p><strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_RECEIVE' ); ?></strong></p>			
 							</div>						
@@ -151,21 +157,21 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			<!-- Extensions table -->
 			<div class="card mb-3">
 				<div id="editcell">
-					<table class="table table-striped">
-						<caption style="font-weight:bold; font-size:10pt; text-center;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></caption>
+					<div style="font-weight:bold; font-size:10pt; text-align:center;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
+					<table class="table table-striped">						
 						<thead>
 							<tr>
-								<td><span class="label label-success"> </span>
+								<td><span class="badge badge-success"> </span>
 								</td>
 								<td>
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_GREEN_COLOR' ); ?>
 								</td>
-								<td><span class="label label-warning"> </span>
+								<td><span class="badge badge-warning"> </span>
 								</td>
 								<td>
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_YELLOW_COLOR' ); ?>
 								</td>
-								<td><span class="label label-important"> </span>
+								<td><span class="badge badge-important"> </span>
 								</td>
 								<td>
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_RED_COLOR' ); ?>
@@ -176,11 +182,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 				</div>
 				
 				<div style="margin-left: 10px; margin-right: 10px;">
-					<select name="filter_extension_type" class="inputbox" onchange="this.form.submit()">
+					<select name="filter_extension_type" class="custom-select" onchange="this.form.submit()">
 						<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
 						<?php echo JHtml::_('select.options', $type_array, 'value', 'text', $this->state->get('filter.extension_type'));?>
 					</select>
-					<select name="filter_vulnerable" class="inputbox" onchange="this.form.submit()">
+					<select name="filter_vulnerable" class="custom-select" onchange="this.form.submit()">
 						<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITIES');?></option>
 						<?php echo JHtml::_('select.options', $vulnerable_array, 'value', 'text', $this->state->get('filter.vulnerable'));?>
 					</select>
@@ -237,13 +243,13 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 									<td class="text-center">
 								<?php
 									if ( $type == 'core' ) {
-									 echo "<span class=\"label\" style=\"background-color: #FFADF5; \">";
+									 echo "<span class=\"badge\" style=\"background-color: #FFADF5; \">";
 									} else if ( $type == 'component' ) {
-									 echo "<span class=\"label label-info\">";
+									 echo "<span class=\"badge badge-info\">";
 									} else if ( $type == 'module' ) {
-									 echo "<span class=\"label\">";
+									 echo "<span class=\"badge\">";
 									} else {
-									 echo "<span class=\"label label-inverse\">";
+									 echo "<span class=\"badge badge-inverse\">";
 									}
 								?>
 								<?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_' . $row->sc_type); ?>
@@ -259,13 +265,13 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 							<?php
 							if ( $vulnerable == 'Si' )
 							{
-							 echo "<span class=\"label label-important\">";
+							 echo "<span class=\"badge badge-important\">";
 							} else if ( $vulnerable == 'Indefinido' )
 							{
-							 echo "<span class=\"label label-warning\">";
+							 echo "<span class=\"badge badge-warning\">";
 							} else
 							{
-							 echo "<span class=\"label label-success\">";
+							 echo "<span class=\"badge badge-success\">";
 							}
 							?>
 							<?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABLE_' . $row->Vulnerable); ?>

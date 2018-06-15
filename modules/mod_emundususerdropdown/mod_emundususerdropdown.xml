@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.8.8" client="site" method="upgrade">
+	<name>mod_emundususerdropdown</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>June 2018</creationDate>
+    <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>6.0</version>
+	<description>Displays a small dropdown menu for user actions.</description>
+	<files>
+		<filename module="mod_emundususerdropdown">mod_emundususerdropdown.php</filename>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+		<filename>helper.php</filename>
+		<filename>index.html</filename>
+		<filename>mod_emundususerdropdown.xml</filename>
+	</files>
+
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="menu_name" type="text" default="0" size="5" label="COM_EMUNDUS_USERDROPDOWN_MENU_NAME" description="COM_EMUNDUS_USERDROPDOWN_MENU_NAME_DESC" />
+				<field name="primary_color" type="text" default="ECF0F1" size="5" label="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR_DESC" />
+				<field name="secondary_color" type="text" default="F89406" size="5" label="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

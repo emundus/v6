@@ -208,16 +208,11 @@ class EmundusModelApplication extends JModelList
     }
 
     public function deleteComment($id){
-        $query = 'SELECT user_id FROM #__emundus_comments WHERE id="'.$id.'"';
-        $this->_db->setQuery( $query );
-        $result=$this->_db->loadResult();
-        if($result==$this->_user->id){
-            $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
-            $this->_db->setQuery($query);
-            return $this->_db->Query();
-        }else{
-            return -1;
-        }
+       
+        $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
+        $this->_db->setQuery($query);
+        return $this->_db->Query();
+       
     }
 
     public function deleteTag($id_tag, $fnum){
@@ -960,8 +955,11 @@ class EmundusModelApplication extends JModelList
                                     $forms .= '<tr>';
                                     $j = 0;
                                     foreach ($r_element as $key => $r_elt) {
-                                        $params = json_decode($elements[$j]->params);
-                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+
+                                    	if (!empty($elements[$j]))
+                                            $params = json_decode($elements[$j]->params);
+
+                                    	if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $elt = date($params->date_form_format, strtotime($r_elt));
@@ -970,13 +968,13 @@ class EmundusModelApplication extends JModelList
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt>0) {
                                                 $format = 'Y-n-j';
                                                 $d = DateTime::createFromFormat($format, $r_elt);
-                                                if($d && $d->format($format) == $r_elt)
+                                                if ($d && $d->format($format) == $r_elt)
                                                     $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
                                                 else
                                                     $elt = $r_elt;
                                             }
 
-                                            elseif($elements[$j]->plugin == 'databasejoin') {
+                                            elseif ($elements[$j]->plugin == 'databasejoin') {
                                                 $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
@@ -2314,38 +2312,38 @@ td {
 
     /**
      * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
-     * If $sent is sent to true, the function will search for orders with a status of 'created'
+     * If $sent is sent to true, the function will search for orders with a status of 'created' and offline paiement methode
      * @param $fnumInfos $sent
      * @return bool|mixed
      */
     public function getHikashopOrder($fnumInfos, $sent=false)
     {
         $dbo = $this->getDbo();
-        try {
 
-            if ($sent) {
+        if ($sent) {
 
-                $query = 'SELECT ho.*, hu.user_cms_id
-                    FROM #__hikashop_order ho
-                    LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                    WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                    AND ho.order_status like "created"
-                    AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
-                    ORDER BY ho.order_created desc';
+            $query = 'SELECT ho.*, hu.user_cms_id
+                FROM #__hikashop_order ho
+                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                AND ho.order_status like "created" AND (ho.order_payment_method like "banktransfer" OR ho.order_payment_method like "check")
+                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
+                AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                ORDER BY ho.order_created desc';
 
-            } else {
+        } else {
 
-                $query = 'SELECT ho.*, hu.user_cms_id
-                    FROM #__hikashop_order ho
-                    LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                    WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                    AND ho.order_status like "confirmed"
-                    AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
-                    ORDER BY ho.order_created desc';
-            }
+            $query = 'SELECT ho.*, hu.user_cms_id
+                FROM #__hikashop_order ho
+                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                AND ho.order_status like "confirmed"
+                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
+                AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                ORDER BY ho.order_created desc';
+        }
 
+	    try {
 
             $dbo->setQuery($query);
             return $dbo->loadObject();
@@ -2681,7 +2679,7 @@ $q=2;
 
     /**
      * Check if iframe can be used
-     * @param $url             String     url to check
+     * @param $url String url to check
      * @return bool
      */
     function allowEmbed($url) {
@@ -2697,5 +2695,33 @@ $q=2;
 
         // Everything passed? Return true!
         return true;
+    }
+
+    /**
+     * Gets the first page of the application form. Used for opening a file.
+     * @return String The URL to the form.
+     * @since 3.8.8
+     */
+    function getFirstPage() {
+
+    	$user = JFactory::getSession()->get('emundusUser');
+    	$db = JFactory::getDBo();
+
+    	if (empty($user->menutype))
+    		return 'index.php';
+
+    	$query = $db->getQuery(true);
+    	$query->select(['id','link'])
+		    ->from($db->quoteName('#__menu'))
+	        ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"');
+
+	    try {
+		    $db->setQuery($query);
+		    $res = $db->loadObject();
+		    return $res->link.'&Itemid='.$res->id;
+	    } catch (Exception $e) {
+	    	JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	    }
+
     }
 }

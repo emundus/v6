@@ -9,10 +9,9 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/controller.php';
 JLoader::import( 'helpers.controllerHelper',FALANG_ADMINPATH);
 
-class ElementsController extends LegacyController   {
+class ElementsController extends JControllerLegacy   {
 
 	/** @var string		current used task */
 	var $task=null;

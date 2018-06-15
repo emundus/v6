@@ -63,6 +63,9 @@ class ControlPanel extends Controller
 		// Update the magic parameters
 		$model->updateMagicParameters();
 
+		// Delete the old log files if logging is disabled
+		$model->deleteOldLogs();
+
 		// Refresh the update site definitions if required. Also takes into account any change of the Download ID
 		// in the Options.
 		/** @var Updates $updateModel */
@@ -183,12 +186,15 @@ ENDRESULT;
 
 	public function unblockme()
 	{
-		$externalIP = $this->input->getString('ip', '');
+		$unblockIP[] = $this->input->getString('ip', '');
 
 		/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $model */
 		$model = $this->getModel();
+		$unblockIP[] = $model->getVisitorIP();
 
-		$model->unblockMyIP($externalIP);
+		/** @var \Akeeba\AdminTools\Admin\Model\UnblockIP $unblockModel */
+		$unblockModel = $this->container->factory->model('UnblockIP')->tmpInstance();
+		$unblockModel->unblockIP($unblockIP);
 
 		$this->setRedirect('index.php?option=com_admintools', JText::_('COM_ADMINTOOLS_CONTROLPANEL_IP_UNBLOCKED'));
 	}

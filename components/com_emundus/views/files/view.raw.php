@@ -95,7 +95,7 @@ class EmundusViewFiles extends JViewLegacy
 			case 'menuactions':
 				$fnum = $app->input->getString("fnum", "0");
 				$display = $app->input->getString('display', 'none');
-				$menu = @JSite::getMenu();
+				$menu = @JFactory::getApplication()->getMenu();
 				$current_menu = $menu->getActive();
 				$Itemid = $app->input->getInt('Itemid', $current_menu->id);
 

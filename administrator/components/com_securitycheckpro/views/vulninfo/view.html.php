@@ -33,11 +33,11 @@ class SecuritycheckprosViewvulninfo extends JViewLegacy
 		
 						
 		// Ponemos los datos y la paginación en el template
-		$this->assignRef('vuln_details',$vuln_details);
-		$this->assignRef('pagination', $pagination);
-		$this->assignRef('logs_pending', $logs_pending);
-		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);		
-							
+		$this->vuln_details = $vuln_details;
+		$this->pagination = $pagination;
+		$this->logs_pending = $logs_pending;
+		$this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		
 		parent::display($tpl);
 	}
 }

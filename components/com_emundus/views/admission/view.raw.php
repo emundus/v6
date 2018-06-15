@@ -52,7 +52,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
-	    $menu 			= @JSite::getMenu();
+	    $menu 			= @JFactory::getApplication()->getMenu();
 		$current_menu  	= $menu->getActive();
 		$menu_params 	= $menu->getParams(@$current_menu->id);
 		$columnSupl 	= explode(',', $menu_params->get('em_other_columns'));

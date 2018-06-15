@@ -1,17 +1,18 @@
 <?php
 /**
- * @package        Joomla
+ * @package       Joomla
  * @subpackage    eMundus
  * @link          http://www.emundus.fr
- * @copyright    Copyright (C) 2008 - 2014 eMundus SAS. All rights reserved.
- * @license        GNU/GPL
- * @author        eMundus SAS - Yoan Durand
+ * @copyright     Copyright (C) 2018 eMundus SAS. All rights reserved.
+ * @license       GNU/GPL
+ * @author        eMundus SAS
  */
 
 // No direct access
 
 defined('_JEXEC') or die('Restricted access');
 
+$offset = JFactory::getConfig()->get('offset');
 JFactory::getSession()->set('application_layout', 'attachment');
 
 $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum)?true:false;
@@ -68,7 +69,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                         echo '<tr>
                                   <td>'.$checkbox.' '.$i.'</td>
                                   <td><a href="'.JURI::base().$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
-                                  <td>'.JHtml::_('date', $attachment->timedate, JText::_('DATE_FORMAT_LC2')).'</td>
+                                  <td>'.date('l, d F Y H:i', strtotime($attachment->timedate)).'</td>
                                   <td>'.$attachment->description.'</td>
                                   <td>'.$attachment->campaign_label.'</td>
                                   <td>'.$attachment->year.'</td>
@@ -164,6 +165,25 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     $( document ).ready(function() {
         $('td').css('vertical-align', 'inherit');
     });
+    
+    /*$(document).on('click', '#em-modal-actions', function(e)
+    {
+        var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
+        $.ajax({
+            type:'get',
+            url:url,
+            dataType:'html',
+            success: function(result)
+            {
+                $('#em-appli-block').empty();
+                $('#em-appli-block').append(result);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR.responseText);
+            }
+        });
+    });*/
 
     $(document).on('click', '#em_application_attachments_all', function(e)
     {

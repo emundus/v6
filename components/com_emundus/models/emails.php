@@ -71,7 +71,8 @@ class EmundusModelEmails extends JModelList
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0)
     {
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id
+
+        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template
                   FROM #__emundus_setup_emails_trigger as eset
                   LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
@@ -79,6 +80,7 @@ class EmundusModelEmails extends JModelList
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
+                  LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
                   WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
@@ -92,13 +94,19 @@ class EmundusModelEmails extends JModelList
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
 
+                // This is the email template model, the HTML structure that makes the email look good.
+                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
+
                 // default recipients
                 if (isset($trigger->profile_id) && !empty($trigger->profile_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+
                 if (isset($trigger->group_id) && !empty($trigger->group_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
+
                 if (isset($trigger->user_id) && !empty($trigger->user_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
+
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
             }
@@ -128,7 +136,7 @@ class EmundusModelEmails extends JModelList
                         $as_where = true;
                     }
 
-                    if($as_where) {
+                    if ($as_where) {
                         $query = 'SELECT u.id, u.name, u.email, eu.university_id
                                     FROM #__users as u
                                     LEFT JOIN #__emundus_users as eu on eu.user_id=u.id
@@ -495,8 +503,7 @@ class EmundusModelEmails extends JModelList
         if (count($fnums) == 0) {
             $fnums = $jinput->get('fnums', null, 'RAW');
             $fnumsArray = (array) json_decode(stripslashes($fnums));
-        }
-        else {
+        } else {
             $fnumsArray = $fnums;
         }
         
@@ -505,42 +512,34 @@ class EmundusModelEmails extends JModelList
         $idFabrik = array();
         $setupTags = array();
 
-        if(count($tags) > 0) {
+        if (count($tags) > 0) {
             
-            foreach($tags as $i => $val)
-            {
+            foreach ($tags as $i => $val) {
                 $tag = strip_tags($val);
-                if(is_numeric($tag))
-                {
+                if (is_numeric($tag))
                     $idFabrik[] = $tag;
-                }
                 else
-                {
                     $setupTags[] = $tag;
-                }
             }
         }
 
-        if(count($idFabrik) > 0) {
+        if (count($idFabrik) > 0) {
             $fabrikElts = $file->getValueFabrikByIds($idFabrik);
             $fabrikValues = array();
             foreach ($fabrikElts as $elt) {
-                $params = json_decode($elt['params']);
+
+            	$params = json_decode($elt['params']);
                 $groupParams = json_decode($elt['group_params']);
                 $isDate = ($elt['plugin'] == 'date');
                 $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                    $fabrikValues[$elt['id']] = $file->getFabrikValueRepeat($elt, $fnumsArray, $params,
-                        @$groupParams->repeat_group_button == 1);
+                    $fabrikValues[$elt['id']] = $file->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
                 } else {
-                    if ($isDate) {
-                        $fabrikValues[$elt['id']] =
-                            $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'],
-                                $params->date_form_format);
-                    } else {
-                        $fabrikValues[$elt['id']] =
-                            $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
-                    }
+                    if ($isDate)
+                        $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                    else
+                        $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                 }
                 
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
@@ -549,8 +548,16 @@ class EmundusModelEmails extends JModelList
                         $val = explode(',', $val["val"]);
                         
                         foreach ($val as $k => $v) {
-                            $index = array_search(trim($v), $params->sub_options->sub_values);
-                            $val[$k] = $params->sub_options->sub_labels[$index];
+
+                        	// If the value is empty then we do not get the label, this avoids '--- Please Select ---' from appearing.
+	                        // is_numeric allows for the variable to be equal to 0, 0.0 or '0' (the empty function considers those to be null).
+                        	if (!empty($v) || is_numeric($v)) {
+		                        $index = array_search(trim($v), $params->sub_options->sub_values);
+		                        $val[$k] = $params->sub_options->sub_labels[$index];
+	                        } else {
+                        		$val[$k] = '';
+	                        }
+
                         }
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                     }

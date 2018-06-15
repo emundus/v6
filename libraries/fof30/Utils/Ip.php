@@ -468,6 +468,12 @@ class Ip
 				return $_SERVER['HTTP_X_FORWARDED_FOR'];
 			}
 
+			// Are we under CloudFlare?
+			if (self::$allowIpOverrides && array_key_exists('HTTP_CF_CONNECTING_IP', $_SERVER))
+			{
+				return $_SERVER['HTTP_CF_CONNECTING_IP'];
+			}
+
 			// Are we using Sucuri firewall? They use a custom HTTP header
 			if (self::$allowIpOverrides && array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER))
 			{
@@ -496,6 +502,12 @@ class Ip
 		if (self::$allowIpOverrides && getenv('HTTP_X_FORWARDED_FOR'))
 		{
 			return getenv('HTTP_X_FORWARDED_FOR');
+		}
+
+		// Are we under CloudFlare?
+		if (self::$allowIpOverrides && getenv('HTTP_CF_CONNECTING_IP'))
+		{
+			return getenv('HTTP_CF_CONNECTING_IP');
 		}
 
 		// Are we using Sucuri firewall? They use a custom HTTP header

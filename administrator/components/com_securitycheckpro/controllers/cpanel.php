@@ -28,8 +28,9 @@ class SecuritycheckprosControllerCpanel extends SecuritycheckproController
 	 */
 	public function display($cachable = false, $urlparams = Array())
 	{
-		JRequest::setVar( 'view', 'cpanel' );
-		
+		$jinput = JFactory::getApplication()->input;
+		$jinput->set('view', 'cpanel');
+				
 		// Display the panel
 		parent::display();
 	}

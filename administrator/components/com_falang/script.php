@@ -77,6 +77,12 @@ class com_falangInstallerScript
 	 */
 	protected $minimumJoomlaVersion = '3.8.0';
 
+	/**
+	 * The maximum Joomla! version required to install this extension
+	 *
+	 * @var   string
+	 */
+	protected $maximumJoomlaVersion = '3.9.9';
 
     private $falangRemoveFilesPaid = array(
         'files'	=> array(
@@ -141,44 +147,7 @@ class com_falangInstallerScript
 
         function preflight($type, $parent)
         {
-
-	        // Check the minimum PHP version. Issue a very stern warning if it's not met.
-	        if (!empty($this->minimumPHPVersion))
-	        {
-		        if (defined('PHP_VERSION'))
-		        {
-			        $version = PHP_VERSION;
-		        }
-		        elseif (function_exists('phpversion'))
-		        {
-			        $version = phpversion();
-		        }
-		        else
-		        {
-			        $version = '5.0.0'; // all bets are off!
-		        }
-
-		        if (!version_compare($version, $this->minimumPHPVersion, 'ge'))
-		        {
-			        $msg = "<h1>Your PHP version is too old</h1>";
-			        $msg .= "<p>You need PHP $this->minimumPHPVersion or later to install this component. Support for PHP 5.3.3 and earlier versions has been discontinued by our company as we publicly announced in February 2013.</p>";
-			        $msg .= "<p>You are using PHP $version which is an extremely old version, released more than four years ago. This version contains known functional and security issues. The functional issues do not allow you to run Akeeba Backup and cannot be worked around. The security issues mean that your site <b>can be easily hacked</b> since that these security issues are well known for over four years.</p>";
-			        $msg .= "<p>You have to ask your host to immediately update your site to PHP $this->minimumPHPVersion or later, ideally the latest available version of PHP 5.4. If your host won't do that you are advised to switch to a better host to ensure the security of your site. If you have to stay with your current host for reasons beyond your control you can use Akeeba Backup 4.0.5 or earlier, available from our downloads page.</p>";
-
-			        JLog::add($msg, JLog::WARNING, 'jerror');
-
-			        return false;
-		        }
-	        }
-
-            $this->_previous_version = $this->getParam('version');
-
-            // abort if the current Joomla release is older
-            if( version_compare(JVERSION, $this->minimumJoomlaVersion, 'lt') ) {
-                $application = JFactory::getApplication();
-                $application->enqueueMessage(JText::_('COM_FALANG_JOOMLA_TOOOLD_MESSAGE'), 'notice');
-                return false;
-            }
+        	//DONE in package script file
         }
 
 		/**

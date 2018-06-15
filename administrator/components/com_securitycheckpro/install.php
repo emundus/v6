@@ -293,7 +293,7 @@ class com_SecuritycheckproInstallerScript {
 			return false;
 		} else if ( version_compare(JVERSION, '3.0.0', 'lt') ) {
 			// Only allow to install on Joomla! 3.0.0 or later, but not in 2.5 branch
-			Jerror::raiseWarning(null, "This version doesn't work in Joomla! 2.5 branch");
+			Jerror::raiseWarning(null, "This version doesn't work in Joomla! 2.5 branch");			
 			return false;
 		}
 		
@@ -308,7 +308,8 @@ class com_SecuritycheckproInstallerScript {
 		
 		$this->_removeObsoleteFilesAndFolders($this->ObsoleteFilesAndFolders);
 		
-		$this->_unistall_Securitycheck();
+		$this->_unistall_Securitycheck();		
+		
 	}
 	
 	/**
@@ -364,7 +365,7 @@ class com_SecuritycheckproInstallerScript {
 
 		$db->execute();
 			Jerror::raiseWarning(null, "There has been an error when creating database tables. Securitycheck Pro Web Firewall and Cron plugin has been disabled.");
-		}		
+		}	
 		
 	}
 	
@@ -384,10 +385,10 @@ class com_SecuritycheckproInstallerScript {
 		
 		$installer = new JInstaller();
 		
-		$manifest = $parent->get("manifest");
-		$parent = $parent->getParent();
-		$source = $parent->getPath("source");
-
+		
+		$manifest = $parent->getParent()->getManifest();
+		$source = $parent->getParent()->getPath('source');
+		
 		// Install module
 		$db = JFactory::getDbo();
 		$result[$indice] = $installer->install($source. DIRECTORY_SEPARATOR .'modules' . DIRECTORY_SEPARATOR .'mod_scpadmin_quickicons');
@@ -487,9 +488,9 @@ class com_SecuritycheckproInstallerScript {
 
 			$db->execute();
 		}
-		
+				
 		// Install message
-		$this->install_message($this->id_free,$this->result_free,$result,$status,$memory_limit); 
+		$this->install_message($this->id_free,$this->result_free,$result,$status,$memory_limit);
 	}
 	
 	/**
@@ -630,10 +631,10 @@ class com_SecuritycheckproInstallerScript {
 	 *
 	 * @return void
 	 */
-	function update($parent) {
+	function update($parent) {		
 		// This variable is updated.
 		$this->update = true;		
-		$this->install($parent);
+		$this->install($parent);		
 	}
 	
 	/**
@@ -689,7 +690,7 @@ class com_SecuritycheckproInstallerScript {
 						<td colspan="2">Securitycheck Pro <?php echo JText::_( 'COM_SECURITYCHECKPRO_COMPONENT' ); ?></td>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-success\">";								
+								$span = "<span class=\"badge badge-success\">";								
 							?>
 							<?php echo $span . $result_ok; ?>
 							</span>
@@ -702,12 +703,12 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-success\">";								
+									$span = "<span class=\"badge badge-success\">";								
 								?>
 								<?php echo $span . $result_ok; ?>
 								</span>
 								<?php 
-									$span = "<span class=\"label label-info\">";	
+									$span = "<span class=\"badge badge-info\">";	
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );																					
 								?>
 								<?php echo $span . $message; ?>
@@ -717,7 +718,7 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-important\">";								
+									$span = "<span class=\"badge badge-danger\">";								
 								?>
 								<?php echo $span . $result_not_ok; ?>
 								</span>
@@ -733,20 +734,20 @@ class com_SecuritycheckproInstallerScript {
 					?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-success\">";								
+								$span = "<span class=\"badge badge-success\">";								
 							?>
 							<?php echo $span . $result_ok; ?>
 							</span>
 							<?php 
 								$limit = false;
 								if ( $this->update ) {
-									$span = "<span class=\"label label-info\">";	
+									$span = "<span class=\"badge badge-info\">";	
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );
 								} else if ( $memory_limit > 128 ) {
-									$span = "<span class=\"label label-info\">";	
+									$span = "<span class=\"badge badge-info\">";	
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );
 								} else if ( $memory_limit <= 128 ) {
-									$span = "<span class=\"label label-warning\">";
+									$span = "<span class=\"badge badge-warning\">";
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' );
 									$limit = true;
 								}
@@ -771,7 +772,7 @@ class com_SecuritycheckproInstallerScript {
 					?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-important\">";								
+								$span = "<span class=\"badge badge-danger\">";								
 							?>
 							<?php echo $span . $result_not_ok; ?>
 							</span>
@@ -787,16 +788,16 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-success\">";								
+									$span = "<span class=\"badge badge-success\">";								
 								?>
 								<?php echo $span . $result_ok; ?>
 								</span>
 								<?php 
 								if ( $this->url_plugin_enabled ) {
-									$span = "<span class=\"label label-info\">";	
+									$span = "<span class=\"badge badge-info\">";	
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );
 								} else {
-									$span = "<span class=\"label label-important\">";	
+									$span = "<span class=\"badge badge-danger\">";	
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' );
 								}
 							?>
@@ -807,7 +808,7 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-important\">";								
+									$span = "<span class=\"badge badge-danger\">";								
 								?>
 								<?php echo $span . $result_not_ok; ?>
 								</span>
@@ -823,12 +824,12 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-success\">";								
+									$span = "<span class=\"badge badge-success\">";								
 								?>
 								<?php echo $span . $result_ok; ?>
 								</span>
 								<?php 
-									$span = "<span class=\"label label-info\">";	
+									$span = "<span class=\"badge badge-info\">";	
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );																					
 								?>
 								<?php echo $span . $message; ?>
@@ -838,7 +839,7 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-important\">";								
+									$span = "<span class=\"badge badge-danger\">";								
 								?>
 								<?php echo $span . $result_not_ok; ?>
 								</span>
@@ -857,12 +858,12 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-success\">";								
+									$span = "<span class=\"badge badge-success\">";								
 								?>
 								<?php echo $span . $result_ok; ?>
 								</span>
 								<?php 
-									$span = "<span class=\"label label-info\">";	
+									$span = "<span class=\"badge badge-info\">";	
 									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );																					
 								?>
 								<?php echo $span . $message; ?>
@@ -872,7 +873,7 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-important\">";								
+									$span = "<span class=\"badge badge-danger\">";								
 								?>
 								<?php echo $span . $result_not_ok; ?>
 								</span>
@@ -892,7 +893,7 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-success\">";								
+									$span = "<span class=\"badge badge-success\">";								
 								?>
 								<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 								</span>
@@ -902,7 +903,7 @@ class com_SecuritycheckproInstallerScript {
 					?>
 							<td>
 								<?php 
-									$span = "<span class=\"label label-important\">";								
+									$span = "<span class=\"badge badge-danger\">";								
 								?>
 								<?php echo $span . JText::_( 'COM_SECURITYCHECK_NOT_UNINSTALLED'); ?>
 								</span>
@@ -947,7 +948,7 @@ class com_SecuritycheckproInstallerScript {
 					<td colspan="2">Securitycheck Pro <?php echo JText::_( 'COM_SECURITYCHECKPRO_COMPONENT' ); ?></td>
 					<td>
 						<?php 
-							$span = "<span class=\"label label-success\">";								
+							$span = "<span class=\"badge badge-success\">";								
 						?>
 						<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
 						</span>
@@ -960,7 +961,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-success\">";								
+								$span = "<span class=\"badge badge-success\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
 							</span>
@@ -970,7 +971,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-important\">";								
+								$span = "<span class=\"badge badge-danger\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
 							</span>
@@ -986,7 +987,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-success\">";								
+								$span = "<span class=\"badge badge-success\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
 							</span>
@@ -996,7 +997,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-important\">";								
+								$span = "<span class=\"badge badge-danger\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
 							</span>
@@ -1012,7 +1013,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-success\">";								
+								$span = "<span class=\"badge badge-success\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
 							</span>
@@ -1022,7 +1023,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-important\">";								
+								$span = "<span class=\"badge badge-danger\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
 							</span>
@@ -1038,7 +1039,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-success\">";								
+								$span = "<span class=\"badge badge-success\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
 							</span>
@@ -1048,7 +1049,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-important\">";								
+								$span = "<span class=\"badge badge-danger\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
 							</span>
@@ -1067,7 +1068,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-success\">";								
+								$span = "<span class=\"badge badge-success\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
 							</span>
@@ -1077,7 +1078,7 @@ class com_SecuritycheckproInstallerScript {
 				?>
 						<td>
 							<?php 
-								$span = "<span class=\"label label-important\">";								
+								$span = "<span class=\"badge badge-danger\">";								
 							?>
 							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
 							</span>

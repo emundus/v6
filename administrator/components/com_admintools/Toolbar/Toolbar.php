@@ -84,7 +84,7 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 		JToolbarHelper::divider();
 
 		$bar = JToolbar::getInstance('toolbar');
-		$bar->appendButton('Popup', 'preview', 'Preview', 'index.php?option=com_admintools&view=NginXConfMaker&task=preview&tmpl=component', 640, 380);
+		$bar->appendButton('Popup', 'search', 'Preview', 'index.php?option=com_admintools&view=NginXConfMaker&task=preview&tmpl=component', 640, 380);
 
 		JToolbarHelper::divider();
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
@@ -98,7 +98,7 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 		JToolbarHelper::divider();
 
 		$bar = JToolbar::getInstance('toolbar');
-		$bar->appendButton('Popup', 'preview', 'Preview', 'index.php?option=com_admintools&view=WebConfigMaker&task=preview&tmpl=component', 640, 380);
+		$bar->appendButton('Popup', 'search', 'Preview', 'index.php?option=com_admintools&view=WebConfigMaker&task=preview&tmpl=component', 640, 380);
 
 		JToolbarHelper::divider();
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
@@ -349,6 +349,12 @@ HTML;
 
 		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_IPAUTOBANHISTORY'), 'admintools');
 		JToolbarHelper::divider();
+		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools&view=WebApplicationFirewall');
+	}
+
+	public function onUnblockIPsBrowse()
+	{
+		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_UNBLOCKIP'), 'admintools');
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools&view=WebApplicationFirewall');
 	}
 

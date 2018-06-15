@@ -61,14 +61,15 @@ class EmundusViewChecklist extends JViewLegacy
 			$m_checklist->setDelete(0, $this->_user);
 		}
 
-    	switch  ($layout)
-		{
+    	switch  ($layout) {
+
 			// layout displayed when paid
 			case 'paid':
 			include_once(JPATH_BASE.'/components/com_emundus/models/application.php');
 
 			// 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
 			$m_application 		= new EmundusModelApplication;
+			$m_files            = new EmundusModelFiles;
 			$applications 		= $m_application->getApplications($this->_user->id);
 			$attachments 		= $m_application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
 			$forms 				= $m_application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
@@ -77,14 +78,27 @@ class EmundusViewChecklist extends JViewLegacy
 				$eMConfig = JComponentHelper::getParams('com_emundus');
 				$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
 				$application_fee = $eMConfig->get('application_fee', 0);
+				$accept_created_payments = $eMConfig->get('accept_created_payments', 0);
+				$fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
-				$params = array(
+				$params = [
 					'type_mail' => 'paid_validation',
 					'can_edit_until_deadline' => $can_edit_until_deadline,
 					'application_fee' => $application_fee
-				);
+				];
 
-				$m_application->sendApplication($this->_user->fnum, $this->_user, $params);
+				$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+
+				// If created payments aren't accepted then we don't need to check.
+				if ($accept_created_payments)
+					$payment_created_offline = count($m_application->getHikashopOrder($fnumInfos, true))>0?1:0;
+				else
+					$payment_created_offline = false;
+
+				// Don't send the application if the payment has not been fully sent.
+				if ($accept_created_payments == 2 || $paid || $payment_created_offline)
+					$m_application->sendApplication($this->_user->fnum, $this->_user, $params);
+
 				$applications = $m_application->getApplications($this->_user->id);
 			}
 
@@ -103,7 +117,7 @@ class EmundusViewChecklist extends JViewLegacy
 	        $document->addStyleSheet("media/com_emundus/css/emundus_application.css" );
 
 			//$greeting = $this->get('Greeting');
-	        $menu 			= @JSite::getMenu();
+	        $menu 			= @JFactory::getApplication()->getMenu();
 	        $current_menu   = $menu->getActive();
 	        $menu_params    = $menu->getParams(@$current_menu->id);
 

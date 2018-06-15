@@ -177,3 +177,8 @@
 <?php else:?>
 	<?php echo JText::_('NO_RESULT'); ?>
 <?php endif;?>
+<script>
+     $(document).ready(function(){
+        $('.em-data-container').doubleScroll();
+    });
+</script>

@@ -20,7 +20,8 @@ public function save()
 	$model = $this->getModel('geoblock');
 	
 	/* Obtenemos los datos del formulario */
-	$data = JRequest::get('post');
+	$jinput = JFactory::getApplication()->input;
+	$data = $jinput->get('post');
 		
 	/* Continentes seleccionados */
 	if ( array_key_exists('continent',$data) ) {

@@ -31,6 +31,37 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		}			
 	}
 	
+	/* Función para borrar logs */
+	function delete_logs(){
+		$db = JFactory::getDBO();
+		
+		(int) $track_actions_delete_period = $this->pro_plugin->getValue('delete_period',0,'pro_plugin');
+		(int) $scp_delete_period = $this->pro_plugin->getValue('scp_delete_period',60,'pro_plugin');
+		
+		// Borramos los logs de Track Actions si el parámetro está establecido así
+		if ( $track_actions_delete_period > 0 ) {
+			try {
+				$sql = "DELETE FROM `#__ecuritycheckpro_trackactions` WHERE log_date < NOW() - INTERVAL '{$track_actions_delete_period}' DAY";
+				$db->setQuery($sql);
+				$db->execute();
+			} catch (Exception $e) {
+				
+			}
+		}
+		
+		// Borramos los logs capturados por el firewall
+		if ( $scp_delete_period > 0 ) {
+			try {
+				$sql = "DELETE FROM `#__securitycheckpro_logs` WHERE time < NOW() - INTERVAL '{$scp_delete_period}' DAY";
+				$db->setQuery($sql);
+				$db->execute();
+			} catch (Exception $e) {
+				
+			}
+		}
+				
+	}
+	
 	
 	/* Función para grabar los logs en la BBDD */
 	function grabar_log($logs_attacks,$ip,$tag_description,$description,$type,$uri,$original_string,$username,$component){
@@ -119,11 +150,8 @@ class plgSystemSecuritycheckpro extends JPlugin{
 					
 				}
 			}
-		}
-		/* Borramos las entradas con más de un mes de antigüedad
-		$sql = "DELETE FROM `#__securitycheckpro_logs` WHERE (DATE_ADD(`time`, INTERVAL 1 MONTH)) < NOW();";
-		$db->setQuery($sql);
-		$db->execute(); */
+		}	
+		
 	}
 	
 	/* Función para grabar los logs de la propia aplicación*/
@@ -1164,6 +1192,10 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		// Controlamos el acceso al backend
 		$app = JFactory::getApplication();
 		if ( in_array($app->getName(),array('administrator','admin')) ) {
+			
+			// Borramos los logs no necesarios
+			$this->delete_logs();
+			
 			// Chequeamos el estado de las subscripciones
 			require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
 			$model = new SecuritycheckproModel();
@@ -1217,7 +1249,8 @@ class plgSystemSecuritycheckpro extends JPlugin{
 					
 				}				
 			}
-		}
+		}	
+		
 	}
 	
 	/* Complementa la función original de Joomla eliminando de la tabla `#__securitycheckpro_sessions` información sobre la sesión del usuario */
@@ -1585,7 +1618,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 					
 			// Obtenemos el componente de la petición
 			$app = JFactory::getApplication();
-			$uri = clone JFactory::getURI();
+			$uri = clone JUri::getInstance();
 			$router = $app->getRouter();
 			$parsed = $router->parse($uri);
 			if ( isset($parsed['option']) ) {
@@ -1734,7 +1767,6 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$track_failed_logins = $this->pro_plugin->getValue('track_failed_logins',1,'pro_plugin');
 		$write_log = $this->pro_plugin->getValue('write_log',1,'pro_plugin');
 		$logins_to_monitorize = $this->pro_plugin->getValue('logins_to_monitorize',2,'pro_plugin');
-		$include_password_in_log = $this->pro_plugin->getValue('include_password_in_log',0,'pro_plugin');
 		$actions_failed_login = $this->pro_plugin->getValue('actions_failed_login',1,'pro_plugin');
 		
 		$logs_attacks = $this->pro_plugin->getValue('logs_attacks',1,'pro_plugin');
@@ -1754,9 +1786,6 @@ class plgSystemSecuritycheckpro extends JPlugin{
 				// Escribimos un log si se produce un intento de acceso fallido	al backend				
 				if ( $logins_to_monitorize != 1 ) {
 					$description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0];
-					if ( $include_password_in_log ) {
-						$description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0] . ' --- ' . $lang->_('COM_SECURITYCHECKPRO_PASSWORD') . $login_info[1];
-					}
 					if( $write_log ) {
 						$this->grabar_log($write_log,$attack_ip,'FAILED_LOGIN_ATTEMPT_LABEL',$lang->_('COM_SECURITYCHECKPRO_FAILED_ADMINISTRATOR_LOGIN_ATTEMPT_LABEL'),'SESSION_PROTECTION',$request_uri,$description,$login_info[0],'---');						
 					}
@@ -1768,10 +1797,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			} else {
 				// Escribimos en log si se produce un intento de acceso fallido	al frontend
 				if ( $logins_to_monitorize != 2 ) {
-					$description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0];
-					if ( $include_password_in_log ) {
-						$description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0] . ' --- ' . $lang->_('COM_SECURITYCHECKPRO_PASSWORD') . $login_info[1];
-					}
+					$description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0];					
 					if( $write_log ) {
 						$this->grabar_log($write_log,$attack_ip,'FAILED_LOGIN_ATTEMPT_LABEL',$lang->_('COM_SECURITYCHECKPRO_FAILED_LOGIN_ATTEMPT_LABEL'),'SESSION_PROTECTION',$request_uri,$description,$login_info[0],'---');
 					}
@@ -1790,20 +1816,12 @@ class plgSystemSecuritycheckpro extends JPlugin{
 	
 	/* Función que recoje los datos de los intentos de acceso fallidos */
 	private function trackFailedLogin()	{
-		// Extraemos la configuración del plugin
-		$include_password_in_log = $this->pro_plugin->getValue('include_password_in_log',0,'pro_plugin');
-		
+			
 		$user = JRequest::getCmd('username',null);
-		$pass = JRequest::getCmd('password',null);
-		if(empty($pass)) $pass = JRequest::getCmd('passwd',null);
+		
 		$extraInfo = array();
-		if(!empty($user)) {
-			if( $include_password_in_log ) {
-				$extraInfo[] = $user;
-				$extraInfo[] = $pass;				
-			} else {
-				$extraInfo[] = $user;
-			}
+		if(!empty($user)) {	
+			$extraInfo[] = $user;		
 		}
 		
 		return $extraInfo;		

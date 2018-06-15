@@ -48,7 +48,7 @@ class EmundusModelEvaluation extends JModelList
 
 		// Get current menu parameters
 		//$current_user = JFactory::getUser();
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 
 		/*
@@ -98,7 +98,7 @@ class EmundusModelEvaluation extends JModelList
 		$show_in_list_summary = 1;
         $hidden = 0;
 		$elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden);
-		if (count($elements_eval)) {
+		if (is_array($elements_eval) && count($elements_eval)) {
 			$this->elements_id .= implode(',', $elements_eval);
 		}
 
@@ -194,11 +194,11 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		if (count($col_elt) == 0)
+		if (empty($col_elt))
 			$col_elt = array();
-		if (count($col_other) == 0)
+		if (empty($col_other))
 			$col_other = array();
-		if (count(@$this->_elements_default_name) == 0)
+		if (empty(@$this->_elements_default_name))
 			$this->_elements_default_name = array();
 
 		$this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
@@ -267,9 +267,9 @@ class EmundusModelEvaluation extends JModelList
 						$eval_elt_list = array();
 					} else {
 						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-						if (count($eval_elt_list)>0) {
+						if (is_array($eval_elt_list) && count($eval_elt_list) > 0) {
 							foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
+                                if (isset($eel->element_id) && !empty($eel->element_id))
     								$elements_id[] = $eel->element_id;
 							}
 						}
@@ -635,7 +635,7 @@ class EmundusModelEvaluation extends JModelList
 		$miss_doc = $this->getState('missing_doc');
 		$validate_application = $this->getState('validate');
 
-		$menu = @JSite::getMenu();
+		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		$this->validate_details = @EmundusHelperList::getElementsDetailsByID($menu_params->get('em_validate_id'));
@@ -1940,7 +1940,32 @@ if (JFactory::getUser()->id == 655)
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+	}
+	
+	public function delevaluation($id) {
+      	try {
+
+            $query = 'DELETE FROM #__emundus_evaluations WHERE id='.$id;
+            $this->_db->setQuery($query);
+            return $this->_db->Query();
+
+        } catch (Exception $e) {
+            JLog::add('Error in model/evaluation at query: '.$query, JLog::ERROR, 'com_emundus');
+        }
+	}
+	
+	function getEvaluationById($id) {
+        try {
+	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.id = ' . $id;
+            $this->_db->setQuery($query);
+            return $this->_db->loadObject();
+
+		} catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
     }
+
 
 
 }
