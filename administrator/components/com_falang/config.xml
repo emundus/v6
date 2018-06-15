@@ -146,7 +146,26 @@
 			<option value="1">YES</option>
 		</field>
     </fieldset>
-        <fieldset name="debug"
+    <fieldset name="translators"
+              label="COM_FALANG_CONFIG_TRANSLATORS"
+              description="COM_FALANG_CONFIG_TRANSLATORS_DESC"
+    >
+        <field name="translator" type="list" default="Bing" required="true" label="COM_FALANG_CONFIG_TRANSLATOR_SELECT_TRANSLATOR" >
+            <option value="Bing">Bing / Azure</option>
+            <option value="Yandex">Yandex</option>
+        </field>
+        <field name="translator_bingkey"
+               type="text"
+               label="COM_FALANG_CONFIG_TRANSLATOR_BING_KEY"
+               description="COM_FALANG_CONFIG_TRANSLATOR_BING_KEY_DESC"
+        />
+        <field name="translator_yandexkey"
+               type="text"
+               label="COM_FALANG_CONFIG_TRANSLATOR_YANDEX_KEY"
+               description="COM_FALANG_CONFIG_TRANSLATOR_YANDEX_KEY_DESC"
+        />
+    </fieldset>
+    <fieldset name="debug"
 		label="COM_FALANG_CONFIG_DEBUG_LABEL"
 		description="COM_FALANG_CONFIG_DEBUG_DESC">
 

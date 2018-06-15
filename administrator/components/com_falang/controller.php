@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/controller.php';
 
-class FalangController extends LegacyController  {
+class FalangController extends JControllerLegacy  {
 
 	/** @var string		current used task */
 	var $task=null;

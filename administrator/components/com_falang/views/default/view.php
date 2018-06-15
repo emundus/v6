@@ -29,10 +29,7 @@ function jfTranslate($matches){
  * @since 2.0
  */
 
-require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/view.php';
-
-
-class FalangViewDefault extends LegacyView {
+class FalangViewDefault extends JViewLegacy {
 
 
     protected $state;
@@ -75,7 +72,7 @@ class FalangViewDefault extends LegacyView {
 	{
 		$version = new FalangVersion();
 		?>
-		<div align="center">
+		<div class="falang_footer">
 		<?php if ($version->_versiontype == 'free')
 		{ ?>
 			<div class="alert alert-warning" style="padding: 15px">

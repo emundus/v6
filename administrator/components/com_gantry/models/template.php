@@ -2,9 +2,9 @@
 /**
  * @package    gantry
  * @subpackage core
- * @version    4.1.34 November 29, 2017
+ * @version    4.1.35 June 14, 2018
  * @author     RocketTheme http://www.rockettheme.com
- * @copyright  Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright  Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license    http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -267,8 +267,8 @@ class GantryModelTemplate extends GantryModelTemplateIntermediate
             $attrs    = $param->xpath('ancestor::fields[@name][not(@ignore-group)]/@name|ancestor::set[@name]/@name');
             $groups   = array_map('strval', $attrs ? $attrs : array());
             $groups[] = (string)$param['name'];
-	        array_walk($groups, create_function('&$value,$key', '$value = \'[\\\'\'.$value.\'\\\']\';'));
-            //array_walk($groups,  create_function('&$item,$k', '$item = "[\'" . $item . "\']");'));
+            array_walk($groups, function(&$value) { $value = '[\\\'\'.$value.\'\\\']'; });
+            //array_walk($groups, create_function('&$value,$key', '$value = \'[\\\'\'.$value.\'\\\']\';'));
             $def_array_eval = '$defaults' . implode('', $groups) . ' = (string)$param[\'default\'];';
             if ($param['default']) @eval($def_array_eval);
         }

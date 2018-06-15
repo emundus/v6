@@ -10,9 +10,9 @@
 defined('_JEXEC') or die;
 
 class FalangVersion {
-	var $_version	= '2.9.7';
+	var $_version	= '3.0.0';
     var $_versiontype	= 'basic';
-    var $_date	= '2018/03/26';
+    var $_date	= '2018/05/16';
 	var $_status	= 'Stable';
 	var $_revision	= '';
 	var $_copyyears = '';

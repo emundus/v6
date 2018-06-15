@@ -9,9 +9,7 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/controller.php';
-
-class CpanelController extends LegacyController  {
+class CpanelController extends JControllerLegacy  {
 
 	function __construct($config = array())
 	{

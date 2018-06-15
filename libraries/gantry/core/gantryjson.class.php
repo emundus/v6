@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantryjson.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -225,9 +225,9 @@ class GantryJSON
 				$result = 'null';
 				break;
 			case 'string' :
-				$i = create_function('&$e, $p, $l', 'return intval(substr($e, $p, $l));');
+				$i = function (&$e, $p, $l) { return (int)substr($e, $p, $l); };
 				if (preg_match('/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$/', $params)) {
-					$result = mktime($i ($params, 11, 2), $i ($params, 14, 2), $i ($params, 17, 2), $i ($params, 5, 2), $i ($params, 9, 2), $i ($params, 0, 4));
+					$result = mktime($i($params, 11, 2), $i($params, 14, 2), $i($params, 17, 2), $i($params, 5, 2), $i($params, 9, 2), $i($params, 0, 4));
 				}
 				break;
 			case 'object' :
