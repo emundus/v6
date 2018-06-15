@@ -2,6 +2,7 @@
 -- This table is used for logging actions done on a User or an fnum.
 CREATE TABLE `jos_emundus_logs` (
   `id` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id_from` int(11) NOT NULL,
   `user_id_to` int(11) DEFAULT NULL,
   `fnum_to` varchar(255) DEFAULT NULL,
@@ -16,8 +17,6 @@ ALTER TABLE `jos_emundus_logs`
 
 ALTER TABLE `jos_emundus_logs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `jos_emundus_logs` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `user_id_to`;
 
 
 ALTER TABLE `jos_emundus_logs`
