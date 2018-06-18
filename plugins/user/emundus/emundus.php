@@ -265,8 +265,6 @@ class plgUserEmundus extends JPlugin
      */
     public function onUserLogout($user, $options = array())
     {
-
-
         $my         = JFactory::getUser();
         $session    = JFactory::getSession();
         $app        = JFactory::getApplication();
