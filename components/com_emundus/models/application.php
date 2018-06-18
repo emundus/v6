@@ -30,6 +30,7 @@ class EmundusModelApplication extends JModelList
     {
         parent::__construct();
         global $option;
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -198,6 +199,25 @@ class EmundusModelApplication extends JModelList
             $query = 'UPDATE #__emundus_comments SET reason = '.$this->_db->quote($title).', comment_body = '.$this->_db->quote($text).'  WHERE id = '.$this->_db->quote($id);
             $this->_db->setQuery($query);
             $this->_db->execute();
+
+	        // Logging requires the fnum, we have to get this from the comment ID being edited.
+	        // Only get the fnum if logging is on and comments are in the list of actions to be logged.
+	        $eMConfig = JComponentHelper::getParams('com_emundus');
+	        $log_actions = $eMConfig->get('log_action', null);
+	        if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array(10, explode(',',$log_actions)))) {
+
+		        $query = $this->_db->getQuery(true);
+		        $query->select($this->_db->quoteName('fnum'))
+			        ->from($this->_db->quoteName('#__emundus_comments'))
+			        ->where($this->_db->quoteName('id').'='.$id);
+
+		        $this->_db->setQuery($query);
+		        $fnum = $this->_db->loadResult();
+
+		        // Log the comment in the eMundus logging system.
+		        EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'u');
+	        }
+
             return true;
 
         } catch (Exception $e) {
@@ -207,7 +227,25 @@ class EmundusModelApplication extends JModelList
 
     }
 
-    public function deleteComment($id){
+    public function deleteComment($id) {
+
+	    // Logging requires the fnum, we have to get this from the comment ID being deleted.
+	    // Only get the fnum if logging is on and comments are in the list of actions to be logged.
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $log_actions = $eMConfig->get('log_actions', null);
+	    if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array(10, explode(',',$log_actions)))) {
+
+		    $query = $this->_db->getQuery(true);
+		    $query->select($this->_db->quoteName('fnum'))
+			    ->from($this->_db->quoteName('#__emundus_comments'))
+			    ->where($this->_db->quoteName('id').'='.$id);
+
+		    $this->_db->setQuery($query);
+		    $fnum = $this->_db->loadResult();
+
+		    // Log the comment in the eMundus logging system.
+		    EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'd');
+	    }
        
         $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
         $this->_db->setQuery($query);
@@ -215,25 +253,29 @@ class EmundusModelApplication extends JModelList
        
     }
 
-    public function deleteTag($id_tag, $fnum){
+    public function deleteTag($id_tag, $fnum) {
         $query = 'DELETE FROM #__emundus_tag_assoc WHERE id_tag = '.$id_tag.' AND fnum like '.$this->_db->Quote($fnum);
         $this->_db->setQuery($query);
+
+	    // Log the action in the eMundus logging system.
+	    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd');
 
         return $this->_db->Query();
     }
 
-    public function addComment($row)
-    {
-        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
+    public function addComment($row) {
+
+	    // Log the comment in the eMundus logging system.
+	    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c');
+
+    	$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
                 VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
-        $this->_db->setQuery( $query );
-        try
-        {
-            $this->_db->query();
+        $this->_db->setQuery($query);
+
+        try {
+            $this->_db->execute();
             return $this->_db->insertid();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }

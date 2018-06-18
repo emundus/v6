@@ -34,27 +34,32 @@ class EmundusModelLogs extends JModelList {
 	 */
 	static function log($user_from, $user_to, $fnum, $action, $crud, $message = '') {
 
-		if (empty($user_to))
-			$user_to = '';
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
+		$log_actions = $eMConfig->get('log_actions', null);
+		if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
 
-		$columns = ['user_id_from',  'user_id_to', 'fnum_to', 'action_id', 'verb', 'message'];
-		$values = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message)];
+			if (empty($user_to))
+				$user_to = '';
 
-		$query->insert($db->quoteName('#__emundus_logs'))
-			->columns($db->quoteName($columns))
-			->values(implode(',', $values));
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-		$db->setQuery($query);
+			$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message'];
+			$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message)];
 
-		try {
-			$db->execute();
-		} catch (Exception $e) {
-			JLog::add('Error logging at the following query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			$query->insert($db->quoteName('#__emundus_logs'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+
+			$db->setQuery($query);
+
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error logging at the following query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+			}
 		}
-
 	}
-
 }
