@@ -58,7 +58,6 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
-
         $this->_user = JFactory::getSession()->get('emundusUser');
 
         $this->_db = JFactory::getDBO();
@@ -429,12 +428,14 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
-     *
-     */
-    public function addcomment()
-    {
-        $jinput = JFactory::getApplication()->input;
+	/**
+	 * Add a comment on a file.
+	 * @throws Exception
+	 * @since 6.0
+	 */
+    public function addcomment() {
+
+	    $jinput = JFactory::getApplication()->input;
         $user   = JFactory::getUser()->id;
         $fnums  = $jinput->getString('fnums', null);
         $title  = $jinput->getString('title', '');
@@ -443,16 +444,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = (array) json_decode(stripslashes($fnums));
         $m_application = $this->getModel('Application');
 
-        foreach($fnums as $fnum)
-        {
-            if(EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum))
-            {
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
-                if($res == 0)
-                {
+	            if ($res == 0) {
                     echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). $res)));
-                    exit;
+	                exit;
                 }
             }
         }
@@ -477,14 +475,13 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     /**
-     * Add a tag to an application
+     * Add a tag to an application.
+     * @since 6.0
      */
-    public function tagfile()
-    {
+    public function tagfile() {
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
-        $tag    = $jinput->getVar('tag', null);
-        //var_dump($fnums);
+        $tag    = $jinput->get('tag', null);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
         $m_files = $this->getModel('Files');
 
@@ -493,15 +490,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $validFnums = array();
        
-        foreach ($fnums as $fnum)
-        {   
-            if($fnum != 'em-check-all'){
-                if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-                {
+        foreach ($fnums as $fnum) {
+            if ($fnum != 'em-check-all') {
+                if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
                     $validFnums[] = $fnum;
                 }
             }
-            
         }
         unset($fnums);
         $res    = $m_files->tagFile($validFnums, $tag);
@@ -511,8 +505,8 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function deletetags()
-    {
+    public function deletetags() {
+
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
         $tags    = $jinput->getVar('tag', null);
@@ -526,16 +520,14 @@ class EmundusControllerFiles extends JControllerLegacy
         if ($fnums == "all")
             $fnums = $m_files->getAllFnums();
 
-        foreach ($fnums as $fnum)
-        {
-            if($fnum != 'em-check-all'){
-                foreach ($tags as $tag){
+        foreach ($fnums as $fnum) {
+            if ($fnum != 'em-check-all') {
+                foreach ($tags as $tag) {
                     $hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
-                    if($hastags){
+                    if  ($hastags) {
                         $result = $m_application->deleteTag($tag, $fnum);
-                    }else{
-                        if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
-                        {
+                    } else {
+                        if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum)) {
                             $result = $m_application->deleteTag($tag, $fnum);
                         }
                     }
