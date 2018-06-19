@@ -6,6 +6,42 @@
 	margin-left:0;
 }
 
+div.falang_footer{
+	width: 100%;
+	clear: both;
+	text-align: center;
+}
+
+div.falang_field_lable{
+	text-align: left;
+	float: left;
+	width: 40%;
+	padding: 4px 0;
+}
+
+div.falang_field_action{
+	text-align: right;
+	float: left;
+	width: 60%;
+}
+
+
+.form-horizontal .falang_publish_btn {
+	display: block;
+	padding-left: 0;
+}
+
+.form-horizontal .falang_publish_btn .controls > .btn {
+	width: 25%;
+	min-width: 40px;
+	padding: 2px 0!important;
+}
+
+
+table.adminform tr.row_original td{border: 1px solid transparent;}
+
+table.adminform th.falang{padding: 4px 8px}
+
 table.translateparams{
 	width:100%;
 }

@@ -2002,6 +2002,11 @@ class hikashopFieldText extends hikashopFieldItem {
 
 class hikashopFieldLink extends hikashopFieldText {
 	var $displayFor = false;
+	function check(&$field,&$value,$oldvalue) {
+		if(is_string($value))
+			$value = trim($value,':');
+		return parent::check($field, $value, $oldvalue);
+	}
 	function show(&$field,$value) {
 		$target = '';
 		if(isset($field->field_options['target_blank']) && $field->field_options['target_blank'] == '1')
@@ -2031,6 +2036,7 @@ class hikashopFieldLink extends hikashopFieldText {
 		}else{
 			@list($text, $link) = explode(':',$value,2);
 		}
+
 		$js = 'document.getElementById(\''.$this->prefix.$namekey.$this->suffix.'\').value = \'\' + document.getElementById(\''.$this->prefix.$namekey.'_text'.$this->suffix.'\').value + \':\' + document.getElementById(\''.$this->prefix.$namekey.'_link'.$this->suffix.'\').value;';
 		if(strpos($options, 'onchange="') === false) {
 			$options .= ' onchange="'.$js.'"';

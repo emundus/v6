@@ -243,7 +243,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function archive() {
 		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$itemid=JSite::getMenu()->getActive()->id;
+		$itemid=JFactory::getApplication()->getMenu()->getActive()->id;
 
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -527,7 +527,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function changeblock() {
 		$user = JFactory::getUser();
-		//temid=JSite::getMenu()->getActive()->id;
+		//temid=JFactory::getApplication()->getMenu()->getActive()->id;
 		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;

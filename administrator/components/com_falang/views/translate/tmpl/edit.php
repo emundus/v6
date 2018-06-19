@@ -21,6 +21,16 @@ if ($this->showMessage) {
 	echo $this->loadTemplate('message');
 }
 
+$params = JComponentHelper::getParams('com_falang');
+
+//if no translator selected.
+$translate_button_available = false;
+if (!empty($params->get('translator')) && (!empty($params->get('translator_bingkey')) || !empty($params->get('translator_yandexkey')) ) ){
+	require_once __DIR__ .'/../../../classes/translator.php';
+	translatorFactory::getTranslator($this->select_language_id);
+	$translate_button_available = true;
+}
+
 $act=$this->act;
 $task=$this->task;
 $select_language_id = $this->select_language_id;
@@ -41,7 +51,7 @@ JHTML::_('behavior.formvalidation');
 JHtml::_('jquery.framework');
 $document->addScript('components/com_falang/assets/js/jquery.cookie.js');
 
-
+JHtml::_('formbehavior.chosen', 'select');
 
 //use to name form to allow form validation
 $idForm = 'adminForm';
@@ -102,6 +112,10 @@ else {
 					srcEl = document.getElementById("original_value_"+value);
 					innerHTML = srcEl.innerHTML;
 				}
+				if (action=="translate") {
+					srcEl = document.getElementById("original_value_"+value);
+					innerHTML = translateService(srcEl.innerHTML);
+				}
 				if (window.clipboardData){
 					window.clipboardData.setData("Text",innerHTML);
 					alert("<?php echo JText::_('CLIPBOARD_COPIED'); ?>");
@@ -160,18 +174,13 @@ else {
 
 
 <form action="index.php" method="post" name="adminForm" id="<?php echo $idForm; ?>" class="form-validate">
-    <table width="100%">
-      <tr>
-        <td>
-
+    <div class="span9 form-horizontal">
             <legend><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_TRANSLATION')?></legend>
 
             <table width="90%" border="0" cellpadding="2" cellspacing="2" class="adminform table table-striped">
 			<?php
-			$k=1;
-			for( $i=0; $i<count($elementTable->Fields); $i++ ) {
-				$field = $elementTable->Fields[$i];
-				
+			foreach ($elementTable->Fields as $field) {
+
 				$field->preHandle($elementTable);
 				$originalValue = $field->originalValue;
 
@@ -198,13 +207,49 @@ else {
 					}
 					else {
 				?>
-		    <tr class="<?php echo "row$k"; ?>">
-		      <th colspan="3" align="left" class="falang"><?php echo JText::_('COM_FALANG_DBFIELDLABLE') .': '. $field->Lable;?></th>
+		    <tr>
+		      <th colspan="3" align="left" class="falang">
+
+
+                  <div class="falang_field_lable">
+                  <?php echo JText::_('COM_FALANG_DBFIELDLABLE') .': '. $field->Lable;?>
+                  </div>
+                  <div class="falang_field_action">
+                      <!-- add hidden use for translate/copy -->
+                      <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
+                      <textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
+                      <?php
+						if ( strtolower($field->Type)=='params'){
+						    //no action on params field
+						} else if ( strtolower($field->Type)=='readonlytext'){
+                          //specific case for menutype link
+                          if ($elementTable->Name == 'menu' && $field->Name == 'link') { ?>
+                              <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
+                          <?php } ?>
+
+                      <?php } else if( strtolower($field->Type)!='htmltext' ) {?>
+                          <!-- Translate button -->
+
+                          <a class="button btn" <?php echo $translate_button_available ? '': 'disabled="disabled"';?> onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = translateService(document.adminForm.origText_<?php echo $field->Name;?>.value);"><i class="icon-shuffle"></i><?php echo JText::_('COM_FALANG_BTN_TRANSLATE'); ?></a>
+                          <!-- Copy button -->
+                          <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
+                          <!-- Delete button -->
+                          <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
+                      <?php }	else { ?>
+                          <!-- Translate button -->
+                          <a class="button btn" <?php echo $translate_button_available ? '': 'disabled="disabled"';?>  onclick="copyToClipboard('<?php echo $field->Name;?>','translate');"><i class="icon-shuffle"></i><?php echo JText::_('COM_FALANG_BTN_TRANSLATE'); ?></a>
+                          <!-- Copy button -->
+                          <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','copy');"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
+                          <!-- Delete button -->
+                          <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
+                      <?php }?>
+                  </div>
+              </th>
 		    </tr>
 	      	<?php
 	      	if (strtolower($field->Type)!='params'){
 	      	?>
-		    <tr class="<?php echo "row$k"; ?>">
+		    <tr  class="row_original">
 		      <td align="left" valign="top"><?php echo JText::_('COM_FALANG_ORIGINAL');?></td>
 				<?php
 				// Hrvoje -
@@ -277,23 +322,9 @@ else {
 
 		      </td>
 			  <td valign="top" class="button">
-				<input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
-				<textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
-				<?php
-                if ( strtolower($field->Type)=='readonlytext'){
-                    //specific case for menutype link
-                    if ($elementTable->Name == 'menu' && $field->Name == 'link') { ?>
-                            <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                    <?php } ?>
-
-                <?php } else if( strtolower($field->Type)!='htmltext' ) {?>
-            					<a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-				<?php }	else { ?>
-                        <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','copy');"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-				<?php }?>
 			  </td>
 		    </tr>
-		    <tr class="<?php echo "row$k"; ?>">
+		    <tr>
 		      <td align="left" valign="top"><?php echo JText::_('COM_FALANG_TRANSLATION');?></td>
 		      <td align="left" valign="top">
 					  <input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
@@ -343,13 +374,6 @@ else {
 						?>
 				</td>
 				<td valign="top" class="button">
-					<?php
-					 if ( strtolower($field->Type)=='readonlytext'){
-					} else if( strtolower($field->Type)!='htmltext' ) {?>
-                            <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
-					<?php } else {?>
-                            <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
-					<?php }?>
 				</td>
 		    </tr>
 	      	<?php
@@ -363,7 +387,7 @@ else {
 		      		$translationContent->value = $field->originalValue;
 	      		}
 	      	?>
-		    <tr class="<?php echo "row$k"; ?>">
+		    <tr class="">
 		      <td colspan="3">
                       <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
                       <textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
@@ -384,54 +408,43 @@ else {
 				?>
 		      </td>
 		    </tr>
-	      	<?php
-	      	}
-					}
-	      	?>
-				<?php
+      	<?php
+	      			}
 				}
-				$k=1-$k;
 			}
-				?>
+		}
+		?>
 		</table>
-	  </td>
-	  <td valign="top" width="30%">
-        <legend><?php echo JText::_('COM_FALANG_TRANSLATE_PUBLISHING')?></legend>
-		<?php
-           //echo JHtml::_('tabs.start','translation');
-           //echo JHtml::_('tabs.panel',JText::_('COM_FALANG_TRANSLATE_PUBLISHING'),"ItemInfo-page");
+	  </div>
 
-	  ?>
-            <table width="100%" border="0" cellpadding="4" cellspacing="2" class="adminForm">
-              <tr>
-                <td width="34%"><strong><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_STATE');?>:</strong></td>
-                <td width="50%"><?php echo $this->actContentObject->state > 0 ? JText::_('COM_FALANG_STATE_OK') : ($this->actContentObject->state < 0 ? JText::_('COM_FALANG_STATE_NOTEXISTING') : JText::_('COM_FALANG_STATE_CHANGED'));?></td>
-              </tr>
-              <tr>
-                <td><strong><?php echo JText::_('COM_FALANG_LANGUAGE');?>:</strong></td>
-                <td><?php echo $this->langlist;?></td>
-              </tr>
-              <tr>
-                <td><strong><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_PUBLISHED')?>:</strong></td>
-                <td><input type="checkbox" name="published" value="1" <?php echo $this->actContentObject->published&0x0001 ? 'checked="checked"' : ''; ?> /></td>
-              </tr>
-              <tr>
-                <td><strong><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_DATECHANGED');?>:</strong></td>
-                <td><?php echo  $this->actContentObject->lastchanged ? JHTML::_('date',  $this->actContentObject->lastchanged, JText::_('DATE_FORMAT_LC2')):JText::_('new');?></td>
-              </tr>
-              </table>
-
+	  <div class="span3 form-horizontal alert alert-info">
+        <h4><?php echo JText::_('COM_FALANG_TRANSLATE_PUBLISHING')?></h4>
+          <div class="control-group">
+              <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_STATE');?></div>
+              <div class="controls"><?php echo $this->actContentObject->state > 0 ? JText::_('COM_FALANG_STATE_OK') : ($this->actContentObject->state < 0 ? JText::_('COM_FALANG_STATE_NOTEXISTING') : JText::_('COM_FALANG_STATE_CHANGED'));?></div>
+          </div>
+          <div class="control-group">
+              <div class="control-label"><?php echo JText::_('COM_FALANG_LANGUAGE');?></div>
+              <div class="controls"><?php echo $this->langlist;?></div>
+          </div>
+          <div class="control-group">
+              <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_PUBLISHED')?></div>
+              <div class="btn-group btn-group-yesno radio falang_publish_btn">
+                     <?php echo JHtml::_('select.booleanlist','published','class="inputbox"',$this->actContentObject->published);?>
+              </div>
+          </div>
+          <div class="control-group">
+              <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_DATECHANGED');?></div>
+              <div class="controls"><?php echo  $this->actContentObject->lastchanged ? JHTML::_('date',  $this->actContentObject->lastchanged, JText::_('DATE_FORMAT_LC2')):JText::_('new');?></div>
+          </div>
               <input type="hidden" name="select_language_id" value="<?php echo $select_language_id;?>" />
               <input type="hidden" name="reference_id" value="<?php echo $this->actContentObject->id;?>" />
               <input type="hidden" name="reference_table" value="<?php echo (isset($elementTable->name) ? $elementTable->name : '');?>" />
               <input type="hidden" name="catid" value="<?php echo $this->catid;?>" />
-	  <?php
-           //echo JHtml::_('tabs.end'); ?>
-           </td></tr>
-	        </table>
+		</div>
 
     <!-- v 1.4 : add content for extra plugins k2 ....-->
-    <div id="extras"></div>
+    <div class="span9" id="extras"></div>
 
 	<!-- v 2.8.1 : submit code put at the end to have the editorFields set-->
 	<script language="javascript" type="text/javascript">

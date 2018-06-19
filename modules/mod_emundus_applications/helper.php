@@ -17,17 +17,32 @@ class modemundusApplicationsHelper
 		$user = JFactory::getUser();
 		$db	= JFactory::getDbo();
 
+		// Test if the table used for showing the title exists.
+		// If it doesn't then we just continue without a title.
+		$has_table = false;
+		if ($layout == '_:hesam') {
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName('id'))->from($db->quoteName('#__emundus_projet'))->setLimit('1');
+
+			try {
+				$db->setQuery($query);
+				$has_table = $db->loadResult();
+			} catch (Exception $e) {
+				$has_table = false;
+			}
+		}
+
 		$query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class ';
 
 		// Hesam layout needs to get the title from the information about the project.
-		if ($layout == '_:hesam')
+		if ($has_table)
 			$query .= ', pro.titre ';
 
 		$query .= ' FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status ';
 
-		if ($layout == '_:hesam')
+		if ($has_table)
 			$query .= ' LEFT JOIN #__emundus_projet AS pro ON pro.fnum=ecc.fnum ';
 
 		$query .= ' WHERE ecc.applicant_id ='.$user->id.'

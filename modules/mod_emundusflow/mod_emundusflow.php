@@ -57,7 +57,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$fnumInfos = $m_files->getFnumInfos($user->fnum);
 	if ($application_fee == 1) {
 
-		$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+		$paid_orders = $m_application->getHikashopOrder($fnumInfos);
+		$paid = is_array($paid_orders) && count($paid_orders) > 0?1:0;
 		if ($paid == 0) {
 
 			$sentOrder = $m_application->getHikashopOrder($fnumInfos, true);
@@ -90,16 +91,11 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 			//$checkout_url = $m_application->getHikashopCheckoutUrl($user->profile);
 			$orderCancelled = false;
-			if (count($sentOrder) > 0) {
-				if ($sentOrder->order_payment_method == 'paybox')
-					$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
-				else
-					$checkout_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
-			} else {
-				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
-				if (count($m_application->getHikashopCancelledOrders($fnumInfos)) > 0)
-					$orderCancelled = true;
-			}
+			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
+
+			$cancelled_orders = $m_application->getHikashopCancelledOrders($fnumInfos);
+			if (is_array($cancelled_orders) && count($cancelled_orders) > 0)
+				$orderCancelled = true;
 
 		} else {
 			$checkout_url = 'index.php';

@@ -57,7 +57,7 @@ class EmundusControllerEmail extends JControllerLegacy {
 		EmundusHelperFilters::clear();
 		
 		//$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
-		$itemid=JSite::getMenu()->getActive()->id;
+		$itemid=JFactory::getApplication()->getMenu()->getActive()->id;
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);

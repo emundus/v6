@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+	<fieldset label="COM_EMUNDUS_GENERAL" name="general" description="COM_EMUNDUS_GENERAL_DESC">
+		<field name="logs" label="LOGS_ACTIVE" type="radio" default="0" description="LOGS_ACTIVE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="log_actions" label="LOG_ACTIONS" type="field" description="LOG_ACTIONS_DESC"/>
+	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
 			<option value="0">JNo</option>
@@ -77,6 +84,11 @@
 		<field name="application_fee" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICATION_FEES" description="COM_EMUNDUS_APPLICATION_FEES_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
+		</field>
+		<field name="accept_created_payments" menu="hide" type="list" default="0" label="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS" description="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			<option value="2">COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_ALLOW_ALL</option>
 		</field>
 		<field name="scholarship_document_id" menu="hide" type="text" label="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID" description="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID_DESC"></field>
 		<field name="copy_application_form" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM" description="COM_EMUNDUS_COPY_APPLICATION_FORM_DESC">

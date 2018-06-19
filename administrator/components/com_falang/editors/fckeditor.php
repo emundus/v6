@@ -19,6 +19,10 @@ defined('_JEXEC') or die;
 					srcEl = document.getElementById("original_value_"+value);
 					innerHTML = srcEl.innerHTML;
 				}
+                if (action=="translate") {
+                    srcEl = document.getElementById("original_value_"+value);
+                    innerHTML = translateService(srcEl.innerHTML);
+                }
 				if ( typeof(FCKeditorAPI)=="object") {
 					var oEditor = FCKeditorAPI.GetInstance("refField_"+value) ;
 					if ( oEditor.EditMode == FCK_EDITMODE_WYSIWYG )

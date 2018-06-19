@@ -12,7 +12,13 @@ class EmundusRouter extends RouterBase
         if (isset($query['view']))
         {
            // $segments[] = $query['view'];
-            unset($query['view']);
+
+	        // This patch helps avoid double opening views. This caused a double refresh on AJAX calls within those views.
+	        // SEO was adding the ?view= to links which already had views (ex: emundus.fr/files/?view=files)
+	        $v_exceptions = ['files', 'evaluation', 'decision', 'admission', 'users'];
+
+	        if (in_array($query['view'], $v_exceptions))
+                unset($query['view']);
         }
         return $segments;
     }

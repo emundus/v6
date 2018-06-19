@@ -402,8 +402,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 	}
 
 	function addRate(&$rates, $type, $parcels, &$rate, $currency, $isInternational) {
-		$app = JFactory::getApplication();
-
+		$app = JFactory::getApplication();		
 		$usps_user_id = $rate->shipping_params->usps_user_id;
 
 		$origin_zip = $parcels[0]->Pickup_Postcode;
@@ -496,7 +495,8 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			$request.='</RateV4Request>';
 		}
 
-		if(!empty($rate->shipping_params->debug))
+		$ctrl = hikaInput::get()->getString('ctrl','');
+		if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
 			echo '<!--' . "\r\n" . 'USPS DEBUG' . "\r\n" . $request . "\r\n" . '-->';
 
 		$responseError = false;
@@ -506,13 +506,13 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			return false;
 
 		if($response_xml->Number) {
-			if(!empty($rate->shipping_params->debug))
+			if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
 				$app->enqueueMessage( 'USPS error: ' . $response_xml->Number . ' ' . $response_xml->Description);
 			$responseError = true;
 		}
 
 		if($response_xml->Package->Error) {
-			if(!empty($rate->shipping_params->debug))
+			if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
 				$app->enqueueMessage( 'USPS error: ' . $response_xml->Package->Error->Number . ' ' . $response_xml->Package->Error->Description);
 			$responseError = true;
 		}

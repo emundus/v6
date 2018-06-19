@@ -39,7 +39,7 @@ class EmundusController extends JControllerLegacy {
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
         if (!JRequest::getCmd('view')) {
-            if ($this->_user->usertype == "Registered") {
+            if (!empty($this->_user->usertype) && $this->_user->usertype == "Registered") {
                 $checklist = $this->getView( 'checklist', 'html' );
                 $checklist->setModel( $this->getModel( 'checklist'), true );
                 $checklist->display();
@@ -398,16 +398,17 @@ class EmundusController extends JControllerLegacy {
         Open application form from fnum  for applicant
     */
     function openfile() {
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+
+    	require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+
         $app    = JFactory::getApplication();
-        $Itemid = $app->input->getInt('Itemid', null, 'int');
-        $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
+        $jinput = $app->input;
+        $Itemid = $jinput->get->getInt('Itemid', null);
+        $fnum   = $jinput->get->get('fnum', null);
 
         if (empty($fnum))
             $app->redirect(JURI::base().'index.php');
 
-        $redirect   = JRequest::getVar('redirect', null, 'GET');
-        $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php';
         $session    = JFactory::getSession();
         $aid        = $session->get('emundusUser');
 
@@ -436,6 +437,16 @@ class EmundusController extends JControllerLegacy {
         $aid->status        = $application['status'];
 
         $session->set('emundusUser', $aid);
+
+	    // If a redirection URL is set: completely ignore it and go find the first form of the file.
+	    $redirect = $jinput->get->get('redirect', null);
+	    if (!empty($redirect)) {
+		    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+		    $m_application = new EmundusModelApplication;
+		    $redirect = $m_application->getFirstPage();
+	    } else {
+		    $redirect = 'index.php';
+	    }
 
         //JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
         $this->setRedirect($redirect);
@@ -1019,7 +1030,7 @@ class EmundusController extends JControllerLegacy {
         $quick_search   = $session->get('quick_search');
         $user           = $session->get('emundusUser');
 
-        $menu=JSite::getMenu()->getActive();
+        $menu=JFactory::getApplication()->getMenu()->getActive();
         $access=!empty($menu)?$menu->access : 0;
         if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access))
             die(JText::_('ACCESS_DENIED'));
@@ -1302,7 +1313,7 @@ class EmundusController extends JControllerLegacy {
     ** @return string HTML to display in page for action block indexed by user ID.
     */
     function ajax_validation() {
-        //$menu=JSite::getMenu()->getActive(); die(print_r($menu));
+        //$menu=JFactory::getApplication()->getMenu()->getActive(); die(print_r($menu));
         //$access=!empty($menu)?$menu->access : 0;
         $user = JFactory::getSession()->get('emundusUser');
         if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id))

@@ -131,15 +131,14 @@ class EmundusHelperAccess {
 	}
 
 	/**
-	 * Gest action acces right.
+	 * Get action acces right.
 	 *
+	 * @param	int		$user_id	The user id.
+	 * @param	string	$fnum		File number of application
+	 * @param	int		$action_id	Id of the action.
+	 * @param	string	$crud		create/read/update/delete.
 	 *
-	 * @param	int			$user_id		The user id.
-	 * @param	varchar		$fnum			File number of application
-	 * @param	int			$action_id		Id of the action.
-	 * @param	varchar		$crud			create/read/update/delete.
-	 *
-	 * @return	boolean		As acces or not
+	 * @return	boolean	Has access or not
 	 * @since	6.0
 	*/
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null) {

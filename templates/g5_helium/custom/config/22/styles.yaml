@@ -1,0 +1,40 @@
+preset: preset1
+base:
+  text-color: '#000000'
+accent:
+  color-1: '#ffffff'
+  color-2: '#ffffff'
+link:
+  regular: '#bb0e29'
+  hover: '#000000'
+navigation:
+  background: '#ffffff'
+  text-color: '#868686'
+header:
+  background: '#ffffff'
+  background-image: ''
+  background-overlay: disabled
+  text-color: '#000000'
+intro:
+  background: 'rgba(255, 255, 255, 0)'
+  text-color: '#000000'
+features:
+  text-color: '#000000'
+utility:
+  background: '#ffffff'
+  text-color: '#000000'
+testimonials:
+  background: '#ffffff'
+  background-image: ''
+  background-overlay: disabled
+  text-color: '#000000'
+expanded:
+  text-color: '#000000'
+footer:
+  background: '#ffffff'
+  text-color: '#868686'
+offcanvas:
+  background: '#bb0e29'
+  text-color: '#ffffff'
+  toggle-color: '#bb0e29'
+  toggle-visibility: '1'

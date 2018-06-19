@@ -10,13 +10,8 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(empty($this->html)) {
 	echo JText::_('THANK_YOU_FOR_PURCHASE');
-	$user = JFactory::getUser();
-	if(!$user->guest) {
-		$url = hikashop_completeLink('order&task=show&cid='.$this->order->order_id);
-	} else {
-		$url = hikashop_completeLink('order&task=show&cid='.$this->order->order_id.'&order_token='.$this->order->order_token);
-	}
-	echo '<br/>'.JText::sprintf('YOU_CAN_NOW_ACCESS_YOUR_ORDER_HERE', $url);
+	if(!empty($this->url))
+		echo '<br/>'.JText::sprintf('YOU_CAN_NOW_ACCESS_YOUR_ORDER_HERE', $this->url);
 } else {
 	echo $this->html;
 }

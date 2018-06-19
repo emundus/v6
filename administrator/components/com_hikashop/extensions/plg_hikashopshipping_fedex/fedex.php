@@ -632,7 +632,8 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$request['RequestedShipment']['PackageCount'] = $pkg_count;
 			$request['RequestedShipment']['RequestedPackageLineItems'] = $this->addPackageLineItem($pkg_values);
 
-			if(@$rate->shipping_params->debug) {
+			$ctrl = hikaInput::get()->getString('ctrl','');
+			if(@$rate->shipping_params->debug && $ctrl == 'checkout') {
 				echo "<br/> Request $v : <br/>";
 				echo '<pre>' . var_export($request, true) . '</pre>';
 			}
@@ -653,7 +654,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 					$app->enqueueMessage('The FedEx request failed with the message : ' . $response->Notifications->Message);
 				}
 			}
-			if(@$rate->shipping_params->debug){
+			if(@$rate->shipping_params->debug && $ctrl == 'checkout') {
 				echo "<br/> Response $v : <br/>";
 				echo '<pre>' . var_export($response, true) . '</pre>';
 			}

@@ -8,16 +8,13 @@
 
 defined( '_JEXEC' ) or die;
 
-require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/controller.php';
-
-
 JLoader::import( 'helpers.controllerHelper',FALANG_ADMINPATH);
 
 /**
- * The JoomFish Tasker manages the general tasks within the Joom!Fish admin interface
+ * The Falang Tasker manages the general tasks within the Falang admin interface
  *
  */
-class TranslateController extends LegacyController   {
+class TranslateController extends JControllerLegacy   {
 
 	/** @var string		current used task */
 	var $task=null;

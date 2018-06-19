@@ -18,6 +18,7 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 jimport('joomla.application.component.model');
 require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'files.php');
 require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'list.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 /**
  * Class EmundusModelFiles
@@ -65,7 +66,7 @@ class EmundusModelFiles extends JModelLegacy
 
         // Get current menu parameters
         $current_user = JFactory::getUser();
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
 
         $h_files = new EmundusHelperFiles;
@@ -235,11 +236,11 @@ class EmundusModelFiles extends JModelLegacy
         if (in_array('overall', $em_other_columns))
             $this->_elements_default[] = ' AVG(ee.overall) as overall ';
 
-        if (count($col_elt) == 0)
+        if (empty($col_elt))
             $col_elt = array();
-        if (count($col_other) == 0)
+        if (empty($col_other))
             $col_other = array();
-        if (count(@$this->_elements_default_name) == 0)
+        if (empty(@$this->_elements_default_name))
             $this->_elements_default_name = array();
 
         $this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
@@ -279,7 +280,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function _buildContentOrderBy()
     {
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
@@ -763,7 +764,7 @@ class EmundusModelFiles extends JModelLegacy
                                 if (is_array($value) && $filt_menu_defined) 
                                     $diff = array_diff($value, $filt_menu['status']);
                                 
-                                if ( count($diff) == 0 )
+                                if (count($diff) == 0)
                                     $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
                                 else
                                     $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
@@ -772,14 +773,11 @@ class EmundusModelFiles extends JModelLegacy
                         break;
 
                     case 'tag':
-                        if ($value)
-                        {
+                        if ($value) {
                             if ( $value[0] == "%" || !isset($value[0]) )
                                 $query['q'] .= ' ';
                             else
-                            {
                                 $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
-                            }
                         }
                         break;
 
@@ -797,10 +795,7 @@ class EmundusModelFiles extends JModelLegacy
         }
 
          // force menu filter
-        if (count($filt_menu['status'])>0 &&
-            isset($filt_menu['status'][0]) &&
-            !empty($filt_menu['status'][0]) &&
-            $filt_menu['status'][0] != "%") {
+        if ((is_array($filt_menu['status']) && count($filt_menu['status']) > 0) && isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
             $query['q'] .= ' AND jos_emundus_campaign_candidature.status IN ("' . implode('","', $filt_menu['status']) . '") ';
         }
 
@@ -1754,19 +1749,22 @@ if (JFactory::getUser()->id == 63)
      * @param $tag
      * @return bool|mixed
      */
-    public function tagFile($fnums, $tags)
-    {
-        try
-        {
+    public function tagFile($fnums, $tags) {
+
+        try {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
           
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
-            if(!empty($fnums) && !empty($tags)){
-                foreach ($fnums as $fnum)
-                {
-                    foreach($tags as $tag)
-                        $query .= '("'.$fnum.'", '.$tag.','.$user.'),';    
+            if (!empty($fnums) && !empty($tags)) {
+                foreach ($fnums as $fnum) {
+
+                	// Log the tag in the eMundus logging system.
+	                EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'Tag file');
+
+	                foreach ($tags as $tag) {
+	                    $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                    }
                 }
             }
            
@@ -1857,21 +1855,18 @@ if (JFactory::getUser()->id == 63)
      * @param $publish
      * @return bool|mixed
      */
-    public function updatePublish($fnums, $publish)
-    {
-        try
-        {
+    public function updatePublish($fnums, $publish) {
+        try {
             $db = $this->getDbo();
-            foreach ($fnums as $fnum)
-            {
+            foreach ($fnums as $fnum) {
+	            // Log the update.
+	            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'Set publish to '.$publish);
                 $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
                 $db->setQuery($query);
                 $res = $db->execute();
             }
             return $res;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;

@@ -24,6 +24,7 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
 
 class EmundusViewApplication extends JViewLegacy
@@ -116,6 +117,7 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'attachment':
 					if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $fnum)) {
+						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 4, 'r', 'Access applicants  attachments from backoffice');
 						$expert_document_id = $params->get('expert_document_id', '36');
 
 						$userAttachments = $m_application->getUserAttachmentsByFnum($fnum);
@@ -145,6 +147,8 @@ class EmundusViewApplication extends JViewLegacy
 				case 'evaluation':
                     if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum)) {
 
+	                    // No call to EmundusModelLogs::log() because the logging in handled in a Fabrik script on form load.
+
 						$params = JComponentHelper::getParams('com_emundus');
 						$can_copy_evaluations = $params->get('can_copy_evaluations', 0);
 						$multi_eval = $params->get('multi_eval', 0);
@@ -162,10 +166,9 @@ class EmundusViewApplication extends JViewLegacy
 							if (count($myEval) > 0) {
 
 								if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum))
-	                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
-
+									$this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
 	                            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum))
-	                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
+		                            $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
 
 							} else {
 
@@ -233,6 +236,9 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'decision':
                     if (EmundusHelperAccess::asAccessAction(29, 'r', $this->_user->id, $fnum)) {
+
+	                    // No call to EmundusModelLogs::log() because the logging in handled in a Fabrik script on form load.
+
                         $student = JFactory::getUser(intval($fnumInfos['applicant_id']));
                         $m_evaluation = new EmundusModelEvaluation();
                         $myEval = $m_evaluation->getDecisionFnum($fnum);
@@ -274,6 +280,8 @@ class EmundusViewApplication extends JViewLegacy
 				case 'comment':
 					if (EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum)) {
 
+						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'Access comments from backoffice.');
+
 						$userComments = $m_application->getFileComments($fnum);
 						$this->assignRef('userComments', $userComments);
 						$this->assignRef('fnum', $fnum);
@@ -286,6 +294,8 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'tag':
 					if (EmundusHelperAccess::asAccessAction(14, 'r', $this->_user->id, $fnum)) {
+
+						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 14, 'r', 'Access tags from backoffice.');
 
 						$m_files = new EmundusModelFiles();
 						$tags = $m_files->getTagsByFnum(array($fnum));
@@ -302,6 +312,8 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'form':
 						if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+
+							EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'Access applicants form from backoffice.');
 							$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
 							$formsProgress = $m_application->getFormsProgress($fnumInfos['applicant_id'], $pid, $fnum);
@@ -333,8 +345,10 @@ class EmundusViewApplication extends JViewLegacy
 					break;
 
 				case 'mail':
-					// This view gets a recap of all the emails sent to the User by the platofrm, requires applicant_email read rights.
+					// This view gets a recap of all the emails sent to the User by the platform, requires applicant_email read rights.
 					if (EmundusHelperAccess::asAccessAction(9, 'r', $this->_user->id, $fnum)) {
+
+						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 9, 'r', 'Access fnum email history from backoffice.');
 
 						$m_emails = new EmundusModelEmails();
 						$messages = $m_emails->get_messages_to_from_user(intval($fnumInfos['applicant_id']));
@@ -349,6 +363,8 @@ class EmundusViewApplication extends JViewLegacy
 				case 'admission':
                     if (EmundusHelperAccess::asAccessAction(32, 'r', $this->_user->id, $fnum)) {
 						$student = JFactory::getUser(intval($fnumInfos['applicant_id']));
+
+						// No call to EmundusModelLogs::log() because the logging in handled in a Fabrik script on form load.
 
 						$m_admission 	= new EmundusModelAdmission();
                         $m_application 	= new EmundusModelApplication();

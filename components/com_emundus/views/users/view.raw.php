@@ -38,7 +38,7 @@ class EmundusViewUsers extends JViewLegacy
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
 
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu   = $menu->getActive();
         $menu_params    = $menu->getParams(@$current_menu->id);
 
@@ -92,7 +92,7 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
 		$edit = JFactory::getApplication()->input->getInt('edit', null);
 
-		if($edit == 1)
+		if ($edit == 1)
 		{
 			$uid = JFactory::getApplication()->input->getInt('user', null);
 			$user  = $m_users->getUserInfos($uid);
@@ -192,7 +192,7 @@ class EmundusViewUsers extends JViewLegacy
 				break;
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
-				$menu = JSite::getMenu();
+				$menu = JFactory::getApplication()->getMenu();
 				$current_menu  = $menu->getActive();
 				$params = $menu->getParams($current_menu->id);
 
@@ -224,7 +224,8 @@ class EmundusViewUsers extends JViewLegacy
 		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 
-		$this->assignRef('itemId', @JFactory::getApplication()->input->getInt('Itemid', null));
+		$itemId = JFactory::getApplication()->input->getInt('Itemid', null);
+		$this->assignRef('itemId', $itemId);
 
 
 		parent::display($tpl);

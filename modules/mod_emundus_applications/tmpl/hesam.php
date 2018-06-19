@@ -21,44 +21,34 @@ echo $description;
 
 <?php if (!empty($applications)) : ?>
     <div class="em-hesam-applications">
-		<?php foreach($applications as $application) : ?>
-            <div class="col-md-4 panel panel-default em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
+		<?php foreach ($applications as $application) : ?>
+            <div class="col-md-4 em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
 
                 <div class="col-xs-6 col-md-8 em-bottom-space em-top-space">
                     <span class="label label-<?php echo $application->class; ?>"><?php echo $application->value; ?></span>
                 </div>
 
                 <div class="col-md-8 em-bottom-space">
-                    <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
-			            <?php if (!empty($application->titre)) :?>
-				            <?php echo ($application->fnum == $user->fnum)?'<b>'.$application->titre.'</b>':$application->titre; ?>
-			            <?php else: ?>
-				            <?php echo ($application->fnum == $user->fnum)?'<b>'.JText::_('NO_TITLE').'</b>':JText::_('NO_TITLE'); ?>
-			            <?php endif; ?>
-                    </a>
+                    <?php if (!empty($application->titre)) :?>
+                        <?php echo ($application->fnum == $user->fnum)?'<b>'.$application->titre.'</b>':$application->titre; ?>
+                    <?php else: ?>
+                        <?php echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'<b>'.JText::_('NO_TITLE').'</b>':JText::_('NO_TITLE'); ?>
+                    <?php endif; ?>
                 </div>
 
                 <div class="col-md-8 em-bottom-space">
-                    <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
+                    <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum.'&Itemid='.$Itemid.'#em-panel')); ?>"  role="button">
                         <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
-					<?php if (((int)($attachments[$application->fnum])>=100 && $application->status==0 && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
+					<?php if ((!empty($attachments) && (int)($attachments[$application->fnum])>=100 && $application->status==0 && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
                         <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
-					<?php endif; ?>
+                    <?php endif; ?>
 
                     <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
 
 					<?php if ($application->status <= 1) : ?>
-                        <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php echo $attachments[$application->fnum]; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
-
-						<?php if ($forms[$application->fnum] == 0) :?>
-                            <div class="ui segments">
-                                <div class="ui yellow segment">
-                                    <p><i class="info circle icon"></i> <?php echo JText::_('MOD_EMUNDUS_FLOW_EMPTY_FILE_ACTION'); ?></p></p>
-                                </div>
-                            </div>
-						<?php endif; ?>
+                        <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
 					<?php endif; ?>
                 </div>
             </div>
@@ -73,7 +63,7 @@ echo $description;
 <?php endif; ?>
 
 
-<?php if ($filled_poll_id == 0 && $poll_url != "") : ?>
+<?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>
     <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-form" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">

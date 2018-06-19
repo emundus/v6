@@ -58,7 +58,6 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
-
         $this->_user = JFactory::getSession()->get('emundusUser');
 
         $this->_db = JFactory::getDBO();
@@ -429,12 +428,14 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
-     *
-     */
-    public function addcomment()
-    {
-        $jinput = JFactory::getApplication()->input;
+	/**
+	 * Add a comment on a file.
+	 * @throws Exception
+	 * @since 6.0
+	 */
+    public function addcomment() {
+
+	    $jinput = JFactory::getApplication()->input;
         $user   = JFactory::getUser()->id;
         $fnums  = $jinput->getString('fnums', null);
         $title  = $jinput->getString('title', '');
@@ -443,16 +444,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = (array) json_decode(stripslashes($fnums));
         $m_application = $this->getModel('Application');
 
-        foreach($fnums as $fnum)
-        {
-            if(EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum))
-            {
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
-                if($res == 0)
-                {
+	            if ($res == 0) {
                     echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). $res)));
-                    exit;
+	                exit;
                 }
             }
         }
@@ -477,14 +475,13 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     /**
-     * Add a tag to an application
+     * Add a tag to an application.
+     * @since 6.0
      */
-    public function tagfile()
-    {
+    public function tagfile() {
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
-        $tag    = $jinput->getVar('tag', null);
-        //var_dump($fnums);
+        $tag    = $jinput->get('tag', null);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
         $m_files = $this->getModel('Files');
 
@@ -493,15 +490,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $validFnums = array();
        
-        foreach ($fnums as $fnum)
-        {   
-            if($fnum != 'em-check-all'){
-                if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-                {
+        foreach ($fnums as $fnum) {
+            if ($fnum != 'em-check-all') {
+                if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
                     $validFnums[] = $fnum;
                 }
             }
-            
         }
         unset($fnums);
         $res    = $m_files->tagFile($validFnums, $tag);
@@ -511,8 +505,8 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function deletetags()
-    {
+    public function deletetags() {
+
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
         $tags    = $jinput->getVar('tag', null);
@@ -526,16 +520,14 @@ class EmundusControllerFiles extends JControllerLegacy
         if ($fnums == "all")
             $fnums = $m_files->getAllFnums();
 
-        foreach ($fnums as $fnum)
-        {
-            if($fnum != 'em-check-all'){
-                foreach ($tags as $tag){
+        foreach ($fnums as $fnum) {
+            if ($fnum != 'em-check-all') {
+                foreach ($tags as $tag) {
                     $hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
-                    if($hastags){
+                    if  ($hastags) {
                         $result = $m_application->deleteTag($tag, $fnum);
-                    }else{
-                        if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
-                        {
+                    } else {
+                        if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum)) {
                             $result = $m_application->deleteTag($tag, $fnum);
                         }
                     }
@@ -1221,7 +1213,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function getcolumnSup($objs) {
 
-       /* $menu = @JSite::getMenu();
+       /* $menu = @JFactory::getApplication()->getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
         $columnSupl = explode(',', $menu_params->get('em_actions'));*/
@@ -1313,7 +1305,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $pictures = array();
                         foreach ($photos as $photo) {
 
-                            $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
+                            $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
 
                             $link = '=HYPERLINK("'.JURI::base(). $folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
                             $pictures[$photo['fnum']] = $link;
@@ -1332,7 +1324,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $formsProgress[$fnum] = $m_application->getFormsProgress($aid, $pid, $fnum);
                     }
-                    $colOpt['forms'] = $formsProgress;
+                    if (!empty($formsProgress))
+                        $colOpt['forms'] = $formsProgress;
                     break;
                 case "attachment":
                     foreach ($fnums as $fnum) {
@@ -1341,7 +1334,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $attachmentProgress[$fnum] = $m_application->getAttachmentsProgress($aid, $pid, $fnum);
                     }
-                    $colOpt['attachment'] = $attachmentProgress;
+	                if (!empty($attachmentProgress))
+                        $colOpt['attachment'] = $attachmentProgress;
                     break;
                 case "assessment":
                     $colOpt['assessment'] = $h_files->getEvaluation('text', $fnums);
@@ -1827,14 +1821,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
         // Excel colonne
         $colonne_by_id = array();
-        for ($i=ord("A");$i<=ord("Z");$i++) {
+        for ($i = ord("A"); $i <= ord("Z"); $i++) {
             $colonne_by_id[]=chr($i);
         }
 
-        for ($i=ord("A");$i<=ord("Z");$i++) {
-            for ($j=ord("A");$j<=ord("Z");$j++) {
+        for ($i = ord("A"); $i <= ord("Z"); $i++) {
+            for ($j = ord("A"); $j <= ord("Z"); $j++) {
                 $colonne_by_id[]=chr($i).chr($j);
-                if(count($colonne_by_id) == $nbrow) break;
+                if (count($colonne_by_id) == $nbrow) break;
             }
         }
 
@@ -1907,18 +1901,17 @@ class EmundusControllerFiles extends JControllerLegacy
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         }
 
-
-
         $randomString = JUserHelper::genRandomPassword(20);
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.$excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xls');
+        $objWriter->save(JPATH_BASE . DS . 'tmp' . DS . $excel_file_name . '_' . $nbrow . 'rows_' . $randomString . '.xls');
         $link = $excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xls';
         if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
             $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
             echo json_encode((object) $result);
             exit();
         }
-        $session     = JFactory::getSession();
+
+        $session = JFactory::getSession();
         $session->clear('fnums_export');
         $result = array('status' => true, 'link' => $link);
         echo json_encode((object) $result);
@@ -1960,7 +1953,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnumsArray = $m_files->getFnumArray($fnums, $elements, $methode);
         $status     = $m_files->getStatusByFnums($fnums);
 
-        $menu = @JSite::getMenu();
+        $menu = @JFactory::getApplication()->getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
 
@@ -2885,7 +2878,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('checkInput', null);
         $fnums = (array) json_decode(stripslashes($fnums));
 
-        if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all"){
+        if (!is_array($fnums) || count($fnums) == 0 || (!empty($fnums[0]) && $fnums[0] == "all")){
              $fnums = $m_files->getAllFnums();
         }
 
@@ -2921,16 +2914,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('checkInput', null);
         $fnums = (array) json_decode(stripslashes($fnums));
 
-        if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all")
+        if (!is_array($fnums) || count($fnums) == 0 || (isset($fnums[0]) && $fnums[0] == "all"))
             $fnums = $m_files->getAllFnums();
 
         $m_campaigns = new EmundusModelCampaign;
         $nbcamp = 0;
-        if(!empty($fnums)){
+        if (!empty($fnums)) {
 
-            foreach($fnums as $fnum){
+            foreach ($fnums as $fnum) {
                 $campaign  = $m_campaigns->getCampaignByFnum($fnum);
-                if($campaign->training == $code){
+                if ($campaign->training == $code) {
                     $nbcamp += 1;
                     $option = '<option value="'.$campaign->id.'">'.$campaign->label.' ('.$campaign->year.')</option>';
                     if (strpos($html, $option) === false) {

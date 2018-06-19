@@ -35,7 +35,7 @@ class EmundusViewControlfiles extends JViewLegacy
     function display($tpl = null)
     {
 		//$current_user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
+		$menu=JFactory::getApplication()->getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) 
 			die("You are not allowed to access to this page.");

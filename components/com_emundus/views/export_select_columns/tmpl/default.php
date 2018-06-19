@@ -65,7 +65,7 @@ if (!empty($s_elements)) {
 </style>
 
 	<?php
-    if (count($this->elements) > 0) {
+    if (is_array($this->elements) && count($this->elements) > 0) {
 
         // If the form is set then this means that we are getting the Admission form details or some other extra form
         // We are going to use the form value as a way to make unique IDs so the JS works correctly :)

@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantrymodulesrenderer.class.php 30226 2016-03-29 12:24:07Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -82,7 +82,7 @@ class GantryModulesRenderer
 			$position_renders[$position] = $contents;
 		}
 
-		$position_renders = array_filter($position_renders, create_function('$o', 'return !empty($o);'));
+		$position_renders = array_filter($position_renders, function ($o) { return !empty($o); });
 
 
 		$position_renders_keys = array_keys($position_renders);

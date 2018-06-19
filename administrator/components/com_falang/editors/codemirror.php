@@ -20,6 +20,10 @@ defined('_JEXEC') or die;
                     srcEl = document.getElementById("original_value_"+value);
                     innerHTML = srcEl.innerHTML;
                 }
+                if (action=="translate") {
+                    srcEl = document.getElementById("original_value_"+value);
+                    innerHTML = translateService(srcEl.innerHTML);
+                }
                 //Joomla.editors.instances["refField_"+value].replaceSelection(innerHTML);
                 Joomla.editors.instances["refField_"+value].setValue(innerHTML);
 

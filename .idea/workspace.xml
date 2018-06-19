@@ -1,8 +1,227 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="">
+    <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_emundus/config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_emundus/config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/article.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/article.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/cart.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/currency.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/currency.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/field.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/field.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/order.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/order.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/controllers/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/controllers/config.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop/mod_hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop/mod_hikashop.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_cart/mod_hikashop_cart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_cart/mod_hikashop_cart.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_currency/mod_hikashop_currency.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_currency/mod_hikashop_currency.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_dashboard/mod_hikashop_dashboard.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_dashboard/mod_hikashop_dashboard.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_editors-xtd_hikashopproduct/hikashopproduct.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_editors-xtd_hikashopproduct/hikashopproduct.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_cartnotify/cartnotify.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_cartnotify/cartnotify.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_content_markdown/content_markdown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_content_markdown/content_markdown.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_datepickerfield/datepickerfield.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_datepickerfield/datepickerfield.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_history/history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_history/history.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_kashflow/kashflow.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_kashflow/kashflow.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_address/massaction_address.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_address/massaction_address.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_category/massaction_category.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_category/massaction_category.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_order/massaction_order.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_order/massaction_order.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_product/massaction_product.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_product/massaction_product.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_user/massaction_user.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_user/massaction_user.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_shippingmanual_prices/shippingmanual_prices.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_shippingmanual_prices/shippingmanual_prices.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_user_account/user_account.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_user_account/user_account.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_validate_free_order/validate_free_order.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_validate_free_order/validate_free_order.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_alertpay/alertpay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_alertpay/alertpay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_alipay/alipay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_alipay/alipay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_atos/atos.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_atos/atos.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_atossips/atossips.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_atossips/atossips.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_authorize/authorize.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_authorize/authorize.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_banktransfer/banktransfer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_banktransfer/banktransfer.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_be2bill/be2bill.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_be2bill/be2bill.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_beanstream/beanstream.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_beanstream/beanstream.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_bluepaid/bluepaid.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_bluepaid/bluepaid.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_borgun/borgun.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_borgun/borgun.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_cardsave/cardsave.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_cardsave/cardsave.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_check/check.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_check/check.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_cmcic/cmcic.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_cmcic/cmcic.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_collectondelivery/collectondelivery.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_collectondelivery/collectondelivery.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_common/common.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_common/common.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_creditcard/creditcard.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_creditcard/creditcard.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_epay/epay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_epay/epay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_eselect/eselect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_eselect/eselect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_eway/eway.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_eway/eway.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_firstdata/firstdata.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_firstdata/firstdata.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_googlecheckout/googlecheckout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_googlecheckout/googlecheckout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_hsbc/hsbc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_hsbc/hsbc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ipaydna/ipaydna.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ipaydna/ipaydna.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_iveri/iveri.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_iveri/iveri.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_migsvpc/migsvpc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_migsvpc/migsvpc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_nets/nets.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_nets/nets.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ogone/ogone.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ogone/ogone.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paybox/paybox.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paybox/paybox.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payfast/payfast.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payfast/payfast.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paygate/paygate.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paygate/paygate.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payjunction/payjunction.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payjunction/payjunction.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paymentexpress/paymentexpress.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paymentexpress/paymentexpress.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypal/paypal.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypal/paypal.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypaladvanced/paypaladvanced.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypaladvanced/paypaladvanced.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypalexpress/paypalexpress.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypalexpress/paypalexpress.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypalintegralevolution/paypalintegralevolution.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypalintegralevolution/paypalintegralevolution.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypalpro/paypalpro.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_paypalpro/paypalpro.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payplug/payplug.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payplug/payplug.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payuindia/payuindia.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_payuindia/payuindia.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_postfinance/postfinance.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_postfinance/postfinance.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_purchaseorder/purchaseorder.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_purchaseorder/purchaseorder.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_pxpay/pxpay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_pxpay/pxpay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_servired/servired.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_servired/servired.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_virtualmerchant/virtualmerchant.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_virtualmerchant/virtualmerchant.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_westernunion/westernunion.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_westernunion/westernunion.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_worldnettps/worldnettps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_worldnettps/worldnettps.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost/aupost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost/aupost.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost2/aupost2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost2/aupost2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_canadapost/canadapost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_canadapost/canadapost.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_manual/manual.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_manual/manual.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_quickicon_hikashop/hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_quickicon_hikashop/hikashop.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_categories/hikashop_categories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_categories/hikashop_categories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_custom_quantity_tax/custom_quantity_tax.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_custom_quantity_tax/custom_quantity_tax.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopmassaction/hikashopmassaction.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopmassaction/hikashopmassaction.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashoppayment/hikashoppayment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashoppayment/hikashoppayment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopproductinsert/hikashopproductinsert.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopproductinsert/hikashopproductinsert.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopproducttag/hikashopproducttag.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopproducttag/hikashopproducttag.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopregistrationredirect/hikashopregistrationredirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopregistrationredirect/hikashopregistrationredirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopremarketing/hikashopremarketing.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopremarketing/hikashopremarketing.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopsocial/hikashopsocial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopsocial/hikashopsocial.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopuser/hikashopuser.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopuser/hikashopuser.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_mijo_redirect/mijo_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_mijo_redirect/mijo_redirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_nossloutsidecheckout/nossloutsidecheckout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_nossloutsidecheckout/nossloutsidecheckout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_reds_redirect/reds_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_reds_redirect/reds_redirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_vm_redirect/vm_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_vm_redirect/vm_redirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/helpers/helper.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/helpers/helper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/hikashop_j3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/hikashop_j3.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/views/config/tmpl/main.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/views/config/tmpl/main.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/views/order/tmpl/edit_products.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/views/order/tmpl/edit_products.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/views/upload/tmpl/galleryimage.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/views/upload/tmpl/galleryimage.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/language/en-GB/en-GB.com_securitycheckpro.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/language/en-GB/en-GB.com_securitycheckpro.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/sql/updates/3.0.1.sql" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/sql/updates/3.0.1.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/language/en-GB/en-GB.com_securitycheckpro.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/language/en-GB/en-GB.com_securitycheckpro.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/modules/mod_hikashop_dashboard/mod_hikashop_dashboard.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/modules/mod_hikashop_dashboard/mod_hikashop_dashboard.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_emundus/models/application.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/models/application.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_hikashop/controllers/checkout.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/controllers/checkout.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/after_end.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/after_end.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/end.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/end.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/show_block_login.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/show_block_login.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/view.html.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/view.html.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/listing_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/listing_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/show.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/show.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/media/com_hikashop/js/checkoutworkflow.js" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_hikashop/js/checkoutworkflow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/language/en-GB/en-GB.mod_emundusflow.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/language/en-GB/en-GB.mod_emundusflow.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/language/fr-FR/fr-FR.mod_emundusflow.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/language/fr-FR/fr-FR.mod_emundusflow.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_hikashop/mod_hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_hikashop/mod_hikashop.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_hikashop_cart/mod_hikashop_cart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_hikashop_cart/mod_hikashop_cart.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_hikashop_currency/mod_hikashop_currency.xml" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_hikashop_currency/mod_hikashop_currency.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/editors-xtd/hikashopproduct/hikashopproduct.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/editors-xtd/hikashopproduct/hikashopproduct.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/cartnotify/cartnotify.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/cartnotify/cartnotify.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/content_markdown/content_markdown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/content_markdown/content_markdown.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/datepickerfield/datepickerfield.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/datepickerfield/datepickerfield.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/history/history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/history/history.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/kashflow/kashflow.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/kashflow/kashflow.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/massaction_address/massaction_address.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/massaction_address/massaction_address.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/massaction_category/massaction_category.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/massaction_category/massaction_category.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/massaction_order/massaction_order.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/massaction_order/massaction_order.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/massaction_product/massaction_product.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/massaction_product/massaction_product.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/massaction_user/massaction_user.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/massaction_user/massaction_user.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/shippingmanual_prices/shippingmanual_prices.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/shippingmanual_prices/shippingmanual_prices.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/user_account/user_account.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/user_account/user_account.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/validate_free_order/validate_free_order.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/validate_free_order/validate_free_order.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/alertpay/alertpay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/alertpay/alertpay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/alipay/alipay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/alipay/alipay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/atos/atos.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/atos/atos.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/atossips/atossips.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/atossips/atossips.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/authorize/authorize.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/authorize/authorize.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/banktransfer/banktransfer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/banktransfer/banktransfer.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/be2bill/be2bill.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/be2bill/be2bill.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/beanstream/beanstream.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/beanstream/beanstream.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/bluepaid/bluepaid.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/bluepaid/bluepaid.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/borgun/borgun.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/borgun/borgun.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/cardsave/cardsave.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/cardsave/cardsave.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/check/check.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/check/check.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/cmcic/cmcic.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/cmcic/cmcic.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/collectondelivery/collectondelivery.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/collectondelivery/collectondelivery.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/common/common.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/common/common.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/creditcard/creditcard.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/creditcard/creditcard.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/epay/epay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/epay/epay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/eselect/eselect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/eselect/eselect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/eway/eway.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/eway/eway.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/firstdata/firstdata.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/firstdata/firstdata.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/googlecheckout/googlecheckout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/googlecheckout/googlecheckout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/hsbc/hsbc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/hsbc/hsbc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/ipaydna/ipaydna.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/ipaydna/ipaydna.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/iveri/iveri.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/iveri/iveri.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/migsvpc/migsvpc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/migsvpc/migsvpc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/nets/nets.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/nets/nets.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/ogone/ogone.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/ogone/ogone.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paybox/paybox.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paybox/paybox.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/payfast/payfast.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/payfast/payfast.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paygate/paygate.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paygate/paygate.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/payjunction/payjunction.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/payjunction/payjunction.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paymentexpress/paymentexpress.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paymentexpress/paymentexpress.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paypal/paypal.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paypal/paypal.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paypaladvanced/paypaladvanced.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paypaladvanced/paypaladvanced.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paypalexpress/paypalexpress.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paypalexpress/paypalexpress.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paypalintegralevolution/paypalintegralevolution.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paypalintegralevolution/paypalintegralevolution.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/paypalpro/paypalpro.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/paypalpro/paypalpro.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/payplug/payplug.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/payplug/payplug.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/payuindia/payuindia.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/payuindia/payuindia.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/postfinance/postfinance.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/postfinance/postfinance.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/purchaseorder/purchaseorder.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/purchaseorder/purchaseorder.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/pxpay/pxpay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/pxpay/pxpay.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/servired/servired.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/servired/servired.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/virtualmerchant/virtualmerchant.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/virtualmerchant/virtualmerchant.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/westernunion/westernunion.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/westernunion/westernunion.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/worldnettps/worldnettps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/worldnettps/worldnettps.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/aupost/aupost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/aupost/aupost.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/aupost2/aupost2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/aupost2/aupost2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/canadapost/canadapost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/canadapost/canadapost.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/manual/manual.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/manual/manual.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/quickicon/hikashop/hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/quickicon/hikashop/hikashop.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/search/hikashop_categories/hikashop_categories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/search/hikashop_categories/hikashop_categories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/custom_quantity_tax/custom_quantity_tax.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/custom_quantity_tax/custom_quantity_tax.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashopmassaction/hikashopmassaction.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopmassaction/hikashopmassaction.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashoppayment/hikashoppayment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashoppayment/hikashoppayment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashopproductinsert/hikashopproductinsert.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopproductinsert/hikashopproductinsert.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashopproducttag/hikashopproducttag.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopproducttag/hikashopproducttag.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashopregistrationredirect/hikashopregistrationredirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopregistrationredirect/hikashopregistrationredirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashopremarketing/hikashopremarketing.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopremarketing/hikashopremarketing.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashopsocial/hikashopsocial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopsocial/hikashopsocial.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/hikashopuser/hikashopuser.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopuser/hikashopuser.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/mijo_redirect/mijo_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/mijo_redirect/mijo_redirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/nossloutsidecheckout/nossloutsidecheckout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/nossloutsidecheckout/nossloutsidecheckout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/reds_redirect/reds_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/reds_redirect/reds_redirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/vm_redirect/vm_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/vm_redirect/vm_redirect.xml" afterDir="false" />
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -14,7 +233,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ComposerSettings" doNotAsk="true">
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="DONT_SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/libraries/composer.json</pharConfigPath>
   </component>
   <component name="CreatePatchCommitExecutor">
@@ -55,29 +274,79 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="console.sql" pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/77a9c266-b43e-40f0-86bd-cc3313e50b21/console.sql">
+      <file leaf-file-name="emundus-isApplicationCompleted.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="23" column="60" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="93" />
+            <state relative-caret-position="796">
+              <caret line="79" column="100" selection-start-line="79" selection-start-column="100" selection-end-line="79" selection-end-column="100" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="emundusregistrationredirect.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.php">
+      <file leaf-file-name="application.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/models/application.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="43" selection-end-column="13" />
+            <state relative-caret-position="427">
+              <caret line="2325" column="138" selection-start-line="2325" selection-start-column="133" selection-end-line="2325" selection-end-column="138" />
+              <folding>
+                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="emundusregistrationredirect.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.xml">
+      <file leaf-file-name="paid.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/paid.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="12" column="53" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="53" />
+            <state relative-caret-position="504">
+              <caret line="14" column="65" selection-start-line="14" selection-start-column="65" selection-end-line="14" selection-end-column="65" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="view.html.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="352">
+              <caret line="81" column="72" selection-start-line="81" selection-start-column="72" selection-end-line="81" selection-end-column="72" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/administrator/components/com_emundus/config.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="837">
+              <caret line="82" column="43" selection-start-line="82" selection-start-column="43" selection-end-line="82" selection-end-column="43" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mod_emundusflow.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-204">
+              <caret line="62" column="22" selection-start-line="62" selection-start-column="12" selection-end-line="62" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="default.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="615">
+              <caret line="62" column="22" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -86,9 +355,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getUsers</find>
-      <find>_buildWhere</find>
-      <find>getElementsByGroups</find>
       <find>edit-comment</find>
       <find>clearCho</find>
       <find>getFileCo</find>
@@ -103,12 +369,22 @@
       <find>case 8</find>
       <find>export_pdf</find>
       <find>update</find>
-      <find>getEmailT</find>
       <find>$</find>
       <find>updatest</find>
       <find>updatestate</find>
       <find>updateS</find>
       <find>case 13</find>
+      <find>getEma</find>
+      <find>getEmail</find>
+      <find>getEmailT</find>
+      <find>getTa</find>
+      <find>setTagsFabrik</find>
+      <find>getHikashopOrder</find>
+      <find>APPLICATI</find>
+      <find>APPLICATION_</find>
+      <find>$sentOrder</find>
+      <find>sen</find>
+      <find>pay</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -122,57 +398,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/view.html.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/files/view.html.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/admission/view.html.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/admission/view.raw.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/decision/view.html.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/decision/tmpl/data.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/decision/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/decision/view.raw.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/decision.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/export_select_columns/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/decision.php" />
-        <option value="$PROJECT_DIR$/libraries/emundus/pdf_evaluation.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/helpers/export.php" />
-        <option value="$PROJECT_DIR$/libraries/emundus/pdf_decision.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/juseremundus/juseremundus.php" />
-        <option value="$PROJECT_DIR$/plugins/user/emundus/emundus.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/thesis/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/helpers/filters.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/jobs/tmpl/default_filter.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/thesiss.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default_filter.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/thesis.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/thesis.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/users.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/users.php" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC_new_thesis_to_validate.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/thesiss/view.html.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/thesiss.php" />
-        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/77a9c266-b43e-40f0-86bd-cc3313e50b21/console.sql" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-evaluation_ESA.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/application.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/controllers/application.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/application/view.raw.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/comment.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/helpers/files.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/controller.php" />
         <option value="$PROJECT_DIR$/libraries/emundus/fpdf.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/emails.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/users/view.html.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/emundus.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/models/evaluation.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/controllers/evaluation.php" />
         <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/files.php" />
         <option value="$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.xml" />
         <option value="$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/emails.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/export_select_columns/tmpl/default.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/export_select_columns/tmpl/programme.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/export_select_columns/view.raw.php" />
+        <option value="$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap-form102/default_actions.php" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/emundusredirect.php" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/en-GB/en-GB.plg_fabrik_form_emunduscampaign.ini" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/en-GB/en-GB.plg_fabrik_form_emunduscampaign.sys.ini" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/fr-FR/fr-FR.plg_fabrik_form_emunduscampaign.ini" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/emunduscampaign.xml" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/fr-FR/fr-FR.plg_fabrik_form_emunduscampaign.sys.ini" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/forms/fields.xml" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusredirect/emundusredirect.php" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/emunduscampaign.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/helper.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/hesam.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_checklist/tmpl/default.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/application_form.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundususerdropdown/helper.php" />
+        <option value="$PROJECT_DIR$/media/com_emundus/css/emundus.css" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/files.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.xml" />
+        <option value="$PROJECT_DIR$/modules/mod_emundususerdropdown/language/en-GB/en-GB.mod_emundusmenu.ini" />
+        <option value="$PROJECT_DIR$/modules/mod_emundususerdropdown/language/fr-FR/fr-FR.mod_emundusmenu.ini" />
+        <option value="$PROJECT_DIR$/modules/mod_emundususerdropdown/tmpl/default.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/application.php" />
+        <option value="$PROJECT_DIR$/administrator/components/com_emundus/config.xml" />
+        <option value="$PROJECT_DIR$/administrator/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" />
+        <option value="$PROJECT_DIR$/administrator/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundusflow/language/fr-FR/fr-FR.mod_emundusflow.ini" />
+        <option value="$PROJECT_DIR$/modules/mod_emundusflow/language/en-GB/en-GB.mod_emundusflow.ini" />
+        <option value="$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php" />
       </list>
     </option>
   </component>
@@ -241,6 +517,7 @@
       <path value="$PROJECT_DIR$/libraries/vendor/joomla/filter" />
       <path value="$PROJECT_DIR$/libraries/vendor/joomla/filesystem" />
       <path value="$PROJECT_DIR$/libraries/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php73" />
     </include_path>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
@@ -274,7 +551,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -285,30 +561,72 @@
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="plugins" type="462c0819:PsiDirectoryNode" />
-              <item name="system" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="plugins" type="462c0819:PsiDirectoryNode" />
-              <item name="system" type="462c0819:PsiDirectoryNode" />
-              <item name="emundusregistrationredirect" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+              <item name="en-GB" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+              <item name="fr-FR" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+              <item name="tmpl" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="FullScreen" value="false" />
-    <property name="SearchEverywhereHistoryKey" value="evaluation_&#9;FILE&#9;file:///Users/emundus/Documents/v6/plugins/fabrik_form/php/scripts/emundus-evaluation_ESA.php" />
+    <property name="SearchEverywhereHistoryKey" value="m/files.php&#9;FILE&#9;file:///Users/emundus/Documents/v6/components/com_emundus/models/files.php&#10;('emundusUser')&#9;null&#9;null&#10;evaluation_&#9;FILE&#9;file:///Users/emundus/Documents/v6/plugins/fabrik_form/php/scripts/emundus-evaluation_ESA.php" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.database.dataSource.DataSourceTemplate" value="MySQL" />
     <property name="database.console.LAST_STATE" value="true" />
@@ -323,11 +641,125 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/modules" />
+      <recent name="$PROJECT_DIR$/plugins/fabrik_form" />
+      <recent name="$PROJECT_DIR$/components/com_fabrik/views/form/tmpl" />
       <recent name="$PROJECT_DIR$/plugins/system/emundusregistrationredirect" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\wamp\www\sorbonnev3\" />
     </key>
+  </component>
+  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
+    <UpdatedFiles>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Updated from server" />
+        <option name="myStatusName" value="Changed on server" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="CHANGED_ON_SERVER" />
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Updated" />
+          <option name="myStatusName" value="Changed" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UPDATED" />
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/components/com_emundus/models/application.php</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Created" />
+          <option name="myStatusName" value="Created" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CREATED" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Deleted" />
+          <option name="myStatusName" value="Deleted" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="true" />
+          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Restored" />
+          <option name="myStatusName" value="Will be restored" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="RESTORED" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Modified" />
+        <option name="myStatusName" value="Modified" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MODIFIED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Skipped" />
+        <option name="myStatusName" value="Skipped" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SKIPPED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with conflicts" />
+        <option name="myStatusName" value="Will be merged with conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_CONFLICTS" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with tree conflicts" />
+        <option name="myStatusName" value="Merged with tree conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with property conflicts" />
+        <option name="myStatusName" value="Will be merged with property conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged" />
+        <option name="myStatusName" value="Will be merged" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Not in repository" />
+        <option name="myStatusName" value="Not in repository" />
+        <option name="mySupportsDeletion" value="true" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="UNKNOWN" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally added" />
+        <option name="myStatusName" value="Locally added" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_ADDED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally removed" />
+        <option name="myStatusName" value="Locally removed" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_REMOVED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Switched" />
+        <option name="myStatusName" value="Switched" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SWITCHED" />
+      </FILE-GROUP>
+    </UpdatedFiles>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -413,6 +845,15 @@
       <workItem from="1526025191086" duration="3208000" />
       <workItem from="1526460821704" duration="1353000" />
       <workItem from="1526472700422" duration="4163000" />
+      <workItem from="1527588487573" duration="7839000" />
+      <workItem from="1527666021220" duration="4243000" />
+      <workItem from="1527753319621" duration="3081000" />
+      <workItem from="1527839448618" duration="6160000" />
+      <workItem from="1528098538669" duration="8064000" />
+      <workItem from="1528185503610" duration="9500000" />
+      <workItem from="1528270126446" duration="4410000" />
+      <workItem from="1528357137813" duration="7155000" />
+      <workItem from="1528444030293" duration="9264000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog.">
       <created>1525445467750</created>
@@ -421,11 +862,32 @@
       <option name="project" value="LOCAL" />
       <updated>1525445467750</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added the message HTML structure to emails sent by triggers.">
+      <created>1527595174813</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1527595174814</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
+      <created>1527600506241</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1527600506241</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Added a new plugin which replaces the old campaign plugin but can now have a custom redirect URL. Added a custom Fabrik form layout for a specific form. Fixed some ugly code.">
+      <created>1527693121484</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1527693121484</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39258000" />
+    <option name="totallyTimeSpent" value="98974000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -451,28 +913,29 @@
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.11015625" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.10390625" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32987553" />
-      <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" x="10" y="629" width="1680" height="349" id="Event Log" order="8" side_tool="true" type="FLOATING" weight="0.3805889" />
+      <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
+      <window_info anchor="bottom" x="10" y="629" width="1680" height="349" id="Event Log" order="9" side_tool="true" type="FLOATING" weight="0.3805889" />
       <window_info anchor="right" id="Database" order="3" weight="0.123046875" />
-      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="11" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.5474373" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="12" weight="0.32987553" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.52040815" />
+      <window_info anchor="bottom" id="Terminal" order="16" weight="0.32987553" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.29008746" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Changes" order="7" weight="0.32987553" />
-      <window_info anchor="bottom" id="Application Servers" order="11" />
-      <window_info anchor="bottom" id="Grunt" order="10" />
+      <window_info anchor="bottom" id="Application Servers" order="15" />
+      <window_info anchor="bottom" id="Grunt" order="14" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.32944608" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info active="true" anchor="bottom" id="Database Console" order="9" visible="true" weight="0.1260933" />
+      <window_info active="true" anchor="bottom" id="Database Console" order="12" visible="true" weight="0.1260933" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.31955308" />
     </layout>
   </component>
@@ -495,7 +958,11 @@
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
     <MESSAGE value="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog." />
+    <MESSAGE value="Added the message HTML structure to emails sent by triggers." />
+    <MESSAGE value="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails)." />
+    <MESSAGE value="Added a new plugin which replaces the old campaign plugin but can now have a custom redirect URL. Added a custom Fabrik form layout for a specific form. Fixed some ugly code." />
+    <MESSAGE value="Added template for Fabrik form in order to make the buttons appear in a better position." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added template for Fabrik form in order to make the buttons appear in a better position." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -555,18 +1022,8 @@
           <line>37</line>
           <option name="timeStamp" value="59" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php</url>
-          <line>192</line>
-          <option name="timeStamp" value="75" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php</url>
-          <line>115</line>
-          <option name="timeStamp" value="76" />
-        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="79" />
+      <option name="time" value="83" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PhpWebAppRunConfigurationType">
@@ -579,338 +1036,342 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf_decision.php">
+    <entry file="file://$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap-form102/default.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        <state relative-caret-position="-1311">
+          <caret line="26" column="5" lean-forward="true" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/tmpl/adduser.php">
+    <entry file="file://$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap-form102/default_actions.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="95" column="45" selection-start-line="95" selection-start-column="37" selection-end-line="95" selection-end-column="45" />
+        <state relative-caret-position="685">
+          <caret line="29" column="21" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/forms/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-campaign.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="246" column="61" selection-start-line="246" selection-start-column="61" selection-end-line="246" selection-end-column="61" />
+        <state relative-caret-position="1019">
+          <caret line="104" column="50" lean-forward="true" selection-start-line="14" selection-end-line="104" selection-end-column="50" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/juseremundus/juseremundus.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/en-GB/en-GB.plg_fabrik_form_emunduscampaign.sys.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="333" column="29" selection-start-line="333" selection-start-column="29" selection-end-line="333" selection-end-column="29" />
+        <state relative-caret-position="180">
+          <caret line="5" column="83" selection-start-line="5" selection-start-column="83" selection-end-line="5" selection-end-column="83" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/view.raw.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/fr-FR/fr-FR.plg_fabrik_form_emunduscampaign.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="185" column="38" selection-start-line="185" selection-start-column="23" selection-end-line="185" selection-end-column="38" />
+        <state relative-caret-position="252">
+          <caret line="7" column="70" selection-start-line="7" selection-start-column="70" selection-end-line="7" selection-end-column="70" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/user/emundus/emundus.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/en-GB/en-GB.plg_fabrik_form_emunduscampaign.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="297" column="64" selection-start-line="297" selection-start-column="64" selection-end-line="297" selection-end-column="64" />
+        <state relative-caret-position="216">
+          <caret line="6" selection-start-line="6" selection-end-line="7" selection-end-column="65" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesis/view.html.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/emunduscampaign.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="37" column="30" selection-start-line="37" selection-start-column="19" selection-end-line="37" selection-end-column="30" />
+        <state relative-caret-position="252">
+          <caret line="7" column="57" lean-forward="true" selection-start-line="7" selection-start-column="57" selection-end-line="7" selection-end-column="57" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default_filter.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-attachment.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="41" column="197" selection-start-line="41" selection-start-column="197" selection-end-line="41" selection-end-column="197" />
+        <state relative-caret-position="-256" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/alphauserpoints.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/emunduscampaign.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="719">
+          <caret line="184" column="22" lean-forward="true" selection-start-line="184" selection-start-column="22" selection-end-line="184" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/jobs/tmpl/default_filter.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusredirect/emundusredirect.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="20" column="17" selection-start-line="20" selection-end-line="20" selection-end-column="17" />
+        <state relative-caret-position="787">
+          <caret line="111" column="71" selection-start-line="111" selection-start-column="71" selection-end-line="111" selection-end-column="71" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/filters.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/forms/fields.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="431" column="25" selection-start-line="431" selection-start-column="13" selection-end-line="431" selection-end-column="25" />
+        <state relative-caret-position="180">
+          <caret line="5" column="86" selection-start-line="5" selection-start-column="86" selection-end-line="5" selection-end-column="86" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/thesis.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="210" column="45" selection-start-line="210" selection-start-column="45" selection-end-line="210" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/thesiss.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="2" column="17" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesis/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/thesis.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="74" column="81" selection-start-line="74" selection-start-column="81" selection-end-line="74" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/thesiss.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="290" column="2" selection-start-line="290" selection-start-column="2" selection-end-line="290" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesiss/view.html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="36" column="44" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/thesiss/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="151" column="69" selection-start-line="151" selection-start-column="69" selection-end-line="151" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="742" selection-start-line="742" selection-end-line="742" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC_new_thesis_to_validate.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="169" column="49" selection-start-line="169" selection-start-column="49" selection-end-line="169" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CSC_new_thesis_validated.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="52" column="48" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/users.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="1546" column="71" selection-start-line="1546" selection-start-column="71" selection-end-line="1546" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3924">
-          <caret line="115" selection-start-line="115" selection-end-line="115" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="409">
-          <caret line="95" column="90" selection-start-line="95" selection-start-column="90" selection-end-line="95" selection-end-column="90" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-evaluation_ESA.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2556">
-          <caret line="71" column="36" selection-start-line="71" selection-start-column="36" selection-end-line="71" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/evaluation.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="602">
-          <caret line="29" column="173" selection-start-line="29" selection-start-column="173" selection-end-line="29" selection-end-column="173" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/application.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="679">
-          <caret line="189" column="37" lean-forward="true" selection-start-line="189" selection-start-column="37" selection-end-line="189" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/application.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="411">
-          <caret line="244" column="63" selection-start-line="244" selection-start-column="63" selection-end-line="244" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/view.raw.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="152" column="33" selection-start-line="152" selection-start-column="33" selection-end-line="152" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/comment.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
-          <caret line="47" column="87" lean-forward="true" selection-start-line="47" selection-start-column="87" selection-end-line="47" selection-end-column="87" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/javascript.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="268" column="79" selection-start-line="268" selection-start-column="66" selection-end-line="268" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/files.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7016">
-          <caret line="1091" column="47" lean-forward="true" selection-start-line="1091" selection-start-column="47" selection-end-line="1091" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/emundus/fpdf.php">
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/language/fr-FR/fr-FR.plg_fabrik_form_emunduscampaign.sys.ini">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
-          <caret line="11" column="2" selection-start-line="11" selection-start-column="2" selection-end-line="11" selection-end-column="2" />
+          <caret line="1" column="83" lean-forward="true" selection-start-line="1" selection-start-column="83" selection-end-line="1" selection-end-column="83" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/dompdf/dompdf.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2640" />
-      </provider>
+    <entry file="file://$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap-form102/default_buttons.php">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/emails.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4500">
-          <caret line="133" column="23" selection-start-line="133" selection-start-column="23" selection-end-line="133" selection-end-column="23" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.xml">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/view.html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="623">
-          <caret line="238" column="51" lean-forward="true" selection-start-line="238" selection-start-column="51" selection-end-line="238" selection-end-column="51" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/media/com_emundus/images/icones/tick.png">
+      <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controller.php">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/helper.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
-          <caret line="227" selection-start-line="227" selection-end-line="227" />
+          <caret line="34" column="40" selection-start-line="34" selection-start-column="40" selection-end-line="34" selection-end-column="40" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/emundus.php">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="305" lean-forward="true" selection-start-line="305" selection-end-line="305" />
+        <state relative-caret-position="703">
+          <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="28" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/evaluation.php">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_checklist/tmpl/default.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="773">
-          <caret line="1531" column="24" selection-start-line="1531" selection-start-column="24" selection-end-line="1531" selection-end-column="24" />
+        <state relative-caret-position="436">
+          <caret line="15" column="48" lean-forward="true" selection-start-line="15" selection-start-column="48" selection-end-line="15" selection-end-column="48" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/evaluation.php">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emunduspanel/mod_emunduspanel.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emunduspanel/tmpl/default.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="26316">
-          <caret line="737" column="34" selection-start-line="737" selection-start-column="34" selection-end-line="737" selection-end-column="34" />
+        <state relative-caret-position="-1312" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/application_form.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="7" column="51" lean-forward="true" selection-start-line="7" selection-start-column="51" selection-end-line="7" selection-end-column="51" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusmenu/helper.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172548">
-          <caret line="4793" column="23" selection-start-line="4793" selection-start-column="23" selection-end-line="4793" selection-end-column="23" />
+        <state relative-caret-position="557">
+          <caret line="36" column="23" selection-start-line="36" selection-start-column="22" selection-end-line="36" selection-end-column="23" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusmenu/mod_emundusmenu.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="897">
-          <caret line="855" column="13" selection-start-line="688" selection-start-column="8" selection-end-line="855" selection-end-column="13" />
+        <state relative-caret-position="681">
+          <caret line="36" selection-start-line="36" selection-end-line="39" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusmenu/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="24" column="31" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emunduspanel/mod_emunduspanel.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="2" column="22" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/tmpl/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_checklist/mod_emundus_checklist.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="864">
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_checklist/mod_emundus_checklist.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-32">
+          <caret line="17" column="12" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/com_emundus/css/emundus.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1091">
+          <caret line="1261" column="1" selection-start-line="1261" selection-start-column="1" selection-end-line="1261" selection-end-column="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/models/files.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="551">
-          <caret line="831" column="95" selection-start-line="831" selection-start-column="95" selection-end-line="831" selection-end-column="95" />
+        <state relative-caret-position="-210">
+          <caret line="233" column="9" selection-start-line="233" selection-start-column="9" selection-end-line="233" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/77a9c266-b43e-40f0-86bd-cc3313e50b21/console.sql">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="23" column="60" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="93" />
+        <state relative-caret-position="528">
+          <caret line="20" column="58" selection-start-line="20" selection-start-column="58" selection-end-line="20" selection-end-column="58" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/language/en-GB/index.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/language/en-GB/en-GB.plg_system_dsconstant.ini">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/dsconstant/dsconstant.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/emundus_period/emundus_period.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/emundus_ametys/emundus_ametys.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.xml">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/language/fr-FR/fr-FR.mod_emundusmenu.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="12" column="53" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="53" />
+        <state relative-caret-position="180">
+          <caret line="5" column="37" selection-start-line="5" selection-start-column="37" selection-end-line="5" selection-end-column="37" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/emundusregistrationredirect/emundusregistrationredirect.php">
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/language/en-GB/en-GB.mod_emundusmenu.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="43" selection-end-column="13" />
+        <state relative-caret-position="180">
+          <caret line="5" column="90" lean-forward="true" selection-start-line="5" selection-start-column="90" selection-end-line="5" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/helper.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="900">
+          <caret line="25" column="191" selection-start-line="25" selection-start-column="146" selection-end-line="25" selection-end-column="191" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/hesam.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1080">
+          <caret line="35" column="109" lean-forward="true" selection-start-line="35" selection-start-column="109" selection-end-line="35" selection-end-column="109" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="647">
+          <caret line="51" column="5" lean-forward="true" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2573">
+          <caret line="127" column="2" selection-start-line="127" selection-start-column="2" selection-end-line="127" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/administrator/components/com_emundus/language/en-GB/en-GB.com_emundus.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="684">
+          <caret line="102" selection-start-line="102" selection-end-line="102" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/administrator/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="88" column="67" lean-forward="true" selection-start-line="88" selection-start-column="67" selection-end-line="88" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/administrator/components/com_emundus/config.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="837">
+          <caret line="82" column="43" selection-start-line="82" selection-start-column="43" selection-end-line="82" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/paid.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="14" column="65" selection-start-line="14" selection-start-column="65" selection-end-line="14" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="796">
+          <caret line="79" column="100" selection-start-line="79" selection-start-column="100" selection-end-line="79" selection-end-column="100" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/language/fr-FR/fr-FR.mod_emundusflow.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="648">
+          <caret line="18" column="46" selection-start-line="18" selection-start-column="46" selection-end-line="18" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/language/en-GB/en-GB.mod_emundusflow.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="648">
+          <caret line="18" column="58" lean-forward="true" selection-start-line="18" selection-start-column="58" selection-end-line="18" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-204">
+          <caret line="62" column="22" selection-start-line="62" selection-start-column="12" selection-end-line="62" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="81" column="72" selection-start-line="81" selection-start-column="72" selection-end-line="81" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/application.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="427">
+          <caret line="2325" column="138" selection-start-line="2325" selection-start-column="133" selection-end-line="2325" selection-end-column="138" />
+          <folding>
+            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="62" column="22" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
         </state>
       </provider>
     </entry>

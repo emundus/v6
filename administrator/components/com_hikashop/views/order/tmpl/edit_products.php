@@ -38,7 +38,12 @@ defined('_JEXEC') or die('Restricted access');
 		<dt class="hikashop_order_product_vat"><label><?php echo JText::_('VAT'); ?></label></dt>
 		<dd class="hikashop_order_product_vat">
 			<input type="text" name="data[order][product][order_product_tax]" value="<?php echo @$this->orderProduct->order_product_tax; ?>" />
-			<?php echo $this->ratesType->display( "data[order][product][tax_namekey]" , reset($this->orderProduct->order_product_tax_info)->tax_namekey ); ?>
+			<?php
+			$tax = null;
+			if(!empty($this->orderProduct->order_product_tax_info)) {
+				$tax = reset($this->orderProduct->order_product_tax_info)->tax_namekey;
+			}
+			echo $this->ratesType->display( "data[order][product][tax_namekey]" , $tax); ?>
 		</dd>
 
 		<dt class="hikashop_order_product_quantity"><label><?php echo JText::_('PRODUCT_QUANTITY'); ?></label></dt>
