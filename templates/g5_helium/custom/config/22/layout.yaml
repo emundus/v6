@@ -1,0 +1,232 @@
+version: 2
+preset:
+  image: 'gantry-admin://images/layouts/default.png'
+  name: default
+  timestamp: 1529395549
+layout:
+  /navigation/:
+    -
+      - 'spacer-spacer-9107 20'
+      - 'position-module-5472 25'
+      - 'social-3171 20'
+      - 'position-module-5514 35'
+  /header/:
+    -
+      - 'position-module-4561 20'
+      - 'menu-8075 53'
+      - 'position-position-4649 27'
+    -
+      - position-module-1599
+  /intro/:
+    -
+      - position-position-5397
+    -
+      - 'position-position-5285 60'
+      - 'position-position-2450 40'
+  /features/:
+    -
+      - 'position-position-3731 40'
+      - 'position-position-1290 60'
+  /utility/:
+    -
+      - position-position-6169
+    -
+      - 'position-position-3740 33.3'
+      - 'position-position-3166 33.3'
+      - 'position-position-5511 33.3'
+  /above/: {  }
+  /testimonials/:
+    -
+      - 'position-position-2587 66'
+      - 'position-position-9141 34'
+    -
+      - position-position-8508
+  /expanded/: {  }
+  /container-main/:
+    -
+      -
+        'aside 25':
+          -
+            - position-position-4734
+      -
+        'mainbar 50':
+          -
+            - system-content-1587
+      -
+        'sidebar 25':
+          -
+            - position-position-3949
+  /footer/:
+    -
+      - 'position-position-5043 40'
+      - 'position-position-3615 60'
+    -
+      - spacer-spacer-9310
+    -
+      - 'horizontalmenu-9034 70'
+      - 'copyright-3869 30'
+  /offcanvas/:
+    -
+      - mobile-menu-5697
+structure:
+  navigation:
+    type: section
+    attributes:
+      boxed: ''
+  header:
+    attributes:
+      boxed: ''
+      class: ''
+  intro:
+    type: section
+    attributes:
+      boxed: ''
+  features:
+    type: section
+    attributes:
+      boxed: ''
+  utility:
+    type: section
+    attributes:
+      boxed: ''
+      class: ''
+  above:
+    type: section
+    attributes:
+      boxed: ''
+  testimonials:
+    type: section
+    attributes:
+      boxed: ''
+  expanded:
+    type: section
+    attributes:
+      boxed: ''
+  aside:
+    attributes:
+      class: ''
+    block:
+      fixed: '1'
+  mainbar:
+    type: section
+    subtype: main
+  sidebar:
+    type: section
+    subtype: aside
+    attributes:
+      class: ''
+    block:
+      fixed: '1'
+  container-main:
+    attributes:
+      boxed: ''
+  footer:
+    attributes:
+      boxed: ''
+  offcanvas:
+    attributes:
+      boxed: ''
+content:
+  position-module-5472:
+    title: 'Logog HESAM'
+    attributes:
+      module_id: '177'
+  social-3171:
+    block:
+      class: g-social-header
+  position-module-5514:
+    title: 'Top links'
+    attributes:
+      module_id: '178'
+  position-module-4561:
+    title: 'logo 1000 doc'
+    attributes:
+      module_id: '176'
+  position-position-4649:
+    title: header-c
+    attributes:
+      key: header-c
+  position-module-1599:
+    title: 'coord menu'
+    attributes:
+      module_id: '198'
+  position-position-5397:
+    title: Drawer
+    attributes:
+      key: drawer
+  position-position-5285:
+    title: Drawer-A
+    attributes:
+      key: drawer-a
+  position-position-2450:
+    title: Drawer-B
+    attributes:
+      key: drawer-b
+  position-position-3731:
+    title: 'Module Position'
+    attributes:
+      key: content-top-1a
+  position-position-1290:
+    title: 'Module Position'
+    attributes:
+      key: content-top-1b
+  position-position-6169:
+    title: 'Module Position'
+    attributes:
+      key: content-top-2
+  position-position-3740:
+    title: 'Module Position'
+    attributes:
+      key: content-top-2a
+  position-position-3166:
+    title: 'Module Position'
+    attributes:
+      key: content-top-2b
+  position-position-5511:
+    title: 'Module Position'
+    attributes:
+      key: content-top-2c
+  position-position-2587:
+    title: 'Module Position'
+    attributes:
+      key: testimonials-a
+  position-position-9141:
+    title: 'Module Position'
+    attributes:
+      key: testimonials-b
+  position-position-8508:
+    title: 'Module Position'
+    attributes:
+      key: testimonials
+  position-position-4734:
+    title: Aside
+    attributes:
+      key: aside
+  position-position-3949:
+    title: Sidebar
+    attributes:
+      key: sidebar
+  position-position-5043:
+    title: 'Module Position'
+    attributes:
+      key: bottom-a
+  position-position-3615:
+    title: 'Module Position'
+    attributes:
+      key: bottom-b
+  horizontalmenu-9034:
+    title: 'Horizontal Menu'
+    attributes:
+      items:
+        -
+          text: Gantry
+          link: 'http://gantry.org'
+          name: Gantry
+        -
+          text: Documentation
+          link: 'http://docs.gantry.org'
+          name: Documentation
+        -
+          text: Download
+          link: 'http://gantry.org/downloads'
+          name: Download
