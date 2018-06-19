@@ -1353,7 +1353,7 @@ class EmundusModelApplication extends JModelList
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = JText::_($element->content);
-                                    $forms .= '<tr><td style="padding-right:35px;"><b>'.JText::_($element->label).'</b></td> <td>: </td></tr>';
+                                    $forms .= '<tr><td style="padding-right:35px; border-right: 1px solid black;"><b>'.JText::_($element->label).'</b></td> <td> </td></tr>';
                                     //$forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
                             }
@@ -1468,7 +1468,7 @@ class EmundusModelApplication extends JModelList
 
                                             // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                             $elt = str_replace('@', '<br>@', $elt);
-                                            $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
+                                            $forms .= '<td style="border-right: 1px solid black;"><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
                                         }
                                         $j++;
                                     }
@@ -1562,7 +1562,7 @@ class EmundusModelApplication extends JModelList
                                                 }
 
                                                 elseif ($elements[$j]->plugin == 'textarea')
-                                                    $elt = '<br>'.JText::_($r_elt);
+                                                    $elt = JText::_($r_elt);
 
                                                 elseif ($elements[$j]->plugin == 'checkbox')
                                                     $elt = JText::_(implode(", ", json_decode (@$r_elt)));
@@ -1577,7 +1577,7 @@ class EmundusModelApplication extends JModelList
 
                                                 if (!empty($elt)) {
                                                     //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.JText::_($elt);
-                                                    $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;">: '.JText::_($elt).'</td></tr>';
+                                                    $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
                                                 }
                                             }
                                         }
@@ -1683,7 +1683,7 @@ class EmundusModelApplication extends JModelList
                                         }
 
                                         elseif ($element->plugin == 'textarea')
-                                            $elt = '<br>'.JText::_($element->content);
+                                            $elt = JText::_($element->content);
 
                                         elseif (@$elements[$j]->plugin == 'checkbox')
                                             $elt = JText::_(implode(", ", json_decode (@$element->content)));
@@ -1696,13 +1696,13 @@ class EmundusModelApplication extends JModelList
                                         else
                                             $elt = JText::_($element->content);
                                         //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
-                                        $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;">: '.JText::_($elt).'</td></tr>';
+                                        $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
 
                                     }
                                 }elseif(empty($element->content)){
                                     if (!empty($element->label) && $element->label!=' ') {
                                         //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: ';
-                                        $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;">: </td></tr>';
+                                        $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> </td></tr>';
                                     }
                                 }
                             }
