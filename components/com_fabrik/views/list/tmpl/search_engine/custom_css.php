@@ -110,18 +110,6 @@ p {
 	font-size: 16px;
 	color:black;
 }
-.em-search-engine-div-data {
-	width:95%; 
-	height:auto; 
-	text-align:justify;
-	border: 1px solid;
-	border-radius:5px;
-	padding: 10px;
-	box-shadow: 5px 10px #a22727;
-}
-.filtertable{
-	background-color: #D6D6D6;
-}
 .fabrikButtonsContainer {
 	background-color:#d6d6d6;
 	border-radius:3px;
