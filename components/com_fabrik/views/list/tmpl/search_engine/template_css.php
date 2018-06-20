@@ -59,40 +59,4 @@ list-style: none;
 	text-align: left;
 	display: inline-block;
 }
-
-
-// Custom checkbox filters.
-.multiselect {
-		width: 200px;
-	}
-
-	.selectBox {
-		position: relative;
-	}
-
-	.selectBox select {
-		width: 100%;
-		font-weight: bold;
-	}
-
-	.overSelect {
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-	}
-
-	.em-checkboxes {
-		display: none;
-		border: 1px #dadada solid;
-	}
-
-	.em-checkboxes label {
-		display: block;
-	}
-
-	.em-checkboxes label:hover {
-		background-color: #1e90ff;
-	}
 ";
