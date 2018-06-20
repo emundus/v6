@@ -13,6 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 $doc = JFactory::getDocument();
 $doc->addStyleSheet('media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
+$doc->addScript('media/com_emundus/lib/chosen/chosen.jquery.js');
+$doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
+
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
 
@@ -155,5 +158,11 @@ echo $this->table->intro;
 			</div>
 		</form>
 	</div>
+
+    <script>
+        jQuery(document).ready(function(){
+            jQuery('select.fabrik_filter[multiple]').chosen();
+        });
+    </script>
 	
 </div>
