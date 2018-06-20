@@ -19,7 +19,6 @@ ALTER TABLE `jos_emundus_logs`
 MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `jos_emundus_logs`
-ADD CONSTRAINT `actions` FOREIGN KEY (`action_id`) REFERENCES `jos_emundus_setup_actions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 ADD CONSTRAINT `fnum to` FOREIGN KEY (`fnum_to`) REFERENCES `jos_emundus_campaign_candidature` (`fnum`) ON DELETE CASCADE ON UPDATE CASCADE,
 ADD CONSTRAINT `user from` FOREIGN KEY (`user_id_from`) REFERENCES `jos_emundus_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 ADD CONSTRAINT `user to` FOREIGN KEY (`user_id_to`) REFERENCES `jos_emundus_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
