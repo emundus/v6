@@ -1,0 +1,17 @@
+@include breakpoint(mobile-only) {
+	.form-horizontal {
+	    .control-label {
+	        display: block;
+	        float: none;
+	        text-align: left;
+	    }
+
+	    .controls {
+	        margin: 0;
+	    }
+	}
+
+	[dir="rtl"] .form-horizontal .control-label {
+		text-align: right;
+	}
+}

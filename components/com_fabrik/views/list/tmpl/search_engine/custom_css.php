@@ -95,5 +95,63 @@ echo <<<EOT
     background-color: #663399 !important;
 }
 
+
+table {
+	font-family: Arial, sans-serif;
+	width: 100%;
+	float: right;
+	margin-bottom:50px;
+}
+td, th {
+	text-align: left;
+	padding: 10px;
+}
+p {
+	font-size: 16px;
+	color:black;
+}
+.em-search-engine-div-data {
+	width:95%; 
+	height:auto; 
+	text-align:justify;
+	border: 1px solid;
+	border-radius:5px;
+	padding: 10px;
+	box-shadow: 5px 10px #a22727;
+}
+.em-search-engine-filters {
+	width:750px;
+	float:left;
+	position:absolute;
+    height: -webkit-fill-available;
+}
+.em-search-engine-data {
+	margin-left:38%;
+	min-width:400px;
+}
+.fabrikDataContainer{
+	border-radius:5px;
+	display: grid;
+	grid-gap: 5px;
+}
+.filtertable{
+	border: 1px solid #b9b9b9f5; 
+	border-radius: 5px;
+	border-style: hidden; 
+	box-shadow: 0 0 10px 0 #a22727;
+	float:left
+}
+.fabrikButtonsContainer{
+	background-color:#d6d6d6;
+	border-radius:3px;
+	height:53px
+}
+.form{
+	margin-right: 15%;
+}
+
+.main{
+	display:inline-flex;
+}
 /* END - Your CSS styling ends here */
 EOT;
