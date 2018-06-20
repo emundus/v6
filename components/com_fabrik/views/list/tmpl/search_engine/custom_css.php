@@ -119,38 +119,19 @@ p {
 	padding: 10px;
 	box-shadow: 5px 10px #a22727;
 }
-.em-search-engine-filters {
-	width:750px;
-	float:left;
-	position:absolute;
-    height: -webkit-fill-available;
-}
-.em-search-engine-data {
-	margin-left:38%;
-	min-width:400px;
-}
-.fabrikDataContainer{
-	border-radius:5px;
-	display: grid;
-	grid-gap: 5px;
-}
 .filtertable{
-	border: 1px solid #b9b9b9f5; 
-	border-radius: 5px;
-	border-style: hidden; 
-	box-shadow: 0 0 10px 0 #a22727;
-	float:left
+	background-color: #D6D6D6;
 }
-.fabrikButtonsContainer{
+.fabrikButtonsContainer {
 	background-color:#d6d6d6;
 	border-radius:3px;
 	height:53px
 }
-.form{
+.form {
 	margin-right: 15%;
 }
 
-.main{
+.main {
 	display:inline-flex;
 }
 /* END - Your CSS styling ends here */
