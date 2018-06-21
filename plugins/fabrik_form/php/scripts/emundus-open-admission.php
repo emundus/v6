@@ -19,4 +19,4 @@ $jinput = JFactory::getApplication()->input;
 $fnum = $jinput->get('jos_emundus_admission___fnum', '')[0];
 
 // Log admission opening action.
-EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 32, 'r', 'Access evaluation form.');
+EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 32, 'r', 'COM_EMUNDUS_LOGS_OPEN_ADMISSION');

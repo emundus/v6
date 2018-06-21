@@ -1760,7 +1760,7 @@ if (JFactory::getUser()->id == 63)
                 foreach ($fnums as $fnum) {
 
                 	// Log the tag in the eMundus logging system.
-	                EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'Tag file');
+	                EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
 
 	                foreach ($tags as $tag) {
 	                    $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
@@ -1860,7 +1860,7 @@ if (JFactory::getUser()->id == 63)
             $db = $this->getDbo();
             foreach ($fnums as $fnum) {
 	            // Log the update.
-	            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'Set publish to '.$publish);
+	            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
                 $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
                 $db->setQuery($query);
                 $res = $db->execute();
