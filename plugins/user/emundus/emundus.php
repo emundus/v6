@@ -197,6 +197,12 @@ class plgUserEmundus extends JPlugin
                     }
                 }
 
+	            // Log the action of creating an account.
+	            // No id exists in jos_emundus_actions for registration so we use -1 instead.
+	            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	            $user = JFactory::getSession()->get('emundusUser');
+	            EmundusModelLogs::log($user['id'], $user['id'], null, -1, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
+
             }
             elseif(!empty($lastname) && !empty($firstname)) { //die(print_r($details));
                 // Update name and fistname from #__users
@@ -250,10 +256,10 @@ class plgUserEmundus extends JPlugin
             $m_profile->initEmundusSession();
 
             // Log the action of signing in.
-	        // No id exists in jos_emundus_actions for signin so we use -1 instead.
+	        // No id exists in jos_emundus_actions for signin so we use -2 instead.
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 	        $user = JFactory::getSession()->get('emundusUser');
-	        EmundusModelLogs::log($user->id, $user->id, null, -1, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
+	        EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
 	        $app->redirect($previous_url);
         }
         return true;
