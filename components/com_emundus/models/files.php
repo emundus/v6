@@ -18,6 +18,7 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 jimport('joomla.application.component.model');
 require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'files.php');
 require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'list.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 /**
  * Class EmundusModelFiles
@@ -1748,19 +1749,22 @@ if (JFactory::getUser()->id == 63)
      * @param $tag
      * @return bool|mixed
      */
-    public function tagFile($fnums, $tags)
-    {
-        try
-        {
+    public function tagFile($fnums, $tags) {
+
+        try {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
           
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
-            if(!empty($fnums) && !empty($tags)){
-                foreach ($fnums as $fnum)
-                {
-                    foreach($tags as $tag)
-                        $query .= '("'.$fnum.'", '.$tag.','.$user.'),';    
+            if (!empty($fnums) && !empty($tags)) {
+                foreach ($fnums as $fnum) {
+
+                	// Log the tag in the eMundus logging system.
+	                EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
+
+	                foreach ($tags as $tag) {
+	                    $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                    }
                 }
             }
            
@@ -1851,21 +1855,18 @@ if (JFactory::getUser()->id == 63)
      * @param $publish
      * @return bool|mixed
      */
-    public function updatePublish($fnums, $publish)
-    {
-        try
-        {
+    public function updatePublish($fnums, $publish) {
+        try {
             $db = $this->getDbo();
-            foreach ($fnums as $fnum)
-            {
+            foreach ($fnums as $fnum) {
+	            // Log the update.
+	            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
                 $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
                 $db->setQuery($query);
                 $res = $db->execute();
             }
             return $res;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;

@@ -95,5 +95,32 @@ echo <<<EOT
     background-color: #663399 !important;
 }
 
+
+table {
+	font-family: Arial, sans-serif;
+	width: 100%;
+	float: right;
+	margin-bottom:50px;
+}
+td, th {
+	text-align: left;
+	padding: 10px;
+}
+p {
+	font-size: 16px;
+	color:black;
+}
+.fabrikButtonsContainer {
+	background-color:#d6d6d6;
+	border-radius:3px;
+	height:53px
+}
+.form {
+	margin-right: 15%;
+}
+
+.main {
+	display:inline-flex;
+}
 /* END - Your CSS styling ends here */
 EOT;

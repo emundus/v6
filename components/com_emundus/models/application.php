@@ -30,6 +30,7 @@ class EmundusModelApplication extends JModelList
     {
         parent::__construct();
         global $option;
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -198,6 +199,25 @@ class EmundusModelApplication extends JModelList
             $query = 'UPDATE #__emundus_comments SET reason = '.$this->_db->quote($title).', comment_body = '.$this->_db->quote($text).'  WHERE id = '.$this->_db->quote($id);
             $this->_db->setQuery($query);
             $this->_db->execute();
+
+	        // Logging requires the fnum, we have to get this from the comment ID being edited.
+	        // Only get the fnum if logging is on and comments are in the list of actions to be logged.
+	        $eMConfig = JComponentHelper::getParams('com_emundus');
+	        $log_actions = $eMConfig->get('log_action', null);
+	        if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array(10, explode(',',$log_actions)))) {
+
+		        $query = $this->_db->getQuery(true);
+		        $query->select($this->_db->quoteName('fnum'))
+			        ->from($this->_db->quoteName('#__emundus_comments'))
+			        ->where($this->_db->quoteName('id').'='.$id);
+
+		        $this->_db->setQuery($query);
+		        $fnum = $this->_db->loadResult();
+
+		        // Log the comment in the eMundus logging system.
+		        EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_LOGS_UPDATE_COMMENT');
+	        }
+
             return true;
 
         } catch (Exception $e) {
@@ -207,7 +227,25 @@ class EmundusModelApplication extends JModelList
 
     }
 
-    public function deleteComment($id){
+    public function deleteComment($id) {
+
+	    // Logging requires the fnum, we have to get this from the comment ID being deleted.
+	    // Only get the fnum if logging is on and comments are in the list of actions to be logged.
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $log_actions = $eMConfig->get('log_actions', null);
+	    if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array(10, explode(',',$log_actions)))) {
+
+		    $query = $this->_db->getQuery(true);
+		    $query->select($this->_db->quoteName('fnum'))
+			    ->from($this->_db->quoteName('#__emundus_comments'))
+			    ->where($this->_db->quoteName('id').'='.$id);
+
+		    $this->_db->setQuery($query);
+		    $fnum = $this->_db->loadResult();
+
+		    // Log the comment in the eMundus logging system.
+		    EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_LOGS_DELETE_COMMENT');
+	    }
        
         $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
         $this->_db->setQuery($query);
@@ -215,25 +253,29 @@ class EmundusModelApplication extends JModelList
        
     }
 
-    public function deleteTag($id_tag, $fnum){
+    public function deleteTag($id_tag, $fnum) {
         $query = 'DELETE FROM #__emundus_tag_assoc WHERE id_tag = '.$id_tag.' AND fnum like '.$this->_db->Quote($fnum);
         $this->_db->setQuery($query);
+
+	    // Log the action in the eMundus logging system.
+	    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_LOGS_DELETE_TAG');
 
         return $this->_db->Query();
     }
 
-    public function addComment($row)
-    {
-        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
+    public function addComment($row) {
+
+	    // Log the comment in the eMundus logging system.
+	    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_LOGS_ADD_COMMENT');
+
+    	$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
                 VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
-        $this->_db->setQuery( $query );
-        try
-        {
-            $this->_db->query();
+        $this->_db->setQuery($query);
+
+        try {
+            $this->_db->execute();
             return $this->_db->insertid();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -1311,7 +1353,7 @@ class EmundusModelApplication extends JModelList
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = JText::_($element->content);
-                                    $forms .= '<tr><td style="padding-right:35px;"><b>'.JText::_($element->label).'</b></td> <td>: </td></tr>';
+                                    $forms .= '<tr><td style="padding-right:35px; border-right: 1px solid black;"><b>'.JText::_($element->label).'</b></td> <td> </td></tr>';
                                     //$forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
                             }
@@ -1426,7 +1468,7 @@ class EmundusModelApplication extends JModelList
 
                                             // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                             $elt = str_replace('@', '<br>@', $elt);
-                                            $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
+                                            $forms .= '<td style="border-right: 1px solid black;"><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
                                         }
                                         $j++;
                                     }
@@ -1520,7 +1562,7 @@ class EmundusModelApplication extends JModelList
                                                 }
 
                                                 elseif ($elements[$j]->plugin == 'textarea')
-                                                    $elt = '<br>'.JText::_($r_elt);
+                                                    $elt = JText::_($r_elt);
 
                                                 elseif ($elements[$j]->plugin == 'checkbox')
                                                     $elt = JText::_(implode(", ", json_decode (@$r_elt)));
@@ -1535,7 +1577,7 @@ class EmundusModelApplication extends JModelList
 
                                                 if (!empty($elt)) {
                                                     //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.JText::_($elt);
-                                                    $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;">: '.JText::_($elt).'</td></tr>';
+                                                    $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
                                                 }
                                             }
                                         }
@@ -1641,7 +1683,7 @@ class EmundusModelApplication extends JModelList
                                         }
 
                                         elseif ($element->plugin == 'textarea')
-                                            $elt = '<br>'.JText::_($element->content);
+                                            $elt = JText::_($element->content);
 
                                         elseif (@$elements[$j]->plugin == 'checkbox')
                                             $elt = JText::_(implode(", ", json_decode (@$element->content)));
@@ -1654,13 +1696,13 @@ class EmundusModelApplication extends JModelList
                                         else
                                             $elt = JText::_($element->content);
                                         //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
-                                        $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;">: '.JText::_($elt).'</td></tr>';
+                                        $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
 
                                     }
                                 }elseif(empty($element->content)){
                                     if (!empty($element->label) && $element->label!=' ') {
                                         //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: ';
-                                        $forms .= '<tr><td style="padding-right:25px;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;">: </td></tr>';
+                                        $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> </td></tr>';
                                     }
                                 }
                             }

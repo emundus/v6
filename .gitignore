@@ -2,6 +2,7 @@
 /.idea/*
 .idea/*
 .idea/workspace.xml
+workspace.xml
 /cache/*
 /installation/*
 /logs/*
@@ -36,7 +37,6 @@ emundus_bdd*
 /administrator/templates/isis/images/logo.png
 administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
-
 
 ### macOS ###
 *.DS_Store

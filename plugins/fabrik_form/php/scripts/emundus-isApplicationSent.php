@@ -44,13 +44,11 @@ if (!$mainframe->isAdmin()) {
 	    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 	    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 	    $now = $dateTime->format('Y-m-d H:i:s');
-	    //echo "::".$this->now;
 	} catch(Exception $e) {
 	    echo $e->getMessage() . '<br />';
 	}
-	//echo($jinput);
 	$view = $jinput->get('view');
-	$fnum = $jinput->get('rowid', null);
+	$fnum = $jinput->get->get('rowid', null);
 	$itemid = $jinput->get('Itemid');
 	$reload = $jinput->get('r', 0);
 	$reload++;

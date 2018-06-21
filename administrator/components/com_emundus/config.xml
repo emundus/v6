@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+	<fieldset label="COM_EMUNDUS_GENERAL" name="general" description="COM_EMUNDUS_GENERAL_DESC">
+		<field name="logs" label="LOGS_ACTIVE" type="radio" default="0" description="LOGS_ACTIVE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<!-- Some action IDs are not in the table :
+			-1 : user registration
+			-2 : user login
+		-->
+		<field name="log_actions" label="LOG_ACTIONS" type="field" description="LOG_ACTIONS_DESC"/>
+	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
 			<option value="0">JNo</option>
