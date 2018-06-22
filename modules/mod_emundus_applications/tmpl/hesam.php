@@ -15,7 +15,7 @@ echo $description;
 
 
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus-sign"></span><?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
 
 
@@ -59,7 +59,7 @@ echo $description;
 
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus-sign"></span><?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
 
 
