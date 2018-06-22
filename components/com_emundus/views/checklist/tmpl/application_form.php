@@ -23,7 +23,7 @@ foreach ($forms as $form) {
 	$class = $need.$active;
 	$endlink= '</a>';
 ?>
-	<li class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$form->title.$endlink; ?></div></li>
+	<li class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.$form->title.$endlink; ?></div></li>
 <?php } ?>
 </ul>
 <?php
