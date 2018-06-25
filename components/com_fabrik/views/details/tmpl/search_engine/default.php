@@ -1,10 +1,10 @@
 <?php
 /**
- * Bootstrap Tabs Form Template
+ * Form details template used for the HESAM search engine pages.
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2018  eMundus - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
@@ -15,8 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 $user = JFactory::getUser();
 if ($user->guest)
 {
-	JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())),
-			JText::_('JGLOBAL_YOU_MUST_LOGIN_FIRST'), 'warning');
+	JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())), JText::_('JGLOBAL_YOU_MUST_LOGIN_FIRST'), 'warning');
 	return;
 }
 
