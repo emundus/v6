@@ -202,6 +202,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
         $m_messages = new EmundusModelMessages();
         $m_emails   = new EmundusModelEmails();
