@@ -381,7 +381,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             // Send and log the email.
             $send = $mailer->Send();
-            if ( $send !== true ) {
+            if ($send !== true) {
                 $failed[] = $fnum->email;
                 echo 'Error sending email: ' . $send->__toString();
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
@@ -395,8 +395,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'type'          => $template->type
                 ];
                 $m_emails->logEmail($log);
+	            // Log the email in the eMundus logging system.
+	            EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
             }
-
         }
 
         echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
