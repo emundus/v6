@@ -60,22 +60,21 @@ if (isset($user->profile) && $user->profile > 0) {
 <script type="text/javascript">
 function postCProfile() {
 
-    var current_fnum    = $$("#profile").get('value');
-    var ajax = new Request({
-        url:'index.php?option=com_emundus&task=switchprofile',
-        method: 'post',
-        data: {
+    var current_fnum = document.getElementById("profile").value;
+
+    jQuery.ajax({
+        type: 'POST',
+        url: 'index.php?option=com_emundus&task=switchprofile',
+        data: ({
             profnum: current_fnum
-        },
-        onSuccess: function(result){
+        }),
+        success: function (result) {
             location.reload(true);
         },
-        onFailure: function (jqXHR, status, err) {
-            alert("ajax sending error");
-          }
+        error : function (jqXHR, status, err) {
+            alert("Error switching porfiles.");
+        }
     });
-
-    ajax.send();
 
 }
 
