@@ -2741,16 +2741,17 @@ $q=2;
 
     /**
      * Gets the first page of the application form. Used for opening a file.
+     * @param String the URL to redirect to if it fails.
      * @return String The URL to the form.
      * @since 3.8.8
      */
-    function getFirstPage() {
+    function getFirstPage($redirect = 'index.php') {
 
     	$user = JFactory::getSession()->get('emundusUser');
     	$db = JFactory::getDBo();
 
     	if (empty($user->menutype))
-    		return 'index.php';
+    		return $redirect;
 
     	$query = $db->getQuery(true);
     	$query->select(['id','link'])
@@ -2763,6 +2764,7 @@ $q=2;
 		    return $res->link.'&Itemid='.$res->id;
 	    } catch (Exception $e) {
 	    	JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	    	return $redirect;
 	    }
 
     }

@@ -234,19 +234,23 @@ class EmundusController extends JControllerLegacy {
     function deletefile() {
         //@TODO ADD COMMENT ON DELETE
         $app = JFactory::getApplication();
+        $jinput = $app->input;
         $m_profile = new EmundusModelProfile;
 
-        $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $layout        = JRequest::getVar('layout', null, 'GET', 'none',0);
-        $format        = JRequest::getVar('format', null, 'GET', 'none',0);
-        $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $student_id    = $jinput->get->get('sid', null);
+        $fnum          = $jinput->get->get('fnum', null);
+        $redirect      = $jinput->get->getBase64('redirect', null);
+        // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
+
+	    if (empty($redirect))
+	    	$redirect = 'index.php';
+	    else
+	    	$redirect = base64_decode($redirect);
 
         if (empty($fnum))
-            $app->redirect('index.php');
+            $app->redirect($redirect);
 
         $current_user  = JFactory::getSession()->get('emundusUser');
-        $chemin = EMUNDUS_PATH_ABS;
         $m_files = $this->getModel('files');
 
         if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
@@ -259,7 +263,7 @@ class EmundusController extends JControllerLegacy {
 
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
-            $app->redirect('index.php');
+            $app->redirect($redirect);
 
             return false;
         }
@@ -267,10 +271,10 @@ class EmundusController extends JControllerLegacy {
         unset($current_user->fnums[$fnum]);
 
         if (in_array($user->fnum, array_keys($user->fnums))) {
-            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
+            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$user->fnum.'&redirect='.base64_encode($redirect));
         } else {
             $fnum = array_shift($current_user->fnums);
-            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum);
+            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum.'&redirect='.base64_encode($redirect));
         }
 
         return true;
@@ -403,11 +407,18 @@ class EmundusController extends JControllerLegacy {
 
         $app    = JFactory::getApplication();
         $jinput = $app->input;
-        $Itemid = $jinput->get->getInt('Itemid', null);
         $fnum   = $jinput->get->get('fnum', null);
 
+        // Redirection URL used to bring the user back to the right spot.
+	    $redirect = $jinput->get->getBase64('redirect', null);
+
+	    if (empty($redirect))
+	    	$redirect = JURI::base().'index.php';
+	    else
+	    	$redirect = base64_decode($redirect);
+
         if (empty($fnum))
-            $app->redirect(JURI::base().'index.php');
+            $app->redirect($redirect);
 
         $session    = JFactory::getSession();
         $aid        = $session->get('emundusUser');
@@ -439,11 +450,10 @@ class EmundusController extends JControllerLegacy {
         $session->set('emundusUser', $aid);
 
 	    // If a redirection URL is set: completely ignore it and go find the first form of the file.
-	    $redirect = $jinput->get->get('redirect', null);
 	    if (!empty($redirect)) {
 		    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
 		    $m_application = new EmundusModelApplication;
-		    $redirect = $m_application->getFirstPage();
+		    $redirect = $m_application->getFirstPage($redirect);
 	    } else {
 		    $redirect = 'index.php';
 	    }
