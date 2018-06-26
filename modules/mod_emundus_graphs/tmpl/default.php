@@ -3,124 +3,130 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 $document = JFactory::getDocument();
 $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'plotly'.DS.'plotly.min.js');
+$document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS.'css'.DS.'bootstrap.min.css');
 ?>
 
-<div style="display: inline-block; width: 100%">
-    <div id ="statsCompte"style="float: left; width: 50%;">
-    <table>
-    <tr><td>Type de compte:</td>
-        <td><select class="compte" >
-            <?php
-                echo $distinctProfile;
-            ?>
-            </select>
-        </td>
-    </tr>
-
-    <tr><td> Période: </td>
-        <td>
-            <select class="periodeCompte" >
-                <option value='0'>Dernière semaine</option>
-                <option value='1'>Deux dernières semaines</option>
-                <option value='2'>Dernier mois</option>
-                <option value='3'>Trois derniers mois</option>
-                <option value='4'>Six derniers mois</option>
-            </select>
-        </td>
-    </tr>
-    </table>
-        
-        <div id="users" ></div>
-        <div id="userSummary" style="float: left; padding-left: 30%">
-        <?php 
-            $count = 0;
-            foreach($usersGraph as $ug) {
-                $count += $ug[nombre];
-            }
-            
-            echo "<p><i>Nombre d'inscriptions : </i>$count </p>" ;
-            
-            ?>
-        </div>
-    </div>
-
-    <div style="float: right;  width: 50%;">
-        <table>
-        <tr><td>Offres:</td>
-            <td><select class="offres" >
-                    <?php
-                        echo $distinctOffres;
-                    ?>
-                </select>
-            </td>
-        </tr>
-
-        <tr><td> Période: </td>
-            <td>
-                <select class="periodeConsult" >
-                    <option value='0'>Dernière semaine</option>
-                    <option value='1'>Deux dernières semaines</option>
-                    <option value='2'>Dernier mois</option>
-                    <option value='3'>Trois derniers mois</option>
-                    <option value='4'>Six derniers mois</option>
-                </select>
-            </td>
-        </tr>
-        </table>
-
-        <div id="offreBar" style="float: left;"></div>
-        <div id="summeryOffres" style="float: left; padding-left: 30%">
-        <?php 
-            $countConsultation = 0;
-            foreach($consultationBar as $cb) {
-                $countConsultation += $cb[nombre];
-            }
-            echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
-            ?>
-        </div>
-        <br>
-    </div>
+<div class="container">
     
+    <div class="row">
+
+        <div class="col-md-6">
+
+            <table>
+            <tr><td>Type de compte:</td>
+                <td><select class="compte" >
+                    <?php
+                        echo $distinctProfile;
+                    ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr><td> Période: </td>
+                <td>
+                    <select class="periodeCompte" >
+                        <option value='0'>Dernière semaine</option>
+                        <option value='1'>Deux dernières semaines</option>
+                        <option value='2'>Dernier mois</option>
+                        <option value='3'>Trois derniers mois</option>
+                        <option value='4'>Six derniers mois</option>
+                    </select>
+                </td>
+            </tr>
+            </table>
+            
+            <div id="users" ></div>
+            <div id="userSummary" style="float: left; padding-left: 30%">
+            <?php 
+                $count = 0;
+                foreach($usersGraph as $ug) {
+                    $count += $ug[nombre];
+                }
+                
+                echo "<p><i>Nombre d'inscriptions : </i>$count </p>" ;
+                
+                ?>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <table>
+            <tr><td>Offres:</td>
+                <td><select class="offres" >
+                        <?php
+                            echo $distinctOffres;
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr><td> Période: </td>
+                <td>
+                    <select class="periodeConsult" >
+                        <option value='0'>Dernière semaine</option>
+                        <option value='1'>Deux dernières semaines</option>
+                        <option value='2'>Dernier mois</option>
+                        <option value='3'>Trois derniers mois</option>
+                        <option value='4'>Six derniers mois</option>
+                    </select>
+                </td>
+            </tr>
+            </table>
+
+            <div id="offreBar" ></div>
+            <div id="summeryOffres" style="float: left; padding-left: 30%">
+            <?php 
+                $countConsultation = 0;
+                foreach($consultationBar as $cb) {
+                    $countConsultation += $cb[nombre];
+                }
+                echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
+                ?>
+            </div>
+            <br>
+        </div>
+
+    </div>
+
     <hr style='width: 100%; border-top: 21px solid #fff;'>
-    <br>
-    <div style="float: left;  width: 50%;">
-    <table>
-        <tr><td>Offres:</td>
-            <td><select class="candidature" >
-                    <?php
-                        echo $distinctCandidatures;
-                    ?>
-                </select>
-            </td>
-        </tr>
 
-        <tr><td> Période: </td>
-            <td>
-                <select class="periodeCand" >
-                    <option value='0'>Dernière semaine</option>
-                    <option value='1'>Deux dernières semaines</option>
-                    <option value='2'>Dernier mois</option>
-                    <option value='3'>Trois derniers mois</option>
-                    <option value='4'>Six derniers mois</option>
-                </select>
-            </td>
-        </tr>
-        </table>
-        <div id="candLigne" style="float: left;"></div>
-        <div id="summeryCandidature" style="float: left; padding-left: 30%">
-        <?php 
-            $countCandidature = 0;
-            foreach($candidature as $candidatures) {
-                $countCandidature += $candidatures[nombre];
-            }
-            echo "<p><i>Nombre de candidature des offres: </i>$countCandidature </p>"; 
+    <div class="row">
+        <div class="col-md-6">
+            <table>
+            <tr><td>Offres:</td>
+                <td><select class="candidature" >
+                        <?php
+                            echo $distinctCandidatures;
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr><td> Période: </td>
+                <td>
+                    <select class="periodeCand" >
+                        <option value='0'>Dernière semaine</option>
+                        <option value='1'>Deux dernières semaines</option>
+                        <option value='2'>Dernier mois</option>
+                        <option value='3'>Trois derniers mois</option>
+                        <option value='4'>Six derniers mois</option>
+                    </select>
+                </td>
+            </tr>
+            </table>
+            <div id="candLigne" style="float: left;"></div>
+            <div id="summeryCandidature" style="float: left; padding-left: 30%">
+            <?php 
+                $countCandidature = 0;
+                foreach($candidature as $candidatures) {
+                    $countCandidature += $candidatures[nombre];
+                }
+                echo "<p><i>Nombre de candidature des offres: </i>$countCandidature </p>"; 
             ?>
         </div>
     </div>
 
-    
-    
-    <div id ="connectionGraph"style="float: left; width: 50%;">
+    <div class="col-md-6">
         <table>
         <tr><td> Période: </td>
             <td>
@@ -145,34 +151,45 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'plotly'.DS.'plotly.mi
             ?>
         </div>
     </div>
-
     <hr style='width: 100%; border-top: 21px solid #fff;'>
-
-    <div id ="relationGraph"style="float: left; width: 50%;">
-        <table>
-        <tr><td> Période: </td>
-            <td>
-                <select class="periodeRel" >
-                    <option value='0'>Dernière semaine</option>
-                    <option value='1'>Deux dernières semaines</option>
-                    <option value='2'>Dernier mois</option>
-                    <option value='3'>Trois derniers mois</option>
-                    <option value='4'>Six derniers mois</option>
-                </select>
-            </td>
-        </tr>
-        </table>
-        <div id="rel" ></div>
-        <div id='summaryRelation' style="float: left; padding-left: 30%">
-            <?php 
-                $countRelations = 0;
-                foreach($relations as $rel) {
-                    $countRelations += $rel[nombre_rel_etablies];
-                }             
-                echo "<p><i>Nombre de relations etablies: </i>$countRelations " ;
-            ?>
+    <div class="row">
+        <div class="col-md-6">
+            <table>
+            <tr><td> Période: </td>
+                <td>
+                    <select class="periodeRel" >
+                        <option value='0'>Dernière semaine</option>
+                        <option value='1'>Deux dernières semaines</option>
+                        <option value='2'>Dernier mois</option>
+                        <option value='3'>Trois derniers mois</option>
+                        <option value='4'>Six derniers mois</option>
+                    </select>
+                </td>
+            </tr>
+            </table>
+            <div id="rel" ></div>
+            <div id='summaryRelation' style="float: left; padding-left: 30%">
+                <?php 
+                    $countRelations = 0;
+                    foreach($relations as $rel) {
+                        $countRelations += $rel[nombre_rel_etablies];
+                    }             
+                    echo "<p><i>Nombre de relations etablies: </i>$countRelations " ;
+                ?>
+            </div>
         </div>
     </div>
+
+    
+</div>
+    
+    
+
+    
+
+    
+
+    
   <!--  <hr style='width: 100%; border-top: 21px solid #fff;'>
      <div id="avancement" style="float: left; width: 50%;">
         <h3>Avancement des dossiers</h3>
@@ -230,7 +247,7 @@ var profileArray = [];
                         }
                     }];
                     var layout = {
-                        autosize: true,
+                        
                         title: 'Nombre de Comptes créés',
                         xaxis: {
                             title: 'Date'
