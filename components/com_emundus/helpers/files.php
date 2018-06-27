@@ -197,11 +197,12 @@ class EmundusHelperFiles
             $params['programme'] = $filts_details['programme'];
             $filts_details['programme'] = $fd_with_param;
         } else {
+            $codes = $m_files->getAssociatedProgrammes($current_user->id);
+
             // ONLY FILES LINKED TO MY GROUP
-            if (is_array($filts_details['programme']) && count($filts_details['programme']) > 0)
+            if (((is_array($filts_details['programme']) && count($filts_details['programme']) > 0)) || $filts_details['programme'] !== NULL)
                 $programme = !empty($m_files->code) ? $m_files->code:'';
-            elseif($filts_details['programme'] !== NULL )
-                $programme = !empty($m_files->code) ? $m_files->code:'';
+           
             //////////////////////////////////////////
             //var_dump($params['programme']);
             if ((is_array($filts_details['programme']) && count(@$params['programme']) == 0) || @$params['programme'][0] == '%') {
@@ -210,7 +211,6 @@ class EmundusHelperFiles
             } elseif ((is_array($filts_details['programme']) && count($filts_details['programme']) == 0) || empty($filts_details['programme'])) {
                 $filts_details['programme'] = $programme;
             }
-            $codes = $m_files->getAssociatedProgrammes($current_user->id);
             if ((is_array($codes) && count($codes)) > 0 && isset($code)) {
                 $params['programme'] = array_merge($params['programme'], $codes);
                 $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
