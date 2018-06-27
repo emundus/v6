@@ -299,5 +299,3 @@ if (!$mainframe->isAdmin()) {
 		}
 	}
 }
-
-?>
