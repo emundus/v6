@@ -77,8 +77,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             <div id="summeryOffres" style="float: left; padding-left: 30%">
             <?php 
                 $countConsultation = 0;
-                foreach($consultationBar as $cb) {
-                    $countConsultation += $cb[nombre];
+                foreach ($consultationBar as $cb) {
+                    $countConsultation += $cb['nombre'];
                 }
                 echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
                 ?>
@@ -102,7 +102,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                 </td>
             </tr>
 
-            <tr><td> Période: </td>
+            <tr><td>Période:</td>
                 <td>
                     <select class="periodeCand" >
                         <option value='0'>Dernière semaine</option>
@@ -119,7 +119,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             <?php 
                 $countCandidature = 0;
                 foreach($candidature as $candidatures) {
-                    $countCandidature += $candidatures[nombre];
+                    $countCandidature += $candidatures['nombre'];
                 }
                 echo "<p><i>Nombre de candidature des offres: </i>$countCandidature </p>"; 
             ?>
@@ -145,7 +145,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             <?php 
                 $countConnexion = 0;
                 foreach($connections as $co) {
-                    $countConnexion += $co[nombre_connexions];
+                    $countConnexion += $co['nombre_connexions'];
                 }             
                 echo "<p><i>Nombre de connexions: </i>$countConnexion " ;
             ?>
@@ -171,23 +171,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             <div id='summaryRelation' style="float: left; padding-left: 30%">
                 <?php 
                     $countRelations = 0;
-                    foreach($relations as $rel) {
-                        $countRelations += $rel[nombre_rel_etablies];
-                    }             
+                    foreach ($relations as $rel) {
+                        $countRelations += $rel['nombre_rel_etablies'];
+                    }
                     echo "<p><i>Nombre de relations etablies: </i>$countRelations " ;
                 ?>
             </div>
         </div>
     </div>
-
-    
 </div>
-    
-    
-
-    
-
-    
 
     
   <!--  <hr style='width: 100%; border-top: 21px solid #fff;'>
@@ -207,37 +199,25 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         </div>
         Exporter les données</td></tr>
         </table>
-        
-        
-        
-        
     </div>
     -->
 </div>
 
-            
-
-
 
 <script type="text/javascript">
 
-// CREATE ARRAY OF USERS
-var profileArray = [];
-    var dateArray = [];
-    var countArray = [];
-
-    
     function afficheGraphe(value,periode) {
        
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getprofiletype",
             dataType: 'json',
-            data:({chosenvalue: value,
-                    periode: periode
-                   }),
+            data:({
+                chosenvalue: value,
+                periode: periode
+           }),
             success: function (result) {
-                if(result.status) {    
+                if (result.status) {
                     var data = [{
                         x: result.datearray,
                         y: result.countarray,
@@ -247,7 +227,6 @@ var profileArray = [];
                         }
                     }];
                     var layout = {
-                        
                         title: 'Nombre de Comptes créés',
                         xaxis: {
                             title: 'Date'
@@ -269,17 +248,16 @@ var profileArray = [];
 
 
     function afficheLigne(value, periode) {
-       
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getcandidatures",
             dataType: 'json',
-            data:({chosenvalue: value,
-                    periode: periode}),
+            data:({
+                chosenvalue: value,
+                periode: periode
+            }),
             success: function (result) {
-
-                //alert(result.result);
-                if(result.status) {                
+                if(result.status) {
                     var data = [{
                         x: result.datearray,
                         y: result.countarray,
@@ -311,17 +289,15 @@ var profileArray = [];
 
 
     function afficheBar(value, periode) {
-        
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getconsultations",
             dataType: 'json',
-            data:({chosenvalue: value,
-                    periode: periode}),
+            data:({
+                chosenvalue: value,
+                periode: periode}),
             success: function (result) {
-                
-                //alert(result.result);
-                if(result.status) {    
+                if(result.status) {
                     var data = [{
                         x: result.datearray,
                         y: result.countarray,
@@ -335,7 +311,6 @@ var profileArray = [];
                         title: 'Nombre de Consultations d\'offres',
                         xaxis: {
                             title: 'Date'
-                            
                         },
                         yaxis: {
                             title: 'Nombre'
@@ -360,9 +335,7 @@ var profileArray = [];
             dataType: 'json',
             data:({periode: periode}),
             success: function (result) {
-
-                //alert(result.result);
-                if(result.status) {    
+                if (result.status) {
                     var data = [{
                         x: result.datearray,
                         y: result.countarray,
@@ -376,7 +349,6 @@ var profileArray = [];
                         title: 'Connexion au Site',
                         xaxis: {
                             title: 'Date'
-                            
                         },
                         yaxis: {
                             title: 'Nombre'
@@ -390,20 +362,17 @@ var profileArray = [];
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
-        }); 
+        });
     }
 
     function relationGraph(periode) {
-        
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getrelations",
             dataType: 'json',
             data:({periode: periode}),
             success: function (result) {
-
-                //alert(result.result);
-                if(result.status) {    
+                if (result.status) {
                     var data = [{
                         x: result.datearray,
                         y: result.countarray,
@@ -419,7 +388,6 @@ var profileArray = [];
                         title: 'Relations établies',
                         xaxis: {
                             title: 'Date'
-                            
                         },
                         yaxis: {
                             title: 'Nombre'
@@ -437,119 +405,117 @@ var profileArray = [];
     }
     
     jQuery(document).ready(function () {
+        var OffreClick = document.createElement("a");
+        var text = document.createTextNode("Exporter les données");
+        OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0' );
+        OffreClick.append(text);
+        document.getElementById("userSummary").append(OffreClick);
+        document.getElementById("userSummary").append(document.createElement("br"));
 
-        valuePeriodecompte = jQuery('.periodeCompte').val();
-        valueTimeLine = jQuery('.compte').val();
+        var contacts = document.createElement("a");
+        text = document.createTextNode("Exporter les contacts");
+        contacts.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id2');?>&Itemid=0' );
+        contacts.append(text);
+        document.getElementById("userSummary").append(contacts);
+
+
+        var exportDonnees1 = document.createElement("a");
+        text = document.createTextNode("Exporter les données");
+        exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0' );
+        exportDonnees1.append(text);
+        document.getElementById("summeryOffres").append(exportDonnees1);
+
+
+        var exportConnexion = document.createElement("a");
+        text = document.createTextNode("Exporter les données");
+        exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0' );
+        exportConnexion.append(text);
+        document.getElementById("summaryConnexion").append(exportConnexion);
+
+        var exportCand = document.createElement("a");
+        text = document.createTextNode("Exporter les données");
+        exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0' );
+        exportCand.append(text);
+        document.getElementById("summeryCandidature").append(exportCand);
+
+        exportCand = document.createElement("a");
+        text = document.createTextNode("Exporter les données");
+        exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id6');?>&Itemid=0' );
+        exportCand.append(text);
+        document.getElementById("summaryRelation").append(exportCand);
+
+        var valuePeriodecompte = jQuery('.periodeCompte').val();
+        var valueTimeLine = jQuery('.compte').val();
         afficheGraphe(valueTimeLine, valuePeriodecompte);
 
         
-        valuePeriodeConsult = jQuery('.periodeConsult').val();
-        valueBar = jQuery('.offres').val();
+        var valuePeriodeConsult = jQuery('.periodeConsult').val();
+        var valueBar = jQuery('.offres').val();
         afficheBar(valueBar, valuePeriodeConsult);
         
-        valuePeriodeCo = jQuery('.periodeCo').val();
+        var valuePeriodeCo = jQuery('.periodeCo').val();
         connectionGraph(valuePeriodeCo);
 
-        valuePeriodeCand = jQuery('.periodeCand').val();
-        valueCand = jQuery('.candidature').val();
+        var valuePeriodeCand = jQuery('.periodeCand').val();
+        var valueCand = jQuery('.candidature').val();
         afficheLigne(valueCand, valuePeriodeCand);
 
-        valuePeriodeRel = jQuery('.periodeRel').val();
+        var valuePeriodeRel = jQuery('.periodeRel').val();
         relationGraph(valuePeriodeRel);
-
     });
 
     jQuery('.compte').on('change', function () {
-        value = jQuery(this).val();
-        valuePeriodecompte = jQuery('.periodeCompte').val();
+        var value = jQuery(this).val();
+        var valuePeriodecompte = jQuery('.periodeCompte').val();
         
         afficheGraphe(value, valuePeriodecompte);
     });
 
     jQuery('.periodeCompte').on('change', function () {
-        value = jQuery('.compte').val();
-        valuePeriodecompte = jQuery(this).val();
+        var value = jQuery('.compte').val();
+        var valuePeriodecompte = jQuery(this).val();
         afficheGraphe(value, valuePeriodecompte);
     });
 
     jQuery('.offres').on('change', function () {
-        value = jQuery(this).val();
-        valuePeriodeConsult = jQuery('.periodeConsult').val();
+        var value = jQuery(this).val();
+        var valuePeriodeConsult = jQuery('.periodeConsult').val();
         afficheBar(value, valuePeriodeConsult);
     });
 
     jQuery('.periodeConsult').on('change', function () {
-        value = jQuery('.offres').val();
-        valuePeriodeConsult = jQuery(this).val();
+        var value = jQuery('.offres').val();
+        var valuePeriodeConsult = jQuery(this).val();
         afficheBar(value, valuePeriodeConsult);
     });
 
     jQuery('.candidature').on('change', function () {
-        value = jQuery(this).val();
-        valuePeriodeCand = jQuery('.periodeCand').val();
+        var value = jQuery(this).val();
+        var valuePeriodeCand = jQuery('.periodeCand').val();
         afficheLigne(value, valuePeriodeCand);
     });
 
     jQuery('.periodeCand').on('change', function () {
-        value = jQuery('.candidature').val();
-        valuePeriodeCand = jQuery(this).val();
+        var value = jQuery('.candidature').val();
+        var valuePeriodeCand = jQuery(this).val();
         afficheLigne(value, valuePeriodeCand);
     });
 
     jQuery('.periodeCo').on('change',function () {
-        valuePeriodeCand = jQuery(this).val();
+        var valuePeriodeCand = jQuery(this).val();
         connectionGraph(valuePeriodeCand);
     });
 
     jQuery('.periodeRel').on('change',function () {
-        valuePeriodeRel = jQuery(this).val();
+        var valuePeriodeRel = jQuery(this).val();
         relationGraph(valuePeriodeRel);
     });
-    
-OffreClick = document.createElement("a");
-var text = document.createTextNode("Exporter les données");
-OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0' );
-OffreClick.append(text);
-document.getElementById("userSummary").append(OffreClick);
-document.getElementById("userSummary").append(document.createElement("br"));
-
-contacts = document.createElement("a");
-var text = document.createTextNode("Exporter les contacts");
-contacts.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id2');?>&Itemid=0' );
-contacts.append(text);
-document.getElementById("userSummary").append(contacts);
-
-
-var exportDonnees1 = document.createElement("a");
-var text = document.createTextNode("Exporter les données");
-exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0' );
-exportDonnees1.append(text);
-document.getElementById("summeryOffres").append(exportDonnees1);
-
-
-var exportConnexion = document.createElement("a");
-var text = document.createTextNode("Exporter les données");
-exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0' );
-exportConnexion.append(text);
-document.getElementById("summaryConnexion").append(exportConnexion);
-
-var exportCand = document.createElement("a");
-var text = document.createTextNode("Exporter les données");
-exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0' );
-exportCand.append(text);
-document.getElementById("summeryCandidature").append(exportCand);
-
-var exportCand = document.createElement("a");
-var text = document.createTextNode("Exporter les données");
-exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id6');?>&Itemid=0' );
-exportCand.append(text);
-document.getElementById("summaryRelation").append(exportCand);
     
 </script>
 
 <style type='text/css'>
 
-    .span12{
+    .span12 {
         display: none;
     }
 

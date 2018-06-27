@@ -14,75 +14,95 @@ defined('_JEXEC') or die('Restricted access');
 class EmundusModelStats extends JModelLegacy {
 
     public function getPeriodeData($periode) {
-        if($periode == 0)
+        if ($periode == 0)
             $query = ' 1 WEEK ';
-        if($periode == 1)
+        elseif ($periode == 1)
             $query = ' 2 WEEK ';
-        if($periode == 2)
+        elseif ($periode == 2)
             $query = ' 1 MONTH ';
-        if($periode == 3)
+        elseif ($periode == 3)
             $query = ' 3 MONTH ';
-        if($periode == 4)
+        elseif ($periode == 4)
             $query = ' 6 MONTH ';
         return $query;
     }
 
     public function getAccountType($value, $periode) {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
-        $query = 'SELECT * FROM jos_emundus_stats_nombre_comptes WHERE _day >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND _day <= CURDATE() AND profile_id = '.$value;
+
+        $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_comptes'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE() AND '.$db->quoteName('profile_id').' = '.$value);
         $db->setQuery($query);
+
         try {
-            $list = $db->loadAssocList();
-            
-            return $list;
-        }
-        catch(Exception $e) {
-            echo $e->getMessage() . '<br />'.$query->__toString();
+            return $db->loadAssocList();
+        } catch(Exception $e) {
+            JLog::add('Error getting stats on account types at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
     public function consultationOffres($value, $periode) {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
-        $query = 'SELECT * FROM jos_emundus_stats_nombre_consult_offre WHERE _day >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND _day <= CURDATE() AND num_offre = '.$value;
-        
+
+        $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_consult_offre'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE() AND '.$db->quoteName('num_offre').' = '.$value);
         $db->setQuery($query);
-        $list = $db->loadAssocList();
-        return $list;
+
+        try {
+        	return $db->loadAssocList();
+        } catch(Exception $e) {
+	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
+        }
     }
 
     public function candidatureOffres($value, $periode) {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
-        $query = 'SELECT * FROM jos_emundus_stats_nombre_candidature_offre WHERE _day >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND _day <= CURDATE() AND num_offre = '.$value;
-        
+
+	    $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_candidature_offre'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE() AND '.$db->quoteName('num_offre').' = '.$value);
         $db->setQuery($query);
-        $list = $db->loadAssocList();
-        return $list;
+
+        try {
+	        return $db->loadAssocList();
+        } catch(Exception $e) {
+	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
+        }
     }
 
     public function getConnections($periode) {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
-        $query = 'SELECT * FROM jos_emundus_stats_nombre_connexions WHERE _day >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND _day <= CURDATE()';
-        $db->setQuery($query);
-        $list = $db->loadAssocList();
-        return $list;
+
+        $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_connexions'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE()');
+
+	    try {
+		    return $db->loadAssocList();
+	    } catch(Exception $e) {
+		    JLog::add('Error getting stats on number of connections at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    return false;
+	    }
     }
 
     public function getNbRelations($periode) {
         $db = JFactory::getDbo();
         $query  = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
-        $query = 'SELECT * FROM jos_emundus_stats_nombre_relations_etablies WHERE _day >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND _day <= CURDATE()';
-        $db->setQuery($query);
-        $list = $db->loadAssocList();
-        return $list;
+
+        $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_relations_etablies'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE()');
+
+	    try {
+		    return $db->loadAssocList();
+	    } catch(Exception $e) {
+		    JLog::add('Error getting stats on number of relations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    return false;
+	    }
     }
 }
 
