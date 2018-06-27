@@ -71,62 +71,62 @@ $m_checklist 		= new EmundusModelChecklist;
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 //if (in_array($user->profile, $applicant_profiles)) {
 
-	if (isset($user->fnum) && !empty($user->fnum)) {
-		$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
-		$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
+if (isset($user->fnum) && !empty($user->fnum)) {
+	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
+	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
 
-		// We redirect to the "send application" form, this form will redirect to payment if required.
-		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+	// We redirect to the "send application" form, this form will redirect to payment if required.
+	$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 
-		// If the user can
-		$profile = $m_profile->getCurrentProfile($user->id);
-		if ($profile['profile'] == 8) {
-			$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
-			$admission_fnum = $admissionInfo->fnum;
-		}
-
-		// Check to see if the applicant meets the criteria to renew a file.
-		switch ($applicant_can_renew) {
-
-			// If the applicant can only have one file per campaign.
-			case 2:
-				// True if does not have a file open in one or more of the available campaigns.
-				$applicant_can_renew = modemundusApplicationsHelper::getOtherCampaigns($user->id);
-				break;
-
-			// If the applicant can only have one file per year.
-			case 3:
-				// True if periods are found for next year.
-				$applicant_can_renew = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
-				break;
-
-		}
-
-		if ($display_poll == 1 && $display_poll_id > 0) {
-			$filled_poll_id = modemundusApplicationsHelper::getPoll();
-			$poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';
-		} else {
-			$poll_url = '';
-			$filled_poll_id = 0;
-		}
+	// If the user can
+	$profile = $m_profile->getCurrentProfile($user->id);
+	if ($profile['profile'] == 8) {
+		$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
+		$admission_fnum = $admissionInfo->fnum;
 	}
 
-	$offset = $app->get('offset', 'UTC');
-	try {
-	    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-	    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-	    $now = $dateTime->format('Y-m-d H:i:s');
-	    //echo "::".$this->now;
-	} catch (Exception $e) {
-	    echo $e->getMessage() . '<br />';
+	// Check to see if the applicant meets the criteria to renew a file.
+	switch ($applicant_can_renew) {
+
+		// If the applicant can only have one file per campaign.
+		case 2:
+			// True if does not have a file open in one or more of the available campaigns.
+			$applicant_can_renew = modemundusApplicationsHelper::getOtherCampaigns($user->id);
+			break;
+
+		// If the applicant can only have one file per year.
+		case 3:
+			// True if periods are found for next year.
+			$applicant_can_renew = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
+			break;
+
 	}
 
-	if (!empty($user->end_date))
-		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
-	if (!empty($user->status))
-		$is_app_sent = ($user->status != 0)? true : false;
+	if ($display_poll == 1 && $display_poll_id > 0) {
+		$filled_poll_id = modemundusApplicationsHelper::getPoll();
+		$poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';
+	} else {
+		$poll_url = '';
+		$filled_poll_id = 0;
+	}
+}
 
-	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
+$offset = $app->get('offset', 'UTC');
+try {
+	$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+	$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+	$now = $dateTime->format('Y-m-d H:i:s');
+	//echo "::".$this->now;
+} catch (Exception $e) {
+	echo $e->getMessage() . '<br />';
+}
+
+if (!empty($user->end_date))
+	$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
+if (!empty($user->status))
+	$is_app_sent = ($user->status != 0)? true : false;
+
+require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 //}
 
 
