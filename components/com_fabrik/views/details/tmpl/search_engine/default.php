@@ -197,7 +197,7 @@ $action_button = $c_ciffe->getActionButton($fnum);
         <button type="button" class="btn btn-primary" onclick="actionButton('reply')">
             Répondre
         </button>
-        <button type="button" class="btn btn-danger" onclick="breakUp()">
+        <button type="button" class="btn btn-primary" onclick="breakUp()">
             Ignorer
         </button>
 
@@ -241,7 +241,7 @@ $action_button = $c_ciffe->getActionButton($fnum);
             url: 'index.php?option=com_emundus&controller=cifre&task='+action,
             data: data,
             beforeSend: function () {
-                jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > ... </button>');
+                jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
             },
             success: function(result) {
                 if (result.status) {
