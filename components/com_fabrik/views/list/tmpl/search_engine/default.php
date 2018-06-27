@@ -116,14 +116,20 @@ echo $this->table->intro;
 									}
 
                                     $themes = $d['jos_emundus_projet_620_repeat___themes'];
-									echo '<tr>
-											<td>
-												<div class="em-search-engine-div-data">
-													<p>En région <i><b>'.$region.'</b></i>, dans le département <i><b>'.$department.'</b></i>, un <i><b>'.$chercheur.'</b></i> cherche <i><b>'.$cherches.'</b></i> sur le thème <i><b>'.$themes.'</b></i></p>
-													<a class="em-search-engine-learn-more" >'.$d['fabrik_actions'].' Connectez-vous pour en savoir plus</a>
-												</div>
-											</td>
-										</tr>';
+									?>
+                                    <tr>
+                                        <td>
+                                            <div class="em-search-engine-div-data">
+                                                <p>En région <i><b><?php echo $region; ?></b></i>, dans le département <i><b><?php echo $department; ?></b></i>, un <i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i> sur le thème <i><b><?php echo $themes; ?></b></i></p>
+                                                <?php if (JFactory::getUser()->guest) :?>
+                                                    <div class="em-search-engine-learn-more">Connectez-vous pour en savoir plus</div>
+                                                <?php else :?>
+                                                    <div class='em-search-engine-details'><?php echo $d['fabrik_actions']; ?> Consultez l'offre</div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php
 									unset($cherches);
 									unset($themes);
 									$gCounter++;

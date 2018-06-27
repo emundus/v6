@@ -12,11 +12,17 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+// If we are not logged in: we cannot access this page and so we are redirected to the login page.
 $user = JFactory::getUser();
 if ($user->guest) {
 	JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())), JText::_('JGLOBAL_YOU_MUST_LOGIN_FIRST'), 'warning');
 	return;
 }
+$user = JFactory::getSession()->get('emundusUser');
+
+// This is currently the only way of getting the fnum.
+$fnum = $this->data["jos_emundus_recherche___fnum_raw"];
+$author = JFactory::getUser((int)substr($fnum,-7));
 
 $form = $this->form;
 $model = $this->getModel();
@@ -30,65 +36,336 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <?php
 endif;
 
-if ($this->params->get('show-title', 1)) :?>
-	<div class="page-header">
-		<h1><?php echo $form->label;?></h1>
-	</div>
-<?php
-endif;
 
-echo $form->intro;
-if ($this->isMambot) :
-	echo '<div class="fabrikForm fabrikDetails fabrikIsMambot" id="' . $form->formid . '">';
-else :
-	echo '<div class="fabrikForm fabrikDetails" id="' . $form->formid . '">';
-endif;
 echo $this->plugintop;
 echo $this->loadTemplate('buttons');
 echo $this->loadTemplate('relateddata');
-foreach ($this->groups as $group) :
-	$this->group = $group;
-	?>
 
-    <div class="<?php echo $group->class; ?>" id="group<?php echo $group->id;?>" style="<?php echo $group->css;?>">
 
-		<?php
-		if ($group->showLegend) :?>
-            <h3 class="legend">
-                <span><?php echo $group->title;?></span>
-            </h3>
-		<?php endif;
+$region=""; $department=""; $chercheur=""; $cherches=""; $themes="";
+$regions 	= $this->data['data_regions___name_raw'];
+$departments= $this->data['data_departements___departement_nom_raw'];
+$chercheur 	= strtolower($this->data['jos_emundus_setup_profiles___label_raw'][0]);
 
-		if (!empty($group->intro)) : ?>
-            <div class="groupintro"><?php echo $group->intro ?></div>
-		<?php
-		endif;
+// Build a natural sentence
+// TODO : The information here comes out as jos_emundus_recherche___futur_doctorant_yesno_raw. This is not OK.
+if (count(array_keys($this->data, "oui")) > 1) {
+	$cherches = implode(",", array_keys($this->data, "oui"));
+	$cherches = strtolower(str_replace(","," </b></i>et<i><b> ", $cherches));
+} else {
+	$cherches = strtolower(array_search("oui", $this->data));
+}
 
-		// Load the group template - this can be :
-		//  * default_group.php - standard group non-repeating rendered as an unordered list
-		//  * default_repeatgroup.php - repeat group rendered as an unordered list
-		//  * default_repeatgroup_table.php - repeat group rendered in a table.
 
-		$this->elements = $group->elements;
-		echo $this->loadTemplate($group->tmpl);
+// Build some of the text to make for a more natural sentence on the front end.
+$themes = $this->data['jos_emundus_projet_620_repeat___themes_raw'];
+if (sizeof($themes) > 1)
+    $themes = ' les themes <i><b>'.implode(',',$themes);
+else
+    $themes = ' le theme <i><b>'.$themes[0];
 
-		if (!empty($group->outro)) : ?>
-            <div class="groupoutro"><?php echo $group->outro ?></div>
-		<?php
-		endif;
-		?>
+if (sizeof($regions) > 1)
+	$regions = 'Dans les régions <i><b>'.implode(' et ',$regions);
+else
+	$regions = 'En région <i><b>'.$regions[0];
+
+if (sizeof($departments) > 1)
+	$departments = ' dans les départements <i><b>'.implode(' et ',$departments);
+else
+	$departments = ' dans le département <i><b>'.$departments[0];
+?>
+
+<div class="em-offre">
+
+    <!-- INTRO TEXT -->
+    <div class="em-offre-summary">
+        <p><?php echo $regions; ?></b></i>,<?php echo $departments; ?></b></i>, un <i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i> sur <?php echo $themes; ?></b></i></p>
     </div>
+
+    <hr>
+
+    <!-- Title -->
+    <p class="em-offre-title">
+        <strong>Sujet de thèse : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
+    </p>
+
+    <!-- Author -->
+    <!-- TODO: Add more information, not just the author's name but also something more like 'la communauté de communes de :' -->
+    <p class="em-offre-author">
+        <strong>Sujet proposé par : </strong><?php echo $author->name; ?>
+    </p>
+
+    <hr>
+    <!-- Presentation of the project -->
+    <div class="em-offre-presentation">
+
+        <strong>Presentation du projet</strong>
+
+        <!-- Project context -->
+        <p class="em-offre-contexte">
+            <strong>Contexte : </strong><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
+        </p>
+
+        <!-- Project question -->
+        <p class="em-offre-question">
+            <strong>Grande question posée : </strong><?php echo $this->data['jos_emundus_projet___question_raw'][0]; ?>
+        </p>
+
+        <!-- Project methodology -->
+        <p class="em-offre-methodologie">
+            <strong>Méthodologie proposée : </strong><?php echo $this->data['jos_emundus_projet___methodologie_raw'][0]; ?>
+        </p>
+
+        <!-- Project disciplines -->
+        <div class="em-offre-disciplines">
+            <!-- TODO: Add the list of disciplines requested. -->
+        </div>
+
+    </div>
+
+    <hr>
+    <!-- Contact information -->
+    <div class="em-offre-contact">
+        <strong> Informations de contact </strong>
+        <p class="em-contact-item"><strong>Nom : </strong><?php echo $this->data['jos_emundus_projet___contact_nom_raw'][0]; ?></p>
+        <p class="em-contact-item"><strong>Mail : </strong><?php echo $this->data['jos_emundus_projet___contact_mail_raw'][0]; ?></p>
+        <p class="em-contact-item"><strong>Tel : </strong><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
+    </div>
+
+</div>
+
+
 <?php
-endforeach;
-
-// This is currently the only way of getting the fnum.
-// CHANGING THE NAME OF THE GROUP 'search engine data' WILL BREAK THIS LOGGING.
-$fnum = $this->groups['search engine data']->elements['fnum']->value;
-
 // Log the action of opening the persons form.
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-EmundusModelLogs::log($user->id, (int)substr($fnum,-7), $fnum, 33, 'r', 'COM_EMUNDUS_LOGS_OPEN_OFFER');
+EmundusModelLogs::log($user->id, $author->id, $fnum, 33, 'r', 'COM_EMUNDUS_LOGS_OPEN_OFFER');
 
+// Action button types:
+// // NO BUTTON : if the offer belongs to the user.
+// // ENTREZ EN CONTACT : If the user has not already contacted.
+// // REPONDRE : If the user has already been contacted for this offer but has not answered.
+// // RELANCE : If the user has contacted but not been answered yet.
+// // BREAK UP : If the user is collaborating with the other.
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'cifre.php');
+$c_ciffe = new EmundusControllerCifre();
+$action_button = $c_ciffe->getActionButton($fnum);
+?>
+
+<!-- Button used for matching with the offer -->
+<div class="em-search-item-action">
+
+    <span class="alert alert-danger hidden" id="em-action-text"></span>
+
+    <div id="em-search-item-action-button">
+    <?php if ($action_button == 'contact') :?>
+
+        <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
+
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">
+	        Entrer en contact
+        </button>
+
+        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Demande de contact</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>
+                        <?php if (!empty($offers)) :?>
+                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>
+                            <select id="em-join-offer">
+                                <?php foreach ($offers as $offer) :?>
+                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->title; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php endif; ?>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton('contact')">Evoyer la demande de contact</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <?php elseif ($action_button == 'reply') :?>
+        <button type="button" class="btn btn-primary" onclick="actionButton('reply')">
+            Répondre
+        </button>
+        <button type="button" class="btn btn-danger" onclick="breakUp()">
+            Ignorer
+        </button>
+
+    <?php elseif ($action_button == 'retry') :?>
+        <button type="button" class="btn btn-primary" onclick="actionButton('retry')">
+            Relancer
+        </button>
+
+    <?php elseif ($action_button == 'breakup') :?>
+        <button type="button" class="btn btn-primary" onclick="breakUp()">
+            Couper contact
+        </button>
+    <?php endif; ?>
+
+    </div>
+
+</div>
+
+<script>
+
+    function actionButton(action) {
+
+        var fnum = '<?php echo $fnum; ?>';
+
+        var data = {
+            fnum : fnum
+        };
+
+        if (action == 'contact') {
+            if (document.getElementById('em-join-offer') != null) {
+                // Get the offer selected from the dropdown by the user.
+                var linkedOffer = document.getElementById('em-join-offer').value;
+                if (linkedOffer != null && linkedOffer != '' && typeof linkedOffer != 'undefined')
+                    data.linkedOffer = linkedOffer;
+            }
+        }
+
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&controller=cifre&task='+action,
+            data: data,
+            beforeSend: function () {
+                jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > ... </button>');
+            },
+            success: function(result) {
+                if (result.status) {
+
+
+                    // When we successfully change the status, we simply dynamically change the button.
+
+                    if (action == 'contact') {
+                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')"> Relancer </button>');
+                    }
+
+                    else if (action == 'retry') {
+                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > Méssage envoyé </button>');
+                    }
+
+                    else if (action == 'reply') {
+                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"> Couper contact </button>');
+                    }
+
+                    else if (action == 'breakup') {
+                        jQuery('#em-search-item-action-button').html('' +
+                            '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">' +
+                            '        Entrer en contact' +
+                            '        </button>' +
+                            '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
+                            '            <div class="modal-dialog" role="document">' +
+                            '                <div class="modal-content">' +
+                            '                    <div class="modal-header">' +
+                            '                        <h5 class="modal-title">Demande de contact</h5>' +
+                            '                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                            '                            <span aria-hidden="true">&times;</span>' +
+                            '                        </button>' +
+                            '                    </div>' +
+                            '                    <div class="modal-body">' +
+                            '                        <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>' +
+                                                        <?php if (!empty($offers)) :?>
+                            '                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>' +
+                            '                            <select id="em-join-offer">' +
+                                                            <?php foreach ($offers as $offer) :?>
+                            '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->title; ?></option>' +
+                                                            <?php endforeach; ?>
+                            '                            </select>' +
+                                                        <?php endif; ?>
+                            '                    </div>' +
+                            '                    <div class="modal-footer">' +
+                            '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Evoyer la demande de contact</button>' +
+                            '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
+                            '                    </div>' +
+                            '                </div>' +
+                            '            </div>');
+                    }
+
+                } else {
+                    var actionText = document.getElementById('em-action-text');
+                    actionText.classList.remove('hidden');
+                    actionText.innerHTML = result.msg;
+                }
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+    function breakUp() {
+        var data = {
+            fnum : '<?php echo $fnum; ?>'
+        };
+
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&controller=cifre&task=breakup',
+            data: data,
+            success: function(result) {
+                if (result.status) {
+
+                    // Dynamically change the button back to the state of not having a link.
+                    jQuery('#em-search-item-action-button').html('' +
+                        '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">' +
+                        '        Entrer en contact' +
+                        '        </button>' +
+                        '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
+                        '            <div class="modal-dialog" role="document">' +
+                        '                <div class="modal-content">' +
+                        '                    <div class="modal-header">' +
+                        '                        <h5 class="modal-title">Demande de contact</h5>' +
+                        '                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                        '                            <span aria-hidden="true">&times;</span>' +
+                        '                        </button>' +
+                        '                    </div>' +
+                        '                    <div class="modal-body">' +
+                        '                        <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>' +
+		                                            <?php if (!empty($offers)) :?>
+                        '                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>' +
+                        '                            <select id="em-join-offer">' +
+		                                                <?php foreach ($offers as $offer) :?>
+                        '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->title; ?></option>' +
+		                                                <?php endforeach; ?>
+                        '                            </select>' +
+		                                            <?php endif; ?>
+                        '                    </div>' +
+                        '                    <div class="modal-footer">' +
+                        '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Evoyer la demande de contact</button>' +
+                        '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
+                        '                    </div>' +
+                        '                </div>' +
+                        '            </div>');
+
+                } else {
+                    var actionText = document.getElementById('em-action-text');
+                    actionText.classList.remove('hidden');
+                    actionText.innerHTML = result.msg;
+                }
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+</script>
+
+<?php
 echo $this->pluginbottom;
 echo $this->loadTemplate('actions');
 echo '</div>';
