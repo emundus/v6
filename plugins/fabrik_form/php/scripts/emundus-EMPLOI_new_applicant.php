@@ -31,8 +31,8 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-$db 		= JFactory::getDBO();
-$student 	= JFactory::getSession()->get('emundusUser');
+$db         = JFactory::getDBO();
+$student    = JFactory::getSession()->get('emundusUser');
 
 $app    = JFactory::getApplication();
 $email_from_sys = $app->getCfg('mailfrom');
@@ -59,8 +59,8 @@ try {
 
 // Université du poste sélectionné par le candidat
 $query ='SELECT etablissement, fiche_emploi
-		 FROM #__emundus_emploi_etudiant_candidat
-		 WHERE fnum like '.$db->Quote($student->fnum);
+         FROM #__emundus_emploi_etudiant_candidat
+         WHERE fnum like '.$db->Quote($student->fnum);
 try {
     $db->setQuery($query);
     $fiche = $db->loadAssoc();
@@ -74,30 +74,26 @@ try {
 //$deposant = JAccess::getUsersByGroup(16);
 $referents = JAccess::getUsersByGroup(17);
 $query ='SELECT eu.firstname, eu.lastname, u.email, u.id
-		 FROM #__users as u
-		 LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-		 WHERE u.disabled!=1 AND u.id IN ('.implode(',', $referents).')
-		 AND eu.university_id = '.$university;
+         FROM #__users as u
+         LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
+         WHERE u.block!=1 AND u.id IN ('.implode(',', $referents).')
+         AND eu.university_id = '.$university;
 try {
     $db->setQuery($query);
     $referents = $db->loadObjectList();
 } catch (Exception $e) {
     // catch any database errors.
 }
-/*$query ='SELECT eu.firstname, eu.lastname, u.email, u.id
-		 FROM #__users as u
-		 LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-		 WHERE u.id IN ('.implode(',', $deposant).') 
-		 AND eu.university_id = '.$university;
-		 */
+
 $query = 'SELECT eee.intitule_poste, eu.firstname, eu.lastname, u.email, u.id
-			FROM #__emundus_emploi_etudiant as eee 
-			LEFT JOIN #__users as u ON u.id=eee.user 
-			LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-			WHERE u.disabled!=1 AND eee.id='.$fiche_emploi;
+            FROM #__emundus_emploi_etudiant as eee 
+            LEFT JOIN #__users as u ON u.id=eee.user 
+            LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
+            WHERE u.block!=1 AND eee.id='.$fiche_emploi;
 try {
     $db->setQuery($query);
     $deposants = $db->loadObjectList();
+    $intitule_poste = $deposants[0]->intitule_poste;
 } catch (Exception $e) {
     // catch any database errors.
 }
@@ -110,16 +106,16 @@ if (count($recipients) > 0) {
 
         // Association de l'ID user Referent avec le candidat (#__emundus_groups_eval)
         $query = 'INSERT INTO `#__emundus_users_assoc` (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
-				VALUES  ('.$referent->id.', 1, '.$db->Quote($student->fnum).', 0,1,0,0),
-						('.$referent->id.', 4, '.$db->Quote($student->fnum).', 0,1,0,0),
-						('.$referent->id.', 5, '.$db->Quote($student->fnum).', 1,1,1,0),
-						('.$referent->id.', 6, '.$db->Quote($student->fnum).', 1,0,0,0),
-						('.$referent->id.', 7, '.$db->Quote($student->fnum).', 1,0,0,0),
-						('.$referent->id.', 8, '.$db->Quote($student->fnum).', 1,0,0,0),
-						('.$referent->id.', 9, '.$db->Quote($student->fnum).', 1,1,0,0),
-						('.$referent->id.', 10, '.$db->Quote($student->fnum).', 1,1,0,0),
-						('.$referent->id.', 13, '.$db->Quote($student->fnum).', 0,1,1,0),
-						('.$referent->id.', 14, '.$db->Quote($student->fnum).', 1,1,1,0)';
+                VALUES  ('.$referent->id.', 1, '.$db->Quote($student->fnum).', 0,1,0,0),
+                        ('.$referent->id.', 4, '.$db->Quote($student->fnum).', 0,1,0,0),
+                        ('.$referent->id.', 5, '.$db->Quote($student->fnum).', 1,1,1,0),
+                        ('.$referent->id.', 6, '.$db->Quote($student->fnum).', 1,0,0,0),
+                        ('.$referent->id.', 7, '.$db->Quote($student->fnum).', 1,0,0,0),
+                        ('.$referent->id.', 8, '.$db->Quote($student->fnum).', 1,0,0,0),
+                        ('.$referent->id.', 9, '.$db->Quote($student->fnum).', 1,1,0,0),
+                        ('.$referent->id.', 10, '.$db->Quote($student->fnum).', 1,1,0,0),
+                        ('.$referent->id.', 13, '.$db->Quote($student->fnum).', 0,1,1,0),
+                        ('.$referent->id.', 14, '.$db->Quote($student->fnum).', 1,1,1,0)';
         $db->setQuery( $query );
         $db->execute();
 
@@ -147,7 +143,7 @@ if (count($trigger_emails) > 0) {
             // only for logged user or Deposant
             if ($student->id == $recipient['id'] || in_array($recipient['id'], $mail_to)) {
 
-                $post = array();
+                $post = array('FICHE_EMPLOI' => $intitule_poste, 'FICHE_ID' => $fiche_emploi);
                 $tags = $emails->setTags($recipient['id'], $post);
 
                 $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
@@ -162,13 +158,13 @@ if (count($trigger_emails) > 0) {
                 //$attachment[] = $path_file;
 
                 // setup mail
-		        $sender = array(
-		            $email_from_sys,
-		            $fromname
-		        );
+                $sender = array(
+                    $email_from_sys,
+                    $fromname
+                );
 
-		        $mailer->setSender($sender);
-		        $mailer->addReplyTo($from, $fromname);
+                $mailer->setSender($sender);
+                $mailer->addReplyTo($from, $fromname);
                 $mailer->addRecipient($to);
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);
