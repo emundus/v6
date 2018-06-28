@@ -81,6 +81,7 @@ class EmundusModelStats extends JModelLegacy {
         $p = self::getPeriodeData($periode);
 
         $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_connexions'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE()');
+        $db->setQuery($query);
 
 	    try {
 		    return $db->loadAssocList();
@@ -96,7 +97,8 @@ class EmundusModelStats extends JModelLegacy {
         $p = self::getPeriodeData($periode);
 
         $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_relations_etablies'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE()');
-
+        $db->setQuery($query);
+        
 	    try {
 		    return $db->loadAssocList();
 	    } catch(Exception $e) {
