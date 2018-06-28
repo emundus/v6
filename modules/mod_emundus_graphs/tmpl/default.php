@@ -36,20 +36,24 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             </table>
             
             <div id="users" ></div>
+
             <div id="userSummary" style="float: left; padding-left: 30%">
-            <?php 
-                $count = 0;
-                foreach($usersGraph as $ug) {
-                    $count += $ug[nombre];
-                }
-                
-                echo "<p><i>Nombre d'inscriptions : </i>$count </p>" ;
-                
+                <?php 
+
+                    $count = 0;
+
+                    foreach($usersGraph as $ug) {
+                        $count += $ug[nombre];
+                    }
+                    
+                    echo "<p><i>Nombre d'inscriptions : </i>$count </p>" ;
+                    
                 ?>
             </div>
         </div>
 
         <div class="col-md-6">
+
             <table>
             <tr><td>Offres:</td>
                 <td><select class="offres" >
@@ -74,13 +78,18 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             </table>
 
             <div id="offreBar" ></div>
+
             <div id="summeryOffres" style="float: left; padding-left: 30%">
-            <?php 
-                $countConsultation = 0;
-                foreach ($consultationBar as $cb) {
-                    $countConsultation += $cb['nombre'];
-                }
-                echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
+                <?php 
+
+                    $countConsultation = 0;
+
+                    foreach ($consultationBar as $cb) {
+                        $countConsultation += $cb['nombre'];
+                    }
+
+                    echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
+
                 ?>
             </div>
             <br>
@@ -114,19 +123,19 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                 </td>
             </tr>
             </table>
-            <div id="candLigne" style="float: left;"></div>
+            <div id="candLigne"></div>
             <div id="summeryCandidature" style="float: left; padding-left: 30%">
-            <?php 
-                $countCandidature = 0;
-                foreach($candidature as $candidatures) {
-                    $countCandidature += $candidatures['nombre'];
-                }
-                echo "<p><i>Nombre de candidature des offres: </i>$countCandidature </p>"; 
-            ?>
+                <?php 
+                    $countCandidature = 0;
+                    foreach($candidature as $candidatures) {
+                        $countCandidature += $candidatures['nombre'];
+                    }
+                    echo "<p><i>Nombre de candidature des offres: </i>$countCandidature </p>"; 
+                ?>
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-6">
+        <div class="col-md-6">
         <table>
         <tr><td> Période: </td>
             <td>
@@ -140,7 +149,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             </td>
         </tr>
         </table>
-        <div id="co" ></div>
+        <div id="co"></div>
         <div id='summaryConnexion' style="float: left; padding-left: 30%">
             <?php 
                 $countConnexion = 0;
@@ -151,7 +160,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             ?>
         </div>
     </div>
+    </div>
+
     <hr style='width: 100%; border-top: 21px solid #fff;'>
+
     <div class="row">
         <div class="col-md-6">
             <table>
