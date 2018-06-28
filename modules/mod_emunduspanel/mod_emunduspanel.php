@@ -23,7 +23,7 @@ include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 // overide css
-$header_class = $params->get('header_class', '');
+$header_class = $document->get('header_class', '');
 if (!empty($header_class))
 	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
 $document->addStyleSheet("media/com_emundus/css/emundus.css" );
