@@ -607,6 +607,8 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
+		$app			= JFactory::getApplication();
+		
 		$m_users 		= new EmundusModelUsers;
 		$current_user 	= JFactory::getUser($user_id);
 		$profile 		= $this->getProfileByApplicant($current_user->id);
