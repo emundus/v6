@@ -77,6 +77,29 @@ class EmundusControllerStats extends JControllerLegacy {
         exit;
     }
 
+    public function getconsultation() {
+        $numOffre = [];
+        $countArray = [];
+
+        $jinput = JFactory::getApplication()->input;
+        $periode = $jinput->post->get('periode', null);
+
+        $m_stats = new EmundusModelStats();
+        $getConsultations = $m_stats->consultationOffre($periode);
+        
+        foreach ($getConsultations as $bars) {
+                $titre[] = $bars['titre'];
+                $countArray[] = $bars['nb'];
+        }
+ 
+    echo json_encode((object)[
+        'status' => true,
+        'titre' => $titre,
+        'countarray' => $countArray
+    ]);
+    exit;
+}
+
     public function getconnections() {
         $dateArray = [];
         $countArray = [];
@@ -85,6 +108,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
 	    $m_stats = new EmundusModelStats();
         $getConnections = $m_stats->getConnections($periode);
+        
         
         foreach ($getConnections as $cog) {
             $dateArray[] = $cog['_day'];
@@ -100,27 +124,24 @@ class EmundusControllerStats extends JControllerLegacy {
     }
 
     public function getcandidatures() {
-        $dateArray = [];
-        $countArray = [];
+        $candArray = [];
+        $nbArray = [];
 
         $jinput = JFactory::getApplication()->input;
-        $val = $jinput->post->get('chosenvalue', null);
+        //$val = $jinput->post->get('chosenvalue', null);
         $periode = $jinput->post->get('periode', null);
 
 	    $m_stats = new EmundusModelStats();
-        $getCandidatures = $m_stats->candidatureOffres($val, $periode);
-        
+        $getCandidatures = $m_stats->candidatureOffres($periode);
         foreach ($getCandidatures as $cand) {
-            if ($cand['num_offre'] == $val) {
-                $dateArray[] = $cand['_day'];
-                $countArray[] = $cand['nombre'];
-            }
+                $candArray[] = $cand['titre'];
+                $nbArray[] = $cand['nb'];
         }
 
         echo json_encode((object)[
         	'status' => true,
-	        'datearray' => $dateArray,
-	        'countarray' => $countArray
+	        'candarray' => $candArray,
+	        'nbarray' => $nbArray
         ]);
         exit;
     }

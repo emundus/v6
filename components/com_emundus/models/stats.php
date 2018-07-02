@@ -24,6 +24,8 @@ class EmundusModelStats extends JModelLegacy {
             $query = ' 3 MONTH ';
         elseif ($periode == 4)
             $query = ' 6 MONTH ';
+        elseif ($periode == 5)
+            $query = ' 1 YEAR ';
         return $query;
     }
 
@@ -43,30 +45,42 @@ class EmundusModelStats extends JModelLegacy {
         }
     }
 
-    public function consultationOffres($value, $periode) {
+    public function consultationOffre($periode) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
 
-        $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_consult_offre'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE() AND '.$db->quoteName('num_offre').' = '.$value);
-        $db->setQuery($query);
 
+
+        $query = 'SELECT `titre`,`num_offre`, SUM(`nombre`) AS nb FROM
+                (
+                    SELECT * FROM jos_emundus_stats_nombre_consult_offre 
+                    WHERE _day >= DATE_SUB(CURDATE(), INTERVAL'.$p.')
+                    AND _day <= CURDATE()
+                ) AS groupDate
+                GROUP BY `num_offre`';
+        $db->setQuery($query);
         try {
-        	return $db->loadAssocList();
+	        return $db->loadAssocList();
         } catch(Exception $e) {
 	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	        return false;
         }
     }
 
-    public function candidatureOffres($value, $periode) {
+    public function candidatureOffres($periode) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
 
-	    $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_candidature_offre'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE() AND '.$db->quoteName('num_offre').' = '.$value);
+        $query = 'SELECT `titre`,`num_offre`, SUM(`nombre`) AS nb FROM
+                (
+                    SELECT * FROM jos_emundus_stats_nombre_candidature_offre 
+                    WHERE _day >= DATE_SUB(CURDATE(), INTERVAL'.$p.')
+                    AND _day <= CURDATE()
+                ) AS groupDate
+                GROUP BY `num_offre`';
         $db->setQuery($query);
-
         try {
 	        return $db->loadAssocList();
         } catch(Exception $e) {

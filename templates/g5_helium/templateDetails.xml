@@ -38,6 +38,7 @@
     </files>
 
     <positions>
+        <position>PieGraph</position>
         <position>aside</position>
         <position>bottom-a</position>
         <position>bottom-b</position>
