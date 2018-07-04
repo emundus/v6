@@ -56,11 +56,11 @@ defined('_JEXEC') or die;
             case 'separator':
             case 'url':
             case 'component':
-                require JModuleHelper::getLayoutPath('mod_menu', 'default_'.$item->type);
+                require JModuleHelper::getLayoutPath('mod_emundusmenu', 'gantry5_'.$item->type);
                 break;
 
             default:
-                require JModuleHelper::getLayoutPath('mod_menu', 'default_url');
+                require JModuleHelper::getLayoutPath('mod_emundusmenu', 'gantry5_url');
                 break;
         endswitch;
 
