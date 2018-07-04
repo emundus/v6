@@ -33,5 +33,5 @@ $menu = $app->getMenu();
 $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;
 
-require JModuleHelper::getLayoutPath('mod_emundususerdropdown', 'default');
+require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', 'default');
 
