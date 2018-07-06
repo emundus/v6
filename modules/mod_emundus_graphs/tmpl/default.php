@@ -1,15 +1,30 @@
 <?php
+
 defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 $document = JFactory::getDocument();
+//Chart.js is the libary used for this module's graphs
 $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'Chart.min.js');
+//moment.js is a Date libary, using to retrieve missing dates 
 $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS.'css'.DS.'bootstrap.min.css');
 ?>
 <div class="container">
-    <!-- Shows user info  -->
-    <div class="row">
 
+
+    <!-- Additional views  -->
+    <div class="row">
+        <div class="col-md-4 col-centered" >
+            <table id="viewTable">
+                <tr><th> Autres Statistiques Possibles</th><th></th></tr>
+                <?php echo $tableField; ?>
+            </table>
+        </div>
+    </div>
+
+    <!-- Shows user info  -->
+    <div class="row" id="userRow" style="display:none;">
+        
         <div class="col-md-12">
            
             <canvas id="users" ></canvas>
@@ -49,22 +64,24 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             <?php 
 
                 $count = 0;
-
-                foreach($usersGraph as $ug) {
-                    $count += $ug[nombre];
+                if($comptes == 'true'){
+                    foreach($usersGraph as $ug) {
+                        $count += $ug[nombre];
+                    }
                 }
+                
                 
                 echo "<p><i>Nombre d'inscriptions : </i>$count </p>" ;
                 
             ?>
         </div>
-        
+        <hr style='width: 100%; border-top: 5px solid #fff;'>
     </div>
 
-    <hr style='width: 100%; border-top: 5px solid #fff;'>
+    
 
     <!-- Shows offer info  -->   
-    <div class="row">
+    <div class="row" id="offerRow" style="display:none;">
         <div class="col-md-12" id="offresDiv">
             <canvas id="candLigne"></canvas>
         </div>
@@ -96,28 +113,28 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                 ?>
             </div>
         </div>
-            <div class="col-md-3">
-                <div id="summaryOffres">
-                    <?php 
+        <div class="col-md-3">
+            <div id="summaryOffres">
+                <?php 
 
-                        $countConsultation = 0;
+                    $countConsultation = 0;
 
-                        foreach ($consultationBar as $cb) {
-                            $countConsultation += $cb['nombre'];
-                        }
+                    foreach ($consultationBar as $cb) {
+                        $countConsultation += $cb['nombre'];
+                    }
 
-                        echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
+                    echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
 
-                    ?>
-                </div>
+                ?>
             </div>
         </div>
+        <hr style='width: 100%; border-top: 5px solid #fff;'>
     </div>
 
-    <hr style='width: 100%; border-top: 5px solid #fff;'>
+    
 
     <!-- Shows connexion info  -->
-    <div class="row">
+    <div class="row" id="connectionRow" style="display:none;">
         <div class="col-md-12">
             <canvas id="co" ></canvas>
         </div>
@@ -149,18 +166,20 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                 ?>
             </div>
         </div>
+        <hr style='width: 100%; border-top: 21px solid #fff;'>
     </div>        
-
-    <hr style='width: 100%; border-top: 21px solid #fff;'>
+    
+    
 
     <!-- Shows relation info  -->
-    <div class="row">
+    <div class="row" id="relationRow" style="display:none;">
 
         <div class="col-md-12">
             <canvas id="rel" ></canvas>
         </div>
 
-        <div class="col-md-6" style="padding-left: 10%;">            <table>
+        <div class="col-md-6" style="padding-left: 10%;">            
+            <table>
             <tr><td> Période: </td>
                 <td>
                     <select class="periodeRel" >
@@ -218,6 +237,11 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
 <script type="text/javascript">
 
+    
+    var compteChart;
+    var offreChart;
+    var connexionChart;
+    var relationChart;
     // global options for graphs so it doesn't show decimals
     var options = 
         {
@@ -271,9 +295,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         }
                     }
 
+                    if(compteChart != undefined || compteChart != null){
+                        compteChart.destroy();
+                    }
                     var elem = document.getElementById('users');
                     
-                    var myLineChart = new Chart(elem, {
+                    compteChart = new Chart(elem, {
                         
                         type: 'line',
                         data: {
@@ -290,6 +317,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                                 text: "Création de comptes",
                                 fontSize: 20
                             },
+                            elements: { point: { radius: 1 } } ,
                             scales: options
                         }
                         
@@ -325,9 +353,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         success: function (resultCon) {
                             var ctxLine = document.getElementById('candLigne').getContext('2d');
                             // destroy old canvas causing hover problems
-                            if(window.bar != undefined)
-                                window.bar.destroy();
-                            window.bar = new Chart(ctxLine, {
+                            if(offreChart != undefined || offreChart != null){
+                                offreChart.destroy();
+                            }
+                            offreChart = new Chart(ctxLine, {
                                 type: 'horizontalBar',
                                 data: {
                                     labels: resultCon.titre,
@@ -409,8 +438,11 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                             }
                         }
                     }
+                    if(connexionChart != undefined || connexionChart != null){
+                        connexionChart.destroy();
+                    }
                     var elem = document.getElementById('co');
-                    var myLineChart = new Chart(elem, {
+                    connexionChart = new Chart(elem, {
                         type: 'line',
                         data: {
                             labels: result.datearray,
@@ -426,6 +458,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                                 text: "Nombre de connexions",
                                 fontSize: 20
                             },
+                            elements: { point: { radius: 1 } } ,
                             scales: options
                         } 
                     });
@@ -446,6 +479,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             data:({periode: periode}),
             success: function (result) {
                 if (result.status) {
+                    
                     // Loop to get missing dates and create new value (0) for those dates
                     for (var i = 0; i < result.datearray.length; i++) {
                         //make sure we are not checking the last date in the labels array
@@ -464,8 +498,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                             }
                         }
                     }
+
+                    if(relationChart != undefined || relationChart != null){
+                        relationChart.destroy();
+                    }
                     var elem = document.getElementById('rel');
-                    var myLineChart = new Chart(elem, {
+                    relationChart = new Chart(elem, {
                         type: 'line',
                         data: {
                             labels: result.datearray,
@@ -481,6 +519,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                                 text: "Relations établies",
                                 fontSize: 20
                             },
+                            elements: { point: { radius: 1 } } ,
                             scales: options
                         }   
                     });
@@ -491,67 +530,149 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             }
         }); 
     }
+
+    //// AddView Function uses 2 AJAXs
+    // Fist AJAX Creates the view if possible
+    function addView(view) {
+        jQuery.ajax({
+            type: "post",
+            url: "index.php?option=com_emundus&controller=stats&task=addview&format=raw",
+            dataType: 'json',
+            data:({view: view}),
+            success: function (result) {
+                //// If the controller created the View it calls the second AJAX
+                // Second AJAX Links To the existing Fabrik List
+                if(result.status) {
+                    jQuery.ajax({
+                        type: "post",
+                        url: "index.php?option=com_emundus&controller=stats&task=linktofabrik&format=raw",
+                        dataType: 'json',
+                        data:({view: view}),
+                        success: function(resultFabrik) {
+                            if(resultFabrik.status) {
+                                 location.reload();
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });  
+                }
+                else {
+                    alert("Vous n'avez pas la table ou les colonnes pour créer ce graphe.");
+                    var nono = document.createElement("i");
+                    nono.className = "fas fa-times";
+                    document.getElementById(view).prepend(nono);
+                    
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+    })
+    }
+
     
     jQuery(document).ready(function () {
-        var OffreClick = document.createElement("a");
-        var text = document.createTextNode("Exporter les données");
-        OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0' );
-        OffreClick.append(text);
-        document.getElementById("userSummary").append(OffreClick);
-        document.getElementById("userSummary").append(document.createElement("br"));
 
-        var contacts = document.createElement("a");
-        text = document.createTextNode("Exporter les contacts");
-        contacts.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id2');?>&Itemid=0' );
-        contacts.append(text);
-        document.getElementById("userSummary").append(contacts);
+        if(<?php echo $nationality; ?>) {
+            var table = document.getElementById("viewTable");
+            var row =table.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = "Nationlalités" ;
+            cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id7');?>&Itemid=0'>Exporter les données</a>";
+        }
+
+        if(<?php echo $gender; ?>) {
+            var table = document.getElementById("viewTable");
+            var row =table.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = "Genres" ;
+            cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0'>Exporter les données</a>";
+        }
+
+        if(<?php echo $files; ?>) {
+            var table = document.getElementById("viewTable");
+            var row =table.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = "Dossiers" ;
+            cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id8');?>&Itemid=0'>Exporter les données</a>";
+        }
 
 
-        var exportDonnees1 = document.createElement("a");
-        text = document.createTextNode("Exporter les données");
-        exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0' );
-        exportDonnees1.append(text);
-        document.getElementById("summaryOffres").append(exportDonnees1);
+        if(<?php echo $comptes; ?> ) {
+           
+            document.getElementById("userRow").setAttribute("style", "display:block;");
+            var OffreClick = document.createElement("a");
+            var text = document.createTextNode("Exporter les données");
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0' );
+            OffreClick.append(text);
+            document.getElementById("userSummary").append(OffreClick);
+            document.getElementById("userSummary").append(document.createElement("br"));
 
+            var contacts = document.createElement("a");
+            text = document.createTextNode("Exporter les contacts");
+            contacts.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id2');?>&Itemid=0' );
+            contacts.append(text);
+            document.getElementById("userSummary").append(contacts);
 
-        var exportConnexion = document.createElement("a");
-        text = document.createTextNode("Exporter les données");
-        exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0' );
-        exportConnexion.append(text);
-        document.getElementById("summaryConnexion").append(exportConnexion);
-
-        var exportCand = document.createElement("a");
-        text = document.createTextNode("Exporter les données");
-        exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0' );
-        exportCand.append(text);
-        document.getElementById("summaryCandidature").append(exportCand);
-
-        exportCand = document.createElement("a");
-        text = document.createTextNode("Exporter les données");
-        exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id6');?>&Itemid=0' );
-        exportCand.append(text);
-        document.getElementById("summaryRelation").append(exportCand);
-
-        var valuePeriodecompte = jQuery('.periodeCompte').val();
-        var valueTimeLine = jQuery('.compte').val();
-        afficheComptes(valueTimeLine, valuePeriodecompte);
+            var valuePeriodecompte = jQuery('.periodeCompte').val();
+            var valueTimeLine = jQuery('.compte').val();
+            afficheComptes(valueTimeLine, valuePeriodecompte);
+        }
         
-        var valuePeriodeCo = jQuery('.periodeCo').val();
-        afficheConnections(valuePeriodeCo);
 
-        var valuePeriodeCand = jQuery('.periodeCand').val();
-        
-        //var valueCand = jQuery('.candidature').val();
-        afficheOffres(valuePeriodeCand);
+        if(<?php echo $consult; ?>  && <?php echo $cand; ?>) {
+            document.getElementById("offerRow").setAttribute("style", "display:block;");
+            var exportDonnees1 = document.createElement("a");
+            text = document.createTextNode("Exporter les données");
+            exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0' );
+            exportDonnees1.append(text);
+            document.getElementById("summaryOffres").append(exportDonnees1);
 
-        var valuePeriodeRel = jQuery('.periodeRel').val();
-        afficherelations(valuePeriodeRel);
+            var exportCand = document.createElement("a");
+            text = document.createTextNode("Exporter les données");
+            exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0' );
+            exportCand.append(text);
+            document.getElementById("summaryCandidature").append(exportCand);
+
+            var valuePeriodeCand = jQuery('.periodeCand').val();
+            afficheOffres(valuePeriodeCand);
+        }
+
+        if(<?php echo $con; ?> ) {
+            document.getElementById("connectionRow").setAttribute("style", "display:block;");
+            var exportConnexion = document.createElement("a");
+            text = document.createTextNode("Exporter les données");
+            exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0' );
+            exportConnexion.append(text);
+            document.getElementById("summaryConnexion").append(exportConnexion);
+
+            var valuePeriodeCo = jQuery('.periodeCo').val();
+            afficheConnections(valuePeriodeCo);
+        }
+
+        if(<?php echo $rels; ?>) {
+            document.getElementById("relationRow").setAttribute("style", "display:block;");
+            exportRel = document.createElement("a");
+            text = document.createTextNode("Exporter les données");
+            exportRel.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id6');?>&Itemid=0' );
+            exportRel.append(text);
+            document.getElementById("summaryRelation").append(exportRel);
+
+            var valuePeriodeRel = jQuery('.periodeRel').val();
+            afficherelations(valuePeriodeRel);
+        }
+
     });
 
+    
     jQuery('.compte').on('change', function () {
         var value = jQuery(this).val();
         var valuePeriodecompte = jQuery('.periodeCompte').val();
-        
         afficheComptes(value, valuePeriodecompte);
     });
 
@@ -581,6 +702,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
 <style type='text/css'>
 
+    
+
     .span12 {
         display: none;
     }
@@ -588,11 +711,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
     table {
         border: none;
     }
-    table tr {
-    }
+    
     table td {
         border: none;
-        c
+        
     }
 
     #selectPeriode {

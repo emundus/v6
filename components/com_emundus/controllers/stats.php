@@ -167,4 +167,36 @@ class EmundusControllerStats extends JControllerLegacy {
         ]);
         exit;
     }
+
+    public function addview() {
+        $m_stats = new EmundusModelStats();
+        $jinput = JFactory::getApplication()->input;
+        $view =  $jinput->post->get('view', null);
+        if($m_stats->addView($view)) 
+            echo json_encode((object)[
+                'status' => true,
+            ]);
+        
+        else 
+            echo json_encode((object)[
+                'status' => false,
+            ]);
+        
+
+    }
+
+    public function linktofabrik() {
+        $m_stats = new EmundusModelStats();
+        $jinput = JFactory::getApplication()->input;
+        $view =  $jinput->post->get('view', null);
+        $fabrikId  = $m_stats->linkToFabrik($view);
+
+        $id = $fabrikId[0];
+
+        echo json_encode((object)[
+        	'status' => true,
+            'fabrikId' => $id
+        ]);
+        exit;
+    }
 }

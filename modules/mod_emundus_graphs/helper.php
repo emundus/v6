@@ -3,6 +3,7 @@ defined('_JEXEC') or die('Access Deny');
 
 class modEmundusGraphsHelper {
 
+    // Get Every account From emundus_stats_nombre_comptes View To then Filter by user_ID
     public function getaccountType() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -17,6 +18,8 @@ class modEmundusGraphsHelper {
         }
     }
 
+
+    //// Get Every consultation From __emundus_stats_nombre_consult_offre View
     public function consultationOffres() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -31,6 +34,7 @@ class modEmundusGraphsHelper {
         }
     }
 
+    //// Get Every candidate From __emundus_stats_nombre_candidature_offre View
     public function candidatureOffres() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -45,6 +49,7 @@ class modEmundusGraphsHelper {
         }
     }
 
+    //// Get Every connexion From __emundus_stats_nombre_connexions View
     public function getConnections() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -59,6 +64,7 @@ class modEmundusGraphsHelper {
         }
     }
 
+    //// Get Every relation From __emundus_stats_nombre_relations_etablies View
     public function getRelations() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
