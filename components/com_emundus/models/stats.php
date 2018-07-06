@@ -17,7 +17,6 @@ class EmundusModelStats extends JModelLegacy {
         
         $db = JFactory::getDbo();
         $dbName = JFactory::getConfig()->get('db');
-        $query = $db->getQuery(true);
         $query = 'SELECT IF( EXISTS(
                     SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = "'.$dbName.'" AND TABLE_TYPE ="VIEW" AND TABLE_NAME = "'.$view.'"
                     ), 1, 0)';
@@ -25,7 +24,7 @@ class EmundusModelStats extends JModelLegacy {
         try {
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add('Error getting stats on account types at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -33,7 +32,6 @@ class EmundusModelStats extends JModelLegacy {
     public function addView($view) {
         
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
         switch($view) {
             case 'jos_emundus_stats_nombre_candidature_offre':
                 $query =  "CREATE VIEW jos_emundus_stats_nombre_candidature_offre AS
@@ -178,7 +176,6 @@ class EmundusModelStats extends JModelLegacy {
             //$this->createFabrik($view);
             return true;
         } catch(Exception $e) {
-
             JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
             return false;
         }
@@ -216,17 +213,16 @@ class EmundusModelStats extends JModelLegacy {
     }
     
     */
-    public function linkToFabrik($view){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    public function linkToFabrik($view) {
 
+    	$db = JFactory::getDbo();
         $query = 'SELECT id FROM `jos_fabrik_lists` WHERE `db_table_name` LIKE "'.$view.'"';
         $db->setQuery($query);
 
         try {
             return $db->loadRow();
         } catch(Exception $e) {
-            JLog::add('Error getting stats on account types at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -267,10 +263,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function consultationOffre($periode) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
-
-
 
         $query = 'SELECT `titre`,`num_offre`, SUM(`nombre`) AS nb FROM
                 (
@@ -283,14 +276,13 @@ class EmundusModelStats extends JModelLegacy {
         try {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
-	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
 	        return false;
         }
     }
 
     public function candidatureOffres($periode) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
 
         $query = 'SELECT `titre`,`num_offre`, SUM(`nombre`) AS nb FROM
@@ -304,7 +296,7 @@ class EmundusModelStats extends JModelLegacy {
         try {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
-	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
 	        return false;
         }
     }

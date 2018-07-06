@@ -26,9 +26,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
     <div class="row" id="userRow" style="display:none;">
         
         <div class="col-md-12">
-           
             <canvas id="users" ></canvas>
-
         </div>
     
         <div class="col-md-6" style="padding-left: 10%;" >
@@ -50,7 +48,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         <select class="periodeCompte" >
                             <option value='0'>Dernière semaine</option>
                             <option value='1'>Deux dernières semaines</option>
-                            <option value='2'selected>Dernier mois</option>
+                            <option value='2' selected>Dernier mois</option>
                             <option value='3'>Trois derniers mois</option>
                             <option value='4'>Six derniers mois</option>
                             <option value='5'>Dernière année</option>
@@ -61,15 +59,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         </div>
 
         <div class="col-md-6" id="userSummary"  >
-            <?php 
-
+            <?php
                 $count = 0;
-                if($comptes == 'true'){
-                    foreach($usersGraph as $ug) {
-                        $count += $ug[nombre];
+                if ($comptes == 'true') {
+                    foreach ($usersGraph as $ug) {
+                        $count += $ug['nombre'];
                     }
                 }
-                
                 
                 echo "<p><i>Nombre d'inscriptions : </i>$count </p>" ;
                 
@@ -93,7 +89,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                     <select class="periodeCand" >
                         <option value='0'>Dernière semaine</option>
                         <option value='1'>Deux dernières semaines</option>
-                        <option value='2'selected>Dernier mois</option>
+                        <option value='2' selected>Dernier mois</option>
                         <option value='3'>Trois derniers mois</option>
                         <option value='4'>Six derniers mois</option>
                         <option value='5'>Dernière année</option>
@@ -102,36 +98,34 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             </tr>
             </table>
         </div>
+
         <div class="col-md-3" >
             <div id="summaryCandidature" >
                 <?php 
                     $countCandidature = 0;
-                    foreach($candidature as $candidatures) {
+                    foreach ($candidature as $candidatures) {
                         $countCandidature += $candidatures['nombre'];
                     }
-                    echo "<p><i>Nombre de candidature des offres: </i>$countCandidature </p>"; 
+                    echo "<p><i>Nombre de candidature des offres: </i>$countCandidature</p>";
                 ?>
             </div>
         </div>
+
         <div class="col-md-3">
             <div id="summaryOffres">
-                <?php 
-
+                <?php
                     $countConsultation = 0;
-
                     foreach ($consultationBar as $cb) {
                         $countConsultation += $cb['nombre'];
                     }
 
                     echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
-
                 ?>
             </div>
         </div>
         <hr style='width: 100%; border-top: 5px solid #fff;'>
     </div>
 
-    
 
     <!-- Shows connexion info  -->
     <div class="row" id="connectionRow" style="display:none;">
@@ -146,7 +140,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                     <select class="periodeCo" >
                         <option value='0'>Dernière semaine</option>
                         <option value='1'>Deux dernières semaines</option>
-                        <option value='2'selected>Dernier mois</option>
+                        <option value='2' selected>Dernier mois</option>
                         <option value='3'>Trois derniers mois</option>
                         <option value='4'>Six derniers mois</option>
                         <option value='5'>Dernière année</option>
@@ -159,7 +153,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             <div id='summaryConnexion'>
                 <?php 
                     $countConnexion = 0;
-                    foreach($connections as $co) {
+                    foreach ($connections as $co) {
                         $countConnexion += $co['nombre_connexions'];
                     }             
                     echo "<p><i>Nombre de connexions: </i>$countConnexion " ;
@@ -167,9 +161,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             </div>
         </div>
         <hr style='width: 100%; border-top: 21px solid #fff;'>
-    </div>        
-    
-    
+    </div>
 
     <!-- Shows relation info  -->
     <div class="row" id="relationRow" style="display:none;">
@@ -205,11 +197,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                     echo "<p><i>Nombre de relations etablies: </i>$countRelations " ;
                 ?>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
     
@@ -243,27 +232,24 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
     var connexionChart;
     var relationChart;
     // global options for graphs so it doesn't show decimals
-    var options = 
-        {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    userCallback: function(label, index, labels) {
-                        // when the floored value is the same as the value we have a whole number
-                        if (Math.floor(label) === label) {
-                            return label;
-                        }
-
-                    },
-                }
-            }],
-        };
+    var options = {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true,
+                userCallback: function(label, index, labels) {
+                    // when the floored value is the same as the value we have a whole number
+                    if (Math.floor(label) === label) {
+                        return label;
+                    }
+                },
+            }
+        }],
+    };
 
     // Account function
     function afficheComptes(value,periode) {
         
         var sel = document.getElementById('compte');
-        
         var opt = sel.options[sel.selectedIndex];
         
         jQuery.ajax({
@@ -295,13 +281,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         }
                     }
 
-                    if(compteChart != undefined || compteChart != null){
+                    if (compteChart != undefined || compteChart != null) {
                         compteChart.destroy();
                     }
                     var elem = document.getElementById('users');
                     
                     compteChart = new Chart(elem, {
-                        
                         type: 'line',
                         data: {
                             labels: result.datearray,
@@ -320,9 +305,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                             elements: { point: { radius: 1 } } ,
                             scales: options
                         }
-                        
                     });
-                   
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -342,7 +325,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             }),
             success: function (resultCand) {
                 
-                if(resultCand.status) {
+                if (resultCand.status) {
                     jQuery.ajax({
                         type: "post",
                         url: "index.php?option=com_emundus&controller=stats&task=getconsultation",
@@ -353,7 +336,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         success: function (resultCon) {
                             var ctxLine = document.getElementById('candLigne').getContext('2d');
                             // destroy old canvas causing hover problems
-                            if(offreChart != undefined || offreChart != null){
+                            if (offreChart != undefined || offreChart != null) {
                                 offreChart.destroy();
                             }
                             offreChart = new Chart(ctxLine, {
@@ -371,7 +354,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                                             data: resultCand.nbarray,
                                             backgroundColor: "#8e5ea2",
                                         },
-
                                     ]
                                 },
                                 options: {
@@ -396,7 +378,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                                     }
                                 } 
                             });
-                            
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                           console.log(jqXHR.responseText);
@@ -420,17 +401,17 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             data:({periode: periode}),
             success: function (result) {
                 if (result.status) {
+
                     // Loop to get missing dates and create new value (0) for those dates
                     for (var i = 0; i < result.datearray.length; i++) {
+
                         //make sure we are not checking the last date in the labels array
                         if (i + 1 < result.datearray.length) {
                             var date1 = moment(result.datearray[i], "YYYY-MM-DD");
                             var date2 = moment(result.datearray[i + 1], "YYYY-MM-DD");
 
-                            
                             //if the current date +1 is not the same as it's next neighbor we have to add in a new one
                             if (!date1.add(1, "days").isSame(date2)) {
-                                
                                 //add the label
                                 result.datearray.splice(i + 1, 0, date1.format("YYYY-MM-DD"));
                                 //add the data
@@ -438,10 +419,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                             }
                         }
                     }
-                    if(connexionChart != undefined || connexionChart != null){
+
+                    if (connexionChart != undefined || connexionChart != null) {
                         connexionChart.destroy();
                     }
                     var elem = document.getElementById('co');
+
                     connexionChart = new Chart(elem, {
                         type: 'line',
                         data: {
@@ -499,9 +482,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         }
                     }
 
-                    if(relationChart != undefined || relationChart != null){
+                    if (relationChart != undefined || relationChart != null) {
                         relationChart.destroy();
                     }
+
                     var elem = document.getElementById('rel');
                     relationChart = new Chart(elem, {
                         type: 'line',
@@ -540,9 +524,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             dataType: 'json',
             data:({view: view}),
             success: function (result) {
+
                 //// If the controller created the View it calls the second AJAX
                 // Second AJAX Links To the existing Fabrik List
-                if(result.status) {
+                if (result.status) {
                     jQuery.ajax({
                         type: "post",
                         url: "index.php?option=com_emundus&controller=stats&task=linktofabrik&format=raw",
@@ -557,25 +542,22 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                             console.log(jqXHR.responseText);
                         }
                     });  
-                }
-                else {
+                } else {
                     alert("Vous n'avez pas la table ou les colonnes pour créer ce graphe.");
                     var nono = document.createElement("i");
                     nono.className = "fas fa-times";
                     document.getElementById(view).prepend(nono);
-                    
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
-    })
+        })
     }
 
-    
     jQuery(document).ready(function () {
 
-        if(<?php echo $nationality; ?>) {
+        if (<?php echo $nationality; ?>) {
             var table = document.getElementById("viewTable");
             var row =table.insertRow();
             var cell1 = row.insertCell(0);
@@ -584,7 +566,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id7');?>&Itemid=0'>Exporter les données</a>";
         }
 
-        if(<?php echo $gender; ?>) {
+        if (<?php echo $gender; ?>) {
             var table = document.getElementById("viewTable");
             var row =table.insertRow();
             var cell1 = row.insertCell(0);
@@ -593,7 +575,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0'>Exporter les données</a>";
         }
 
-        if(<?php echo $files; ?>) {
+        if (<?php echo $files; ?>) {
             var table = document.getElementById("viewTable");
             var row =table.insertRow();
             var cell1 = row.insertCell(0);
@@ -602,8 +584,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id8');?>&Itemid=0'>Exporter les données</a>";
         }
 
-
-        if(<?php echo $comptes; ?> ) {
+        if (<?php echo $comptes; ?> ) {
            
             document.getElementById("userRow").setAttribute("style", "display:block;");
             var OffreClick = document.createElement("a");
@@ -623,9 +604,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             var valueTimeLine = jQuery('.compte').val();
             afficheComptes(valueTimeLine, valuePeriodecompte);
         }
-        
 
-        if(<?php echo $consult; ?>  && <?php echo $cand; ?>) {
+        if (<?php echo $consult; ?>  && <?php echo $cand; ?>) {
             document.getElementById("offerRow").setAttribute("style", "display:block;");
             var exportDonnees1 = document.createElement("a");
             text = document.createTextNode("Exporter les données");
@@ -643,7 +623,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             afficheOffres(valuePeriodeCand);
         }
 
-        if(<?php echo $con; ?> ) {
+        if (<?php echo $con; ?> ) {
             document.getElementById("connectionRow").setAttribute("style", "display:block;");
             var exportConnexion = document.createElement("a");
             text = document.createTextNode("Exporter les données");
@@ -655,7 +635,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             afficheConnections(valuePeriodeCo);
         }
 
-        if(<?php echo $rels; ?>) {
+        if (<?php echo $rels; ?>) {
             document.getElementById("relationRow").setAttribute("style", "display:block;");
             exportRel = document.createElement("a");
             text = document.createTextNode("Exporter les données");
@@ -666,7 +646,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             var valuePeriodeRel = jQuery('.periodeRel').val();
             afficherelations(valuePeriodeRel);
         }
-
     });
 
     
@@ -677,7 +656,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
     });
 
     jQuery('.periodeCompte').on('change', function () {
-        
         var value = jQuery('.compte').val();
         var valuePeriodecompte = jQuery(this).val();
         afficheComptes(value, valuePeriodecompte);
@@ -702,8 +680,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
 <style type='text/css'>
 
-    
-
     .span12 {
         display: none;
     }
@@ -714,7 +690,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
     
     table td {
         border: none;
-        
     }
 
     #selectPeriode {

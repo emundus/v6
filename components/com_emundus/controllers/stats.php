@@ -34,7 +34,7 @@ class EmundusControllerStats extends JControllerLegacy {
         $periode = $jinput->post->get('periode', null);
 
         $m_stats = new EmundusModelStats();
-        $getAccountType  = $m_stats->getAccountType($val, $periode);
+        $getAccountType = $m_stats->getAccountType($val, $periode);
 
         foreach ($getAccountType as $users) {
         	if ($users['profile_id'] == $val) {
@@ -92,19 +92,19 @@ class EmundusControllerStats extends JControllerLegacy {
                 $countArray[] = $bars['nb'];
         }
  
-    echo json_encode((object)[
-        'status' => true,
-        'titre' => $titre,
-        'countarray' => $countArray
-    ]);
-    exit;
-}
+	    echo json_encode((object)[
+	        'status' => true,
+	        'titre' => $titre,
+	        'countarray' => $countArray
+	    ]);
+	    exit;
+	}
 
     public function getconnections() {
         $dateArray = [];
         $countArray = [];
         $jinput = JFactory::getApplication()->input;
-        $periode =  $jinput->post->get('periode', null);
+        $periode = $jinput->post->get('periode', null);
 
 	    $m_stats = new EmundusModelStats();
         $getConnections = $m_stats->getConnections($periode);
@@ -150,10 +150,10 @@ class EmundusControllerStats extends JControllerLegacy {
         $dateArray = [];
         $countArray = [];
         $jinput = JFactory::getApplication()->input;
-        $periode =  $jinput->post->get('periode', null);
+        $periode = $jinput->post->get('periode', null);
 
 	    $m_stats = new EmundusModelStats();
-        $getNbRelations  = $m_stats->getNbRelations($periode);
+        $getNbRelations = $m_stats->getNbRelations($periode);
         
         foreach ($getNbRelations as $rel) {
             $dateArray[] = $rel['_day'];
@@ -171,25 +171,19 @@ class EmundusControllerStats extends JControllerLegacy {
     public function addview() {
         $m_stats = new EmundusModelStats();
         $jinput = JFactory::getApplication()->input;
-        $view =  $jinput->post->get('view', null);
-        if($m_stats->addView($view)) 
-            echo json_encode((object)[
-                'status' => true,
-            ]);
-        
-        else 
-            echo json_encode((object)[
-                'status' => false,
-            ]);
-        
+        $view = $jinput->post->get('view', null);
 
+	    echo json_encode((object) [
+		    'status' => $m_stats->addView($view)
+	    ]);
+	    exit;
     }
 
     public function linktofabrik() {
         $m_stats = new EmundusModelStats();
         $jinput = JFactory::getApplication()->input;
-        $view =  $jinput->post->get('view', null);
-        $fabrikId  = $m_stats->linkToFabrik($view);
+        $view = $jinput->post->get('view', null);
+        $fabrikId = $m_stats->linkToFabrik($view);
 
         $id = $fabrikId[0];
 
