@@ -12,6 +12,9 @@ JHTML::stylesheet($font_awesome);
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
+
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -22,8 +25,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -157,17 +162,30 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 													</td>
 													<td>
 														<?php 
-														$user_object = JUser::getInstance($item->user_id);
-														// El usuario pertenece al grupo Super users
-														if ( array_search(8,$user_object->groups) !== false ) {									
-															$span = '<span class="badge badge-danger">';
-														// El usuario pertenece al grupo Administrators
-														} else if ( array_search(7,$user_object->groups) !== false ) {
-															$span = '<span class="badge badge-warning">';
+														$user_id = $item->user_id;
+														
+														$db = JFactory::getDBO();
+														$query = "SELECT COUNT(*) FROM #__users WHERE id={$user_id}";
+														$db->setQuery( $query );
+														$db->execute();
+														$existe_usuario = $db->loadResult();
+														
+														if ( $existe_usuario ) {
+															$user_object = JUser::getInstance($user_id);
+															// El usuario pertenece al grupo Super users
+															if ( array_search(8,$user_object->groups) !== false ) {									
+																$span = '<span class="badge badge-danger">';
+															// El usuario pertenece al grupo Administrators
+															} else if ( array_search(7,$user_object->groups) !== false ) {
+																$span = '<span class="badge badge-warning">';
+															} else {
+																$span = '<span class="badge badge-default">';
+															}
+															echo $span . $user_object->name . "</span>";
 														} else {
-															$span = '<span class="badge badge-default">';
+															echo "<span class=\"badge badge-info\" data-toggle=\"tooltip\" title=\"" . JText::_( 'COM_SECURITYCHECKPRO_USER_DONT_EXISTS' ) . "\">---</span>";
+															
 														}
-														echo $span . $user_object->name . "</span>";
 														?>
 													</td>
 													<td>

@@ -35,6 +35,8 @@ public function apply()
 	
 	// Obtenemos los valores del formulario; hemos de especificar cada uno de ellos porque el campo 'own_code' ha de contener datos en bruto
 	$jinput = JFactory::getApplication()->input;
+	$csp_policy = $jinput->get("csp_policy",null,'string');	
+	$referrer_policy = $jinput->get("referrer_policy",null,'string');
 	$data = $jinput->getArray(array(
 		'backend_exceptions'	=> '',
 		'default_banned_list'	=> '',
@@ -55,8 +57,13 @@ public function apply()
 		'redirect_to_www'	=>	1,
 		'compress_content'	=>	1,
 		'backend_protection_applied'	=>	0,
-		'hide_backend_url_redirection'	=>	'not_found'
+		'hide_backend_url_redirection'	=>	'not_found',
+		'sts_options'	=>	0,
+		'xss_options'	=>	0,
+		'csp_policy'	=>	$csp_policy,
+		'referrer_policy'	=>	$referrer_policy
 	));
+	
 	
 	$model->saveConfig($data, 'cparams');
 	$this->setRedirect('index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1',JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));

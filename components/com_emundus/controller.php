@@ -108,7 +108,6 @@ class EmundusController extends JControllerLegacy {
     function pdf_emploi(){
         $user = JFactory::getSession()->get('emundusUser');
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $rowid = explode('-', JRequest::getVar('rowid', null, 'GET', 'none',0));
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_emploi.php';

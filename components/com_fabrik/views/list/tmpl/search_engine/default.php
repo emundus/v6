@@ -69,8 +69,11 @@ echo $this->table->intro;
 								if (strcasecmp($v->data->$key, "oui") == 0)
 									$data[$i][$val] = $v->data->$key;
 								else
-									$data[$i][$key] = $v->data->$key;		
+									$data[$i][$key] = $v->data->$key;
 							}
+						}
+						if (array_key_exists('fabrik_view_url', $v->data)) {
+							$data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
 						}
 						$i = $i + 1;
 					}
@@ -122,9 +125,9 @@ echo $this->table->intro;
                                             <div class="em-search-engine-div-data">
                                                 <p>En région <i><b><?php echo $region; ?></b></i>, dans le département <i><b><?php echo $department; ?></b></i>, un <i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i> sur le thème <i><b><?php echo $themes; ?></b></i></p>
                                                 <?php if (JFactory::getUser()->guest) :?>
-                                                    <div class="em-search-engine-learn-more">Connectez-vous pour en savoir plus</div>
+                                                    <div class="em-search-engine-learn-more"><a href="index.php?option=com_users&view=login"> Connectez-vous pour en savoir plus </a></div>
                                                 <?php else :?>
-                                                    <div class='em-search-engine-details'><?php echo $d['fabrik_actions']; ?> Consultez l'offre</div>
+                                                    <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
                                                 <?php endif; ?>
                                             </div>
                                         </td>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -57,7 +57,7 @@ class plgHikashopMassaction_order extends JPlugin
 		$loadedData->massaction_filters['__num__']->name = 'orderStatus';
 		$loadedData->massaction_filters['__num__']->html = '';
 
-		$this->db->setQuery('SELECT `category_name` FROM '.hikashop_table('category').' WHERE `category_type` = '.$this->db->quote('status').' AND `category_name` != '.$this->db->quote('order status'));
+		$this->db->setQuery('SELECT `orderstatus_name` FROM '.hikashop_table('orderstatus'));
 		if(!HIKASHOP_J25){
 			$orderStatuses = $this->db->loadResultArray();
 		} else {
@@ -77,7 +77,7 @@ class plgHikashopMassaction_order extends JPlugin
 				foreach($orderStatuses as $orderStatus){
 					$selected = '';
 					if($orderStatus == $value->data['type']) $selected = 'selected="selected"';
-					$output .= '<option value="'.$orderStatus.'" '.$selected.'>'.JText::_($orderStatus).'</option>';
+					$output .= '<option value="'.$orderStatus.'" '.$selected.'>'.hikashop_orderStatus($orderStatus).'</option>';
 				}
 			}
 			$output .= '</select>';
@@ -720,7 +720,14 @@ class plgHikashopMassaction_order extends JPlugin
 	}
 
 	function onAfterOrderUpdate(&$order,&$send_email){
-		$orders = array($order);
+		$o = clone $order;
+		if(!empty($order->old)) {
+			foreach($order->old as $key => $value) {
+				if(!isset($o->$key))
+				$o->$key = $value;
+			}
+		}
+		$orders = array($o);
 		$this->massaction->trigger('onAfterOrderUpdate',$orders);
 	}
 

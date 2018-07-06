@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -161,6 +161,17 @@ if(!empty($this->options['address_on_registration']) && !empty($this->extraField
 				false
 		);
 ?>
+		</div>
+	</div>
+<?php
+	}
+	if(!empty($this->options['same_address'])) {
+?>
+	<div class="hkform-group control-group hikashop_registration_same_address_line" id="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address'; ?>">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class="<?php echo $inputcolumnclass;?>">
+			<input class="hikashop_checkout_same_address_checkbox" id="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address_input'; ?>" type="checkbox" name="data[same_address]" value="1"/>
+			<label for="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address_input'; ?>"><?php echo JText::_('SAME_FOR_SHIPPING'); ?></label>
 		</div>
 	</div>
 <?php

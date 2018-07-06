@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -100,7 +100,14 @@ class ProductViewProduct extends HikaShopView {
 			'display_custom_item_fields' => '-1'
 		);
 
-		$data = $this->params->get('data',new stdClass());
+		$data = $this->params->get('data', false);
+		if($data === false) {
+			$data = new stdClass();
+			$data->hk_product = $this->params->get('hk_product', false);
+			if(!empty($data->hk_product))
+				$data->hk_product = (object)$data->hk_product;
+		}
+
 		$moduleData = $this->params->get('hikashopmodule');
 
 		if(isset($data->hk_product) && is_object($data->hk_product)) {
@@ -1498,7 +1505,7 @@ class ProductViewProduct extends HikaShopView {
 
 		if($element->product_parent_id > 0 && isset($element->main_product_quantity_layout))
 			$element->product_quantity_layout = $element->main_product_quantity_layout;
-		$qLayout = $config->get('product_quantity_display', 'show_default');
+		$qLayout = $config->get('product_quantity_display', 'show_default_div');
 		if(!empty($element->product_quantity_layout) && $element->product_quantity_layout != 'inherit') {
 			$qLayout = $element->product_quantity_layout;
 		} elseif(!empty($categoryQuantityLayout) && $categoryQuantityLayout != 'inherit') {

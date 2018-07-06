@@ -73,6 +73,33 @@
 						size="60"
 					/>
 
+					<field 
+						name="mod_em_list_id7" 
+						type="text" 
+						default=""
+						label="MOD_EM_LIST_ID7" 
+						description="MOD_EM_LIST_ID7_DESC" 
+						size="60"
+					/>
+
+					<field 
+						name="mod_em_list_id8" 
+						type="text" 
+						default=""
+						label="MOD_EM_LIST_ID8" 
+						description="MOD_EM_LIST_ID8_DESC" 
+						size="60"
+					/>
+
+					<field 
+						name="mod_em_list_id9" 
+						type="text" 
+						default=""
+						label="MOD_EM_LIST_ID9" 
+						description="MOD_EM_LIST_ID9_DESC" 
+						size="60"
+					/>
+
 				</fieldset>
 			</fields>
 		</config>

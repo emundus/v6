@@ -30,6 +30,7 @@ $model = $this->getModel("filemanager");
 $last_check_integrity = $model->loadStack("fileintegrity_resume","last_check_integrity");
 $files_scanned_integrity = $model->loadStack("fileintegrity_resume","files_scanned_integrity");
 $files_with_bad_integrity = $model->loadStack("fileintegrity_resume","files_with_bad_integrity");
+$this->log_filename = $model->get_log_filename("fileintegrity_log",true);
 
 $task_ended = $model->get_campo_filemanager("estado_integrity");
 

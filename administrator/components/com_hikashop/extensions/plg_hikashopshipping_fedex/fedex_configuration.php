@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -270,7 +270,20 @@ defined('_JEXEC') or die('Restricted access');
 		</td>
 		<td>
 			<?php
-			$options = array("FEDEX_BOX"=>"FedEx Box", "FEDEX_PAK"=>"FedEx Pak", "FEDEX_TUBE"=>"FedEx Tube", "YOUR_PACKAGING"=>JText::_( 'SHIPPING_YOUR_PACKAGING'));
+			$options = array(
+							"YOUR_PACKAGING"=>JText::_( 'SHIPPING_YOUR_PACKAGING'),
+							"FEDEX_PAK"=>"FedEx pak",
+							"FEDEX_TUBE"=>"FedEx tube",
+							"FEDEX_BOX"=>"FedEx box",
+							"FEDEX_SMALL_BOX"=>"FedEx small box",
+							"FEDEX_MEDIUM_BOX"=>"FedEx medium box",
+							"FEDEX_LARGE_BOX"=>"FedEx large box",
+							"FEDEX_EXTRA_LARGE_BOX"=>"FedEx extra large box",
+							"FEDEX_10KG_BOX"=>"FedEx 10KG box",
+							"FEDEX_25KG_BOX"=>"FedEx 25 box",
+							"FEDEX_ENVELOPE"=>"FedEx envelope"
+						);
+
 			$opts = array();
 			foreach($options as $key=>$value){
 				$opts[] = @JHTML::_('select.option',$key,$value);

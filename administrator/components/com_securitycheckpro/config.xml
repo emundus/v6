@@ -43,6 +43,11 @@
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>
+		
+		<field name="otp" type="radio" default="1" label="COM_SECURITYCHECKPRO_OTP_LABEL" description="COM_SECURITYCHECKPRO_OTP_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
 	</fieldset>
 	
 	<fieldset name="FileManager" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DESCRIPTION">

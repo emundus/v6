@@ -47,7 +47,7 @@ particles/spacer.yaml	72f62ba43d554bf9b8590362d9c4543f
 particles/totop.html.twig	11a8a23eadbf449ec87e062f90d6777f
 particles/totop.yaml	c0207346fe89effdad46d3306a308e1a
 particles/contentarray.html.twig	b96d04ac775d021672344e76184c0a73
-particles/contentarray.yaml	05c17ffc65afc7cba3a8da09728ae92b
+particles/contentarray.yaml	3e2f6536070e3574c19a79f9e7166bc8
 particles/frameworks.html.twig	6d1cb1e84bb2550b1ac39eb26db89342
 particles/frameworks.yaml	77bb88085b1470166523f23cf0fa94e4
 particles/module.html.twig	56c551dc497a256f5a49ae1e940bb168
@@ -209,7 +209,7 @@ templates/layout/section.html.twig	441a4ab602328e36fbcd26f361591e8e
 templates/layout/wrapper.html.twig	80575cb54b77a5b88b8299c99fda28e1
 templates/partials/particle.html.twig	07935cff8475093e4c5e315985b39b99
 templates/page.html.twig	44e35731891a8f85fee50e71cd61a886
-templates/page_head.html.twig	ed6237924b8ed68ccc59551048c4c743
+templates/page_head.html.twig	bc49b7e4fb44d16abaabf783a9ef342e
 layouts/_joomla_-_beez3.yaml	7d77be36f4765da38b8f709a8633d3be
 layouts/_joomla_-_gantry4.yaml	f01ef72766e54eef2966b2a4727a81d3
 layouts/_joomla_-_protostar.yaml	9d7f02c310a41c6ad48d8f39e366e9bc

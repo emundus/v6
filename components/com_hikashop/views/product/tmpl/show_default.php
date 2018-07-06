@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,14 +53,14 @@ defined('_JEXEC') or die('Restricted access');
 		echo hikashop_getLayout('vote', 'mini', $this->params, $js);
 	}
 		?></div>
-		<span id="hikashop_product_price_main" class="hikashop_product_price_main" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+		<span id="hikashop_product_price_main" class="hikashop_product_price_main" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
 <?php
 	$main =& $this->element;
 	if(!empty($this->element->main))
 		$main =& $this->element->main;
 	if(!empty($main->product_condition)){
 ?>
-			<meta itemprop="itemCondition" itemtype="http://schema.org/OfferItemCondition" content="http://schema.org/<?php echo $main->product_condition; ?>" />
+			<meta itemprop="itemCondition" itemtype="https://schema.org/OfferItemCondition" content="https://schema.org/<?php echo $main->product_condition; ?>" />
 <?php
 	}
 	if($this->params->get('show_price') && (empty($this->displayVariants['prices']) || $this->params->get('characteristic_display') != 'list')) {
@@ -68,7 +68,7 @@ defined('_JEXEC') or die('Restricted access');
 		$this->setLayout('listing_price');
 		echo $this->loadTemplate();
 ?>
-			<meta itemprop="availability" content="http://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
+			<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
 			<meta itemprop="priceCurrency" content="<?php echo $this->currency->currency_code; ?>" />
 <?php
 	}

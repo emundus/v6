@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -137,7 +137,7 @@ class hikashopCheckoutHelper {
 
 		$user_id = hikashop_loadUser();
 		if(!empty($user_id))
-			$ret['data'] = $this->addressClass->loadUserAddresses($user_id);
+			$ret['data'] = $this->addressClass->loadUserAddresses($user_id, $type);
 
 		if(!empty($ret['data'])) {
 			$this->addressClass->loadZone($ret['data']);
@@ -368,6 +368,7 @@ class hikashopCheckoutHelper {
 		$payments = md5(serialize(@$cart->usable_methods->payment));
 		$shippings = md5(serialize(@$cart->usable_methods->shipping));
 		$address_override = md5(serialize($this->getShippingAddressOverride()));
+		$order_fields = md5(serialize(@$cart->order_fields));
 
 		$shipping = $cart->cart_shipping_ids;
 		if(is_array($shippings))
@@ -415,6 +416,7 @@ class hikashopCheckoutHelper {
 			'shipping_address' => (int)$cart->cart_shipping_address_ids,
 			'shipping_address_overirde' => $address_override,
 			'user' => $user,
+			'order_fields' => $order_fields,
 		);
 
 		$markers = array();
@@ -444,6 +446,7 @@ class hikashopCheckoutHelper {
 			'shipping_group_products' => 'checkout.shipping.updated',
 			'shipping_address_overirde' => 'checkout.address.updated',
 			'user' => 'checkout.user.updated',
+			'order_fields' => 'checkout.fields.updated',
 		);
 
 		if(!empty($newMarkers['cart_empty'])) {
@@ -504,7 +507,7 @@ class hikashopCheckoutHelper {
 	}
 
 	public function displayMessages($name = null, $display = true) {
-		if(empty($this->messages))
+		if(empty($this->messages) && $name !== 'cart')
 			return;
 
 		$key = ($name !== null) ? $name.'.' : null;
@@ -531,6 +534,17 @@ class hikashopCheckoutHelper {
 			}
 			if(!isset($msg['type']))
 				$msg['type'] = 'error';
+			hikashop_display($msg['msg'], $msg['type']);
+		}
+
+		if($name !== 'cart')
+			return $messagesToReturn;
+
+		$cart = $this->getCart();
+		if(empty($cart->messages))
+			return $messagesToReturn;
+
+		foreach($cart->messages as $msg) {
 			hikashop_display($msg['msg'], $msg['type']);
 		}
 

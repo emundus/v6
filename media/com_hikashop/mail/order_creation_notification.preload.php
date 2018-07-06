@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -456,8 +456,8 @@ if(!empty($data->cart->override_shipping_address)) {
 	$vars['SHIPPING_ADDRESS'] = $vars['BILLING_ADDRESS'];
 }
 
-$confirmed = $config->get('order_confirmed_status','confirmed');
-if($data->order_status != $confirmed && !empty($data->order_payment_method) && $data->order_payment_method != 'collectondelivery') {
+$unpaid_statuses = explode(',', $config->get('order_unpaid_statuses', 'created'));
+if(in_array($data->order_status, $unpaid_statuses) && !empty($data->order_payment_method) && $data->order_payment_method != 'collectondelivery') {
 	ob_start();
 
 	if($data->cart->full_total->prices[0]->price_value_with_tax>0)

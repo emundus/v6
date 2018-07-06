@@ -29,6 +29,7 @@ function xframeoptions( $name, $attribs = null, $selected = null, $id=false )
 	return JHTML::_('select.genericlist',  $arr, $name, 'class="chosen-select-no-single"', 'value', 'text', $selected, $id );
 }
 
+
 // Cargamos el comportamiento modal para mostrar las ventanas para exportar
 JHtml::_('behavior.modal');
 
@@ -46,6 +47,8 @@ JHTML::stylesheet($media_url);
 
 $site_url = JURI::base();
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
 ?>
 
 <?php 
@@ -53,8 +56,10 @@ $site_url = JURI::base();
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core JavaScript -->
 <script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
@@ -389,6 +394,58 @@ function hideIt(){
 							</div>
 						</div>
 						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN') ?></footer></blockquote>
+						
+						<div class="control-group">
+							<label for="sts_options" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_STS_OPTIONS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_STS_OPTIONS_TEXT'); ?></label>
+							<div class="controls controls-row">
+								<?php echo booleanlist('sts_options', array(), $this->protection_config['sts_options']) ?>
+								<?php if ( $this->config_applied['sts_options'] ) {?>
+									<span class="help-inline">
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+									</span>
+								<?php } ?>
+							</div>
+						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_STS_OPTIONS_EXPLAIN') ?></footer></blockquote>
+						
+						<div class="control-group">
+							<label for="xss_options" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_TEXT'); ?></label>
+							<div class="controls controls-row">
+								<?php echo booleanlist('xss_options', array(), $this->protection_config['xss_options']) ?>
+								<?php if ( $this->config_applied['xss_options'] ) {?>
+									<span class="help-inline">
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+									</span>
+								<?php } ?>
+							</div>
+						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_STS_OPTIONS_EXPLAIN') ?></footer></blockquote>
+						
+						<div class="control-group">
+							<label for="csp_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT'); ?></label>
+							<div class="controls controls-row">
+								<input type="text" class="form-control" style="width: 560px;" id="csp_policy" name="csp_policy" aria-describedby="csp_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['csp_policy']); ?>">			
+								<?php if ( $this->config_applied['csp_policy'] ) {?>
+									<span class="help-inline">
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+									</span>
+								<?php } ?>
+							</div>
+						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?></footer></blockquote>
+						
+						<div class="control-group">
+							<label for="referrer_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_TEXT'); ?></label>
+							<div class="controls controls-row">
+								<input type="text" class="form-control" style="width: 560px;" id="referrer_policy" name="referrer_policy" aria-describedby="referrer_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['referrer_policy']); ?>">			
+								<?php if ( $this->config_applied['referrer_policy'] ) {?>
+									<span class="help-inline">
+										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+									</span>
+								<?php } ?>
+							</div>
+						</div>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?></footer></blockquote>
 					<!-- headers_protection tab end -->
 					</div>
 						
@@ -528,7 +585,7 @@ function hideIt(){
 							<label for="hide_backend_url" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_TEXT'); ?></label>
 							<div class="controls controls-row">
 								<?php 
-									if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
+									if ( version_compare(JVERSION, '3.20', 'lt') ) {										
 								?>
 									<div class="input-prepend">
 										<span class="add-on" style="background-color: #FFBF60;"><?php echo $site_url ?>?</span>
@@ -559,7 +616,7 @@ function hideIt(){
 							<label for="hide_backend_url_redirection" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_TEXT'); ?></label>
 							<div class="controls controls-row">
 								<?php 
-									if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
+									if ( version_compare(JVERSION, '3.20', 'lt') ) {										
 								?>
 									<div class="input-prepend">
 										<span class="add-on" style="background-color: #D0F5A9;"><?php echo "/" ?></span>
@@ -590,7 +647,7 @@ function hideIt(){
 									  <input class="span8" type="text" name="exception" id="exception" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_YOUR_EXCEPTION_HERE') ?>">
 										<div class="input-group-btn">
 											<?php 
-												if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+												if ( version_compare(JVERSION, '3.20', 'lt') ) {
 											?>
 												<div class="btn-group">
 													<button class="btn dropdown-toggle" data-toggle="dropdown">

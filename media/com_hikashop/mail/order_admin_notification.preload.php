@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -89,12 +89,12 @@ $texts = array(
 	'ADDITIONAL_INFORMATION' => JText::_('ADDITIONAL_INFORMATION'),
 	'CUSTOMER' => JText::_('CUSTOMER'),
 
-	'ORDER_TITLE' => JText::_('YOUR_ORDER'),
+	'ORDER_TITLE' => JText::_('HIKASHOP_ORDER'),
 	'HI_CUSTOMER' => JText::sprintf('HI_CUSTOMER', @$mail->to_name),
 	'ORDER_CHANGED' => JText::sprintf('ORDER_STATUS_CHANGED', $data->mail_status),
 	'NOTIFICATION_OF_ORDER' => JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $data->order_number, HIKASHOP_LIVE),
-	'ORDER_BEGIN_MESSAGE' => JText::sprintf('ACCESS_ORDER_WITH_LINK',$vars['ORDER_LINK']),
-	'ORDER_END_MESSAGE' => '',
+	'ORDER_BEGIN_MESSAGE' => JText::sprintf('ACCESS_ORDER_WITH_LINK', $vars['ORDER_LINK'], $vars['ORDER_LINK']),
+	'ORDER_END_MESSAGE' => @$data->mail_params,
 );
 $templates = array();
 

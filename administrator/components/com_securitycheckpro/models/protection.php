@@ -45,7 +45,11 @@ var $defaultConfig = array(
 	'redirect_to_www'	=>	0,
 	'compress_content'	=>	0,
 	'backend_protection_applied'	=>	0,
-	'hide_backend_url_redirection'	=>	''
+	'hide_backend_url_redirection'	=>	'',
+	'sts_options'	=>	0,
+	'xss_options'	=>	0,
+	'csp_policy'	=>	'',
+	'referrer_policy'	=>	''
 );
 
 var $ConfigApplied = array(
@@ -67,7 +71,11 @@ var $ConfigApplied = array(
 	'redirect_to_www'	=>	0,
 	'compress_content'	=>	0,
 	'backend_protection_applied'	=>	0,
-	'hide_backend_url_redirection'	=>	0
+	'hide_backend_url_redirection'	=>	0,
+	'sts_options'	=>	0,
+	'xss_options'	=>	0,
+	'csp_policy'	=>	'',
+	'referrer_policy'	=>	''
 );
 
 private $config = null;
@@ -217,11 +225,27 @@ public function GetConfigApplied(){
 			$this->ConfigApplied['self_environ'] = 1;
 		}
 		/* 'xframe_options' habilitado? */
-		if ( stripos($rules_applied,"Header set X-Frame-Options") ) {
+		if ( stripos($rules_applied,"set X-Frame-Options") ) {
 			$this->ConfigApplied['xframe_options'] = 1;
 		}
+		/* 'sts_options' habilitado? */
+		if ( stripos($rules_applied,"Strict-Transport-Security") ) {
+			$this->ConfigApplied['sts_options'] = 1;
+		}
+		/* 'xss_options' habilitado? */
+		if ( stripos($rules_applied,"X-Xss-Protection") ) {
+			$this->ConfigApplied['xss_options'] = 1;
+		}
+		/* 'csp policy' habilitado? */
+		if ( stripos($rules_applied,"Content-Security-Policy") ) {
+			$this->ConfigApplied['csp_policy'] = 1;
+		}
+		/* 'referrer policy' habilitado? */
+		if ( stripos($rules_applied,"Referrer-Policy") ) {
+			$this->ConfigApplied['referrer_policy'] = 1;
+		}
 		/* 'prevent_mime_attacks' habilitado? */
-		if ( stripos($rules_applied,'Header set X-Content-Type-Options "nosniff"') ) {
+		if ( stripos($rules_applied,'set X-Content-Type-Options "nosniff"') ) {
 			$this->ConfigApplied['prevent_mime_attacks'] = 1;
 		}
 		/* 'own_banned_list' habilitado? */
@@ -289,7 +313,7 @@ public function GetConfigApplied(){
 			$this->ConfigApplied['disallow_sensible_files_access'] = 1;
 		}		
 		/* 'hide_backend_url' habilitado? */
-		if ( stripos($rules_applied,"RewriteCond %{QUERY_STRING} !^" . $this->getValue("hide_backend_url")) ) {
+		if ( stripos($rules_applied,"RewriteCond %{QUERY_STRING} !" . $this->getValue("hide_backend_url")) ) {
 			$this->ConfigApplied['hide_backend_url'] = 1;
 		}
 		/* 'hide_backend_url_redirection' habilitado? */
@@ -378,13 +402,18 @@ public function protect()
 			}
 			$fin = $endsat + strlen("## End Securitycheck Pro");						
 		}
-		
-		// Obtenemos la primera parte del fichero (desde el comienzo del fichero hasta la aparición del string "## Begin Securitycheck Pro")
-		$rules = substr($rules_applied, 0, $startsat);
-		// Modificamos el valor para añadir el contenido hasta el final de la línea
-		$endsat = strpos($rules_applied, PHP_EOL, $endsat);
-		
-		$rules_end = trim(substr($rules_applied, $endsat));
+				
+		if (!$fin) {
+			// Existe el fichero .htaccess pero no hay contenido de SCP; añadimos el contenido al final
+			$rules = $rules_applied;			
+		} else {			
+			// Obtenemos la primera parte del fichero (desde el comienzo del fichero hasta la aparición del string "## Begin Securitycheck Pro")
+			$rules = substr($rules_applied, 0, $startsat);
+			// Modificamos el valor para añadir el contenido hasta el final de la línea
+			$endsat = strpos($rules_applied, PHP_EOL, $endsat);
+			
+			$rules_end = trim(substr($rules_applied, $endsat));
+		}
 		
 	} else {  
 		/* Si no existe el fichero, copiamos el que incorpora Joomla por defecto */		
@@ -462,6 +491,56 @@ public function protect()
 			$rules .= PHP_EOL . 'Header set X-Content-Type-Options "nosniff"';			
 			$rules .= PHP_EOL . "</IfModule>";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Prevent mime based attacks" . PHP_EOL;	
+		
+	}
+	
+	/* Comprobamos si hay que establecer protección STS (Strict Transport Security) */
+	$sts_options = $this->getValue("sts_options");
+	if ( $sts_options ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Strict Transport Security";
+			$rules .= PHP_EOL . "<IfModule mod_headers.c>";
+			$rules .= PHP_EOL . 'Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"';			
+			$rules .= PHP_EOL . "</IfModule>";
+			$rules .= PHP_EOL . "## End Securitycheck Pro Strict Transport Security" . PHP_EOL;	
+		
+	}
+	
+	/* Comprobamos si hay que establecer protección X-Xss-Protection */
+	$xss_options = $this->getValue("xss_options");
+	if ( $xss_options ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro X-Xss-Protection";
+			$rules .= PHP_EOL . "<IfModule mod_headers.c>";
+			$rules .= PHP_EOL . 'Header set X-Xss-Protection "1; mode=block"';			
+			$rules .= PHP_EOL . "</IfModule>";
+			$rules .= PHP_EOL . "## End Securitycheck Pro X-Xss-Protection" . PHP_EOL;	
+		
+	}
+	
+	/* Comprobamos si hay que establecer protección Content-Security-Policy */
+	$csp_policy = $this->getValue("csp_policy");
+	$csp_policy = str_replace('"','', $csp_policy);
+	if ( !empty($csp_policy) ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Content-Security-Policy protection";
+			$rules .= PHP_EOL . "<IfModule mod_headers.c>";
+			$rules .= PHP_EOL . 'Header set X-Frame-Options "' . $csp_policy . '"';		
+			$rules .= PHP_EOL . "</IfModule>";
+			$rules .= PHP_EOL . "## End Securitycheck Pro Content-Security-Policy protection" . PHP_EOL;	
+		
+	}
+	
+	/* Comprobamos si hay que establecer protección Referrer-Policy */
+	$referrer_policy = $this->getValue("referrer_policy");
+	$referrer_policy = str_replace('"','', $referrer_policy);
+	if ( !empty($referrer_policy) ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Referrer policy protection";
+			$rules .= PHP_EOL . "<IfModule mod_headers.c>";
+			$rules .= PHP_EOL . 'Header set Referrer-Policy "' . $referrer_policy . '"';			
+			$rules .= PHP_EOL . "</IfModule>";
+			$rules .= PHP_EOL . "## End Securitycheck Pro Referrer policy protection" . PHP_EOL;	
 		
 	}
 	
@@ -561,7 +640,7 @@ public function protect()
 		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Hide Backend Url";
 			$rules .= PHP_EOL . "RewriteCond %{HTTP_REFERER} !" . $site_url;
-			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !^" . $this->getValue("hide_backend_url") . "$";
+			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !" . $this->getValue("hide_backend_url") . "$";
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !com_securitycheckprocontrolcenter [NC]";
 			if ( !is_null($this->getValue("hide_backend_url")) ) {
 				$backend_exceptions = explode( ",", $this->getValue("backend_exceptions") );
@@ -766,6 +845,46 @@ function generate_rules() {
 				
 			$rules .= PHP_EOL . "## End Securitycheck Pro User Own Code" . PHP_EOL;
 		}
+	}
+	
+	/* Comprobamos si hay que proteger las cabeceras X-Frame del navegador */
+	$xframe_options = $this->getValue("xframe_options");
+	if ( (!empty($xframe_options)) && ($this->getValue("xframe_options") != 'NO') ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Xframe-options protection";
+			$rules .= PHP_EOL . "## Don't allow any pages to be framed - Defends against CSRF";
+			$rules .= PHP_EOL . 'add_header X-Frame-Options "' . $this->getValue("xframe_options") . '";';			
+			$rules .= PHP_EOL . "## End Securitycheck Pro Xframe-options protection" . PHP_EOL;	
+		
+	}
+	
+	/* Comprobamos si hay que establecer protección contra ataques basados en 'mime'*/
+	if ( $this->getValue("prevent_mime_attacks") ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Prevent mime based attacks";			
+			$rules .= PHP_EOL . 'add_header X-Content-Type-Options "nosniff";';	
+			$rules .= PHP_EOL . "## End Securitycheck Pro Prevent mime based attacks" . PHP_EOL;	
+		
+	}
+	
+	/* Comprobamos si hay que establecer protección STS (Strict Transport Security) */
+	$sts_options = $this->getValue("sts_options");
+	if ( $sts_options ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Strict Transport Security";
+			$rules .= PHP_EOL . 'add_header Strict-Transport-Security "max-age=31536000; includeSubdomains";';	
+			$rules .= PHP_EOL . "## End Securitycheck Pro Strict Transport Security" . PHP_EOL;	
+		
+	}
+	
+	/* Comprobamos si hay que establecer protección X-Xss-Protection */
+	$xss_options = $this->getValue("xss_options");
+	if ( $xss_options ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro X-Xss-Protection";
+			$rules .= PHP_EOL . 'add_header X-Xss-Protection "1; mode=block"';			
+			$rules .= PHP_EOL . "## End Securitycheck Pro X-Xss-Protection" . PHP_EOL;	
+		
 	}
 	
 	/* Comprobamos si hay que ocultar la url del backend */

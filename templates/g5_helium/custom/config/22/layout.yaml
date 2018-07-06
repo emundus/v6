@@ -6,7 +6,7 @@ preset:
 layout:
   /navigation/:
     -
-      - 'spacer-spacer-9107 20'
+      - 'spacer-9107 20'
       - 'position-module-5472 25'
       - 'social-3171 20'
       - 'position-module-5514 35'
@@ -52,6 +52,8 @@ layout:
         'mainbar 50':
           -
             - system-content-1587
+          -
+            - position-position-2517
       -
         'sidebar 25':
           -
@@ -61,7 +63,7 @@ layout:
       - 'position-position-5043 40'
       - 'position-position-3615 60'
     -
-      - spacer-spacer-9310
+      - spacer-9310
     -
       - 'horizontalmenu-9034 70'
       - 'copyright-3869 30'
@@ -131,6 +133,7 @@ content:
     title: 'Logog HESAM'
     attributes:
       module_id: '177'
+      key: logog-hesam
   social-3171:
     block:
       class: g-social-header
@@ -138,10 +141,12 @@ content:
     title: 'Top links'
     attributes:
       module_id: '178'
+      key: top-links
   position-module-4561:
     title: 'logo 1000 doc'
     attributes:
       module_id: '176'
+      key: logo-1000-doc
   position-position-4649:
     title: header-c
     attributes:
@@ -150,6 +155,7 @@ content:
     title: 'coord menu'
     attributes:
       module_id: '198'
+      key: coord-menu
   position-position-5397:
     title: Drawer
     attributes:
@@ -202,6 +208,10 @@ content:
     title: Aside
     attributes:
       key: aside
+  position-position-2517:
+    title: 'Module Position'
+    attributes:
+      key: PieGraph
   position-position-3949:
     title: Sidebar
     attributes:

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,16 @@ class hikashopCurrencyType {
 		$filters = array(
 			'currency_published = 1'
 		);
-		if($this->displayType == 'auto') {
+
+		if($this->displayType == 'product') {
+			if(is_array($value)) {
+				$forced = array_merge($forced, $value);
+				JArrayHelper::toInteger($forced);
+			} else
+				$forced[] = (int)$value;
+			$filters[] = 'currency_displayed = 1';
+			$filters[] = 'currency_id IN ('.implode(',',$forced).')';
+		}elseif($this->displayType == 'auto') {
 			$app = JFactory::getApplication();
 			if($app->isAdmin()) {
 				if(is_array($value)) {

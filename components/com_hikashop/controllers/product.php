@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -335,6 +335,30 @@ class productController extends hikashopController {
 		$product_id = hikaInput::get()->getInt('product_id', 0);
 		$module_id = hikaInput::get()->getInt('module_id', 0);
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
+
+		if(empty($_COOKIE)) {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
+				$ret = array(
+					'ret' => 0,
+					'message' => JText::_('COOKIES_REQUIRED_FOR_OPERATION')
+				);
+				echo json_encode($ret);
+				exit;
+			}
+
+			$privacy_plugin_present = false;
+			try {
+				$db = JFactory::getDBO();
+				$db->setQuery("SELECT extension_id FROM #__extensions WHERE `type` = 'plugin' AND `folder` = 'system' AND `element` = 'eprivacy' AND `enabled` = '1'");
+				$privacy_plugin_present = $db->loadResult();
+			} catch(Exception $e) {
+			}
+
+			if($privacy_plugin_present) {
+				echo hikashop_display(JText::_('COOKIES_REQUIRED_FOR_OPERATION'), 'error');
+				return;
+			}
+		}
 
 		$cart_type = hikaInput::get()->getString('hikashop_cart_type_'.$product_id.'_'.$module_id, null);
 		if(empty($cart_type))

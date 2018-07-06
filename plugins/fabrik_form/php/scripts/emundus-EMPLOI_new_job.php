@@ -27,12 +27,16 @@ $email_from_sys = $app->getCfg('mailfrom');
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
 $referents = JAccess::getUsersByGroup(17);
+$id = $fabrikFormData['id'][0];
 $university = $fabrikFormData['etablissement_raw'][0];
+$intitule_poste = $fabrikFormData['intitule_poste_raw'];
+
+$deposant = (object) array('firstname' => $user->name, 'lastname' => $user->name, 'email' => $user->email,'id' => $user->id);
 
 $query ='SELECT eu.firstname, eu.lastname, u.email, u.id 
          FROM #__users as u 
          LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id 
-         WHERE u.disabled!=1 AND u.id IN ('.implode(',', $referents).')
+         WHERE u.block!=1 AND u.id IN ('.implode(',', $referents).')
          AND eu.university_id = '.$university;
 try {
     $db->setQuery($query);
@@ -40,12 +44,13 @@ try {
 } catch (Exception $e) {
     // catch any database errors.
 }
+$recipients[] = $deposant;
 
 if (count($recipients) > 0) {
 
     $emails = new EmundusModelEmails;
 
-    $post = array();
+    $post = array('FICHE_EMPLOI' => $intitule_poste, 'FICHE_ID' => $id);
     $tags = $emails->setTags($user->id, $post);
     $email = $emails->getEmail("new_job");
 
@@ -70,7 +75,6 @@ if (count($recipients) > 0) {
             $email_from_sys,
             $fromname
         );
-
         $mailer->setSender($sender);
         $mailer->addReplyTo($from, $fromname);
         $mailer->addRecipient($recipient);
