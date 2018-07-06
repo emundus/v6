@@ -184,8 +184,8 @@ class EmundusModelStats extends JModelLegacy {
         }
 
     }
-
-  /*  public function createFabrik($view) {
+/*
+    public function createFabrik($view) {
         $db = JFactory::getDbo();
         $currentTime = JFactory::getDate();
         $date0 = new JDate('0000-00-00 00:00:00');
@@ -214,7 +214,8 @@ class EmundusModelStats extends JModelLegacy {
         }
 
     }
-
+    
+    */
     public function linkToFabrik($view){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -230,7 +231,7 @@ class EmundusModelStats extends JModelLegacy {
         }
 
     }
-    */
+    
     
     public function getPeriodeData($periode) {
         if ($periode == 0)
