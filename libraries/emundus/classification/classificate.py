@@ -4,6 +4,7 @@ from PIL import Image
 import os, os.path, sys, re
 from pytesseract import image_to_string
 import cv2
+from pdf2image import convert_from_path
 import face_recognition
 
 
@@ -31,8 +32,8 @@ def getString(image):
 def isPhoto(imagePath):
 	# Read the image
 	image = cv2.imread(imagePath)
-	#if len(image.shape) == 3:
-	#	image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	if len(image.shape) == 3:
+		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 	faces = detectFaces(image)
 
@@ -64,8 +65,6 @@ def isPassport(imagePath, keywords = ""):
 	image = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
           cv2.THRESH_BINARY,11,2)
 
-	#cv2.imshow("binary", image)
-	#cv2.waitKey(0)
 
 	char = getString(image)
 	match = re.search(r'\w+[<]+\w+', char)
@@ -84,20 +83,6 @@ def isPassport(imagePath, keywords = ""):
 	else:
 		return 0
 
-# is image a cv?
-def isCv(imagePath):
-	# Read the image
-	image = cv2.imread(imagePath)
-	if len(image.shape) == 3:
-		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	if 'Curriculum vitae' in getString(image):
-		if 'europass' in getString(image):
-			return 100
-		else:
-			return 70
-	else:
-		return 0
-	
 	
 def main(image, function, keywords=""):
 
@@ -131,28 +116,18 @@ def main(image, function, keywords=""):
 			image = pdf2image(image, 350)
 		res = isPassport(image, keywords)
 		if res == 1:
-			print 'yes, it''s a passeport 100%'
+			#print 'yes, it''s a passeport 100%'
 			return 1
 		elif res == 0.75:
-			print 'yes, it''s a passeport 75%'
+			#print 'yes, it''s a passeport 75%'
 			return 0.75
 		elif res == 0.5:
-			print 'yes, it''s a passeport 50%'
+			#print 'yes, it''s a passeport 50%'
 			return 0.5
 		else:
-			print 'no, it''s not a passport'
+			#print 'no, it''s not a passport'
 			return 0
 
-	if function == "iscv":
-		if image.endswith('.pdf'):
-			image = pdf2image(image, 250)
-		res = isCv(image)
-		if res == 100:
-			print 'yes it'' a cv in 100% !'
-		elif res == 70:
-			print 'yes it'' a cv in 70% !'
-		else:
-			print 'no, it''s not a cv !'
 
 
 
