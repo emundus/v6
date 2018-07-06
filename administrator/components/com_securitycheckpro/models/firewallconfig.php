@@ -810,7 +810,7 @@ public function save_geoblock($config, $key_name)
 	$db->insertObject('#__securitycheckpro_storage', $object);
 }
 
-/* Función que chequea si el plugin Spam protection está instalado */
+/* Función que chequea si el plugin pasado como argumento está instalado */
 public function is_plugin_installed($folder,$plugin_name) {
 	// Inicializamos las variables
 	$installed= false;

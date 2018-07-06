@@ -1,7 +1,9 @@
 <?php
 namespace RocketTheme\Toolbox\File;
 
-use \Symfony\Component\Yaml\Yaml as YamlParser;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml as YamlParser;
+use RocketTheme\Toolbox\Compat\Yaml\Yaml as FallbackYamlParser;
 
 /**
  * Implements Markdown File reader.
@@ -20,7 +22,7 @@ class MarkdownFile extends File
     /**
      * @var array|File[]
      */
-    static protected $instances = array();
+    static protected $instances = [];
 
     /**
      * Get/set file header.
@@ -107,7 +109,7 @@ class MarkdownFile extends File
     protected function encode($var)
     {
         // Create Markdown file with YAML header.
-        $o = (!empty($var['header']) ? "---\n" . trim(YamlParser::dump($var['header'], 5)) . "\n---\n\n" : '') . $var['markdown'];
+        $o = (!empty($var['header']) ? "---\n" . trim(YamlParser::dump($var['header'], 20)) . "\n---\n\n" : '') . $var['markdown'];
 
         // Normalize line endings to Unix style.
         $o = preg_replace("/(\r\n|\r)/", "\n", $o);
@@ -136,26 +138,28 @@ class MarkdownFile extends File
         // Parse header.
         preg_match($frontmatter_regex, ltrim($var), $m);
         if(!empty($m)) {
-            $content['frontmatter'] = preg_replace("/\n\t/", "\n    ", $m[1]);
+            // Normalize frontmatter.
+            $content['frontmatter'] = $frontmatter = preg_replace("/\n\t/", "\n    ", $m[1]);
 
             // Try native PECL YAML PHP extension first if available.
             if ($this->setting('native') && function_exists('yaml_parse')) {
-                $data = $content['frontmatter'];
-                if ($this->setting('compat', true)) {
-                    // Fix illegal @ start character.
-                    $data = preg_replace('/ (@[\w\.\-]*)/', " '\${1}'", $data);
-                }
-
                 // Safely decode YAML.
                 $saved = @ini_get('yaml.decode_php');
                 @ini_set('yaml.decode_php', 0);
-                $content['header'] = @yaml_parse("---\n" . $data . "\n...");
+                $content['header'] = @yaml_parse("---\n" . $frontmatter . "\n...");
                 @ini_set('yaml.decode_php', $saved);
             }
 
             if ($content['header'] === false) {
                 // YAML hasn't been parsed yet (error or extension isn't available). Fall back to Symfony parser.
-                $content['header'] = (array) YamlParser::parse($content['frontmatter']);
+                try {
+                    $content['header'] = (array) YamlParser::parse($frontmatter);
+                } catch (ParseException $e) {
+                    if (!$this->setting('compat', true)) {
+                        throw $e;
+                    }
+                    $content['header'] = (array) FallbackYamlParser::parse($frontmatter);
+                }
             }
             $content['markdown'] = $m[2];
         } else {

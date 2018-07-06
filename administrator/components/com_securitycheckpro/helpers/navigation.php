@@ -2,6 +2,35 @@
 defined('_JEXEC') or die();
 ?>
 
+	<!-- Modal view file -->
+		<div class="modal" id="view_logfile" tabindex="-1" role="dialog" aria-labelledby="viewlogfileLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			  <div class="modal-header alert alert-info">
+				<h2 class="modal-title" id="viewlogfileLabel"><?php echo JText::_('COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_MESSAGE'); ?></h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">	
+				<textarea rows="10" class="table">		
+				<?php 
+				$contenido = "There is no log info";
+				if ( !empty($this->log_filename) ) {
+						if ( file_exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.$this->log_filename) ) {
+						$contenido = file_get_contents(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.$this->log_filename);
+					}			
+				}									
+				echo $contenido;
+				?></textarea>	
+			  </div>
+				<div class="modal-footer">					
+					<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
+				</div>			  
+			</div>
+		  </div>
+		</div>
+		
 <!-- Modal purgesessions -->
 		<div class="modal fade" id="purgesessions" tabindex="-1" role="dialog" aria-labelledby="purgesessionsLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
@@ -223,7 +252,12 @@ defined('_JEXEC') or die();
               <a href="#purge_sessions" data-toggle="modal" data-target="#purgesessions"><i class="fapro fa-fw fa-user-times"></i><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></a>
             </li>            
           </ul>
-        </li>        
+        </li>  
+
+		<li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php JText::_('OTP'); ?>">
+			<a class="nav2-link" href="#" onclick="get_otp_status();"><i class="fapro fa-fw fa-sign-in"></i><?php echo JText::_('OTP'); ?><span class="badge badge-success" style="margin-left: 5px;"><?php echo JText::_('COM_SECURITYCHECKPRO_NEW'); ?></span></a>	  
+		</li>
+			
       </ul>
       <ul class="navbar2-nav sidenav2-toggler">
         <li class="nav2-item">

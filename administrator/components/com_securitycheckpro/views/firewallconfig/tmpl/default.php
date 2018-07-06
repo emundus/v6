@@ -136,6 +136,9 @@ unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
 $document->setHeadData($arrHead);
 
 $site_url = JURI::root();
+
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
 ?>
 
 <!-- Bootstrap core JavaScript -->
@@ -145,6 +148,8 @@ $site_url = JURI::root();
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
+
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
 <?php
 	$current_ip = "";
@@ -321,7 +326,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 </script>
 
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -413,7 +418,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 						<a class="nav-link" data-toggle="tab" href="#url_inspector" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_URL_INSPECTOR_TEXT'); ?></a>
 					  </li>
 					  <li class="nav-item" onclick="SetActiveTab('track_actions');">
-						<a class="nav-link" data-toggle="tab" href="#track_actions" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_TRACK_ACTIONS'); ?>&nbsp;<span class="badge badge-warning"><?php echo JText::_('COM_SECURITYCHECKPRO_NEW') . "!" ?></span></a>
+						<a class="nav-link" data-toggle="tab" href="#track_actions" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_TRACK_ACTIONS'); ?></a>
 					  </li>
 					</ul>
 					
@@ -964,7 +969,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 																																				
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_TEXT'); ?></h4>
 												<?php 
-													if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
+													if ( version_compare(JVERSION, '3.20', 'lt') ) {										
 												?>
 													<div class="controls controls-row">
 														<div class="input-prepend">

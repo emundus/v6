@@ -10,6 +10,7 @@ defined('_JEXEC') or die();
 jimport('joomla.filesystem.folder');
 
 use Joomla\Component\Joomlaupdate\Administrator\Model\UpdateModel;
+use Joomla\Component\Users\Administrator\Model\UserModel;
 
 class SecuritycheckProsModelJson extends SecuritycheckproModel
 {
@@ -366,7 +367,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$this->getBackupInfo();	
 			
 		// Verificamos si el core está actualizado (obviando la caché) 
-		if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+		if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';
 			$updatemodel = new JoomlaupdateModelDefault();
 		} else {
@@ -491,21 +492,36 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	function get_two_factor_status() {
 		$enabled = 0;
 		
-		$db = $this->getDbo();
-		$query = $db->getQuery(true)
-			->select(array($db->quoteName('enabled')))
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_totp'));
-		$db->setQuery($query);
-		$enabled = $db->loadResult();
+		$methods = JAuthenticationHelper::getTwoFactorMethods();
 		
-		if ( $enabled == 0 ) {
-			$query = $db->getQuery(true)
-				->select(array($db->quoteName('enabled')))
-				->from($db->quoteName('#__extensions'))
-				->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_yubikey'));
-			$db->setQuery($query);
-			$enabled = $db->loadResult();
+		if (count($methods) > 1) {
+			$enabled = 1;
+			// Chequeamos que al menos un Super usuario tenga el método habilitado
+			
+			$db = JFactory::getDBO();
+			$query = 'SELECT user_id FROM #__user_usergroup_map WHERE group_id="8"';
+			$db->setQuery( $query );
+			$db->execute();	
+			$super_users_ids = $db->loadColumn();
+			
+			if ( version_compare(JVERSION, '3.20', 'lt') ) {
+				JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_users/models', 'UsersModel');
+
+				// @var UsersModelUser $model
+				$model = JModelLegacy::getInstance('User', 'UsersModel', array('ignore_request' => true));
+			} else {
+				$model = new UserModel(array('ignore_request' => true));
+			}
+									
+			foreach ($super_users_ids as $user_id) {
+				$otpConfig = $model->getOtpConfig($user_id);
+		
+				// Check if the user has enabled two factor authentication
+				if (!empty($otpConfig->method) && !($otpConfig->method === 'none')) {					
+					$enabled = 2;
+				}
+			}	
+			
 		}
 		
 		return $enabled;
@@ -540,7 +556,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		if ( $info['forbid_new_admins'] == 1 ) {
 			$overall = $overall + 5;
 		}
-		if ( $info['twofactor_enabled'] == 1 ) {
+		if ( $info['twofactor_enabled'] >= 1 ) {
 			$overall = $overall + 10;
 		}
 		
@@ -808,7 +824,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$result = array();
 		
 		// Cargamos las librerías necesarias
-		if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+		if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';			
 		} else {
 			require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/Model/UpdateModel.php';			
@@ -823,36 +839,41 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Extraemos la url de descarga
 		$coreInformation = $model->getUpdateInformation();
 		
-		// Descargamos el archivo
-		$file = $this->download_core($coreInformation['object']->downloadurl->_data);
+		try {
+			// Descargamos el archivo
+			$file = $this->download_core($coreInformation['object']->downloadurl->_data);
 		
-		// Extract the downloaded package file
-		$config   = JFactory::getConfig();
-		$tmp_dest = $config->get('tmp_path');
-				
-		$zip = new ZipArchive;
-		$res = $zip->open($tmp_dest . DIRECTORY_SEPARATOR .$file);
-		if ($res === true) {
-			$zip->extractTo(JPATH_SITE);
-			$zip->close();			
+			// Extract the downloaded package file
+			$config   = JFactory::getConfig();
+			$tmp_dest = $config->get('tmp_path');
+					
+			$zip = new ZipArchive;
+			$res = $zip->open($tmp_dest . DIRECTORY_SEPARATOR .$file);
+			if ($res === true) {
+				$zip->extractTo(JPATH_SITE);
+				$zip->close();			
+			}
+			
+			// Create restoration file
+			$this->createRestorationFile($file);
+			
+			$install_result = $this->finaliseUpgrade();
+										
+			if ( !$install_result ) {
+				$msg = JText::_('COM_INSTALLER_MSG_UPDATE_ERROR');
+				$result[0][1] = $msg;
+				$result[0][0] = false;			
+			} else {
+				$result[0][1] = '';			
+				$result[0][0] = true;			
+			}
+			
+			// Clean the site
+			JFile::delete($tmp_dest . DIRECTORY_SEPARATOR .$file);	
+		} catch (Exception $e) {
+			$result[0][1] = $e->getMessage();
+			$result[0][0] = false;
 		}
-		
-		// Create restoration file
-		$this->createRestorationFile($file);
-		
-		$install_result = $this->finaliseUpgrade();
-						
-		if ( !$install_result ) {
-			$msg = JText::_('COM_INSTALLER_MSG_UPDATE_ERROR');
-			$result[0][1] = $msg;
-			$result[0][0] = false;			
-		} else {
-			$result[0][1] = '';			
-			$result[0][0] = true;			
-		}
-		
-		// Clean the site
-		JFile::delete($tmp_dest . DIRECTORY_SEPARATOR .$file);		
 		
 		// Devolvemos el resultado
 		return $result;		

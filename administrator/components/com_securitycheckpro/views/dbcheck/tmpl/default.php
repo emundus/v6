@@ -24,6 +24,9 @@ $document->setHeadData($arrHead);
 
 $opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
 JHTML::stylesheet($opa_icons);
+
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -34,8 +37,10 @@ JHTML::stylesheet($opa_icons);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">

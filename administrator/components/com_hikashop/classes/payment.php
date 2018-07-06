@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -104,14 +104,14 @@ class hikashopPaymentClass extends hikashopClass {
 		return $rates;
 	}
 
-	function &getPayments(&$order,$reset=false) {
+	function &getPayments(&$order, $reset = false) {
 		static $usable_methods = null;
 		static $errors = array();
-		if($reset){
+		if($reset) {
 			$usable_methods = null;
 			$errors = array();
 		}
-		if(!is_null($usable_methods)){
+		if(!is_null($usable_methods)) {
 			$this->errors = $errors;
 			return $usable_methods;
 		}
@@ -218,7 +218,7 @@ class hikashopPaymentClass extends hikashopClass {
 
 		if(is_array($usable_methods) && !empty($usable_methods)) {
 			foreach($usable_methods as $k => $usable_method) {
-				if(!empty($order->paymentOptions['recurring']) && empty($usable_method->features['recurring'])) {
+				if(!empty($order->paymentOptions['recurring']) && empty($order->paymentOptions['recurring']['optional']) && empty($usable_method->features['recurring'])) {
 					unset($usable_methods[$k]);
 					continue;
 				}

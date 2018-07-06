@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -82,7 +82,7 @@ defined('_JEXEC') or die('Restricted access');
 	}
 
 	global $Itemid;
-	$checkout_itemid = $this->config->get('checkout_itemid');
+	$checkout_itemid = (int)$this->config->get('checkout_itemid');
 	if(!empty($checkout_itemid))
 		$Itemid = $checkout_itemid;
 
@@ -211,6 +211,9 @@ defined('_JEXEC') or die('Restricted access');
 
 		if(!empty($html))
 			echo '<div class="hikashop_cart_product_custom_item_fields">'.$html.'</div>';
+
+		if(!empty($product->extraData) && !empty($product->extraData->checkout))
+			echo '<div class="hikashop_cart_product_extradata"><p>' . implode('</p><p>', $product->extraData->checkout) . '</p></div>';
 ?>
 			</td>
 <?php
@@ -245,7 +248,7 @@ defined('_JEXEC') or die('Restricted access');
 			if($product->product_parent_id != 0 && isset($product->main_product_quantity_layout))
 				$product->product_quantity_layout = $product->main_product_quantity_layout;
 
-			if($product->product_quantity_layout == 'show_select' || (empty($product->product_quantity_layout) && $this->config->get('product_quantity_display', '') == 'show_select')) {
+			if($product->product_quantity_layout == 'show_select' || (empty($product->product_quantity_layout) && $this->config->get('product_quantity_display', 'show_default_div') == 'show_select')) {
 				$min_quantity = ($product->product_min_per_order || empty($product->parent_product)) ? $product->product_min_per_order : $product->parent_product->product_min_per_order;
 				$max_quantity = ($product->product_max_per_order || empty($product->parent_product)) ? $product->product_max_per_order : $product->parent_product->product_max_per_order;
 				$min_quantity = max((int)$min_quantity, 1);
@@ -275,9 +278,12 @@ defined('_JEXEC') or die('Restricted access');
 
 			if(!empty($this->options['show_delete'])) {
 				$url = hikashop_currentURL();
+				$delete_url = hikashop_completeLink('product&task=updatecart&product_id='.$product->product_id.'&quantity=0');
+				$delete_url .= ((strpos($delete_url, '?') === false) ? '?' : '&') . 'return_url='.urlencode(base64_encode(urldecode($url)));
+
 ?>
 				<div class="hikashop_cart_product_quantity_delete">
-					<a class="hikashop_no_print" href="<?php echo hikashop_completeLink('product&task=updatecart&product_id='.$product->product_id.'&quantity=0&return_url='.urlencode(base64_encode(urldecode($url)))); ?>" onclick="var qty_field = document.getElementById('hikashop_checkout_quantity_<?php echo $product->cart_product_id;?>'); if(qty_field){qty_field.value=0; return window.checkout.submitCart(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>); } return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>">
+					<a class="hikashop_no_print" href="<?php echo $delete_url; ?>" onclick="var qty_field = document.getElementById('hikashop_checkout_quantity_<?php echo $product->cart_product_id;?>'); if(qty_field){qty_field.value=0; return window.checkout.submitCart(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>); } return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>">
 						<img src="<?php echo HIKASHOP_IMAGES . 'delete2.png';?>" border="0" alt="<?php echo JText::_('HIKA_DELETE'); ?>" />
 					</a>
 				</div>

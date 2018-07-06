@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -100,6 +100,14 @@ $dropdown_style = (empty($this->element['small_cart']) || (int)$this->element['s
 			?></dt>
 			<dd class="hikashop_option_value"><?php
 				echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_taxes]', '', @$this->element['show_taxes']);
+			?></dd>
+		</dl>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name"><?php
+				echo hikashop_hktooltip(JText::sprintf('HIKA_PRINT_BUTTON_DESC', $this->type), '', JText::_('HIKA_PRINT_BUTTON'), '', 0);
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[print_cart]', '', @$this->element['print_cart']);
 			?></dd>
 		</dl>
 		<dl class="hika_options">

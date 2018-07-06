@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,6 +16,8 @@ class hikashopProductdisplayType {
 	);
 
 	function load(){
+		if(!empty($this->values))
+			return;
 		$this->values = array();
 		if(hikaInput::get()->getCmd('from_display',false) == false)
 			$this->values[] = JHTML::_('select.option', '', JText::_('HIKA_INHERIT'));
@@ -44,6 +46,10 @@ class hikashopProductdisplayType {
 		if(version_compare(JVERSION,'1.6.0','>=') && !empty($closeOpt)){
 			$this->values[] = JHTML::_('select.optgroup', $closeOpt);
 		}
+
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
+		$dispatcher->trigger('onProductLayoutSelect', array(&$this->values));
 	}
 
 	function display($map,$value) {
@@ -52,7 +58,7 @@ class hikashopProductdisplayType {
 	}
 
 	function check($name,$template) {
-		if($name == '' || in_array($name, $this->default))
+		if($name == '' || in_array($name, $this->default) || strpos($name, 'plg.') !== false)
 			return true;
 		$values = $this->getLayout($template);
 		return in_array($name,$values);

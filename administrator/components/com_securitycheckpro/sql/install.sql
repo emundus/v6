@@ -432,7 +432,13 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_gridbox','component','2.4.0','<=','3.0.0','>=','Gridbox Component','Multiple Vulnerabilities','Apr 10 2018','Version 2.4.0 and previous','none','No details'),
 ('com_jdownloads','component','3.2.58','<=','3.0.0','>=','JDownloads Component','Cross site scripting Vulnerability','Apr 10 2018','Version 3.2.58 and previous','update','3.2.59'),
 ('com_cwtags','component','2.0.8','<=','3.0.0','>=','CW Tags Component','Sql injection Vulnerability','Apr 10 2018','Version 2.0.8 and previous','update','2.1.1'),
-('com_convertforms','component','2.0.3','<=','3.0.0','>=','Convert Forms Component','Csv Injection Vulnerability','Apr 13 2018','Version 2.0.3 and previous','update','2.0.4');
+('com_convertforms','component','2.0.3','<=','3.0.0','>=','Convert Forms Component','Csv Injection Vulnerability','Apr 13 2018','Version 2.0.3 and previous','update','2.0.4'),
+('com_nexevocontact','component','1.0.1','<=','3.0.0','>=','Nexevo contact form Component','Backdoor Vulnerability','May 15 2018','Version 1.0.1 and previous','none','No details'),
+('Joomla!','core','3.8.7','<=','3.0.0','>=','Joomla! multiple vulnerabilities','9 security vulnerabilities','May 22 2018','Joomla!  versions 1.5.0 through 3.8.7','update','3.8.8'),
+('com_ekrishta','component','2.10','==','3.0.0','>=','EkRishta Component','Sql injection Vulnerability','Jun 13 2018','Version 2.10','none','No details'),
+('com_cb','component','2.1.4','<=','3.0.0','>=','Community Builder Component','XSS Vulnerability','Jun 14 2018','Version 2.1.4 and previous','update','2.1.5'),
+('com_jomres','component','9.11.2','==','3.0.0','>=','Jomres Component','CSRF Vulnerability','Jun 19 2018','Version 9.11.2','none','No details'),
+('Joomla!','core','3.8.8','<=','3.0.0','>=','Joomla! multiple vulnerabilities','2 security vulnerabilities','Jun 26 2018','Joomla! versions 1.5.0 through 3.8.8','update','3.8.9');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -551,7 +557,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.12');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.18');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

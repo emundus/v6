@@ -32,6 +32,9 @@ $document->setHeadData($arrHead);
 $media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
 JHTML::stylesheet($media_url);
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
+
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -42,8 +45,10 @@ JHTML::stylesheet($media_url);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -338,7 +343,13 @@ if ( strstr($server,"iis") ) { ?>
 									</li>
 								</ul>
 							</div>						
-						</div>					
+						</div>	
+						<div id="button_show_log" class="card-footer">	
+							<?php								
+								if ( !empty($this->log_filename) ) { ?>
+									<button class="btn btn-success" type="button" onclick="view_modal_log();"><i class="fapro fa-fw fa-eye"></i><?php echo substr(JText::_( 'COM_SECURITYCHECKPRO_ACTION_VIEWLOGS' ),0, -1); ?></button>
+							<?php }	?>							
+						</div>	
 					</div>					
 				</div>
 				

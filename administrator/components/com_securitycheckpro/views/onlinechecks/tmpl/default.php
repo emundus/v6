@@ -32,6 +32,9 @@ $document->setHeadData($arrHead);
 $media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
 JHTML::stylesheet($media_url);
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
+
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -41,6 +44,8 @@ JHTML::stylesheet($media_url);
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
+
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -122,7 +127,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 		  
 			<div class="alert alert-warn">
 				<?php echo JText::_('COM_SECURITYCHECKPRO_PROFESSIONAL_HELP'); ?>
-				<p>	<a href="https://securitycheck.protegetuordenador.com/index.php/contact-us" target="_blank" class="btn btn-primary btn-success btn-large">
+				<p>	<a href="https://securitycheck.protegetuordenador.com/index.php/contact-us" target="_blank"  rel="noopener noreferrer" class="btn btn-primary btn-success btn-large">
 					<?php echo JText::_('COM_SECURITYCHECKPRO_CONTACT_US'); ?></a>
 				</p>
 			</div>

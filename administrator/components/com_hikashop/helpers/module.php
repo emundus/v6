@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,6 +20,13 @@ class hikashopModuleHelper {
 			if(isset($data->$type) && is_object($data->$type)) {
 				foreach($data->$type as $k => $v) {
 					$obj->params->set($k,$v);
+				}
+			} else {
+				$data = $obj->params->get('hk_'.$obj->ctrl);
+				if(!empty($data) && is_array($data)) {
+					foreach($data as $k => $v) {
+						$obj->params->set($k,$v);
+					}
 				}
 			}
 		}

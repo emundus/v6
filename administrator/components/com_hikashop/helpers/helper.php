@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ define('HIKASHOP_J30',version_compare($jversion,'3.0.0','>=') ? true : false);
 
 define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '3.4.0');
+define('HIKASHOP_VERSION', '3.5.0');
 
 class hikashop {
 	public static function getDate($time = 0,$format = '%d %B %Y %H:%M'){ return hikashop_getDate($time,$format); }
@@ -600,8 +600,6 @@ function hikashop_initModule(){
 	return true;
 }
 
-//		//-->";
-
 function hikashop_absoluteURL($text){
 	static $mainurl = '';
 	if(empty($mainurl)){
@@ -950,7 +948,8 @@ function hikashop_contentLink($link,$object,$popup = false,$redirect = false, $j
 				$id = $menusClass->loadAMenuItemId('product','listing',$match[1]);
 				if(empty($id)){
 					$id = $menusClass->loadAMenuItemId($type,'listing');
-					$link = str_replace('Itemid='.$match[1],'Itemid='.$id,$link);
+					if(!empty($id))
+						$link = str_replace('Itemid='.$match[1],'Itemid='.$id,$link);
 				}
 			}
 
@@ -1035,7 +1034,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1806011004] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1807041153] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -1151,7 +1150,7 @@ function hikashop_getPluginController($ctrl) {
 
 	$type = preg_replace('#[^A-Z0-9_\.-]#i', '', $controller['type']);
 	$name = preg_replace('#[^A-Z0-9_\.-]#i', '', $controller['name']);
-	$prefix = preg_replace('#[^A-Z0-9]#i', '', $controller['prefix']);
+	$prefix = preg_replace('#[^A-Z0-9_]#i', '', $controller['prefix']);
 	if(!HIKASHOP_J16)
 		$path = JPATH_PLUGINS.DS.$type.DS;
 	else
@@ -2219,7 +2218,7 @@ class hikashopView extends hikashopBridgeView {
 		}
 	}
 
-	protected function loadHkLayout($layout, $params = array()) {
+	function loadHkLayout($layout, $params = array()) {
 		$backup_paths = $this->_path['template'];
 
 		$layout_path = $this->_basePath . '/views/layouts/tmpl';
@@ -2601,7 +2600,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!$this->checkPaymentDisplay($method, $order))
 				continue;
 
-			if(!empty($order->paymentOptions) && !empty($order->paymentOptions['recurring']) && empty($method->features['recurring']))
+			if(!empty($order->paymentOptions) && !empty($order->paymentOptions['recurring']) && empty($order->paymentOptions['recurring']['optional']) && empty($method->features['recurring']))
 				continue;
 			if(!empty($order->paymentOptions) && !empty($order->paymentOptions['term']) && empty($method->features['authorize_capture']))
 				continue;
@@ -2761,8 +2760,12 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			}
 		}
 
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
+		$dispatcher->trigger('onBeforeModifyOrder', array(&$order, &$order_status, &$history, &$email));
+
+		$orderClass = hikashop_get('class.order');
 		if(!is_object($order_id) && $order_id !== false) {
-			$orderClass = hikashop_get('class.order');
 			$orderClass->save($order);
 		}
 
@@ -2773,55 +2776,23 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 		if(empty($email) || empty($recipients))
 			return;
 
-		$sender = array(
-			$config->get('from_email'),
-			$config->get('from_name')
-		);
-		$mailer->setSender($sender);
-		$mailer->addRecipient(explode(',', $recipients));
-
 		$payment_status = $order_status;
 		$mail_status = hikashop_orderStatus($order_status);
-		$order_number = '';
-
-		global $Itemid;
-		$this->url_itemid = empty($Itemid) ? '' : '&Itemid=' . $Itemid;
-
-		if(is_object($order_id)) {
-			$subject = JText::sprintf('PAYMENT_NOTIFICATION', $this->name, $payment_status);
-			$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=listing'. $this->url_itemid;
-			if(isset($order->order_id))
-				$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id=' . $order->order_id . $this->url_itemid;
-			if(isset($order->order_number))
-				$order_number = $order->order_number;
-		} elseif($order_id !== false) {
-			$dbOrder = $orderClass->get($order_id);
-			$order_number = $dbOrder->order_number;
-			$subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', $this->name, $payment_status, $order_number);
-			$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id=' . $order_id . $this->url_itemid;
-		}
-
-		$order_text = '';
-		if(is_string($email))
-			$order_text = "\r\n\r\n" . $email;
-
-		$body = str_replace('<br/>', "\r\n", JText::sprintf('PAYMENT_NOTIFICATION_STATUS', $this->name, $payment_status)) . ' ' .
+		if(is_object($order_id))
+			$id = $order->order_id;
+		else
+			$id = $order_id;
+		$dbOrder = $orderClass->get($id);
+		$message = str_replace('<br/>', "\r\n", JText::sprintf('PAYMENT_NOTIFICATION_STATUS', $this->name, $payment_status)) . ' ' .
 			JText::sprintf('ORDER_STATUS_CHANGED', $mail_status) .
-			"\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $order_number, HIKASHOP_LIVE);
-		if(!empty($url))
-			$body .= "\r\n".str_replace('<br/>', "\r\n", JText::sprintf('ACCESS_ORDER_WITH_LINK', $url));
-		$body .= $order_text;
+			"\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE);
+		$order = $orderClass->loadNotification((int)$id, 'payment_notification', $message);
+		if(empty($order->mail->subject))
+			$order->mail->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', $this->name, $payment_status, $dbOrder->order_number);
+		$order->mail->dst_email = $recipients;
 
-		if(is_object($email)) {
-			if(!empty($email->subject))
-				$subject = $email->subject;
-			if(!empty($email->body))
-				$body = $email->body;
-		}
-
-		$mailer->setSubject($subject);
-		$mailer->setBody($body);
-		$mailer->Send();
+		$mailClass = hikashop_get('class.mail');
+		$mailClass->sendMail($order->mail);
 	}
 
 	function loadOrderData(&$order) {
@@ -3742,6 +3713,12 @@ if(HIKASHOP_J30) {
 			return JRequest::getVar($value, $default, ($this->mode == null) ? '' : $this->mode, 'array');
 		}
 	}
+}
+
+class hikaRegistry {
+	protected static $data = array();
+	public static function get($name) { return isset(self::$data[$name]) ? self::$data[$name] : null; }
+	public static function set($name, $value) { self::$data[$name] = $value; }
 }
 
 JHTML::_('select.booleanlist','hikashop');

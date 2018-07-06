@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_order_main">
 <?php
-$colspan = 2;
+$colspan = 3;
 if($this->invoice_type == 'order') {
 	echo $this->toolbarHelper->process($this->toolbar, $this->title);
 }
@@ -380,9 +380,7 @@ if($this->invoice_type == 'order') {
 	}
 ?>
 							<tr>
-								<td class="hikashop_empty_td" style="border-top:2px solid #B8B8B8;" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_subtotal_title" style="border-top:2px solid #B8B8B8;" class="key">
+								<td class="hikashop_order_subtotal_title key" style="border-top:2px solid #B8B8B8;" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo JText::_( 'SUBTOTAL' );
 									?></label>
@@ -401,9 +399,7 @@ if($this->invoice_type == 'order') {
 	if(!empty($this->order->order_discount_code)) {
 ?>
 							<tr>
-								<td class="hikashop_empty_td" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_coupon_title key">
+								<td class="hikashop_order_coupon_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo JText::_( 'HIKASHOP_COUPON' );
 									?></label>
@@ -422,9 +418,7 @@ if($this->invoice_type == 'order') {
 	if(!empty($this->order->order_shipping_method)) {
 ?>
 							<tr>
-								<td class="hikashop_empty_td" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_shipping_title key">
+								<td class="hikashop_order_shipping_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo JText::_( 'SHIPPING' );
 									?></label>
@@ -447,9 +441,7 @@ if($this->invoice_type == 'order') {
 				continue;
 ?>
 							<tr>
-								<td class="hikashop_empty_td" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_additionall_title key">
+								<td class="hikashop_order_additionall_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo JText::_($additional->order_product_name);
 									?></label>
@@ -476,9 +468,7 @@ if($this->invoice_type == 'order') {
 	if(!empty($this->order->order_payment_method) && $this->order->order_payment_price != 0) {
 ?>
 							<tr>
-								<td class="hikashop_empty_td" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_payment_title key">
+								<td class="hikashop_order_payment_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo JText::_( 'HIKASHOP_PAYMENT' );
 									?></label>
@@ -499,9 +489,7 @@ if($this->invoice_type == 'order') {
 			foreach($this->order->order_tax_info as $tax) {
 ?>
 							<tr>
-								<td class="hikashop_empty_td" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_tax_title key">
+								<td class="hikashop_order_tax_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo $tax->tax_namekey;
 									?></label>
@@ -515,9 +503,7 @@ if($this->invoice_type == 'order') {
 		} else {
 ?>
 							<tr>
-								<td class="hikashop_empty_td" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_tax_title key">
+								<td class="hikashop_order_tax_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo JText::_( 'VAT' );
 									?></label>
@@ -531,9 +517,7 @@ if($this->invoice_type == 'order') {
 	}
 ?>
 							<tr>
-								<td class="hikashop_empty_td" colspan="<?php echo $colspan; ?>">
-								</td>
-								<td class="hikashop_order_total_title key">
+								<td class="hikashop_order_total_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
 										echo JText::_( 'HIKASHOP_TOTAL' );
 									?></label>

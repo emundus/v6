@@ -1,96 +1,168 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div id="hikashop_<?php echo $this->type; ?>_address_selection"<?php if(empty($this->addresses)) { echo ' style="display:none;"'; } ?>>
-<?php
-if($this->address_selector == 1) {
-	if(!empty($this->addresses)) {
-		foreach($this->addresses as $address) {
-			$checked = ($address->address_default == 1) ? ' checked="checked"' : '';
-?>
-<div id="hikashop_address_<?php echo $this->type; ?>_selection_<?php echo $address->address_id; ?>" class="address_selection<?php echo ($address->address_default == 1) ? ' address_selected':''; ?>">
-	<input id="hikashop_<?php echo $this->type; ?>_address_radio_<?php echo $address->address_id;?>" onclick="window.localPage.selectAddr(this, '<?php echo $this->type; ?>');" class="checkout_<?php echo $this->type; ?>_address_radio" type="radio" name="hikashop_address_<?php echo $this->type; ?>" value="<?php echo $address->address_id;?>"<?php echo $checked; ?>/>
-<?php
-			$this->address_id = (int)$address->address_id;
-			$this->address = $address;
-			$this->setLayout('show');
-			echo $this->loadTemplate();
-?>
-</div>
-<?php
+?><dl class="hika_options large">
+	<dt><label for="hikashop_default_billing_address_selector"><?php echo JText::_('HIKASHOP_SELECT_DEFAULT_BILLING_ADDRESS'); ?></label></dt>
+	<dd><?php
+		$current = 0;
+		$values = array();
+		if(!empty($this->addresses)) {
+			if(empty($this->addressClass))
+				$this->addressClass = hikashop_get('class.address');
+
+			foreach($this->addresses as $k => $address) {
+				if(!in_array($address->address_type, array('billing', 'both', '')))
+					continue;
+
+				$addr = $this->addressClass->miniFormat($address);
+				$values[] = JHTML::_('select.option', $k, $addr);
+				if(!empty($address->address_default))
+					$current = $address->address_default;
+			}
 		}
-	}
-?>
-	<div id="hikashop_<?php echo $this->type; ?>_address_template" class="address_selection" style="display:none;">
-		<input id="hikashop_<?php echo $this->type; ?>_address_radio_{VALUE}" class="checkout_<?php echo $this->type; ?>_address_radio" type="radio" name="hikashop_address" value="{VALUE}"/>
-		{CONTENT}
-	</div>
-<?php if(!empty($this->show_new_btn)) { ?>
-	<div class="" style="margin-top:6px;">
-		<a class="btn btn-success" href="#newAddress" onclick="return window.localPage.newAddr(this, '<?php echo $this->type; ?>');"><?php echo JText::_('HIKA_NEW'); ?></a>
-	</div>
-<?php }
-}
+		if(empty($values))
+			$values = array(JHTML::_('select.option', '', JText::_('HIKAM_NO_ADDRESS')));
+		echo JHTML::_('select.genericlist', $values, 'data[user][default_billing]', 'class="hikashop_default_address_dropdown"', 'value', 'text', $current, 'hikashop_default_billing_address_selector');
+	?></dd>
+</dl>
+<dl class="hika_options large">
+	<dt><label for="hikashop_default_shipping_address_selector"><?php echo JText::_('HIKASHOP_SELECT_DEFAULT_SHIPPING_ADDRESS'); ?></label></dt>
+	<dd><?php
+		$current = 0;
+		$values = array();
+		if(!empty($this->addresses)) {
+			if(empty($this->addressClass))
+				$this->addressClass = hikashop_get('class.address');
 
-if($this->address_selector == 2) {
-	$current = 0;
-	$values = array();
-	if(!empty($this->addresses)) {
-		$addressClass = hikashop_get('class.address');
-		foreach($this->addresses as $k => $address) {
-			$addr = $addressClass->miniFormat($address);
-			$values[] = JHTML::_('select.option', $k, $addr);
+			foreach($this->addresses as $k => $address) {
+				if(!in_array($address->address_type, array('shipping', 'both', '')))
+					continue;
 
-			if($address->address_default == 1)
-				$current = $k;
+				$addr = $this->addressClass->miniFormat($address);
+				$values[] = JHTML::_('select.option', $k, $addr);
+				if(!empty($address->address_default))
+					$current = $address->address_default;
+			}
 		}
-	}
-	$values[] = JHTML::_('select.option', 0, JText::_('HIKASHOP_NEW_ADDRESS_ITEM'));
-	echo JHTML::_('select.genericlist', $values, 'hikashop_address_'.$this->type, 'class="hikashop_field_dropdown" onchange="window.localPage.selectAddr(this, \''.$this->type.'\');"', 'value', 'text', $current, 'hikashop_address_'.$this->type.'_selector');
-?><div id="hikashop_selected_<?php echo $type; ?>_address">
-<?php
-	if(isset($this->addresses[$current]))
-		$address = $this->addresses[$current];
-	else
-		$address = reset($this->addresses);
+		if(empty($values))
+			$values = array(JHTML::_('select.option', '', JText::_('HIKAM_NO_ADDRESS')));
+		echo JHTML::_('select.genericlist', $values, 'data[user][default_shipping]', 'class="hikashop_default_address_dropdown"', 'value', 'text', $current, 'hikashop_default_shipping_address_selector');
+	?></dd>
+</dl>
 
+	<div id="hikashop_user_addresses_show">
+<?php
+foreach($this->addresses as $address) {
+?>
+	<div class="hikashop_user_address address_selection" id="hikashop_user_address_<?php echo $address->address_id; ?>">
+<?php
 	$this->address_id = (int)$address->address_id;
 	$this->address = $address;
 	$this->setLayout('show');
 	echo $this->loadTemplate();
 ?>
-</div>
+	</div>
 <?php
 }
 ?>
-</div>
-<div id="hikashop_<?php echo $this->type; ?>_address_zone">
-<?php
-if(empty($this->addresses)) {
-	$this->address_id = 0;
-	$this->edit = true;
-	$this->address = null;
-	$this->setLayout('show');
-	echo $this->loadTemplate();
-}
-?>
-</div>
-
-<?php
-static $hikashop_address_select_once = false;
-if(!$hikashop_address_select_once) {
-	$hikashop_address_select_once = true;
-?>
+		<div class="" style="margin-top:6px;">
+			<a class="btn btn-success" href="#newAddress" onclick="return window.addressMgr.new();"><?php echo JText::_('HIKA_NEW'); ?></a>
+		</div>
+	</div>
+	<div id="hikashop_user_addresses_edition">
+	</div>
 <script type="text/javascript">
 if(!window.addressMgr) window.addressMgr = {};
+window.Oby.registerAjax('hikashop_address_changed', function(params) {
+	if(!params) return;
 
-<?php ?>
+	var d = document,
+		el_show = d.getElementById('hikashop_user_addresses_show'),
+		el_edit = d.getElementById('hikashop_user_addresses_edition');
+
+	if(params.edit) {
+		el_show.style.display = 'none';
+		el_edit.style.display = '';
+		return;
+	}
+	if(el_edit.children.length == 0)
+		return;
+
+	var target_id = params.previous_cid || params.cid,
+		target = d.getElementById('hikashop_user_address_' + target_id),
+		el_sel = d.getElementById('hikashop_default_address_selector');
+		content = el_edit.innerHTML;
+
+	el_edit.style.display = 'none';
+	el_edit.innerHTML = '';
+
+	for(var k in el_sel.options) {
+		if(params.previous_cid && el_sel.options[k].value == params.previous_cid && params.previous_cid != 0 && params.previous_cid != params.cid)
+			el_sel.options[k].value = params.cid;
+		if(el_sel.options[k].value == params.cid)
+			el_sel.options[k].text = params.miniFormat;
+	}
+	if(params.previous_cid !== undefined && params.previous_cid === 0) {
+		var o = d.createElement('option');
+		o.text = params.miniFormat;
+		o.value = params.cid;
+		el_sel.add(o, el_sel.options[el_sel.selectedIndex]);
+		el_sel.selectedIndex--;
+		o.fireEvent(el_sel,'change');
+	}
+	if(jQuery) jQuery(el_sel).trigger("liszt:updated");
+
+	if(target) {
+		target.innerHTML = content;
+	} else if(params.cid > 0) {
+		window.hikashop.dup('hikashop_user_address_template', {'VALUE':params.cid, 'CONTENT':content}, 'hikashop_user_address_'+params.cid);
+	}
+
+	el_show.style.display = '';
+});
+window.addressMgr.new = function() {
+	var d = document, w = window, o = w.Oby,
+		el_show = d.getElementById('hikashop_user_addresses_show'),
+		el_edit = d.getElementById('hikashop_user_addresses_edition');
+	if(!el_edit || !el_show)
+		return false;
+	el_edit.innerHTML = '';
+	var url = '<?php echo hikashop_completeLink('address&task=edit&cid=0&user_id='.$this->user_id, 'ajax', true); ?>';
+	o.xRequest(url, {update:el_edit}, function(xhr) {
+		el_show.style.display = 'none';
+		el_edit.style.display = '';
+	});
+	return false;
+};
+window.addressMgr.delete = function(el, cid) {
+	if(!confirm('<?php echo JText::_('HIKASHOP_CONFIRM_DELETE_ADDRESS', true); ?>'))
+		return false;
+	var w = window, o = w.Oby, d = document;
+	o.xRequest(el.href, {mode: 'POST', data: '<?php echo hikashop_getFormToken(); ?>=1'}, function(xhr) { if(xhr.status == 200) {
+		var target = d.getElementById('hikashop_user_address_' + cid);
+		if(xhr.responseText == '1') {
+			if(target)
+				target.parentNode.removeChild(target);
+			var el_sel = d.getElementById('hikashop_default_address_selector');
+			for(var k in el_sel.options) {
+				if(el_sel.options[k].value == cid) {
+					el_sel.remove(k);
+					break;
+				}
+			}
+			o.fireEvent(el_sel,'change');
+			if(jQuery) jQuery(el_sel).trigger("liszt:updated");
+			o.fireAjax('hikashop_address_deleted',{'cid':cid,'uid':target,'el':el});
+		} else if(xhr.responseText != '0') {
+			if(target) o.updateElem(target, xhr.responseText);
+		}
+	}});
+	return false;
+};
 </script>
-<?php
-}

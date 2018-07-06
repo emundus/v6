@@ -1320,6 +1320,164 @@
 })();
 
 /**
+ * oResize
+ * version: 0.0.1
+ * release date: 2018-01-15
+ */
+(function() {
+	var oResize = function(el, options) {
+		if(typeof(el) == 'string')
+			el = document.getElementById(el);
+		if(!el) return;
+		if(options === undefined && el.getAttribute('data-oresize')) {
+			try {
+				var params = JSON.parse( el.getAttribute('data-oresize') );
+				if(params) options = params;
+			}catch(e) {}
+		}
+		this.create(el, options);
+	};
+	/**
+	 *
+	 */
+	oResize.init = function() {
+		if(!document.querySelectorAll)
+			return;
+		var d = document,
+			els = d.querySelectorAll('[data-oresize]');
+		if(!els || !els.length)
+			return;
+		for(var i = els.length - 1; i >= 0; i--) {
+			var el = els[i], opt = {};
+			try {
+				var params = JSON.parse( el.getAttribute('data-oresize') );
+				if(params)
+					opt = params;
+			}catch(e) {}
+			oResize.create(el, opt);
+		}
+	};
+	/**
+	 *
+	 */
+	oResize.prototype = {
+		target: null,
+		options: null,
+		/**
+		 *
+		 */
+		create: function(el, options) {
+			var t = this, d = document;
+
+			t.options = options || {};
+			if(t.options.width === false && t.options.height === false)
+				return;
+
+			var r = d.createElement('div');
+			r.className = 'oresize';
+			r.style.position = 'absolute';
+			r.style.right = 0;
+			r.style.bottom = 0;
+			r.style.cursor = 'se-resize';
+
+			r.style.width = '10px';
+			r.style.height = '10px';
+			// if(!el.style.position)
+			//	el.style.position = 'relative';
+
+			t.target = el;
+			el.appendChild(r);
+			t.addEvent(r, 'mousedown', function(evt){ t.start(evt); });
+		},
+		/**
+		 *
+		 */
+		start: function(e) {
+			var t = this, d = document, w = window;
+			t.cancelEvent(e);
+			t.resizeEvt = t.addEvent(w, 'mousemove', function(evt){ t.resize(evt); });
+			t.stopEvt = t.addEvent(w, 'mouseup', function(evt){ t.stop(evt); });
+		},
+		/**
+		 *
+		 */
+		stop: function(e) {
+			var t = this, d = document, w = window;
+			t.removeEvent(w, 'mousemove', t.resizeEvt);
+			t.removeEvent(w, 'mouseup', t.stopEvt);
+		},
+		/**
+		 *
+		 */
+		resize: function(e) {
+			this.cancelEvent(e);
+			var t = this,
+				minW = (t.options.width && t.options.width.min) ? t.options.width.min : 100,
+				minH = (t.options.height && t.options.height.min) ? t.options.height.min : 100,
+				offset = t.getOffset(t.target),
+				w = Math.max((e.clientX - offset.left), minW),
+				h = Math.max((e.clientY - offset.top), minH);
+			if(t.options.width !== false) {
+				if(t.options.width && t.options.width.max)
+					w = Math.min(w, t.options.width.max);
+				t.target.style.width = w + 'px';
+			}
+			if(t.options.height !== false) {
+				if(t.options.height && t.options.height.max)
+					h = Math.min(h, t.options.height.max);
+				t.target.style.height = h + 'px';
+			}
+		},
+		/**
+		 *
+		 */
+		addEvent: function(d,e,f) {
+			if( d.attachEvent )
+				d.attachEvent('on' + e, f);
+			else if (d.addEventListener)
+				d.addEventListener(e, f, false);
+			else
+				d['on' + e] = f;
+			return f;
+		},
+		removeEvent: function(d,e,f) {
+			try {
+				if( d.detachEvent )
+					d.detachEvent('on' + e, f);
+				else if( d.removeEventListener)
+					d.removeEventListener(e, f, false);
+				else
+					d['on' + e] = null;
+			} catch(e) {}
+		},
+		cancelEvent: function(e) {
+			e = e || window.event;
+			if( !e )
+				return false;
+			if(e.stopPropagation) e.stopPropagation();
+			else e.cancelBubble = true;
+			if( e.preventDefault ) e.preventDefault();
+			else e.returnValue = false;
+			return false;
+		},
+		/**
+		 *
+		 */
+		getOffset: function(el, scroll) {
+			var rect = el.getBoundingClientRect(),
+				scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+				scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+			if(!scroll)
+				return { top: rect.top , left: rect.left };
+			return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
+		}
+	};
+	oResize.version = 20170115;
+	if(!window.oResize || window.oResize.version < oResize.version)
+		window.oResize = oResize;
+})();
+
+/**
  * oNamebox
  * version: 0.1.3
  * release date: 2016-03-01
@@ -1375,7 +1533,14 @@
 		el.parentNode.removeChild(el);
 	};
 	oNamebox.cancelEvent = function(e) {
-		return window.Oby.cancelEvent(e);
+		e = e || window.event;
+		if( !e )
+			return false;
+		if(e.stopPropagation) e.stopPropagation();
+		else e.cancelBubble = true;
+		if( e.preventDefault ) e.preventDefault();
+		else e.returnValue = false;
+		return false;
 	};
 	/**
 	 *
@@ -1479,6 +1644,9 @@
 				};
 			}
 			t.content.render(true);
+
+			if(window.oResize)
+				t.resize = new oResize(t.container,{width:false,height:{min:100,max:550}});
 
 			t.initKeyboard();
 

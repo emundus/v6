@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -161,6 +161,20 @@ $vote_active = in_array($this->config->get('enable_status_vote', 0), array('vote
 	</tr>
 <?php } ?>
 <?php if($vote_active){ ?>
+<?php	if($vote_active || $comment_active){ ?>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_show_vote_product');?>><?php echo JText::_('DISPLAY_VOTE_OF_PRODUCTS');?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][show_vote_product]' , '', @$this->default_params['show_vote_product']);
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_show_vote');?>><?php echo JText::_('DISPLAY_VOTE_IN_CATEGORIES'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][show_vote]', '', @$this->default_params['show_vote']);
+		?></td>
+	</tr>
+<?php } ?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('vote_star_number');?>><?php echo JText::_('STAR_NUMBER'); ?></td>
 		<td>
@@ -250,22 +264,6 @@ $vote_active = in_array($this->config->get('enable_status_vote', 0), array('vote
 		JHTML::_('select.option', 'thumbs', JText::_('HIKA_VOTE_USEFUL_HAND') ),
 	);
 	echo JHTML::_('hikaselect.genericlist', $arr, "config[vote_useful_style]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('vote_useful_style', 0));
-		?></td>
-	</tr>
-<?php } ?>
-<?php if($vote_active || $comment_active){ ?>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_show_vote_product');?>><?php echo JText::_('DISPLAY_VOTE_OF_PRODUCTS');?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][show_vote_product]' , '', @$this->default_params['show_vote_product']);
-		?></td>
-	</tr>
-<?php } ?>
-<?php if($vote_active){ ?>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_show_vote');?>><?php echo JText::_('DISPLAY_VOTE_IN_CATEGORIES'); ?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][show_vote]', '', @$this->default_params['show_vote']);
 		?></td>
 	</tr>
 <?php } ?>

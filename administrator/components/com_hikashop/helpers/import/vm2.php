@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1379,7 +1379,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			'ORDER BY vmo.virtuemart_order_id ASC;';
 
 		$data = array(
-			'address_user_id' => 'vmui.virtuemart_user_id',
+			'address_user_id' => 'hkusr.user_id',
 			'address_firstname' => 'vmui.first_name',
 			'address_middle_name' => 'vmui.middle_name',
 			'address_lastname' => 'vmui.last_name',
@@ -1401,6 +1401,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			'SELECT '.implode(',',$data).' FROM `'.$this->vmprefix.'virtuemart_order_userinfos` AS vmui '.
 			"INNER JOIN `".$this->vmprefix."virtuemart_states` vms ON vmui.virtuemart_state_id = vms.virtuemart_state_id ".
 			"INNER JOIN `".$this->vmprefix."virtuemart_countries` vmc ON vmui.virtuemart_country_id = vmc.virtuemart_country_id ".
+			'LEFT JOIN `#__hikashop_user` AS hkusr ON vmui.virtuemart_user_id = hkusr.user_cms_id '.
 			'WHERE vmui.virtuemart_order_id > '.$this->options->last_vm_order.' ORDER BY vmui.virtuemart_order_userinfo_id ASC';
 
 		$sql2_2 = 'UPDATE `#__hikashop_address` AS a '.
