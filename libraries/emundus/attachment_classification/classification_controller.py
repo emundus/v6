@@ -58,7 +58,7 @@ print "**********************************************************"
 sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
     from jos_emundus_uploads eu\
     left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
-    where sa.lbl like '_photo' and eu.is_validated=0"
+    where sa.lbl like '_photo' and eu.is_validated = -2"
 
 cur.execute(sql)
 data = cur.fetchall()
@@ -80,7 +80,7 @@ print "**********************************************************"
 sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
     from jos_emundus_uploads eu\
     left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
-    where sa.lbl like '_passport'"
+    where sa.lbl like '_passport' and eu.is_validated = -2"
 
 cur.execute(sql)
 data = cur.fetchall()

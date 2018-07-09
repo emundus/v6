@@ -37,7 +37,6 @@ def isPhoto(imagePath):
 
 	faces = detectFaces(image)
 
-	
 	if len(faces) > 0 and getString(image) == "":
 		return 1
 	else:
@@ -74,12 +73,12 @@ def isPassport(imagePath, keywords = ""):
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
 		keymatch = [m.findall(char) for m in matchkeywords if m.findall(char)]
 	
-	if len(faces) > 0 and match and keymatch:
+	if (len(faces) > 0 and match and keymatch) or (len(faces) > 0  and keymatch):
 		return 1
-	elif (len(faces) > 0  and keymatch) or (len(faces) > 0  and match):
-		return 0.75
-	elif (match):
-		return 0.5
+	#elif (len(faces) > 0  and keymatch) or (len(faces) > 0  and match):
+		#return 0.75
+	#elif (match):
+		#return 0.5
 	else:
 		return 0
 
@@ -118,12 +117,12 @@ def main(image, function, keywords=""):
 		if res == 1:
 			#print 'yes, it''s a passeport 100%'
 			return 1
-		elif res == 0.75:
+		#elif res == 0.75:
 			#print 'yes, it''s a passeport 75%'
-			return 0.75
-		elif res == 0.5:
+			#return 0.75
+		#elif res == 0.5:
 			#print 'yes, it''s a passeport 50%'
-			return 0.5
+			#return 0.5
 		else:
 			#print 'no, it''s not a passport'
 			return 0
