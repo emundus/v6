@@ -34,8 +34,8 @@ if ($profile == 1007) {
 
 $db = JFactory::getDBO();
 $query = $db->getQuery(true);
-$columns = ['user', 'institution', 'profile', 'can_edit'];
-$values = [$data['jos_emundus_users___user_id'], $institution_id, $profile, 0];
+$columns = ['user', 'institution', 'profile'];
+$values = [$data['jos_emundus_users___user_id'], $institution_id, $profile];
 $query->insert($db->quoteName('#__emundus_users_institutions'))->columns($db->quoteName($columns))->values(implode(',', $values));
 $db->setQuery($query);
 
