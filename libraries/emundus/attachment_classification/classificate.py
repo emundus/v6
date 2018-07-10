@@ -7,6 +7,11 @@ import cv2
 from pdf2image import convert_from_path
 import face_recognition
 
+import mahotas as mt
+from sklearn.svm import LinearSVC
+
+import training_vector as t_vector
+
 
 Image.MAX_IMAGE_PIXELS = 1000000000  
 
@@ -17,6 +22,22 @@ def pdf2image(pdfPath, dpi):
 	for page in pages:
 		page.save(filename, 'JPEG')
 	return filename
+
+def extract_features(image):
+	# calculate haralick texture features for 4 types of adjacency
+	textures = mt.features.haralick(image)
+
+	# take the mean of it and return it
+	ht_mean = textures.mean(axis=0)
+	return ht_mean
+
+def getClassResult(image):
+	features = extract_features(image)
+	clf_svm = LinearSVC(random_state=9)
+	clf_svm.fit(t_vector.train_features(), t_vector.train_labels())
+	# evaluate the model and predict label
+	prediction = clf_svm.predict(features.reshape(1, -1))[0]
+	return prediction
 
 # face detector
 def detectFaces(image):
@@ -36,8 +57,9 @@ def isPhoto(imagePath):
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 	faces = detectFaces(image)
+	#print getClassResult(image)
 
-	if len(faces) > 0 and getString(image) == "":
+	if (len(faces) > 0 and getClassResult(image) == "photo") or (len(faces) > 0 and getString(image) == ""):
 		return 1
 	else:
 		return 0
@@ -51,6 +73,7 @@ def isPassport(imagePath, keywords = ""):
 	if len(image.shape) == 3: # if color image
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #convert to grayscale image
 	faces = detectFaces(image)
+	classresult = getClassResult(image)
 	#print "Found {0} faces!".format(len(faces))
 
 	#averaging filter 9*9 to remove gaussian noisy(5*)
@@ -72,7 +95,7 @@ def isPassport(imagePath, keywords = ""):
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
 		keymatch = [m.findall(char) for m in matchkeywords if m.findall(char)]
 	
-	if (len(faces) > 0 and match and keymatch) or (len(faces) > 0  and keymatch):
+	if (len(faces) > 0 and match and keymatch) or (len(faces) > 0  and keymatch) or classresult == "passport":
 		return 1
 	#elif (len(faces) > 0  and keymatch) or (len(faces) > 0  and match):
 		#return 0.75

@@ -72,6 +72,10 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                             $class = "glyphicon-unchecked";
                             $color = "gray";
                         }
+                        if($attachment->is_validated == null){
+                            $class = "glyphicon-unchecked";
+                            $color = "gray";
+                        }
                         elseif($attachment->is_validated == 1){
                             $class = "glyphicon-ok";
                             $color = "green";
