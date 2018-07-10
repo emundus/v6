@@ -65,6 +65,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                         if ($can_export)
                             $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
+                        
                         $class = "";
                         $color = "";
                         if($attachment->is_validated == -2){
@@ -90,7 +91,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                 </tr>';
 
                         $i++;
-                        //}
                     }
                     echo '</tbody></table>';
                     if(count($this->userAttachments) > 0) {
