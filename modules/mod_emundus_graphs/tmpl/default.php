@@ -12,15 +12,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 <div class="container">
 
 
-    <!-- Additional views  -->
-    <div class="row">
-        <div class="col-md-4 col-centered" >
-            <table id="viewTable">
-                <tr><th> Autres Statistiques Possibles</th><th></th></tr>
-                <?php echo $tableField; ?>
-            </table>
-        </div>
-    </div>
+    
 
     <!-- Shows user info  -->
     <div class="row" id="userRow" style="display:none;">
@@ -198,8 +190,61 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                 ?>
             </div>
         </div>
+        <hr style='width: 100%; border-top: 5px solid #fff;'>
     </div>
+
+    <!-- Shows gender info  -->
+    <div class="row" id="genderRow" style="display:none;">
+
+        <div class="col-md-12">
+            <canvas id="gender" ></canvas>
+        </div>
+
+        <div class="col-md-6" style="padding-left: 10%;">
+            <div id='summaryGender'></div>
+        </div>
+        <hr style='width: 100%; border-top: 5px solid #fff;'>
+    </div>
+
+    <!-- Shows nationality info  -->
+    <div class="row" id="nationRow" style="display:none;">
+
+        <div class="col-md-12">
+            <canvas id="nationality" ></canvas>
+        </div>
+
+        <div class="col-md-6" style="padding-left: 10%;">
+            <div id='summaryNationality'></div>
+        </div>
+        <hr style='width: 100%; border-top: 5px solid #fff;'>
+    </div>
+
+    <!-- Shows files info  -->
+    <div class="row" id="filesRow" style="display:none;">
+
+        <div class="col-md-12">
+            <canvas id="files" ></canvas>
+        </div>
+
+        <div class="col-md-6" style="padding-left: 10%;">
+            <div id='summaryFiles'></div>
+        </div>
+        <hr style='width: 100%; border-top: 5px solid #fff;'>
+    </div>
+
+    <!-- Additional views  -->
+    <div class="row">
+        <div class="col-md-4 col-centered" >
+            <table id="viewTable">
+                <tr><th> Autres Statistiques Possibles</th><th></th></tr>
+                <?php echo $tableField; ?>
+            </table>
+        </div>
+    </div>
+
 </div>
+
+
 
     
   <!--  <hr style='width: 100%; border-top: 21px solid #fff;'>
@@ -226,11 +271,21 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
 <script type="text/javascript">
 
+    var randomColorFactor = function() {
+        return Math.round(Math.random() * 255);
+    };
+
+    var randomColor = function() {
+        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
+    };
     
     var compteChart;
     var offreChart;
     var connexionChart;
     var relationChart;
+    var genderChart;
+    var nationChart;
+    var filesChart;
     // global options for graphs so it doesn't show decimals
     var options = {
         yAxes: [{
@@ -454,7 +509,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
     }
 
     // Relation function 
-    function afficherelations(periode) {
+    function afficheRelations(periode) {
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getrelations",
@@ -515,6 +570,142 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         }); 
     }
 
+    function afficheGenre() {
+
+        jQuery.ajax({
+            type: "post",
+            url: "index.php?option=com_emundus&controller=stats&task=getgender",
+            dataType: 'json',
+            success: function (result) {
+                if (result.status) {
+                    if (genderChart != undefined || genderChart != null) {
+                    genderChart.destroy();
+                }
+
+                var elem = document.getElementById('gender');
+                genderChart = new Chart(elem, {
+                    type: 'pie',
+                    data: {
+                        datasets: [{
+                            data: [result.male, result.female],
+                            backgroundColor: ["#3e95cd", "#8e5ea2"]
+                        }],
+
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        labels: [
+                            'Male',
+                            'Female'
+                        ]
+                    },
+                    options: {
+                        title:{
+                            display: true,
+                            text: "Genres",
+                            fontSize: 20
+                        }
+                        
+                    }   
+                });
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        }); 
+
+    }
+
+    function afficheNationality() {
+        var colorArray = [];
+        jQuery.ajax({
+            type: "post",
+            url: "index.php?option=com_emundus&controller=stats&task=getnationality",
+            dataType: 'json',
+            success: function (result) {
+                if (result.status) {
+                    if (nationChart != undefined || nationChart != null) 
+                        nationChart.destroy();
+                
+                    for(var i in result.nationality) {
+                        colorArray.push(randomColor());
+                    }
+
+                var elem = document.getElementById('nationality');
+                nationChart = new Chart(elem, {
+                    type: 'bar',
+                    data: {
+                        labels: result.nationality,
+                        datasets: [{
+                            data: result.nb,
+                            backgroundColor: colorArray
+                        }],
+                    },
+                    options: {
+                        title:{
+                            display: true,
+                            text: "Nationalités",
+                            fontSize: 20
+                        },
+                        scales: options
+                        
+                    }   
+                });
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        }); 
+
+    }
+
+    function afficheFiles() {
+
+        var colorArray = [];
+        jQuery.ajax({
+            type: "post",
+            url: "index.php?option=com_emundus&controller=stats&task=getfiles",
+            dataType: 'json',
+            success: function (result) {
+                if (filesChart != undefined || filesChart != null) {
+                    filesChart.destroy();
+                }
+
+                for(var i in result.val) {
+                    colorArray.push(randomColor());
+                }
+
+                var elem = document.getElementById('files');
+
+                filesChart = new Chart(elem, {
+                    type: 'pie',
+                    data: {
+                        datasets: [{
+                            data: result.nb,
+                            backgroundColor: colorArray
+                        }],
+
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        labels: result.val
+                    },
+                    options: {
+                        title:{
+                            display: true,
+                            text: "Dossiers",
+                            fontSize: 20
+                        }
+                        
+                    }   
+                });
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        }); 
+
+    }
+
     //// AddView Function uses 2 AJAXs
     // Fist AJAX Creates the view if possible
     function addView(view) {
@@ -525,23 +716,24 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             data:({view: view}),
             success: function (result) {
 
-                //// If the controller created the View it calls the second AJAX
-                // Second AJAX Links To the existing Fabrik List
                 if (result.status) {
                     jQuery.ajax({
                         type: "post",
-                        url: "index.php?option=com_emundus&controller=stats&task=linktofabrik&format=raw",
+                        url: "index.php?option=com_emundus&controller=stats&task=linkfabrik&format=raw",
                         dataType: 'json',
-                        data:({view: view}),
-                        success: function(resultFabrik) {
-                            if(resultFabrik.status) {
-                                 location.reload();
+                        data:({view: view, 
+                               listid: result.listid
+                            }),
+                        success: function(res) {
+                            if(res.status) {
+                                location.reload();
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
+                            alert("Impossible de relier à Fabrik");
                             console.log(jqXHR.responseText);
                         }
-                    });  
+                    })
                 } else {
                     alert("Vous n'avez pas la table ou les colonnes pour créer ce graphe.");
                     var nono = document.createElement("i");
@@ -557,31 +749,49 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
     jQuery(document).ready(function () {
 
+        jQuery('#viewTable').each(function() {
+            if(jQuery(this).find('tr').children("td").length < 2) {
+                jQuery(this).hide();
+            }
+        });
+
         if (<?php echo $nationality; ?>) {
-            var table = document.getElementById("viewTable");
-            var row =table.insertRow();
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            cell1.innerHTML = "Nationlalités" ;
-            cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id7');?>&Itemid=0'>Exporter les données</a>";
+            document.getElementById("nationRow").setAttribute("style", "display:block;");
+            var OffreClick = document.createElement("a");
+            var text = document.createTextNode("Exporter les données");
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
+            OffreClick.append(text);
+            document.getElementById("summaryNationality").append(OffreClick);
+            document.getElementById("summaryNationality").append(document.createElement("br"));
+
+            afficheNationality();
+
         }
 
         if (<?php echo $gender; ?>) {
-            var table = document.getElementById("viewTable");
-            var row =table.insertRow();
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            cell1.innerHTML = "Genres" ;
-            cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0'>Exporter les données</a>";
+            document.getElementById("genderRow").setAttribute("style", "display:block;");
+            var OffreClick = document.createElement("a");
+            var text = document.createTextNode("Exporter les données");
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
+            OffreClick.append(text);
+            document.getElementById("summaryGender").append(OffreClick);
+            document.getElementById("summaryGender").append(document.createElement("br"));
+
+            afficheGenre();
+
         }
 
         if (<?php echo $files; ?>) {
-            var table = document.getElementById("viewTable");
-            var row =table.insertRow();
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            cell1.innerHTML = "Dossiers" ;
-            cell2.innerHTML = "<a href ='index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id8');?>&Itemid=0'>Exporter les données</a>";
+            document.getElementById("filesRow").setAttribute("style", "display:block;");
+            var OffreClick = document.createElement("a");
+            var text = document.createTextNode("Exporter les données");
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
+            OffreClick.append(text);
+            document.getElementById("summaryFiles").append(OffreClick);
+            document.getElementById("summaryFiles").append(document.createElement("br"));
+
+            afficheFiles();
+
         }
 
         if (<?php echo $comptes; ?> ) {
@@ -644,7 +854,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             document.getElementById("summaryRelation").append(exportRel);
 
             var valuePeriodeRel = jQuery('.periodeRel').val();
-            afficherelations(valuePeriodeRel);
+            afficheRelations(valuePeriodeRel);
         }
     });
 
@@ -673,7 +883,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
     jQuery('.periodeRel').on('change',function () {
         var valuePeriodeRel = jQuery(this).val();
-        afficherelations(valuePeriodeRel);
+        afficheRelations(valuePeriodeRel);
     });
     
 </script>
