@@ -48,11 +48,10 @@ def isPassport(imagePath, keywords = ""):
 	# Read the image
 	image = cv2.imread(imagePath)
 
-	faces = detectFaces(image)
-	#print "Found {0} faces!".format(len(faces))
-
 	if len(image.shape) == 3: # if color image
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #convert to grayscale image
+	faces = detectFaces(image)
+	#print "Found {0} faces!".format(len(faces))
 
 	#averaging filter 9*9 to remove gaussian noisy(5*)
 	blur = cv2.GaussianBlur(image,(9,9),0)
@@ -86,9 +85,9 @@ def isPassport(imagePath, keywords = ""):
 def main(image, function, keywords=""):
 
 	if function == "isphoto":
-		if image.endswith('.pdf'):
+		if image.lower().endswith('.pdf'):
 			image = pdf2image(image, 250)
-		if image.endswith('.gif'):
+		if image.lower().endswith('.gif'):
 			im = Image.open(image)
 			img = im.convert('RGB')
 			pix = img.load()
@@ -111,7 +110,7 @@ def main(image, function, keywords=""):
 			return 0
 
 	if function == "ispassport":
-		if image.endswith('.pdf'):
+		if image.lower().endswith('.pdf'):
 			image = pdf2image(image, 350)
 		res = isPassport(image, keywords)
 		if res == 1:
