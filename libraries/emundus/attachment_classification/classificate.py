@@ -98,8 +98,8 @@ def isPassport(imagePath, keywords = ""):
 		key_t = keywords.split(";")
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
 		keymatch = [m.findall(char) for m in matchkeywords if m.findall(char)]
-		
-	if (len(faces) > 0 and match.group() and keymatch) or (len(faces) > 0  and keymatch) or (len(faces) > 0 and classresult == "passport") or (match.group() and classresult == "passport") or (keymatch and classresult == "passport") or (match.group() and len(faces) > 0 ):
+
+	if (len(faces) > 0 and match and keymatch) or (len(faces) > 0  and keymatch) or (len(faces) > 0 and classresult == "passport") or (match and classresult == "passport") or (keymatch and classresult == "passport") or (match and len(faces) > 0 ):
 		return 1
 	#elif (len(faces) > 0  and keymatch) or (len(faces) > 0  and match):
 		#return 0.75
