@@ -69,10 +69,14 @@ def isPhoto(imagePath):
 def isPassport(imagePath, keywords = ""):
 	# Read the image
 	image = cv2.imread(imagePath)
+	faces = detectFaces(image)
+	height, width = image.shape[:2]
+	if height >= 3000 and width >= 3000:
+		image = cv2.resize(image, (height / 3, width / 3)) 
+	
 
 	if len(image.shape) == 3: # if color image
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #convert to grayscale image
-	faces = detectFaces(image)
 	classresult = getClassResult(image)
 	#print "Found {0} faces!".format(len(faces))
 
@@ -86,16 +90,16 @@ def isPassport(imagePath, keywords = ""):
 	image = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
           cv2.THRESH_BINARY,11,2)
 
-
 	char = getString(image)
+	#char = "ezgcbzv<brkzbfnfyhgbv"
 	match = re.search(r'\w+[<]+\w+', char)
 	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
 		keymatch = [m.findall(char) for m in matchkeywords if m.findall(char)]
-	
-	if (len(faces) > 0 and match and keymatch) or (len(faces) > 0  and keymatch) or classresult == "passport":
+		
+	if (len(faces) > 0 and match.group() and keymatch) or (len(faces) > 0  and keymatch) or (len(faces) > 0 and classresult == "passport") or (match.group() and classresult == "passport") or (keymatch and classresult == "passport") or (match.group() and len(faces) > 0 ):
 		return 1
 	#elif (len(faces) > 0  and keymatch) or (len(faces) > 0  and match):
 		#return 0.75
@@ -106,7 +110,6 @@ def isPassport(imagePath, keywords = ""):
 
 	
 def main(image, function, keywords=""):
-
 	if function == "isphoto":
 		if image.lower().endswith('.pdf'):
 			image = pdf2image(image, 250)
@@ -123,6 +126,7 @@ def main(image, function, keywords=""):
 
 			img.save(image[:-4]+'.jpg')
 			image = image[:-4]+'.jpg'
+
 		res = isPhoto(image)
 
 		if res == 1:
@@ -135,6 +139,8 @@ def main(image, function, keywords=""):
 	if function == "ispassport":
 		if image.lower().endswith('.pdf'):
 			image = pdf2image(image, 350)
+
+		
 		res = isPassport(image, keywords)
 		if res == 1:
 			#print 'yes, it''s a passeport 100%'
