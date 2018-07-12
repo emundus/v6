@@ -23,7 +23,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
     
         <div class="col-md-6" style="padding-left: 10%;" >
             <table id="userTable">
-                <tr><td>Type de compte:</td>
+                <tr><td><?php echo JText::_("USER_TYPE"); ?></td>
                     <td>
                         
                         <select class="compte" id="compte">
@@ -35,15 +35,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                     </td>
                 </tr>
 
-                <tr><td> Période: </td>
+                <tr><td> <?php echo JText::_("PERIODE"); ?> </td>
                     <td>
                         <select class="periodeCompte" >
-                            <option value='0'>Dernière semaine</option>
-                            <option value='1'>Deux dernières semaines</option>
-                            <option value='2' selected>Dernier mois</option>
-                            <option value='3'>Trois derniers mois</option>
-                            <option value='4'>Six derniers mois</option>
-                            <option value='5'>Dernière année</option>
+                            <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
+                            <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
+                            <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
+                            <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
+                            <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
+                            <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
                         </select>
                     </td>
                 </tr>
@@ -59,7 +59,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                     }
                 }
                 
-                echo "<p><i>Nombre d'inscriptions : </i>$count </p>" ;
+                echo "<p><i>" . JText::_("USER_GRAPH_LABEL") ."</i>$count </p>" ;
                 
             ?>
         </div>
@@ -76,15 +76,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
         <div class="col-md-6" style="padding-left: 10%;">
             <table>
-            <tr><td>Période:</td>
+            <tr><td><?php echo JText::_("PERIODE"); ?></td>
                 <td>
                     <select class="periodeCand" >
-                        <option value='0'>Dernière semaine</option>
-                        <option value='1'>Deux dernières semaines</option>
-                        <option value='2' selected>Dernier mois</option>
-                        <option value='3'>Trois derniers mois</option>
-                        <option value='4'>Six derniers mois</option>
-                        <option value='5'>Dernière année</option>
+                        <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
+                        <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
+                        <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
+                        <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
+                        <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
+                        <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
                     </select>
                 </td>
             </tr>
@@ -98,7 +98,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                     foreach ($candidature as $candidatures) {
                         $countCandidature += $candidatures['nombre'];
                     }
-                    echo "<p><i>Nombre de candidature des offres: </i>$countCandidature</p>";
+                    echo "<p><i>" . JText::_("CANDIDATE_TOTAL") ."</i>$countCandidature</p>";
                 ?>
             </div>
         </div>
@@ -111,7 +111,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         $countConsultation += $cb['nombre'];
                     }
 
-                    echo "<p><i>Nombre de consultation des offres: </i>$countConsultation " ;
+                    echo "<p><i>" . JText::_("CONSULT_TOTAL") ."</i>$countConsultation " ;
                 ?>
             </div>
         </div>
@@ -127,15 +127,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         
         <div class="col-md-6" style="padding-left: 10%;">
             <table>
-            <tr><td> Période: </td>
+            <tr><td><?php echo JText::_("PERIODE"); ?></td>
                 <td>
                     <select class="periodeCo" >
-                        <option value='0'>Dernière semaine</option>
-                        <option value='1'>Deux dernières semaines</option>
-                        <option value='2' selected>Dernier mois</option>
-                        <option value='3'>Trois derniers mois</option>
-                        <option value='4'>Six derniers mois</option>
-                        <option value='5'>Dernière année</option>
+                        <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
+                        <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
+                        <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
+                        <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
+                        <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
+                        <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
                     </select>
                 </td>
             </tr>
@@ -164,15 +164,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
         <div class="col-md-6" style="padding-left: 10%;">            
             <table>
-            <tr><td> Période: </td>
+            <tr><td><?php echo JText::_("PERIODE"); ?></td>
                 <td>
                     <select class="periodeRel" >
-                        <option value='0'>Dernière semaine</option>
-                        <option value='1'>Deux dernières semaines</option>
-                        <option value='2' selected>Dernier mois</option>
-                        <option value='3'>Trois derniers mois</option>
-                        <option value='4'>Six derniers mois</option>
-                        <option value='5'>Dernière année</option>
+                        <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
+                        <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
+                        <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
+                        <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
+                        <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
+                        <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
                     </select>
                 </td>
             </tr>
@@ -346,7 +346,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         data: {
                             labels: result.datearray,
                             datasets: [{
-                                label: "Nombre de comptes "+opt.text+" créés",
+                                label: "<?php echo JText::_("USER_GRAPH_LABEL"); ?>",
                                 data: result.countarray,
                                 borderColor: 'rgba(0, 99, 132, 0.6)'
                             }]
@@ -354,7 +354,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         options: {
                             title:{
                                 display: true,
-                                text: "Création de comptes",
+                                text: "<?php echo JText::_("USER_GRAPH_TITLE"); ?>",
                                 fontSize: 20
                             },
                             elements: { point: { radius: 1 } } ,
@@ -641,6 +641,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                         }],
                     },
                     options: {
+                        legend: {
+                            display: false,
+                        },
                         title:{
                             display: true,
                             text: "Nationalités",
@@ -758,8 +761,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         if (<?php echo $nationality; ?>) {
             document.getElementById("nationRow").setAttribute("style", "display:block;");
             var OffreClick = document.createElement("a");
-            var text = document.createTextNode("Exporter les données");
-            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
+            var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID7"); ?>");
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id7');?>&Itemid=0' );
             OffreClick.append(text);
             document.getElementById("summaryNationality").append(OffreClick);
             document.getElementById("summaryNationality").append(document.createElement("br"));
@@ -771,7 +774,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         if (<?php echo $gender; ?>) {
             document.getElementById("genderRow").setAttribute("style", "display:block;");
             var OffreClick = document.createElement("a");
-            var text = document.createTextNode("Exporter les données");
+            var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID9"); ?>");
             OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
             OffreClick.append(text);
             document.getElementById("summaryGender").append(OffreClick);
@@ -784,8 +787,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         if (<?php echo $files; ?>) {
             document.getElementById("filesRow").setAttribute("style", "display:block;");
             var OffreClick = document.createElement("a");
-            var text = document.createTextNode("Exporter les données");
-            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
+            var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID8"); ?>");
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id8');?>&Itemid=0' );
             OffreClick.append(text);
             document.getElementById("summaryFiles").append(OffreClick);
             document.getElementById("summaryFiles").append(document.createElement("br"));
@@ -798,14 +801,14 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
            
             document.getElementById("userRow").setAttribute("style", "display:block;");
             var OffreClick = document.createElement("a");
-            var text = document.createTextNode("Exporter les données");
+            var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID1"); ?>");
             OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0' );
             OffreClick.append(text);
             document.getElementById("userSummary").append(OffreClick);
             document.getElementById("userSummary").append(document.createElement("br"));
 
             var contacts = document.createElement("a");
-            text = document.createTextNode("Exporter les contacts");
+            text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID2"); ?>");
             contacts.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id2');?>&Itemid=0' );
             contacts.append(text);
             document.getElementById("userSummary").append(contacts);
@@ -818,13 +821,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         if (<?php echo $consult; ?>  && <?php echo $cand; ?>) {
             document.getElementById("offerRow").setAttribute("style", "display:block;");
             var exportDonnees1 = document.createElement("a");
-            text = document.createTextNode("Exporter les données");
+            text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID3"); ?>");
             exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0' );
             exportDonnees1.append(text);
             document.getElementById("summaryOffres").append(exportDonnees1);
 
             var exportCand = document.createElement("a");
-            text = document.createTextNode("Exporter les données");
+            text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID5"); ?>");
             exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0' );
             exportCand.append(text);
             document.getElementById("summaryCandidature").append(exportCand);
@@ -836,7 +839,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         if (<?php echo $con; ?> ) {
             document.getElementById("connectionRow").setAttribute("style", "display:block;");
             var exportConnexion = document.createElement("a");
-            text = document.createTextNode("Exporter les données");
+            text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID4"); ?>");
             exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0' );
             exportConnexion.append(text);
             document.getElementById("summaryConnexion").append(exportConnexion);
@@ -848,7 +851,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         if (<?php echo $rels; ?>) {
             document.getElementById("relationRow").setAttribute("style", "display:block;");
             exportRel = document.createElement("a");
-            text = document.createTextNode("Exporter les données");
+            text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID6"); ?>");
             exportRel.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id6');?>&Itemid=0' );
             exportRel.append(text);
             document.getElementById("summaryRelation").append(exportRel);
