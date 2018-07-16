@@ -86,6 +86,7 @@ if os.path.exists(filename):
 		f.write('Datetime\t\tPriority\t\tClientip\t\tCategory\t\tType\t\tMessage\t\tStatus \n')
 		
 		#load a progressbar
+		
 		bar = progressbar.ProgressBar(maxval=len(data), \
 			widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
 		bar.start()
@@ -163,7 +164,6 @@ if os.path.exists(filename):
 			sleep(0.1)
 		bar.finish()
 		print "end passports processing"
-		
 		
 		# get CV
 		print "**********************************************************"

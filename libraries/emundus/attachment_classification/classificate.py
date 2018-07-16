@@ -8,6 +8,8 @@ from pdf2image import convert_from_path
 import face_recognition
 from scipy import ndimage
 import numpy as np
+import textract
+
 
 import mahotas as mt
 from sklearn.svm import LinearSVC
@@ -50,6 +52,10 @@ def detectFaces(image):
 def getString(image):
 	char = image_to_string(image,config='-c tessedit_char_whitelist=<0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ -psm 6')
 	return char 
+
+def getText(pdf):
+	text = textract.process(pdf)
+	return text
 
 # is image a human photo? 
 def isPhoto(imagePath):
@@ -119,18 +125,14 @@ def isPassport(imagePath, keywords = ""):
 		return 0
 
 # is image a cv?
-def isCv(imagePath, keywords = ""):
-	# Read the image
-	image = cv2.imread(imagePath)
-	if len(image.shape) == 3:
-		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def isCv(pdf, keywords = ""):
 	# char contains ocr result string
-	char = getString(image)
+	text = getText(pdf)
 	if keywords:
 		key_t = keywords.split(";")
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
-		keymatch = [m.findall(char) for m in matchkeywords if m.findall(char)]
-	if ('Curriculum vitae' in char) or keymatch:
+		keymatch = [m.findall(text) for m in matchkeywords if m.findall(text)]
+	if ('Curriculum vitae' in text) or keymatch:
 			return 1
 	else:
 		return 0
@@ -171,9 +173,6 @@ def main(image, function, keywords=""):
 			return 0
 	
 	if function == "iscv":
-		if image.lower().endswith('.pdf'):
-			image = pdf2image(image, 250)
-		
 		res = isCv(image, keywords)
 		if res == 1:
 			return 1
