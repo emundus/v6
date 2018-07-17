@@ -1,0 +1,57 @@
+************************************************************
+********************* ATTACHMENTS CLASSIFICATION ***********
+********************* 	 INSTALLATION ON LINUX	 ***********
+************************************************************
+
+Serveur linux
+
+- Installer python 2.7:
+	apt-get install python2.7
+
+- Installer les librairies dépendantes:
+	* install poppler on server
+	apt-get install poppler-utils
+
+	* install cmake on server
+	apt-get install cmake
+	
+	* install tesseract
+	apt-get install tesseract-ocr
+
+- librairies python à installer:
+
+	* install pillow
+	pip install pillow
+
+	* install cv2
+	pip install opencv-python
+
+	* install pytesseract ocr
+	pip install pytesseract
+
+	* install pdf2image/ librairie de conversion de pdf vers image
+	pip install pdf2image
+
+	* install face_recognition
+	pip install face_recognition
+
+	*install mysql connector
+	pip install mysql-connector
+
+	*install requests 
+	pip install requests
+
+	*install mahotas
+	pip install mahotas
+	
+	*install scikit-learn
+	pip install -U scikit-learn
+
+	*install progress bar
+	pip install progressbar2
+	
+	*install scipy
+	pip install scipy
+
+	* install textract
+	pip install textract

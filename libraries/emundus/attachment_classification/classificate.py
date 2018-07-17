@@ -93,25 +93,28 @@ def isPassport(imagePath, keywords = ""):
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #convert to grayscale image
 	classresult = getClassResult(image)
 	#print "Found {0} faces!".format(len(faces))
-	#print classresult
+
 	#averaging filter 9*9 to remove gaussian noisy(5*)
 	blur = cv2.GaussianBlur(image,(9,9),0)
 	blur = cv2.GaussianBlur(blur,(9,9),0)
 	blur = cv2.GaussianBlur(blur,(9,9),0)
 	blur = cv2.GaussianBlur(blur,(9,9),0)
 	blur = cv2.GaussianBlur(blur,(9,9),0)
+
 	#image binarisation using gaussian threshold 
 	image = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-          cv2.THRESH_BINARY,11,2)
+        cv2.THRESH_BINARY,11,2)
 	
 	kernel = np.ones((5,5),np.uint8)
 	image = cv2.erode(image,kernel,iterations = 1) #image erode for caractere restitution
 	image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel) #image closing morphology for noisy deletion
 
 	char = getString(image)
+
 	#print char
 	#cv2.imshow('hdb', image)
 	#cv2.waitKey(0)
+
 	match = re.search(r'\w+[<]+\w+', char)
 	keymatch = []
 	if keywords:
@@ -128,12 +131,26 @@ def isPassport(imagePath, keywords = ""):
 def isCv(pdf, keywords = ""):
 	# char contains ocr result string
 	text = getText(pdf)
+	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
-		keymatch = [m.findall(text) for m in matchkeywords if m.findall(text)]
-	if ('Curriculum vitae' in text) or keymatch:
-			return 1
+		keymatch = [m.findall(text.lower()) for m in matchkeywords if m.findall(text.lower())]
+	if ('curriculum vitae' in text.lower()) or ('curriculum' in text.lower()) or keymatch:
+		return 1
+	else:
+		return 0
+
+def isMotivation(pdf, keywords = ""):
+	# char contains ocr result string
+	text = getText(pdf)
+	keymatch = []
+	if keywords:
+		key_t = keywords.split(";")
+		matchkeywords = [re.compile(f ,re.I) for f in key_t]
+		keymatch = [m.findall(text.lower()) for m in matchkeywords if m.findall(text.lower())]
+	if ('dear' in text.lower()) or keymatch:
+		return 1
 	else:
 		return 0
 
@@ -179,6 +196,12 @@ def main(image, function, keywords=""):
 		else:
 			return 0
 
+	if function == "ismotivation":
+		res = isMotivation(image, keywords)
+		if res == 1:
+			return 1
+		else:
+			return 0
 
 
 

@@ -42,8 +42,8 @@ config = {
   'password': password,
   'host':host,
   'port':'8889',
-  'database': db,
-  'raise_on_warnings': True,
+  'database': db
+  
 }
 
 cnx = mysql.connector.connect(**config)
@@ -82,8 +82,9 @@ if os.path.exists(filename):
 	if current_week < fileweek:
 		tar = tarfile.open(parent+'/logs/com_emundus.classification.'+ fileyearweek +'.php.tar.gz', "w:gz")
 		open(filename, 'w+')
-	with open(filename, 'a') as f:
-		f.write('Datetime\t\tPriority\t\tClientip\t\tCategory\t\tType\t\tMessage\t\tStatus \n')
+	with open(filename, 'r+') as f:
+		if not f.read(1):
+			f.write('Datetime\t\tPriority\t\tClientip\t\tCategory\t\tType\t\tMessage\t\tStatus \n')
 		
 		#load a progressbar
 		
@@ -110,7 +111,6 @@ if os.path.exists(filename):
 				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tERROR\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found\n')
 			bar.update(i)
 			sleep(0.1)
-			#print parent+"/"+filepath+ str(d[1])+"/"+d[2]
 		bar.finish()
 		print "end photos processing"
 		
@@ -215,3 +215,52 @@ if os.path.exists(filename):
 		bar.finish()
 		print "end CV processing"
 		
+		# get motivation
+		print "**********************************************************"
+		print "**************** MOTIVATIONS ******************************"
+		print "**********************************************************"
+
+		sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
+			from jos_emundus_uploads eu\
+			left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
+			where sa.lbl like '_motivation%' and eu.is_validated IS NULL order by eu.timedate ASC limit 100"
+
+		cur.execute(sql)
+		data = cur.fetchall()
+		print "motivation processing, please wait ..."
+		
+		# load a progressbar
+		bar = progressbar.ProgressBar(maxval=len(data), \
+			widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+		bar.start()
+		
+		i = 0
+		for d in data:
+			i += 1
+			if os.path.exists(parent+"/"+filepath+ str(d[1])+"/"+d[2]):
+				if d[4]:
+					valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "ismotivation", d[4])
+				else:
+					valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "ismotivation")
+				#insert log
+				if valid == 1:
+					status = "success"
+				if valid == 0:
+					status = "failed"
+				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
+
+				req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
+				cur.execute(req)
+				cnx.commit()
+				# after sql insertion, remove generated jpeg image
+				image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
+				if os.path.exists(image):
+					os.remove(image)
+			else:
+				#insert log			
+				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
+			
+			bar.update(i)
+			sleep(0.1)
+		bar.finish()
+		print "end motivation processing"
