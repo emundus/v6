@@ -3,6 +3,21 @@ defined('_JEXEC') or die('Access Deny');
 
 class modEmundusGraphsHelper {
 
+    public function getCountView($view) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('COUNT(*)')
+            ->from($view);
+
+        try {
+            return $db->loadResult();
+        } catch(Exception $e) {
+            JLog::add('Error getting account type stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
     // Get Every account From emundus_stats_nombre_comptes View To then Filter by user_ID
     public function getaccountType() {
         $db = JFactory::getDbo();

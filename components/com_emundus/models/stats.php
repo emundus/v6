@@ -29,7 +29,8 @@ class EmundusModelStats extends JModelLegacy {
         }
     }
 
-    public function addView($view) {
+    // $boolean is to return a boolean instead of the query String 
+    public function addView($view, $boolean = false) {
             $db = JFactory::getDbo();
             switch($view) {
                 case 'jos_emundus_stats_nombre_candidature_offre':
@@ -50,16 +51,7 @@ class EmundusModelStats extends JModelLegacy {
                                         FROM `jos_emundus_logs` `el`
                                         WHERE (`el`.`action_id` = 32)
                                         GROUP BY  `el`.`fnum_to`,date_format(`el`.`timestamp`,'%Y%m%d')";
-                    try {
-                        $db->setQuery($query);
-                        if(!empty($db->loadResult())) 
-                            $query = "CREATE VIEW " . $view . " AS " . $query;
-                        
-                    } catch(Exception $e) {
-                        JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                        return false;
-                    }
-                    
+                   
                 break;
 
                 case 'jos_emundus_stats_nombre_comptes':
@@ -80,15 +72,6 @@ class EmundusModelStats extends JModelLegacy {
                                         FROM `jos_emundus_setup_profiles`
                                         WHERE (`jos_emundus_setup_profiles`.`published` = 1))
                                     GROUP BY  `eu`.`profile`,date_format(`eu`.`registerDate`,'%Y%m%d')";
-                    try {
-                        $db->setQuery($query);
-                        if(!empty($db->loadResult())) 
-                            $query = "CREATE VIEW " . $view . " AS " . $query;
-                    } catch(Exception $e) {
-                        JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                        return false;
-                    }
-                    
                 break;
 
                 case 'jos_emundus_stats_nombre_connexions':
@@ -103,14 +86,6 @@ class EmundusModelStats extends JModelLegacy {
                                     FROM `jos_emundus_logs` `el`
                                     WHERE (`el`.`action_id` = -(2))
                                     GROUP BY  date_format(`el`.`timestamp`,'%Y%m%d')";
-                    try {
-                        $db->setQuery($query);
-                        if(!empty($db->loadResult())) 
-                            $query = "CREATE VIEW " . $view . " AS " . $query;
-                    } catch(Exception $e) {
-                        JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                        return false;
-                    }
                 break;
 
                 case 'jos_emundus_stats_nombre_consult_offre':
@@ -129,14 +104,6 @@ class EmundusModelStats extends JModelLegacy {
                                             FROM `jos_emundus_logs` `el`
                                             WHERE (`el`.`action_id` = 33)
                                             GROUP BY  `el`.`fnum_to`,date_format(`el`.`timestamp`,'%Y%m%d')";
-                        try {
-                            $db->setQuery($query);
-                            if(!empty($db->loadResult())) 
-                                $query = "CREATE VIEW " . $view . " AS " . $query;
-                        }catch(Exception $e) {
-                            JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                            return false;
-                        }
                 break;
 
                 case 'jos_emundus_stats_nombre_relations_etablies':
@@ -150,15 +117,6 @@ class EmundusModelStats extends JModelLegacy {
                                                 date_format(`er`.`timestamp`,'%Y') AS `_year`
                                         FROM `jos_emundus_relations` `er`
                                         GROUP BY  date_format(`er`.`timestamp`,'%Y%m%d')";
-                    try {
-                        $db->setQuery($query);
-                        if(!empty($db->loadResult())) 
-                            $query = "CREATE VIEW " . $view . " AS " . $query;
-                    }catch(Exception $e) {
-                        JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                        return false;
-                    }
-
                 break;
 
                 case 'jos_emundus_stats_nationality':
@@ -176,15 +134,6 @@ class EmundusModelStats extends JModelLegacy {
                                             WHERE ((`epd`.`nationality` is NOT null)
                                                 AND (`ecc`.`submitted` = 1))
                                             GROUP BY  `epd`.`nationality`";
-                    try {
-                        $db->setQuery($query);
-                        if(!empty($db->loadResult())) 
-                            $query = "CREATE VIEW " . $view . " AS " . $query;
-                    }catch(Exception $e) {
-                        JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                        return false;
-                    }
-
                 break;
 
                 case 'jos_emundus_stats_gender':
@@ -202,14 +151,6 @@ class EmundusModelStats extends JModelLegacy {
                                     WHERE ((`epd`.`gender` is NOT null)
                                         AND (`ecc`.`submitted` = 1))
                                     GROUP BY  `epd`.`gender`";
-                    try {
-                        $db->setQuery($query);
-                        if(!empty($db->loadResult())) 
-                            $query = "CREATE VIEW " . $view . " AS " . $query;
-                    }catch(Exception $e) {
-                        JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                        return false;
-                    }
                 break;
 
                 case 'jos_emundus_stats_files':
@@ -229,28 +170,44 @@ class EmundusModelStats extends JModelLegacy {
                                     LEFT JOIN `jos_emundus_setup_status` `ess` on((`ess`.`step` = `ecc`.`status`)))
                                     LEFT JOIN `jos_users` `u` on((`u`.`id` = `ecc`.`user_id`)))
                                     GROUP BY  `ecc`.`campaign_id`,`ecc`.`status`";
-                    try {
-                        $db->setQuery($query);
-                        if(!empty($db->loadResult())) 
-                            $query = "CREATE VIEW " . $view . " AS " . $query;
-                    }catch(Exception $e) {
-                        JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
-                        return false;
-                    }
+                    
                 break;
             }
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-                // Fuction which creates Entitre fabrik and returns the List id so we can link it after
-                $listId = $this->createFabrik($view, $columnNames);
             
-                return $listId;
-            } catch(Exception $e) {
-                JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
-                return false;
+            $db->setQuery($query);
+            if($boolean == true) {
+                try {
+
+                    return $db->loadResult();
+
+                }catch(Exception $e) {
+                    JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
+                }
             }
+            else {
+                try {
+                    $db->setQuery($query);
+                    
+                    if(!empty($db->loadResult())) 
+                        $query = "CREATE VIEW " . $view . " AS " . $query;
+                    
+                }catch(Exception $e) {
+                    JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
+                    return false;
+                }
+
+                $db->setQuery($query);
+                try {
+                            
+                    $db->execute();
+                    // Fuction which creates Entitre fabrik and returns the List id so we can link it after
+                    $listId = $this->createFabrik($view, $columnNames);
+                    return $listId;
+                } catch(Exception $e) {
+                    JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
+                    return false;
+                }
+            }   
     }
 
 

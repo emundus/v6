@@ -39,7 +39,10 @@ foreach ($viewArray as $key => $value) {
     $exist = $model->viewExist($key);
     // $exist = 1 or 0
     if ($exist == 0) {
-        $tableField .= '<tr><td>'.$value.'</td><td><button type="button" class="btn btn-primary" id="'.$key.'" onClick="addView(\''.$key.'\')">+</button></td></tr>';
+        // check it the view has any values.. no point to show with nothing in it
+        $viewCount = $model->addView($key, true);
+        if($viewCount)
+            $tableField .= '<tr><td>'.$value.'</td><td><button type="button" class="btn btn-primary" id="'.$key.'" onClick="addView(\''.$key.'\')">+</button></td></tr>';
     } else {
         switch($key) {
             case 'jos_emundus_stats_nombre_candidature_offre':
