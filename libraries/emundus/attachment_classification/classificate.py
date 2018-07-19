@@ -128,28 +128,41 @@ def isPassport(imagePath, keywords = ""):
 		return 0
 
 # is image a cv?
-def isCv(pdf, keywords = ""):
-	# char contains ocr result string
-	text = getText(pdf)
+def isCv(filepath, keywords = ""):
+	text = ""
+	if filepath.lower().endswith('.pdf'):
+		filepath = pdf2image(filepath, 250)
+		image = cv2.imread(filepath)
+		text = getString(image)
+
+	if filepath.lower().endswith('.doc')  or filepath.lower().endswith('.docx'):
+		text = getText(filepath)
 	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
 		keymatch = [m.findall(text.lower()) for m in matchkeywords if m.findall(text.lower())]
-	if ('curriculum vitae' in text.lower()) or ('curriculum' in text.lower()) or keymatch:
+	if keymatch:
 		return 1
 	else:
 		return 0
 
-def isMotivation(pdf, keywords = ""):
-	# char contains ocr result string
-	text = getText(pdf)
+def isMotivation(filepath, keywords = ""):
+	text = ""
+	if filepath.lower().endswith('.pdf'):
+		filepath = pdf2image(filepath, 250)
+		image = cv2.imread(filepath)
+		text = getString(image)
+
+	if filepath.lower().endswith('.doc')  or filepath.lower().endswith('.docx'):
+		text = getText(filepath)
+		
 	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
 		keymatch = [m.findall(text.lower()) for m in matchkeywords if m.findall(text.lower())]
-	if ('dear' in text.lower()) or keymatch:
+	if keymatch:
 		return 1
 	else:
 		return 0
