@@ -138,14 +138,14 @@ class EmundusModelApplication extends JModelList
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $expert_document_id = $eMConfig->get('expert_document_id', '36');
 
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, esc.label as campaign_label, esc.year, esc.training
+            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
             LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
             WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND (eu.attachment_id != '.$expert_document_id.')
             ORDER BY esa.ordering, eu.timedate ASC';
         } else {
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, esc.label as campaign_label, esc.year, esc.training
+            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
             LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
@@ -2767,5 +2767,21 @@ $q=2;
 	    	return $redirect;
 	    }
 
+    }
+
+    public function attachment_validation($attachment_id, $state)
+    {
+        $dbo = $this->getDbo();
+        try
+        {
+            $query = 'UPDATE #__emundus_uploads  SET `is_validated` = '.(int) $state.' WHERE `id` = '.(int) $attachment_id;
+            #die($query);
+            $dbo->setQuery($query);
+            return $dbo->execute();
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
     }
 }

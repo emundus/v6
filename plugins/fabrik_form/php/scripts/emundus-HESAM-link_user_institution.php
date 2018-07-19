@@ -13,29 +13,140 @@ defined('_JEXEC') or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Ratachement d'un utilisateur a une institution au moment de la création de son compte.
  */
-$profile = $data('jos_emundus_users___profile_raw')[0];
+$profile = $data['jos_emundus_users___profile_raw'][0];
 
+$db = JFactory::getDBO();
 // 1007 = researcher
 // 1008 = municipality
 if ($profile == 1007) {
 
 	// TODO: Adding a lab that is not in the list should now be done with the '+' button.
-	$institution_id = $data('jos_emundus_users___ecole_doctorale_raw')[0];
+	$institution_id = $data['jos_emundus_users___ecole_doctorale_raw'][0];
+
+	// Time to get the category ID from the inserted lab
+	$query = $db->getQuery(true);
+	$query->select($db->quoteName(['catid','name']))->from($db->quoteName('em_laboratoire'))->where($db->quoteName('id').' = '.$institution_id);
+	$db->setQuery($query);
+	try {
+		$institution = $db->loadObject();
+	} catch (Exception $e) {
+		// TODO: What to do if error? block user from account creation?? Might be too late.
+	}
+
+	// If the lab does not have a cat_id: add it.
+	if (empty($institution->catid)) {
+		//The category is that added into the Joomla system.
+		$parent_id = 107;
+
+		// Initialize a new category
+		$category = JTable::getInstance('Category');
+		$category->extension = 'com_contact';
+		$category->title = $institution->name;
+		$category->description = '';
+		$category->published = 1;
+		$category->access = 1;
+		$category->params = '{"target":"","image":""}';
+		$category->metadata = '{"page_title":"","author":"","robots":""}';
+		$category->language = '*';
+		// Set the location in the tree
+		$category->setLocation($parent_id, 'last-child');
+		// Check to make sure our data is valid
+		if (!$category->check()) {
+			JError::raiseNotice(500, $category->getError());
+			return false;
+		}
+		// Now store the category
+		if (!$category->store(true)) {
+			JError::raiseNotice(500, $category->getError());
+			return false;
+		}
+		// Build the path for our category
+		$category->rebuildPath($category->id);
+
+		// Add the cat_id to the lab.
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->update($db->quoteName('em_laboratoire'))->set($db->quoteName('catid').' = '.$category->id)->where('id = '.$institution_id);
+		$db->setQuery($query);
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			// TODO: What to do if error? block user from account creation?? Might be too late.
+			JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		}
+
+		// Set the catid so that we can add it to the user.
+		$institution->catid = $category->id;
+	}
 
 } elseif ($profile == 1008) {
 
-	// TODO: Adding a lab that is not in the list should now be done with the '+' button.
-	$institution_id = $data('jos_emundus_users___nom_de_structure_raw')[0];;
+	$institution_id = $data['jos_emundus_users___nom_de_structure_raw'][0];
+
+	// Time to get the category ID from the inserted lab
+	$query = $db->getQuery(true);
+	$query->select($db->quoteName(['catid','nom_de_structure']))->from($db->quoteName('em_municipalitees'))->where($db->quoteName('id').' = '.$institution_id);
+	$db->setQuery($query);
+	try {
+		$institution = $db->loadObject();
+	} catch (Exception $e) {
+		// TODO: What to do if error? block user from account creation?? Might be too late.
+	}
+
+	// If the municipality does not have a cat_id: create and add it.
+	if (empty($institution->catid)) {
+		//The parent ID of the category to create.
+		$parent_id = 106;
+
+		// Initialize a new category
+		$category = JTable::getInstance('Category');
+		$category->extension = 'com_contact';
+		$category->title = $institution->nom_de_structure;
+		$category->description = '';
+		$category->published = 1;
+		$category->access = 1;
+		$category->params = '{"target":"","image":""}';
+		$category->metadata = '{"page_title":"","author":"","robots":""}';
+		$category->language = '*';
+		// Set the location in the tree
+		$category->setLocation($parent_id, 'last-child');
+		// Check to make sure our data is valid
+		if (!$category->check()) {
+			JError::raiseNotice(500, $category->getError());
+			return false;
+		}
+		// Now store the category
+		if (!$category->store(true)) {
+			JError::raiseNotice(500, $category->getError());
+			return false;
+		}
+		// Build the path for our category
+		$category->rebuildPath($category->id);
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->update($db->quoteName('em_municipalitees'))->set($db->quoteName('catid').' = '.$category->id)->where('id = '.$institution_id);
+		$db->setQuery($query);
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			// TODO: What to do if error? block user from account creation?? Might be too late.
+			JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		}
+
+		// Set the catid so that we can add it to the user.
+		$institution->catid = $category->id;
+
+	}
 
 } else {
 	// Future PHd students don't need to be linked to an institution.
 	exit;
 }
 
-$db = JFactory::getDBO();
 $query = $db->getQuery(true);
-$columns = ['user', 'institution', 'profile', 'can_edit'];
-$values = [$data['jos_emundus_users___user_id'], $institution_id, $profile, 0];
+$columns = ['user', 'institution', 'profile', 'cat_id'];
+$values = [$data['jos_emundus_users___user_id_raw'], $institution_id, $profile, $institution->catid];
 $query->insert($db->quoteName('#__emundus_users_institutions'))->columns($db->quoteName($columns))->values(implode(',', $values));
 $db->setQuery($query);
 
@@ -45,4 +156,16 @@ try {
 	JLog::add('Error adding user link to institution in plugin/link_user_institution at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	// TODO: What to do if error? block user from account creation?? Might be too late.
 	return false;
+}
+
+
+// Add the cat_id to the user table as a university ID.
+$query = $db->getQuery(true);
+$query->update($db->quoteName('#__emundus_users'))->set($db->quoteName('university_id').' = '.$institution->catid)->where('user_id = '.$data['jos_emundus_users___user_id_raw']);
+$db->setQuery($query);
+try {
+	$db->execute();
+} catch (Exception $e) {
+	// TODO: What to do if error? block user from account creation?? Might be too late.
+	JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 }
