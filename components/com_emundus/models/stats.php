@@ -431,6 +431,25 @@ class EmundusModelStats extends JModelLegacy {
         return $query;
     }
 
+    public function countUser($val) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_stats_nombre_comptes'))
+            ->where($db->quoteName('profile_id'). ' = '. $db->quote($val));
+            
+        $db->setQuery($query);
+        
+        try {
+            return $db->loadResult();
+        } catch(Exception $e) {
+            JLog::add('Error getting stats on account types at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
     public function getAccountType($value, $periode) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -447,20 +466,20 @@ class EmundusModelStats extends JModelLegacy {
         }
     }
 
-    public function consultationOffre($periode) {
+    public function getOffres($periode) {
         $db = JFactory::getDbo();
         $p = self::getPeriodeData($periode);
 
-        $query = 'SELECT `titre`,`num_offre`, SUM(`nombre`) AS nb FROM
+        $query = 'SELECT COUNT(`id`) AS nb FROM
                 (
-                    SELECT * FROM jos_emundus_stats_nombre_consult_offre 
-                    WHERE _day >= DATE_SUB(CURDATE(), INTERVAL'.$p.')
-                    AND _day <= CURDATE()
-                ) AS groupDate
-                GROUP BY `num_offre`';
+                    SELECT * FROM jos_emundus_projet
+                    WHERE date_time >= DATE_SUB(CURDATE(), INTERVAL'.$p.')
+                    AND date_time <= CURDATE()
+                ) AS groupDate';
+
         $db->setQuery($query);
         try {
-	        return $db->loadAssocList();
+	        return $db->loadResult();
         } catch(Exception $e) {
 	        JLog::add('Error getting stats on offer consultations at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
 	        return false;
@@ -508,7 +527,10 @@ class EmundusModelStats extends JModelLegacy {
         $query  = $db->getQuery(true);
         $p = self::getPeriodeData($periode);
 
-        $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_relations_etablies'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE()');
+        $query
+            ->select('*')
+            ->from($db->quoteName('#__emundus_stats_nombre_relations_etablies'))
+            ->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE()');
         $db->setQuery($query);
         
 	    try {

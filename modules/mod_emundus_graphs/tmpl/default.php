@@ -3,11 +3,13 @@
 defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 $document = JFactory::getDocument();
+
 //Chart.js is the libary used for this module's graphs
 $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'Chart.min.js');
 //moment.js is a Date libary, using to retrieve missing dates 
 $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS.'css'.DS.'bootstrap.min.css');
+$document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-master'.DS.'semantic.min.css');
 ?>
 <div class="container">
 
@@ -51,19 +53,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         </div>
 
         <div class="col-md-6" id="userSummary"  >
-            <?php
-                $count = 0;
-                if ($comptes == 'true') {
-                    foreach ($usersGraph as $ug) {
-                        $count += $ug['nombre'];
-                    }
-                }
-                
-                echo "<p><i>" . JText::_("USER_GRAPH_LABEL") ."</i>$count </p>" ;
-                
-            ?>
+            <p id='userCount'><i><?php echo JText::_("USER_GRAPH_LABEL");?></i></p>
         </div>
-        <hr style='width: 100%; border-top: 5px solid #fff;'>
+        <div class="col-md-12">
+            <hr style='width: 100%; border-top: 5px solid #fff;'>
+        </div>
+        
     </div>
 
     
@@ -91,31 +86,21 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             </table>
         </div>
 
-        <div class="col-md-3" >
-            <div id="summaryCandidature" >
-                <?php 
-                    $countCandidature = 0;
-                    foreach ($candidature as $candidatures) {
-                        $countCandidature += $candidatures['nombre'];
-                    }
-                    echo "<p><i>" . JText::_("CANDIDATE_TOTAL") ."</i>$countCandidature</p>";
-                ?>
-            </div>
-        </div>
-
         <div class="col-md-3">
             <div id="summaryOffres">
-                <?php
-                    $countConsultation = 0;
-                    foreach ($consultationBar as $cb) {
-                        $countConsultation += $cb['nombre'];
-                    }
-
-                    echo "<p><i>" . JText::_("CONSULT_TOTAL") ."</i>$countConsultation " ;
-                ?>
+                <p id='countConsultation'><i><?php echo JText::_("CONSULT_TOTAL"); ?></i></p>
             </div>
         </div>
-        <hr style='width: 100%; border-top: 5px solid #fff;'>
+
+        <div class="col-md-3" >
+            <div id="summaryCandidature" >
+                    <p id='countCandidature'><i><?php echo JText::_("CANDIDATE_TOTAL"); ?></i></p>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <hr style='width: 100%; border-top: 5px solid #fff;'>
+        </div>
     </div>
 
 
@@ -143,16 +128,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         </div>
         <div class="col-md-6" style="padding-left: 10%;">
             <div id='summaryConnexion'>
-                <?php 
-                    $countConnexion = 0;
-                    foreach ($connections as $co) {
-                        $countConnexion += $co['nombre_connexions'];
-                    }             
-                    echo "<p><i>Nombre de connexions: </i>$countConnexion " ;
-                ?>
+                <p id='countConnexion'><i><?php echo JText::_("CONNEXION_TOTAL"); ?></i></p>
             </div>
         </div>
-        <hr style='width: 100%; border-top: 21px solid #fff;'>
+        <div class="col-md-12">
+            <hr style='width: 100%; border-top: 5px solid #fff;'>
+        </div>
     </div>
 
     <!-- Shows relation info  -->
@@ -181,16 +162,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
         <div class="col-md-6" style="padding-left: 10%;">
             <div id='summaryRelation'>
-                <?php 
-                    $countRelations = 0;
-                    foreach ($relations as $rel) {
-                        $countRelations += $rel['nombre_rel_etablies'];
-                    }
-                    echo "<p><i>Nombre de relations etablies: </i>$countRelations " ;
-                ?>
+                <p id='countRelations'><i><?php echo JText::_("RELATION_TOTAL"); ?></i></p>
             </div>
         </div>
-        <hr style='width: 100%; border-top: 5px solid #fff;'>
+        <div class="col-md-12">
+            <hr style='width: 100%; border-top: 5px solid #fff;'>
+        </div>
     </div>
 
     <!-- Shows gender info  -->
@@ -203,7 +180,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         <div class="col-md-6" style="padding-left: 10%;">
             <div id='summaryGender'></div>
         </div>
-        <hr style='width: 100%; border-top: 5px solid #fff;'>
+        <div class="col-md-12">
+            <hr style='width: 100%; border-top: 5px solid #fff;'>
+        </div>
     </div>
 
     <!-- Shows nationality info  -->
@@ -216,7 +195,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         <div class="col-md-6" style="padding-left: 10%;">
             <div id='summaryNationality'></div>
         </div>
-        <hr style='width: 100%; border-top: 5px solid #fff;'>
+        <div class="col-md-12">
+            <hr style='width: 100%; border-top: 5px solid #fff;'>
+        </div>
     </div>
 
     <!-- Shows files info  -->
@@ -229,7 +210,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         <div class="col-md-6" style="padding-left: 10%;">
             <div id='summaryFiles'></div>
         </div>
-        <hr style='width: 100%; border-top: 5px solid #fff;'>
+        <div class="col-md-12">
+            <hr style='width: 100%; border-top: 5px solid #fff;'>
+        </div>
     </div>
 
     <!-- Additional views  -->
@@ -301,6 +284,28 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         }],
     };
 
+    // Get total accounts created by user
+    /*
+    function countType(value) {
+        jQuery.ajax({
+            type: "post",
+            url: "index.php?option=com_emundus&controller=stats&task=countuser",
+            dataType: 'json',
+            data:({
+                value: value
+           }),
+           success: function(result) {
+                if(document.getElementById("userCount").childNodes.length > 1)
+                    document.getElementById("userCount").childNodes[1].remove();
+                document.getElementById("userCount").append(result.count);
+           },
+           error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            } 
+        });
+    }
+    */
+
     // Account function
     function afficheComptes(value,periode) {
         
@@ -317,6 +322,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
            }),
             success: function (result) {
                 if (result.status) {
+                    if(document.getElementById("userCount").childNodes.length > 1)
+                        document.getElementById("userCount").childNodes[1].remove();
+
+                    document.getElementById("userCount").append(result.count);
                     // Loop to get missing dates and create new value (0) for those dates
                     for (var i = 0; i < result.datearray.length; i++) {
                         //make sure we are not checking the last date in the labels array
@@ -361,6 +370,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                             scales: options
                         }
                     });
+
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -383,12 +393,23 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                 if (resultCand.status) {
                     jQuery.ajax({
                         type: "post",
-                        url: "index.php?option=com_emundus&controller=stats&task=getconsultation",
+                        url: "index.php?option=com_emundus&controller=stats&task=getoffres",
                         dataType: 'json',
                         data:({
                             periode: periode
                         }),
-                        success: function (resultCon) {
+                        success: function (resultOffre) {
+
+                            if(document.getElementById("countCandidature").childNodes.length > 1)
+                                document.getElementById("countCandidature").childNodes[1].remove();
+
+                            document.getElementById("countCandidature").append(resultCand.count);
+
+                            if(document.getElementById("countConsultation").childNodes.length > 1)
+                                document.getElementById("countConsultation").childNodes[1].remove();
+
+                            document.getElementById("countConsultation").append(resultOffre.countOffre);
+
                             var ctxLine = document.getElementById('candLigne').getContext('2d');
                             // destroy old canvas causing hover problems
                             if (offreChart != undefined || offreChart != null) {
@@ -397,16 +418,16 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
                             offreChart = new Chart(ctxLine, {
                                 type: 'horizontalBar',
                                 data: {
-                                    labels: resultCon.titre,
+                                    
                                     datasets: [
                                         {
-                                            label: "Consultations",
-                                            data: resultCon.countarray,
+                                            label: "Nombre d'offres",
+                                            data: [resultOffre.countOffre],
                                             backgroundColor: "#3e95cd",
                                         },
                                         {
                                             label: "Mise en relation",
-                                            data: resultCand.nbarray,
+                                            data: [resultCand.count],
                                             backgroundColor: "#8e5ea2",
                                         },
                                     ]
@@ -456,6 +477,11 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             data:({periode: periode}),
             success: function (result) {
                 if (result.status) {
+                    
+                    if(document.getElementById("countConnexion").childNodes.length > 1)
+                        document.getElementById("countConnexion").childNodes[1].remove();
+
+                    document.getElementById("countConnexion").append(result.count);
 
                     // Loop to get missing dates and create new value (0) for those dates
                     for (var i = 0; i < result.datearray.length; i++) {
@@ -517,7 +543,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
             data:({periode: periode}),
             success: function (result) {
                 if (result.status) {
-                    
+                    console.log(result.count);
+                    if(document.getElementById("countRelations").childNodes.length > 1)
+                        document.getElementById("countRelations").childNodes[1].remove();
+
+                    document.getElementById("countRelations").append(result.count);
+
                     // Loop to get missing dates and create new value (0) for those dates
                     for (var i = 0; i < result.datearray.length; i++) {
                         //make sure we are not checking the last date in the labels array
@@ -786,11 +817,20 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
         if (<?php echo $files; ?>) {
             document.getElementById("filesRow").setAttribute("style", "display:block;");
+
+            var button = document.createElement("div");
+            button.className = "btn";
+
+            var icon = document.createElement("i");
+            icon.className ="search icon";
+            button.append(icon);
+
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID8"); ?>");
             OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id8');?>&Itemid=0' );
             OffreClick.append(text);
-            document.getElementById("summaryFiles").append(OffreClick);
+            button.append(OffreClick);
+            document.getElementById("summaryFiles").append(button);
             document.getElementById("summaryFiles").append(document.createElement("br"));
 
             afficheFiles();
@@ -798,39 +838,79 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         }
 
         if (<?php echo $comptes; ?> ) {
-           
+           // create button to export user data 
             document.getElementById("userRow").setAttribute("style", "display:block;");
+
+            var button = document.createElement("div");
+            button.className = "btn";
+
+            var icon = document.createElement("i");
+            icon.className ="search icon";
+            button.append(icon);
+
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID1"); ?>");
             OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0' );
             OffreClick.append(text);
-            document.getElementById("userSummary").append(OffreClick);
+
+            button.append(OffreClick);
+            document.getElementById("userSummary").append(button);
+            
             document.getElementById("userSummary").append(document.createElement("br"));
+
+            // create button to see contacts
+            var buttonC = document.createElement("div");
+            buttonC.className = "btn";
+
+            var iconC = document.createElement("i");
+            iconC.className ="search icon";
+            buttonC.append(iconC);
 
             var contacts = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID2"); ?>");
             contacts.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id2');?>&Itemid=0' );
             contacts.append(text);
-            document.getElementById("userSummary").append(contacts);
+            buttonC.append(contacts);
+
+            document.getElementById("userSummary").append(buttonC);
 
             var valuePeriodecompte = jQuery('.periodeCompte').val();
-            var valueTimeLine = jQuery('.compte').val();
-            afficheComptes(valueTimeLine, valuePeriodecompte);
+            var value = jQuery('.compte').val();
+            afficheComptes(value, valuePeriodecompte);
+
         }
 
         if (<?php echo $consult; ?>  && <?php echo $cand; ?>) {
             document.getElementById("offerRow").setAttribute("style", "display:block;");
+
+            var buttonCon = document.createElement("div");
+            buttonCon.className = "btn";
+
+            var buttonCand = document.createElement("div");
+            buttonCand.className = "btn";
+
+            var icon1 = document.createElement("i");
+            icon1.className ="search icon";
+
+            var icon2 = document.createElement("i");
+            icon2.className ="search icon";
+            buttonCand.append(icon1);
+            buttonCon.append(icon2);
+            
+
             var exportDonnees1 = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID3"); ?>");
             exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0' );
             exportDonnees1.append(text);
-            document.getElementById("summaryOffres").append(exportDonnees1);
+            buttonCon.append(exportDonnees1);
+            document.getElementById("summaryOffres").append(buttonCon);
 
             var exportCand = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID5"); ?>");
             exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0' );
             exportCand.append(text);
-            document.getElementById("summaryCandidature").append(exportCand);
+            buttonCand.append(exportCand);
+            document.getElementById("summaryCandidature").append(buttonCand);
 
             var valuePeriodeCand = jQuery('.periodeCand').val();
             afficheOffres(valuePeriodeCand);
@@ -838,23 +918,42 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 
         if (<?php echo $con; ?> ) {
             document.getElementById("connectionRow").setAttribute("style", "display:block;");
+
+            var button = document.createElement("div");
+            button.className = "btn";
+
+            var icon = document.createElement("i");
+            icon.className ="search icon";
+            button.append(icon);
+
             var exportConnexion = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID4"); ?>");
             exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0' );
             exportConnexion.append(text);
-            document.getElementById("summaryConnexion").append(exportConnexion);
+            button.append(exportConnexion);
+            document.getElementById("summaryConnexion").append(button);
 
             var valuePeriodeCo = jQuery('.periodeCo').val();
             afficheConnections(valuePeriodeCo);
         }
 
         if (<?php echo $rels; ?>) {
+
             document.getElementById("relationRow").setAttribute("style", "display:block;");
+
+            var button = document.createElement("div");
+            button.className = "btn";
+
+            var icon = document.createElement("i");
+            icon.className ="search icon";
+            button.append(icon);
+
             exportRel = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID6"); ?>");
             exportRel.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id6');?>&Itemid=0' );
             exportRel.append(text);
-            document.getElementById("summaryRelation").append(exportRel);
+            button.append(exportRel);
+            document.getElementById("summaryRelation").append(button);
 
             var valuePeriodeRel = jQuery('.periodeRel').val();
             afficheRelations(valuePeriodeRel);
@@ -866,6 +965,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
         var value = jQuery(this).val();
         var valuePeriodecompte = jQuery('.periodeCompte').val();
         afficheComptes(value, valuePeriodecompte);
+        countType(value);
     });
 
     jQuery('.periodeCompte').on('change', function () {
