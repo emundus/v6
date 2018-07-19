@@ -88,6 +88,7 @@ class EmundusHelperFiles
         $filts_values   = explode(',', $menu_params->get('em_filters_values'));
         $filts_types    = explode(',', $menu_params->get('em_filters_options'));
 
+        //var_dump($menu_params);die;
         // All types of filters
         $filts_details  = [
             'profile'           => NULL,
@@ -166,7 +167,6 @@ class EmundusHelperFiles
             } else $filts_options[$filt_name] = '';
 
         }
-
         /*
         // on force avec la valeur du filtre défini dans les options de menu
         if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0])) {
@@ -190,18 +190,19 @@ class EmundusHelperFiles
 	            $filts_details['institution'] = $fd_with_param;
 	        }
 	    }
-
+        
         // Else statement is present due to the fact that programmes are group limited
         if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
             $fd_with_param = $params['programme'] + $filts_details['programme'];
             $params['programme'] = $filts_details['programme'];
             $filts_details['programme'] = $fd_with_param;
         } else {
+            $codes = $m_files->getAssociatedProgrammes($current_user->id);
+
             // ONLY FILES LINKED TO MY GROUP
-            if (is_array($filts_details['programme']) && count($filts_details['programme']) > 0)
+            if (((is_array($filts_details['programme']) && count($filts_details['programme']) > 0)) || $filts_details['programme'] !== NULL)
                 $programme = !empty($m_files->code) ? $m_files->code:'';
-            else
-                $programme = !empty($m_files->code) ? $m_files->code:null;
+           
             //////////////////////////////////////////
             //var_dump($params['programme']);
             if ((is_array($filts_details['programme']) && count(@$params['programme']) == 0) || @$params['programme'][0] == '%') {
@@ -210,7 +211,6 @@ class EmundusHelperFiles
             } elseif ((is_array($filts_details['programme']) && count($filts_details['programme']) == 0) || empty($filts_details['programme'])) {
                 $filts_details['programme'] = $programme;
             }
-            $codes = $m_files->getAssociatedProgrammes($current_user->id);
             if ((is_array($codes) && count($codes)) > 0 && isset($code)) {
                 $params['programme'] = array_merge($params['programme'], $codes);
                 $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
@@ -223,14 +223,13 @@ class EmundusHelperFiles
         if (empty($params['programme']))
             $params['programme'] = ["%"];
         
+        
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
-        
         $filters['filts_details'] = $filts_details;
         $filters['filts_options'] = $filts_options;
        
         $filters['tables'] = $tables;
-
         return $filters;
     }
 
@@ -333,7 +332,7 @@ class EmundusHelperFiles
         $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
        // var_dump($params);
        
-        if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
+        if (isset($filt_menu['programme'][0]) && ($filt_menu['programme'][0] == "%" || $filt_menu['programme'][0] == "")) {
             $where = '1=1';
         } elseif ((is_array($filt_menu['programme']) && count($filt_menu['programme']) > 0) && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $where = ' training IN ("'.implode('","', $filt_menu['programme']).'") ';
@@ -363,7 +362,7 @@ class EmundusHelperFiles
     public  function getProgrammes($code = array()) {
         $db = JFactory::getDBO();
         if (!empty($code) && is_array($code)) {
-            if ($code[0] == '%') {
+            if ($code[0] == '%' || $code[0] == '') {
                 // ONLY FILES LINKED TO MY GROUPS
                 require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
                 $m_users = new EmundusModelUsers();
@@ -1358,7 +1357,6 @@ class EmundusHelperFiles
         if (@$params['programme'] !== NULL) {
             $hidden = $types['programme'] != 'hidden' ? false : true;
             $programmeList = $h_files->getProgrammes($params['programme']);
-            
             $programme = '';
             if (!$hidden) {
                 $programme .= '<div id="programme">

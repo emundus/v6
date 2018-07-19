@@ -578,4 +578,25 @@ class EmundusControllerApplication extends JControllerLegacy
             exit();
         }
     }
+    public function attachment_validation()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', null);
+        $att_id = $jinput->getVar('att_id', null);
+        $state = $jinput->getVar('state', null);
+        $m_application = $this->getModel('Application');
+        $res = new stdClass();
+
+        if(EmundusHelperAccess::asAccessAction(4, 'c', JFactory::getUser()->id, $fnum))
+        {
+            $res->status = $m_application->attachment_validation($att_id, $state);
+            echo json_encode($res);
+            exit();
+        }
+        else
+        {
+            $res->msg = JText::_('YOU_ARE_NOT_ALLOWED_TO_DO_THAT');
+            exit();
+        }
+    }
 }
