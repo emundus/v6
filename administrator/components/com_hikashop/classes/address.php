@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -143,10 +143,14 @@ class hikashopAddressClass extends hikashopClass {
 		return $html;
 	}
 
-	function loadUserAddresses($user_id) {
+	function loadUserAddresses($user_id, $type = '') {
 		static $addresses = array();
-		if(isset($addresses[$user_id]))
-			return $addresses[$user_id];
+
+		if(empty($type))
+			$type = 'both';
+
+		if(isset($addresses[$user_id][$type]))
+			return $addresses[$user_id][$type];
 
 		if($user_id === 'reset_cache') {
 			$addresses = array();
@@ -155,11 +159,16 @@ class hikashopAddressClass extends hikashopClass {
 		if((int)$user_id == 0)
 			return array();
 
-		$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a WHERE a.address_user_id = '.(int)$user_id.' and a.address_published = 1 ORDER BY a.address_default DESC, a.address_id DESC';
-		$this->database->setQuery($query);
-		$addresses[$user_id] = $this->database->loadObjectList('address_id');
+		$filters = array('a.address_user_id = '.(int)$user_id, 'a.address_published = 1');
 
-		return $addresses[$user_id];
+		if($type != 'both')
+			$filters[] = 'a.address_type IN ('. $this->database->Quote($type) . ',' . $this->database->Quote('both') . ',' . $this->database->Quote('') . ')';
+
+		$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a WHERE '.implode(' AND ', $filters).' ORDER BY a.address_default DESC, a.address_id DESC';
+		$this->database->setQuery($query);
+		$addresses[$user_id][$type] = $this->database->loadObjectList('address_id');
+
+		return $addresses[$user_id][$type];
 	}
 
 	public function cleanCaches() {
@@ -204,7 +213,7 @@ class hikashopAddressClass extends hikashopClass {
 		}
 	}
 
-	function save(&$addressData, $order_id = 0, $type = 'shipping') {
+	public function save(&$addressData, $order_id = 0, $type = 'shipping') {
 		$app = JFactory::getApplication();
 		$new = empty($addressData->address_id);
 
@@ -243,6 +252,9 @@ class hikashopAddressClass extends hikashopClass {
 		if($new) {
 			if(!empty($addressData->address_user_id)) {
 				$query = 'SELECT count(*) as cpt FROM '.hikashop_table('address').' WHERE address_user_id = '.(int)$addressData->address_user_id.' AND address_published = 1 AND address_default = 1';
+				if(in_array($addressData->address_type, array('shipping', 'billing'))) {
+					$query .= ' AND address_type IN (\'\', \'both\', '.$this->database->Quote($addressData->address_type).')';
+				}
 				$this->database->setQuery($query);
 				$ret = $this->database->loadObject();
 				if($ret->cpt == 0) {
@@ -259,6 +271,20 @@ class hikashopAddressClass extends hikashopClass {
 			return false;
 
 		if(empty($addressData->address_id) || (int)$addressData->address_id > 0) {
+
+			if($new) {
+				if($addressData->address_published && in_array(@$addressData->address_type, array('', 'both'))) {
+					$config = hikashop_config();
+					if($config->get('distinguish_new_addresses', 1) && !$config->get('checkout_legacy',0)) {
+						$addressData->address_type = 'billing';
+						$duplicatedAddress = hikashop_copy($addressData);
+						$duplicatedAddress->address_type = 'shipping';
+						unset($duplicatedAddress->address_id);
+						parent::save($duplicatedAddress);
+					}
+				}
+			}
+
 			$status = parent::save($addressData);
 		}
 		if(!$status)
@@ -268,8 +294,34 @@ class hikashopAddressClass extends hikashopClass {
 
 		if(!empty($addressData->address_default) && !empty($oldData)) {
 			$query = 'UPDATE '.hikashop_table('address').' SET address_default = 0 WHERE address_user_id = '.(int)$oldData->address_user_id.' AND address_id != '.(int)$status;
+			if(!empty($type)) {
+				$query .= ' AND address_type=' . $this->database->Quote($type);
+			}
 			$this->database->setQuery($query);
 			$this->database->query();
+
+			if(!empty($type)) {
+				$config = hikashop_config();
+				if(!$config->get('checkout_legacy',0)) {
+					$query = 'SELECT * FROM #__hikashop_address WHERE address_user_id = '.(int)$oldData->address_user_id.' AND address_type IN (\'\', \'both\') AND address_published = 1 AND address_default = 1';
+					$this->database->setQuery($query);
+					$addresses = $this->database->loadObjectList();
+					if(!empty($addresses)) {
+						foreach($addresses as $alreadyDefaultAddress) {
+							$alreadyDefaultAddress->address_type = 'billing';
+							$duplicatedAddress = hikashop_copy($addressData);
+							$duplicatedAddress->address_type = 'shipping';
+							unset($duplicatedAddress->address_id);
+							if($type == $alreadyDefaultAddress->address_type)
+								$alreadyDefaultAddress->address_default = 0;
+							else
+								$duplicatedAddress->address_default = 0;
+							parent::save($alreadyDefaultAddress);
+							parent::save($duplicatedAddress);
+						}
+					}
+				}
+			}
 		}
 
 		if(!empty($oldData) && (int)$oldData->address_id != (int)$status) {
@@ -295,6 +347,7 @@ class hikashopAddressClass extends hikashopClass {
 		}
 
 		if($new) {
+			$addressData->address_id = (int)$status;
 			$dispatcher->trigger( 'onAfterAddressCreate', array( &$addressData ) );
 		} else {
 			$dispatcher->trigger( 'onAfterAddressUpdate', array( &$addressData ) );
@@ -303,12 +356,40 @@ class hikashopAddressClass extends hikashopClass {
 		return $status;
 	}
 
-	function frontSaveForm($task = '') {
+	public function frontSaveForm($task = '') {
 		$fieldsClass = hikashop_get('class.field');
 		$data = hikaInput::get()->get('data', array(), 'array');
 		$ret = array();
 
 		$user_id = hikashop_loadUser(false);
+
+		if(empty($task) && !empty($data['address'])) {
+			$formdata = array('address' => $data['address']);
+			$null = null;
+			$address = $fieldsClass->getFilteredInput('address', $null, 'ret', $formdata, false, 'frontcomp');
+
+			if(empty($address))
+				return array('id' => false, 'error' => $fieldsClass->messages);
+
+			$address_id = 0;
+			if(!empty($data['address']['address_id'])) {
+				$address->address_id = (int)$data['address']['address_id'];
+				$address_id = (int)$address_id;
+			}
+			if(!empty($data['address']['address_user_id']))
+				$address->address_user_id = (int)$data['address']['address_user_id'];
+			else
+				$address->address_user_id = hikashop_loadUser(false);
+
+			if(empty($address->address_id) && !empty($data['address']['address_type']))
+				$address->address_type = $data['address']['address_type'];
+			$ret = $this->save($address);
+
+			if($address_id != $ret)
+				return array('id' => $ret, 'previous_id' => $address_id);
+
+			return $ret;
+		}
 
 		$currentTask = 'billing_address';
 		if( (empty($task) || $task == $currentTask) && !empty($data[$currentTask])) {
@@ -320,14 +401,13 @@ class hikashopAddressClass extends hikashopClass {
 				$id = (int)@$billing_address->address_id;
 
 				$result = $this->save($billing_address, 0, 'billing');
-				if($result) {
-					$r = new stdClass();
-					$r->id = $result;
-					$r->previous_id = $id;
-					$ret[$currentTask] = $r;
-				}else{
+				if(!$result)
 					return false;
-				}
+
+				$r = new stdClass();
+				$r->id = $result;
+				$r->previous_id = $id;
+				$ret[$currentTask] = $r;
 			}
 		}
 
@@ -342,14 +422,13 @@ class hikashopAddressClass extends hikashopClass {
 				$id = (int)@$shipping_address->address_id;
 
 				$result = $this->save($shipping_address, 0, 'shipping');
-				if($result) {
-					$r = new stdClass();
-					$r->id = $result;
-					$r->previous_id = $id;
-					$ret[$currentTask] = $r;
-				}else{
+				if(!$result)
 					return false;
-				}
+
+				$r = new stdClass();
+				$r->id = $result;
+				$r->previous_id = $id;
+				$ret[$currentTask] = $r;
 			}
 		}
 
@@ -432,6 +511,7 @@ class hikashopAddressClass extends hikashopClass {
 		if(!$do){
 			return false;
 		}
+		$data = $this->get($elements);
 		$orderClass = hikashop_get('class.order');
 		$status = true;
 		if($orderClass->addressUsed($elements)){
@@ -446,18 +526,17 @@ class hikashopAddressClass extends hikashopClass {
 				}
 			}
 		}else{
-			$data = $this->get($elements);
+
 			if(!$order || (isset($data->address_published) && !$data->address_published)){
 				$status = parent::delete($elements);
 			}
 		}
 		if($status){
-			if(empty($data))
-				$data = $this->get($elements);
 			if(!empty($data->address_default)) {
-				$query = 'SELECT MIN(address_id) as address_id, MAX(address_default) as address_default FROM '.hikashop_table('address').' WHERE address_user_id = '.(int)$data->address_user_id.' AND address_published = 1';
+				$query = 'SELECT MIN(address_id) as address_id, MAX(address_default) as address_default FROM '.hikashop_table('address').' WHERE address_user_id = ' . (int)$data->address_user_id . ' AND address_published = 1 AND address_type = ' . $this->database->Quote($data->address_type);
 				$this->database->setQuery($query);
 				$ret = $this->database->loadObject();
+
 				if(!empty($ret) && (int)$ret->address_default == 0) {
 					$address=new stdClass();
 					$address->address_id = (int)$ret->address_id;
@@ -478,6 +557,49 @@ class hikashopAddressClass extends hikashopClass {
 			return false;
 		}
 		return true;
+	}
+
+	public function maxiFormat($address, $fields = null, $nlbr = false) {
+		static $templateAddress = null;
+		static $templateClassicalMode = true;
+		if($templateAddress === null) {
+			$config = hikashop_config();
+			$tpl = $config->get('address_template', '');
+			if(!empty($tpl)) {
+				$templateAddress = $tpl;
+			} else {
+				$params = null;
+				$js = null;
+				$app = JFactory::getApplication();
+				$view = $app->isAdmin() ? 'order' : 'address';
+				$templateAddress = hikashop_getLayout($view, 'address_template', $params, $js);
+			}
+		}
+
+		$ret = ''.$templateAddress;
+		if($templateClassicalMode) {
+			if(!empty($fields)) {
+				if(empty($this->fieldsClass))
+					$this->fieldsClass = hikashop_get('class.field');
+
+				foreach($fields as $field){
+					$fieldname = $field->field_namekey;
+					$ret = str_replace('{'.$fieldname.'}', $this->fieldsClass->show($field, @$address->$fieldname), $ret);
+				}
+			} elseif(!empty($address)) {
+				foreach($address as $k => $v) {
+					if(is_string($v))
+						$ret = str_replace('{' . $k . '}', $v, $ret);
+				}
+			}
+			$ret = str_replace(array("\r\n\r\n","\n\n","\r\r"),array("\r\n","\n","\r"), trim(preg_replace('#{(?:(?!}).)*}#i','',$ret)));
+		} else {
+
+		}
+
+		if($nlbr)
+			$ret = str_replace(array("\r\n","\r","\n"), '<br/>', $ret);
+		return $ret;
 	}
 
 	public function miniFormat($address, $fields = null, $format = '') {

@@ -12,7 +12,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 $doc = JFactory::getDocument();
-$doc->addStyleSheet( 'media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css' );
+$doc->addStyleSheet('media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
+$doc->addScript('media/com_emundus/lib/chosen/chosen.jquery.js');
+$doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
+
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
 
@@ -40,125 +43,48 @@ endif;
 echo $this->table->intro;
 
 ?>
-<style>
-	table {
-		font-family: Arial, sans-serif;
-		width: 100%;
-		float: right;
-		margin-bottom:50px;
-	}
-	td, th {
-		text-align: left;
-		padding: 10px;
-	}
-	p {
-		font-size: 16px;
-		color:black;
-	}
-	.em-search-engine-div-data {
-		width:95%; 
-		height:auto; 
-		text-align:justify;
-		border: 1px solid;
-		border-radius:5px;
-		padding: 10px;
-		box-shadow: 5px 10px #a22727;
-	}
-	.em-search-engine-filters {
-		width:55%;
-		float:left;
-		position:absolute;
-		padding-left:2%;
-		height: -webkit-fill-available;
 
-		
-	}
-	.em-search-engine-data {
-		margin-left:38%;
-		min-width:400px;
-	}
-	.fabrikDataContainer{
-		border-radius:5px;
-		display: grid;
-		grid-gap: 5px;
-	}
-	.filtertable{
-		border: 1px solid #b9b9b9f5; 
-		border-radius: 5px;
-		border-style: hidden; 
-		box-shadow: 0 0 10px 0 #a22727;
-		float:left
-	}
-	.fabrikButtonsContainer{
-		background-color:#d6d6d6;
-		border-radius:3px;
-		height:53px
-	}
-	.form{
-		margin-right: 15%;
-	}
-	
-	.main{
-		display:inline-flex;
-	}
-
-
-
-	
-	
-
-</style>
 <div class="main">
 	<div class="form">
 		<form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
 			
 			<?php
-			if ($this->hasButtons):
+            if ($this->hasButtons)
 				echo $this->loadTemplate('buttons');
-			endif;
-
-			
-			//for some really ODD reason loading the headings template inside the group
-			//template causes an error as $this->_path['template'] doesn't contain the correct
-			// path to this template - go figure!
-			/*$headingsHtml = $this->loadTemplate('headings');
-			echo $this->loadTemplate('tabs');*/
 			?>
 
 			<div class="fabrikDataContainer">
 				
-				<?php foreach ($this->pluginBeforeList as $c) :
+				<?php foreach ($this->pluginBeforeList as $c) {
 					echo $c;
-				endforeach;
+				}
 
 
 				$data = array();
 				$i = 0;
-				if(!empty($this->rows[0])){
-					foreach($this->rows[0] as $k=>$v){
+				if (!empty($this->rows[0])) {
+					foreach ($this->rows[0] as $k => $v) {
 						foreach ($this->headings as $key => $val) {
-							if(array_key_exists($key, $v->data)){
-								if(strcasecmp($v->data->$key , "oui") == 0)
+							if (array_key_exists($key, $v->data)) {
+								if (strcasecmp($v->data->$key, "oui") == 0)
 									$data[$i][$val] = $v->data->$key;
 								else
-									$data[$i][$key] = $v->data->$key;		
+									$data[$i][$key] = $v->data->$key;
 							}
+						}
+						if (array_key_exists('fabrik_view_url', $v->data)) {
+							$data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
 						}
 						$i = $i + 1;
 					}
-				}
-				
-				//var_dump($data);die;
+				} ?>
 
-				?>												
-
-				<div class="em-search-engine-filters" >
-					<?php
-						if ($this->showFilters && $this->bootShowFilters) :
+				<div class="em-search-engine-filters">
+					<?php if ($this->showFilters && $this->bootShowFilters)
 							echo $this->layoutFilters();
-						endif; 
 					?>
 				</div>
+
 				<div class="em-search-engine-data">
 					<table>
 						<thead>
@@ -176,35 +102,40 @@ echo $this->table->intro;
 						
 						<tbody>
 						
-							<?php  
+							<?php
 								$region=""; $department=""; $chercheur=""; $cherches=""; $themes="";
 								$gCounter = 0;
 								//var_dump($data);die;
-								foreach($data as $d){
+								foreach ($data as $d) {
 									$region 	= $d['data_regions___name'];
 									$department = $d['data_departements___departement_nom'];
 									$chercheur 	= strtolower($d['jos_emundus_setup_profiles___label']);
 
-									if(count(array_keys($d, "oui")) > 1){
-										$cherches  	= implode(",", array_keys($d, "oui"));
-										$cherches 	= strtolower(str_replace(","," </b></i>et<i><b> ", $cherches));	
-
-									}else{
-										$cherches	= strtolower(array_search("oui", $d));
+									if (count(array_keys($d, "oui")) > 1) {
+										$cherches = implode(",", array_keys($d, "oui"));
+										$cherches = strtolower(str_replace(","," </b></i>et<i><b> ", $cherches));
+									} else {
+										$cherches = strtolower(array_search("oui", $d));
 									}
-										$themes     = $d['jos_emundus_projet_620_repeat___themes'];
-									echo '<tr>
-											<td>
-												<div class="em-search-engine-div-data">
-													<p>En région <i><b>'.$region.'</b></i>, dans le département <i><b>'.$department.'</b></i>, un <i><b>'.$chercheur.'</b></i> cherche <i><b>'.$cherches.'</b></i> sur le thème <i><b>'.$themes.'</b></i></p>
-													<a class="em-search-engine-learn-more" >'.$d['fabrik_actions'].' Connectez-vous pour en savoir plus</a>
-												</div>
-											</td>
-										</tr>';
+
+                                    $themes = $d['jos_emundus_projet_620_repeat___themes'];
+									?>
+                                    <tr>
+                                        <td>
+                                            <div class="em-search-engine-div-data">
+                                                <p>En région <i><b><?php echo $region; ?></b></i>, dans le département <i><b><?php echo $department; ?></b></i>, un <i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i> sur le thème <i><b><?php echo $themes; ?></b></i></p>
+                                                <?php if (JFactory::getUser()->guest) :?>
+                                                    <div class="em-search-engine-learn-more"><a href="index.php?option=com_users&view=login"> Connectez-vous pour en savoir plus </a></div>
+                                                <?php else :?>
+                                                    <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php
 									unset($cherches);
 									unset($themes);
 									$gCounter++;
-
 								}
 
 							?>
@@ -213,10 +144,9 @@ echo $this->table->intro;
 							<tfoot>
 								<tr class="fabrik_calculations">
 
-								<?php
-								foreach ($this->headings as $key => $heading) :
+								<?php foreach ($this->headings as $key => $heading) :
 									$h = $this->headingClass[$key];
-									$style = empty($h['style']) ? '' : 'style="' . $h['style'] . '"';?>
+									$style = empty($h['style']) ? '' : 'style="' . $h['style'] . '"'; ?>
 									<td class="<?php echo $h['class']?>" <?php echo $style?>>
 										<?php
 										$cal = $this->calculations[$key];
@@ -233,10 +163,15 @@ echo $this->table->intro;
 					</table>
 				</div>
 				
-				
 				<?php print_r($this->hiddenFields);?>
 			</div>
 		</form>
 	</div>
+
+    <script>
+        jQuery(document).ready(function(){
+            jQuery('select.fabrik_filter[multiple]').chosen();
+        });
+    </script>
 	
 </div>

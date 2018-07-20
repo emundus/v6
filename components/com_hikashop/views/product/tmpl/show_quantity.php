@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,7 +47,7 @@ if(!empty($this->global_on_listing))
 $current_quantity = hikaInput::get()->getInt('quantity', $min_quantity);
 
 if(!isset($this->quantityLayout)) {
-	$quantityLayout = $this->config->get('product_quantity_display', 'show_default');
+	$quantityLayout = $this->config->get('product_quantity_display', 'show_default_div');
 	if(isset($this->row))
 		$quantityLayout = $this->getProductQuantityLayout($this->row);
 } else

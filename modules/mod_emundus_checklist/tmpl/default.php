@@ -6,7 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 if ($show_forms == 1) {
 
   if (count($forms) > 0) {
-    echo '<h3>'.JText::_($forms_title).'</h3>';
+    echo '<h3 class="em-checklist-title">'.JText::_($forms_title).'</h3>';
     echo '<ul>';
     foreach ($forms as $form) {
       $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$user->id. ' AND fnum like '.$db->Quote($user->fnum);
@@ -18,7 +18,7 @@ if ($show_forms == 1) {
       $class = $need.$active;
       $endlink= '</a>';
     ?>
-        <li id="mlf<?php echo $form->id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$form->title.$endlink; ?></div></li>
+        <li id="mlf<?php echo $form->id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.$form->title.$endlink; ?></div></li>
     <?php 
     }
     echo '</ul>';
@@ -31,7 +31,7 @@ if ($show_forms == 1) {
 if ($show_mandatory_documents == 1) {
 
   if (count($mandatory_documents) > 0) {
-    echo '<h3>'.JText::_($mandatory_documents_title).'</h3>';
+    echo '<h3 class="em-checklist-title">'.JText::_($mandatory_documents_title).'</h3>';
     echo '<ul>';
     foreach ($mandatory_documents as $attachment) {
       $query = 'SELECT count(id) FROM #__emundus_uploads up
@@ -44,7 +44,7 @@ if ($show_mandatory_documents == 1) {
       $class = $need.$active;
       $endlink= '</a>';
     ?>
-        <li id="ml<?php echo $attachment->_id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$attachment->value.$endlink; ?></div></li>
+        <li id="ml<?php echo $attachment->_id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.$attachment->value.$endlink; ?></div></li>
     <?php 
     }
     echo '</ul>';
@@ -57,7 +57,7 @@ if ($show_mandatory_documents == 1) {
 if ($show_optional_documents == 1) {
 
   if (count($optional_documents) > 0) {
-    echo '<h3>'.JText::_($optional_documents_title).'</h3>';
+    echo '<h3 class="em-checklist-title">'.JText::_($optional_documents_title).'</h3>';
     echo '<ul>';
     foreach ($optional_documents as $attachment) {
       $query = 'SELECT count(id) FROM #__emundus_uploads up
@@ -70,7 +70,7 @@ if ($show_optional_documents == 1) {
       $class = $need.$active;
       $endlink= '</a>';
     ?>
-        <li id="ml<?php echo $attachment->_id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$attachment->value.$endlink; ?></div></li>
+        <li id="ml<?php echo $attachment->_id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.$attachment->value.$endlink; ?></div></li>
     <?php 
     }
     echo '</ul>';

@@ -23,7 +23,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '3.4.0';
+	var $version = '3.5.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -761,10 +761,19 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			try{$this->db->query();}catch(Exception $e){}
 		}
 
-		if(version_compare($this->fromVersion, '3.3.1', '<')) {
+		if(version_compare($this->fromVersion, '3.4.0', '<')) {
 			$this->databaseHelper->addColumns('discount', array(
 				"`discount_shipping_percent` decimal(12,3) NOT NULL DEFAULT '0.000'",
 			));
+		}
+
+		if(version_compare($this->fromVersion, '3.4.1', '<')) {
+			$config = hikashop_config();
+			$discount_before_tax = $config->get('discount_before_tax');
+			$query = 'INSERT IGNORE INTO `#__hikashop_config` (`config_namekey`,`config_value`,`config_default`) VALUES
+				('.$this->db->Quote('coupon_before_tax').','.$this->db->Quote($discount_before_tax).','.$this->db->Quote($discount_before_tax).')';
+			$this->db->setQuery($query);
+			$this->db->query();
 		}
 	}
 
@@ -902,6 +911,10 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			'order_admin_notification.subject' => 'ORDER_ADMIN_NOTIFICATION_SUBJECT',
 			'order_admin_notification.published' => 1,
 			'order_admin_notification.template' => 'admin',
+			'payment_notification.html' => 1,
+			'payment_notification.subject' => 'PAYMENT_NOTIFICATION_SUBJECT',
+			'payment_notification.published' => 1,
+			'payment_notification.template' => 'admin',
 			'new_comment.html' => 1,
 			'new_comment.template' => 'admin_notification',
 			'new_comment.subject' => 'NEW_COMMENT_NOTIFICATION_SUBJECT',

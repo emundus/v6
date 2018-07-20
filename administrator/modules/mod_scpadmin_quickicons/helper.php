@@ -115,7 +115,7 @@ abstract class modScpadminQuickIconsHelper
 			$undefined_vuln_extensions = $db->loadResult();
 			
 			if ( $vuln_extensions > 0 ) {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_vulnerable_extensions_image = 'warning';
 				} else { 
 					$check_vulnerable_extensions_image = 'fa fa-exclamation';
@@ -135,7 +135,7 @@ abstract class modScpadminQuickIconsHelper
 				
 				$check_vulnerable_extensions_label = JText::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
 			} else if  ( $undefined_vuln_extensions > 0 ) {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_vulnerable_extensions_image = 'help';
 				} else { 
 					$check_vulnerable_extensions_image = 'fa fa-question-circle ';
@@ -156,7 +156,7 @@ abstract class modScpadminQuickIconsHelper
 				$check_vulnerable_extensions_label = JText::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
 			} else {
 				
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_vulnerable_extensions_image = 'checkmark';
 				} else { 
 					$check_vulnerable_extensions_image = 'fa fa-check-circle ';
@@ -193,7 +193,7 @@ abstract class modScpadminQuickIconsHelper
 			(int) $logs_pending = $cpanel_model->LogsPending();
 				
 			if ( $logs_pending == 0 ) {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_not_readed_logs_image = 'drawer';
 				} else { 
 					$check_not_readed_logs_image = 'fa fa-inbox';
@@ -213,7 +213,7 @@ abstract class modScpadminQuickIconsHelper
 				
 				$check_not_readed_logs_label = JText::_('MOD_SECURITYCHECKPRO_NOT_UNREAD_LOGS');
 			} else {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_not_readed_logs_image = 'drawer-2';
 				} else { 
 					$check_not_readed_logs_image = 'fapro fa-inbox-in';
@@ -250,7 +250,7 @@ abstract class modScpadminQuickIconsHelper
 			$files_with_incorrect_permissions = $filemanager_model->loadStack("filemanager_resume","files_with_incorrect_permissions");
 				
 			if ( $files_with_incorrect_permissions == 0 ) {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_file_permissions_image = 'checkbox';
 				} else { 
 					$check_file_permissions_image = 'fa fa-check-square';
@@ -270,7 +270,7 @@ abstract class modScpadminQuickIconsHelper
 						
 				$check_file_permissions_label = JText::_('MOD_SECURITYCHECKPRO_FILE_PERMISSIONS_OK');
 			} else {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_file_permissions_image = 'checkbox-unchecked';
 				} else { 
 					$check_file_permissions_image = 'fa fa-square';
@@ -307,7 +307,7 @@ abstract class modScpadminQuickIconsHelper
 			$files_with_bad_integrity = $filemanager_model->loadStack("fileintegrity_resume","files_with_bad_integrity");
 				
 			if ( $files_with_bad_integrity == 0 ) {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_file_integrity_image = 'locked';
 				} else { 
 					$check_file_integrity_image = 'fa fa-lock';
@@ -327,7 +327,7 @@ abstract class modScpadminQuickIconsHelper
 				
 				$check_file_integrity_label = JText::_('MOD_SECURITYCHECKPRO_FILE_INTEGRITY_OK');
 			} else {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_file_integrity_image = 'cancel';
 				} else { 
 					$check_file_integrity_image = 'fa fa-unlock';
@@ -364,7 +364,7 @@ abstract class modScpadminQuickIconsHelper
 			$suspicious_files = $filemanager_model->loadStack("malwarescan_resume","suspicious_files");
 				
 			if ( $suspicious_files == 0 ) {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_malwarescan_image = 'thumbs-up';
 				} else { 
 					$check_malwarescan_image = 'fa fa-thumbs-up';
@@ -384,7 +384,7 @@ abstract class modScpadminQuickIconsHelper
 				
 				$check_malwarescan_label = JText::_('MOD_SECURITYCHECKPRO_MALWARESCAN_OK');
 			} else {
-				if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					$check_malwarescan_image = 'thumbs-down';
 				} else { 
 					$check_malwarescan_image = 'fa fa-bug';

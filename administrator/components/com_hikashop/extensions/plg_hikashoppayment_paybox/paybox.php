@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -284,9 +284,13 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			exit;
 		}
 
+
 		$history->notified = 1;
 		$order_status = $this->payment_params->verified_status;
 		$payment_status = 'Accepted';
+
+		if($dbOrder->order_status == $order_status)
+			return true;
 
 		$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','Paybox', $payment_status)).' '.JText::sprintf('ORDER_STATUS_CHANGED', $statuses[$order_status])."\r\n\r\n".$order_text;
 		$email->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', 'Paybox', $payment_status, $dbOrder->order_number);

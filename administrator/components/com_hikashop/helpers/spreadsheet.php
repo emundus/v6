@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,6 +16,7 @@ class hikashopSpreadsheetHelper {
 	var $currLine;
 	var $buffer;
 	var $forceQuote;
+	var $forceText;
 	var $progressive;
 	var $headerSent;
 	var $excelSecurity;
@@ -24,12 +25,13 @@ class hikashopSpreadsheetHelper {
 		$this->init();
 	}
 
-	function init($format = 'csv', $filename = 'export', $sep = ';', $forceQuote = false, $decimal_separator = '.') {
+	function init($format = 'csv', $filename = 'export', $sep = ';', $forceQuote = false, $decimal_separator = '.', $forceText = false) {
 		$this->currLine = -1;
 		$this->buffer = '';
 		$this->separator = ';';
 		$this->filename = $filename;
 		$this->forceQuote = $forceQuote;
+		$this->forceText = $forceText;
 		$this->progressive = false;
 		$this->headerSent = false;
 		$this->excelSecurity = "'";
@@ -175,7 +177,7 @@ class hikashopSpreadsheetHelper {
 			if(is_array($value))
 				continue;
 
-			if( is_numeric($value) && (preg_match('[^0-9]',$value) || ltrim($value, '0') === (string)$value) || '0' === (string)$value) {
+			if( !$this->forceText && is_numeric($value) && (preg_match('[^0-9]',$value) || ltrim($value, '0') === (string)$value) || '0' === (string)$value) {
 				$this->writeNumber($this->currLine, $i++, $value, $lastOne);
 			} else {
 				$this->writeText($this->currLine, $i++, $value, $lastOne);

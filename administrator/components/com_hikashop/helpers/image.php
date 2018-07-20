@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -345,7 +345,7 @@ class hikashopImageHelper {
 				imagefill($ret['res'], 0, 0, $color);
 			}
 		} else {
-			$bgcolor = $this->GD_getBackgroundColor($source['res'], @$options['background']);
+			$bgcolor = $this->GD_getBackgroundColor($ret['res'], @$options['background']);
 			imagefill($ret['res'], 0, 0, $bgcolor);
 		}
 
@@ -1355,6 +1355,7 @@ window.hikashop.ready( function() {
 
 
 	protected function GD_getBackgroundColor($resource, $color) {
+		$bgcolor = false;
 		if(!empty($color)) {
 			if(is_array($color)) {
 				$bgcolor = imagecolorallocatealpha($resource, $color[0], $color[1], $color[2], 0);
@@ -1367,7 +1368,7 @@ window.hikashop.ready( function() {
 					$bgcolor = imagecolorallocate($resource, hexdec($rgb[0]), hexdec($rgb[1]), hexdec($rgb[2]));
 			}
 		}
-		if(empty($bgcolor)) {
+		if($bgcolor === false) {
 			$bgcolor = imagecolorallocatealpha($resource, 255, 255, 255, 0);
 			if($bgcolor === false || $bgcolor === -1)
 				$bgcolor = imagecolorallocate($resource, 255, 255, 255);

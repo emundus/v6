@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -97,7 +97,7 @@ defined('_JEXEC') or die('Restricted access');
 		<thead>
 			<tr>
 				<th></th>
-				<th></th>
+				<th><?php echo JText::_('ACTIONS'); ?></th>
 <?php if(!empty($affiliate_payment_delay)) { ?>
 				<th><?php
 					echo hikashop_tooltip(JText::sprintf('AMOUNT_DELAY', $delayType->displayDelay($this->config->get('affiliate_payment_delay'))), JText::_('PAYABLE'), '', JText::_('PAYABLE'))
@@ -111,7 +111,7 @@ defined('_JEXEC') or die('Restricted access');
 				<td><?php echo JText::_('CLICKS_UNPAID_AMOUNT'); ?></td>
 				<td><?php
 					echo $this->popup->display(
-						'<img src="'. HIKASHOP_IMAGES.'go.png" alt="'.JText::_('CLICKS_UNPAID_AMOUNT').'"/>',
+						'<span class="hikabtn">'.JText::_('HIKA_DETAILS').'</span>',
 						'CLICKS_UNPAID_AMOUNT',
 						hikashop_completeLink('user&task=clicks&user_id='.$this->user->user_id.'',true),
 						'clicks_link',
@@ -131,7 +131,7 @@ defined('_JEXEC') or die('Restricted access');
 				<td><?php echo JText::_('LEADS_UNPAID_AMOUNT'); ?></td>
 				<td><?php
 					echo $this->popup->display(
-						'<img src="'. HIKASHOP_IMAGES.'go.png" alt="'.JText::_('LEADS_UNPAID_AMOUNT').'"/>',
+						'<span class="hikabtn">'.JText::_('HIKA_DETAILS').'</span>',
 						'LEADS_UNPAID_AMOUNT',
 						hikashop_completeLink('user&task=leads&user_id='.$this->user->user_id.'',true),
 						'leads_link',
@@ -151,7 +151,7 @@ defined('_JEXEC') or die('Restricted access');
 				<td><?php echo JText::_('SALES_UNPAID_AMOUNT'); ?></td>
 				<td><?php
 					echo $this->popup->display(
-						'<img src="'. HIKASHOP_IMAGES.'go.png" alt="'.JText::_('SALES_UNPAID_AMOUNT').'"/>',
+						'<span class="hikabtn">'.JText::_('HIKA_DETAILS').'</span>',
 						'SALES_UNPAID_AMOUNT',
 						hikashop_completeLink('user&task=sales&user_id='.$this->user->user_id.'',true),
 						'sales_link',
@@ -170,13 +170,19 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td><?php echo JText::_('TOTAL_UNPAID_AMOUNT'); ?></td>
 				<td><?php
-					echo $this->popup->display(
-						'<img src="'. HIKASHOP_IMAGES.'pay.png" alt="'.JText::_('PAY_NOW').'"/>',
-						'PAY_NOW',
-						hikashop_completeLink('user&task=pay&user_id='.$this->user->user_id.'',true),
-						'pay_link',
-						760, 480, '', '', 'link'
-					);
+	$total = @$this->user->accumulated['total'];
+	if(!empty($affiliate_payment_delay)) {
+		$total = @$this->user->accumulated['currenttotal'];
+	}
+	if($total > 0) {
+		echo $this->popup->display(
+			'<span class="hikabtn">'.JText::_('PAY_NOW').'</span>',
+			'PAY_NOW',
+			hikashop_completeLink('user&task=pay&user_id='.$this->user->user_id.'',true),
+			'pay_link',
+			760, 480, '', '', 'link'
+		);
+	}
 				?></td>
 <?php if(!empty($affiliate_payment_delay)) { ?>
 				<td class="hk_center"><?php

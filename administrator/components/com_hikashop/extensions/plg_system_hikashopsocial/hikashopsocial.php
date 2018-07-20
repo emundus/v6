@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -542,7 +542,7 @@ function twitterPop(str) {
 	function _cleanDescription($description){
 		$description = preg_replace('#\{(load)?(module|position|modulepos) +[a-z_0-9]+\}#i','',$description);
 
-		$description = preg_replace('#\{(slider|tab|modal|tip|article)(-[a-z_0-9]+)? +[a-z_ 0-9\|]+\}.*\{\/(slider|tab|modal|tip|article)s?(-[a-z_0-9]+)?\}#Usi','',$description);
+		$description = preg_replace('#\{(slider|tab|modal|tip|article|snippet)(-[a-z_0-9]+)? +[a-z_ 0-9\|]+\}.*\{\/(slider|tab|modal|tip|article|snippet)s?(-[a-z_0-9]+)?\}#Usi','',$description);
 
 		$description = htmlspecialchars(strip_tags($description), ENT_COMPAT,'UTF-8');
 		return $description;

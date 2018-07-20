@@ -13,8 +13,13 @@ defined('_JEXEC') or die;
 require_once dirname(__FILE__).'/helper.php';
 // needed when default top menu is missing
 global $gantry;
-$gantry->addLess('menu.less', 'menu.css', 1, array('menustyle'=>$gantry->get('menustyle','light'), 'menuHoverColor'=>$gantry->get('linkcolor'), 'menuDropBack'=>$gantry->get('accentcolor')));
-$gantry->addLess('menu-responsive.less', 'menu-responsive.css', 1, array('menustyle'=>$gantry->get('menustyle','light'), 'menuHoverColor'=>$gantry->get('linkcolor'), 'menuDropBack'=>$gantry->get('accentcolor')));
+if (!empty($gantry)) {
+	$gantry->addLess('menu.less', 'menu.css', 1, array('menustyle' => $gantry->get('menustyle', 'light'), 'menuHoverColor' => $gantry->get('linkcolor'), 'menuDropBack' => $gantry->get('accentcolor')));
+	$gantry->addLess('menu-responsive.less', 'menu-responsive.css', 1, array('menustyle' => $gantry->get('menustyle', 'light'), 'menuHoverColor' => $gantry->get('linkcolor'), 'menuDropBack' => $gantry->get('accentcolor')));
+	$layout = 'default';
+} else {
+	$layout = 'gantry5';
+}
 
 /*
 $document = JFactory::getDocument();
@@ -43,6 +48,6 @@ $showAll = $params->get('showAllChildren');
 $class_sfx = htmlspecialchars($params->get('class_sfx'));
 
 if (count($list))
-	require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('layout', 'default'));
+	require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('layout', $layout));
 
 ?>

@@ -25,6 +25,9 @@ unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
 unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
 $document->setHeadData($arrHead);
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
+
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -35,8 +38,10 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -440,7 +445,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 											<li class="list-group-item list-group-item-primary"><?php echo JText::_( 'COM_SECURITYCHECKPRO_TWO_FACTOR_ENABLED_LABEL' ); ?></li>
 											<li class="list-group-item">
 												<?php 
-													if ( $this->system_info['twofactor_enabled'] == 1 ) {
+													if ( $this->system_info['twofactor_enabled'] > 1 ) {
 														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
@@ -466,6 +471,43 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 														  </div>
 														</div>											
 													<a href="#modal_two_factor_enabled" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+												<?php }	?>							
+											</li>
+										</ul>
+										</div>
+										
+										<!-- Http headers -->
+										<div class="col-xl-3 mb-3">
+										<ul class="list-group">
+											<li class="list-group-item list-group-item-primary"><?php echo JText::_( 'COM_SECURITYCHECKPRO_HTTP_HEADERS_LABEL' ); ?></li>
+											<li class="list-group-item">
+												<?php 
+													if ( ($this->system_info['htaccess_protection']['xframe_options'] > 0) && ($this->system_info['htaccess_protection']['sts_options'] > 0) && ($this->system_info['htaccess_protection']['xss_options'] > 0) && ($this->system_info['htaccess_protection']['csp_policy'] > 0) && ($this->system_info['htaccess_protection']['referrer_policy'] > 0) && ($this->system_info['htaccess_protection']['prevent_mime_attacks'] > 0) ) {
+														echo "<span class=\"badge badge-success\">OK</span>";
+													} else {
+														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+												?>
+													<button class="btn btn-info btn-mini" type="button" onclick="storeValue('active_htaccess', 'headers_protection'); Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<!-- Modal http headers -->
+													<div class="modal hide bd-example-modal-lg" id="modal_http_headers" tabindex="-1" role="dialog" aria-labelledby="modal_http_headersLabel" aria-hidden="true">
+														  <div class="modal-dialog modal-lg" role="document">
+															<div class="modal-content">
+															  <div class="modal-header alert alert-info">
+																<h2 class="modal-title"><?php echo JText::_( 'COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT' ); ?></h2>
+																<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">&times;</span>
+																</button>				
+															  </div>
+															  <div class="modal-body">	
+																<span class="tammano-18"><?php echo JText::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_INFO'); ?></span><br/><br/>	
+															  </div>
+																<div class="modal-footer">
+																	<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CLOSE' ); ?></button>
+																</div>			  
+															</div>
+														  </div>
+														</div>											
+													<a href="#modal_http_headers" role="button" class="btn btn-secondary btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
 												<?php }	?>							
 											</li>
 										</ul>

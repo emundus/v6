@@ -62,7 +62,7 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 			}
 
 			// Redirect! :)
-			$app->redirect(JRoute::_($url.$url_itemid, false));
+			$app->redirect($url.$url_itemid, false);
 		}
 		return true;
 	}

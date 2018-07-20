@@ -37,6 +37,7 @@ class com_SecuritycheckproInstallerScript {
 			'administrator/components/com_securitycheckpro/controllers/firewallexceptions.php',
 			'administrator/components/com_securitycheckpro/controllers/firewallinspector.php',
 			'administrator/components/com_securitycheckpro/controllers/firewalllogs.php',
+			'administrator/components/com_securitycheckpro/controllers/firewalllists.php',
 			'administrator/components/com_securitycheckpro/controllers/firewallmethods.php',
 			'administrator/components/com_securitycheckpro/controllers/firewallmode.php',
 			'administrator/components/com_securitycheckpro/controllers/firewallredirection.php',
@@ -51,6 +52,7 @@ class com_SecuritycheckproInstallerScript {
 			'administrator/components/com_securitycheckpro/models/firewallexceptions.php',
 			'administrator/components/com_securitycheckpro/models/firewallinspector.php',
 			'administrator/components/com_securitycheckpro/models/firewalllogs.php',
+			'administrator/components/com_securitycheckpro/models/firewalllists.php',
 			'administrator/components/com_securitycheckpro/models/firewallmethods.php',
 			'administrator/components/com_securitycheckpro/models/firewallmode.php',
 			'administrator/components/com_securitycheckpro/models/firewallredirection.php',
@@ -136,6 +138,7 @@ class com_SecuritycheckproInstallerScript {
 			'administrator/components/com_securitycheckpro/views/firewallemail',
 			'administrator/components/com_securitycheckpro/views/firewallexceptions',
 			'administrator/components/com_securitycheckpro/views/firewalinspector',
+			'administrator/components/com_securitycheckpro/views/firewalllists',
 			'administrator/components/com_securitycheckpro/views/firewalllogs',
 			'administrator/components/com_securitycheckpro/views/firewallmethods',
 			'administrator/components/com_securitycheckpro/views/firewallmode',
@@ -216,8 +219,8 @@ class com_SecuritycheckproInstallerScript {
 		}
 	}
 	
-	/* Chequea las opciones para lanzar el Cron y las adapta al formato de la versión 2.8.0 */
-	private function _280_version_changes() {
+	/* Cambia la protección del backend para que funcione OTP */
+	private function _311_version_changes() {
 	
 		// Extraemos la información necesario de la tabla #_extensions 		
 		$db = JFactory::getDBO();
@@ -235,10 +238,10 @@ class com_SecuritycheckproInstallerScript {
 			// Versión de Securitycheck Pro instalada
 			$scpro_version = $stack["version"];
 			
-			// Si la versión instalada es menor a la 2.8.0, hemos de realizar las comprobaciones
-			if ( version_compare($scpro_version,"2.8.0","lt") ) {
-				// Extraemos las opciones de configuración del Cron
-				$query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE (storage_key="cron_plugin")' ;
+			// Si la versión instalada es menor a la 3.1.1, hemos de realizar las comprobaciones
+			if ( version_compare($scpro_version,"3.1.1","lt") ) {
+				// Extraemos las opciones de la protección del backend
+				$query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE (storage_key="cparams")' ;
 				$db->setQuery( $query );
 				$db->execute();
 				$result = $db->loadAssocList();
@@ -246,33 +249,23 @@ class com_SecuritycheckproInstallerScript {
 				if ( !empty($result) ) {
 					$stack = json_decode($result[0]["storage_value"], true);
 					
-					/* Si la periodicidad estaba establecida a 1 (Diaria), la hemos de establecer a 24 (Diaria a partir de la versión 2.8.0)
-					Si estaba establecida a 7 (Semanal), la hemos de cambiar a 168 (Semanal a partir de la versión 2.8.0) */
+					// Chequeamos si está habilitada la protección del backend					
+					if ( !empty($stack["hide_backend_url"]) ) {
+						// Chequeamos si existe el fichero .htaccess
+						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . ".htaccess";
+						if ( file_exists($path) ) {							
+							//read the entire string
+							$str=file_get_contents($path);
+
+							//replace backend protection old format
+							$str=str_replace('^' . $stack["hide_backend_url"], $stack["hide_backend_url"], $str);
+
+							//write the entire string
+							file_put_contents($path, $str);
+						}
+						
+					}					
 					
-					if ( $stack["periodicity"] == 1 ) {
-						$stack["periodicity"] = 24;
-					} else if ( $stack["periodicity"] == 7 ) {
-						$stack["periodicity"] = 168;
-					}
-						
-					// Sobreescribimos las opciones del Cron en la bbdd
-					$object = (object)array(
-						'storage_key'	=> 'cron_plugin',
-						'storage_value'	=> (json_encode($stack))							
-					);
-						
-					// Borramos los valores existentes
-					$query = $db->getQuery(true)
-						->delete($db->quoteName('#__securitycheckpro_storage'))
-						->where($db->quoteName('storage_key').' = '.$db->quote('cron_plugin'));
-					$db->setQuery($query);
-					$db->execute();
-		
-					try {
-						$db->insertObject('#__securitycheckpro_storage', $object);
-					} catch (Exception $e) {	
-						JFactory::getApplication()->enqueueMessage(JText::_('Error updating Cron settings. Please, check your Periodicity.'), 'Warning');
-					}
 				}
 			}
 		}
@@ -303,8 +296,8 @@ class com_SecuritycheckproInstallerScript {
 			return false;
 		}
 		
-		// Do changes for 2.8.0 version in Cron
-		$this->_280_version_changes();
+		// Do changes for versions previous to 3.1.1
+		$this->_311_version_changes();
 		
 		$this->_removeObsoleteFilesAndFolders($this->ObsoleteFilesAndFolders);
 		

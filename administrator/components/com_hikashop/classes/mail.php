@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,6 +47,7 @@ class hikashopMailClass {
 			'order_creation_notification',
 			'order_status_notification',
 			'order_notification',
+			'payment_notification',
 			'user_account',
 			'user_account_admin_notification',
 			'out_of_stock',

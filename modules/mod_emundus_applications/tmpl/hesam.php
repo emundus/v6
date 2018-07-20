@@ -11,11 +11,12 @@
 defined('_JEXEC') or die;
 
 echo $description;
+$uri = JUri::getInstance();
 ?>
 
 
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus"></span> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
 
 
@@ -37,7 +38,7 @@ echo $description;
                 </div>
 
                 <div class="col-md-8 em-bottom-space">
-                    <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum.'&Itemid='.$Itemid.'#em-panel')); ?>"  role="button">
+                    <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode(JUri::getInstance()->getPath())); ?>"  role="button">
                         <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
@@ -59,7 +60,7 @@ echo $description;
 
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus"></span> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
 
 
@@ -93,7 +94,7 @@ echo $description;
     function deletefile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
             url = "<?php echo JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='; ?>";
-            document.location.href = url+fnum;
+            document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
         }
     }
 </script>

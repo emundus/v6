@@ -21,7 +21,6 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.copy
  * @since       3.0
  */
-
 class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 {
 
@@ -46,6 +45,36 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 	{
 		parent::button($args);
 		return true;
+	}
+
+	/**
+	 * Get the button label
+	 *
+	 * @return  string
+	 */
+	protected function buttonLabel()
+	{
+		return $this->getParams()->get('copytable_button_label', parent::buttonLabel());
+	}
+
+	/**
+	 * Get button image
+	 *
+	 * @since   3.1b
+	 *
+	 * @return   string  image
+	 */
+
+	protected function getImageName()
+	{
+		$img = parent::getImageName();
+
+		if (FabrikWorker::j3() && $img === 'copy.png')
+		{
+			$img = 'copy';
+		}
+
+		return $img;
 	}
 
 	/**
@@ -139,22 +168,21 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 		return JText::sprintf('PLG_LIST_ROWS_COPIED', count($ids));
 	}
 
+
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   object  $params  plugin parameters
-	 * @param   object  $model   list model
-	 * @param   array   $args    array [0] => string table's form id to contain plugin
+	 * @param   array  $args  Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$opts = $this->getElementJSOptions($model);
+		$opts = $this->getElementJSOptions();
 		$opts = json_encode($opts);
 		$this->jsInstance = "new FbListSu_copy_fiche_emplois($opts)";
+
 		return true;
 	}
 

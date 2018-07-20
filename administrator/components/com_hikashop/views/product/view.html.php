@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -44,8 +44,8 @@ class ProductViewProduct extends hikashopView
 		$newFilterId = hikaInput::get()->getVar('filter_id');
 		$newSearch = hikaInput::get()->getVar('search');
 
-		if( (!empty($newSearch) && $newSearch!=$app->getUserState($this->paramBase.".search")) || (!empty($newFilterId) && $newFilterId != $app->getUserState($this->paramBase.".filter_id", $newFilterId))) {
-			$app->setUserState( $this->paramBase.'.limitstart',0);
+		if( (!empty($newSearch) && $newSearch != $app->getUserState($this->paramBase.".search")) || (!empty($newFilterId) && $newFilterId != $app->getUserState($this->paramBase.".filter_id", $newFilterId))) {
+			$app->setUserState($this->paramBase.'.limitstart', 0);
 			$pageInfo->limit->start = 0;
 		} else {
 			$pageInfo->limit->start = $app->getUserStateFromRequest($this->paramBase.'.limitstart', 'limitstart', 0, 'int');
@@ -1871,6 +1871,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('manufacturerType', $manufacturerType);
 
 		$main_currency = (int)$config->get('main_currency');
+		$this->currencyType->displayType = 'product';
 		$this->currencyType->load($main_currency);
 		$currencies = $this->currencyType->currencies;
 		$this->assignRef('currencies', $currencies);
@@ -2296,6 +2297,7 @@ class ProductViewProduct extends hikashopView
 			'currencyType' => 'type.currency',
 			'userClass' => 'class.user'
 		));
+		$this->currencyType->displayType = 'product';
 
 		$price = null;
 		if(!empty($price_id)){

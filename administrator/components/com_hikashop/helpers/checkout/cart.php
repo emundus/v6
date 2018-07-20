@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -133,18 +133,18 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function display(&$view, &$params) {
-		if(!isset($params['show_cart_image']) || $params['show_cart_image'] === -1)
-			$params['show_cart_image'] = $view->config->get('show_cart_image');
-		if(!isset($params['show_product_code']) || $params['show_product_code'] === -1)
-			$params['show_product_code'] = $view->config->get('show_code');
-		if(!isset($params['price_with_tax']) || $params['price_with_tax'] === -1)
-			$params['price_with_tax'] = $view->config->get('price_with_tax');
+		if(!isset($params['show_cart_image']) || (int)$params['show_cart_image'] === -1)
+			$params['show_cart_image'] = (int)$view->config->get('show_cart_image');
+		if(!isset($params['show_product_code']) || (int)$params['show_product_code'] === -1)
+			$params['show_product_code'] = (int)$view->config->get('show_code');
+		if(!isset($params['price_with_tax']) || (int)$params['price_with_tax'] === -1)
+			$params['price_with_tax'] = (int)$view->config->get('price_with_tax');
 		if(!isset($params['show_price']))
 			$params['show_price'] = true;
 		if(!isset($params['show_delete']))
 			$params['show_delete'] = true;
 
-		if(!isset($params['link_to_product_page']) || $params['link_to_product_page'] === -1) {
+		if(!isset($params['link_to_product_page']) || (int)$params['link_to_product_page'] === -1) {
 			$defaultParams = $view->config->get('default_params');
 			$params['link_to_product_page'] = !empty($defaultParams['link_to_product_page']);
 		}

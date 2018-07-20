@@ -33,6 +33,9 @@ unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
 unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
 $document->setHeadData($arrHead);
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
+
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -43,8 +46,10 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -136,7 +141,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 								?>
 								<a href="<?php echo 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->plugin_id?>" class="btn"><?php echo JText::_('COM_SECURITYCHECKPRO_CHECK_CONFIG'); ?></a>			
 								<?php } else { ?>
-									<a href="https://securitycheck.protegetuordenador.com/subscriptions" target="_blank" class="btn"><?php echo JText::_('COM_SECURITYCHECKPRO_RENEW'); ?></a>
+									<a href="https://securitycheck.protegetuordenador.com/subscriptions" target="_blank"  rel="noopener noreferrer" class="btn"><?php echo JText::_('COM_SECURITYCHECKPRO_RENEW'); ?></a>
 								<?php } ?>
 										
 							</div>	

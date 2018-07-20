@@ -66,6 +66,9 @@ $document->setHeadData($arrHead);
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
+
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -76,8 +79,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -192,12 +197,12 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 									<tr>
 										<td align="center">
 												<?php 
-													$ip_sanitized = filter_var($row->ip, FILTER_SANITIZE_STRING);
+													$ip_sanitized =  htmlentities(filter_var($row->ip, FILTER_SANITIZE_STRING));
 												echo $ip_sanitized; ?>	
 										</td>
 										<td align="center">
 												<?php 
-													$geolocation_sanitized = filter_var($row->geolocation, FILTER_SANITIZE_STRING);
+													$geolocation_sanitized =  htmlentities(filter_var($row->geolocation, FILTER_SANITIZE_STRING));
 												echo $geolocation_sanitized; ?>	
 										</td>
 										<td align="center">
@@ -205,14 +210,14 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 										</td>
 										<td align="center">
 												<?php 
-												$username_sanitized = filter_var($row->username, FILTER_SANITIZE_STRING);
+												$username_sanitized =  htmlentities(filter_var($row->username, FILTER_SANITIZE_STRING));
 												echo $username_sanitized; ?>	
 										</td>
 										<td align="center">
 												<?php $title = JText::_( 'COM_SECURITYCHECK_ORIGINAL_STRING' ); ?>
 												<?php $decoded_string = base64_decode($row->original_string); ?>
 												<?php $decoded_string = filter_var($decoded_string, FILTER_SANITIZE_STRING); ?>
-												<?php $description_sanitized = filter_var($row->description, FILTER_SANITIZE_STRING); ?>
+												<?php $description_sanitized =  htmlentities(filter_var($row->description, FILTER_SANITIZE_STRING)); ?>
 												<?php echo JText::_( 'COM_SECURITYCHECKPRO_' .$row->tag_description ); ?>
 												<?php echo JText::_( ':' .$description_sanitized ); ?>
 												<?php echo "<br />"; ?>
@@ -220,17 +225,17 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 										</td>	
 										<td align="center; font-size: 0.75em;">
 												<?php 
-													$uri_sanitized = filter_var($row->uri, FILTER_SANITIZE_STRING);
+													$uri_sanitized =  htmlentities(filter_var($row->uri, FILTER_SANITIZE_STRING));
 												echo substr(($uri_sanitized),0,40); ?>
 												
 										</td>
 										<td align="center">
-												<?php $component_sanitized = filter_var($row->component, FILTER_SANITIZE_STRING);
+												<?php $component_sanitized = htmlentities(filter_var($row->component, FILTER_SANITIZE_STRING));
 												echo substr(($component_sanitized),0,20);	?>	
 										</td>
 										<td align="center">
 											<?php 
-												$type_sanitized = filter_var($row->type, FILTER_SANITIZE_STRING);
+												$type_sanitized =  htmlentities(filter_var($row->type, FILTER_SANITIZE_STRING));
 												$type = $type_sanitized;			
 												if ( $type == 'XSS' ){
 													echo ('<img src="../media/com_securitycheckpro/images/xss.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');

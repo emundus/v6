@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,7 +56,7 @@ hikaInput::get()->set('from_display',true);
 			$options = array(
 				'inherit' => JHTML::_('hikaselect.option', 'inherit', JText::_('HIKA_INHERIT')),
 				'mootools' => JHTML::_('hikaselect.option', 'mootools', JText::_('mootools')),
-				'bootstrap' => JHTML::_('hikaselect.option', 'bootstrap', JText::_('bootstrap')),
+				'bootstrap' => JHTML::_('hikaselect.option', 'bootstrap', JText::_('bootstrap v2')),
 				'vex' => JHTML::_('hikaselect.option', 'vex', JText::_('vex')),
 			);
 			if(!HIKASHOP_J30)
@@ -239,7 +239,7 @@ window.localPage.imagepopupmode = function(el) {
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('product_quantity_display');?>><?php echo JText::_('QUANTITY_LAYOUT_ON_PRODUCT_PAGE');?></td>
-		<td><?php echo $this->quantityDisplayType->display('config[product_quantity_display]', $this->config->get('product_quantity_display','show_default')); ?></td>
+		<td><?php echo $this->quantityDisplayType->display('config[product_quantity_display]', $this->config->get('product_quantity_display','show_default_div')); ?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('characteristic_display');?>><?php echo JText::_('CHARACTERISTICS_DISPLAY'); ?></td>
