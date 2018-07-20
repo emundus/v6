@@ -101,6 +101,7 @@ if os.path.exists(filename):
 			if os.path.exists(parent+"/"+filepath+ str(d[1])+"/"+d[2]):
 				try:
 					valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "isphoto")
+					
 					req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					cur.execute(req)
 					cnx.commit()
@@ -109,10 +110,11 @@ if os.path.exists(filename):
 						status = "success"
 					if valid == 0:
 						status = "failed"
+					
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
 				except :
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
-					continue
+					#continue
 			else:
 				#insert log
 				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tERROR\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found\n')
@@ -284,3 +286,4 @@ if os.path.exists(filename):
 			sleep(0.1)
 		bar.finish()
 		print "end motivation processing"
+		

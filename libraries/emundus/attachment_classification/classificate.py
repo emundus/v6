@@ -61,12 +61,16 @@ def getText(pdf):
 def isPhoto(imagePath):
 	# Read the image
 	image = cv2.imread(imagePath)
+	
+	faces = detectFaces(image)
+
 	if len(image.shape) == 3:
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-	faces = detectFaces(image)
 	#print getClassResult(image)
-
+	#cv2.imshow('hdb', image)
+	#cv2.waitKey(0)
+	#print len(faces)
 	if (len(faces) > 0 and getClassResult(image) == "photo") or (len(faces) > 0 and getString(image) == ""):
 		return 1
 	else:
