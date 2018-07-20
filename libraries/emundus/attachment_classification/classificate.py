@@ -152,15 +152,7 @@ def isCv(filepath, keywords = ""):
 		return 0
 
 def isMotivation(filepath, keywords = ""):
-	text = ""
-	if filepath.lower().endswith('.pdf'):
-		filepath = pdf2image(filepath, 250)
-		image = cv2.imread(filepath)
-		text = getString(image)
-
-	if filepath.lower().endswith('.doc')  or filepath.lower().endswith('.docx'):
-		text = getText(filepath)
-		
+	text = getText(filepath)
 	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")
