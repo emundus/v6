@@ -21,10 +21,13 @@ Serveur linux
 - librairies python à installer:
 
 	* install pillow
+	** For LINUX
+	apt-get install python-PIL
+	** For MacOS
 	pip install pillow
 
 	* install cv2
-	pip install opencv-python
+	apt-get install libopencv-dev python3-opencv
 
 	* install pytesseract ocr
 	pip install pytesseract
@@ -33,6 +36,9 @@ Serveur linux
 	pip install pdf2image
 
 	* install face_recognition
+	apt-get install libgtk-3-dev
+	apt-get install libboost-all-dev
+	pip install dlib
 	pip install face_recognition
 
 	*install mysql connector
@@ -45,6 +51,7 @@ Serveur linux
 	pip install mahotas
 	
 	*install scikit-learn
+	apt-get install python-scipy
 	pip install -U scikit-learn
 
 	*install progress bar
@@ -54,4 +61,5 @@ Serveur linux
 	pip install scipy
 
 	* install textract
+	apt-get install libpulse-dev swig
 	pip install textract

@@ -25,9 +25,13 @@ class EmundusControllerStats extends JControllerLegacy {
         parent::__construct($config);
     }
 
+    
+
     public function getprofiletype() {
     	$dateArray = [];
         $countArray = [];
+
+        $count = 0;
 
         $jinput = JFactory::getApplication()->input;
         $val = $jinput->post->get('chosenvalue', null);
@@ -40,20 +44,23 @@ class EmundusControllerStats extends JControllerLegacy {
         	if ($users['profile_id'] == $val) {
                 $dateArray[] = $users['_day'];
                 $countArray[] = $users['nombre'];
+                $count += $users['nombre'];
             }
         }
 
         echo json_encode((object)[
         	'status' => true,
 	        'datearray' => $dateArray,
-	        'countarray' => $countArray
+            'countarray' => $countArray,
+            'count' => $count
         ]);
         exit;
     }
-
+/*
     public function getconsultations() {
         $dateArray = [];
         $countArray = [];
+        $count = 0;
 
         $jinput = JFactory::getApplication()->input;
         $val = $jinput->post->get('chosenvalue', null);
@@ -66,66 +73,39 @@ class EmundusControllerStats extends JControllerLegacy {
             if ($bars['num_offre'] == $val) {
                 $dateArray[] = $bars['_day'];
                 $countArray[] = $bars['nombre'];
+                $count += $bars['nombre'];
             }
         }
      
         echo json_encode((object)[
         	'status' => true,
 	        'datearray' => $dateArray,
-	        'countarray' => $countArray
+            'countarray' => $countArray,
+            'count' => $count
         ]);
         exit;
     }
+    */
 
-    public function getconsultation() {
-        $numOffre = [];
-        $countArray = [];
+    public function getoffres() {
 
         $jinput = JFactory::getApplication()->input;
         $periode = $jinput->post->get('periode', null);
 
-        $m_stats = new EmundusModelStats();
-        $getConsultations = $m_stats->consultationOffre($periode);
-        
-        foreach ($getConsultations as $bars) {
-                $titre[] = $bars['titre'];
-                $countArray[] = $bars['nb'];
-        }
+        $m_stats = new EmundusModelStats();   
  
 	    echo json_encode((object)[
 	        'status' => true,
-	        'titre' => $titre,
-	        'countarray' => $countArray
+	        'countOffre' => $m_stats->getOffres($periode)
 	    ]);
 	    exit;
-	}
-
-    public function getconnections() {
-        $dateArray = [];
-        $countArray = [];
-        $jinput = JFactory::getApplication()->input;
-        $periode = $jinput->post->get('periode', null);
-
-	    $m_stats = new EmundusModelStats();
-        $getConnections = $m_stats->getConnections($periode);
-        
-        
-        foreach ($getConnections as $cog) {
-            $dateArray[] = $cog['_day'];
-            $countArray[] = $cog['nombre_connexions'];
-        }
-     
-        echo json_encode((object)[
-        	'status' => true,
-	        'datearray' => $dateArray,
-	        'countarray' => $countArray
-        ]);
-        exit;
     }
-
+    
+    
     public function getcandidatures() {
         $candArray = [];
         $nbArray = [];
+        $count = 0;
 
         $jinput = JFactory::getApplication()->input;
         //$val = $jinput->post->get('chosenvalue', null);
@@ -136,12 +116,41 @@ class EmundusControllerStats extends JControllerLegacy {
         foreach ($getCandidatures as $cand) {
                 $candArray[] = $cand['titre'];
                 $nbArray[] = $cand['nb'];
+                $count += $cand['nb'];
         }
 
         echo json_encode((object)[
         	'status' => true,
 	        'candarray' => $candArray,
-	        'nbarray' => $nbArray
+            'nbarray' => $nbArray,
+            'count' => $count
+        ]);
+        exit;
+    }
+
+    public function getconnections() {
+        $dateArray = [];
+        $countArray = [];
+        $count = 0;
+
+        $jinput = JFactory::getApplication()->input;
+        $periode = $jinput->post->get('periode', null);
+
+	    $m_stats = new EmundusModelStats();
+        $getConnections = $m_stats->getConnections($periode);
+        
+        
+        foreach ($getConnections as $co) {
+            $dateArray[] = $co['_day'];
+            $countArray[] = $co['nombre_connexions'];
+            $count += $co['nombre_connexions'];
+        }
+     
+        echo json_encode((object)[
+        	'status' => true,
+	        'datearray' => $dateArray,
+            'countarray' => $countArray,
+            'count' => $count
         ]);
         exit;
     }
@@ -149,6 +158,8 @@ class EmundusControllerStats extends JControllerLegacy {
     public function getrelations() {
         $dateArray = [];
         $countArray = [];
+        $count = 0;
+
         $jinput = JFactory::getApplication()->input;
         $periode = $jinput->post->get('periode', null);
 
@@ -158,12 +169,14 @@ class EmundusControllerStats extends JControllerLegacy {
         foreach ($getNbRelations as $rel) {
             $dateArray[] = $rel['_day'];
             $countArray[] = $rel['nombre_rel_etablies'];
+            $count += $rel['nombre_rel_etablies'];
         }
 
         echo json_encode((object)[
         	'status' => true,
 	        'datearray' => $dateArray,
-	        'countarray' => $countArray
+            'countarray' => $countArray,
+            'count' => $count
         ]);
         exit;
     }
