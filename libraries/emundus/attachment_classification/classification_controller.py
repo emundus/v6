@@ -41,7 +41,7 @@ config = {
   'user': user,
   'password': password,
   'host':host,
-  'port':'8889',
+  'port':'3306',
   'database': db
   
 }
