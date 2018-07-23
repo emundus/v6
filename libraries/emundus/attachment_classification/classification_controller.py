@@ -82,7 +82,7 @@ if os.path.exists(filename):
 	fileweek = 	strftime("%W", gmtime(os.path.getmtime(filename)))
 	current_week = 	filedate = strftime("%W", gmtime(os.path.getmtime(filename)))
 
-	if current_week < fileweek:
+	if current_week > fileweek:
 		tar = tarfile.open(parent+'/logs/com_emundus.classification.'+ fileyearweek +'.php.tar.gz', "w:gz")
 		open(filename, 'w+')
 	with open(filename, 'r+') as f:
@@ -112,14 +112,14 @@ if os.path.exists(filename):
 						status = "failed"
 					
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
-				except :
-					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+				except Exception as e:
+					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR \t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
 					#continue
 			else:
 				#insert log
 				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tERROR\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found\n')
 			bar.update(i)
-			sleep(0.1)
+			sleep(0.2)
 		bar.finish()
 		print "end photos processing"
 		
@@ -157,6 +157,7 @@ if os.path.exists(filename):
 						status = "success"
 					if valid == 0:
 						status = "failed"
+
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
 
 					req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
@@ -166,15 +167,15 @@ if os.path.exists(filename):
 					image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
 					if os.path.exists(image):
 						os.remove(image)
-				except :
-					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
-					continue
+				except Exception as e:
+					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR \t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+					
 			else:
 				#insert log			
-				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
+				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR \t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
 			
 			bar.update(i)
-			sleep(0.1)
+			sleep(0.2)
 		bar.finish()
 		print "end passports processing"
 		
@@ -221,15 +222,15 @@ if os.path.exists(filename):
 					if os.path.exists(image):
 						os.remove(image)
 
-				except:
-					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t CV \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
-					continue
+				except Exception as e:
+					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t CV \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+					
 			else:
 				#insert log		
-				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t CV \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
+				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t CV \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
 			
 			bar.update(i)
-			sleep(0.1)
+			sleep(0.2)
 		bar.finish()
 		print "end CV processing"
 		
@@ -275,15 +276,15 @@ if os.path.exists(filename):
 					image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
 					if os.path.exists(image):
 						os.remove(image)
-				except :
-					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
-					continue
+				except Exception as e:
+					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+					
 			else:
 				#insert log			
-				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
+				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
 			
 			bar.update(i)
-			sleep(0.1)
+			sleep(0.2)
 		bar.finish()
 		print "end motivation processing"
 		
