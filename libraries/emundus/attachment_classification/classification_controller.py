@@ -82,7 +82,7 @@ if os.path.exists(filename):
 	fileweek = 	strftime("%W", gmtime(os.path.getmtime(filename)))
 	current_week = 	filedate = strftime("%W", gmtime(os.path.getmtime(filename)))
 
-	if current_week < fileweek:
+	if current_week > fileweek:
 		tar = tarfile.open(parent+'/logs/com_emundus.classification.'+ fileyearweek +'.php.tar.gz', "w:gz")
 		open(filename, 'w+')
 	with open(filename, 'r+') as f:

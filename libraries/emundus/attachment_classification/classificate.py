@@ -138,9 +138,9 @@ def isCv(filepath, keywords = ""):
 		filepath = pdf2image(filepath, 250)
 		image = cv2.imread(filepath)
 		text = getString(image)
-
-	if filepath.lower().endswith('.doc')  or filepath.lower().endswith('.docx'):
+	if filepath.lower().endswith('.docx'):
 		text = getText(filepath)
+		
 	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")
