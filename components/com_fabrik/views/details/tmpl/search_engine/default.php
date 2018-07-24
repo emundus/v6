@@ -46,40 +46,41 @@ $region=""; $department=""; $chercheur=""; $cherches=""; $themes="";
 $regions 	= $this->data['data_regions___name_raw'];
 $departments= $this->data['data_departements___departement_nom_raw'];
 $chercheur 	= strtolower($this->data['jos_emundus_setup_profiles___label_raw'][0]);
+$profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
-// Build a natural sentence
-// TODO : The information here comes out as jos_emundus_recherche___futur_doctorant_yesno_raw. This is not OK.
-if (count(array_keys($this->data, "oui")) > 1) {
-	$cherches = implode(",", array_keys($this->data, "oui"));
-	$cherches = strtolower(str_replace(","," </b></i>et<i><b> ", $cherches));
-} else {
-	$cherches = strtolower(array_search("oui", $this->data));
-}
+?><div class="em-offre"><?php
+
+    // Build a natural sentence
+    // TODO : The information here comes out as jos_emundus_recherche___futur_doctorant_yesno_raw. This is not OK.
+    if (count(array_keys($this->data, "oui")) > 1) {
+        $cherches = implode(",", array_keys($this->data, "oui"));
+        $cherches = strtolower(str_replace(","," </b></i>et<i><b> ", $cherches));
+    } else {
+        $cherches = strtolower(array_search("oui", $this->data));
+    }
 
 
-// Build some of the text to make for a more natural sentence on the front end.
-$themes = $this->data['jos_emundus_projet_620_repeat___themes_raw'];
-if (sizeof($themes) > 1)
-    $themes = ' les themes <i><b>'.implode(',',$themes);
-else
-    $themes = ' le theme <i><b>'.$themes[0];
+    // Build some of the text to make for a more natural sentence on the front end.
+    $themes = $this->data['jos_emundus_projet_620_repeat___themes_raw'];
+    if (sizeof($themes) > 1)
+        $themes = ' les themes <i><b>'.implode(', ',$themes);
+    else
+        $themes = ' le theme <i><b>'.$themes[0];
 
-if (sizeof($regions) > 1)
-	$regions = 'Dans les régions <i><b>'.implode(' et ',$regions);
-else
-	$regions = 'En région <i><b>'.$regions[0];
+    if (sizeof($regions) > 1)
+        $regions = 'Dans les régions <i><b>'.implode(' et ',$regions);
+    else
+        $regions = 'En région <i><b>'.$regions[0];
 
-if (sizeof($departments) > 1)
-	$departments = ' dans les départements <i><b>'.implode(' et ',$departments);
-else
-	$departments = ' dans le département <i><b>'.$departments[0];
-?>
-
-<div class="em-offre">
+    if (sizeof($departments) > 1)
+        $departments = ' dans les départements <i><b>'.implode(' et ',$departments);
+    else
+        $departments = ' dans le département <i><b>'.$departments[0];
+    ?>
 
     <!-- INTRO TEXT -->
     <div class="em-offre-summary">
-        <p><?php echo $regions; ?></b></i>,<?php echo $departments; ?></b></i>, un <i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i> sur <?php echo $themes; ?></b></i></p>
+        <p><?php echo $regions; ?></b></i>,<?php echo $departments; ?></b></i> sur <?php echo $themes; ?></b></i></p>
     </div>
 
     <hr>
@@ -91,9 +92,46 @@ else
 
     <!-- Author -->
     <!-- TODO: Add more information, not just the author's name but also something more like 'la communauté de communes de :' -->
-    <p class="em-offre-author">
-        <strong>Sujet proposé par : </strong><?php echo $author->name; ?>
-    </p>
+    <div class="em-offre-author">
+        <br><strong>Sujet proposé par : </strong><?php echo $author->name; ?>
+
+	    <?php
+	    // We need to change up the page based on if the person is viewing an offer from a lab, a future PHd, or a municiplaity.
+	    //// Profile 1006 : Futur doctorant = display no special information.
+	    //// Profile 1007 : Researcher = display information about his lab.
+	    //// Profile 1008 : Municipality = display information about the organization.
+	    if ($profile == '1007') :?>
+            <?php
+                require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+                $m_cifre = new EmundusModelCifre();
+                $laboratoire = $m_cifre->getUserLaboratory($author->id);
+            ?>
+            du laboratoire
+                <?php
+                    if (!empty($laboratoire->website))
+                        echo '<a target="_blank " href="'.$laboratoire->website.'">';
+                    echo $laboratoire->name;
+                    if (!empty($laboratoire->website))
+                        echo '</a>';
+                ?>
+                <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
+        <?php elseif ($profile == '1008') :?>
+		    <?php
+                require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+                $m_cifre = new EmundusModelCifre();
+                $institution = $m_cifre->getUserInstitution($author->id);
+		    ?>
+            de la structure
+		    <?php
+		    if (!empty($institution->website))
+			    echo '<a target="_blank " href="'.$institution->website.'">';
+		    echo $institution->nom_de_structure;
+		    if (!empty($institution->website))
+			    echo '</a>';
+		    ?>
+            <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Cliquez ici pour plus d'information</a>
+        <?php endif; ?>
+    </div>
 
     <hr>
     <!-- Presentation of the project -->
@@ -127,9 +165,9 @@ else
     <!-- Contact information -->
     <div class="em-offre-contact">
         <strong> Informations de contact </strong>
-        <p class="em-contact-item"><strong>Nom : </strong><?php echo $this->data['jos_emundus_projet___contact_nom_raw'][0]; ?></p>
-        <p class="em-contact-item"><strong>Mail : </strong><?php echo $this->data['jos_emundus_projet___contact_mail_raw'][0]; ?></p>
-        <p class="em-contact-item"><strong>Tel : </strong><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
+        <p class="em-contact-item"><strong>Nom : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_nom_raw'][0])?$this->data['jos_emundus_projet___contact_nom_raw'][0]:'Aucun nom renseigné'; ?></p>
+        <p class="em-contact-item"><strong>Mail : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_mail_raw'][0])?$this->data['jos_emundus_projet___contact_mail_raw'][0]:'Aucun mail renseingé'; ?></p>
+        <p class="em-contact-item"><strong>Tel : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_tel_raw'][0])?$this->data['jos_emundus_projet___contact_tel_raw'][0]:'Aucun numéro renseigné'; ?></p>
     </div>
 
 </div>

@@ -32,8 +32,7 @@ CREATE TABLE `jos_emundus_users_institutions` (
   `id` int(11) NOT NULL,
   `user` int(11) NOT NULL,
   `institution` int(11) NOT NULL,
-  `profile` int(11) NOT NULL,
-  `can_edit` tinyint(4) NOT NULL
+  `profile` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

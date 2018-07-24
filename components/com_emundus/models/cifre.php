@@ -78,13 +78,71 @@ class EmundusModelCifre extends JModelList {
 	}
 
 	/**
+	 * @param null $fnum String The fnum of the offer.
+	 * @return Mixed An array of objects.
+	 */
+	function getOffer($fnum) {
+
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$listID = $eMConfig->get('fabrikListID');
+
+		if (empty($listID) || empty($fnum))
+			return false;
+
+		// We need to get the table name associated to the Fabrik list defined in the comments.
+		// TODO: Rebuild the Fabrik logic and get all of the elements for the entire offer, not just the list in question.
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('db_table_name'))->from($this->db->quoteName('#__fabrik_lists'))->where($this->db->quoteName('id').'='.$listID);
+
+		try {
+			$offerTable = $this->db->loadResult();
+		} catch (Exception $e) {
+			return false;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select('*')->from($this->db->quoteName($offerTable))->where($this->db->quoteName('fnum').' LIKE '.$fnum);
+		$this->db->setQuery($query);
+
+		try {
+			return $this->db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting offers by user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+	/**
 	 * @param $user_id Int The ID of the user who's offers we are getting.
 	 * @param null $fnum String If any of the offers are linked to this fnum, do not get them.
 	 * @return Mixed An array of objects.
 	 */
 	function getOffersByUser($user_id, $fnum = null) {
 
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$listID = $eMConfig->get('fabrikListID');
+
+		if (empty($listID) || empty($fnum))
+			return false;
+
+		// We need to get the table name associated to the Fabrik list defined in the comments.
+		// TODO: Rebuild the Fabrik logic and get all of the elements for the entire offer, not just the list in question.
 		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('db_table_name'))->from($this->db->quoteName('#__fabrik_lists'))->where($this->db->quoteName('id').'='.$listID);
+
+		try {
+			$offerTable = $this->db->loadResult();
+		} catch (Exception $e) {
+			return false;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select('ot.*')
+			->from($this->db->quoteName($offerTable, 'ot'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('ot.fnum'));
+
+		if (!empty($fnum))
+			$query->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('cc.fnum').' OR '.$this->db->quoteName('cl.fnum_from').' LIKE '.$this->db->quoteName('cc.fnum').')');
 
 		// This tricky function does something a bit complex when an fnum is defined.
 		// If the user has ANY link to the fnum in question, don't return the result.
@@ -92,12 +150,6 @@ class EmundusModelCifre extends JModelList {
 		$where = $this->db->quoteName('cc.user_id').'='.$user_id.' AND '.$this->db->quoteName('cc.status').'!= 0 ';
 		if (!empty($fnum))
 			$where .= ' AND NOT (( '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('cl.user_from').'='.$user_id.' ) OR ( '.$this->db->quoteName('cl.fnum_from').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('cl.user_to').'='.$user_id.' ))';
-
-		$query->select($this->db->quoteName('fnum'))
-			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'));
-
-		if (!empty($fnum))
-			$query->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('cc.fnum').' OR '.$this->db->quoteName('cl.fnum_from').' LIKE '.$this->db->quoteName('cc.fnum').')');
 
 		$query->where($where);
 
@@ -194,6 +246,83 @@ class EmundusModelCifre extends JModelList {
 			return true;
 		} catch (Exception $e) {
 			JLog::add('Error deleting cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+
+	/**
+	 * Gets the laboratory information linked to the user passed in the params or the currently logged in user if not.
+	 *
+	 * @param $user_id Int The user ID of the person to check the lab.
+	 * @return Mixed
+	 */
+	function getUserLaboratory($user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		// First step is to get the user in question and make sure his profile is correct.
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('profile').', '.$this->db->quoteName('laboratoire'))->from($this->db->quoteName('#__emundus_users'))->where('user_id = '.$user_id);
+		$this->db->setQuery($query);
+		try {
+			$user = $this->db->loadObject();
+		} catch (Exception $e) {
+			JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		// Do not continue if the user is not a researcher.
+		if ($user->profile != '1007')
+			return false;
+
+		// Get the lab details from the DB.
+		$query = $this->db->getQuery(true);
+		$query->select('*')->from($this->db->quoteName('em_laboratoire'))->where('id = '.$user->laboratoire);
+		$this->db->setQuery($query);
+		try {
+			return $this->db->loadObject();
+		} catch (Exception $e) {
+			JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+	/**
+	 * Gets the institution information linked to the user passed in the params or the currently logged in user if not.
+	 *
+	 * @param $user_id Int The user ID of the person to check the lab.
+	 * @return Mixed
+	 */
+	function getUserInstitution($user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		// First step is to get the user in question and make sure his profile is correct.
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('profile').', '.$this->db->quoteName('nom_de_structure'))->from($this->db->quoteName('#__emundus_users'))->where('user_id = '.$user_id);
+		$this->db->setQuery($query);
+		try {
+			$user = $this->db->loadObject();
+		} catch (Exception $e) {
+			JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		// Do not continue if the user is not linked to a municipality.
+		if ($user->profile != '1008')
+			return false;
+
+		// Get the lab details from the DB.
+		$query = $this->db->getQuery(true);
+		$query->select('*')->from($this->db->quoteName('em_municipalitees'))->where('id = '.$user->nom_de_structure);
+		$this->db->setQuery($query);
+		try {
+			return $this->db->loadObject();
+		} catch (Exception $e) {
+			JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
