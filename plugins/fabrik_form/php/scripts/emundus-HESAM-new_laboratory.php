@@ -16,6 +16,20 @@ defined('_JEXEC') or die();
 $extension = 'com_contact';
 $id = $data['em_laboratoire___id_raw'];
 $title = $data['em_laboratoire___name_raw'];
+
+$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+$query->select($db->quoteName('catid'))->from($db->quoteName('em_laboratoire'))->where('id = '.$id);
+$db->setQuery($query);
+try {
+	if (!empty($db->loadResult()))
+		return false;
+} catch (Exception $e) {
+	JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	return false;
+}
+
+
 // Category ID 107 = lab
 $parent_id = 107;
 
@@ -44,7 +58,6 @@ if (!$category->store(true)) {
 // Build the path for our category
 $category->rebuildPath($category->id);
 
-$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $query->update($db->quoteName('em_laboratoire'))->set($db->quoteName('catid').' = '.$category->id)->where('id = '.$id);
 $db->setQuery($query);
