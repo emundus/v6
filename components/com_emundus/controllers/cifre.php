@@ -26,16 +26,19 @@ class EmundusControllerCifre extends JControllerLegacy {
 	// Initialize class variables
 	var $user = null;
 	var $m_cifre = null;
+	var $c_messages = null;
 
 	public function __construct(array $config = array()) {
 
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 
 
 		// Load class variables
 		$this->user = JFactory::getSession()->get('emundusUser');
 		$this->m_cifre = new EmundusModelCifre();
+		$this->c_messages = new EmundusControllerMessages();
 
 		parent::__construct($config);
 	}
@@ -112,9 +115,46 @@ class EmundusControllerCifre extends JControllerLegacy {
 		// Add the contact request into the DB.
 		if ($this->m_cifre->createContactRequest((int)substr($fnum, -7), $this->user->id, $fnum, $linkedOffer)) {
 
+			require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+			$m_files = new EmundusModelFiles();
+
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$offerTitle = $eMConfig->get('offerTitle');
+
+			// Get additional info for the fnums such as the user email.
+			$fnum = $m_files->getFnumInfos($fnum);
+			// This gets additional information about the offer, for example the title.
+			$offerInformation = $this->m_cifre->getOffer($fnum);
+
 			// Link created: Send email.
-			// TODO: Send email.
-			echo json_encode((object)['status' => true]);
+			if (!empty($linkedOffer)) {
+
+				$linkedOffer = $this->m_cifre->getOffer($linkedOffer);
+				$post = [
+					'USER_NAME' => $this->user->name,
+					'LINKED_OFFER_FNUM' => $linkedOffer->fnum,
+					'LINKED_OFFER_NAME' => $linkedOffer->{$offerTitle},
+					'OFFER_USER_NAME' => $fnum['name'],
+					'OFFER_NAME' => $offerInformation->{$offerTitle}
+				];
+
+				// TODO: Add email for contacting someone WITH an offer attached.
+				$email_to_send = '';
+
+			} else {
+
+				$post = [
+					'REQUESTING_USER_NAME' => $this->user->name,
+					'USER_NAME' => $fnum['name'],
+					'OFFER_NAME' => $offerInformation->{$offerTitle}
+				];
+
+				// TODO: Add email for contacting someone WITHOUT an offer attached.
+				$email_to_send = '';
+			}
+
+
+			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
 			exit;
 
 		} else {
@@ -140,13 +180,13 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$fnum = $jinput->post->get('fnum', null);
 
 		// If we have a link type that isn't 1 then we have not contacted them.
-		if ($this->m_cifre->getContactStatus($this->user->id, $fnum) != 1) {
+		if ($this->m_cifre->getContactStatus($this->user->id, $fnum['fnum']) != 1) {
 			echo json_encode((object)['status' => false, 'msg' => "Vous n'avez pas contacté la personne pour cette offre ou vous etes déja en lien avec cette personne."]);
 			exit;
 		}
 
 		// Log the act of having contacted the person.
-		EmundusModelLogs::log($this->user->id, (int)substr($fnum, -7), $fnum, 32, 'u', 'COM_EMUNDUS_LOGS_CONTACT_REQUEST_RETRY');
+		EmundusModelLogs::log($this->user->id, $fnum['applicant_id'], $fnum['fnum'], 32, 'u', 'COM_EMUNDUS_LOGS_CONTACT_REQUEST_RETRY');
 
 		// TODO: Send email.
 		echo json_encode((object)['status' => true]);

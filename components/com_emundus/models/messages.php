@@ -194,6 +194,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @param Int The ID of the email.
      * @param Bool Whether or not to also get the candidate file attachments linked to this template, this is an option use for compatibility because some DBs may not have this table.
+     * @param Bool Whether or not to also get the letter attachments linked to this template.
      * @return Object The email we seek, false if none is found.
      */
 	function getEmail($id, $candidateAttachments = false, $letterAttachments = false) {
