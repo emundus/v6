@@ -87,9 +87,10 @@ def isPassport(imagePath, keywords = ""):
 		image = cv2.resize(image, (height / 3, width / 3)) 
 	
 	i = 0
-	while len(detectFaces(image)) == 0 and i <= 4:
+	while len(detectFaces(image)) == 0 and i < 4:
 		image = ndimage.rotate(image, 90)
 		i += 1
+		
 
 	faces = detectFaces(image)
 	
@@ -141,10 +142,10 @@ def isCv(filepath, keywords = ""):
 	if filepath.lower().endswith('.docx'):
 		text = getText(filepath)
 	if filepath.lower().endswith('.doc'):
-		os.system('cat '+ filepath+ ' > ' + path + '/line.txt')
-		text = open(path + '/line.txt', 'r').read()
-		if os.path.exists(path + '/line.txt'):
-			os.remove(path + '/line.txt')
+		os.system('cat '+ filepath+ ' > ' + path + '/extractedtext.txt')
+		text = open(path + '/extractedtext.txt', 'r').read()
+		if os.path.exists(path + '/extractedtext.txt'):
+			os.remove(path + '/extractedtext.txt')
 
 	keymatch = []
 	if keywords:
@@ -161,10 +162,10 @@ def isMotivation(filepath, keywords = ""):
 	if filepath.lower().endswith('.docx') or filepath.lower().endswith('.pdf'):
 		text = getText(filepath)
 	if filepath.lower().endswith('.doc'):
-		os.system('cat '+ filepath+ ' > ' + path + '/line.txt')
-		text = open(path + '/line.txt', 'r').read()
-		if os.path.exists(path + '/line.txt'):
-			os.remove(path + '/line.txt')
+		os.system('cat '+ filepath+ ' > ' + path + '/extractedtext.txt')
+		text = open(path + '/extractedtext.txt', 'r').read()
+		if os.path.exists(path + '/extractedtext.txt'):
+			os.remove(path + '/extractedtext.txt')
 	
 	keymatch = []
 	if keywords:
