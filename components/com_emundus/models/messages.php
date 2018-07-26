@@ -540,6 +540,7 @@ class EmundusModelMessages extends JModelList {
             }
             unset($preprocess);
 
+            // ka makani
 
         } catch (Extension $e) {
             JLog::add('Error generating DOC file in model/messages', JLog::ERROR, 'com_emundus');
