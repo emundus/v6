@@ -108,8 +108,11 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             ?>
             du laboratoire
                 <?php
-                    if (!empty($laboratoire->website))
-                        echo '<a target="_blank " href="'.$laboratoire->website.'">';
+                    if (!empty($laboratoire->website)) {
+                        $parse =parse_url($laboratoire->website, PHP_URL_SCHEME) === null ? 'http://' . $laboratoire->website: $laboratoire->website;
+                        echo '<a target="_blank " href="'.$parse.'">';
+                    }
+                        
                     echo $laboratoire->name;
                     if (!empty($laboratoire->website))
                         echo '</a>';
@@ -123,8 +126,11 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 		    ?>
             de la structure
 		    <?php
-		    if (!empty($institution->website))
-			    echo '<a target="_blank " href="'.$institution->website.'">';
+            
+		    if (!empty($institution->website)) {
+                $parse =parse_url($institution->website, PHP_URL_SCHEME) === null ? 'http://' . $institution->website: $institution->website;
+                echo '<a target="_blank " href="'.$parse.'">';
+            }
 		    echo $institution->nom_de_structure;
 		    if (!empty($institution->website))
 			    echo '</a>';
@@ -195,6 +201,7 @@ $action_button = $c_ciffe->getActionButton($fnum);
     <span class="alert alert-danger hidden" id="em-action-text"></span>
 
     <div id="em-search-item-action-button">
+
     <?php if ($action_button == 'contact') :?>
 
         <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
@@ -217,8 +224,9 @@ $action_button = $c_ciffe->getActionButton($fnum);
                         <?php if (!empty($offers)) :?>
                             <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>
                             <select id="em-join-offer">
+                                <option value="">Je ne souhaite pas joindre mes offres</option>
                                 <?php foreach ($offers as $offer) :?>
-                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->title; ?></option>
+                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         <?php endif; ?>
@@ -259,7 +267,6 @@ $action_button = $c_ciffe->getActionButton($fnum);
     function actionButton(action) {
 
         var fnum = '<?php echo $fnum; ?>';
-
         var data = {
             fnum : fnum
         };
@@ -270,6 +277,7 @@ $action_button = $c_ciffe->getActionButton($fnum);
                 var linkedOffer = document.getElementById('em-join-offer').value;
                 if (linkedOffer != null && linkedOffer != '' && typeof linkedOffer != 'undefined')
                     data.linkedOffer = linkedOffer;
+                
             }
         }
 
@@ -319,7 +327,7 @@ $action_button = $c_ciffe->getActionButton($fnum);
                             '                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>' +
                             '                            <select id="em-join-offer">' +
                                                             <?php foreach ($offers as $offer) :?>
-                            '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->title; ?></option>' +
+                            '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
                                                             <?php endforeach; ?>
                             '                            </select>' +
                                                         <?php endif; ?>
@@ -377,7 +385,7 @@ $action_button = $c_ciffe->getActionButton($fnum);
                         '                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>' +
                         '                            <select id="em-join-offer">' +
 		                                                <?php foreach ($offers as $offer) :?>
-                        '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->title; ?></option>' +
+                        '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
 		                                                <?php endforeach; ?>
                         '                            </select>' +
 		                                            <?php endif; ?>
