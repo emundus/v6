@@ -102,7 +102,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$jinput = $application->input;
 		$fnum = $jinput->post->get('fnum', null);
 		$linkedOffer = $jinput->post->get('linkedOffer', null);
-
 		// If there is an entry in the contact table then that means we already have a link with this person
 		if (!empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
 			echo json_encode((object)['status' => false, 'msg' => 'Vous avez déja contacté cette personne pour cette offre.']);
@@ -114,43 +113,43 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		// Add the contact request into the DB.
 		if ($this->m_cifre->createContactRequest((int)substr($fnum, -7), $this->user->id, $fnum, $linkedOffer)) {
-
 			require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 			$m_files = new EmundusModelFiles();
 
-			$eMConfig = JComponentHelper::getParams('com_emundus');
-			$offerTitle = $eMConfig->get('offerTitle');
-
 			// Get additional info for the fnums such as the user email.
 			$fnum = $m_files->getFnumInfos($fnum);
+
 			// This gets additional information about the offer, for example the title.
-			$offerInformation = $this->m_cifre->getOffer($fnum);
+			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
+			
 
 			// Link created: Send email.
 			if (!empty($linkedOffer)) {
-
+				
 				$linkedOffer = $this->m_cifre->getOffer($linkedOffer);
+				$url = JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$linkedOffer->id);
 				$post = [
 					'USER_NAME' => $this->user->name,
 					'LINKED_OFFER_FNUM' => $linkedOffer->fnum,
-					'LINKED_OFFER_NAME' => $linkedOffer->{$offerTitle},
+					'LINKED_OFFER_NAME' => $linkedOffer->titre,
 					'OFFER_USER_NAME' => $fnum['name'],
-					'OFFER_NAME' => $offerInformation->{$offerTitle}
+					'OFFER_NAME' => $offerInformation->titre,
+					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>"
 				];
 
 				// TODO: Add email for contacting someone WITH an offer attached.
-				$email_to_send = '';
+				$email_to_send = 72;
 
 			} else {
 
 				$post = [
-					'REQUESTING_USER_NAME' => $this->user->name,
-					'USER_NAME' => $fnum['name'],
-					'OFFER_NAME' => $offerInformation->{$offerTitle}
+					'USER_NAME' => $this->user->name,
+					'OFFER_USER_NAME' => $fnum['name'],
+					'OFFER_NAME' => $offerInformation->titre
 				];
 
 				// TODO: Add email for contacting someone WITHOUT an offer attached.
-				$email_to_send = '';
+				$email_to_send = 71;
 			}
 
 

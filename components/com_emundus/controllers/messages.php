@@ -419,7 +419,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
-	    require_once (JPATH_COMPONENT.DS.'helper'.DS.'files.php');
+	    require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 
 	    $m_messages = new EmundusModelMessages();
 	    $m_emails   = new EmundusModelEmails();
@@ -485,7 +485,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    if ($template != false)
 		    $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 
-
 	    // Configure email sender
 	    $mailer = JFactory::getMailer();
 	    $mailer->setSender($sender);
@@ -496,79 +495,86 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mailer->Encoding = 'base64';
 	    $mailer->setBody($body);
 
+        
+        // Get any candidate files included in the message.
+        if(!empty($template->candidate_file)) {
+            foreach ($template->candidate_file as $candidate_file) {
 
-	    // Get any candidate files included in the message.
-	    foreach ($template->candidate_file as $candidate_file) {
-
-		    $filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
-
-		    if ($filename != false) {
-
-			    // Build the path to the file we are searching for on the disk.
-			    $path = EMUNDUS_PATH_ABS.$fnum['applicant_id'].DS.$filename;
-
-			    if (file_exists($path)) {
-				    $toAttach[] = $path;
-			    }
-		    }
-	    }
+                $filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
+    
+                if ($filename != false) {
+    
+                    // Build the path to the file we are searching for on the disk.
+                    $path = EMUNDUS_PATH_ABS.$fnum['applicant_id'].DS.$filename;
+    
+                    if (file_exists($path)) {
+                        $toAttach[] = $path;
+                    }
+                }
+            }
+        }
+	    
 
 	    // Files generated using the Letters system. Requires attachment creation and doc generation rights.
-	    // Get from DB and generate using the tags.
-	    foreach ($template->setup_letters as $setup_letter) {
+        // Get from DB and generate using the tags.
+        if(!empty($template->setup_letters)) {
+            foreach ($template->setup_letters as $setup_letter) {
 
-		    $letter = $m_messages->get_letter($setup_letter);
-
-		    // We only get the letters if they are for that particular programme.
-		    if ($letter != false && in_array($fnum['training'], explode('","', $letter->training))) {
-
-			    // Some letters are only for files of a certain status, this is where we check for that.
-			    if ($letter->status != null && !in_array($fnum['step'], explode(',', $letter->status)))
-				    continue;
-
-			    // A different file is to be generated depending on the template type.
-			    switch ($letter->template_type) {
-
-				    case '1':
-					    // This is a static file, we just need to find its path add it as an attachment.
-					    if (file_exists(JPATH_BASE.$letter->file))
-						    $toAttach[] = JPATH_BASE.$letter->file;
-					    break;
-
-				    case '2':
-					    // This is a PDF to be generated from HTML.
-					    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-
-					    $path = generateLetterFromHtml($letter, $fnum['fnum'], $fnum['applicant_id'], $fnum['training']);
-
-					    if ($path != false && file_exists($path))
-						    $toAttach[] = $path;
-					    break;
-
-				    case '3':
-					    // This is a DOC template to be completed with applicant information.
-					    $path = $m_messages->generateLetterDoc($letter, $fnum['fnum']);
-
-					    if ($path != false && file_exists($path))
-						    $toAttach[] = $path;
-					    break;
-
-			    }
-
-		    }
-
-	    }
+                $letter = $m_messages->get_letter($setup_letter);
+    
+                // We only get the letters if they are for that particular programme.
+                if ($letter != false && in_array($fnum['training'], explode('","', $letter->training))) {
+    
+                    // Some letters are only for files of a certain status, this is where we check for that.
+                    if ($letter->status != null && !in_array($fnum['step'], explode(',', $letter->status)))
+                        continue;
+    
+                    // A different file is to be generated depending on the template type.
+                    switch ($letter->template_type) {
+    
+                        case '1':
+                            // This is a static file, we just need to find its path add it as an attachment.
+                            if (file_exists(JPATH_BASE.$letter->file))
+                                $toAttach[] = JPATH_BASE.$letter->file;
+                            break;
+    
+                        case '2':
+                            // This is a PDF to be generated from HTML.
+                            require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+    
+                            $path = generateLetterFromHtml($letter, $fnum['fnum'], $fnum['applicant_id'], $fnum['training']);
+    
+                            if ($path != false && file_exists($path))
+                                $toAttach[] = $path;
+                            break;
+    
+                        case '3':
+                            // This is a DOC template to be completed with applicant information.
+                            $path = $m_messages->generateLetterDoc($letter, $fnum['fnum']);
+    
+                            if ($path != false && file_exists($path))
+                                $toAttach[] = $path;
+                            break;
+    
+                    }
+    
+                }
+    
+            }
+        }
+	    
 
 	    $mailer->addAttachment($toAttach);
-
 	    // Send and log the email.
-	    $send = $mailer->Send();
+        $send = $mailer->Send();
+        
 	    if ($send !== true) {
 
 		    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
 		    return false;
 
 	    } else {
+            
 		    $sent[] = $fnum['email'];
 		    $log = [
 			    'user_id_from'  => $user->id,

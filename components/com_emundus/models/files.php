@@ -1993,7 +1993,7 @@ where 1 order by ga.fnum asc, g.title';
         try
         {
             $db = JFactory::getDBO();
-            $query = 'select u.name, cc.fnum, cc.applicant_id, c.*
+            $query = 'select u.name, u.email, cc.fnum, cc.applicant_id, c.*
                         from #__emundus_campaign_candidature as cc
                         left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join
                         #__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);

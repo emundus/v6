@@ -82,30 +82,21 @@ class EmundusModelCifre extends JModelList {
 	 * @return Mixed An array of objects.
 	 */
 	function getOffer($fnum) {
+		//$eMConfig = JComponentHelper::getParams('com_emundus');
+		//$listID = $eMConfig->get('fabrikListID');
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$listID = $eMConfig->get('fabrikListID');
-
-		if (empty($listID) || empty($fnum))
+		if (empty($fnum))
 			return false;
 
-		// We need to get the table name associated to the Fabrik list defined in the comments.
-		// TODO: Rebuild the Fabrik logic and get all of the elements for the entire offer, not just the list in question.
 		$query = $this->db->getQuery(true);
-		$query->select($this->db->quoteName('db_table_name'))->from($this->db->quoteName('#__fabrik_lists'))->where($this->db->quoteName('id').'='.$listID);
+		$query
+			->select('*')
+			->from($this->db->quoteName('#__emundus_projet'))
+			->where($this->db->quoteName('fnum').' LIKE "' . $fnum . '"');
 
-		try {
-			$offerTable = $this->db->loadResult();
-		} catch (Exception $e) {
-			return false;
-		}
-
-		$query = $this->db->getQuery(true);
-		$query->select('*')->from($this->db->quoteName($offerTable))->where($this->db->quoteName('fnum').' LIKE '.$fnum);
 		$this->db->setQuery($query);
-
 		try {
-			return $this->db->loadObjectList();
+			return $this->db->loadObject();
 		} catch (Exception $e) {
 			JLog::add('Error getting offers by user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
@@ -118,20 +109,28 @@ class EmundusModelCifre extends JModelList {
 	 * @return Mixed An array of objects.
 	 */
 	function getOffersByUser($user_id, $fnum = null) {
-
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$listID = $eMConfig->get('fabrikListID');
-
-		if (empty($listID) || empty($fnum))
+		
+		//$eMConfig = JComponentHelper::getParams('com_emundus');
+		//$listID = $eMConfig->get('fabrikListID');
+		
+		if (empty($fnum))
 			return false;
-
+		
 		// We need to get the table name associated to the Fabrik list defined in the comments.
 		// TODO: Rebuild the Fabrik logic and get all of the elements for the entire offer, not just the list in question.
 		$query = $this->db->getQuery(true);
-		$query->select($this->db->quoteName('db_table_name'))->from($this->db->quoteName('#__fabrik_lists'))->where($this->db->quoteName('id').'='.$listID);
+
+		$query
+			->select($this->db->quoteName(['cc.fnum','p.titre']))
+			->from($this->db->quoteName('#__emundus_campaign_candidature','cc'))
+			->join('LEFT', $this->db->quoteName('#__emundus_projet', 'p') . ' ON (' . $this->db->quoteName('p.fnum') . ' = ' . $this->db->quoteName('cc.fnum') . ')')
+			->where($this->db->quoteName('cc.user_id') . ' = '.$user_id . ' AND ' . $this->db->quoteName('cc.status') . ' = 1');
+
+			$this->db->setQuery($query);
 
 		try {
-			$offerTable = $this->db->loadResult();
+			return $this->db->loadObjectList();
+
 		} catch (Exception $e) {
 			return false;
 		}

@@ -1140,7 +1140,6 @@ class EmundusModelUsers extends JModelList
                     AND acl.group_id in ('. implode(',', $groups) . ') AND ((acl.c = 1) OR (acl.u = 1))
                     ORDER BY act.ordering';
         $db = $this->getDbo();
-
         try {
             $db->setQuery($query);
             return $db->loadAssocList();
