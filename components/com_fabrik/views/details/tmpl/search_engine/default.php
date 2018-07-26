@@ -288,6 +288,14 @@ $action_button = $c_ciffe->getActionButton($fnum);
             data: data,
             beforeSend: function () {
                 jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
+                
+                if (action == 'contact') {
+                    jQuery('#contactModal').modal('hide');
+                    jQuery('body').removeClass('modal-open');
+                    jQuery('.modal-backdrop').remove();
+                }
+                    
+                    
             },
             success: function(result) {
                 if (result.status) {
