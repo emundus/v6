@@ -50,7 +50,7 @@ def detectFaces(image):
 	
 # get generated string by tesseract ocr
 def getString(image):
-	char = image_to_string(image,config='-c tessedit_char_whitelist=<0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ -psm 6')
+	char = image_to_string(image,config='-c tessedit_char_whitelist=<0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz -psm 6')
 	return char 
 
 def getText(pdf):
@@ -125,8 +125,7 @@ def isPassport(imagePath, keywords = ""):
 		key_t = keywords.split(";")
 		matchkeywords = [re.compile(f ,re.I) for f in key_t]
 		keymatch = [m.findall(char) for m in matchkeywords if m.findall(char)]
-
-	if (len(faces) > 0 and match) or (len(faces) > 0  and keymatch) or (len(faces) > 0 and classresult == "passport") or (match and classresult == "passport") or (keymatch and classresult == "passport") or (match and len(faces) > 0 ):
+	if (len(faces) > 0 and match and keymatch) or (len(faces) > 0  and keymatch) or (len(faces) > 0  and match) :
 		return 1
 	else:
 		return 0
@@ -134,13 +133,19 @@ def isPassport(imagePath, keywords = ""):
 # is image a cv?
 def isCv(filepath, keywords = ""):
 	text = ""
+	path = os.getcwd()
 	if filepath.lower().endswith('.pdf'):
 		filepath = pdf2image(filepath, 250)
 		image = cv2.imread(filepath)
 		text = getString(image)
 	if filepath.lower().endswith('.docx'):
 		text = getText(filepath)
-		
+	if filepath.lower().endswith('.doc'):
+		os.system('cat '+ filepath+ ' > ' + path + '/line.txt')
+		text = open(path + '/line.txt', 'r').read()
+		if os.path.exists(path + '/line.txt'):
+			os.remove(path + '/line.txt')
+
 	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")
@@ -152,7 +157,15 @@ def isCv(filepath, keywords = ""):
 		return 0
 
 def isMotivation(filepath, keywords = ""):
-	text = getText(filepath)
+	path = os.getcwd()
+	if filepath.lower().endswith('.docx') or filepath.lower().endswith('.pdf'):
+		text = getText(filepath)
+	if filepath.lower().endswith('.doc'):
+		os.system('cat '+ filepath+ ' > ' + path + '/line.txt')
+		text = open(path + '/line.txt', 'r').read()
+		if os.path.exists(path + '/line.txt'):
+			os.remove(path + '/line.txt')
+	
 	keymatch = []
 	if keywords:
 		key_t = keywords.split(";")

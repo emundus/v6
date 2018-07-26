@@ -9,7 +9,7 @@ from time import gmtime, strftime, sleep
 import tarfile
 import socket
 import progressbar
-
+import PyPDF2
 import classificate as cl
 
 
@@ -41,7 +41,7 @@ config = {
   'user': user,
   'password': password,
   'host':host,
-  'port':'3306',
+  'port':'8889',
   'database': db
   
 }
@@ -80,7 +80,7 @@ if not os.path.exists(filename):
 if os.path.exists(filename):
 	fileyearweek = strftime("%Y%W", gmtime(os.path.getmtime(filename)))
 	fileweek = 	strftime("%W", gmtime(os.path.getmtime(filename)))
-	current_week = 	filedate = strftime("%W", gmtime(os.path.getmtime(filename)))
+	current_week = strftime("%W", gmtime())
 
 	if current_week > fileweek:
 		tar = tarfile.open(parent+'/logs/com_emundus.classification.'+ fileyearweek +'.php.tar.gz', "w:gz")
@@ -101,20 +101,20 @@ if os.path.exists(filename):
 			if os.path.exists(parent+"/"+filepath+ str(d[1])+"/"+d[2]):
 				try:
 					valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "isphoto")
-					
-					req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
-					cur.execute(req)
-					cnx.commit()
-					#insert log
+				
+					#insert log in log/com_emundus.classification.php
 					if valid == 1:
 						status = "success"
 					if valid == 0:
 						status = "failed"
-					
+				
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
+					req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
+					cur.execute(req)
+					cnx.commit()
 				except Exception as e:
-					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR \t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
-					#continue
+					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+
 			else:
 				#insert log
 				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tERROR\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found\n')
@@ -131,7 +131,7 @@ if os.path.exists(filename):
 		sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
 			from jos_emundus_uploads eu\
 			left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
-			where sa.lbl in ('_passport', '_identity') and eu.is_validated IS NULL order by eu.timedate ASC limit 100"
+			where (sa.lbl like '_passport%' or sa.lbl like '_identity%') and eu.is_validated IS NULL order by eu.timedate ASC limit 100"
 
 		cur.execute(sql)
 		data = cur.fetchall()
@@ -157,19 +157,20 @@ if os.path.exists(filename):
 						status = "success"
 					if valid == 0:
 						status = "failed"
-
+				
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
-
 					req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					cur.execute(req)
 					cnx.commit()
 					# after sql insertion, remove generated jpeg image
 					image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
 					if os.path.exists(image):
-						os.remove(image)
+						os.remove(image)	
+
 				except Exception as e:
-					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR \t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
-					
+					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+
+								
 			else:
 				#insert log			
 				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR \t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found \n')
@@ -208,12 +209,13 @@ if os.path.exists(filename):
 					else:
 						valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "iscv")
 					#insert log
+
 					if valid == 1:
 						status = "success"
 					if valid == 0:
 						status = "failed"
+					
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t CV \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
-
 					req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					cur.execute(req)
 					cnx.commit()
@@ -224,6 +226,8 @@ if os.path.exists(filename):
 
 				except Exception as e:
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t CV \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+
+				
 					
 			else:
 				#insert log		
@@ -267,8 +271,8 @@ if os.path.exists(filename):
 						status = "success"
 					if valid == 0:
 						status = "failed"
-					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
 
+					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\t'+status+' \n')
 					req = "UPDATE jos_emundus_uploads SET is_validated="+str(valid)+" WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					cur.execute(req)
 					cnx.commit()
@@ -276,8 +280,10 @@ if os.path.exists(filename):
 					image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
 					if os.path.exists(image):
 						os.remove(image)
+
 				except Exception as e:
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\t ERROR\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile is corrupted \n')
+				
 					
 			else:
 				#insert log			
