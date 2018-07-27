@@ -14,8 +14,9 @@ defined('_JEXEC') or die();
  */
 
 $extension = 'com_contact';
-$id = $data['em_laboratoire___id_raw'];
-$title = $data['em_laboratoire___name_raw'];
+$id = $data['em_laboratoire___id'];
+$title = $data['em_laboratoire___name'];
+
 
 $db = JFactory::getDbo();
 $query = $db->getQuery(true);

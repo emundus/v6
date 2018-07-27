@@ -137,7 +137,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>"
 				];
 
-				// TODO: Add email for contacting someone WITH an offer attached.
 				$email_to_send = 72;
 
 			} else {
@@ -148,7 +147,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'OFFER_NAME' => $offerInformation->titre
 				];
 
-				// TODO: Add email for contacting someone WITHOUT an offer attached.
 				$email_to_send = 71;
 			}
 
