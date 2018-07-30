@@ -67,11 +67,7 @@ def isPhoto(imagePath):
 	if len(image.shape) == 3:
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-	#print getClassResult(image)
-	#cv2.imshow('hdb', image)
-	#cv2.waitKey(0)
-	#print len(faces)
-	if (len(faces) > 0 and getClassResult(image) == "photo") or (len(faces) > 0 and getString(image) == ""):
+	if (len(faces) > 0 and getClassResult(image) == "photo") or (len(faces) > 0 and image_to_string(image) == ""):
 		return 1
 	else:
 		return 0
@@ -115,10 +111,6 @@ def isPassport(imagePath, keywords = ""):
 	image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel) #image closing morphology for noisy deletion
 
 	char = getString(image)
-
-	#print char
-	#cv2.imshow('hdb', image)
-	#cv2.waitKey(0)
 
 	match = re.search(r'\w+[<]+\w+', char)
 	keymatch = []

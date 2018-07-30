@@ -38,12 +38,11 @@ password=re.search(r'\w+', password).group()
 	
 
 config = {
-  'user': user,
-  'password': password,
-  'host':host,
-  'port':'8889',
-  'database': db
-  
+  	'user': user,
+  	'password': password,
+  	'host':host,
+  	'port':'8889',
+  	'database': db
 }
 
 cnx = mysql.connector.connect(**config)
@@ -84,6 +83,13 @@ if os.path.exists(filename):
 
 	if current_week > fileweek:
 		tar = tarfile.open(parent+'/logs/com_emundus.classification.'+ fileyearweek +'.php.tar.gz', "w:gz")
+		os.chdir(parent+'/logs/')
+		os.rename('com_emundus.classification.php','com_emundus.classification'+ fileyearweek +'.php')
+		tar.add('com_emundus.classification'+ fileyearweek +'.php')
+		tar.close()
+		if os.path.exists('com_emundus.classification'+ fileyearweek +'.php'):
+			os.remove('com_emundus.classification'+ fileyearweek +'.php')
+			
 		open(filename, 'w+')
 	with open(filename, 'r+') as f:
 		if not f.read(1):
