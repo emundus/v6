@@ -1,5 +1,5 @@
 div.modal {
-    background-color: rgba(0, 0, 0, 0.78) !important;
+    background-color: rgba(0, 0, 0, 0) !important;
     overflow: auto;
     overflow-y: scroll;
     position: fixed;
