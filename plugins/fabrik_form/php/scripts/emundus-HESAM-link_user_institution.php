@@ -20,7 +20,6 @@ $db = JFactory::getDBO();
 // 1008 = municipality
 if ($profile == 1007) {
 
-	// TODO: Adding a lab that is not in the list should now be done with the '+' button.
 	$institution_id = $data['jos_emundus_users___ecole_doctorale_raw'][0];
 
 	// Time to get the category ID from the inserted lab
@@ -141,7 +140,7 @@ if ($profile == 1007) {
 
 } else {
 	// Future PHd students don't need to be linked to an institution.
-	exit;
+	return true;
 }
 
 $query = $db->getQuery(true);
