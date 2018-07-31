@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 <div class="hikashop_listing_comment">
 	<span><?php echo JText::_('HIKASHOP_LISTING_COMMENT');?></span>
 <?php
-	if($row->vote_comment_sort_frontend) {
+	if($row->vote_comment_sort_frontend && count($this->elts)) {
 		$sort = hikaInput::get()->getString('sort_comment','');
 ?>
 	<span style="float: right;" class="hikashop_sort_listing_comment">
@@ -115,7 +115,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 			echo $hika_useless;
 		?></td>
 <?php } ?>
-		<td class="hika_comment_listing_useless" title="Useless" onclick="if(!window.Oby.hasClass(this, 'next_button_disabled')) hikashop_vote_useful(<?php echo $elt->vote_id;?>,2); window.Oby.addClass(this, 'next_button_disabled');"></td>
+		<td class="hika_comment_listing_useless" title="<?php echo JText::_('HIKA_USELESS'); ?>" onclick="if(!window.Oby.hasClass(this, 'next_button_disabled')) hikashop_vote_useful(<?php echo $elt->vote_id;?>,2); window.Oby.addClass(this, 'next_button_disabled');"></td>
 <?php
 			} else if($row->useful_style == "thumbs") {
 ?>

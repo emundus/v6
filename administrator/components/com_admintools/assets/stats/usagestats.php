@@ -12,7 +12,7 @@ class AkeebaUsagestats
     /** @var array Associative array of data being sent */
     private $data = array();
     /** @var string Remote url to upload the stats */
-    private $remoteUrl = 'http://abrandnewsite.com/index.php';
+    private $remoteUrl = 'https://abrandnewsite.com/index.php';
 
     public function setSiteId($siteId)
     {

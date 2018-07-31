@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -76,7 +76,8 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		'notification'=>array("ALLOW_NOTIFICATIONS_FROM_X",'boolean','0'),
 		'bank' =>array('Bank', 'list', array(
 			'default' => 'Default',
-			'bnp' => 'Bnp Paribas (Mercanet)'
+			'bnp' => 'Bnp Paribas (Mercanet)',
+			'socg' => 'Société Générale'
 		)),
 		'testmode'=>array('TEST_MODE', 'boolean','0'),
 		'debug' => array('DEBUG', 'boolean','0'),
@@ -109,7 +110,10 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		$PostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&lang='.$this->locale . $this->url_itemid;
 		$userPostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&user_return=1&lang='.$this->url_itemid;
 
-		if (empty($this->payment_params->bank)) {
+		if ($this->payment_params->bank == 'socg') $transactionRef = '';
+		else $transactionRef = $order->order_id;
+
+		if (empty($this->payment_params->bank) || ($this->payment_params->bank == 'socg')) {
 			$this->payment_params->bank = 'default';
 		}
 
@@ -123,7 +127,7 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 			"merchantId" => trim($this->payment_params->merchantID),
 			"normalReturnUrl" => $userPostUrl,
 			"amount" => str_replace(array('.',','),'',round($order->cart->full_total->prices[0]->price_value_with_tax,2)*100),
-			"transactionReference" => $order->order_id,
+			"transactionReference" => $transactionRef,
 			"keyVersion" => trim ($this->payment_params->keyVersion),
 			"automaticResponseUrl" => $PostUrl,
 			"orderId" => $order->order_id,

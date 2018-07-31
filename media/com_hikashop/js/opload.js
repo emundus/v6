@@ -129,7 +129,7 @@ opload.prototype = {
 
 		// File uploaded
 		entry.xhr.addEventListener("load", function(){
-			t.xhrFileLoaded(entry);
+			t.xhrFileLoaded(entry, file);
 		});
 
 		var params = {
@@ -182,8 +182,12 @@ opload.prototype = {
 			return fd;
 		}
 
+		if(!entry.chunk_size) entry.chunk_size = t.options.maxChunkSize;
+
 		var start = entry.chunk_size * entry.index,
 			end = start + entry.chunk_size;
+		if(end >= file.size)
+			end = file.size;
 		fd.append(fileInputName, opload.sliceBlob(file, start, end), filename);
 		fd.append('filename', filename);
 		fd.append('slice', entry.index);
@@ -196,7 +200,7 @@ opload.prototype = {
 	/**
 	 *
 	 */
-	xhrFileLoaded: function(entry) {
+	xhrFileLoaded: function(entry, file) {
 		var t = this,
 			response = t.getXhrResponse(entry);
 
@@ -855,7 +859,7 @@ hkUploaderMgr.prototype = {
 				if(dest) dest.innerHTML = r.html;
 				var empty = d.getElementById(t.id+'_empty');
 				if(empty) empty.style.display = 'none';
-				t.oploader.data.uploader_oldname = r.name;
+				t.oploader.options.data.uploader_oldname = r.name;
 			} else if(t.mode == 'listImg') {
 				if(t.options['imgClasses'] && t.options['imgClasses'][1]) {
 					var dest = hkjQuery('#'+t.id+'_content'), myData = document.createElement('li'), className = '';

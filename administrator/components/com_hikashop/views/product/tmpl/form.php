@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -203,7 +203,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php if(hikashop_acl('product/edit/description')) { ?>
 	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_description"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_description_title"><?php
-			echo JText::_('DESCRIPTION');
+			echo JText::_('HIKA_DESCRIPTION');
 		?></div>
 		<?php echo $this->editor->display(); ?>
 <script type="text/javascript">

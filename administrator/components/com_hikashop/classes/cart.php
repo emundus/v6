@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -658,16 +658,19 @@ class hikashopCartClass extends hikashopClass {
 		$tax_zone_id = 0;
 
 		if($cart->cart_type != 'wishlist') {
+
 			$addressClass = hikashop_get('class.address');
+			$cart->usable_addresses = new stdClass();
+			$cart->usable_addresses->billing = $addressClass->loadUserAddresses((int)$cart->user_id, 'billing');
+			$cart->usable_addresses->shipping = $addressClass->loadUserAddresses((int)$cart->user_id, 'shipping');
 
 			$address = null;
 			if(!empty($cart->cart_billing_address_id))
-				$address = $addressClass->get((int)$cart->cart_billing_address_id);
+				$address = $cart->usable_addresses->billing[(int)$cart->cart_billing_address_id];
 
 			if(empty($address)) {
-				$addresses = $addressClass->loadUserAddresses((int)$cart->user_id, 'billing');
-				if(!empty($addresses) && is_array($addresses)) {
-					$address = reset($addresses);
+				if(!empty($cart->usable_addresses->billing) && is_array($cart->usable_addresses->billing)) {
+					$address = reset($cart->usable_addresses->billing);
 					$cart->cart_billing_address_id = (int)$address->address_id;
 				}
 			}
@@ -683,12 +686,11 @@ class hikashopCartClass extends hikashopClass {
 
 			$address = null;
 			if(!empty($cart->cart_shipping_address_ids))
-				$address = $addressClass->get((int)$cart->cart_shipping_address_ids);
+				$address = $cart->usable_addresses->shipping[(int)$cart->cart_shipping_address_ids];
 
 			if(empty($address)) {
-				$addresses = $addressClass->loadUserAddresses((int)$cart->user_id, 'shipping');
-				if(!empty($addresses) && is_array($addresses)) {
-					$address = reset($addresses);
+				if(!empty($cart->usable_addresses->shipping) && is_array($cart->usable_addresses->shipping)) {
+					$address = reset($cart->usable_addresses->shipping);
 					$cart->cart_shipping_address_ids = (int)$address->address_id;
 				}
 			}

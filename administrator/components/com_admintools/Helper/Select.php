@@ -332,6 +332,24 @@ class Select
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
+	public static function referrerpolicy($name, $attribs = null, $selected = null)
+	{
+		$options = array(
+			JHtml::_('FEFHelper.select.option', '-1', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_DISABLED')),
+			JHtml::_('FEFHelper.select.option', '', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_EMPTY')),
+			JHtml::_('FEFHelper.select.option', 'no-referrer', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_NOREF')),
+			JHtml::_('FEFHelper.select.option', 'no-referrer-when-downgrade', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_NOREF_DOWNGRADE')),
+			JHtml::_('FEFHelper.select.option', 'same-origin', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_SAMEORIGIN')),
+			JHtml::_('FEFHelper.select.option', 'origin', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_ORIGIN')),
+			JHtml::_('FEFHelper.select.option', 'strict-origin', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_STRICTORIGIN')),
+			JHtml::_('FEFHelper.select.option', 'origin-when-cross-origin', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_ORIGINCROSS')),
+			JHtml::_('FEFHelper.select.option', 'strict-origin-when-cross-origin', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_STRICTORIGINGCROSS')),
+			JHtml::_('FEFHelper.select.option', 'unsafe-url', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERRERPOLICY_UNSAFE')),
+		);
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
 	public static function etagtype($name, $attribs = null, $selected = null)
 	{
 		$options = array(

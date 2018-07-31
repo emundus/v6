@@ -1,4 +1,11 @@
 <?php die() ?>
+Admin Tools 5.1.3
+================================================================================
+# [HIGH] IP Workarounds were always enabled
+# [LOW] Control Panel graphs do not display on Safari due to Safari's quirky JavaScript date parsing
+# [LOW] Admin Tools proposed secret URL parameter may start with a number
+# [LOW] Prevent a security exception when the secret param is used and we're explicitly logging out
+
 Admin Tools 5.1.2
 ================================================================================
 ! .htaccess Maker's front-end protection causes 403 errors (regression introduced in 5.1.1)

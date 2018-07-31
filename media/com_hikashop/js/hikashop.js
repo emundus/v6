@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.5.0
+ * @version    3.5.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1094,38 +1094,46 @@ var hikashop = {
 		});
 		return false;
 	},
-	toggleOverlayBlock: function(el, type) {
+	toggleOverlayBlock: function(el, type, state) {
 		var t = this, d = document, w = window, o = w.Oby;
 		if(typeof(el) == 'string')
 			el = d.getElementById(el);
 		if(!el)
 			return false;
-		var open = el.style.display == 'none';
+		var open = !!el.toggleOpen; // (el.style.display != 'none');
 		if(type != 'hover' && type != 'toggle')
 			type = 'click';
+		if(type == 'hover' && (!state && open) || (state && !open))
+			return;
 		if(jQuery) {
 			jQuery(el).slideToggle('fast');
 		} else {
 			el.style.display = (el.style.display == 'none')?'block':'none';
 		}
+		el.toggleOpen = !el.toggleOpen;
 
-		if(!open) {
-			if(type == 'hover'){
-				el.onmouseleave = function(event) {
-					if(this != event.currentTarget)
-						return false;
-					window.hikashop.toggleOverlayBlock(this, 'hover');
-				};
-				return true;
+		if(open) {
+			if(type == 'hover') {
+				o.removeEvent(el, "mouseout", el.toggleFunctionHover);
+				el.toggleFunctionHover = null;
 			}
 			if(el.toggleFunction)
-				w.Oby.removeEvent(document, "click", el.toggleFunction);
+				o.removeEvent(document, "click", el.toggleFunction);
 			el.toggleFunction = null;
 			return true;
 		}
-		if(type != 'click')
-			return true;
-
+		if(type == 'hover') {
+			el.toggleFunctionHover = function(event) {
+				if(event.target && this != event.target)
+					return false;
+				window.hikashop.toggleOverlayBlock(el, 'hover', true);
+			};
+			if(jQuery) {
+				jQuery(el).mouseleave(el.toggleFunctionHover);
+			} else {
+				o.addEvent(el, "mouseout", el.toggleFunctionHover);
+			}
+		}
 		var f = function(evt) {
 			if (!evt) var evt = window.event;
 			var trg = (window.event) ? evt.srcElement : evt.target;
@@ -1135,7 +1143,7 @@ var hikashop = {
 				trg = trg.parentNode;
 			}
 			t.toggleOverlayBlock(el);
-			w.Oby.removeEvent(document, "click", f);
+			o.removeEvent(document, "click", f);
 			el.toggleFunction = null;
 		};
 		el.toggleFunction = f;
