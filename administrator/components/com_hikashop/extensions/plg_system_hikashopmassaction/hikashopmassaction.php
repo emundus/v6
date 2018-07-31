@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -799,14 +799,14 @@ class plgSystemHikashopmassaction extends JPlugin {
 					if(($value->name != 'changeStatus' || ($table->table != $loadedData->massaction_table && is_int($key))))
 						continue;
 
-					$db->setQuery('SELECT `orderstatus_name` FROM '.hikashop_table('orderstatus'));
+					$db->setQuery('SELECT `orderstatus_namekey` FROM '.hikashop_table('orderstatus'));
 					$orderStatuses = $db->loadObjectList();
 
 					$output='<div id="'.$table->table.'action'.$key.'changeStatus">';
 					$output.= JText::_('NEW_ORDER_STATUS').': <select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_changeStatus_value" name="action['.$table->table.']['.$key.'][changeStatus][value]">';
 					if(is_array($orderStatuses)){
 						foreach($orderStatuses as $orderStatus){
-							$orderStatus = $orderStatus->orderstatus_name;
+							$orderStatus = $orderStatus->orderstatus_namekey;
 							$selected='';
 							if($orderStatus==@$value->data['value']){
 								$selected='selected="selected"';

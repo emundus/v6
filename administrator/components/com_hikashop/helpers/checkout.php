@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -369,6 +369,8 @@ class hikashopCheckoutHelper {
 		$shippings = md5(serialize(@$cart->usable_methods->shipping));
 		$address_override = md5(serialize($this->getShippingAddressOverride()));
 		$order_fields = md5(serialize(@$cart->order_fields));
+		$billing_addreses = md5(serialize(@$cart->usable_addresses->billing));
+		$shipping_addreses = md5(serialize(@$cart->usable_addresses->shipping));
 
 		$shipping = $cart->cart_shipping_ids;
 		if(is_array($shippings))
@@ -413,8 +415,10 @@ class hikashopCheckoutHelper {
 			'shipping_list' => $shippings, // shipping
 			'shipping_group_products' => $shipping_products, // shipping
 			'billing_address' => (int)$cart->cart_billing_address_id,
+			'billing_addresses' => $billing_addreses,
 			'shipping_address' => (int)$cart->cart_shipping_address_ids,
 			'shipping_address_overirde' => $address_override,
+			'shipping_addresses' => $shipping_addreses,
 			'user' => $user,
 			'order_fields' => $order_fields,
 		);
@@ -445,6 +449,8 @@ class hikashopCheckoutHelper {
 			'shipping_list' => 'checkout.shipping.updated',
 			'shipping_group_products' => 'checkout.shipping.updated',
 			'shipping_address_overirde' => 'checkout.address.updated',
+			'billing_addresses' => 'checkout.address.updated',
+			'shipping_addresses' => 'checkout.address.updated',
 			'user' => 'checkout.user.updated',
 			'order_fields' => 'checkout.fields.updated',
 		);

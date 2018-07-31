@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -244,6 +244,11 @@ class hikashopOrderClass extends hikashopClass {
 
 		if(empty($order->old))
 			unset($order->old);
+
+		if(isset($order->order_url))
+			unset($order->order_url);
+		if(isset($order->mail_params))
+			unset($order->mail_params);
 
 		$order->order_id = parent::save($order);
 
@@ -1755,13 +1760,13 @@ class hikashopOrderClass extends hikashopClass {
 		$order->mail->subject = JText::sprintf($order->mail->subject, $order->order_number, $mail_status, HIKASHOP_LIVE);
 
 		if(!empty($order->customer->user_email)) {
-			$order->mail->dst_email =& $order->customer->user_email;
+			$order->mail->dst_email = $order->customer->user_email;
 		} else {
 			$order->mail->dst_email = '';
 		}
 
 		if(!empty($order->customer->name)) {
-			$order->mail->dst_name =& $order->customer->name;
+			$order->mail->dst_name = $order->customer->name;
 		} else {
 			$order->mail->dst_name = '';
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -572,7 +572,7 @@ if($this->invoice_type == 'order') {
 					<table class="hikashop_order_custom_fields_table adminlist" cellpadding="1" width="100%">
 <?php
 		foreach($this->fields['order'] as $fieldName => $oneExtraField) {
-			if(!@$oneExtraField->field_frontcomp || empty($this->order->$fieldName))
+			if(empty($this->order->$fieldName))
 				continue;
 ?>
 						<tr class="hikashop_order_custom_field_<?php echo $fieldName;?>_line">

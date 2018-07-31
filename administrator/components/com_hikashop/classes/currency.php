@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -787,10 +787,12 @@ class hikashopCurrencyClass extends hikashopClass{
 							$matches[]=$match;
 						}
 					}
+					$all_loaded = false;
 					if(!empty($matches)){
 						switch($price_display_type){
 							default:
 							case 'all':
+								$all_loaded = true;
 								$found = array();
 								foreach($matches as $j => $match){
 									if(isset($found[$match->price_value])) continue;
@@ -862,8 +864,13 @@ class hikashopCurrencyClass extends hikashopClass{
 						}
 
 					}
+					if(!$all_loaded) {
+						$rows[$k]->all_prices = $matches;
+					} else {
+						$rows[$k]->all_prices =& $rows[$k]->prices;
 				}
 			}
+		}
 		}
 
 
@@ -1164,7 +1171,7 @@ class hikashopCurrencyClass extends hikashopClass{
 					$discount = array_shift($discount);
 				}
 			}
-			$product->discount = $discount;
+			$product->discount = hikashop_copy($discount);
 		}elseif($discountSkippedBecauseOverQuota){
 		}
 	}

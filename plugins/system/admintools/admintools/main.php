@@ -305,11 +305,6 @@ class plgSystemAdmintools extends JPlugin
 			$this->componentParams->setValue('ipworkarounds', 1, true);
 		}
 
-		if (!$enableWorkarounds)
-		{
-			return;
-		}
-
 		if (!class_exists('FOF30\\Utils\\Ip'))
 		{
 			return;

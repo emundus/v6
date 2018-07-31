@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -218,7 +218,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 
 		$this->vars = $vars;
 
-		if($this->payment_params->debug)
+		if(!empty($this->payment_params->debug))
 			$this->writeToLog($vars);
 
 		return $this->showPage('end');

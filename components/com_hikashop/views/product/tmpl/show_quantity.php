@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -111,6 +111,8 @@ switch($quantityLayout) {
 ?>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_select"><?php
 				$values = array();
+				if(!isset($this->row->all_prices) && isset($this->row->prices))
+					$this->row->all_prices =& $this->row->prices;
 				if(!empty($this->row->all_prices)){
 					foreach($this->row->all_prices as $price) {
 						$price_min_qty = max((int)$price->price_min_quantity, $min_quantity);

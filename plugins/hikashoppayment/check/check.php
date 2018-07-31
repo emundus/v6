@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,7 @@ class plgHikashoppaymentCheck extends hikashopPaymentPlugin {
 	public function onAfterOrderConfirm(&$order, &$methods, $method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 		$method =& $methods[$method_id];
-		$this->modifyOrder($order->order_id, $method->payment_params->order_status, @$method->payment_params->status_notif_email, false);
+		$this->modifyOrder($order->order_id, $method->payment_params->order_status, (bool)@$method->payment_params->status_notif_email, false);
 		$this->removeCart = true;
 
 		$this->information = $method->payment_params->information;

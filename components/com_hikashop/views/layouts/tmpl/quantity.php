@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -46,6 +46,8 @@ if(empty($quantityLayout) || $quantityLayout == 'inherit') {
 $script = $this->params->get('onchange_script', 'window.hikashop.checkQuantity(this);');
 $extra_data = $this->params->get('extra_data', '');
 
+if(!isset($this->row->all_prices) && isset($this->row->prices))
+	$this->row->all_prices =& $this->row->prices;
 if($quantityLayout == 'show_select_price' && !isset($this->row->all_prices)) {
 	$quantityLayout = 'show_select';
 }

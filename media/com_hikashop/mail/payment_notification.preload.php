@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -348,22 +348,20 @@ if(!empty($data->cart->order_payment_method)) {
 }
 
 if(!empty($data->cart->order_shipping_id)) {
+	$shippingClass = hikashop_get('class.shipping');
 	if(!empty($data->cart->order_shipping_method)) {
 		if(!is_numeric($data->cart->order_shipping_id)){
 			$shipping_name = $shippingClass->getShippingName($data->cart->order_shipping_method, $data->cart->order_shipping_id);
 			$vars['SHIPPING'] = $shipping_name;
 			$vars['SHIPPING_TXT'] = $vars['SHIPPING'];
 		}else{
-			$shippingClass = hikashop_get('class.shipping');
 			$shipping = $shippingClass->get($data->cart->order_shipping_id);
 			$vars['SHIPPING'] = $shipping->shipping_name;
 			$vars['SHIPPING_TXT'] = $vars['SHIPPING'];
-			unset($shippingClass);
 		}
 	} else {
 		$shippings_data = array();
 		$shipping_ids = explode(';', $data->cart->order_shipping_id);
-		$shippingClass = hikashop_get('class.shipping');
 		foreach($shipping_ids as $key) {
 			$shipping_data = '';
 			list($k, $w) = explode('@', $key);
@@ -397,7 +395,6 @@ if(!empty($data->cart->order_shipping_id)) {
 			}
 			$shippings_data[] = $shipping_data;
 		}
-		unset($shippingClass);
 		if(!empty($shippings_data)) {
 			$vars['SHIPPING'] = '<ul><li>'.implode('</li><li>', $shippings_data).'</li></ul>';
 			$vars['SHIPPING_TXT'] = ' - ' . implode("\r\n - ", $shippings_data);
