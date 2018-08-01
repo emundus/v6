@@ -90,9 +90,10 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 		$query
-			->select('*')
-			->from($this->db->quoteName('#__emundus_projet'))
-			->where($this->db->quoteName('fnum').' LIKE "' . $fnum . '"');
+			->select(['p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->from($this->db->quoteName('#__emundus_projet','p'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('p.fnum').' LIKE "' . $fnum . '"');
 
 		$this->db->setQuery($query);
 		try {
@@ -177,8 +178,13 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 
-		$columns = ['user_to', 'user_from', 'fnum_to', 'fnum_from', 'state'];
-		$values = [$user_to, $user_from, $this->db->quote($fnum_to), $this->db->quote($fnum_from), 1];
+		$columns = ['user_to', 'user_from', 'fnum_to', 'state'];
+		$values = [$user_to, $user_from, $this->db->quote($fnum_to), 1];
+
+		if (!empty($fnum_from)) {
+			$columns[] = 'fnum_from';
+			$values[] = $this->db->quote($fnum_from);
+		}
 
 		$query->insert($this->db->quoteName('#__emundus_cifre_links'))
 			->columns($this->db->quoteName($columns))
