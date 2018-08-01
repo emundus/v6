@@ -230,6 +230,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 		// Add the contact request into the DB.
 		if ($this->m_cifre->acceptContactRequest((int)substr($fnum, -7), $this->user->id, $fnum)) {
 
+			$fnum = $this->m_files->getFnumInfos($fnum);
+			
 			// This gets additional information about the offer, for example the title.
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 
@@ -277,6 +279,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		// Add the contact request into the DB.
 		if ($this->m_cifre->deleteContactRequest((int) substr($fnum, -7), $this->user->id, $fnum)) {
+
+			$fnum = $this->m_files->getFnumInfos($fnum);
 
 			// This gets additional information about the offer, for example the title.
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
