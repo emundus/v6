@@ -223,7 +223,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                 Relancer
             </button>
             <button type="button" class="btn btn-primary" onclick="breakUp()">
-                Anuller la demande
+                Annuler la demande
             </button>
 
         <?php elseif ($action_button == 'breakup') :?>
