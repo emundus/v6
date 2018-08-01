@@ -111,14 +111,10 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getOffersByUser($user_id, $fnum = null) {
 		
-		//$eMConfig = JComponentHelper::getParams('com_emundus');
-		//$listID = $eMConfig->get('fabrikListID');
-		
 		if (empty($fnum))
 			return false;
 		
-		// We need to get the table name associated to the Fabrik list defined in the comments.
-		// TODO: Rebuild the Fabrik logic and get all of the elements for the entire offer, not just the list in question.
+		// This is custom code, we need to make this able to work for everyone.
 		$query = $this->db->getQuery(true);
 
 		$query
@@ -131,35 +127,8 @@ class EmundusModelCifre extends JModelList {
 
 		try {
 			return $this->db->loadObjectList();
-
 		} catch (Exception $e) {
 			return false;
-		}
-
-		$query = $this->db->getQuery(true);
-		$query->select('ot.*')
-			->from($this->db->quoteName($offerTable, 'ot'))
-			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('ot.fnum'));
-
-		if (!empty($fnum))
-			$query->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('cc.fnum').' OR '.$this->db->quoteName('cl.fnum_from').' LIKE '.$this->db->quoteName('cc.fnum').')');
-
-		// This tricky function does something a bit complex when an fnum is defined.
-		// If the user has ANY link to the fnum in question, don't return the result.
-		// This is tricky to do because we have to look at links in both directions.
-		$where = $this->db->quoteName('cc.user_id').'='.$user_id.' AND '.$this->db->quoteName('cc.status').'!= 0 ';
-		if (!empty($fnum))
-			$where .= ' AND NOT (( '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('cl.user_from').'='.$user_id.' ) OR ( '.$this->db->quoteName('cl.fnum_from').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('cl.user_to').'='.$user_id.' ))';
-
-		$query->where($where);
-
-		$this->db->setQuery($query);
-
-		try {
-			return $this->db->loadObjectList();
-		} catch (Exception $e) {
-			JLog::add('Error getting offers by user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
-			return null;
 		}
 	}
 

@@ -268,7 +268,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$jinput = $application->input;
 		$fnum   = $jinput->post->get('fnum', null);
 
-		// If we have a link type that isnt -1 then we are not replying.
 		if (empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
 			echo json_encode((object) ['status' => false, 'msg' => "Vous n'etes pas en contact avec cette personne pour cette offre."]);
 			exit;
