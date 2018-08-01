@@ -122,18 +122,18 @@ class EmundusModelStats extends JModelLegacy {
                 case 'jos_emundus_stats_nationality':
                     $columnNames = array('schoolyear', 'nb', 'nationality', 'campaign','course');
                     $query =    " SELECT `ecc`.`id` AS `id`,
-                                                    `esc`.`year` AS `schoolyear`,
-                                                    count(distinct `ecc`.`applicant_id`) AS `nb`,
-                                                    `epd`.`nationality` AS `nationality`,
-                                                    `esc`.`label` AS `campaign`,
-                                                    `esc`.`training` AS `course`
-                                            FROM (((`jos_emundus_declaration` `ed`
-                                            JOIN `jos_emundus_campaign_candidature` `ecc` on((`ed`.`user` = `ecc`.`applicant_id`)))
-                                            LEFT JOIN `jos_emundus_setup_campaigns` `esc` on((`esc`.`id` = `ecc`.`campaign_id`)))
-                                            LEFT JOIN `jos_emundus_personal_detail` `epd` on((`ecc`.`applicant_id` = `epd`.`user`)))
-                                            WHERE ((`epd`.`nationality` is NOT null)
-                                                AND (`ecc`.`submitted` = 1))
-                                            GROUP BY  `epd`.`nationality`";
+                                    `esc`.`year` AS `schoolyear`,       
+                                    count(distinct `ecc`.`applicant_id`) AS `nb`,
+                                    `epd`.`nationality` AS `nationality`,
+                                    `esc`.`label` AS `campaign`,
+                                    `esc`.`training` AS `course` 
+                                    FROM (((`jos_emundus_declaration` `ed` 
+                                    JOIN `jos_emundus_campaign_candidature` `ecc` ON((`ed`.`user` = `ecc`.`applicant_id`))) 
+                                    LEFT JOIN `jos_emundus_setup_campaigns` `esc` ON((`esc`.`id` = `ecc`.`campaign_id`))) 
+                                    LEFT JOIN `jos_emundus_personal_detail` `epd` ON((`ecc`.`applicant_id` = `epd`.`user`))) 
+                                    WHERE ((`epd`.`nationality` is not null) 
+                                        AND (`ecc`.`submitted` = 1)) 
+                                    GROUP BY `epd`.`nationality`";
                 break;
 
                 case 'jos_emundus_stats_gender':

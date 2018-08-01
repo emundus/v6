@@ -3,7 +3,6 @@
 defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 $document = JFactory::getDocument();
-
 //Chart.js is the libary used for this module's graphs
 $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'Chart.min.js');
 //moment.js is a Date libary, using to retrieve missing dates 
@@ -543,7 +542,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             data:({periode: periode}),
             success: function (result) {
                 if (result.status) {
-                    console.log(result.count);
                     if(document.getElementById("countRelations").childNodes.length > 1)
                         document.getElementById("countRelations").childNodes[1].remove();
 
@@ -701,26 +699,30 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             url: "index.php?option=com_emundus&controller=stats&task=getfiles",
             dataType: 'json',
             success: function (result) {
+                var nbArray = [];
+                var valArray = [];
                 if (filesChart != undefined || filesChart != null) {
                     filesChart.destroy();
                 }
 
                 for(var i in result.val) {
                     colorArray.push(randomColor());
+                    valArray.push(i);
+                    nbArray.push(result.val[i])
                 }
 
                 var elem = document.getElementById('files');
-
+                
                 filesChart = new Chart(elem, {
                     type: 'pie',
                     data: {
                         datasets: [{
-                            data: result.nb,
+                            data: nbArray,
                             backgroundColor: colorArray
                         }],
 
                         // These labels appear in the legend and in the tooltips when hovering different arcs
-                        labels: result.val
+                        labels: valArray
                     },
                     options: {
                         title:{
@@ -783,12 +785,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
     jQuery(document).ready(function () {
 
-        jQuery('#viewTable').each(function() {
+      /*  jQuery('#viewTable').each(function() {
             if(jQuery(this).find('tr').children("td").length < 2) {
                 jQuery(this).hide();
             }
         });
-
+*/
         if (<?php echo $nationality; ?>) {
             document.getElementById("nationRow").setAttribute("style", "display:block;");
             var OffreClick = document.createElement("a");

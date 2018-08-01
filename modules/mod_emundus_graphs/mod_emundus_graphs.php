@@ -36,6 +36,7 @@ $rels = 'false';
 
 // Loop to check which views are in the Db
 foreach ($viewArray as $key => $value) {
+    
     $exist = $model->viewExist($key);
     // $exist = 1 or 0
     if ($exist == 0) {
