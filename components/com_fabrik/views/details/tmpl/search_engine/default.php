@@ -59,7 +59,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 </p>
 
 <div class="em-offre-meta">
-    <p>Sujet déposé le <strong class="em-highlight"><?php echo date('d/m/y H:i:s', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
+    <p>Sujet déposé le <strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
     <p>Par un <strong class="em-highlight"><?php echo $chercheur; ?></strong></p>
 </div>
 
@@ -221,6 +221,9 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         <?php elseif ($action_button == 'retry') :?>
             <button type="button" class="btn btn-primary" onclick="actionButton('retry')">
                 Relancer
+            </button>
+            <button type="button" class="btn btn-primary" onclick="breakUp()">
+                Anuller la demande
             </button>
 
         <?php elseif ($action_button == 'breakup') :?>

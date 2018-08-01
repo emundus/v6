@@ -230,6 +230,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 		// Add the contact request into the DB.
 		if ($this->m_cifre->acceptContactRequest((int)substr($fnum, -7), $this->user->id, $fnum)) {
 
+			$fnum = $this->m_files->getFnumInfos($fnum);
+			
 			// This gets additional information about the offer, for example the title.
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 
@@ -266,7 +268,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$jinput = $application->input;
 		$fnum   = $jinput->post->get('fnum', null);
 
-		// If we have a link type that isnt -1 then we are not replying.
 		if (empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
 			echo json_encode((object) ['status' => false, 'msg' => "Vous n'etes pas en contact avec cette personne pour cette offre."]);
 			exit;
@@ -277,6 +278,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		// Add the contact request into the DB.
 		if ($this->m_cifre->deleteContactRequest((int) substr($fnum, -7), $this->user->id, $fnum)) {
+
+			$fnum = $this->m_files->getFnumInfos($fnum);
 
 			// This gets additional information about the offer, for example the title.
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
