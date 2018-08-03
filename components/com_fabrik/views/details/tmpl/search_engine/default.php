@@ -203,7 +203,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                             <?php endif; ?>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton('contact')">Evoyer la demande de contact</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton('contact')">Envoyer la demande de contact</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
                         </div>
                     </div>
