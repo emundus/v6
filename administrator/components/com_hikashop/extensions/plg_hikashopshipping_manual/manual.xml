@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashopshipping">
 	<name>Hikashop Manual Shipping Plugin</name>
-	<creationDate>31 juillet 2018</creationDate>
+	<creationDate>01 août 2018</creationDate>
 	<version>3.5.1</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
