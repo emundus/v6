@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -235,14 +235,14 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		if($ctrl != "product" || $task != 'show')
 			return;
 
-		if(empty($plugin->params['displayOnFrontend'] ) )
-			return;
-
 		$shippings = $this->_getShippings($view->element);
 		$shipPrices = @$view->element->prices;
 
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('hikashop','shippingmanual_prices');
+
+		if(empty($plugin->params['displayOnFrontend'] ) )
+			return;
 
 		if(!isset($plugin->params['position'] ) )
 			$plugin->params['position'] = 'rightMiddle';

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,11 +52,14 @@ foreach($this->order->history as $k => $history) {
 				echo $history->history_reason;
 			?></td>
 			<td><?php
+				$elements = array();
 				if(!empty($history->history_user_id)){
 					$user = $userClass->get($history->history_user_id);
-					echo $user->username.' / ';
+					$elements[] = $user->username;
 				}
-				echo $history->history_ip;
+				if(!empty($history->history_ip))
+					$elements[] = $history->history_ip;
+				echo implode(' / ', $elements);
 			?></td>
 			<td><?php
 				echo hikashop_getDate($history->history_created,'%Y-%m-%d %H:%M');

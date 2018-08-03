@@ -59,9 +59,8 @@ $obj=$db->loadObjectList();
 
 // Récupération de la pièce jointe : modele de lettre
 $query = 'SELECT esp.reference_letter
-                FROM #__emundus_users as eu 
-                LEFT JOIN #__emundus_setup_profiles as esp on esp.id = eu.profile 
-                WHERE eu.user_id = '.$student->id;
+                FROM #__emundus_setup_profiles as esp
+                WHERE esp.id = '.$current_user->profile;
 $db->setQuery( $query );
 $db->execute();
 $obj_letter=$db->loadRowList();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,8 +37,8 @@ class plgSystemHikashopproducttag extends JPlugin {
 		$product_page_parts = explode('class="hikashop_product_page ', $product_page);
 		if(!empty($product_page_parts[1])){
 
-			if(!preg_match('#http://schema.org/Product#',$product_page_parts[1])){
-				$product_page_parts[1] = 'itemscope itemtype="http://schema.org/Product" class="hikashop_product_page ' .$product_page_parts[1];
+			if(!preg_match('#https://schema.org/Product#',$product_page_parts[1])){
+				$product_page_parts[1] = 'itemscope itemtype="https://schema.org/Product" class="hikashop_product_page ' .$product_page_parts[1];
 			}
 
 			if(!preg_match('#itemprop="name"#',$product_page_parts[1])){
@@ -58,7 +58,7 @@ class plgSystemHikashopproducttag extends JPlugin {
 					$data=$currencies[$currency_id];
 
 					$pattern='/<(span|div) id="hikashop_product_price_main" class="hikashop_product_price_main">/';
-					$replacement= '<div itemprop="offers" itemscope itemtype="http://schema.org/Offer"><$1 id="hikashop_product_price_main" class="hikashop_product_price_main"><meta itemprop="priceCurrency" content="'.$data->currency_code.'" />';
+					$replacement= '<div itemprop="offers" itemscope itemtype="https://schema.org/Offer"><$1 id="hikashop_product_price_main" class="hikashop_product_price_main"><meta itemprop="priceCurrency" content="'.$data->currency_code.'" />';
 					$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1],1);
 
 					$pattern='/class="hikashop_product_price_main"(.*)class="hikashop_product_price hikashop_product_price_0(.*)>(.*)<\/span>/msU';
@@ -76,9 +76,9 @@ class plgSystemHikashopproducttag extends JPlugin {
 				$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1],1);
 			}
 
-			if(!preg_match('#http://schema.org/Review#',$product_page_parts[1])){
+			if(!preg_match('#https://schema.org/Review#',$product_page_parts[1])){
 				$pattern='/id="hikashop_product_vote_listing"/';
-				$replacement='id="hikashop_product_vote_listing" itemscope itemtype="http://schema.org/Review"';
+				$replacement='id="hikashop_product_vote_listing" itemscope itemtype="https://schema.org/Review"';
 				$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1],1);
 			}
 
@@ -117,10 +117,10 @@ class plgSystemHikashopproducttag extends JPlugin {
 				$replacement='</div> <$1 id="$2"';
 			}
 
-			if(!preg_match('#itemtype="http://schema.org/Review"#',$product_page_parts[1])){
+			if(!preg_match('#itemtype="https://schema.org/Review"#',$product_page_parts[1])){
 				if(strpos($product_page_parts[1],'class="hika_comment_listing_empty"')==false){
 					$pattern='/class="ui-corner-all hika_comment_listing"/';
-					$replacement='class="ui-corner-all hika_comment_listing" itemprop="review" itemscope itemtype="http://schema.org/Review"';
+					$replacement='class="ui-corner-all hika_comment_listing" itemprop="review" itemscope itemtype="https://schema.org/Review"';
 					$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1]);
 				}
 
@@ -129,7 +129,7 @@ class plgSystemHikashopproducttag extends JPlugin {
 				$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1]);
 
 				$pattern='/class="hika_comment_listing_name"/';
-				$replacement='class="hika_comment_listing_name" itemprop="author" itemscope itemtype="http://schema.org/Person"';
+				$replacement='class="hika_comment_listing_name" itemprop="author" itemscope itemtype="https://schema.org/Person"';
 				$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1]);
 
 				$pattern='/class="hika_vote_listing_username"/';
@@ -139,7 +139,7 @@ class plgSystemHikashopproducttag extends JPlugin {
 
 			if(!preg_match('#itemprop="aggregateRating"#',$product_page_parts[1])){
 				$pattern='/class="hikashop_vote_stars"/';
-				$replacement='class="hikashop_vote_stars" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"';
+				$replacement='class="hikashop_vote_stars" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating"';
 				$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1],1);
 			}
 
@@ -160,18 +160,18 @@ class plgSystemHikashopproducttag extends JPlugin {
 					}
 				}else{
 
-					$pattern='#itemtype="http://schema.org/AggregateRating">#';
+					$pattern='#itemtype="https://schema.org/AggregateRating">#';
 					preg_match('/class="hk-rating" data-original-title="(.*)"/U',$product_page_parts[1],$matches);
 					if(!isset($matches[1]))
 						preg_match('/data-rate=".*" data-original-title="(.*)"/U',$product_page_parts[1],$matches);
 					if(isset($matches[1])){
 						preg_match_all('/<strong>.*<\/strong>(.*)<br\/>/U',$matches[1],$matches);
 						if(isset($matches[1][0])){
-							$replacement = 'itemtype="http://schema.org/AggregateRating"><span style="display:none" itemprop="ratingValue">'.trim($matches[1][0]).'</span><span style="display:none" itemprop="bestRating">'.$ratemax.'</span><span style="display:none" itemprop="worstRating">1</span>$1';
+							$replacement = 'itemtype="https://schema.org/AggregateRating"><span style="display:none" itemprop="ratingValue">'.trim($matches[1][0]).'</span><span style="display:none" itemprop="bestRating">'.$ratemax.'</span><span style="display:none" itemprop="worstRating">1</span>$1';
 							$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1],1);
 						}
 						if(isset($matches[1][1])){
-							$replacement = 'itemtype="http://schema.org/AggregateRating"><span style="display:none" itemprop="reviewCount">'.trim($matches[1][1]).'</span>$1';
+							$replacement = 'itemtype="https://schema.org/AggregateRating"><span style="display:none" itemprop="reviewCount">'.trim($matches[1][1]).'</span>$1';
 							$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1],1);
 						}
 					}

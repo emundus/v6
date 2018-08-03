@@ -1,165 +1,131 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-$name = $this->type.'_address';
-$uniq_id = 'hikashop_address_'.$this->type.'_'.$this->address_id;
-$pfid = '';
-if(!empty($this->fieldset_id))
-	$pfid = '&fid='.$this->fieldset_id;
-else
-	$this->fieldset_id = $uniq_id;
+$tmpl = hikaInput::get()->getCmd('tmpl', '');
+if(isset($this->params->address_id) || $tmpl == 'component') {
+	echo $this->loadTemplate('legacy');
+	return;
+}
 
-$show_url = 'address&task=show&subtask='.$this->type.'&cid='.$this->address_id.$pfid;
-$save_url = 'address&task=save&subtask='.$this->type.'&cid='.$this->address_id.$pfid;
-$update_url = 'address&task=edit&subtask='.$this->type.'&cid='.$this->address_id.$pfid;
-$delete_url = 'address&task=delete&subtask='.$this->type.'&cid='.$this->address_id.'&'.hikashop_getFormToken().'=1';
+$show_url = 'address&task=listing';
+$save_url = 'address&task=save&cid='.(int)@$this->address->address_id;
+$update_url = 'address&task=edit&cid='.(int)@$this->address->address_id;
+$delete_url = 'address&task=delete&cid='.(int)@$this->address->address_id;
+$dest = 'hikashop_user_addresses_show';
 
-?><div id="<?php echo $uniq_id; ?>">
-<?php
-	if(!isset($this->edit) || $this->edit !== true ) {
-?>		<div class="hika_edit">
-			<a href="<?php echo hikashop_completeLink($update_url, true);?>" id="<?php echo $uniq_id; ?>_edit" onclick="return window.hikashop.get(this,'<?php echo $this->fieldset_id; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt=""/><span><?php echo JText::_('HIKA_EDIT'); ?></span></a>
-			<?php if(count($this->addresses)>=2){ ?>
-				<a href="<?php echo hikashop_completeLink($delete_url, true);?>" id="<?php echo $uniq_id; ?>_delete" onclick="return window.addressMgr.delete(this,<?php echo $this->address_id; ?>,'<?php echo $uniq_id; ?>','<?php echo $this->type; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt=""/><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
-			<?php } ?>
+if(!isset($this->edit) || $this->edit !== true ) {
+?>
+		<div class="hika_edit">
+			<a href="<?php echo hikashop_completeLink($update_url, 'ajax');?>" onclick="return window.addressMgr.get(this,'<?php echo $dest; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt=""/><span><?php echo JText::_('HIKA_EDIT'); ?></span></a>
+			<a href="<?php echo hikashop_completeLink($delete_url, 'ajax');?>" onclick="return window.addressMgr.delete(this,<?php echo (int)@$this->address->address_id; ?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt=""/><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
 		</div>
 <?php
+} else {
+	if(!empty($this->ajax)) {
+?>
+	<div class="hikashop_checkout_loading_elem"></div>
+	<div class="hikashop_checkout_loading_spinner"></div>
+<?php }
+}
+
+if(isset($this->edit) && $this->edit === true) {
+	if(empty($this->address->address_id)) {
+		$title = $this->type == 'billing' ? 'HIKASHOP_NEW_BILLING_ADDRESS': 'HIKASHOP_NEW_SHIPPING_ADDRESS';
 	} else {
-?>		<div class="hika_edit">
-			<a href="<?php echo hikashop_completeLink($save_url, true);?>" onclick="return window.hikashop.form(this,'<?php echo $this->fieldset_id; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>ok.png" alt=""/><span><?php echo JText::_('HIKA_SAVE'); ?></span></a>
-			<?php if(!empty($this->address_id) || !empty($this->addresses)){ ?>
-				<a href="<?php echo hikashop_completeLink($show_url, true);?>" onclick="return window.hikashop.get(this,'<?php echo $this->fieldset_id; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt=""/><span><?php echo JText::_('HIKA_CANCEL'); ?></span></a>
-			<?php } ?>
-		</div>
-<?php
+		$title = in_array($this->address->address_type, array('billing', 'shipping')) ? 'HIKASHOP_EDIT_'.strtoupper($this->address->address_type).'_ADDRESS' : 'HIKASHOP_EDIT_ADDRESS';
 	}
 ?>
+<div class="hikashop_address_edition">
+	<h3><?php echo JText::_($title); ?></h3>
 <?php
-$display = 'field_backend';
-if(isset($this->edit) && $this->edit === true) {
-?>
-<table class="admintable table">
-<?php
-	foreach($this->fields as $field){
-		if(empty($field->$display))
-			continue;
+	$error_messages = hikaRegistry::get('address.error');
+	if(!empty($error_messages)) {
+		foreach($error_messages as $msg) {
+			hikashop_display($msg[0], $msg[1]);
+		}
+	}
 
-		$fieldname = $field->field_namekey;
+	foreach($this->fields as $fieldname => $field) {
 ?>
-	<tr class="hikashop_<?php echo $this->type;?>_address_<?php echo $fieldname;?>" id="hikashop_<?php echo $this->type; ?>_address_<?php echo $fieldname; ?>">
-		<td class="key"><label><?php echo $this->fieldsClass->trans($field->field_realname);?></label></td>
-		<td><?php
+	<dl id="hikashop_user_address_<?php echo $this->address->address_id; ?>_<?php echo $fieldname;?>" class="hika_options">
+		<dt class="hikashop_user_address_<?php echo $fieldname;?>"><label><?php
+			echo $this->fieldsClass->trans($field->field_realname);
+			if($field->field_required)
+				echo ' <span class="field_required">*</span>';
+		?></label></dt>
+		<dd class="hikashop_user_address_<?php echo $fieldname;?>"><?php
 			$onWhat = 'onchange';
 			if($field->field_type == 'radio')
 				$onWhat = 'onclick';
 
-			$field->table_name = 'order';
+			$field->field_required = false;
 			echo $this->fieldsClass->display(
 					$field,
 					@$this->address->$fieldname,
-					'data['.$name.']['.$fieldname.']',
+					'data[address]['.$fieldname.']',
 					false,
-					' ' . $onWhat . '="hikashopToggleFields(this.value,\''.$fieldname.'\',\''.$name.'\',0);"',
+					' ' . $onWhat . '="hikashopToggleFields(this.value,\''.$fieldname.'\',\'address\',0);"',
 					false,
 					$this->fields,
 					$this->address
 			);
-		?></td>
-	</tr>
+		?></dd>
+	</dl>
+<?php
+	}
+	if(empty($this->address->address_id)) {
+?>
+	<input type="hidden" name="data[address][address_type]" value="<?php echo @$this->address->address_type; ?>"/>
 <?php
 	}
 ?>
-</table>
+	<input type="hidden" name="data[address][address_id]" value="<?php echo @$this->address->address_id; ?>"/>
+	<input type="hidden" name="data[address][address_user_id]" value="<?php echo @$this->address->address_user_id; ?>"/>
+	<?php echo JHTML::_('form.token'); ?>
+
+	<div style="float:right">
+		<a href="<?php echo hikashop_completeLink($save_url, 'ajax');?>" onclick="return window.addressMgr.form(this,'<?php echo $dest; ?>');" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikashop_checkout_address_ok_button"><img src="<?php echo HIKASHOP_IMAGES; ?>save2.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_OK'); ;?></a>
+	</div>
+	<a href="<?php echo hikashop_completeLink($show_url, 'ajax');?>" onclick="return window.addressMgr.get(this,'<?php echo $dest; ?>');" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikashop_checkout_address_cancel_button"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_CANCEL'); ;?></a>
+</div>
 <?php
 } else {
-
-	if(false) {
+	if($this->config->get('address_show_details', 0)) {
+		foreach($this->fields as $fieldname => $field) {
 ?>
-<table class="admintable table">
+	<dl class="hika_options">
+		<dt class="hikashop_user_address_<?php echo $fieldname;?>"><label><?php echo $this->fieldsClass->trans($field->field_realname);?></label></dt>
+		<dd class="hikashop_user_address_<?php echo $fieldname;?>"><span><?php echo $this->fieldsClass->show($field, @$this->address->$fieldname);?></span></dd>
+	</dl>
 <?php
-		foreach($this->fields as $field){
-			if($field->$display){
-				$fieldname = $field->field_namekey;
-?>
-	<tr class="hikashop_<?php echo $this->type;?>order_address_<?php echo $fieldname;?>">
-		<td class="key"><label><?php echo $this->fieldsClass->trans($field->field_realname);?></label></td>
-		<td><span><?php echo $this->fieldsClass->show($field, @$this->address->$fieldname);?></span></td>
-	</tr>
-<?php
-			}
 		}
-?>
-</table>
-<?php
 	} else {
+		echo $this->addressClass->maxiFormat($this->address, null, true);
+	}
+
+	if(!empty($this->display_badge)) {
 ?>
-<div class="hikashop_address_content" onclick="return window.addressMgr.click(this,<?php echo $this->address_id;?>,'<?php echo $uniq_id; ?>','<?php echo $this->type; ?>');">
-<?php
-		if(empty($this->addressClass))
-			$this->addressClass = hikashop_get('class.address');
-		echo $this->addressClass->displayAddress($this->fields,$this->address,'address');
-?>
-</div>
+		<div class="" style="float:right"><?php
+			if(in_array($this->address->address_type, array('billing', '', 'both')))
+				echo '<span class="hk-label hk-label-blue">'.JText::_('HIKASHOP_BILLING_ADDRESS').'</span>';
+			if(in_array($this->address->address_type, array('shipping', '', 'both')))
+				echo '<span class="hk-label hk-label-orange">'.JText::_('HIKASHOP_SHIPPING_ADDRESS').'</span>';
+		?></div>
 <?php
 	}
 }
 
-if(isset($this->edit) && $this->edit === true) {
-	echo '<input type="hidden" name="data['.$name.'][address_id]" value="'.$this->address_id.'"/>';
-	echo JHTML::_( 'form.token' );
-}
+if(!empty($this->init_js)) {
 ?>
 <script type="text/javascript">
-if(!window.addressMgr) window.addressMgr = {};
-window.addressMgr.update<?php echo ucfirst($this->type);?> = function() {
-	window.Oby.xRequest('<?php echo hikashop_completeLink('address&task=show&subtask='.$this->type.'_address&cid='.$this->address_id, true, false, true); ?>',{update:'<?php echo $this->fieldset_id; ?>'});
-};
-<?php
-static $hikashop_address_show_js_init = false;
-if(!$hikashop_address_show_js_init) {
-	$hikashop_address_show_js_init = true;
-?>
-window.addressMgr.delete = function(el, cid, uid, type) {
-	if(!confirm('<?php echo JText::_('HIKASHOP_CONFIRM_DELETE_ADDRESS', true); ?>'))
-		return false;
-	var w = window, o = w.Oby, d = document;
-	o.xRequest(el.href, null, function(xhr) {
-		if(xhr.status != 200)
-			return;
-		if(xhr.responseText == '1') {
-			var target = d.getElementById(uid);
-			if(target) target.parentNode.removeChild(target);
-			window.Oby.fireAjax('hikashop_address_deleted',{'type':type,'cid':cid,'uid':uid,'el':el});
-		} else if(xhr.responseText != '0')
-			o.updateElem(uid, xhr.responseText);
-	});
-	return false;
-};
-window.addressMgr.click = function(el, cid, uid, type) { window.Oby.fireAjax('hikashop_address_click',{'type':type,'cid':cid,'uid':uid,'el':el}); }
-<?php
-}
-
-if(hikaInput::get()->getVar('tmpl', '') == 'component') {
-	if(empty($this->addressClass))
-		$this->addressClass = hikashop_get('class.address');
-	$miniFormat = $this->addressClass->miniFormat($this->address);
-	$task = hikaInput::get()->getCmd('task', '');
-?>
-window.Oby.fireAjax('hikashop_address_changed',{'type':'<?php echo $this->type; ?>','edit':<?php echo $this->edit?'1':'0'; ?>,'cid':<?php echo $this->address_id; ?>,'task':'<?php echo $task; ?>','miniFormat':'<?php echo str_replace('\'','\\\'', $miniFormat); ?>'<?php
-	$previous_id = hikaInput::get()->getVar('previous_cid', null);
-	if((!empty($previous_id) || $previous_id === 0) && is_int($previous_id))
-		echo ',\'previous_cid\':' . $previous_id;
-?>});
-<?php
-	echo $this->init_js;
-}
-?>
+<?php echo $this->init_js; ?>
 </script>
-</div>
+<?php
+}

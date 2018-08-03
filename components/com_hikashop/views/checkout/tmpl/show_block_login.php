@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -299,7 +299,9 @@ function displayRegistration(el) {
 		if(registration_div)
 			registration_div.className = '';
 
-		d.getElementById("hika_registration_type").innerHTML = "<?php echo JText::_('GUEST',true); ?>";
+		var title = d.getElementById("hika_registration_type");
+		if(title)
+			title.innerHTML = "<?php echo JText::_('GUEST',true); ?>";
 		var submit_button = d.getElementById("hikashop_register_form_button");
 		if(submit_button)
 			submit_button.firstChild.data = "<?php echo JText::_('HIKA_NEXT',true); ?>";

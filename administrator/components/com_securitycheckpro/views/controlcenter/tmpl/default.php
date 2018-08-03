@@ -30,6 +30,9 @@ unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
 unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
 $document->setHeadData($arrHead);
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
+
 ?>
 
   <!-- Bootstrap core JavaScript -->
@@ -40,8 +43,10 @@ $document->setHeadData($arrHead);
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
+
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -141,7 +146,7 @@ var Password = {
 								<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENABLED_EXPLAIN') ?></small></p></blockquote>										
 								<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_TEXT'); ?></h4>
 								<?php 
-									if ( version_compare(JVERSION, '3.9.50', 'lt') ) {										
+									if ( version_compare(JVERSION, '3.20', 'lt') ) {										
 								?>
 									<div class="input-prepend">
 										<input class="input-xlarge" type="text" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>

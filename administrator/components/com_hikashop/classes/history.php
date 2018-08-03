@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,9 @@ class hikashopHistoryClass extends hikashopClass
 		$history = new stdClass();
 		$history->history_order_id = (int)$order->order_id;
 		$history->history_created = time();
-		$history->history_ip = hikashop_getIP();
+		$config = hikashop_config();
+		if($config->get('history_ip', 1))
+			$history->history_ip = hikashop_getIP();
 		$history->history_user_id = hikashop_loadUser();
 
 		if (!empty($order->order_status)) {

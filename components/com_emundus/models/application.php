@@ -138,14 +138,14 @@ class EmundusModelApplication extends JModelList
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $expert_document_id = $eMConfig->get('expert_document_id', '36');
 
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, esc.label as campaign_label, esc.year, esc.training
+            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
             LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
             WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND (eu.attachment_id != '.$expert_document_id.')
             ORDER BY esa.ordering, eu.timedate ASC';
         } else {
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, esc.label as campaign_label, esc.year, esc.training
+            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
             LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
@@ -2741,16 +2741,17 @@ $q=2;
 
     /**
      * Gets the first page of the application form. Used for opening a file.
+     * @param String the URL to redirect to if it fails.
      * @return String The URL to the form.
      * @since 3.8.8
      */
-    function getFirstPage() {
+    function getFirstPage($redirect = 'index.php') {
 
     	$user = JFactory::getSession()->get('emundusUser');
     	$db = JFactory::getDBo();
 
     	if (empty($user->menutype))
-    		return 'index.php';
+    		return $redirect;
 
     	$query = $db->getQuery(true);
     	$query->select(['id','link'])
@@ -2763,7 +2764,24 @@ $q=2;
 		    return $res->link.'&Itemid='.$res->id;
 	    } catch (Exception $e) {
 	    	JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	    	return $redirect;
 	    }
 
+    }
+
+    public function attachment_validation($attachment_id, $state)
+    {
+        $dbo = $this->getDbo();
+        try
+        {
+            $query = 'UPDATE #__emundus_uploads  SET `is_validated` = '.(int) $state.' WHERE `id` = '.(int) $attachment_id;
+            #die($query);
+            $dbo->setQuery($query);
+            return $dbo->execute();
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
     }
 }

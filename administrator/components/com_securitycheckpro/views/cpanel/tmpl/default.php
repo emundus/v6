@@ -17,7 +17,7 @@ $lang->load('com_securitycheckpro.sys');
 $lang2 = JFactory::getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 
-$review = sprintf( $lang->_('COM_SECURITYCHECKPRO_REVIEW'), '<a href="http://extensions.joomla.org/extensions/extension/access-a-security/site-security/securitycheck-pro" target="_blank">', '</a>' );
+$review = sprintf( $lang->_('COM_SECURITYCHECKPRO_REVIEW'), '<a href="http://extensions.joomla.org/extensions/extension/access-a-security/site-security/securitycheck-pro" target="_blank"  rel="noopener noreferrer">', '</a>' );
 $translator_name = $lang2->_('COM_SECURITYCHECKPRO_TRANSLATOR_NAME');
 $firewall_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_FIREWALL_PLUGIN_STATUS');
 $cron_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_CRON_PLUGIN_STATUS');
@@ -47,6 +47,9 @@ JHTML::stylesheet($media_url);
 // Css circle
 JHTML::stylesheet('media/com_securitycheckpro/new/css/circle.css');
 
+$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
+JHTML::stylesheet($sweet);
+
 // Load Javascript
 $document = JFactory::getDocument();
 //Cookie
@@ -65,6 +68,8 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
+
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
 <script type="text/javascript" language="javascript">
 
@@ -157,8 +162,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 		} else {
 			$.cookies.set(key, value);
 		}
-	}
-		
+	}		
 </script>
 <?php 
 	$valor_a_mostrar = 0; 
@@ -199,7 +203,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 ?>
 
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 <!-- Bootstrap core CSS-->
 <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -279,7 +283,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 			</div>			
 			<?php 
 				}
-			?> 
+			?> 			
 				
 		<!-- Contenido principal -->
       <div class="row">
@@ -427,7 +431,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 						<?php echo JText::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
 					</button>
 				<?php } else if (!$exists ) { ?>
-					<a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-pro-database-update" target="_blank"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
+					<a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-pro-database-update" target="_blank"  rel="noopener noreferrer"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
 				<?php } ?>
 				</div>              
             </div>            
@@ -485,7 +489,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 						<?php echo JText::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
 					</button>
 				<?php } else if (!$exists ) { ?>
-					<a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-spam-protection" target="_blank"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
+					<a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-spam-protection" target="_blank"  rel="noopener noreferrer"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
 				<?php } ?>
 				</div>              
             </div>            
@@ -865,7 +869,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 					<p><?php echo $span_update_database ?><?php echo $scp_update_database_subscription_status ?> </span></p>
 					<p><?php echo $span_trackactions ?><?php echo $trackactions_subscription_status ?> </span></p>
 					<?php if ( $expired ) { ?>
-							<a class="btn btn-small btn-info" type="button" href="https://securitycheck.protegetuordenador.com/subscriptions" target="_blank"><?php echo JText::_('COM_SECURITYCHECKPRO_RENEW'); ?></a>
+							<a class="btn btn-small btn-info" type="button" href="https://securitycheck.protegetuordenador.com/subscriptions" target="_blank"  rel="noopener noreferrer"><?php echo JText::_('COM_SECURITYCHECKPRO_RENEW'); ?></a>
 					<?php	} ?>		
 				</div>				
 			</div>	
@@ -903,7 +907,7 @@ if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
 					<h3 class="card-title"><i class="fapro fa-thumbs-up"></i>&nbsp;&nbsp;<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?></h3>
 					<p class="card-text">
 						<?php echo($review); ?><br/><br/>
-						<i class="fapro fa-info-square"></i>&nbsp;&nbsp;<?php echo('<a href="' . $translator_url . '" target="_blank">' . $translator_name . '</a>'); ?>
+						<i class="fapro fa-info-square"></i>&nbsp;&nbsp;<?php echo('<a href="' . $translator_url . '" target="_blank"  rel="noopener noreferrer">' . $translator_name . '</a>'); ?>
 					</p>
 				</div>
 			</div>

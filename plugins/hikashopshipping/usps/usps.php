@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -402,7 +402,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 	}
 
 	function addRate(&$rates, $type, $parcels, &$rate, $currency, $isInternational) {
-		$app = JFactory::getApplication();		
+		$app = JFactory::getApplication();
 		$usps_user_id = $rate->shipping_params->usps_user_id;
 
 		$origin_zip = $parcels[0]->Pickup_Postcode;
@@ -445,12 +445,14 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 					'<Width>'.$parcel->Width.'</Width>'.
 					'<Length>'.$parcel->Length.'</Length>'.
 					'<Height>'.$parcel->Height.'</Height>'.
-					'<Girth>'.$parcel->Girth.'</Girth>'.
-					'</Package>';
+					'<Girth>'.$parcel->Girth.'</Girth>';
+
+				if($parcels[0]->Country == 'CA')
+					$request .= '<OriginZip>' . $origin_zip . '</OriginZip>';
+
+				$request .=	'</Package>';
 				$package_id++;
 			}
-			if($parcels[0]->Country == 'CA')
-				$request .= '<OriginZip>' . $origin_zip . '</OriginZip>';
 
 			$request .= '</IntlRateV2Request>';
 		}

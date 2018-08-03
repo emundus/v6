@@ -108,7 +108,6 @@ class EmundusController extends JControllerLegacy {
     function pdf_emploi(){
         $user = JFactory::getSession()->get('emundusUser');
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $rowid = explode('-', JRequest::getVar('rowid', null, 'GET', 'none',0));
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_emploi.php';
@@ -234,19 +233,23 @@ class EmundusController extends JControllerLegacy {
     function deletefile() {
         //@TODO ADD COMMENT ON DELETE
         $app = JFactory::getApplication();
+        $jinput = $app->input;
         $m_profile = new EmundusModelProfile;
 
-        $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $layout        = JRequest::getVar('layout', null, 'GET', 'none',0);
-        $format        = JRequest::getVar('format', null, 'GET', 'none',0);
-        $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $student_id    = $jinput->get->get('sid', null);
+        $fnum          = $jinput->get->get('fnum', null);
+        $redirect      = $jinput->get->getBase64('redirect', null);
+        // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
+
+	    if (empty($redirect))
+	    	$redirect = 'index.php';
+	    else
+	    	$redirect = base64_decode($redirect);
 
         if (empty($fnum))
-            $app->redirect('index.php');
+            $app->redirect($redirect);
 
         $current_user  = JFactory::getSession()->get('emundusUser');
-        $chemin = EMUNDUS_PATH_ABS;
         $m_files = $this->getModel('files');
 
         if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
@@ -259,7 +262,7 @@ class EmundusController extends JControllerLegacy {
 
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
-            $app->redirect('index.php');
+            $app->redirect($redirect);
 
             return false;
         }
@@ -267,10 +270,10 @@ class EmundusController extends JControllerLegacy {
         unset($current_user->fnums[$fnum]);
 
         if (in_array($user->fnum, array_keys($user->fnums))) {
-            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
+            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$user->fnum.'&redirect='.base64_encode($redirect));
         } else {
             $fnum = array_shift($current_user->fnums);
-            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum);
+            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum.'&redirect='.base64_encode($redirect));
         }
 
         return true;
@@ -403,11 +406,18 @@ class EmundusController extends JControllerLegacy {
 
         $app    = JFactory::getApplication();
         $jinput = $app->input;
-        $Itemid = $jinput->get->getInt('Itemid', null);
         $fnum   = $jinput->get->get('fnum', null);
 
+        // Redirection URL used to bring the user back to the right spot.
+	    $redirect = $jinput->get->getBase64('redirect', null);
+
+	    if (empty($redirect))
+	    	$redirect = JURI::base().'index.php';
+	    else
+	    	$redirect = base64_decode($redirect);
+
         if (empty($fnum))
-            $app->redirect(JURI::base().'index.php');
+            $app->redirect($redirect);
 
         $session    = JFactory::getSession();
         $aid        = $session->get('emundusUser');
@@ -439,11 +449,10 @@ class EmundusController extends JControllerLegacy {
         $session->set('emundusUser', $aid);
 
 	    // If a redirection URL is set: completely ignore it and go find the first form of the file.
-	    $redirect = $jinput->get->get('redirect', null);
 	    if (!empty($redirect)) {
 		    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
 		    $m_application = new EmundusModelApplication;
-		    $redirect = $m_application->getFirstPage();
+		    $redirect = $m_application->getFirstPage($redirect);
 	    } else {
 		    $redirect = 'index.php';
 	    }
@@ -458,10 +467,10 @@ class EmundusController extends JControllerLegacy {
         include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
 
+        $jinput = JFactory::getApplication()->input;
+        $profile_fnum = $jinput->post->get('profnum', null);
 
-        $profile_fnum = JRequest::getVar('profnum', null, 'POST', 'none', 0);
-
-        $ids= explode('.', $profile_fnum[0]);
+        $ids = explode('.', $profile_fnum);
         $profile = $ids[0];
 
 
@@ -472,12 +481,12 @@ class EmundusController extends JControllerLegacy {
         $m_profile = new EmundusModelProfile;
 
         $applicant_profiles = $m_profile->getApplicantsProfilesArray();
-        foreach($aid->emProfiles as $emProfile){
-            if($emProfile->id === $profile){
+        foreach ($aid->emProfiles as $emProfile) {
+            if ($emProfile->id === $profile) {
 
-                if (in_array($profile, $applicant_profiles) ) {
+                if (in_array($profile, $applicant_profiles)) {
                     $fnum = $ids[1];
-                    if($fnum !== ""){
+                    if ($fnum !== "") {
                         $infos = $m_profile->getFnumDetails($fnum);
 
                         $profile        = $m_profile->getProfileByCampaign($infos['campaign_id']);
@@ -502,7 +511,7 @@ class EmundusController extends JControllerLegacy {
                         $aid->university_id = null;
                         $aid->applicant     = 1;
                         $aid->status        = $application['status'];
-                    }  else{
+                    } else {
                         $aid->profile       = $profile;
                         $aid->fnum          = $ids[1];
                         $profiles = $m_profile->getProfileById($profile);
@@ -510,62 +519,50 @@ class EmundusController extends JControllerLegacy {
                         $aid->profile_label          = $profiles["label"];
                         $aid->menutype               = $profiles["menutype"];
                     }
-                }else{
-                    if(isset($aid->start_date)){
+                } else {
+                    if (isset($aid->start_date))
                         unset($aid->start_date);
-                    }
-                    if(isset($aid->end_date)){
+                    if (isset($aid->end_date))
                         unset($aid->end_date);
-                    }
-                    if(isset($aid->candidature_posted)){
+                    if (isset($aid->candidature_posted))
                         unset($aid->candidature_posted);
-                    }
-                    if(isset($aid->candidature_incomplete)){
+                    if (isset($aid->candidature_incomplete))
                         unset($aid->candidature_incomplete);
-                    }
-                    if(isset($aid->schoolyear)){
+                    if (isset($aid->schoolyear))
                         unset($aid->schoolyear);
-                    }
-                    if(isset($aid->code)){
+                    if (isset($aid->code))
                         unset($aid->code);
-                    }
-                    if(isset($aid->campaign_id)){
+                    if (isset($aid->campaign_id))
                         unset($aid->campaign_id);
-                    }
-                    if(isset($aid->campaign_name)){
+                    if (isset($aid->campaign_name))
                         unset($aid->campaign_name);
-                    }
-                    if(isset($aid->fnum)){
+                    if (isset($aid->fnum))
                         unset($aid->fnum);
-                    }
-                    if(isset($aid->status)){
+                    if (isset($aid->status))
                         unset($aid->status);
-                    }
-                    if(isset($aid->fnums)){
+                    if (isset($aid->fnums))
                         unset($aid->fnums);
-                    }
 
-                    $aid->profile                = $profile;
+                    $aid->profile = $profile;
 
                     $profiles = $m_profile->getProfileById($profile);
 
-                    $aid->profile_label          = $profiles["label"];
-                    $aid->menutype               = $profiles["menutype"];
+                    $aid->profile_label = $profiles["label"];
+                    $aid->menutype = $profiles["menutype"];
                     //$aid->university_id          = $profile["university_id"];
-                   // unset($aid->id);
-                   //S $aid->groups[$profile["acl_aro_groups"]]  = $profile["acl_aro_groups"];
-                    $aid->applicant              = 0;
+                    // unset($aid->id);
+                    //S $aid->groups[$profile["acl_aro_groups"]]  = $profile["acl_aro_groups"];
+                    $aid->applicant = 0;
 
 
                 }
-                $m_users = new EmundusModelUsers;
+                //$m_users = new EmundusModelUsers;
                 //$m_users->changeCurrentUserProfile($current_user->id, $emProfile->id);
             }
         }
         $session->set('emundusUser', $aid);
 
-        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
-
+        echo json_encode((object)(array('status' => true)));
         exit;
     }
 

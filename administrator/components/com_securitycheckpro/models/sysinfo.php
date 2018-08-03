@@ -86,7 +86,7 @@ public function &getInfo()
 		$this->info['cron_plugin_enabled']		= $cron_plugin_enabled;
 		$this->info['firewall_plugin_enabled']		= $firewall_plugin_enabled;
 		$this->info['spam_protection_plugin_enabled']		= $spam_protection_plugin_enabled;
-		$this->info['firewall_options']		= $FirewallOptions;
+		//$this->info['firewall_options']		= $FirewallOptions;
 		$this->info['last_check']		= $values->data['last_check'];
 		$this->info['last_check_integrity']		= $values->data['last_check_integrity'];		
 		//Htaccess protection
@@ -109,7 +109,7 @@ public function getOverall($info,$opcion) {
 				return 2;
 			}
 			if ( version_compare($info['coreinstalled'],$info['corelatest'],'==') ) {
-				$overall = $overall + 10;
+				$overall = $overall + 4;
 			}
 			if ( $info['files_with_incorrect_permissions'] == 0 ) {
 				$overall = $overall + 5;
@@ -128,9 +128,27 @@ public function getOverall($info,$opcion) {
 			}
 			if ( $info['firewall_options']['forbid_new_admins'] == 1 ) {
 				$overall = $overall + 5;
-			}
-			if ( $info['twofactor_enabled'] == 1 ) {
+			}			
+			if ( $info['twofactor_enabled'] > 1 ) {
 				$overall = $overall + 10;
+			}
+			if ( $info['htaccess_protection']['xframe_options'] == 1 ) {
+				$overall = $overall + 1;
+			}
+			if ( $info['htaccess_protection']['sts_options'] == 1 ) {
+				$overall = $overall + 1;
+			}
+			if ( $info['htaccess_protection']['xss_options'] == 1 ) {
+				$overall = $overall + 1;
+			}
+			if ( $info['htaccess_protection']['csp_policy'] == 1 ) {
+				$overall = $overall + 1;
+			}
+			if ( $info['htaccess_protection']['referrer_policy'] == 1 ) {
+				$overall = $overall + 1;
+			}
+			if ( $info['htaccess_protection']['prevent_mime_attacks'] == 1 ) {
+				$overall = $overall + 1;
 			}
 			break;
 		case 2:

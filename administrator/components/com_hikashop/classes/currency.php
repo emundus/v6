@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -787,10 +787,12 @@ class hikashopCurrencyClass extends hikashopClass{
 							$matches[]=$match;
 						}
 					}
+					$all_loaded = false;
 					if(!empty($matches)){
 						switch($price_display_type){
 							default:
 							case 'all':
+								$all_loaded = true;
 								$found = array();
 								foreach($matches as $j => $match){
 									if(isset($found[$match->price_value])) continue;
@@ -862,8 +864,13 @@ class hikashopCurrencyClass extends hikashopClass{
 						}
 
 					}
+					if(!$all_loaded) {
+						$rows[$k]->all_prices = $matches;
+					} else {
+						$rows[$k]->all_prices =& $rows[$k]->prices;
 				}
 			}
+		}
 		}
 
 
@@ -873,7 +880,7 @@ class hikashopCurrencyClass extends hikashopClass{
 				if(empty($row->prices))
 					continue;
 				foreach($row->prices as $k2 => $price) {
-					if($price->price_currency_id != $currency_id) {
+					if(@$price->price_currency_id != $currency_id) {
 						$cids[$price->price_currency_id] = $price->price_currency_id;
 					}
 				}
@@ -1164,7 +1171,7 @@ class hikashopCurrencyClass extends hikashopClass{
 					$discount = array_shift($discount);
 				}
 			}
-			$product->discount = $discount;
+			$product->discount = hikashop_copy($discount);
 		}elseif($discountSkippedBecauseOverQuota){
 		}
 	}
@@ -2034,7 +2041,7 @@ class hikashopCurrencyClass extends hikashopClass{
 									foreach($value as $taxKey => $tax) {
 										$element->variants[$k]->prices[$k2]->taxes[$taxKey]->tax_amount = @$tax->tax_amount * (float) $element->variants[$k]->product_price_percentage / 100;
 									}
-								} elseif(!in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
+								} elseif(is_numeric($value) && !in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
 									$element->variants[$k]->prices[$k2]->$key = $value * (float) $element->variants[$k]->product_price_percentage / 100;
 								}
 							}
@@ -2181,7 +2188,7 @@ class hikashopCurrencyClass extends hikashopClass{
 
 	function addCoupon(&$prices, &$discount, $products = null, $id = array()) {
 		$config =& hikashop_config();
-		$discount_before_tax = (int)$config->get('discount_before_tax', 1);
+		$discount_before_tax = (int)$config->get('coupon_before_tax', 1);
 
 		$config = hikashop_config();
 		$floating_tax = (int)$config->get('floating_tax_prices', 0);

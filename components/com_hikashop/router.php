@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ function HikashopBuildRoute( &$query )
 	$segments = array();
 	if(!defined('DS'))
 		define('DS', DIRECTORY_SEPARATOR);
-	if(function_exists('hikashop_config') || include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')){
+	if(function_exists('hikashop_config') || include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) {
 		$config =& hikashop_config();
 		if($config->get('activate_sef',1)){
 			$categorySef=$config->get('category_sef_name','category');
@@ -71,6 +71,7 @@ function HikashopBuildRoute( &$query )
 	}
 
 	if (isset($query['ctrl'])) {
+		$ctrl = $query['ctrl'];
 		$segments[] = $query['ctrl'];
 		unset( $query['ctrl'] );
 		if (isset($query['task'])) {
@@ -78,10 +79,13 @@ function HikashopBuildRoute( &$query )
 			unset( $query['task'] );
 		}
 	}elseif(isset($query['view'])){
+		$ctrl = $query['view'];
 		unset( $query['view'] );
 		if(isset($query['layout'])){
 			unset( $query['layout'] );
 		}
+	}else{
+		$ctrl = '';
 	}
 
 	if(isset($query['product_id'])){
@@ -89,7 +93,7 @@ function HikashopBuildRoute( &$query )
 		unset($query['product_id']);
 	}
 	if(isset($query['cid']) && isset($query['name'])){
-		if($config->get('sef_remove_id',0) && !empty($query['name'])){
+		if($config->get('sef_remove_id',0) && !empty($query['name']) && in_array($ctrl, array('product','category', ''))) {
 			$int_at_the_beginning = (int)$query['name'];
 			if($int_at_the_beginning){
 				$query['name'] = $config->get('alias_prefix','p').$query['name'];

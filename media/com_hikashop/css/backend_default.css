@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.4.0
+ * @version    3.5.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -418,6 +418,9 @@ body.com_hikashop div.field-calendar > .input-append, body.com_hikashop .hikasho
 .hikashop_main_content table td.order input {
 	width:20px;
 	margin-bottom:0px;
+}
+#hikashop_invoice_main_div .key{
+	text-align: right;
 }
 #price_listing input, #price_listing select,
 #price_listing_table_row input, #price_listing_table_row select {
@@ -938,7 +941,7 @@ a.checkout_content_block_nav.checkout_content_block_previous::after {
 }
 
 @media only screen and (max-width: 1024px) {
-	.checkout_content_block .checkout_content_block_nav, 
+	.checkout_content_block .checkout_content_block_nav,
 	.checkout_content_block .checkout_content_block_delete {
 		display: block;
 	}
@@ -993,7 +996,7 @@ a.checkout_content_block_nav.checkout_content_block_previous::after {
 	.checkout_content_block.terms {
 		min-height: 300px !important;
 	}
-	.checkout_content_block.address, 
+	.checkout_content_block.address,
 	.checkout_content_block.shipping {
 		min-height: 230px !important;
 	}
@@ -2460,6 +2463,10 @@ div.hikashop_backend_tile_edition .hikashop_tile_block > div {
 #hikashop_product_image_main {
 	background-color: white;
 	margin-top: 10px;
+}
+#hikashop_product_variant_image_main.opload-drop-over,
+#hikashop_product_image_main.opload-drop-over {
+	background-color: #d0d0d0;
 }
 
 #hikashop_product_backend_page_edition .hikashop_main_file_div,

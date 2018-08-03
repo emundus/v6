@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -83,9 +83,11 @@ class hikashopUserClass extends hikashopClass {
 	public function save(&$element, $skipJoomla = false) {
 		$new = empty($element->user_id);
 		if($new) {
-			if(empty($element->user_created_ip))
-				$element->user_created_ip = hikashop_getIP();
-
+			if(empty($element->user_created_ip)) {
+				$config = hikashop_config();
+				if($config->get('user_ip', 1))
+					$element->user_created_ip = hikashop_getIP();
+			}
 			if(empty($element->user_created))
 				$element->user_created = time();
 
@@ -433,10 +435,10 @@ class hikashopUserClass extends hikashopClass {
 		$fieldClass = hikashop_get('class.field');
 		$old = null;
 		$registerData = $fieldClass->getInput('register', $old, 'msg', $input_data['register']);
-		$userData = $fieldClass->getInput('user', $old, 'msg', $input_data['user']);
+		$userData = $fieldClass->getFilteredInput('user', $old, 'msg', $input_data['user']);
 		$addressData = null;
 		if($input_data['address'] !== null)
-			$addressData = $fieldClass->getInput('address', $old, 'msg', $input_data['address']);
+			$addressData = $fieldClass->getFilteredInput('address', $old, 'msg', $input_data['address']);
 
 		$status = true;
 		$messages = array();
@@ -726,6 +728,9 @@ class hikashopUserClass extends hikashopClass {
 			if(isset($addressData->address_id))
 				unset($addressData->address_id);
 
+			if(!empty($options['address_type']))
+				$addressData->address_type = $options['address_type'];
+
 			$registerData->user_id = $ret['user_id'];
 			if(!empty($addressData)) {
 				$addressData->address_user_id = $ret['user_id'];
@@ -818,7 +823,7 @@ class hikashopUserClass extends hikashopClass {
 		return $ret;
 	}
 
-	public function registerGuest($user_id, $registerData){
+	public function registerGuest($user_id, $registerData) {
 		$authorize = JFactory::getACL();
 		$user = clone(JFactory::getUser());
 
@@ -832,12 +837,12 @@ class hikashopUserClass extends hikashopClass {
 		$status = true;
 		$messages = array();
 
-		if(empty($hikaUser)){
+		if(empty($hikaUser)) {
 			$status = false;
 			$messages['invalid_user'] = array(JText::_('INVALID_USER'), 'error');
 		}
 
-		if(empty($registerData->name)){
+		if(empty($registerData->name)) {
 			$status = false;
 			$messages['register_name'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_NAME')), 'error');
 		}

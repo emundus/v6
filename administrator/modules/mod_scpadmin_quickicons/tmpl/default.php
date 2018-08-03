@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 $html = JHtml::_('icons.buttons', $buttons);
 ?>
 <?php 
-if ( version_compare(JVERSION, '3.9.50', 'lt') ) {
+if ( version_compare(JVERSION, '3.20', 'lt') ) {
 ?>
 	<?php if (!empty($html)): ?>
 		<div class="j-links-groups">

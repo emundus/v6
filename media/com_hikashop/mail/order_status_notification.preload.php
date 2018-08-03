@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -444,6 +444,27 @@ ob_start();
 
 $content = ob_get_clean();
 $vars['ORDER_SUMMARY'] = trim($content);
+
+
+$unpaid_statuses = explode(',', $config->get('order_unpaid_statuses', 'created'));
+if(in_array($data->order_status, $unpaid_statuses) && !empty($data->cart->order_payment_method)) {
+	ob_start();
+	if($data->cart->order_full_price>0 && hikashop_level(1) && $config->get('allow_payment_button',1)) {
+		echo '<p>' . JText::_('ORDER_VALID_AFTER_PAYMENT') . '</p>';
+		$pay_url = 'index.php?option=com_hikashop&ctrl=order&task=pay&order_id='.$data->order_id.$url_itemid;
+		if(empty($customer->user_cms_id) && !empty($data->cart->order_token)) {
+			$pay_url .= '&order_token='.urlencode($data->cart->order_token);
+		}
+		$pay_url = hikashop_frontendLink($pay_url);
+		if($config->get('force_ssl',0) && strpos('https://',$pay_url) === false) {
+			$pay_url = str_replace('http://','https://',$pay_url);
+		}
+		echo '<p><a href="'. $pay_url .'">'.JText::_('PAY_NOW') . '</a></p>';
+	}
+
+	$content = ob_get_clean();
+	$vars['ORDER_SUMMARY'] .= $content;
+}
 
 if($config->get('register_after_guest', 1) && empty($customer->user_cms_id) && !empty($data->order_token)){
 	jimport('joomla.application.component.helper');

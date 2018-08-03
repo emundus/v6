@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -86,7 +86,7 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 		if(!empty($params['fields']) && is_string($params['fields']))
 			$params['fields'] = explode(',',$params['fields']);
 		$fieldClass = hikashop_get('class.field');
-		$orderData = $fieldClass->getInput('order', $old, 'msg', $data['fields'], false, '', @$params['fields']);
+		$orderData = $fieldClass->getFilteredInput('order', $old, 'msg', $data['fields'], false, '', @$params['fields']);
 
 		if($orderData === false) {
 			$messages = $fieldClass->messages;

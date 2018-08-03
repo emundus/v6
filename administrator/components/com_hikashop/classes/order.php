@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,7 +38,8 @@ class hikashopOrderClass extends hikashopClass {
 			if(empty($order->order_type))
 				$order->order_type = 'sale';
 
-			$order->order_ip = hikashop_getIP();
+			if($config->get('order_ip', 1))
+				$order->order_ip = hikashop_getIP();
 			$order->old = new stdClass();
 
 			if(empty($order->order_status)) {
@@ -244,6 +245,11 @@ class hikashopOrderClass extends hikashopClass {
 		if(empty($order->old))
 			unset($order->old);
 
+		if(isset($order->order_url))
+			unset($order->order_url);
+		if(isset($order->mail_params))
+			unset($order->mail_params);
+
 		$order->order_id = parent::save($order);
 
 		foreach($serializes as $serialize) {
@@ -328,16 +334,20 @@ class hikashopOrderClass extends hikashopClass {
 
 				if(!empty($order->order_payment_params->recurring) && !empty($order->order_payment_params->recurring['products'])) {
 					$recurring_cart_products = $order->order_payment_params->recurring['products'];
+
 					$recurring_order_products = array();
 					foreach($recurring_cart_products as $k) {
-						$recurring_order_products[] = $order->cart_order_products[$k];
+						if(isset($order->cart_order_products[$k]))
+							$recurring_order_products[] = $order->cart_order_products[$k];
 					}
-					$order->order_payment_params->recurring['products'] = $recurring_order_products;
-					$query = 'UPDATE '.hikashop_table('order').
-						' SET order_payment_params = '.$this->database->Quote(serialize($order->order_payment_params)).
-						' WHERE order_id = '.(int)$order->order_id;
-					$this->database->setQuery($query);
-					$this->database->query();
+					if(!empty($recurring_order_products)) {
+						$order->order_payment_params->recurring['products'] = $recurring_order_products;
+						$query = 'UPDATE '.hikashop_table('order').
+							' SET order_payment_params = '.$this->database->Quote(serialize($order->order_payment_params)).
+							' WHERE order_id = '.(int)$order->order_id;
+						$this->database->setQuery($query);
+						$this->database->query();
+					}
 				}
 			}
 
@@ -792,6 +802,9 @@ class hikashopOrderClass extends hikashopClass {
 			$order->paymentOptions = array_merge($cart->paymentOptions);
 
 		if(!empty($order->paymentOptions)) {
+			if(isset($order->paymentOptions['recurring']['optional']))
+				unset($order->paymentOptions['recurring']['optional']);
+
 			foreach($order->paymentOptions as $k => $v) {
 				if($v === false)
 					continue;
@@ -1325,7 +1338,7 @@ class hikashopOrderClass extends hikashopClass {
 				if(empty($order->order_token) || $token != $order->order_token){
 					return null;
 				}
-			}elseif( hikashop_loadUser() != $order->order_user_id ){
+			}elseif( hikashop_loadUser(false) != $order->order_user_id ){
 				return null;
 			}
 		}
@@ -1503,16 +1516,18 @@ class hikashopOrderClass extends hikashopClass {
 				if(!isset($products[$k]->files[$id])) {
 					for($i = 1; $i <= $product_quantity; $i++) {
 						$f = clone($file);
-						$f->file_pos = $i;
+						$f->file_pos = $i + $file->file_pos;
 						$f->download_number = 0;
 						$id = sprintf('%05d-%05d-%05d', $file->file_ordering, $file->file_id, $i);
 						$products[$k]->files[$id] = $f;
 						unset($f);
 					}
+
 				}
 				$id = sprintf('%05d-%05d-%05d', $file->file_ordering, $file->file_id, (int)$file->file_pos);
 				$products[$k]->files[$id] = $file;
 			}
+			$file->file_pos += $product_quantity;
 		} else {
 			$file->file_pos = 0;
 			$file->file_limit *= $product_quantity;
@@ -1535,17 +1550,6 @@ class hikashopOrderClass extends hikashopClass {
 				$order->additional[] = $product;
 			} else if(!empty($product->order_product_options)) {
 				$order->products[$k]->order_product_options = hikashop_unserialize($order->products[$k]->order_product_options);
-			}
-
-			if(!empty($order->products[$k]->order_product_options['type']) && $order->products[$k]->order_product_options['type'] == 'bundle' && !empty($product->order_product_option_parent_id)) {
-				foreach($order->products as $j => $main_product) {
-					if($product->order_product_option_parent_id == $main_product->order_product_id) {
-						if(!isset($main_product->bundle))
-							$main_product->bundle = array();
-						$main_product->bundle[] = $product;
-						break;
-					}
-				}
 			}
 			if($product->order_product_quantity == 0) {
 				unset($order->products[$k]);
@@ -1699,13 +1703,13 @@ class hikashopOrderClass extends hikashopClass {
 			$lang->publicLoadLanguage($override_path, 'override');
 	}
 
-	public function loadNotification($order_id, $type = 'order_status_notification') {
+	public function loadNotification($order_id, $type = 'order_status_notification', $params = null) {
 		$order = $this->get($order_id);
-		$this->loadOrderNotification($order,$type);
+		$this->loadOrderNotification($order,$type, $params);
 		return $order;
 	}
 
-	public function loadOrderNotification(&$order, $type = 'order_status_notification') {
+	public function loadOrderNotification(&$order, $type = 'order_status_notification', $params = null) {
 		if(empty($order->order_user_id) || empty($order->order_status) || empty($order->order_token)) {
 			$dbOrder = parent::get($order->order_id);
 			$order->order_user_id = @$dbOrder->order_user_id;
@@ -1748,19 +1752,21 @@ class hikashopOrderClass extends hikashopClass {
 			$order->mail_status = '';
 
 		$mail_status = $order->mail_status;
+		if(!empty($params))
+			$order->mail_params = $params;
 		$mailClass = hikashop_get('class.mail');
 		$order->mail = $mailClass->get($type,$order);
 		$order->mail_status = $mail_status;
 		$order->mail->subject = JText::sprintf($order->mail->subject, $order->order_number, $mail_status, HIKASHOP_LIVE);
 
 		if(!empty($order->customer->user_email)) {
-			$order->mail->dst_email =& $order->customer->user_email;
+			$order->mail->dst_email = $order->customer->user_email;
 		} else {
 			$order->mail->dst_email = '';
 		}
 
 		if(!empty($order->customer->name)) {
-			$order->mail->dst_name =& $order->customer->name;
+			$order->mail->dst_name = $order->customer->name;
 		} else {
 			$order->mail->dst_name = '';
 		}

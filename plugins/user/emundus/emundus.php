@@ -198,7 +198,7 @@ class plgUserEmundus extends JPlugin
                 }
 
             }
-            elseif(!empty($lastname) && !empty($firstname)) { //die(print_r($details));
+            elseif (!empty($lastname) && !empty($firstname)) { //die(print_r($details));
                 // Update name and fistname from #__users
                 $db->setQuery('UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'" WHERE id='.$user['id']);
                 $db->Query();

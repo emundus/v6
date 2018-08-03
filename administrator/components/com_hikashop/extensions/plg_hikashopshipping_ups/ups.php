@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,14 +37,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		array('key' => 21, 'code' => '83', 'name' => 'UPS Today Dedicated Courrier', 'countries' => 'POLAND', 'zones' => array('country_Poland_170'), 'destinations' => array('country_Poland_170')),
 		array('key' => 22, 'code' => '84', 'name' => 'UPS Today Intercity', 'countries' => 'POLAND', 'zones' => array('country_Poland_170'), 'destinations' => array('country_Poland_170')),
 		array('key' => 23, 'code' => '85', 'name' => 'UPS Today Express', 'countries' => 'POLAND', 'zones' => array('country_Poland_170'), 'destinations' => array('country_Poland_170')),
-		array('key' => 24, 'code' => '86', 'name' => 'UPS Today Express Saver', 'countries' => 'POLAND', 'zones' => array('country_Poland_170'), 'destinations' => array('country_Poland_170')),
-
-		array('key' => 25, 'code' => 'TDCB', 'name' => 'Trade Direct Cross Border', 'countries' => 'ALL', 'zones' => array('all'), 'destinations' => array('international')),
-		array('key' => 26, 'code' => 'TDA', 'name' => 'Trade Direct Air', 'countries' => 'ALL', 'zones' => array('all'), 'destinations' => array('international')),
-		array('key' => 27, 'code' => 'TDO', 'name' => 'Trade Direct Ocean', 'countries' => 'ALL', 'zones' => array('all'), 'destinations' => array('international')),
-		array('key' => 28, 'code' => '308', 'name' => 'UPS Freight LTL', 'countries' => 'ALL', 'zones' => array('all'), 'destinations' => array('international')),
-		array('key' => 29, 'code' => '309', 'name' => 'UPS Freight LTL Guaranteed', 'countries' => 'ALL', 'zones' => array('all'), 'destinations' => array('international')),
-		array('key' => 30, 'code' => '310', 'name' => 'UPS Freight LTL Urgent', 'countries' => 'ALL', 'zones' => array('all'), 'destinations' => array('international')),
+		array('key' => 24, 'code' => '86', 'name' => 'UPS Today Express Saver', 'countries' => 'POLAND', 'zones' => array('country_Poland_170'), 'destinations' => array('country_Poland_170'))
 	);
 
 	var $multiple = true;
@@ -150,19 +143,6 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 			}
 
 			$rate->shipping_params->methods = hikashop_unserialize($rate->shipping_params->methodsList);
-
-			$this->freight = false;
-			$this->classicMethod = false;
-			$heavyProduct = false;
-			$weightTotal = 0;
-			if(!empty($rate->shipping_params->methods)) {
-				foreach($rate->shipping_params->methods as $method) {
-					if(in_array($method, array('TDCB', 'TDA', 'TDO', '308', '309', '310')))
-						$this->freight = true;
-					else
-						$this->classicMethod = true;
-				}
-			}
 			$null = null;
 			if(empty($this->shipping_currency_id)) {
 				$this->shipping_currency_id = hikashop_getCurrency();
@@ -174,7 +154,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 			$cart = hikashop_get('class.cart');
 			$cart->loadAddress($null, $order->shipping_address->address_id, 'object', 'shipping');
 
-			$receivedMethods = $this->_getBestMethods($rate, $order, $usableWarehouses, $heavyProduct, $null);
+			$receivedMethods = $this->_getBestMethods($rate, $order, $usableWarehouses, $null);
 
 			if(empty($receivedMethods)) {
 				$this->error_messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
@@ -417,19 +397,10 @@ function checkAllBox(id, type){
 		return true;
 	}
 
-	protected function _getBestMethods(&$rate, &$order, &$usableWarehouses, $heavyProduct, $null) {
+	protected function _getBestMethods(&$rate, &$order, &$usableWarehouses, $null) {
 		$db = JFactory::getDBO();
 		$usableMethods = array();
 		$zone_code = '';
-
-		$this->freight = false;
-		$this->classicMethod = false;
-		foreach($rate->shipping_params->methods as $method) {
-			if($method=='TDCB' || $method=='TDA' || $method=='TDO' || $method=='308' || $method=='309' || $method=='310')
-				$this->freight = true;
-			else
-				$this->classicMethod = true;
-		}
 
 		$currencies = array();
 		foreach($usableWarehouses as $warehouse) {
@@ -469,29 +440,32 @@ function checkAllBox(id, type){
 			}
 		}
 		foreach($usableWarehouses as $k => $warehouse){
-			$usableWarehouses[$k]->methods = $this->_getShippingMethods($rate, $order, $warehouse, $heavyProduct, $null);
+			$usableWarehouses[$k]->methods = $this->_getShippingMethods($rate, $order, $warehouse, $null);
 		}
 		if(empty($usableWarehouses))
 			return false;
 
+		$bestPrice=99999999;
 		foreach($usableWarehouses as $k => $warehouse) {
-			if(!empty($warehouse->methods)) {
+			if(!empty($warehouse->methods) && $warehouse->methods !== true) {
 				foreach($warehouse->methods as $i => $method) {
 					if(!in_array($method['code'], $rate->shipping_params->methods))
 						unset($usableWarehouses[$k]->methods[$i]);
 				}
-			}
-		}
 
-		$bestPrice=99999999;
-		foreach($usableWarehouses as $id => $warehouse) {
-			if(!empty($warehouse->methods)) {
 				foreach($warehouse->methods as $method) {
 					if($method['value'] < $bestPrice) {
 						$bestPrice = $method['value'];
-						$bestWarehouse = $id;
+						$bestWarehouse = $k;
 					}
 				}
+			}
+		}
+
+
+		foreach($usableWarehouses as $id => $warehouse) {
+			if(!empty($warehouse->methods) && $warehouse->methods !== true) {
+
 			}
 		}
 		if(isset($bestWarehouse))
@@ -500,7 +474,7 @@ function checkAllBox(id, type){
 		return false;
 	}
 
-	protected function _getShippingMethods(&$rate, &$order, &$warehouse, $heavyProduct, $null) {
+	protected function _getShippingMethods(&$rate, &$order, &$warehouse, $null) {
 		$data['userId'] = $rate->shipping_params->user_id;
 		$data['accessLicenseNumber'] = $rate->shipping_params->access_code;
 		$data['password'] = $rate->shipping_params->password;
@@ -538,10 +512,8 @@ function checkAllBox(id, type){
 
 		$limitations = array();
 
-		if(($this->freight == false && $this->classicMethod == true) || ($heavyProduct == false && $this->freight == false)) {
-			$limitations['dimension'] = 165;
-			$limitations['w'] = 150;
-		}
+		$limitations['dimension'] = 165;
+		$limitations['w'] = 150;
 
 		if(empty($rate->shipping_params->group_package))
 			$limitations['unit'] = 1;

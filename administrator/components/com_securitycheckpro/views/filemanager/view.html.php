@@ -30,6 +30,7 @@ $model = $this->getModel("filemanager");
 $last_check = $model->loadStack("filemanager_resume","last_check");
 $files_scanned = $model->loadStack("filemanager_resume","files_scanned");
 $incorrect_permissions = $model->loadStack("filemanager_resume","files_with_incorrect_permissions");
+$this->log_filename = $model->get_log_filename("filepermissions_log",true);
 
 $task_ended = $model->get_campo_filemanager("estado");
 

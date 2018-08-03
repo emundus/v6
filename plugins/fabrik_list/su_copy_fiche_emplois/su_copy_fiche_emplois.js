@@ -1,5 +1,5 @@
 define(['jquery', 'fab/list-plugin'], function (jQuery, FbListPlugin) {
-	var FbListCopy = new Class({
+	var FbListSu_copy_fiche_emplois = new Class({
 		Extends   : FbListPlugin,
 		initialize: function (options) {
 			this.parent(options);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -111,7 +111,14 @@ if(!empty($html)) echo '<div class="hikashop_subcategories_listing">'.$html.'</d
 
 if(!$this->module){
 	$data = $this->params->get('data');
-	if(isset($data->hk_product) && is_object($data->hk_product)){
+	if(empty($data)) {
+		$hk_p = $this->params->get('hk_product');
+		if(!empty($hk_p)) {
+			$data = new stdClass();
+			$data->hk_product = $hk_p;
+		}
+	}
+	if(isset($data->hk_product) && (is_object($data->hk_product) || is_array($data->hk_product))) {
 		$js = '';
 		$empty='';
 		jimport('joomla.html.parameter');

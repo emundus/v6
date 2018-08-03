@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -275,8 +275,6 @@ class hikashopProductClass extends hikashopClass{
 			$product_with_same_alias = $this->database->loadResult();
 			if($product_with_same_alias && (empty($element->product_id) || $product_with_same_alias!=$element->product_id)){
 				$app->enqueueMessage(JText::_( 'ELEMENT_WITH_SAME_ALIAS_ALREADY_EXISTS' ), 'error');
-				hikaInput::get()->set( 'fail', $element  );
-				return false;
 			}
 		}
 
@@ -2872,7 +2870,7 @@ class hikashopProductClass extends hikashopClass{
 
 		$insert = array();
 		foreach($element->categories as $entry){
-			$insert[]='('.$entry.','.$status.','.(int)@$olds[$entry]->ordering.')';
+			$insert[]='('.(int)$entry.','.(int)$status.','.(int)@$olds[$entry]->ordering.')';
 		}
 		$query = 'INSERT IGNORE INTO '.hikashop_table('product_category').' (category_id,product_id,ordering) VALUES '.implode(',',$insert).';';
 		$this->database->setQuery($query);
@@ -2973,14 +2971,13 @@ class hikashopProductClass extends hikashopClass{
 		}
 	}
 
-	function delete(&$elements, $ignoreFile=false){
+	function delete(&$elements, $ignoreFile = false) {
 		if(!is_array($elements))
 			$elements = array($elements);
-
 		JArrayHelper::toInteger($elements);
 
 		if(!empty($elements)) {
-			$query ='SELECT product_id FROM '.hikashop_table('product').' WHERE product_type=\'variant\' AND product_parent_id IN ('.implode(',',$elements).')';
+			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_type=\'variant\' AND product_parent_id IN ('.implode(',',$elements).')';
 			$this->database->setQuery($query);
 			if(!HIKASHOP_J25)
 				$elements = array_merge($elements, $this->database->loadResultArray());
@@ -3010,6 +3007,81 @@ class hikashopProductClass extends hikashopClass{
 			return count($elements);
 		}
 		return $status;
+	}
+
+	public function trash(&$elements) {
+		if(!is_array($elements))
+			$elements = array($elements);
+		JArrayHelper::toInteger($elements);
+		if(empty($elements))
+			return false;
+
+		$query = 'SELECT product_id FROM '.hikashop_table('product').
+			' WHERE product_type IN ('.$this->database->Quote('main').','.$this->database->Quote('variant').') '.
+				' AND product_id IN ('.implode(',', $elements).')';
+		$this->database->setQuery($query);
+		if(!HIKASHOP_J25)
+			$product_ids = $this->database->loadResultArray();
+		else
+			$product_ids = $this->database->loadColumn();
+
+		JArrayHelper::toInteger($product_ids);
+
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
+		$do = true;
+		$dispatcher->trigger('onBeforeProductTrash', array(&$product_ids, &$do));
+		if(!$do)
+			return false;
+
+		$query = 'UPDATE '.hikashop_table('product').' SET product_type = ' . $this->database->Quote('trash').
+			' WHERE product_id IN ('.implode(',', $product_ids).')';
+		$this->database->setQuery($query);
+		$this->database->query();
+
+		$dispatcher->trigger('onAfterProductTrash', array(&$product_ids));
+
+		return count($product_ids);
+	}
+
+	public function untrash(&$elements) {
+		if(!is_array($elements))
+			$elements = array($elements);
+		JArrayHelper::toInteger($elements);
+		if(empty($elements))
+			return false;
+
+		$query = 'SELECT product_id FROM '.hikashop_table('product').
+			' WHERE product_type = '.$this->database->Quote('trash').' '.
+				' AND product_id IN ('.implode(',', $elements).')';
+		$this->database->setQuery($query);
+		if(!HIKASHOP_J25)
+			$product_ids = $this->database->loadResultArray();
+		else
+			$product_ids = $this->database->loadColumn();
+
+		JArrayHelper::toInteger($product_ids);
+
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
+		$do = true;
+		$dispatcher->trigger('onBeforeProductUntrash', array(&$product_ids, &$do));
+		if(!$do)
+			return false;
+
+		$query = 'UPDATE '.hikashop_table('product').' SET product_type = ' . $this->database->Quote('main').
+			' WHERE product_id IN ('.implode(',', $product_ids).') AND product_parent_id = 0';
+		$this->database->setQuery($query);
+		$this->database->query();
+
+		$query = 'UPDATE '.hikashop_table('product').' SET product_type = ' . $this->database->Quote('variant').
+			' WHERE product_id IN ('.implode(',', $product_ids).') AND product_parent_id > 0';
+		$this->database->setQuery($query);
+		$this->database->query();
+
+		$dispatcher->trigger('onAfterProductUntrash', array(&$product_ids));
+
+		return count($product_ids);
 	}
 
 	function addFiles(&$element, &$files) {
@@ -3110,7 +3182,7 @@ class hikashopProductClass extends hikashopClass{
 							foreach($value as $taxKey => $tax) {
 								$variant->prices[$k]->taxes[$taxKey]->tax_amount = @$tax->tax_amount * $product_price_percentage / 100;
 							}
-						} elseif(!in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
+						} elseif(is_numeric($value) && !in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
 							$variant->prices[$k]->$key = $value * $product_price_percentage / 100;
 						}
 					}

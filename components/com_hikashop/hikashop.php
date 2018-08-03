@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,6 +24,15 @@ if(defined('JDEBUG') && JDEBUG){
 
 $config =& hikashop_config();
 if($config->get('store_offline')) {
+	$tmpl = hikaInput::get()->getCmd('tmpl', '');
+	if(in_array($tmpl, array('ajax', 'raw'))) {
+		$ret = array(
+			'ret' => 0,
+			'message' => JText::_('SHOP_IN_MAINTENANCE')
+		);
+		echo json_encode($ret);
+		exit;
+	}
 	$app = JFactory::getApplication();
 	$app->enqueueMessage(JText::_('SHOP_IN_MAINTENANCE'));
 	return;

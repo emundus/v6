@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -130,6 +130,13 @@ function setVisible(value) {
 				array('name' => 'mail_admin_notif', 'title' => JText::_('FIELD_ITEM_ORDER_ADMIN_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_admin_notification)
 				array('name' => 'mail_payment_notif', 'title' => JText::_('FIELD_ITEM_PAYMENT_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_payment_notification)
 			);
+			if($field->field_type == 'customtext') {
+				$displayOptions = array(
+					array('name' => 'front_product_listing', 'title' => JText::_('FIELD_ITEM_PRODUCT_LISTING')), // (ex: field_item_product_listing)
+					array('name' => 'front_order', 'title' => JText::_('FIELD_ITEM_ORDER')), // front (ex: field_item_order)
+					array('name' => 'back_invoice', 'title' => JText::_('FIELD_ITEM_INVOICE')), // only back ? (ex: field_item_invoice)
+				);
+			}
 		} elseif($field->field_table == 'order') {
 			$displayOptions = array(
 			//	'field_order_checkout', //--> frontcomp

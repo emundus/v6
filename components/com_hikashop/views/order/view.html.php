@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -57,7 +57,8 @@ class OrderViewOrder extends hikashopView {
 		$searchMap = array(
 			'hk_order.order_id',
 			'hk_order.order_status',
-			'hk_order.order_number'
+			'hk_order.order_number',
+			'FROM_UNIXTIME(hk_order.order_created, \''.str_replace("'","",JText::_('HIKASHOP_EXTENDED_DATE_FORMAT')).'\')'
 		);
 		$orderingAccept = array(
 			'hk_order.'
@@ -233,6 +234,24 @@ class OrderViewOrder extends hikashopView {
 		}
 		$this->assignRef('url_itemid', $url_itemid);
 		$toolbar_array = array();
+
+		$unpaid_statuses = explode(',', $config->get('order_unpaid_statuses', 'created'));
+		if(hikashop_level(1) && $config->get('allow_payment_button', 1) && in_array($this->element->order_status, $unpaid_statuses) && bccomp($this->element->order_full_price, 0, 5) > 0) {
+			$url = 'order&task=pay&order_id='.$this->element->order_id.$url_itemid;
+			$url .= ($config->get('allow_payment_change', 1)) ? '&select_payment=1' : '';
+			$token = hikaInput::get()->getVar('order_token');
+			if(!empty($token))
+				$url .= '&order_token='.urlencode($token);
+			$url = hikashop_completeLink($url);
+			if($config->get('force_ssl',0) && strpos('https://',$url) === false)
+				$url = str_replace('http://','https://', $url);
+			$pay = array(
+				'icon' => 'pay',
+				'name' => JText::_('PAY_NOW'),
+				'url' => hikashop_completeLink($url),
+			);
+			$toolbar_array['pay'] = $pay;
+		}
 		if($this->invoice_type == 'order') {
 			if(hikashop_level(1) && $this->config->get('print_invoice_frontend', 0) && !in_array($this->element->order_status, array('created','refunded','cancelled')) && ($this->invoice_type == 'order')) {
 				$url = 'order&task=invoice&order_id='.$this->element->order_id.$url_itemid;

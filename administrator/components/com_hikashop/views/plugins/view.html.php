@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -621,7 +621,7 @@ class PluginsViewPlugins extends hikashopView{
 
 				switch ($value[1]) {
 					case 'input':
-						$html .= '<input type="text" name="data['.$type.']['.$paramsType.']['.$key.']" value="'.@$this->element->$paramsType->$key.'"/>';
+						$html .= '<input type="text" name="data['.$type.']['.$paramsType.']['.$key.']" value="'.htmlentities(@$this->element->$paramsType->$key, ENT_COMPAT, 'UTF-8').'"/>';
 						break;
 
 					case 'textarea':
@@ -657,7 +657,7 @@ class PluginsViewPlugins extends hikashopView{
 						foreach($value[2] as $listKey => $listData){
 							$values[] = JHTML::_('select.option', $listKey, JText::_($listData));
 						}
-						$html .= JHTML::_('hikaselect.radiolist',   $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="inputbox" size="1"', 'value', 'text', @$this->element->$paramsType->$key );
+						$html .= JHTML::_('hikaselect.radiolist', $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="inputbox" size="1"', 'value', 'text', @$this->element->$paramsType->$key);
 						break;
 
 					case 'list':
@@ -665,7 +665,7 @@ class PluginsViewPlugins extends hikashopView{
 						foreach($value[2] as $listKey => $listData){
 							$values[] = JHTML::_('select.option', $listKey,JText::_($listData));
 						}
-						$html .= JHTML::_('select.genericlist',   $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="inputbox" size="1"', 'value', 'text', @$this->element->$paramsType->$key );
+						$html .= JHTML::_('select.genericlist', $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="inputbox" size="1"', 'value', 'text', @$this->element->$paramsType->$key);
 						break;
 
 					case 'orderstatus':

@@ -226,7 +226,7 @@ function add_to_whitelist()
 /* Añadir Ip(s) a la lista blanca */
 function filter_vulnerable_extension()
 {
-	//$product = JRequest::getVar('product');
+	$jinput = JFactory::getApplication()->input;
 	$product = $jinput->get('product','','string');
 	$model = $this->getModel('securitycheckpros');
 	$vuln_extensions = $model->filter_vulnerable_extension($product);

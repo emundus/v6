@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,20 @@ if($voteAccess == 'buyed' && !empty($user)){
 $canVote = $voteAccess == 'public' || ($voteAccess == 'registered' && !empty($user)) || ($voteAccess == 'buyed' && $hasBought);
 
 if(!$canVote && $row->hikashop_vote_total_vote == '0'){
-	echo '<div class="hikashop_vote_stars">'.JText::_('HIKA_NO_VOTE').'</div>';
+?>
+<div class="hikashop_vote_stars">
+	<div class="hk-rating-empty-label">
+		<?php echo JText::_('HIKA_NO_VOTE'); ?>
+	</div>
+	<div class="hk-rating hk-rating-empty" data-original-title="<?php echo JText::_('HIKA_NO_VOTE'); ?>" data-toggle="hk-tooltip">
+<?php
+	for($i = 1; $i <= $row->hikashop_vote_nb_star; $i++) {
+		echo '<span class="hk-rate-star state-empty"></span>';
+	}
+?>
+	</div>
+</div>
+<?php
 	return;
 }
 
@@ -53,7 +66,7 @@ if($config->get('enable_status_vote', 'vote') != 'both' && $canVote) {
 	if ($row->hikashop_vote_total_vote > 0) {
 ?>
 	<div style="display: none;">
-		<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+		<div itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
 			<span itemprop="ratingValue"><?php echo $row->hikashop_vote_average_score; ?></span>
 			<span itemprop="bestRating"><?php echo $row->hikashop_vote_nb_star; ?></span>
 			<span itemprop="ratingCount"><?php echo $row->hikashop_vote_total_vote; ?></span>
@@ -70,7 +83,7 @@ if($config->get('enable_status_vote', 'vote') != 'both' && $canVote) {
 	if ($row->hikashop_vote_total_vote > 0) {
 ?>
 	<div style="display: none;">
-		<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+		<div itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
 			<span itemprop="ratingValue"><?php echo $row->hikashop_vote_average_score; ?></span>
 			<span itemprop="bestRating"><?php echo $row->hikashop_vote_nb_star; ?></span>
 			<span itemprop="ratingCount"><?php echo $row->hikashop_vote_total_vote; ?></span>

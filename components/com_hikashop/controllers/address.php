@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,7 @@ class addressController extends hikashopController
 
 	public function show() {
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		if($tmpl == 'component') {
+		if(in_array($tmpl, array('component', 'ajax', 'raw'))) {
 			hikaInput::get()->set('hidemainmenu', 1);
 			hikaInput::get()->set('layout', 'show');
 			ob_end_clean();
@@ -36,7 +36,7 @@ class addressController extends hikashopController
 		$subtask = hikaInput::get()->getCmd('subtask', '');
 		$addrtype = hikaInput::get()->getCmd('address_type', '');
 		$config = hikashop_config();
-		if($tmpl == 'component' && ($addrtype != '' || $subtask != '') && $config->get('checkout_address_selector', 0)) {
+		if(($tmpl == 'raw') || ($tmpl == 'component' && ($addrtype != '' || $subtask != '') && $config->get('checkout_address_selector', 0))) {
 			hikaInput::get()->set('hidemainmenu', 1);
 			hikaInput::get()->set('layout', 'show');
 			hikaInput::get()->set('edition', true);
@@ -58,8 +58,15 @@ class addressController extends hikashopController
 
 	public function listing() {
 		$user = JFactory::getUser();
-		if(!$user->guest)
+		if(!$user->guest) {
+			$tmpl = hikaInput::get()->getCmd('tmpl', '');
+			if(in_array($tmpl, array('ajax', 'raw'))) {
+				hikashop_cleanBuffers();
+				parent::listing();
+				exit;
+			}
 			return parent::listing();
+		}
 
 		$app = JFactory::getApplication();
 		$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
@@ -86,58 +93,77 @@ class addressController extends hikashopController
 			}
 			$addressClass = hikashop_get('class.address');
 			$oldData = $addressClass->get($addressdelete);
-			if(!empty($oldData)){
-				$user_id = hikashop_loadUser();
-				if($user_id==$oldData->address_user_id){
-					$addressClass->delete($addressdelete);
-				}
+			$user_id = hikashop_loadUser(false);
+			if(!empty($oldData) && $user_id == $oldData->address_user_id) {
+				$addressClass->delete($addressdelete);
 			}
-		} else {
-			$cid = hikashop_getCID('cid');
-			$tmpl = hikaInput::get()->getCmd('tmpl', '');
-			if(!empty($cid)) {
-				if(!HIKASHOP_J25) {
-					JRequest::checkToken('request') || die('Invalid Token');
-				} else {
-					JSession::checkToken('request') || die('Invalid Token');
-				}
-				$addressClass = hikashop_get('class.address');
-				$old = $addressClass->get($cid);
-				if(!empty($old)) {
-					$user_id = hikashop_loadUser(false);
-					if($user_id == $old->address_user_id) {
-						$ret = $addressClass->delete($cid);
-						if($ret && $tmpl == 'component') {
-							echo '1';
-							exit;
-						}
-					}
-				}
-			}
-			return $this->show();
+			return $this->listing();
 		}
-		$this->listing();
+
+		$ret = false;
+		$cid = hikashop_getCID('cid');
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
+		if(empty($cid))
+			return $this->show();
+
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken('request') || die('Invalid Token');
+		} else {
+			JSession::checkToken('request') || die('Invalid Token');
+		}
+
+		$addressClass = hikashop_get('class.address');
+		$old = $addressClass->get($cid);
+		$user_id = hikashop_loadUser(false);
+		if(!empty($old) && $user_id == $old->address_user_id) {
+			$ret = $addressClass->delete($cid);
+		}
+
+		if(in_array($tmpl, array('ajax', 'raw'))) {
+			if($ret)
+				hikaRegistry::set('address_deleted_id', $cid);
+			return $this->listing();
+		}
+
+		if($ret && $tmpl == 'component') {
+			echo '1';
+			exit;
+		}
+		return $this->show();
 	}
 
-	function setdefault(){
+	public function setdefault() {
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 		$newDefaultId = hikaInput::get()->getInt('address_default', 0);
-		if($newDefaultId){
+
+		if(!empty($newDefaultId)) {
 			if(!HIKASHOP_J25) {
 				JRequest::checkToken('request') || die('Invalid Token');
 			} else {
 				JSession::checkToken('request') || die('Invalid Token');
 			}
-			$addressClass = hikashop_get('class.address');
-			$oldData = $addressClass->get($newDefaultId);
-			if(!empty($oldData)){
-				$user_id = hikashop_loadUser();
-				if($user_id==$oldData->address_user_id){
-					$oldData->address_default = 1;
-					$addressClass->save($oldData);
-				}
-			}
 		}
-		$this->listing();
+
+		$status = 0;
+		$oldData = null;
+		$addressClass = hikashop_get('class.address');
+		$user_id = hikashop_loadUser();
+
+		if(!empty($newDefaultId))
+			$oldData = $addressClass->get($newDefaultId);
+
+		if(!empty($oldData) && $user_id == $oldData->address_user_id) {
+			$oldData->address_default = 1;
+			$type = hikaInput::get()->getString('address_type', '');
+			$status = $addressClass->save($oldData, 0, $type);
+		}
+
+		if(in_array($tmpl, array('ajax', 'raw'))) {
+			hikashop_cleanBuffers();
+			echo '{ret:'.(int)$status.'}';
+			exit;
+		}
+		return $this->listing();
 	}
 
 	public function save() {
@@ -149,7 +175,6 @@ class addressController extends hikashopController
 
 		$app = JFactory::getApplication();
 		$addressClass = hikashop_get('class.address');
-		$fieldClass = hikashop_get('class.field');
 		$task = hikaInput::get()->getVar('subtask', '');
 
 		if(!empty($task)) {
@@ -163,6 +188,31 @@ class addressController extends hikashopController
 			}
 			return $this->edit();
 		}
+
+		$formData = hikaInput::get()->get('address', array(), 'array');
+		if(!empty($formData))
+			return $this->saveLegacy();
+
+		$result = $addressClass->frontSaveForm();
+		if($result === false || (isset($result['id']) && $result['id'] === false)) {
+			if(!empty($result['error']))
+				hikaRegistry::set('address.error', $result['error']);
+			return $this->edit();
+		}
+
+		if(is_array($result)) {
+			hikaRegistry::set('previous_cid', @$result['previous_id']);
+			hikaRegistry::set('new_cid', @$result['id']);
+		} else {
+			hikaRegistry::set('new_cid', $result);
+		}
+		return $this->listing();
+	}
+
+	protected function saveLegacy() {
+		$app = JFactory::getApplication();
+		$addressClass = hikashop_get('class.address');
+		$fieldClass = hikashop_get('class.field');
 
 		$oldData = null;
 		$formData = hikaInput::get()->get('address', array(), 'array');
@@ -190,7 +240,6 @@ class addressController extends hikashopController
 				$message = 'alert(\''.addslashes($addressClass->message).'\');';
 
 			if(!HIKASHOP_J16) {
-				$app = JFactory::getApplication();
 				$session = JFactory::getSession();
 				$session->set('application.queue', $app->_messageQueue);
 			}

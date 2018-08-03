@@ -3,7 +3,7 @@ blueprints/gantry/theme/configuration.yaml	a0854a80c8b78af96c4373decbda5385
 blueprints/gantry/theme/details.yaml	dfdacb33d214d21c040018dcf0170049
 blueprints/menu/menu.yaml	97bfc9e993a9459303397d6be3a99cda
 blueprints/menu/menuitem.yaml	08be6856e2d7d9d5613bdfe578494eef
-css-compiled/g-admin.css	372eb0e7f9720e4df56f2e0574f5af3d
+css-compiled/g-admin.css	fe145b5d8486ca30b4db1c51ed844e61
 css-compiled/joomla-g-admin.css	1a508223be25b9dbb42e4199a3330a24
 fonts/roboto_bold_macroman/Roboto-Bold-webfont.eot	ecdd509cadbf1ea78b8d2e31ec52328c
 fonts/roboto_bold_macroman/Roboto-Bold-webfont.svg	375c4f3bd35840adee24a1535bbb2018
@@ -38,7 +38,7 @@ images/layouts/offline.png	62be3bedd74a07f5e038fe62accc4432
 images/placeholder.png	85a94268260d40f95f690d88c97178b7
 images/gantrylogo.png	83b6b9f4fcc3a651964d4dee8fe89bd7
 js/google-fonts.json	4747a6e3f9e4c74a5ea7962b9b086d1b
-js/main.js	95d7f8efd9f9ff699602de7890ae1b13
+js/main.js	f594af483b85513285f713ed5c307455
 js/tooltips.js	2462fb34ec347c0391c56569c1c5b419
 scss/admin/fields/_colorpicker.scss	96ea1c8ac356d1aab97b8b9c0e78f0d2
 scss/admin/fields/_filepicker.scss	2bb78a1b746b9d669af2dfd7a4d16933
@@ -61,9 +61,9 @@ scss/admin/_fields.scss	d1861d241d159ba2c578152d4f587871
 scss/admin/_fonts.scss	7310ece8ad6291d9613a0c7713819f2c
 scss/admin/_headers.scss	7b76051254a77b21a1279d24d6cd5e83
 scss/admin/_input-groups.scss	c5b616a51a7f19dc1a7cb08ac20c8fbf
-scss/admin/_layout-manager.scss	db5a46bb8ed6f710fde0fec18befbc82
+scss/admin/_layout-manager.scss	e1085155509428e9cdf7f326da78916d
 scss/admin/_main.scss	76fdb03cc818e57865392452bd7f2da0
-scss/admin/_menu.scss	64d52b974b31e2b240dcca50a741f11f
+scss/admin/_menu.scss	3ca979f33b64e5f87440c957fca44d34
 scss/admin/_modal.scss	9283ef74ae6effccc4c6fe967152dda4
 scss/admin/_navbar.scss	dcc1fd794500f7d20f3752b20fa96a69
 scss/admin/_overview.scss	19a0e2e726044c7227a2ef181e792ea6
@@ -76,7 +76,7 @@ scss/admin/_settings.scss	e99133517607982fb1cd9f4914986277
 scss/admin/_styles.scss	b7a6515df72095188a1d3d5b039427d2
 scss/admin/_toastr.scss	b3e2edd76420e9022be78ba96afcdf20
 scss/admin/_tooltips.scss	0cdef3373ddb990878e5b4ead4aaa2e0
-scss/admin/_typography.scss	a8aaff76ffe75ccd043d2ef13348a8ed
+scss/admin/_typography.scss	6ecfe93632f2d9569e887895cd12bf87
 scss/configuration/admin/_core.scss	65830b3608a204e106f9289c8f3479ba
 scss/configuration/admin/_layout.scss	dfcdc75fca14d358b67190e9e1176fb3
 scss/configuration/admin/_base.scss	5d01b8d0a4be67d4a94c2296db91a017

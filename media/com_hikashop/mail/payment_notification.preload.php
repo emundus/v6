@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 $app = JFactory::getApplication();
 $config = hikashop_config();
 $orderClass = hikashop_get('class.order');
+$productClass = hikashop_get('class.product');
 $imageHelper = hikashop_get('helper.image');
 if(hikashop_level(1)) {
 	$fieldsClass = hikashop_get('class.field');
@@ -27,18 +28,20 @@ if(!empty($Itemid)) {
 	$url_itemid = '&Itemid=' . $Itemid;
 }
 
+$data->cart = $orderClass->loadFullOrder($data->order_id,true,false);
+
 $order_url = $data->order_url;
 $mail_status = $data->mail_status;
 $customer = $data->customer;
-$url = $data->order->order_number;
+$url = $data->cart->order_number;
 
-$data->order->order_url = $order_url;
+$data->cart->order_url = $order_url;
 
 if($config->get('simplified_registration',0)!=2) {
 	$url = '<a href="'.$order_url.'">'. $url.'</a>';
 }
 
-$data->cart = $orderClass->loadFullOrder($data->order_id,true,false);
+
 $data->cart->coupon = new stdClass();
 $price = new stdClass();
 $tax = $data->cart->order_subtotal - $data->cart->order_subtotal_no_vat - $data->cart->order_discount_tax + $data->cart->order_shipping_tax + $data->cart->order_payment_tax;
@@ -59,10 +62,12 @@ $customer_name = @$customer->name;
 if(empty($customer_name))
 	$customer_name = @$data->cart->billing_address->address_firstname;
 
+
+
 $vars = array(
 	'LIVE_SITE' => HIKASHOP_LIVE,
 	'URL' => $order_url,
-
+	'ORDER_LINK' => HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$data->order_id,
 	'TPL_HEADER' => (bool)@$customer->user_cms_id,
 	'TPL_HEADER_URL' => $order_url,
 );
@@ -80,17 +85,22 @@ $texts = array(
 	'PRODUCT_TOTAL' => JText::_('HIKASHOP_TOTAL'),
 	'ADDITIONAL_INFORMATION' => JText::_('ADDITIONAL_INFORMATION'),
 
-	'ORDER_TITLE' => JText::_('YOUR_ORDER'),
-	'HI_CUSTOMER' => JText::sprintf('HI_CUSTOMER', $customer_name),
-	'ORDER_CHANGED' => JText::sprintf('ORDER_STATUS_CHANGED_TO', $url, $data->mail_status),
-	'ORDER_BEGIN_MESSAGE' => JText::sprintf('THANK_YOU_FOR_YOUR_ORDER_BEGIN', HIKASHOP_LIVE),
-	'ORDER_END_MESSAGE' => JText::sprintf('THANK_YOU_FOR_YOUR_ORDER', HIKASHOP_LIVE) . '<br/>' . JText::sprintf('BEST_REGARDS_CUSTOMER',$mail->from_name),
+	'ORDER_TITLE' => JText::_('HIKASHOP_ORDER'),
+	'HI_CUSTOMER' => JText::sprintf('HI_CUSTOMER', @$mail->to_name),
+	'ORDER_CHANGED' => JText::sprintf('ORDER_STATUS_CHANGED', $data->mail_status),
+	'ORDER_END_MESSAGE' => JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $data->order_number, HIKASHOP_LIVE),
+	'ORDER_BEGIN_MESSAGE' => JText::sprintf('ACCESS_ORDER_WITH_LINK', $vars['ORDER_LINK'], $vars['ORDER_LINK']),
+	'NOTIFICATION_MESSAGE' => @$data->mail_params,
 );
 $templates = array();
 
 $cartProducts = array();
 $cartFooters = array();
 if(!empty($data->cart->products)){
+
+	$products_ids = array();
+	foreach($data->cart->products as $item) { $products_ids[] = $item->product_id; }
+	$productClass->getProducts($products_ids);
 
 	$null = null;
 	$fields = null;
@@ -237,7 +247,7 @@ if(!empty($data->cart->products)){
 	}
 	$templates['PRODUCT_LINE'] = $cartProducts;
 
-	if(bccomp($data->order->order_discount_price,0,5) != 0 || bccomp($data->cart->order_shipping_price,0,5) != 0 || bccomp($data->cart->order_payment_price,0,5) != 0 || ($data->cart->full_total->prices[0]->price_value!=$data->cart->full_total->prices[0]->price_value_with_tax) || !empty($data->cart->additional)){
+	if(bccomp($data->cart->order_discount_price,0,5) != 0 || bccomp($data->cart->order_shipping_price,0,5) != 0 || bccomp($data->cart->order_payment_price,0,5) != 0 || ($data->cart->full_total->prices[0]->price_value!=$data->cart->full_total->prices[0]->price_value_with_tax) || !empty($data->cart->additional)){
 		$cartFooters[] = array(
 			'NAME' => JText::_('SUBTOTAL'),
 			'VALUE' => $currencyHelper->format($subtotal,$data->cart->order_currency_id)
@@ -338,22 +348,20 @@ if(!empty($data->cart->order_payment_method)) {
 }
 
 if(!empty($data->cart->order_shipping_id)) {
+	$shippingClass = hikashop_get('class.shipping');
 	if(!empty($data->cart->order_shipping_method)) {
 		if(!is_numeric($data->cart->order_shipping_id)){
 			$shipping_name = $shippingClass->getShippingName($data->cart->order_shipping_method, $data->cart->order_shipping_id);
 			$vars['SHIPPING'] = $shipping_name;
 			$vars['SHIPPING_TXT'] = $vars['SHIPPING'];
 		}else{
-			$shippingClass = hikashop_get('class.shipping');
 			$shipping = $shippingClass->get($data->cart->order_shipping_id);
 			$vars['SHIPPING'] = $shipping->shipping_name;
 			$vars['SHIPPING_TXT'] = $vars['SHIPPING'];
-			unset($shippingClass);
 		}
 	} else {
 		$shippings_data = array();
 		$shipping_ids = explode(';', $data->cart->order_shipping_id);
-		$shippingClass = hikashop_get('class.shipping');
 		foreach($shipping_ids as $key) {
 			$shipping_data = '';
 			list($k, $w) = explode('@', $key);
@@ -387,7 +395,6 @@ if(!empty($data->cart->order_shipping_id)) {
 			}
 			$shippings_data[] = $shipping_data;
 		}
-		unset($shippingClass);
 		if(!empty($shippings_data)) {
 			$vars['SHIPPING'] = '<ul><li>'.implode('</li><li>', $shippings_data).'</li></ul>';
 			$vars['SHIPPING_TXT'] = ' - ' . implode("\r\n - ", $shippings_data);

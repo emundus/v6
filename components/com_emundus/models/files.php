@@ -18,7 +18,8 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 jimport('joomla.application.component.model');
 require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'files.php');
 require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'list.php');
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
 /**
  * Class EmundusModelFiles
@@ -70,7 +71,11 @@ class EmundusModelFiles extends JModelLegacy
         $current_menu = $menu->getActive();
 
         $h_files = new EmundusHelperFiles;
+        $m_users = new EmundusModelUsers;
 
+        $groupAssoc = array_filter($m_users->getUserGroupsProgrammeAssoc($current_user->id));
+        $progAssoc = array_filter($this->getAssociatedProgrammes($current_user->id));
+        $this->code = array_merge($groupAssoc, $progAssoc);
         /*
         ** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
         */
@@ -1988,7 +1993,7 @@ where 1 order by ga.fnum asc, g.title';
         try
         {
             $db = JFactory::getDBO();
-            $query = 'select u.name, cc.fnum, cc.applicant_id, c.*
+            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, c.*
                         from #__emundus_campaign_candidature as cc
                         left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join
                         #__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);

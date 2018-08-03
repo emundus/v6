@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -80,7 +80,12 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		if(!empty($data) && !empty($data['address_' . (int)$params['src']['step'] . '_' . (int)$params['src']['pos']])) {
 			$address_data = $data['address_' . (int)$params['src']['step'] . '_' . (int)$params['src']['pos']];
 			$new_address_type = @$data['address_type_' . (int)$params['src']['step'] . '_' . (int)$params['src']['pos']];
-			return $this->saveAddress($controller, $params, $address_data, $new_address_type);
+
+			$both_types = null;
+			if(!empty($new_address_type) && !empty($data['address_selecttype_' . (int)$params['src']['step'] . '_' . (int)$params['src']['pos']]))
+				$both_types = (int)@$data['address_bothtypes_' . (int)$params['src']['step'] . '_' . (int)$params['src']['pos']];
+
+			return $this->saveAddress($controller, $params, $address_data, $new_address_type, $both_types);
 		}
 
 		$checkout = hikaInput::get()->get('checkout', array(), 'array');
@@ -94,7 +99,7 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		return true;
 	}
 
-	private function saveAddress(&$controller, &$params, $address_data, $new_address_type = '') {
+	private function saveAddress(&$controller, &$params, $address_data, $new_address_type = '', $both_types = null) {
 		$addressClass = hikashop_get('class.address');
 
 		$old_address = new stdClass();
@@ -107,8 +112,13 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		$fieldClass = hikashop_get('class.field');
 		$type = 'address';
 		$formdata = array('address' => &$address_data);
+
+		$app = JFactory::getApplication();
+		$old_messages = $app->getMessageQueue();
+
+
 		$null = null;
-		$address = $fieldClass->getInput($type, $null, 'ret', $formdata, false, 'frontcomp');
+		$address = $fieldClass->getFilteredInput($type, $null, 'ret', $formdata, false, 'frontcomp');
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$ret = true;
@@ -121,10 +131,20 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		if($ret) {
+			if(isset($formdata['address']) && !empty($formdata['address']['address_id']))
+				$address->address_id = (int)$formdata['address']['address_id'];
+
 			$address->address_published = 1;
 			if(!empty($old_address) && !empty($old_address->address_default))
 				$address->address_default = 1;
 			$address->address_user_id = hikashop_loadUser(false);
+
+			if(!empty($new_address_type) && $both_types !== null) {
+				if($both_types)
+					$address->address_type = 'both';
+				else
+					$address->address_type = $new_address_type;
+			}
 
 			$ret = $addressClass->save($address);
 		}
@@ -133,6 +153,17 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 
 			if(!empty($addressClass->message))
 				$checkoutHelper->addMessage('address.error', array('msg' => $addressClass->message, 'type' => 'error'));
+
+			$new_messages = $app->getMessageQueue();
+			if(count($old_messages) < count($new_messages)) {
+				$new_messages = array_slice($new_messages, count($old_messages));
+				foreach($new_messages as $i => $msg) {
+					$checkoutHelper->addMessage('address.joomla_error_' . $i, array(
+						'msg' => $msg['message'],
+						'type' => $msg['type']
+					));
+				}
+			}
 
 			$new_address_data = $_SESSION['hikashop_'.$type.'_data'];
 			$_SESSION['hikashop_'.$type.'_data'] = null;
@@ -293,6 +324,26 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 				$checkout['address']['new'] = 'billing';
 			} elseif(isset($checkout['address']['shipping']) && $checkout['address']['shipping'] == 0) {
 				$checkout['address']['new'] = 'shipping';
+			}else{
+				$billing_addresses = false;
+				$shipping_addresses = false;
+				foreach($addresses['data'] as $address) {
+					if(empty($address->address_type) || $address->address_type == 'both') {
+						$billing_addresses = true;
+						$shipping_addresses = true;
+						break;
+					}
+					if($address->address_type == 'billing')
+						$billing_addresses = true;
+					elseif($address->address_type == 'shipping')
+						$shipping_addresses = true;
+				}
+				if($params['show_billing'] && $params['show_shipping'] && !$billing_addresses && !$shipping_addresses )
+					$checkout['address']['new'] = 'billing';
+				elseif($params['show_billing'] && !$billing_addresses)
+					$checkout['address']['new'] = 'billing';
+				elseif($params['show_shipping'] && !$shipping_addresses)
+					$checkout['address']['new'] = 'shipping';
 			}
 
 			if(!empty($checkout['address']['new'])) {

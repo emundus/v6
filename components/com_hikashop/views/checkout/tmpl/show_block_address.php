@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -42,8 +42,11 @@ if(!empty($this->options['display'])) {
 			<fieldset class="hika_address_field hikashop_checkout_checkout_address_block">
 <?php
 		if($this->options['edit_address'] === true) {
+			$label = 'HIKASHOP_NEW_ADDRESS';
+			if(!empty($this->options['new_address_type']) && in_array($this->options['new_address_type'], array('billing','shipping')))
+				$label = 'HIKASHOP_NEW_'.strtoupper($this->options['new_address_type']).'_ADDRESS';
 ?>
-				<legend><?php echo JText::_('HIKASHOP_NEW_ADDRESS'); ?></legend>
+				<legend><?php echo JText::_($label); ?></legend>
 <?php
 		} else {
 ?>
@@ -88,6 +91,20 @@ if(!empty($this->options['display'])) {
 	</div>
 <?php
 		}
+		if(!empty($this->options['new_address_type'])) {
+?>
+	<div class="hkform-group control-group hikashop_checkout_address_<?php echo $fieldname;?>" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_'.$fieldname; ?>">
+		<div class="<?php echo $labelcolumnclass; ?>"></div>
+		<div class="<?php echo $inputcolumnclass;?>">
+			<input type="hidden" name="data[address_selecttype_<?php echo $this->step . '_' . $this->module_position; ?>]" value="1" />
+			<label><input type="checkbox" checked="checked" name="data[address_bothtypes_<?php echo $this->step . '_' . $this->module_position; ?>]" value="1"> <?php
+				$other = ($this->options['new_address_type'] == 'billing') ? 'shipping' : 'billing';
+				echo JText::_('HIKASHOP_ALSO_'.strtoupper($other).'_ADDRESS');
+			?></label>
+		</div>
+	</div>
+<?php
+		}
 ?>
 </fieldset>
 <?php
@@ -120,6 +137,10 @@ if(!empty($this->options['display'])) {
 		} elseif($this->options['address_selector'] == 2) {
 			$values = array();
 			foreach($this->cart_addresses['data'] as $k => $address) {
+				if(empty($address))
+					continue;
+				if(!empty($address->address_type) && !in_array($address->address_type, array('both', 'billing')))
+					continue;
 				$addr = $this->addressClass->miniFormat($address);
 				$values[] = JHTML::_('select.option', $k, $addr);
 			}
@@ -143,6 +164,9 @@ if(!empty($this->options['display'])) {
 <?php
 		} else { // address_selector : 0 or 1
 			foreach($this->cart_addresses['data'] as $k => $address) {
+				if(!empty($address->address_type) && !in_array($address->address_type, array('both', 'billing')))
+					continue;
+
 				$update_url = 'address&task=edit&cid='.(int)$address->address_id;
 				$delete_url = 'address&task=delete&cid='.(int)$address->address_id;
 
@@ -200,6 +224,10 @@ if(!empty($this->options['display'])) {
 			} elseif($this->options['address_selector'] == 2) {
 				$values = array();
 				foreach($this->cart_addresses['data'] as $k => $address) {
+					if(empty($address))
+						continue;
+					if(!empty($address->address_type) && !in_array($address->address_type, array('both', 'shipping')))
+						continue;
 					$addr = $this->addressClass->miniFormat($address);
 					$values[] = JHTML::_('select.option', $k, $addr);
 				}
@@ -223,6 +251,8 @@ if(!empty($this->options['display'])) {
 <?php
 			} else {
 				foreach($this->cart_addresses['data'] as $k => $address) {
+					if(!empty($address->address_type) && !in_array($address->address_type, array('both', 'shipping')))
+						continue;
 					$update_url = 'address&task=edit&cid='.(int)$address->address_id;
 					$delete_url = 'address&task=delete&cid='.(int)$address->address_id;
 

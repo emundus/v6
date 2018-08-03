@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -104,8 +104,14 @@ $doc->addScriptDeclaration($js);
 <?php }
 		if(!empty($row->name))
 			echo $row->name;
-		else
-			echo JText::_(strtoupper($row->file));
+		else {
+			$key = strtoupper($row->file);
+			$trans = JText::_($key.'_EMAIL');
+			if($trans == $key.'_EMAIL') {
+				$trans = JText::_($key);
+			}
+			echo $trans;
+		}
 
 		if($this->manage && hikashop_level(2)) { ?>
 					</a>

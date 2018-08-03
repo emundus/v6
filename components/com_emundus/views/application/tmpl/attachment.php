@@ -52,10 +52,10 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                               <th>'. JText::_('ATTACHMENT_DESCRIPTION').'</th>
                               <th>'. JText::_('CAMPAIGN').'</th>
                               <th>'. JText::_('ACADEMIC_YEAR').'</th>
+                              <th>'. JText::_('VALIDATION_STATE').'</th>
                             </tr>
                           </thead><tbody>';
                     $i = 1;
-
                     foreach($this->userAttachments as $attachment)
                     {
                         $path = $attachment->lbl == "_archive"?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student_id.'/'.$attachment->filename;
@@ -65,7 +65,25 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                         if ($can_export)
                             $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
-
+                        
+                        $class = "";
+                        $color = "";
+                        if($attachment->is_validated == -2){
+                            $class = "glyphicon-unchecked";
+                            $color = "gray";
+                        }
+                        if($attachment->is_validated == null){
+                            $class = "glyphicon-unchecked";
+                            $color = "gray";
+                        }
+                        elseif($attachment->is_validated == 1){
+                            $class = "glyphicon-ok";
+                            $color = "green";
+                        }
+                        else{
+                            $class = "glyphicon-warning-sign";
+                            $color = "orange";
+                        }
                         echo '<tr>
                                   <td>'.$checkbox.' '.$i.'</td>
                                   <td><a href="'.JURI::base().$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
@@ -73,10 +91,10 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                   <td>'.$attachment->description.'</td>
                                   <td>'.$attachment->campaign_label.'</td>
                                   <td>'.$attachment->year.'</td>
+                                  <td><p class="is-validated" id="'.$attachment->aid.'"><span class="glyphicon '.$class.'" style="color:'.$color.'"></span></p></td>
                                 </tr>';
 
                         $i++;
-                        //}
                     }
                     echo '</tbody></table>';
                     if(count($this->userAttachments) > 0) {
@@ -308,4 +326,41 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             alert("<?php //echo JText::_('YOU_MUST_SELECT_ATTACHMENT')?>");
         }*/
     });
+
+    $(".is-validated").click(function () { 
+        var id = $(this).attr("id")
+        var state = -2
+        if($("#"+id+" span").hasClass("glyphicon-unchecked")){
+            $("#"+id+" span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
+            state = 1
+        }else{
+            if($("#"+id+" span").hasClass("glyphicon-ok")){
+                $("#"+id+" span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange"); 
+                state = 0     
+            }else{
+                if($("#"+id+" span").hasClass("glyphicon-warning-sign")){
+                    $("#"+id+" span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");  
+                    state = -2
+                }
+            } 
+        }
+        $.ajax({
+            type:'post',
+            url:"index.php?option=com_emundus&controller=application&task=attachment_validation&fnum=<?php echo $this->fnum; ?>",
+            dataType:'json',
+            data:({state: state, att_id: id}),
+
+            success: function(result) {
+                if(result.res){
+                    console.log(res)
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR.responseText);
+            }
+        });
+
+                      
+});
 </script>

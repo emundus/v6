@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1768,6 +1768,7 @@ class hikashopImportHelper
 	function _insertProducts(&$products){
 		$this->_insertOneTypeOfProducts($products,'main');
 
+		$unset = array();
 		foreach($products as $k => $variant){
 			if($variant->product_type!='main'){
 				$parent_code = $variant->product_parent_id;
@@ -1781,9 +1782,15 @@ class hikashopImportHelper
 				if(!empty($this->codes[$parent_code])){
 					$products[$k]->product_parent_id = @$this->codes[$parent_code]->product_id;
 				}
+
 				if(empty($products[$k]->product_parent_id)){
-					unset($products[$k]->product_parent_id);
+					$unset[] = $k;
 				}
+			}
+		}
+		if(!empty($unset)) {
+			foreach($unset as $u) {
+				unset($products[$u]);
 			}
 		}
 

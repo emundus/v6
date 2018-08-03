@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,7 +38,7 @@ window.hikashop.toggleCC = function(type,hide) {
 	document.getElementById('hikashop_'+type+'_input').focus();
 }
 
-window.hikashop.ready(function(){ 
+window.hikashop.ready(function(){
 	window.hikashop.toggleCC('cc',<?php echo $hide_cc; ?>);
 	window.hikashop.toggleCC('bcc',<?php echo $hide_bcc; ?>);
 });
@@ -135,5 +135,6 @@ window.hikashop.ready(function(){
 							</td>
 						</tr>
 					</table>
+					<input type="hidden" name="data[order][mail][reply_email]" value="<?php echo $this->element->mail->reply_email;?>" />
 					<input type="hidden" name="data[order][mail][html]" value="<?php echo $this->element->mail->html;?>" />
 					<input type="hidden" name="data[order][mail][mail_name]" value="<?php echo $this->element->mail->mail_name;?>" />

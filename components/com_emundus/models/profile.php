@@ -607,6 +607,8 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
+		$app			= JFactory::getApplication();
+		
 		$m_users 		= new EmundusModelUsers;
 		$current_user 	= JFactory::getUser($user_id);
 		$profile 		= $this->getProfileByApplicant($current_user->id);
@@ -632,10 +634,11 @@ class EmundusModelProfile extends JModelList
 			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
 			$p 			= $this->isProfileUserSet($current_user->id);
-			$profile 	= $this->getProfileByCampaign($campaign["id"]);
 
 			if (empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
 				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
+			
+			$profile 	= $this->getProfileByCampaign($campaign["id"]);
 
 			$emundus_user->profile 				  = $profile["profile_id"];
 			$emundus_user->profile_label          = $profile["label"];

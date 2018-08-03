@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -162,9 +162,13 @@ class hikashopBridgePaginationHelper extends JPagination {
 		return $html;
 	}
 
-	function getListFooter($minimum = 20) {
+	function getListFooter($minimum = -1) {
+		$limit = $minimum;
+		if($limit == -1)
+			$limit = !empty($this->limit) ? $this->limit : 20;
+
 		$list = array(
-			'limit'	=> $this->limit,
+			'limit'	=> $limit,
 			'limitstart' => $this->limitstart,
 			'total' => $this->total,
 			'limitfield' => $this->getLimitBox($minimum),
@@ -193,8 +197,12 @@ class hikashopBridgePaginationHelper extends JPagination {
 		return $this->_list_footer($list);
 	}
 
-	function getLimitBox($minimum = 20) {
+	function getLimitBox($minimum = -1) {
 		$limits = array ();
+		if($minimum == -1) {
+			$app = JFactory::getApplication();
+			$minimum = $app->getCfg('list_limit');
+		}
 		for ($i = $minimum; $i <= $minimum*5; $i += $minimum) {
 			$limits[] = JHTML::_('select.option', $i);
 		}

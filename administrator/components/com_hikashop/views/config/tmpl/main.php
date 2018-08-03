@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1806011004]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1807311515]
 		</td>
 	</tr>
 	<tr>
@@ -138,6 +138,12 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('discount_before_tax');?>><?php echo JText::_('APPLY_DISCOUNTS'); ?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', "config[discount_before_tax]",'',$this->config->get('discount_before_tax'),JTEXT::_('BEFORE_TAXES'),JTEXT::_('AFTER_TAXES'));
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('coupon_before_tax');?>><?php echo JText::_('APPLY_COUPONS'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', "config[coupon_before_tax]",'',$this->config->get('coupon_before_tax'),JTEXT::_('BEFORE_TAXES'),JTEXT::_('AFTER_TAXES'));
 		?></td>
 	</tr>
 
@@ -339,7 +345,18 @@ echo $this->leftmenu(
 			}
 		?></td>
 	</tr>
-
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('order_ip');?>><?php echo JText::_('LOG_IP_ADDRESS'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[order_ip]', '', $this->config->get('order_ip', 1));
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('history_ip');?>><?php echo JText::_('LOG_HISTORY_IP_ADDRESS'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[history_ip]', '', $this->config->get('history_ip', 1));
+		?></td>
+	</tr>
 </table>
 	</div></div>
 </div>

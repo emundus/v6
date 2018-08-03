@@ -7,6 +7,8 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.plugin.plugin' );
 
+use Joomla\CMS\Access\Access as JAccess;
+
 class plgSystemSecuritycheckpro extends JPlugin{
 	private $pro_plugin = null;
 	private $geoblock_config = null;
@@ -773,7 +775,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		// Chequeamos si la IP tiene un formato válido
 		$ip_valid = filter_var($attack_ip, FILTER_VALIDATE_IP);
 		
-		// Sanitizamos la entrada y la convertimos a BIGINT
+		// Sanitizamos la entrada
 		$attack_ip = $db->escape($attack_ip);
 				
 		// Validamos si el valor devuelto es una dirección IP válida
@@ -787,6 +789,177 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		}
 	}
 	
+	/* Función que chequea la sesión para usar la funcionalidad otp de Securitycheck Pro */
+	private function check_environment($session_username) {
+		$is_ok = true;
+		
+		$app = JFactory::getApplication();
+		
+		//Si no estamos en el backend salimos
+		if ( !$app->isAdmin() ) {			
+			$is_ok = false;
+		}
+		
+		// El usuario logado debe coincidir con el almacenado en la sesión o ser el invitado (antes de logarse en el backend)
+		$currentUser = JFactory::getUser();
+				
+		if ( !$currentUser->guest && (strtoupper($currentUser->username) != strtoupper($session_username)) ) {
+			$is_ok = false;
+		}
+		
+		return $is_ok;
+	}
+	
+	/* Función que obtiene el id de un usuario a través de la variable pasada como argumento. El usuario no puede estar bloqueado. */
+	private function get_user_id($username) {
+		
+		if ( empty($username) ) {
+			return null;
+		}
+		
+		try {
+			// Get a database object
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true)
+				->select('id')
+				->from('#__users')
+				->where('username=' . $db->quote($username))
+				->where($db->qn('block') . ' = ' . $db->q(0));
+
+			$db->setQuery($query);
+			$userID = $db->setQuery($query)->loadResult();
+		} catch (Exception $e) {
+			return null;
+		}
+		
+		return $userID;
+		
+	}
+	
+	/* Función que chequea si la url usa la función otp de Securitycheck Pro para desbloquear el acceso */
+	private function check_otp_params() {
+		$is_otp = false;
+		
+		$params = JComponentHelper::getParams('com_securitycheckpro');
+		$otp_enabled = $params->get('otp',1);
+		
+		// Si la funcionalidad OTP está habilitada realizamos las secuencia
+		if ( $otp_enabled ) {		
+			$session = JFactory::getSession();				
+			$session_username = $session->get('otp_username', '', 'com_securitycheckpro');
+					
+			if ( empty($session_username) ) {
+					
+				$jinput = JFactory::getApplication()->input;
+				$url_username = trim($jinput->get('username','','username'));
+				$url_otp = $jinput->get('otp','','string');
+						
+				$userID = self::get_user_id($url_username);
+					
+				if ( !empty($userID) ) {				
+					$user = JFactory::getUser($userID);
+
+					if ( $user->authorise('core.admin') ) {
+						$check = self::match_otps($userID,$url_otp);
+								
+						if ( $check ) {					
+							$session->set('otp_username', $url_username, 'com_securitycheckpro');
+						}
+					}
+				}
+			} else {
+				$is_ok = self::check_environment($session_username);				
+				if ( $is_ok ) {
+					$is_otp = true;
+				}
+			}
+		}
+		
+		return $is_otp;
+	
+	}
+	
+	/* Función que chequea si el otp introducido por el usuario coincide con el de Google */
+	private function match_otps($userID,$url_otp) {
+		
+		if ( empty($url_otp) ) {
+			// The url_otp is empty
+			return false;
+		}
+		
+		$methods = JAuthenticationHelper::getTwoFactorMethods();
+
+		if (count($methods) <= 1) {
+			// No two factor authentication method is enabled
+			return false;
+		}
+		
+		if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_users/models', 'UsersModel');
+
+			// @var UsersModelUser $model
+			$model = JModelLegacy::getInstance('User', 'UsersModel', array('ignore_request' => true));
+		} else {
+			$model = new UserModel(array('ignore_request' => true));
+		}
+							
+		$otpConfig = $model->getOtpConfig($userID);
+		
+		// Check if the user has enabled two factor authentication
+		if (empty($otpConfig->method) || ($otpConfig->method === 'none')) {
+			return false;
+		} else {
+			if ( $otpConfig->method === 'totp' ) {
+				// El usuario tiene configurado Google Authenticator TOTP Plugin como 2FA
+				// Create a new TOTP class with Google Authenticator compatible settings
+				$totp = new FOFEncryptTotp(30, 6, 10);
+				$code = $totp->getCode($otpConfig->config['code']);
+									
+				$check = $code === $url_otp;
+				
+				/*
+				 * If the check fails, test the previous 30 second slot. This allow the
+				 * user to enter the security code when it's becoming red in Google
+				 * Authenticator app (reaching the end of its 30 second lifetime)
+				 */
+				if (!$check)
+				{
+					$time = time() - 30;
+					$code = $totp->getCode($otpConfig->config['code'], $time);
+					$check = $code === $url_otp;
+				}
+
+				/*
+				 * If the check fails, test the next 30 second slot. This allows some
+				 * time drift between the authentication device and the server
+				 */
+				if (!$check)
+				{
+					$time = time() + 30;
+					$code = $totp->getCode($otpConfig->config['code'], $time);
+					$check = $code === $url_otp;
+				}
+				
+				return $check;
+			} else if ( $otpConfig->method === 'yubikey' ) {
+				// El usuario tiene configurado Yubikey como 2FA
+				// Check if the Yubikey starts with the configured Yubikey user string
+				$yubikey_valid = $otpConfig->config['yubikey'];
+				$yubikey       = substr($url_otp, 0, -32);
+
+				$check = $yubikey === $yubikey_valid;
+
+				if ($check) {
+					require_once JPATH_ROOT. DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'twofactorauth' . DIRECTORY_SEPARATOR . 'yubikey' . DIRECTORY_SEPARATOR . 'yubikey.php';
+					$yubimodel = new PlgTwofactorauthYubikey();
+					$check = $yubimodel->validateYubikeyOtp($url_otp);
+				}
+				return $check;				
+			}				
+		}								
+				
+	}
+	
 	/* Acciones a realizar si la IP está en la lista negra dinámica*/
 	function acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable){
 		/* Cargamos el lenguaje del sitio */
@@ -794,20 +967,25 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
 		
 		/* Actualizamos la lista dinámica */
-			$this->pasar_a_historico($dynamic_blacklist_time);
+		$this->pasar_a_historico($dynamic_blacklist_time);
 		
-			$aparece_lista_negra_dinamica = $this->chequear_ip_en_lista_dinamica($attack_ip,$dynamic_blacklist_counter);
+		$aparece_lista_negra_dinamica = $this->chequear_ip_en_lista_dinamica($attack_ip,$dynamic_blacklist_counter);
 						
-			if ( $aparece_lista_negra_dinamica ) {
+		if ( $aparece_lista_negra_dinamica ) {
 			
-				/* Grabamos una entrada en el log con el intento de acceso de la ip prohibida */
+			// Url con otp de Securitycheck Pro?
+			$is_otp = self::check_otp_params();
+				
+			if ( !$is_otp ) {			
+				// Grabamos una entrada en el log con el intento de acceso de la ip prohibida 
 				$access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
 				$this->grabar_log($logs_attacks,$attack_ip,'IP_BLOCKED_DINAMIC',$access_attempt,'IP_BLOCKED_DINAMIC',$request_uri,$not_applicable,'---','---');
-				
-				/* Redirección a nuestra página de "Prohibido" */
+								
+				// Redirección a nuestra página de "Prohibido" 
 				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
-				$this->redirection(403,$error_403,true);	
-			}		
+				$this->redirection(403,$error_403,true);
+			}
+		}		
 	}
 	
 	/* Acciones a realizar si la ip está en la lista negra*/
@@ -818,16 +996,24 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
 		
 		$add_access_attempts_logs = $this->pro_plugin->getValue('add_access_attempts_logs',0,'pro_plugin');
+		
+		// Url con otp de Securitycheck Pro?
+		self::check_otp_params();
+		
+		// Url con otp de Securitycheck Pro?
+		$is_otp = self::check_otp_params();
 				
-		/* Grabamos una entrada en el log con el intento de acceso de la ip prohibida si está seleccionada la opción para ello */
-		if ($add_access_attempts_logs) {
-			$access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
-			$this->grabar_log($logs_attacks,$attack_ip,'IP_BLOCKED',$access_attempt,'IP_BLOCKED',$request_uri,$not_applicable,'---','---');
+		if ( !$is_otp ) {				
+			// Grabamos una entrada en el log con el intento de acceso de la ip prohibida si está seleccionada la opción para ello
+			if ($add_access_attempts_logs) {
+				$access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
+				$this->grabar_log($logs_attacks,$attack_ip,'IP_BLOCKED',$access_attempt,'IP_BLOCKED',$request_uri,$not_applicable,'---','---');
+			}
+				
+			// Redirección a nuestra página de "Prohibido"
+				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
+				$this->redirection(403,$error_403,true);	
 		}
-			
-		/* Redirección a nuestra página de "Prohibido" */
-			$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
-			$this->redirection(403,$error_403,true);	
 	}
 	
 	/* Opciones de redirección: página de error (de Joomla o personalizada) o rechazar la conexión. El parámetro blacklist indica si venimos de una lista negra; en ese caso, no podemos hacer la redirección ya que entraríamos en un bucle infinito. Lo que hacemos es mostrar el código que haya establecido el administrador */
@@ -1056,11 +1242,11 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		// Creamos el nuevo objeto query
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
+		
 				
 		if ( $user->guest ) {
-			/* El usuario no se ha logado; no hacemos nada */			
-		} else {
-			
+			/* El usuario no se ha logado; no hacemos nada */						
+		} else {			
 			/* En algún caso no se pueden determinar los grupos a los que pertenece el usuario. Controlamos que la variable no esté vacía */
 			if ( !is_null($user_groups) ) {
 				// Chequeamos si el usuario pertenece a un grupo al que haya que aplicar la protección
@@ -1078,7 +1264,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			$db->setQuery( $query );
 			$result = $db->loadResult();
 						
-			if ( ($result > 1) && ($apply_to_user) ) {  // Ya existe más de una sesión activa del usuario y el usuario está incluido en un grupo al que hay que aplicar la protección
+			if ( ($result > 1) && ($apply_to_user) ) {  // Ya existe más de una sesión activa del usuario y el usuario está incluido en un grupo al que hay que aplicar la protección				
 				if ($session_protection_active){
 					/*Cerramos todas las sesiones activas del usuario, tanto del frontend (clientid->0) como del backend (clientid->1); este código es necesario porque no queremos modificar los archivos de Joomla , pero esta comprobación podría incluirse en la función onUserLogin*/
 					$mainframe= JFactory::getApplication();
@@ -1151,11 +1337,16 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			foreach ( $permissions_to_check as $key => $value ){
 				$public_acl = JAccess::checkGroup($public_group_id, $key);
 				if ($public_acl) {
-					$app->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', JText::_('COM_SECURITYCHECKPRO_PUBLIC'), JText::_($value)),'error');
+					if ( in_array($app->getName(),array('administrator','admin')) ) {
+						$app->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', JText::_('COM_SECURITYCHECKPRO_PUBLIC'), JText::_($value)),'error');
+					}
 				}
+				
 				$guest_acl = JAccess::checkGroup($guest_acl_security, $key);
 				if ($guest_acl) {
-					$app->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', JText::_('COM_SECURITYCHECKPRO_GUEST'), JText::_($value)),'error');
+					if ( in_array($app->getName(),array('administrator','admin')) ) {
+						$app->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', JText::_('COM_SECURITYCHECKPRO_GUEST'), JText::_($value)),'error');
+					}
 				}
 			}			
 		}				
@@ -1439,19 +1630,31 @@ class plgSystemSecuritycheckpro extends JPlugin{
 				
 		if(($geo["continent_code"]) && !empty($continents)) {
 			// Si el continente se encuentra en la lista de bloqueados, mostramos un error 403
-			if(in_array($geo["continent_code"], $continents)) {			
-				$this->grabar_log($logs_attacks,$ip,'IP_BLOCKED',$lang->_('COM_SECURITYCHECKPRO_GEOBLOCK_LABEL'),'IP_BLOCKED',$request_uri,$not_applicable,'---','---');
-				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
-				$this->redirection(403,$error_403);				
+			if(in_array($geo["continent_code"], $continents)) {	
+				
+				// Url con otp de Securitycheck Pro?
+				$is_otp = self::check_otp_params();
+				
+				if ( !$is_otp ) {
+					$this->grabar_log($logs_attacks,$ip,'IP_BLOCKED',$lang->_('COM_SECURITYCHECKPRO_GEOBLOCK_LABEL'),'IP_BLOCKED',$request_uri,$not_applicable,'---','---');
+					$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
+					$this->redirection(403,$error_403,true);	
+				}							
 			}
 		}
 
 		if(($geo["country_code"]) && !empty($countries)) {
 			// Si el país se encuentra en la lista de bloqueados, mostramos un error 403
 			if(in_array($geo["country_code"], $countries)) {
-				$this->grabar_log($logs_attacks,$ip,'IP_BLOCKED',$lang->_('COM_SECURITYCHECKPRO_GEOBLOCK_LABEL'),'IP_BLOCKED',$request_uri,$not_applicable,'---','---');
-				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
-				$this->redirection(403,$error_403);					
+				
+				// Url con otp de Securitycheck Pro?
+				$is_otp = self::check_otp_params();
+				
+				if ( !$is_otp ) {
+					$this->grabar_log($logs_attacks,$ip,'IP_BLOCKED',$lang->_('COM_SECURITYCHECKPRO_GEOBLOCK_LABEL'),'IP_BLOCKED',$request_uri,$not_applicable,'---','---');
+					$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
+					$this->redirection(403,$error_403,true);					
+				}
 			}
 		}
 				
@@ -1886,7 +2089,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP);
 			// Si la ip no es válida entonces bloqueamos la petición y mostramos un error 403
 			if ( !$ip_valid ) {
-				/* Cargamos el lenguaje del sitio */
+				// Cargamos el lenguaje del sitio 
 				$lang = JFactory::getLanguage();
 				$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
 				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
@@ -1915,7 +2118,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 				$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP);
 				// Si la ip no es válida entonces bloqueamos la petición y mostramos un error 403
 				if ( !$ip_valid ) {
-					/* Cargamos el lenguaje del sitio */
+					// Cargamos el lenguaje del sitio
 					$lang = JFactory::getLanguage();
 					$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
 					$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
@@ -1924,7 +2127,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			}
 			
 			// Devolvemos el resultado
-			return $clientIpAddress;	
+			return $clientIpAddress;			
 		}
 	}
 	

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -156,7 +156,7 @@ class plgSystemHikashopuser extends JPlugin {
 				return;
 			$oldUser = null;
 			$fieldsClass = hikashop_get('class.field');
-			$element = $fieldsClass->getInput('user', $oldUser);
+			$element = $fieldsClass->getFilteredInput('user', $oldUser);
 			if(!empty($element)) {
 				foreach($element as $key => $value) {
 					$hikaUser->$key = $value;
@@ -251,9 +251,9 @@ class plgSystemHikashopuser extends JPlugin {
 		if(empty($hika_user_id))
 			return true;
 
-		if($options !== null)
+		if($options !== null) {
 			$this->moveCarts($hika_user_id);
-		else{
+		} else {
 			$db = JFactory::getDBO();
 			$query = 'UPDATE #__hikashop_cart SET session_id = \'\' WHERE user_id = '.(int)$hika_user_id.' AND cart_type = \'cart\';';
 			$db->setQuery($query);

@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.4.0
+ * @version    3.5.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -975,6 +975,7 @@ div.hikashop_messages {
 div.hikashop_messages.hikashop_warning { background-color:#EFE7B8; border-color:#F0DC7E; color:#CC0000; }
 div.hikashop_messages.hikashop_success { background-color:#CCFFBB; border-color:#00AA00; color:#00AA00; }
 div.hikashop_messages.hikashop_info    { background-color:#C3D2E5; border-color:#84A7DB; color:#0055BB; }
+div.hikashop_messages.hikashop_notice  { background-color:#C3D2E5; border-color:#84A7DB; color:#0055BB; }
 div.hikashop_messages.hikashop_error   { background-color:#E6C0C0; border-color:#DE7A7B; color:#CC0000; }
 
 div.hikashop_messages ul { margin:0px; padding:7px; }
@@ -1105,4 +1106,8 @@ div.hikashop_filter_collapsable_content_mobile {
 	.hika_toolbar .btnIcon, div.hika_toolbar .hkdropdown-icon {
 		float: left !important;
 	}
+}
+
+.hikashop_order_main_table .key {
+	text-align: right;
 }

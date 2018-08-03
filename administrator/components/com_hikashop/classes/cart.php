@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -471,6 +471,7 @@ class hikashopCartClass extends hikashopClass {
 
 					unset($i['product_parent_id']);
 					unset($i['product_type']);
+					unset($i['extra']);
 
 					if(isset($i['cart_product_parent_id']) && substr($i['cart_product_parent_id'], 0, 1) == 'p')
 						unset($i['cart_product_parent_id']);
@@ -657,16 +658,19 @@ class hikashopCartClass extends hikashopClass {
 		$tax_zone_id = 0;
 
 		if($cart->cart_type != 'wishlist') {
+
 			$addressClass = hikashop_get('class.address');
+			$cart->usable_addresses = new stdClass();
+			$cart->usable_addresses->billing = $addressClass->loadUserAddresses((int)$cart->user_id, 'billing');
+			$cart->usable_addresses->shipping = $addressClass->loadUserAddresses((int)$cart->user_id, 'shipping');
 
 			$address = null;
 			if(!empty($cart->cart_billing_address_id))
-				$address = $addressClass->get((int)$cart->cart_billing_address_id);
+				$address = $cart->usable_addresses->billing[(int)$cart->cart_billing_address_id];
 
 			if(empty($address)) {
-				$addresses = $addressClass->loadUserAddresses((int)$cart->user_id);
-				if(!empty($addresses) && is_array($addresses)) {
-					$address = reset($addresses);
+				if(!empty($cart->usable_addresses->billing) && is_array($cart->usable_addresses->billing)) {
+					$address = reset($cart->usable_addresses->billing);
 					$cart->cart_billing_address_id = (int)$address->address_id;
 				}
 			}
@@ -682,12 +686,11 @@ class hikashopCartClass extends hikashopClass {
 
 			$address = null;
 			if(!empty($cart->cart_shipping_address_ids))
-				$address = $addressClass->get((int)$cart->cart_shipping_address_ids);
+				$address = $cart->usable_addresses->shipping[(int)$cart->cart_shipping_address_ids];
 
 			if(empty($address)) {
-				$addresses = $addressClass->loadUserAddresses((int)$cart->user_id);
-				if(!empty($addresses) && is_array($addresses)) {
-					$address = reset($addresses);
+				if(!empty($cart->usable_addresses->shipping) && is_array($cart->usable_addresses->shipping)) {
+					$address = reset($cart->usable_addresses->shipping);
 					$cart->cart_shipping_address_ids = (int)$address->address_id;
 				}
 			}
@@ -938,7 +941,7 @@ class hikashopCartClass extends hikashopClass {
 				$product->product_quantity_layout = $product->main_product_quantity_layout;
 
 			if(empty($product->product_quantity_layout) || $product->product_quantity_layout == 'inherit') {
-				$product->product_quantity_layout = $this->config->get('product_quantity_display', 'show_default');
+				$product->product_quantity_layout = $this->config->get('product_quantity_display', 'show_default_div');
 				if(!empty($product->categories) ) {
 					if(empty($quantityDisplayType))
 						$quantityDisplayType = hikashop_get('type.quantitydisplay');
@@ -1297,7 +1300,7 @@ class hikashopCartClass extends hikashopClass {
 				$cart->cart_payment_id = (int)$cart_payment_id;
 			}
 
-			if(!empty($cart->cart_payment_id)) {
+			if(!empty($cart->cart_payment_id) && !empty($cart->usable_methods->payment)) {
 				foreach($cart->usable_methods->payment as $payment) {
 					if($payment->payment_id == $cart->cart_payment_id) {
 						$cart->payment = $payment;
@@ -1577,6 +1580,8 @@ class hikashopCartClass extends hikashopClass {
 			$cart_product->product_id = (int)$p['id']; //$product_id;
 			$cart_product->cart_product_quantity = (int)$p['qty']; //$product_data;
 			$cart_product->cart_product_modified = time();
+			if(!empty($p['extra']))
+				$cart_product->extra = $p['extra'];
 			$cart->cart_products[] = $cart_product;
 		}
 
@@ -1586,7 +1591,14 @@ class hikashopCartClass extends hikashopClass {
 	protected function compareCartProducts($p, $cart_product, $cart_product_options = null, $fields = null) {
 		if(!isset($p['id']) || $cart_product->product_id != $p['id'])
 			return false;
-
+		if(!empty($p['extra'])) {
+			$do = true;
+			JPluginHelper::importPlugin('hikashop');
+			$dispatcher = JDispatcher::getInstance();
+			$dispatcher->trigger('onCompareCartProducts', array( $p, $cart_product, &$do ) );
+			if(!$do)
+				return false;
+		}
 		return true;
 	}
 
@@ -1957,6 +1969,13 @@ class hikashopCartClass extends hikashopClass {
 					);
 				}
 			}
+		}
+		$formData = hikaInput::get()->get('data', array(), 'array');
+		if(!empty($formData['extra'])) {
+			foreach($data as &$d) {
+				$d['extra'] = $formData['extra'];
+			}
+			unset($d);
 		}
 
 
@@ -2721,6 +2740,7 @@ class hikashopCartClass extends hikashopClass {
 		$limits = array('min' => false, 'max' => false);
 		$notUsable = array();
 		$errorMessagesProductNames = array();
+		$userClass = null;
 		foreach($cart->products as $cart_product_id => &$product) {
 			if(empty($product->product_id))
 				continue;
@@ -2814,6 +2834,7 @@ class hikashopCartClass extends hikashopClass {
 			}
 		}
 		unset($product);
+		unset($userClass);
 
 		if(!empty($limits['min']) || !empty($limits['max'])) {
 			$counts = array();
@@ -2900,9 +2921,6 @@ class hikashopCartClass extends hikashopClass {
 			}
 			$ret = false;
 		}
-
-		if($wishlist)
-			return $ret;
 
 
 		$product_keys = array_reverse(array_keys($cart->cart_products));

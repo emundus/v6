@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,23 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			'default' => 1,
 			'tooltip' => 'login_submit',
 		),
+		'address_on_registration' =>  array(
+			'name' => 'ASK_ADDRESS_ON_REGISTRATION',
+			'type' => 'boolean',
+			'default' => 1,
+			'tooltip' => 'address_on_registration',
+		),
+		'same_address' =>  array(
+			'name' => 'SHOW_SHIPPING_SAME_ADDRESS_CHECKBOX',
+			'type' => 'boolean',
+			'default' => 1,
+			'showon' => array(
+				'key' => 'address_on_registration',
+				'values' => array(1)
+			)
+		),
 	);
+
 
 	public function check(&$controller, &$params) {
 		$checkoutHelper = hikashopCheckoutHelper::get();
@@ -190,8 +206,12 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$data['register'] = $formData['register'];
 		if(isset($formData['user']))
 			$data['user'] = $formData['user'];
-		if($config->get('address_on_registration', 1) && isset($formData['address']))
+		if(!isset($params['address_on_registration']))
+			$params['address_on_registration'] = $config->get('address_on_registration', 1);
+		if($params['address_on_registration'] && isset($formData['address']))
 			$data['address'] = $formData['address'];
+		if(!isset($params['same_address']))
+			$params['same_address'] = 1;
 
 		$mode = $config->get('simplified_registration', 0);
 
@@ -209,8 +229,12 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			}
 		}
 
+		$options = array('address_type' => 'both');
+		if($params['same_address'] && empty($formData['same_address']))
+			$options['address_type'] = 'billing';
+
 		$userClass = hikashop_get('class.user');
-		$ret = $userClass->register($data, $mode);
+		$ret = $userClass->register($data, $mode, $options);
 
 		if($ret === false || !isset($ret['status']))
 			return false;
@@ -339,13 +363,17 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 
 	protected function loadRegistrationparams(&$view, &$params) {
 		$params['registration_email_confirmation'] = $view->config->get('show_email_confirmation_field', 0);
-		$params['address_on_registration'] = $view->config->get('address_on_registration', 1);
 		$params['affiliate_registration'] = $view->config->get('affiliate_registration', 0);
 		$params['user_group_registration'] = $view->config->get('user_group_registration', '');
 		if(!isset($params['default_registration_view']))
 			$params['default_registration_view'] = $view->config->get('default_registration_view', '');
 		if(!isset($params['show_submit']))
 			$params['show_submit'] = 1;
+
+		if(!isset($params['address_on_registration']))
+			$params['address_on_registration'] = $view->config->get('address_on_registration', 1);
+		if(!isset($params['same_address']))
+			$params['same_address'] = 1;
 
 
 		$params['display_method'] = 0;

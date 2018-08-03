@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -244,7 +244,7 @@ defined('_JEXEC') or die('Restricted access');
 	</dl>
 </div></div>
 <?php
-	$filters = array('cols','filtering','maxlength','rows','zone','pleaseselect','size','format','customtext','allow','readonly');
+	$filters = array('cols','filtering','maxlength','rows','zone','pleaseselect','size','format','customtext','allow','readonly','allowed_extensions');
 	if(!empty($this->field->field_table) && in_array($this->field->field_table, array('product', 'category')))
 		$filters[] = 'translatable';
 	if(!empty($this->fieldtype->externalOptions)) {
@@ -344,6 +344,13 @@ defined('_JEXEC') or die('Restricted access');
 		<dd data-hk-display="allow"><?php
 			echo $this->allowType->display('field_options[allow]', @$this->field->field_options['allow']);
 		?></dd>
+
+		<dt data-hk-display="allowed_extensions"><label><?php
+			echo JText::_('ALLOWED_FILES');
+		?></label></dt>
+		<dd data-hk-display="allowed_extensions">
+			<input type="text" name="field_options[allowed_extensions]" value="<?php echo $this->escape(@$this->field->field_options['allowed_extensions']); ?>"/>
+		</dd>
 
 		<dt data-hk-display="readonly"><label><?php
 			echo JText::_('READONLY');

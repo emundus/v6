@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.4.0
+ * @version	3.5.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 <div class="hikashop_listing_comment">
 	<span><?php echo JText::_('HIKASHOP_LISTING_COMMENT');?></span>
 <?php
-	if($row->vote_comment_sort_frontend) {
+	if($row->vote_comment_sort_frontend && count($this->elts)) {
 		$sort = hikaInput::get()->getString('sort_comment','');
 ?>
 	<span style="float: right;" class="hikashop_sort_listing_comment">
@@ -35,9 +35,9 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 		if(empty($elt->vote_comment))
 			continue;
 ?>
-<table itemprop="review" itemscope itemtype="http://schema.org/Review" class="hika_comment_listing" style="width:100%;">
+<table itemprop="review" itemscope itemtype="https://schema.org/Review" class="hika_comment_listing" style="width:100%;">
 	<tr>
-		<td class="hika_comment_listing_name" itemprop="author" itemscope itemtype="http://schema.org/Person">
+		<td class="hika_comment_listing_name" itemprop="author" itemscope itemtype="https://schema.org/Person">
 <?php if ($elt->vote_pseudo == '0') { ?>
 			<span itemprop="name" class="hika_vote_listing_username"><?php echo $elt->username; ?> </span>
 <?php } else { ?>
@@ -60,7 +60,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 				?><span class="hika_comment_listing_empty_stars hk-rate-star state-empty"></span><?php
 			}
 ?>
-			<span style="display:none;" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+			<span style="display:none;" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
 				<span itemprop="bestRating"><?php echo $nb_star_config; ?></span>
 				<span itemprop="worstRating">1</span>
 				<span itemprop="ratingValue"><?php echo $nb_star_vote; ?></span>
@@ -115,7 +115,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 			echo $hika_useless;
 		?></td>
 <?php } ?>
-		<td class="hika_comment_listing_useless" title="Useless" onclick="if(!window.Oby.hasClass(this, 'next_button_disabled')) hikashop_vote_useful(<?php echo $elt->vote_id;?>,2); window.Oby.addClass(this, 'next_button_disabled');"></td>
+		<td class="hika_comment_listing_useless" title="<?php echo JText::_('HIKA_USELESS'); ?>" onclick="if(!window.Oby.hasClass(this, 'next_button_disabled')) hikashop_vote_useful(<?php echo $elt->vote_id;?>,2); window.Oby.addClass(this, 'next_button_disabled');"></td>
 <?php
 			} else if($row->useful_style == "thumbs") {
 ?>

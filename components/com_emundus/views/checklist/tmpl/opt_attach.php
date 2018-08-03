@@ -29,7 +29,7 @@ $query='SELECT esa.value, esap.id, esa.id as _id
 				$class	= 'need_ok';
 			$endlink= '</a>';
 ?>
-    <li class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$form->value.$endlink; ?></div></li>
+    <li class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.$form->value.$endlink; ?></div></li>
 <?php } ?>
 </ul>
 <?php 
