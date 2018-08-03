@@ -14,11 +14,11 @@ defined('_JEXEC') or die;
 
 	<?php if (!empty($offers->to)) :?>
 		<span class="em-contact-request col-md-12">
-			<div class="em-highlight">Offres reçus</div>
+			<div class="em-highlight"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFERS'); ?></div>
 			<?php foreach ($offers->to as $offer) :?>
 				<div class="col-md-5 em-contact-request-card" id="<?php echo $offer->link_id; ?>">
 					<div class="col-md-8 em-bottom-space">
-                        <div class="em-contact-request-heading"> Nom de l'offre </div>
+                        <div class="em-contact-request-heading"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_OFFER_NAME'); ?></div>
 						<?php if (!empty($offer->titre)) :?>
 							<?php echo '<b>'.$offer->titre.'</b>'; ?>
 						<?php else: ?>
@@ -28,24 +28,24 @@ defined('_JEXEC') or die;
 
 					<div class="col-md-8 em-bottom-space">
                         <div class="em-contact-request-contact">
-                            <div class="em-contact-request-heading"> Demande reçu de: </div>
-                            <div class="em-contact-request-contact-item"><strong>Nom:</strong> <?php echo JFactory::getUser($offer->user_from)->name; ?> </div>
-                            <div class="em-contact-request-contact-item"><strong>Email:</strong> <?php echo JFactory::getUser($offer->user_from)->email; ?> </div>
+                            <div class="em-contact-request-heading"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_FROM'); ?></div>
+                            <div class="em-contact-request-contact-item"><strong><?php echo JText::_('NAME'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->name; ?> </div>
+                            <div class="em-contact-request-contact-item"><strong><?php echo JText::_('EMAIL'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->email; ?> </div>
                         </div>
 						<?php if ($offer->state == '1') :?>
 							<button type="button" class="btn btn-primary" onclick="reply('<?php echo $offer->link_id; ?>')">
-								Répondre
+								<?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_REPLY'); ?>
 							</button>
 							<button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
-								Ignorer
+								<?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_IGNORE'); ?>
 							</button>
 						<?php elseif ($offer->state == '2') :?>
 							<button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
-								Couper contact
+								<?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?>
 							</button>
 						<?php endif; ?>
 						<?php if (!empty($offer->offer_from)) :?>
-                            <div class="em-contact-request-linked-offer"> Offre liée : </div>
+                            <div class="em-contact-request-linked-offer"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_LINKED_OFFER'); ?></div>
                             <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
 						<?php endif; ?>
 					</div>
@@ -57,10 +57,11 @@ defined('_JEXEC') or die;
 
 	<?php if (!empty($offers->from)) :?>
 		<span class="em-contact-request col-md-12">
-			<div class="em-highlight">Offres envoyées</div>
+			<div class="em-highlight"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_SENT_OFFERS'); ?></div>
 			<?php foreach ($offers->from as $offer) :?>
 				<div class="col-md-5 em-contact-request-card" id="<?php echo $offer->link_id; ?>">
 					<div class="col-md-8 em-bottom-space">
+                        <div class="em-contact-request-heading"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_OFFER_NAME'); ?></div>
 						<?php if (!empty($offer->titre)) :?>
 							<?php echo '<b>'.$offer->titre.'</b>'; ?>
 						<?php else: ?>
@@ -70,24 +71,24 @@ defined('_JEXEC') or die;
 
 					<div class="col-md-8 em-bottom-space">
                         <div class="em-contact-request-contact">
-                            <div class="em-contact-request-heading"> Demande envoyé à: </div>
-                            <div class="em-contact-request-contact-item"><strong>Nom:</strong> <?php echo JFactory::getUser($offer->user_to)->name; ?> </div>
-                            <div class="em-contact-request-contact-item"><strong>Email:</strong> <?php echo JFactory::getUser($offer->user_to)->email; ?> </div>
+                            <div class="em-contact-request-heading"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_SENT_TO'); ?></div>
+                            <div class="em-contact-request-contact-item"><strong><?php echo JText::_('NAME'); ?>:</strong> <?php echo JFactory::getUser($offer->user_to)->name; ?> </div>
+                            <div class="em-contact-request-contact-item"><strong><?php echo JText::_('EMAIL'); ?>:</strong> <?php echo JFactory::getUser($offer->user_to)->email; ?> </div>
                         </div>
 						<?php if ($offer->state == '1') :?>
 							<button type="button" class="btn btn-primary" onclick="retry('<?php echo $offer->link_id; ?>')">
-								Relancer
+								<?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RETRY'); ?>
 							</button>
 							<button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
-								Annuler
+								<?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_CANCEL'); ?>
 							</button>
 						<?php elseif ($offer->state == '2') :?>
 							<button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
-								Couper contact
+								<?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?>
 							</button>
 						<?php endif; ?>
 						<?php if (!empty($offer->offer_from)) :?>
-                            <div class="em-contact-request-linked-offer"> Votre offre liée : </div>
+                            <div class="em-contact-request-linked-offer"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_YOUR_LINKED_OFFER'); ?></div>
                             <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
 						<?php endif; ?>
 					</div>
@@ -110,7 +111,7 @@ defined('_JEXEC') or die;
                 success: function(result) {
                     if (result.status) {
                         // When we successfully change the status, we simply dynamically change the button.
-                        jQuery('#'+id).html('<button type="button" class="btn btn-danger" onclick="breakUp(id)"> Couper contact </button>');
+                        jQuery('#'+id).html('<button type="button" class="btn btn-danger" onclick="breakUp(id)"> <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?> </button>');
                     } else {
                         var actionText = document.getElementById('em-action-text-'+id);
                         actionText.classList.remove('hidden');
@@ -137,7 +138,7 @@ defined('_JEXEC') or die;
                 success: function(result) {
                     if (result.status) {
                         // When we successfully change the status, we simply dynamically change the button.
-                        jQuery('#'+id).html('<button type="button" class="btn btn-default" disabled > Méssage envoyé </button>');
+                        jQuery('#'+id).html('<button type="button" class="btn btn-default" disabled ><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_MESSAGE_SENT'); ?></button>');
                     } else {
                         var actionText = document.getElementById('em-action-text-'+id);
                         actionText.classList.remove('hidden');
@@ -161,7 +162,7 @@ defined('_JEXEC') or die;
                 success: function(result) {
                     if (result.status) {
                         // Dynamically change the button back to the state of not having a link.
-                        jQuery('#'+id).html('<button type="button" class="btn btn-default" disabled> Mise en relation annulée </button>');
+                        jQuery('#'+id).html('<button type="button" class="btn btn-default" disabled><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BROKEN_UP'); ?></button>');
                     } else {
                         var actionText = document.getElementById('em-action-text-'.id);
                         actionText.classList.remove('hidden');
