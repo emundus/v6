@@ -2,6 +2,7 @@
 
 defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
+
 $document = JFactory::getDocument();
 
 ?>
@@ -33,6 +34,11 @@ $document = JFactory::getDocument();
                 ?>
                 
                 <button type="button" class="updateLaterButton"><?php echo JText::_("MODAL_LATER_BUTTON_DESC"); ?></button>
+                <div id="updateForm" class="updateForm">
+                    <input type="date" id="updateDate" name="update"/>
+
+                    <button class="confirmDate">Confirm</button>
+                </div>
                
             </div>
         </div>
@@ -94,12 +100,61 @@ $document = JFactory::getDocument();
             }
         }); 
     });
+
+/// Just to show the date form
+    jQuery('.updateLaterButton').on('click',function() {
+        var updateForm = document.getElementById("updateForm");
+        updateForm.style.display = "flex";
+    });
+
+/// Choose Update 
+    jQuery('.confirmDate').on('click',function() {
+        var updateDate = jQuery('#updateDate').val();
+
+        jQuery.ajax({
+            type: "post",
+            url: "index.php?option=com_emundus&controller=update&task=choose",
+            dataType: 'json',
+            headers: {
+                "Access-Control-Request-Headers": "*",
+                "Access-Control-Request-Method": "*"
+            },
+            data:({version: version,
+                   oldversion: oldVersion,
+                   ignoreversion:  ignoreVersion,
+                   updateDate: updateDate
+                 }),
+            success: function (result) {
+                if (result.status) {
+                    window.location.reload();
+                } else {
+                    var actionText = document.getElementById('em-action-text');
+                    actionText.classList.remove('hidden');
+                    actionText.innerHTML = result.msg;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    });
+    
+
     
 </script>
 
 <style type='text/css'>
+
 .modal-backdrop {
   z-index: 0;
 }
+
+#updateForm {
+    display: none;
+
+}
+
+
+
 </style>
 
