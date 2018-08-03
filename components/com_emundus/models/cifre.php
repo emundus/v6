@@ -132,6 +132,60 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+	/**
+	 * This function gets all of the contact requests that are destined to the user.
+	 * @param null $user Int The user who has received the contact requests.
+	 * @return Mixed An array of objects.
+	 */
+	function getContactToUser($user) {
+
+		if (empty($user))
+			return false;
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select([$this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('cl.user_to').' = ' . $user);
+
+		$this->db->setQuery($query);
+		try {
+			return $this->db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting offers to user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+	/**
+	 * This function gets all of the contact requests that are sent by the user.
+	 * @param null $user Int The user who has sent the contact requests.
+	 * @return Mixed An array of objects.
+	 */
+	function getContactFromUser($user) {
+
+		if (empty($user))
+			return false;
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select([$this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('cl.user_from').' = ' . $user);
+
+		$this->db->setQuery($query);
+		try {
+			return $this->db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting offers to user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
 
 	/**
 	 * Create contact offer.
@@ -299,5 +353,58 @@ class EmundusModelCifre extends JModelList {
 			JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
+	}
+
+	/**
+	 * Gets the CIFRE link by ID.
+	 *
+	 * @param Int $id the ID of the link to get.
+	 * @return Mixed
+	 */
+	public function getLinkByID($id) {
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select('*')
+			->from($this->db->quoteName('#__emundus_cifre_links'))
+			->where($this->db->quoteName('id').'='.$id);
+		$this->db->setQuery($query);
+
+
+		try {
+			return $this->db->loadObject();
+		} catch (Exception $e) {
+			JLog::add('Error getting CIFRE link by ID in m/CIFRE at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+	}
+
+
+	/**
+	 * Gets the CIFRE link by ID.
+	 *
+	 * @param Int $id the ID of the link to get.
+	 * @param Int $state The state to set the link to.
+	 * @return Boolean
+	 */
+	public function setLinkState($id, $state = 0) {
+
+		$query = $this->db->getQuery(true);
+
+		$query
+			->update($this->db->quoteName('#__emundus_cifre_links'))
+			->set([$this->db->quoteName('state').' = '.$state])
+			->where([$this->db->quoteName('id').'='.$id]);
+		$this->db->setQuery($query);
+
+		try {
+			$this->db->execute();
+			return true;
+		} catch (Exception $e) {
+			JLog::add('Error updating CIFRE link state in m/CIFRE at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
 	}
 }
