@@ -128,7 +128,7 @@ var itemId = <?php echo $this->itemId; ?>;
 				$.ajax(
 					{
 						type:'post', 
-						url:'index.php?option=com_emundus&controller=users&task=setgrouprights&format=raw', 
+						url:'<?php echo JRoute::_('index.php?option=com_emundus&controller=users&task=setgrouprights&format=raw', true); ?>', 
 						dataType:'json', 
 						data:{
 							id:$(this).parent('tr').attr('id'), 
