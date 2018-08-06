@@ -370,11 +370,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                                 break;
 
                             }
-
                         }
-
                     }
-
                 }
             }
 
@@ -497,7 +494,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         
         // Get any candidate files included in the message.
-        if(!empty($template->candidate_file)) {
+        if (!empty($template->candidate_file)) {
             foreach ($template->candidate_file as $candidate_file) {
 
                 $filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
@@ -517,7 +514,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    // Files generated using the Letters system. Requires attachment creation and doc generation rights.
         // Get from DB and generate using the tags.
-        if(!empty($template->setup_letters)) {
+        if (!empty($template->setup_letters)) {
             foreach ($template->setup_letters as $setup_letter) {
 
                 $letter = $m_messages->get_letter($setup_letter);

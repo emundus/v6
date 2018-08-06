@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>User - HikaShop</name>
-	<creationDate>31 juillet 2018</creationDate>
+	<creationDate>01 août 2018</creationDate>
 	<version>3.5.1</version>
 	<author>HikaShop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

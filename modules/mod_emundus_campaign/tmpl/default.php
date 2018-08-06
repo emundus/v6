@@ -33,10 +33,11 @@ if ($locallang == "fr-FR") {
         </div>
         <div class="rt-grid-4 navorder">
             <p><?php if ($order=="start_date") {?>
-                <?php if ($ordertime=="desc") {?><a href="index.php?order_date=start_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=start_date&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
-                    <?php } else { ?>
+                <?php if ($ordertime=="desc") {?>
+                    <a href="index.php?order_date=start_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=start_date&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
+                <?php } else { ?>
                     <a href="index.php?order_date=start_date&order_time=<?php echo $ordertime ?>"><?php echo JText::_("CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime=="desc") {?><a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("LIST_DATE_END");?></b></a>
-                        <?php }?> </p>
+                <?php }?> </p>
         </div>
         <div class="rt-grid-4 navsearch">
             <div class="navsearch-content">
@@ -120,7 +121,14 @@ if ($locallang == "fr-FR") {
                             <div class="below-content">
                             <?php if($result->apply_online==1) {?>
                                 <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <?php
+                                // The register URL does not
+                                if ($sef == 1) {
+	                                $register_url = "index.php?option=com_users&view=registration&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
+	                            } else {
+	                                $register_url = "registration?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
+                                } ?>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
                                 <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>

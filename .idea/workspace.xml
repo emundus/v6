@@ -3,15 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_emundus/config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_emundus/config.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/article.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/article.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/cart.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/currency.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/currency.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/field.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/field.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/order.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/classes/order.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/controllers/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/controllers/config.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop/mod_hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop/mod_hikashop.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_cart/mod_hikashop_cart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_cart/mod_hikashop_cart.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_currency/mod_hikashop_currency.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/mod_hikashop_currency/mod_hikashop_currency.xml" afterDir="false" />
@@ -20,6 +11,7 @@
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_cartnotify/cartnotify.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_cartnotify/cartnotify.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_content_markdown/content_markdown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_content_markdown/content_markdown.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_datepickerfield/datepickerfield.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_datepickerfield/datepickerfield.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_email_history/email_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_email_history/email_history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_history/history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_history/history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_kashflow/kashflow.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_kashflow/kashflow.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_address/massaction_address.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashop_massaction_address/massaction_address.xml" afterDir="false" />
@@ -55,7 +47,6 @@
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ipaydna/ipaydna.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ipaydna/ipaydna.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_iveri/iveri.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_iveri/iveri.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_migsvpc/migsvpc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_migsvpc/migsvpc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_moneybookers/moneybookers.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_nets/nets.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_nets/nets.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ogone/ogone.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashoppayment_ogone/ogone.xml" afterDir="false" />
@@ -81,16 +72,12 @@
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost/aupost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost/aupost.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost2/aupost2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_aupost2/aupost2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_canadapost/canadapost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_canadapost/canadapost.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_fedex/fedex.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_manual/manual.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_manual/manual.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_ups/ups.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_hikashopshipping_usps/usps.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_quickicon_hikashop/hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_quickicon_hikashop/hikashop.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_categories/hikashop_categories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_categories/hikashop_categories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_search_hikashop_products/hikashop_products.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_custom_quantity_tax/custom_quantity_tax.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_custom_quantity_tax/custom_quantity_tax.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopmassaction/hikashopmassaction.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/extensions/plg_system_hikashopmassaction/hikashopmassaction.xml" afterDir="false" />
@@ -108,35 +95,16 @@
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/helpers/helper.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/helpers/helper.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/hikashop_j3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/hikashop_j3.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/views/config/tmpl/main.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/views/config/tmpl/main.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/views/order/tmpl/edit_products.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/views/order/tmpl/edit_products.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_hikashop/views/upload/tmpl/galleryimage.php" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_hikashop/views/upload/tmpl/galleryimage.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/language/en-GB/en-GB.com_securitycheckpro.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/language/en-GB/en-GB.com_securitycheckpro.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/sql/updates/3.0.1.sql" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/components/com_securitycheckpro/sql/updates/3.0.1.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administrator/language/en-GB/en-GB.com_securitycheckpro.ini" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/language/en-GB/en-GB.com_securitycheckpro.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administrator/modules/mod_hikashop_dashboard/mod_hikashop_dashboard.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administrator/modules/mod_hikashop_dashboard/mod_hikashop_dashboard.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/models/application.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/models/application.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_fabrik/views/form/tmpl/bootstrap/default.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_hikashop/controllers/checkout.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/controllers/checkout.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/after_end.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/after_end.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/end.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/end.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/show_block_login.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/tmpl/show_block_login.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/checkout/view.html.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/checkout/view.html.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/listing_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/listing_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/show.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_hikashop/views/product/tmpl/show.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/media/com_hikashop/js/checkoutworkflow.js" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_hikashop/js/checkoutworkflow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/language/en-GB/en-GB.mod_emundusflow.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/language/en-GB/en-GB.mod_emundusflow.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/language/fr-FR/fr-FR.mod_emundusflow.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/language/fr-FR/fr-FR.mod_emundusflow.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/media/com_hikashop/mail/order_notification.preload.php" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_hikashop/mail/order_notification.preload.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/mod_hikashop/mod_hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_hikashop/mod_hikashop.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/mod_hikashop_cart/mod_hikashop_cart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_hikashop_cart/mod_hikashop_cart.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/mod_hikashop_currency/mod_hikashop_currency.xml" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_hikashop_currency/mod_hikashop_currency.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/editors-xtd/hikashopproduct/hikashopproduct.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/editors-xtd/hikashopproduct/hikashopproduct.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashop/cartnotify/cartnotify.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/cartnotify/cartnotify.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashop/content_markdown/content_markdown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/content_markdown/content_markdown.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashop/datepickerfield/datepickerfield.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/datepickerfield/datepickerfield.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/hikashop/email_history/email_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/email_history/email_history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashop/history/history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/history/history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashop/kashflow/kashflow.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/kashflow/kashflow.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashop/massaction_address/massaction_address.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashop/massaction_address/massaction_address.xml" afterDir="false" />
@@ -172,7 +140,6 @@
       <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/ipaydna/ipaydna.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/ipaydna/ipaydna.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/iveri/iveri.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/iveri/iveri.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/migsvpc/migsvpc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/migsvpc/migsvpc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/moneybookers/moneybookers.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/nets/nets.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/nets/nets.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashoppayment/ogone/ogone.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashoppayment/ogone/ogone.xml" afterDir="false" />
@@ -198,16 +165,12 @@
       <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/aupost/aupost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/aupost/aupost.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/aupost2/aupost2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/aupost2/aupost2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/canadapost/canadapost.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/canadapost/canadapost.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/fedex/fedex.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/manual/manual.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/manual/manual.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/ups/ups.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/hikashopshipping/usps/usps.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/quickicon/hikashop/hikashop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/quickicon/hikashop/hikashop.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/search/hikashop_categories/hikashop_categories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/search/hikashop_categories/hikashop_categories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/search/hikashop_products/hikashop_products.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/custom_quantity_tax/custom_quantity_tax.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/custom_quantity_tax/custom_quantity_tax.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/hikashopmassaction/hikashopmassaction.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/hikashopmassaction/hikashopmassaction.xml" afterDir="false" />
@@ -222,12 +185,15 @@
       <change beforePath="$PROJECT_DIR$/plugins/system/nossloutsidecheckout/nossloutsidecheckout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/nossloutsidecheckout/nossloutsidecheckout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/reds_redirect/reds_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/reds_redirect/reds_redirect.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/vm_redirect/vm_redirect.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/vm_redirect/vm_redirect.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/custom/config/22/index.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/custom/config/22/index.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/custom/css-compiled/custom__error.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/custom/css-compiled/helium-joomla__error.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/custom/css-compiled/helium__error.css" beforeDir="false" />
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -273,85 +239,70 @@
     <favorites_list name="sorbonnev3" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="emundus-isApplicationCompleted.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="796">
-              <caret line="79" column="100" selection-start-line="79" selection-start-column="100" selection-end-line="79" selection-end-column="100" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="application.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/models/application.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="427">
-              <caret line="2325" column="138" selection-start-line="2325" selection-start-column="133" selection-end-line="2325" selection-end-column="138" />
-              <folding>
-                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="paid.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/paid.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="14" column="65" selection-start-line="14" selection-start-column="65" selection-end-line="14" selection-end-column="65" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="view.html.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/views/checklist/view.html.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="81" column="72" selection-start-line="81" selection-start-column="72" selection-end-line="81" selection-end-column="72" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/administrator/components/com_emundus/config.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="837">
-              <caret line="82" column="43" selection-start-line="82" selection-start-column="43" selection-end-line="82" selection-end-column="43" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mod_emundusflow.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-204">
-              <caret line="62" column="22" selection-start-line="62" selection-start-column="12" selection-end-line="62" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="default.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/tmpl/default.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="615">
-              <caret line="62" column="22" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5015886">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/modules/mod_emundus_cifre_offers/tmpl/default.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1548">
+                  <caret line="164" column="155" selection-start-line="164" selection-start-column="155" selection-end-line="164" selection-end-column="155" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/messages.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="131">
+                  <caret line="106" column="44" selection-start-line="106" selection-start-column="44" selection-end-line="106" selection-end-column="44" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/modules/mod_emundus_cifre_offers/mod_emundus_cifre_offers.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="360">
+                  <caret line="15" column="75" selection-start-line="15" selection-start-column="75" selection-end-line="15" selection-end-column="75" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/modules/mod_emundus_cifre_offers/helper.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1044">
+                  <caret line="32" column="42" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/components/com_emundus/models/cifre.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="2834">
+                  <caret line="399" selection-start-line="399" selection-end-line="399" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/cifre.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="3420">
+                  <caret line="548" column="16" selection-start-line="548" selection-start-column="16" selection-end-line="548" selection-end-column="16" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -561,44 +512,26 @@
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
-              <item name="models" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="v6" type="462c0819:PsiDirectoryNode" />
               <item name="modules" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
               <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_checklist" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
               <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_checklist" type="462c0819:PsiDirectoryNode" />
               <item name="language" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
               <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_checklist" type="462c0819:PsiDirectoryNode" />
               <item name="language" type="462c0819:PsiDirectoryNode" />
               <item name="en-GB" type="462c0819:PsiDirectoryNode" />
             </path>
@@ -606,16 +539,30 @@
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
               <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
-              <item name="language" type="462c0819:PsiDirectoryNode" />
-              <item name="fr-FR" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_cifre_offers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="v6" type="b2602c69:ProjectViewProjectNode" />
               <item name="v6" type="462c0819:PsiDirectoryNode" />
               <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_emundusflow" type="462c0819:PsiDirectoryNode" />
-              <item name="tmpl" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_cifre_offers" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_cifre_offers" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+              <item name="en-GB" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_cifre_offers" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+              <item name="fr-FR" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -664,8 +611,6 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="UPDATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/components/com_emundus/models/application.php</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Created" />
@@ -759,6 +704,652 @@
         <option name="myCanBeAbsent" value="false" />
         <option name="myId" value="SWITCHED" />
       </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Updated from server" />
+        <option name="myStatusName" value="Changed on server" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="CHANGED_ON_SERVER" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Updated" />
+          <option name="myStatusName" value="Changed" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UPDATED" />
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/components/com_emundus/models/application.php</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationCompleted.php</PATH>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Created" />
+          <option name="myStatusName" value="Created" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CREATED" />
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Deleted" />
+          <option name="myStatusName" value="Deleted" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="true" />
+          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Restored" />
+          <option name="myStatusName" value="Will be restored" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="RESTORED" />
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" />
+            <option name="myStatusName" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" />
+          </FILE-GROUP>
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Modified" />
+        <option name="myStatusName" value="Modified" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MODIFIED" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Skipped" />
+        <option name="myStatusName" value="Skipped" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SKIPPED" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with conflicts" />
+        <option name="myStatusName" value="Will be merged with conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_CONFLICTS" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with tree conflicts" />
+        <option name="myStatusName" value="Merged with tree conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with property conflicts" />
+        <option name="myStatusName" value="Will be merged with property conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged" />
+        <option name="myStatusName" value="Will be merged" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Not in repository" />
+        <option name="myStatusName" value="Not in repository" />
+        <option name="mySupportsDeletion" value="true" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="UNKNOWN" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally added" />
+        <option name="myStatusName" value="Locally added" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_ADDED" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally removed" />
+        <option name="myStatusName" value="Locally removed" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_REMOVED" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Switched" />
+        <option name="myStatusName" value="Switched" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SWITCHED" />
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" />
+          <option name="myStatusName" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" />
+        </FILE-GROUP>
+      </FILE-GROUP>
     </UpdatedFiles>
   </component>
   <component name="RunDashboard">
@@ -774,25 +1365,6 @@
     </option>
   </component>
   <component name="RunManager" selected="PHP Web Page.localhost">
-    <configuration name="syncs.php" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://sorbonnev3.local/components/com_jcrm/models/syncs.php">
-      <RunnerSettings RunnerId="JavascriptDebugRunner" />
-      <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
-    </configuration>
-    <configuration name="syncs.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/models/syncs.php">
-      <RunnerSettings RunnerId="PhpScriptDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
-    </configuration>
-    <configuration name="view.html.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/views/syncs/view.html.php">
-      <RunnerSettings RunnerId="PhpScriptDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
-    </configuration>
-    <configuration default="true" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="local" start_url="http://sorbonnev3.local/index.php?option=com_jcrm&amp;view=syncs&amp;Itemid=1427" />
-    <configuration name="localhost" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="localhost" start_url="http://localhost:8888/index.php/en/evaluations?view=evaluation">
-      <RunnerSettings RunnerId="PhpRunner" />
-      <RunnerSettings RunnerId="PhpWebAppDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpRunner" />
-      <ConfigurationWrapper RunnerId="PhpWebAppDebugRunner" />
-    </configuration>
     <configuration default="true" type="AppEnginePhpConfigurationType" factoryName="App Engine for PHP">
       <method />
     </configuration>
@@ -805,6 +1377,31 @@
       <option name="CONTEXT_PROVIDER" />
       <method />
     </configuration>
+    <configuration name="syncs.php" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://sorbonnev3.local/components/com_jcrm/models/syncs.php">
+      <RunnerSettings RunnerId="JavascriptDebugRunner" />
+      <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
+      <method v="2" />
+    </configuration>
+    <configuration name="syncs.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/models/syncs.php">
+      <RunnerSettings RunnerId="PhpScriptDebugRunner" />
+      <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
+      <method v="2" />
+    </configuration>
+    <configuration name="view.html.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/views/syncs/view.html.php">
+      <RunnerSettings RunnerId="PhpScriptDebugRunner" />
+      <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="local" start_url="http://sorbonnev3.local/index.php?option=com_jcrm&amp;view=syncs&amp;Itemid=1427">
+      <method v="2" />
+    </configuration>
+    <configuration name="localhost" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="localhost" start_url="http://localhost:8888/index.php/en/evaluations?view=evaluation">
+      <RunnerSettings RunnerId="PhpRunner" />
+      <RunnerSettings RunnerId="PhpWebAppDebugRunner" />
+      <ConfigurationWrapper RunnerId="PhpRunner" />
+      <ConfigurationWrapper RunnerId="PhpWebAppDebugRunner" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
       <node-interpreter>project</node-interpreter>
       <node-options />
@@ -812,6 +1409,7 @@
       <tasks />
       <arguments />
       <pass-parent-envs>true</pass-parent-envs>
+      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="PHP Web Page.localhost" />
@@ -887,7 +1485,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="98974000" />
+    <option name="totallyTimeSpent" value="99285000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -913,31 +1511,57 @@
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.10390625" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.11874504" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.31955308" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.5474373" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.29008746" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32987553" />
-      <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Changes" order="7" weight="0.32987553" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.32944608" />
       <window_info anchor="bottom" x="10" y="629" width="1680" height="349" id="Event Log" order="9" side_tool="true" type="FLOATING" weight="0.3805889" />
-      <window_info anchor="right" id="Database" order="3" weight="0.123046875" />
       <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="11" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.5474373" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info active="true" anchor="bottom" id="Database Console" order="12" visible="true" weight="0.1260933" />
+      <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Grunt" order="14" />
+      <window_info anchor="bottom" id="Application Servers" order="15" />
       <window_info anchor="bottom" id="Terminal" order="16" weight="0.32987553" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.29008746" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Changes" order="7" weight="0.32987553" />
-      <window_info anchor="bottom" id="Application Servers" order="15" />
-      <window_info anchor="bottom" id="Grunt" order="14" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.32944608" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info active="true" anchor="bottom" id="Database Console" order="12" visible="true" weight="0.1260933" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.31955308" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" weight="0.123046875" />
     </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13343924" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.31955308" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.5474373" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.29008746" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32987553" />
+      <window_info anchor="bottom" id="Changes" order="7" weight="0.32987553" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.32944608" />
+      <window_info anchor="bottom" x="10" y="629" width="1680" height="349" id="Event Log" order="9" side_tool="true" type="FLOATING" weight="0.3805889" />
+      <window_info anchor="bottom" id="Database Changes" order="10" />
+      <window_info anchor="bottom" id="Version Control" order="11" />
+      <window_info active="true" anchor="bottom" id="Database Console" order="12" visible="true" weight="0.1260933" />
+      <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Grunt" order="14" />
+      <window_info anchor="bottom" id="Application Servers" order="15" />
+      <window_info anchor="bottom" id="Terminal" order="16" weight="0.32987553" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" weight="0.123046875" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -1023,7 +1647,6 @@
           <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="83" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PhpWebAppRunConfigurationType">
@@ -1197,9 +1820,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/tmpl/index.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/tmpl/index.html" />
     <entry file="file://$PROJECT_DIR$/modules/mod_emundus_checklist/mod_emundus_checklist.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="864">
@@ -1228,41 +1849,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="20" column="58" selection-start-line="20" selection-start-column="58" selection-end-line="20" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/language/fr-FR/fr-FR.mod_emundusmenu.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="5" column="37" selection-start-line="5" selection-start-column="37" selection-end-line="5" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/language/en-GB/en-GB.mod_emundusmenu.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="5" column="90" lean-forward="true" selection-start-line="5" selection-start-column="90" selection-end-line="5" selection-end-column="90" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/helper.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="900">
-          <caret line="25" column="191" selection-start-line="25" selection-start-column="146" selection-end-line="25" selection-end-column="191" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.php" />
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/language/fr-FR/fr-FR.mod_emundusmenu.ini" />
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/language/en-GB/en-GB.mod_emundusmenu.ini" />
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/helper.php" />
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/mod_emundususerdropdown.xml" />
     <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/hesam.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1080">
@@ -1270,13 +1861,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="647">
-          <caret line="51" column="5" lean-forward="true" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundususerdropdown/tmpl/default.php" />
     <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2573">
@@ -1351,20 +1936,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="427">
           <caret line="2325" column="138" selection-start-line="2325" selection-start-column="133" selection-end-line="2325" selection-end-column="138" />
-          <folding>
-            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#td#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#1;n#tr#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
