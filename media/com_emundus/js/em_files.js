@@ -3838,6 +3838,7 @@ $(document).ready(function()
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
+                $('.modal-body').attr("style","height : 300px");
                 //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=gettags';
                 $.ajax({
                     type:'get',

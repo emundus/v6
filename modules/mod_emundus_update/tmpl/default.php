@@ -17,19 +17,19 @@ $document = JFactory::getDocument();
     <div class="modal-dialog" role="document">    
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><?php echo JText::_("MODAL_TITLE")." ".$update->version; ?></h5>
+                <h5 class="modal-title"><?php echo JText::_("MODAL_TITLE")." ".$update['version']; ?></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <p><?php echo JText::_("MODAL_BODY"); ?></p>
-                <a href=<?php echo "'" . $update->article ."'"?>><button type="button" class="articleInfoButton"><?php echo JText::_("MODAL_ARTICLE_BUTTON"); ?></button></a>
+                <a href=<?php echo "'" . $update['article'] ."'"?>><button type="button" class="articleInfoButton"><?php echo JText::_("MODAL_ARTICLE_BUTTON"); ?></button></a>
             </div>
             <div class="modal-footer">
                 <button type="button" class="updateAcceptButton"><?php echo JText::_("MODAL_ACCEPT_BUTTON"); ?></button>
                 <?php
-                    if($update->important == 1) 
+                    if($update['important'] == 1) 
                         echo '<button type="button" class="updateIgnoreButton">' . JText::_("MODAL_IGNORE_BUTTON_DESC") . '</button>';
                 ?>
                 
@@ -47,7 +47,7 @@ $document = JFactory::getDocument();
 
 
 <script type="text/javascript">
-    var version = <?php echo "'" . $update->version . "'";?>;
+    var version = <?php echo "'" . $update['version'] . "'";?>;
     var oldVersion = <?php echo "'" . $siteVersion->version . "'"; ?>;
     var ignoreVersion = <?php echo "'" . $siteVersion->ignore . "'"; ?>;
 
