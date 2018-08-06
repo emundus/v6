@@ -25,11 +25,11 @@ $uri = JUri::getInstance();
 		<?php foreach ($applications as $application) : ?>
             <div class="col-md-4 em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
 
-                <div class="col-xs-6 col-md-8 em-bottom-space em-top-space">
+                <div class="col-xs-6 col-md-12 em-bottom-space em-top-space">
                     <span class="label label-<?php echo $application->class; ?>"><?php echo $application->value; ?></span>
                 </div>
 
-                <div class="col-md-8 em-bottom-space">
+                <div class="col-md-12 em-bottom-space">
                     <?php if (!empty($application->titre)) :?>
                         <?php echo ($application->fnum == $user->fnum)?'<b>'.$application->titre.'</b>':$application->titre; ?>
                     <?php else: ?>
@@ -37,7 +37,7 @@ $uri = JUri::getInstance();
                     <?php endif; ?>
                 </div>
 
-                <div class="col-md-8 em-bottom-space">
+                <div class="col-md-12 em-bottom-space">
                     <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode(JUri::getInstance()->getPath())); ?>"  role="button">
                         <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
                     </a>
