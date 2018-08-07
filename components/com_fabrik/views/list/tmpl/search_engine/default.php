@@ -66,7 +66,7 @@ echo $this->table->intro;
 					foreach ($this->rows[0] as $k => $v) {
 						foreach ($this->headings as $key => $val) {
 							if (array_key_exists($key, $v->data)) {
-								if (strcasecmp($v->data->$key, "oui") == 0)
+								if (strcasecmp($v->data->$key, "1") == 0)
 									$data[$i][$val] = $v->data->$key;
 								else
 									$data[$i][$key] = $v->data->$key;
@@ -111,11 +111,11 @@ echo $this->table->intro;
 									$department = $d['data_departements___departement_nom'];
 									$chercheur 	= strtolower($d['jos_emundus_setup_profiles___label']);
 
-									if (count(array_keys($d, "oui")) > 1) {
-										$cherches = implode(",", array_keys($d, "oui"));
+									if (count(array_keys($d, "1")) > 1) {
+										$cherches = implode(",", array_keys($d, "1"));
 										$cherches = strtolower(str_replace(","," </b></i>et<i><b> ", $cherches));
 									} else {
-										$cherches = strtolower(array_search("oui", $d));
+										$cherches = strtolower(array_search("1", $d));
 									}
 
                                     $themes = $d['data_thematics___thematic'];
@@ -123,7 +123,8 @@ echo $this->table->intro;
                                     <tr>
                                         <td>
                                             <div class="em-search-engine-div-data">
-                                                <p><?php if (!empty($region)) :?>En région <i><b><?php echo $region; ?></b></i>,<?php endif; if (!empty($department)) :?> <?php if (empty($region)) :?> Dans <?php else :?> dans <?php endif; ?> le(s) département(s) <i><b><?php echo $department; ?></b></i>, <?php endif; if (empty($region) && empty($department)) :?> Un <?php else :?> un <?php endif; ?><i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i><?php if (!empty($themes)) :?> sur le(s) thème(s) <i><b><?php echo $themes; ?></b></i><?php endif; ?></p>
+                                                <div><?php echo $d['jos_emundus_projet___id']; ?></div>
+                                                <p><?php if (!empty(strip_tags($region))) :?>En région <i><b><?php echo $region; ?></b></i>,<?php endif; if (!empty(strip_tags($department))) :?> <?php if (empty(strip_tags($region))) :?> Dans <?php else :?> dans <?php endif; ?> le(s) département(s) <i><b><?php echo $department; ?></b></i>, <?php endif; if (empty(strip_tags($region)) && empty(strip_tags($department))) :?> Un <?php else :?> un <?php endif; ?><i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i><?php if (!empty(strip_tags($themes))) :?> sur le(s) thème(s) <i><b><?php echo $themes; ?></b></i><?php endif; ?></p>
                                                 <?php if (JFactory::getUser()->guest) :?>
                                                     <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
                                                 <?php else :?>
