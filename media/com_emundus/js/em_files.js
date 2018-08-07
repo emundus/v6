@@ -805,6 +805,9 @@ function back(){
 
 $(document).ready(function()
 {
+        $('.em-check-all-all').hide(); 
+        $('#check').removeClass('em-check-all-all');
+
     var lastVal = new Object();
     $(document).on('click', function() {
         if (!$('ul.dropdown-menu.open').hasClass('just-open')) {
@@ -1044,8 +1047,14 @@ $(document).ready(function()
                     $.ajaxQ.abortAll();
                     addElement();
                     break;
-                case 'em-close-file': $.ajaxQ.abortAll(); document.location.hash = "close";
-                    $('.alert.alert-warning').remove();
+
+                case 'em-close-file': 
+                    $.ajaxQ.abortAll(); 
+                    document.location.hash = "close";
+                    $('.em-check:checked').prop('checked', false);
+                    $('.nav.navbar-nav').hide();
+                    reloadActions('files', undefined, false);
+
                 case 'em-mini-file':
                     $.ajaxQ.abortAll();
                     $('#em-appli-block').remove();
