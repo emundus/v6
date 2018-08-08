@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop PayU India Payment Plugin</name>
-	<creationDate>01 août 2018</creationDate>
+	<creationDate>07 août 2018</creationDate>
 	<version>3.5.1</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

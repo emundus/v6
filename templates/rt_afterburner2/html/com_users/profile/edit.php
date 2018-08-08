@@ -66,26 +66,18 @@ $this->form->loadFile( dirname(__FILE__) . DS . "profile.xml");
 </div>
 
 <script>
-function check_field(){
-    <?php $i=0; foreach($fields as $field){?>
+function check_field() {
+    <?php foreach ($fields as $field) :?>
 		firstname = document.getElementById("jform_emundus_profile_firstname");
 		lastname = document.getElementById("jform_emundus_profile_lastname");
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) {
-			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
-				field[0].setStyles({backgroundColor: '#D0C2BD'});
 			field[0].onblur = function() {
-				if ("<?php echo $browser; ?>" != "IE")
-					this.setStyles({backgroundColor: '#fff'}); 
 				$("jform_name").value = firstname.value + ' ' + lastname.value;
-			}
-			if ("<?php echo $browser; ?>" != "IE") {
-				field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
-				field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
-			}
-		}
-	<?php }?>
+			};
+        }
+	<?php endforeach; ?>
 }
-check_field();
 
+check_field();
 </script>
