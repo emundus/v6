@@ -63,3 +63,9 @@ Serveur linux
 	* install textract
 	apt-get install libpulse-dev swig
 	pip install textract
+
+	* install passporteye
+	pip install PassportEye
+	
+	* install alyn for image deskewing
+	pip install alyn

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from PIL import Image
-import os, os.path, sys, re
+import commands, os, os.path, sys, re
 from pytesseract import image_to_string
 import cv2
 from pdf2image import convert_from_path
@@ -9,7 +9,10 @@ import face_recognition
 from scipy import ndimage
 import numpy as np
 import textract
-
+from passporteye.mrz.image import read_mrz
+from alyn import Deskew
+from time import gmtime, strftime, sleep
+import difflib
 
 import mahotas as mt
 from sklearn.svm import LinearSVC
@@ -47,15 +50,49 @@ def getClassResult(image):
 def detectFaces(image):
 	faces = face_recognition.face_locations(image)
 	return faces
-	
+
+# deskew passport in order to extract correctly the mrz
+def deskew(filename):
+	image = cv2.imread(filename)
+	image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #convert to grayscale image
+	cv2.imwrite(filename,image)
+	d = Deskew(
+		input_file=filename,
+		display_image=None,
+		output_file=filename,
+		r_angle=0)
+	d.run()
+
 # get generated string by tesseract ocr
 def getString(image):
-	char = image_to_string(image,config='-c tessedit_char_whitelist=<0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz -psm 6')
+	char = image_to_string(image)
+	#,config='-c tessedit_char_whitelist=<0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz -psm 6'
 	return char 
 
 def getText(pdf):
 	text = textract.process(pdf)
 	return text
+
+def getSimilarity(w1, w2):
+	seq = difflib.SequenceMatcher(None,w1,w2)
+	d = seq.ratio()*100
+	return d
+
+def getMrz(filename):
+	mrz = read_mrz(filename, save_roi=True)
+	return mrz.to_dict()
+	
+def fix_incorrect_orientation(filename):  
+    tesseractResult = str(commands.getstatusoutput('tesseract ' + filename + ' -  -psm 0'))
+    #print('tesseractResult: ' + tesseractResult)
+    regexObj = re.search("Orientation in degrees:\s([0-9])+",tesseractResult)
+    if regexObj:
+        orientation = int(regexObj.group().split(': ')[1])
+        print('orientation: ' + str(orientation))
+        if orientation:
+            image = cv2.imread(filename)
+            image = ndimage.rotate(image, orientation)
+            cv2.imwrite(filename, image)
 
 # is image a human photo? 
 def isPhoto(imagePath):
@@ -74,61 +111,45 @@ def isPhoto(imagePath):
 	
 	
 # is image a passport?
-def isPassport(imagePath, keywords = ""):
+def isPassport(imagePath, fname, lname, end_date):
+
+	if imagePath.lower().endswith('.pdf'):
+		imagePath = pdf2image(imagePath, 300)
+	
+	fix_incorrect_orientation(imagePath)
 	# Read the image
 	image = cv2.imread(imagePath)
 	
 	height, width = image.shape[:2]
-	if height >= 7000 and width >= 7000:
+	if height >= 6000 and width >= 6000:
 		image = cv2.resize(image, (height / 3, width / 3)) 
-	
-	i = 0
-	while len(detectFaces(image)) == 0 and i < 4:
-		image = ndimage.rotate(image, 90)
-		i += 1
 		
+	cv2.imwrite(imagePath, image)
 
-	faces = detectFaces(image)
-	
-	if len(image.shape) == 3: # if color image
-		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #convert to grayscale image
-	classresult = getClassResult(image)
-	#print "Found {0} faces!".format(len(faces))
+	# deskew image
+	deskew(imagePath)
+	fix_incorrect_orientation(imagePath)
 
-	#averaging filter 9*9 to remove gaussian noisy(5*)
-	blur = cv2.GaussianBlur(image,(9,9),0)
-	blur = cv2.GaussianBlur(blur,(9,9),0)
-	blur = cv2.GaussianBlur(blur,(9,9),0)
-	blur = cv2.GaussianBlur(blur,(9,9),0)
-	blur = cv2.GaussianBlur(blur,(9,9),0)
-
-	#image binarisation using gaussian threshold 
-	image = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-        cv2.THRESH_BINARY,11,2)
-	
-	kernel = np.ones((5,5),np.uint8)
-	image = cv2.erode(image,kernel,iterations = 1) #image erode for caractere restitution
-	image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel) #image closing morphology for noisy deletion
-
-	char = getString(image)
-
-	match = re.search(r'\w+[<]+\w+', char)
-	keymatch = []
-	if keywords:
-		key_t = keywords.split(";")
-		matchkeywords = [re.compile(f ,re.I) for f in key_t]
-		keymatch = [m.findall(char) for m in matchkeywords if m.findall(char)]
-	if (len(faces) > 0 and match and keymatch) or (len(faces) > 0  and keymatch) or (len(faces) > 0  and match) :
+	passdata = getMrz(imagePath)
+	#print passdata
+	pass_names = passdata['names'].upper() +' '+ passdata['surname'].upper()
+	form_names = fname.upper() +' '+ lname.upper()
+	is_same = getSimilarity(pass_names, form_names)
+	l_similar = getSimilarity(lname.upper(), passdata['surname'].upper())
+	if (is_same >= 75 and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d"))) \
+		or (fname.upper() in pass_names and lname.upper() in pass_names and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d")))\
+		or l_similar >= 75 and fname.upper() in pass_names and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d")) :
 		return 1
 	else:
 		return 0
+	
 
 # is image a cv?
 def isCv(filepath, keywords = ""):
 	text = ""
 	path = os.getcwd()
 	if filepath.lower().endswith('.pdf'):
-		filepath = pdf2image(filepath, 250)
+		filepath = pdf2image(filepath, 300)
 		image = cv2.imread(filepath)
 		text = getString(image)
 	if filepath.lower().endswith('.docx'):
@@ -172,7 +193,7 @@ def isMotivation(filepath, keywords = ""):
 def main(image, function, keywords=""):
 	if function == "isphoto":
 		if image.lower().endswith('.pdf'):
-			image = pdf2image(image, 250)
+			image = pdf2image(image, 300)
 		if image.lower().endswith('.gif'):
 			im = Image.open(image)
 			img = im.convert('RGB')
@@ -198,7 +219,7 @@ def main(image, function, keywords=""):
 		if image.lower().endswith('.pdf'):
 			image = pdf2image(image, 350)
 
-		res = isPassport(image, keywords)
+		res = isPassport(image, uid)
 		if res == 1:
 			return 1
 		else:
