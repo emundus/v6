@@ -19,6 +19,9 @@ ALTER TABLE `jos_emundus_cifre_links`
   ADD UNIQUE KEY `user_to` (`user_to`,`user_from`,`fnum_to`,`fnum_from`),
   ADD KEY `user_from` (`user_from`);
 
+ALTER TABLE `jos_emundus_cifre_links`
+  ADD PRIMARY KEY (`id`);
+
 
 ALTER TABLE `jos_emundus_cifre_links`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

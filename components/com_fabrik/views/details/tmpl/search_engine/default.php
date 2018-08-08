@@ -123,7 +123,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
     <!-- THEMES -->
     <div class="em-offre-themes">
         <div class="em-offre-subtitle">Thématiques identifiées :</div>
-        <strong class="em-highlight"> <?php echo implode('</strong>; <strong class="em-highlight">', $this->data['jos_emundus_projet_620_repeat___themes_raw']); ?></strong>
+        <strong class="em-highlight"> <?php echo is_array($this->data['data_thematics___thematic_raw'])?implode('</strong>; <strong class="em-highlight">', $this->data['data_thematics___thematic_raw']):$this->data['data_thematics___thematic_raw']; ?></strong>
     </div>
 
     <!-- Project context -->
@@ -252,7 +252,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                 var linkedOffer = document.getElementById('em-join-offer').value;
                 if (linkedOffer != null && linkedOffer != '' && typeof linkedOffer != 'undefined')
                     data.linkedOffer = linkedOffer;
-                
+
             }
         }
 
@@ -263,14 +263,14 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             data: data,
             beforeSend: function () {
                 jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
-                
+
                 if (action == 'contact') {
                     jQuery('#contactModal').modal('hide');
                     jQuery('body').removeClass('modal-open');
                     jQuery('.modal-backdrop').remove();
                 }
-                    
-                    
+
+
             },
             success: function(result) {
                 if (result.status) {
@@ -279,7 +279,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                     // When we successfully change the status, we simply dynamically change the button.
 
                     if (action == 'contact') {
-                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')"> Relancer </button>');
+                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp()">Annuler la demande</button>');
                     }
 
                     else if (action == 'retry') {

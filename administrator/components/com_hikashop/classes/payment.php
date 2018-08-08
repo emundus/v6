@@ -143,7 +143,8 @@ class hikashopPaymentClass extends hikashopClass {
 		}
 
 		$zoneClass = hikashop_get('class.zone');
-		$zones = $zoneClass->getOrderZones($order);
+		$config = hikashop_config();
+		$zones = $zoneClass->getOrderZones($order, $config->get('payment_methods_zone_address_type','billing_address'));
 
 		foreach($methods as $k => $method) {
 			if(!empty($method->payment_zone_namekey) && !in_array($method->payment_zone_namekey, $zones)) {

@@ -106,11 +106,6 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 			$checkoutHelper->redirectBeforeDisplay = JText::_('CART_EMPTY');
 		}
 
-		if(!empty($cart->messages) && count($cart->messages) > $msg_cpt) {
-			foreach($cart->messages as $i => $msg) {
-				$checkoutHelper->addMessage('cart.error.'.$i, $msg);
-			}
-		}
 		if(!$ret && !empty($cart->messages) && count($cart->messages) > $msg_cpt) {
 			return false;
 		}

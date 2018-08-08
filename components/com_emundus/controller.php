@@ -270,10 +270,10 @@ class EmundusController extends JControllerLegacy {
         unset($current_user->fnums[$fnum]);
 
         if (in_array($user->fnum, array_keys($user->fnums))) {
-            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$user->fnum.'&redirect='.base64_encode($redirect));
+            $app->redirect($redirect);
         } else {
             $fnum = array_shift($current_user->fnums);
-            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum.'&redirect='.base64_encode($redirect));
+            $app->redirect($redirect);
         }
 
         return true;
