@@ -253,14 +253,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
 <script type="text/javascript">
 
-    var randomColorFactor = function() {
-        return Math.round(Math.random() * 255);
-    };
-
-    var randomColor = function() {
-        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
-    };
-    
     var compteChart;
     var offreChart;
     var connexionChart;
@@ -304,6 +296,39 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         });
     }
     */
+
+    function setColorGradient(num_steps) {
+        var colorArray = [];
+        // colors needs to be in rgb(red, green, blue)
+        var start_red = 185;
+        var start_green = 43;
+        var start_blue = 39;
+
+        var end_red = 21;
+        var end_green = 101;
+        var end_blue = 192;
+
+        var current_red = start_red;
+        var current_green = start_green;
+        var current_blue = start_blue;
+
+        var red_diff = end_red - start_red;
+        var green_diff = end_green - start_green;
+        var blue_diff = end_blue - start_blue;
+        
+        var red_step = red_diff/num_steps ;
+        var green_step = green_diff/num_steps;
+        var blue_step = blue_diff/num_steps;
+
+        while (current_red != end_red && current_green != end_green && current_blue != end_blue) {
+            current_red += red_step;
+            current_green += green_step;
+            current_blue += blue_step;
+
+            colorArray.push('rgb(' + current_red + ',' + current_green + ',' + current_blue + ')');
+        }
+        return colorArray;
+    };
 
     // Account function
     function afficheComptes(value,periode) {
@@ -645,7 +670,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     }
 
     function afficheNationality() {
-        var colorArray = [];
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getnationality",
@@ -654,10 +678,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                 if (result.status) {
                     if (nationChart != undefined || nationChart != null) 
                         nationChart.destroy();
-                
-                    for(var i in result.nationality) {
-                        colorArray.push(randomColor());
-                    }
+
+                    var colorArray = setColorGradient(result.nationality.length);
+                    
 
                 var elem = document.getElementById('nationality');
                 nationChart = new Chart(elem, {
@@ -693,7 +716,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
     function afficheFiles() {
 
-        var colorArray = [];
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getfiles",
@@ -706,13 +728,11 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                 }
 
                 for(var i in result.val) {
-                    colorArray.push(randomColor());
                     valArray.push(i);
-                    nbArray.push(result.val[i])
+                    nbArray.push(result.val[i]);
                 }
-
+                var colorArray = setColorGradient(nbArray.length);
                 var elem = document.getElementById('files');
-                
                 filesChart = new Chart(elem, {
                     type: 'pie',
                     data: {
@@ -730,7 +750,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                             text: "Dossiers",
                             fontSize: 20
                         }
-                        
                     }   
                 });
                 
@@ -785,12 +804,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
     jQuery(document).ready(function () {
 
-      /*  jQuery('#viewTable').each(function() {
+
+        jQuery('#viewTable').each(function() {
             if(jQuery(this).find('tr').children("td").length < 2) {
                 jQuery(this).hide();
             }
         });
-*/
+
         if (<?php echo $nationality; ?>) {
             document.getElementById("nationRow").setAttribute("style", "display:block;");
             var OffreClick = document.createElement("a");
