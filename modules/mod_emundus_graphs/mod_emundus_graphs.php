@@ -42,7 +42,7 @@ foreach ($viewArray as $key => $value) {
     if ($exist == 0) {
         // check it the view has any values.. no point to show with nothing in it
         $viewCount = $model->addView($key, true);
-        if($viewCount)
+        if ($viewCount)
             $tableField .= '<tr><td>'.$value.'</td><td><button type="button" class="btn btn-primary" id="'.$key.'" onClick="addView(\''.$key.'\')">+</button></td></tr>';
     } else {
         switch($key) {

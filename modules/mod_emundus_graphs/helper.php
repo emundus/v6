@@ -7,14 +7,13 @@ class modEmundusGraphsHelper {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('COUNT(*)')
-            ->from($view);
+        $query->select('COUNT(*)')->from($view);
 
         try {
             return $db->loadResult();
         } catch(Exception $e) {
             JLog::add('Error getting account type stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return 0;
         }
     }
 
@@ -30,6 +29,7 @@ class modEmundusGraphsHelper {
             return $db->loadAssocList();
         } catch(Exception $e) {
             JLog::add('Error getting account type stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
@@ -46,6 +46,7 @@ class modEmundusGraphsHelper {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
 	        JLog::add('Error getting offer consultation stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
         }
     }
 
@@ -61,6 +62,7 @@ class modEmundusGraphsHelper {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
 	        JLog::add('Error getting offer candidacy stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
         }
     }
 
@@ -76,6 +78,7 @@ class modEmundusGraphsHelper {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
 	        JLog::add('Error getting connection stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
         }
     }
 
@@ -91,6 +94,7 @@ class modEmundusGraphsHelper {
 		    return $db->loadAssocList();
 	    } catch(Exception $e) {
 		    JLog::add('Error getting relationship stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    return false;
 	    }
     }
 }

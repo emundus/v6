@@ -12,9 +12,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 ?>
 <div class="container">
 
-
-    
-
     <!-- Shows user info  -->
     <div class="row" id="userRow" style="display:none;">
         
@@ -328,7 +325,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             colorArray.push('rgb(' + current_red + ',' + current_green + ',' + current_blue + ')');
         }
         return colorArray;
-    };
+    }
 
     // Account function
     function afficheComptes(value,periode) {
@@ -346,21 +343,21 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
            }),
             success: function (result) {
                 if (result.status) {
-                    if(document.getElementById("userCount").childNodes.length > 1)
+
+                    if (document.getElementById("userCount").childNodes.length > 1)
                         document.getElementById("userCount").childNodes[1].remove();
 
                     document.getElementById("userCount").append(result.count);
                     // Loop to get missing dates and create new value (0) for those dates
                     for (var i = 0; i < result.datearray.length; i++) {
+
                         //make sure we are not checking the last date in the labels array
                         if (i + 1 < result.datearray.length) {
                             var date1 = moment(result.datearray[i], "YYYY-MM-DD");
                             var date2 = moment(result.datearray[i + 1], "YYYY-MM-DD");
-
                             
                             //if the current date +1 is not the same as it's next neighbor we have to add in a new one
                             if (!date1.add(1, "days").isSame(date2)) {
-                                
                                 //add the label
                                 result.datearray.splice(i + 1, 0, date1.format("YYYY-MM-DD"));
                                 //add the data
@@ -369,9 +366,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         }
                     }
 
-                    if (compteChart != undefined || compteChart != null) {
+                    if (compteChart != undefined || compteChart != null)
                         compteChart.destroy();
-                    }
                     var elem = document.getElementById('users');
                     
                     compteChart = new Chart(elem, {
@@ -424,21 +420,21 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         }),
                         success: function (resultOffre) {
 
-                            if(document.getElementById("countCandidature").childNodes.length > 1)
+                            if (document.getElementById("countCandidature").childNodes.length > 1)
                                 document.getElementById("countCandidature").childNodes[1].remove();
 
                             document.getElementById("countCandidature").append(resultCand.count);
 
-                            if(document.getElementById("countConsultation").childNodes.length > 1)
+                            if (document.getElementById("countConsultation").childNodes.length > 1)
                                 document.getElementById("countConsultation").childNodes[1].remove();
 
                             document.getElementById("countConsultation").append(resultOffre.countOffre);
 
                             var ctxLine = document.getElementById('candLigne').getContext('2d');
                             // destroy old canvas causing hover problems
-                            if (offreChart != undefined || offreChart != null) {
+                            if (offreChart != undefined || offreChart != null)
                                 offreChart.destroy();
-                            }
+
                             offreChart = new Chart(ctxLine, {
                                 type: 'horizontalBar',
                                 data: {
@@ -502,7 +498,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             success: function (result) {
                 if (result.status) {
                     
-                    if(document.getElementById("countConnexion").childNodes.length > 1)
+                    if (document.getElementById("countConnexion").childNodes.length > 1)
                         document.getElementById("countConnexion").childNodes[1].remove();
 
                     document.getElementById("countConnexion").append(result.count);
@@ -525,9 +521,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         }
                     }
 
-                    if (connexionChart != undefined || connexionChart != null) {
+                    if (connexionChart != undefined || connexionChart != null)
                         connexionChart.destroy();
-                    }
+
                     var elem = document.getElementById('co');
 
                     connexionChart = new Chart(elem, {
@@ -567,22 +563,22 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             data:({periode: periode}),
             success: function (result) {
                 if (result.status) {
-                    if(document.getElementById("countRelations").childNodes.length > 1)
+
+                    if (document.getElementById("countRelations").childNodes.length > 1)
                         document.getElementById("countRelations").childNodes[1].remove();
 
                     document.getElementById("countRelations").append(result.count);
 
                     // Loop to get missing dates and create new value (0) for those dates
                     for (var i = 0; i < result.datearray.length; i++) {
+
                         //make sure we are not checking the last date in the labels array
                         if (i + 1 < result.datearray.length) {
                             var date1 = moment(result.datearray[i], "YYYY-MM-DD");
                             var date2 = moment(result.datearray[i + 1], "YYYY-MM-DD");
 
-                            
                             //if the current date +1 is not the same as it's next neighbor we have to add in a new one
                             if (!date1.add(1, "days").isSame(date2)) {
-                                
                                 //add the label
                                 result.datearray.splice(i + 1, 0, date1.format("YYYY-MM-DD"));
                                 //add the data
@@ -591,9 +587,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         }
                     }
 
-                    if (relationChart != undefined || relationChart != null) {
+                    if (relationChart != undefined || relationChart != null)
                         relationChart.destroy();
-                    }
 
                     var elem = document.getElementById('rel');
                     relationChart = new Chart(elem, {
@@ -632,41 +627,40 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             dataType: 'json',
             success: function (result) {
                 if (result.status) {
-                    if (genderChart != undefined || genderChart != null) {
-                    genderChart.destroy();
-                }
 
-                var elem = document.getElementById('gender');
-                genderChart = new Chart(elem, {
-                    type: 'pie',
-                    data: {
-                        datasets: [{
-                            data: [result.male, result.female],
-                            backgroundColor: ["#3e95cd", "#8e5ea2"]
-                        }],
+                    if (genderChart != undefined || genderChart != null)
+                        genderChart.destroy();
 
-                        // These labels appear in the legend and in the tooltips when hovering different arcs
-                        labels: [
-                            'Male',
-                            'Female'
-                        ]
-                    },
-                    options: {
-                        title:{
-                            display: true,
-                            text: "Genres",
-                            fontSize: 20
+                    var elem = document.getElementById('gender');
+                    genderChart = new Chart(elem, {
+                        type: 'pie',
+                        data: {
+                            datasets: [{
+                                data: [result.male, result.female],
+                                backgroundColor: ["#3e95cd", "#8e5ea2"]
+                            }],
+
+                            // These labels appear in the legend and in the tooltips when hovering different arcs
+                            labels: [
+                                'Male',
+                                'Female'
+                            ]
+                        },
+                        options: {
+                            title:{
+                                display: true,
+                                text: "Genres",
+                                fontSize: 20
+                            }
+
                         }
-                        
-                    }   
-                });
+                    });
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
-        }); 
-
+        });
     }
 
     function afficheNationality() {
@@ -676,35 +670,35 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             dataType: 'json',
             success: function (result) {
                 if (result.status) {
+
                     if (nationChart != undefined || nationChart != null) 
                         nationChart.destroy();
 
                     var colorArray = setColorGradient(result.nationality.length);
-                    
 
-                var elem = document.getElementById('nationality');
-                nationChart = new Chart(elem, {
-                    type: 'bar',
-                    data: {
-                        labels: result.nationality,
-                        datasets: [{
-                            data: result.nb,
-                            backgroundColor: colorArray
-                        }],
-                    },
-                    options: {
-                        legend: {
-                            display: false,
+                    var elem = document.getElementById('nationality');
+
+                    nationChart = new Chart(elem, {
+                        type: 'bar',
+                        data: {
+                            labels: result.nationality,
+                            datasets: [{
+                                data: result.nb,
+                                backgroundColor: colorArray
+                            }],
                         },
-                        title:{
-                            display: true,
-                            text: "Nationalités",
-                            fontSize: 20
-                        },
-                        scales: options
-                        
-                    }   
-                });
+                        options: {
+                            legend: {
+                                display: false,
+                            },
+                            title:{
+                                display: true,
+                                text: "Nationalités",
+                                fontSize: 20
+                            },
+                            scales: options
+                        }
+                    });
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -723,14 +717,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             success: function (result) {
                 var nbArray = [];
                 var valArray = [];
-                if (filesChart != undefined || filesChart != null) {
-                    filesChart.destroy();
-                }
 
-                for(var i in result.val) {
+                if (filesChart != undefined || filesChart != null)
+                    filesChart.destroy();
+
+                for (var i in result.val) {
                     valArray.push(i);
                     nbArray.push(result.val[i]);
                 }
+
                 var colorArray = setColorGradient(nbArray.length);
                 var elem = document.getElementById('files');
                 filesChart = new Chart(elem, {
@@ -752,13 +747,11 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         }
                     }   
                 });
-                
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
-        }); 
-
+        });
     }
 
     //// AddView Function uses 2 AJAXs
@@ -804,7 +797,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
     jQuery(document).ready(function () {
 
-
         jQuery('#viewTable').each(function() {
             if(jQuery(this).find('tr').children("td").length < 2) {
                 jQuery(this).hide();
@@ -821,7 +813,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             document.getElementById("summaryNationality").append(document.createElement("br"));
 
             afficheNationality();
-
         }
 
         if (<?php echo $gender; ?>) {
@@ -834,7 +825,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             document.getElementById("summaryGender").append(document.createElement("br"));
 
             afficheGenre();
-
         }
 
         if (<?php echo $files; ?>) {
@@ -856,7 +846,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             document.getElementById("summaryFiles").append(document.createElement("br"));
 
             afficheFiles();
-
         }
 
         if (<?php echo $comptes; ?> ) {
@@ -899,7 +888,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             var valuePeriodecompte = jQuery('.periodeCompte').val();
             var value = jQuery('.compte').val();
             afficheComptes(value, valuePeriodecompte);
-
         }
 
         if (<?php echo $consult; ?>  && <?php echo $cand; ?>) {
@@ -918,7 +906,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             icon2.className ="search icon";
             buttonCand.append(icon1);
             buttonCon.append(icon2);
-            
 
             var exportDonnees1 = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID3"); ?>");
@@ -960,7 +947,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         }
 
         if (<?php echo $rels; ?>) {
-
             document.getElementById("relationRow").setAttribute("style", "display:block;");
 
             var button = document.createElement("div");
@@ -1010,7 +996,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         var valuePeriodeRel = jQuery(this).val();
         afficheRelations(valuePeriodeRel);
     });
-    
 </script>
 
 <style type='text/css'>
@@ -1051,6 +1036,4 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     #summaryRelation p {
         margin-bottom: -2px;
     }
-
 </style>
-
