@@ -4,7 +4,6 @@ ALTER TABLE `jos_emundus_uploads` ADD `is_validated` DOUBLE DEFAULT NULL ;
 
 ALTER TABLE `jos_emundus_setup_attachments` ADD `ocr_keywords` TEXT  DEFAULT NULL ;
 
-UPDATE `jos_emundus_setup_attachments` SET `ocr_keywords` = 'passport;passeport;pasaporte;passaporte' WHERE lbl LIKE '%_passport%' ;
 
 UPDATE `jos_emundus_setup_attachments` SET `ocr_keywords` = 'curriculum vitae;curriculum;work experience;professional experience;personal information;education;experience professionnelle;diplomes obtenus' WHERE lbl LIKE '_cv%' ;
 
