@@ -88,7 +88,7 @@ def fix_incorrect_orientation(filename):
     regexObj = re.search("Orientation in degrees:\s([0-9])+",tesseractResult)
     if regexObj:
         orientation = int(regexObj.group().split(': ')[1])
-        print('orientation: ' + str(orientation))
+        #print('orientation: ' + str(orientation))
         if orientation:
             image = cv2.imread(filename)
             image = ndimage.rotate(image, orientation)
@@ -115,30 +115,32 @@ def isPassport(imagePath, fname, lname, end_date):
 
 	if imagePath.lower().endswith('.pdf'):
 		imagePath = pdf2image(imagePath, 300)
-	
-	fix_incorrect_orientation(imagePath)
-	# Read the image
-	image = cv2.imread(imagePath)
-	
-	height, width = image.shape[:2]
-	if height >= 6000 and width >= 6000:
-		image = cv2.resize(image, (height / 3, width / 3)) 
+	try:
+		passdata = getMrz(imagePath)
+	except:
+		fix_incorrect_orientation(imagePath)
+		# Read the image
+		image = cv2.imread(imagePath)
 		
-	cv2.imwrite(imagePath, image)
+		height, width = image.shape[:2]
+		if height >= 6000 and width >= 6000:
+			image = cv2.resize(image, (height / 3, width / 3)) 
+			
+		cv2.imwrite(imagePath, image)
 
-	# deskew image
-	deskew(imagePath)
-	fix_incorrect_orientation(imagePath)
+		# deskew image
+		deskew(imagePath)
+		fix_incorrect_orientation(imagePath)
+		passdata = getMrz(imagePath)
 
-	passdata = getMrz(imagePath)
 	#print passdata
 	pass_names = passdata['names'].upper() +' '+ passdata['surname'].upper()
 	form_names = fname.upper() +' '+ lname.upper()
-	is_same = getSimilarity(pass_names, form_names)
-	l_similar = getSimilarity(lname.upper(), passdata['surname'].upper())
-	if (is_same >= 75 and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d"))) \
+	names_similarity = getSimilarity(pass_names, form_names)
+	lname_similarity = getSimilarity(lname.upper(), passdata['surname'].upper())
+	if (names_similarity >= 75 and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d"))) \
 		or (fname.upper() in pass_names and lname.upper() in pass_names and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d")))\
-		or l_similar >= 75 and fname.upper() in pass_names and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d")) :
+		or lname_similarity >= 75 and fname.upper() in pass_names and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d")) :
 		return 1
 	else:
 		return 0

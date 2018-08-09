@@ -69,13 +69,13 @@ print "**********************************************************"
 sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
     from jos_emundus_uploads eu\
     left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
-    where sa.lbl like '_photo' and eu.is_validated IS NULL order by eu.timedate ASC limit 100"
+    where sa.lbl like '_photo' and eu.is_validated IS NULL order by eu.timedate ASC limit 300"
 try:
 	cur.execute(sql)
 	data = cur.fetchall()
-except Exception, e:
-	handleException(e)
-	raise
+except:
+	sys.exit(1)
+	
 
 
 print "photos processing, please wait ..."
@@ -103,7 +103,7 @@ if os.path.exists(filename):
 	with open(filename, 'r+') as f:
 		if not f.read(1):
 			f.write('Datetime\t\tPriority\t\tClientip\t\tCategory\t\tType\t\tMessage\t\tStatus \n')
-		
+		'''
 		#load a progressbar
 		
 		bar = progressbar.ProgressBar(maxval=len(data), \
@@ -128,18 +128,18 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise
-				except Exception as e:
+					except:
+						sys.exit(1)
+						
+				except:
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tfailed \n')
 					req = "UPDATE jos_emundus_uploads SET is_validated=0 WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise
+					except:
+						sys.exit(1)
+						
 			else:
 				#insert log
 				f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tERROR\t\t'+ip+'\t\tcom_emundus\t\t PHOTO \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tFile not found\n')
@@ -147,7 +147,7 @@ if os.path.exists(filename):
 			sleep(0.2)
 		bar.finish()
 		print "end photos processing"
-		
+		'''
 		# get passports
 		print "**********************************************************"
 		print "**************** PASSPORTS *******************************"
@@ -163,9 +163,9 @@ if os.path.exists(filename):
 		try:
 			cur.execute(sql)
 			data = cur.fetchall()
-		except Exception, e:
-			handleException(e)
-			raise
+		except:
+			sys.exit(1)
+		
 		print "passports processing, please wait ..."
 		
 		# load a progressbar
@@ -190,20 +190,19 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise
+					except:
+						sys.exit(1) 
 						
 
-				except Exception as e:
+				except:
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t PASSPORT-ID_CARD \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tfailed \n')
 					req = "UPDATE jos_emundus_uploads SET is_validated=0 WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise
+					except:
+						sys.exit(1) 
+						
 								
 			else:
 				#insert log			
@@ -218,7 +217,7 @@ if os.path.exists(filename):
 			sleep(0.2)
 		bar.finish()
 		print "end passports processing"
-	
+	'''
 		# get CV
 		print "**********************************************************"
 		print "**************** CV **************************************"
@@ -227,14 +226,14 @@ if os.path.exists(filename):
 		sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
 			from jos_emundus_uploads eu\
 			left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
-			where sa.lbl like '_cv%' and eu.is_validated IS NULL order by eu.timedate ASC limit 100"
+			where sa.lbl like '_cv%' and eu.is_validated IS NULL order by eu.timedate ASC limit 300"
 
 		try:
 			cur.execute(sql)
 			data = cur.fetchall()
-		except Exception, e:
-			handleException(e)
-			raise
+		except:
+			sys.exit(1)
+			
 		print "CV processing, please wait ..."
 		
 		# load a progressbar
@@ -263,23 +262,23 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise
+					except:
+						sys.exit(1) 
+
 					# after sql insertion, remove generated jpeg image
 					image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
 					if os.path.exists(image):
 						os.remove(image)
 
-				except Exception as e:
+				except:
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t CV \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tfailed \n')
 					req = "UPDATE jos_emundus_uploads SET is_validated=0 WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise
+					except:
+						sys.exit(1)
+						
 				
 					
 			else:
@@ -299,14 +298,14 @@ if os.path.exists(filename):
 		sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
 			from jos_emundus_uploads eu\
 			left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
-			where sa.lbl like '_motivation%' and eu.is_validated IS NULL order by eu.timedate ASC limit 100"
+			where sa.lbl like '_motivation%' and eu.is_validated IS NULL order by eu.timedate ASC limit 300"
 
 		try:
 			cur.execute(sql)
 			data = cur.fetchall()
-		except Exception, e:
-			handleException(e)
-			raise
+		except:
+			sys.exit(1)
+			
 
 		print "motivation processing, please wait ..."
 		
@@ -335,24 +334,24 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise
+					except:
+						sys.exit(1)
+						
 
 					# after sql insertion, remove generated jpeg image
 					image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
 					if os.path.exists(image):
 						os.remove(image)
 
-				except Exception as e:
+				except:
 					f.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) +'\t\tVALIDATION\t\t'+ip+'\t\tcom_emundus\t\t MOTIVATION \t\t'+ parent+"/"+filepath+ str(d[1])+"/"+d[2] +'\t\tfailed \n')
 					req = "UPDATE jos_emundus_uploads SET is_validated=0 WHERE filename LIKE '"+d[2]+"' AND user_id = "+str(d[1])
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except Exception, e:
-						handleException(e)
-						raise				
+					except:
+						sys.exit(1)
+										
 					
 			else:
 				#insert log			
@@ -362,4 +361,4 @@ if os.path.exists(filename):
 			sleep(0.2)
 		bar.finish()
 		print "end motivation processing"
-		
+		'''
