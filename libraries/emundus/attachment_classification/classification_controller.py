@@ -103,7 +103,7 @@ if os.path.exists(filename):
 	with open(filename, 'r+') as f:
 		if not f.read(1):
 			f.write('Datetime\t\tPriority\t\tClientip\t\tCategory\t\tType\t\tMessage\t\tStatus \n')
-		'''
+		
 		#load a progressbar
 		
 		bar = progressbar.ProgressBar(maxval=len(data), \
@@ -147,7 +147,7 @@ if os.path.exists(filename):
 			sleep(0.2)
 		bar.finish()
 		print "end photos processing"
-		'''
+		
 		# get passports
 		print "**********************************************************"
 		print "**************** PASSPORTS *******************************"
@@ -158,14 +158,14 @@ if os.path.exists(filename):
 			left join jos_emundus_setup_attachments sa on eu.attachment_id = sa.id\
 			left join jos_emundus_users eau on eu.user_id = eau.user_id\
 			left join jos_emundus_setup_campaigns esc on eu.campaign_id = esc.id\
-			where (sa.lbl like '_passport%' or sa.lbl like '_identity%') and eu.is_validated IS NULL order by eu.timedate ASC limit 100"
+			where (sa.lbl like '_passport%' or sa.lbl like '_identity%') and eu.is_validated IS NULL order by eu.timedate ASC limit 300"
 
 		try:
 			cur.execute(sql)
 			data = cur.fetchall()
 		except:
 			sys.exit(1)
-		
+
 		print "passports processing, please wait ..."
 		
 		# load a progressbar
@@ -217,7 +217,7 @@ if os.path.exists(filename):
 			sleep(0.2)
 		bar.finish()
 		print "end passports processing"
-	'''
+	
 		# get CV
 		print "**********************************************************"
 		print "**************** CV **************************************"
@@ -361,4 +361,4 @@ if os.path.exists(filename):
 			sleep(0.2)
 		bar.finish()
 		print "end motivation processing"
-		'''
+		
