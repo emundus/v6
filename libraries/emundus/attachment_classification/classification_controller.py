@@ -73,7 +73,8 @@ sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
 try:
 	cur.execute(sql)
 	data = cur.fetchall()
-except:
+except Exception, e:
+	print 'An error occur, '+str(e)
 	sys.exit(1)
 	
 
@@ -115,7 +116,7 @@ if os.path.exists(filename):
 			i += 1
 			if os.path.exists(parent+"/"+filepath+ str(d[1])+"/"+d[2]):
 				try:
-					valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "isphoto")
+					valid = cl.isPhoto(parent+"/"+filepath+ str(d[1])+"/"+d[2])
 				
 					#insert log in log/com_emundus.classification.php
 					if valid == 1:
@@ -128,7 +129,8 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
+					except Exception, e:
+						print 'An error occur, '+str(e)
 						sys.exit(1)
 						
 				except:
@@ -137,7 +139,8 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
+					except Exception, e:
+						print 'An error occur, '+str(e)
 						sys.exit(1)
 						
 			else:
@@ -163,7 +166,8 @@ if os.path.exists(filename):
 		try:
 			cur.execute(sql)
 			data = cur.fetchall()
-		except:
+		except Exception, e:
+			print 'An error occur, '+str(e)
 			sys.exit(1)
 
 		print "passports processing, please wait ..."
@@ -190,7 +194,8 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
+					except Exception, e:
+						print 'An error occur, '+str(e)
 						sys.exit(1) 
 						
 
@@ -200,8 +205,9 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
-						sys.exit(1) 
+					except Exception, e:
+						print 'An error occur, '+str(e)
+						sys.exit(1)
 						
 								
 			else:
@@ -231,7 +237,8 @@ if os.path.exists(filename):
 		try:
 			cur.execute(sql)
 			data = cur.fetchall()
-		except:
+		except Exception, e:
+			print 'An error occur, '+str(e)
 			sys.exit(1)
 			
 		print "CV processing, please wait ..."
@@ -247,9 +254,9 @@ if os.path.exists(filename):
 			if os.path.exists(parent+"/"+filepath+ str(d[1])+"/"+d[2]):
 				try:
 					if d[4]:
-						valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "iscv", d[4])
+						valid = cl.isCv(parent+"/"+filepath+ str(d[1])+"/"+d[2], d[4])
 					else:
-						valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "iscv")
+						valid = cl.isCv(parent+"/"+filepath+ str(d[1])+"/"+d[2])
 					#insert log
 
 					if valid == 1:
@@ -262,8 +269,9 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
-						sys.exit(1) 
+					except Exception, e:
+						print 'An error occur, '+str(e)
+						sys.exit(1)
 
 					# after sql insertion, remove generated jpeg image
 					image = parent+"/"+filepath+ str(d[1])+"/"+d[2][:-4]+'.jpg'
@@ -276,7 +284,8 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
+					except Exception, e:
+						print 'An error occur, '+str(e)
 						sys.exit(1)
 						
 				
@@ -292,7 +301,7 @@ if os.path.exists(filename):
 		
 		# get motivation
 		print "**********************************************************"
-		print "**************** MOTIVATIONS ******************************"
+		print "**************** MOTIVATIONS *****************************"
 		print "**********************************************************"
 
 		sql="select eu.attachment_id, eu.user_id, eu.filename, sa.lbl, sa.ocr_keywords\
@@ -303,7 +312,8 @@ if os.path.exists(filename):
 		try:
 			cur.execute(sql)
 			data = cur.fetchall()
-		except:
+		except Exception, e:
+			print 'An error occur, '+str(e)
 			sys.exit(1)
 			
 
@@ -320,9 +330,9 @@ if os.path.exists(filename):
 			if os.path.exists(parent+"/"+filepath+ str(d[1])+"/"+d[2]):
 				try:
 					if d[4]:
-						valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "ismotivation", d[4])
+						valid = cl.isMotivation(parent+"/"+filepath+ str(d[1])+"/"+d[2], d[4])
 					else:
-						valid = cl.main(parent+"/"+filepath+ str(d[1])+"/"+d[2], "ismotivation")
+						valid = cl.isMotivation(parent+"/"+filepath+ str(d[1])+"/"+d[2])
 					#insert log
 					if valid == 1:
 						status = "success"
@@ -334,7 +344,8 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
+					except Exception, e:
+						print 'An error occur, '+str(e)
 						sys.exit(1)
 						
 
@@ -349,9 +360,9 @@ if os.path.exists(filename):
 					try:
 						cur.execute(req)
 						cnx.commit()
-					except:
+					except Exception, e:
+						print 'An error occur, '+str(e)
 						sys.exit(1)
-										
 					
 			else:
 				#insert log			

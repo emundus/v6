@@ -66,7 +66,6 @@ def deskew(filename):
 # get generated string by tesseract ocr
 def getString(image):
 	char = image_to_string(image)
-	#,config='-c tessedit_char_whitelist=<0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz -psm 6'
 	return char 
 
 def getText(pdf):
@@ -84,7 +83,6 @@ def getMrz(filename):
 	
 def fix_incorrect_orientation(filename):  
     tesseractResult = str(commands.getstatusoutput('tesseract ' + filename + ' -  -psm 0'))
-    #print('tesseractResult: ' + tesseractResult)
     regexObj = re.search("Orientation in degrees:\s([0-9])+",tesseractResult)
     if regexObj:
         orientation = int(regexObj.group().split(': ')[1])
@@ -96,6 +94,22 @@ def fix_incorrect_orientation(filename):
 
 # is image a human photo? 
 def isPhoto(imagePath):
+	# Convert the file to image
+	if imagePath.lower().endswith('.pdf'):
+		imagePath = pdf2image(imagePath, 300)
+	if imagePath.lower().endswith('.gif'):
+		im = Image.open(imagePath)
+		img = im.convert('RGB')
+		pix = img.load()
+		for y in range(img.size[1]):
+			for x in range(img.size[0]):
+				if pix[x, y][0] < 102 or pix[x, y][1] < 102 or pix[x, y][2] < 102:
+					pix[x, y] = (0, 0, 0, 255)
+				else:
+					pix[x, y] = (255, 255, 255, 255)
+
+		img.save(imagePath[:-4]+'.jpg')
+		imagePath = imagePath[:-4]+'.jpg'
 	# Read the image
 	image = cv2.imread(imagePath)
 	
@@ -114,7 +128,7 @@ def isPhoto(imagePath):
 def isPassport(imagePath, fname, lname, end_date):
 
 	if imagePath.lower().endswith('.pdf'):
-		imagePath = pdf2image(imagePath, 300)
+		imagePath = pdf2image(imagePath, 350)
 	try:
 		passdata = getMrz(imagePath)
 	except:
@@ -154,13 +168,19 @@ def isCv(filepath, keywords = ""):
 		filepath = pdf2image(filepath, 300)
 		image = cv2.imread(filepath)
 		text = getString(image)
-	if filepath.lower().endswith('.docx'):
+
+	elif filepath.lower().endswith('.docx'):
 		text = getText(filepath)
-	if filepath.lower().endswith('.doc'):
+
+	elif filepath.lower().endswith('.doc'):
 		os.system('cat '+ filepath+ ' > ' + path + '/extractedtext.txt')
 		text = open(path + '/extractedtext.txt', 'r').read()
 		if os.path.exists(path + '/extractedtext.txt'):
 			os.remove(path + '/extractedtext.txt')
+
+	else:
+		image = cv2.imread(filepath)
+		text = getString(image)
 
 	keymatch = []
 	if keywords:
@@ -192,54 +212,8 @@ def isMotivation(filepath, keywords = ""):
 	else:
 		return 0
 
-def main(image, function, keywords=""):
-	if function == "isphoto":
-		if image.lower().endswith('.pdf'):
-			image = pdf2image(image, 300)
-		if image.lower().endswith('.gif'):
-			im = Image.open(image)
-			img = im.convert('RGB')
-			pix = img.load()
-			for y in range(img.size[1]):
-				for x in range(img.size[0]):
-					if pix[x, y][0] < 102 or pix[x, y][1] < 102 or pix[x, y][2] < 102:
-						pix[x, y] = (0, 0, 0, 255)
-					else:
-						pix[x, y] = (255, 255, 255, 255)
 
-			img.save(image[:-4]+'.jpg')
-			image = image[:-4]+'.jpg'
 
-		res = isPhoto(image)
-
-		if res == 1:
-			return 1
-		else:
-			return 0
-
-	if function == "ispassport":
-		if image.lower().endswith('.pdf'):
-			image = pdf2image(image, 350)
-
-		res = isPassport(image, uid)
-		if res == 1:
-			return 1
-		else:
-			return 0
-	
-	if function == "iscv":
-		res = isCv(image, keywords)
-		if res == 1:
-			return 1
-		else:
-			return 0
-
-	if function == "ismotivation":
-		res = isMotivation(image, keywords)
-		if res == 1:
-			return 1
-		else:
-			return 0
 
 
 
