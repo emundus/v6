@@ -107,8 +107,7 @@ if os.path.exists(filename):
 		
 		#load a progressbar
 		
-		bar = progressbar.ProgressBar(maxval=len(data), \
-			widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+		bar = progressbar.ProgressBar(maxval=len(data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
 		bar.start()
 		
 		i = 0
@@ -173,8 +172,7 @@ if os.path.exists(filename):
 		print "passports processing, please wait ..."
 		
 		# load a progressbar
-		bar = progressbar.ProgressBar(maxval=len(data), \
-			widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+		bar = progressbar.ProgressBar(maxval=len(data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
 		bar.start()
 		
 		i = 0
@@ -244,8 +242,7 @@ if os.path.exists(filename):
 		print "CV processing, please wait ..."
 		
 		# load a progressbar
-		bar = progressbar.ProgressBar(maxval=len(data), \
-			widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+		bar = progressbar.ProgressBar(maxval=len(data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
 		bar.start()
 		
 		i = 0
@@ -320,8 +317,7 @@ if os.path.exists(filename):
 		print "motivation processing, please wait ..."
 		
 		# load a progressbar
-		bar = progressbar.ProgressBar(maxval=len(data), \
-			widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+		bar = progressbar.ProgressBar(maxval=len(data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
 		bar.start()
 		
 		i = 0
