@@ -140,6 +140,9 @@ JText::script('TAGS_DELETE_SUCCESS');
 JText::script('CONFIRM_DELETE_FILTER');
 JText::script('ADD_TAGS');
 JText::script('PLEASE_SELECT_TAG');
+JText::script('VALID');
+JText::script('INVALID');
+JText::script('UNCHECKED');
 
 
 // view user

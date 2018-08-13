@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 
 	<?php if (!empty($offers->to)) :?>
 		<span class="em-contact-request col-md-12">
-			<div class="em-highlight"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFERS'); ?></div>
+			<div class="em-highlight"><?php echo count($offers->to) > 1 ?JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFERS'):JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFER'); ?></div>
 			<?php foreach ($offers->to as $offer) :?>
 				<div class="col-md-5 em-contact-request-card" id="<?php echo $offer->link_id; ?>">
 					<div class="col-md-8 em-bottom-space">
@@ -59,7 +59,7 @@ defined('_JEXEC') or die;
 
 	<?php if (!empty($offers->from)) :?>
 		<span class="em-contact-request col-md-12">
-			<div class="em-highlight"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_SENT_OFFERS'); ?></div>
+			<div class="em-highlight"><?php echo count($offers->from) > 1 ? JText::_('MOD_EMUNDUS_CIFRE_OFFERS_SENT_OFFERS') : JText::_('MOD_EMUNDUS_CIFRE_OFFERS_SENT_OFFER'); ?></div>
 			<?php foreach ($offers->from as $offer) :?>
 				<div class="col-md-5 em-contact-request-card" id="<?php echo $offer->link_id; ?>">
 					<div class="col-md-8 em-bottom-space">
@@ -163,6 +163,9 @@ defined('_JEXEC') or die;
                 dataType: 'json',
                 url: 'index.php?option=com_emundus&controller=cifre&task=breakupbyid',
                 data: { id : id },
+                beforeSend: function () {
+                    jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled> ... </button>');
+                },
                 success: function(result) {
                     if (result.status) {
                         // Dynamically change the button back to the state of not having a link.

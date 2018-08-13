@@ -313,9 +313,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         var green_diff = end_green - start_green;
         var blue_diff = end_blue - start_blue;
         
-        var red_step = red_diff/num_steps ;
-        var green_step = green_diff/num_steps;
-        var blue_step = blue_diff/num_steps;
+        var red_step = parseInt(red_diff/num_steps) ;
+        var green_step = parseInt(green_diff/num_steps);
+        var blue_step = parseInt(blue_diff/num_steps);
 
         while (current_red != end_red && current_green != end_green && current_blue != end_blue) {
             current_red += red_step;
@@ -727,6 +727,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                 }
 
                 var colorArray = setColorGradient(nbArray.length);
+                console.log(colorArray);
                 var elem = document.getElementById('files');
                 filesChart = new Chart(elem, {
                     type: 'pie',

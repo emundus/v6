@@ -126,20 +126,32 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         <strong class="em-highlight"> <?php echo is_array($this->data['data_thematics___thematic_raw'])?implode('</strong>; <strong class="em-highlight">', $this->data['data_thematics___thematic_raw']):$this->data['data_thematics___thematic_raw']; ?></strong>
     </div>
 
-    <!-- Project context -->
-    <p class="em-offre-contexte">
-        <div class="em-offre-subtitle">Contexte : </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
-    </p>
+	<?php if ($profile == '1006') :?>
+        <!-- Project context -->
+        <p class="em-offre-contexte">
+            <div class="em-offre-subtitle">Contexte : </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
+        </p>
+    <?php endif; ?>
 
     <!-- Project question -->
+    <?php
+        if ($profile == '1006')
+            $questionText = 'Grande question posée :';
+        elseif ($profile == '1007')
+            $questionText = 'Problématique de recherche :';
+        elseif ($profile == '1008')
+            $questionText = 'Grand défi :';
+    ?>
     <p class="em-offre-question">
-        <div class="em-offre-subtitle">Grande question posée : </div><?php echo $this->data['jos_emundus_projet___question_raw'][0]; ?>
+        <div class="em-offre-subtitle"><?php echo $questionText; ?></div><?php echo $this->data['jos_emundus_projet___question_raw'][0]; ?>
     </p>
 
-    <!-- Project methodology -->
-    <p class="em-offre-methodologie">
-        <div class="em-offre-subtitle">Méthodologie proposée : </div><?php echo $this->data['jos_emundus_projet___methodologie_raw'][0]; ?>
-    </p>
+	<?php if ($profile == '1006') :?>
+        <!-- Project methodology -->
+        <p class="em-offre-methodologie">
+            <div class="em-offre-subtitle">Méthodologie proposée : </div><?php echo $this->data['jos_emundus_projet___methodologie_raw'][0]; ?>
+        </p>
+	<?php endif; ?>
 
 </div>
 
