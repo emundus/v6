@@ -574,13 +574,14 @@ class EmundusController extends JControllerLegacy {
         $m_profile = new EmundusModelProfile;
 
         $db = JFactory::getDBO();
+        $jinput = JFactory::getApplication()->input;
 
-        $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $duplicate  = JRequest::getVar('duplicate', null, 'GET', 'none',0);
-        $layout     = JRequest::getVar('layout', null, 'GET', 'none',0);
-        $format     = JRequest::getVar('format', null, 'GET', 'none',0);
-        $itemid     = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $fnum       = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $student_id = $jinput->get->get('sid', null);
+        $duplicate  = $jinput->get->get('duplicate', null);
+		$layout     = $jinput->get->get('layout', null);
+        $format     = $jinput->get->get('format', null);
+        $itemid     = $jinput->get('Itemid', null);
+        $fnum       = $jinput->get->get('fnum', null);
 
         $fnums = array();
         $current_user = JFactory::getSession()->get('emundusUser');
@@ -650,7 +651,7 @@ class EmundusController extends JControllerLegacy {
         else
             $url = 'index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments;
 
-        foreach ($fnums as $key => $fnum) {
+        foreach ($fnums as $fnum) {
 
             foreach ($files as $key => $file) {
 
@@ -669,7 +670,7 @@ class EmundusController extends JControllerLegacy {
 
                 try {
                     $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
-                    $db->setQuery( $query_ext );
+                    $db->setQuery($query_ext);
                     $attachment = $db->loadAssoc();
 
                     try {
@@ -852,7 +853,7 @@ class EmundusController extends JControllerLegacy {
                         return false;
                     }
 
-                    if ($labels=="_photo") {
+                    if ($labels == "_photo") {
 
                         $checkdouble_query = 'SELECT count(user_id)
                         FROM #__emundus_uploads

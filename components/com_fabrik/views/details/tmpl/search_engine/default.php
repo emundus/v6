@@ -226,7 +226,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             <button type="button" class="btn btn-primary" onclick="actionButton('reply')">
                 Répondre
             </button>
-            <button type="button" class="btn btn-primary" onclick="breakUp()">
+            <button type="button" class="btn btn-primary" onclick="breakUp('ignore')">
                 Ignorer
             </button>
 
@@ -234,12 +234,12 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             <button type="button" class="btn btn-primary" onclick="actionButton('retry')">
                 Relancer
             </button>
-            <button type="button" class="btn btn-primary" onclick="breakUp()">
+            <button type="button" class="btn btn-primary" onclick="breakUp('cancel')">
                 Annuler la demande
             </button>
 
         <?php elseif ($action_button == 'breakup') :?>
-            <button type="button" class="btn btn-primary" onclick="breakUp()">
+            <button type="button" class="btn btn-primary" onclick="breakUp('breakup')">
                 Couper contact
             </button>
         <?php endif; ?>
@@ -287,11 +287,10 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             success: function(result) {
                 if (result.status) {
 
-
                     // When we successfully change the status, we simply dynamically change the button.
 
                     if (action == 'contact') {
-                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp()">Annuler la demande</button>');
+                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
                     }
 
                     else if (action == 'retry') {
@@ -300,39 +299,6 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
                     else if (action == 'reply') {
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"> Couper contact </button>');
-                    }
-
-                    else if (action == 'breakup') {
-                        jQuery('#em-search-item-action-button').html('' +
-                            '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">' +
-                            '        Entrer en contact' +
-                            '        </button>' +
-                            '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
-                            '            <div class="modal-dialog" role="document">' +
-                            '                <div class="modal-content">' +
-                            '                    <div class="modal-header">' +
-                            '                        <h5 class="modal-title">Demande de contact</h5>' +
-                            '                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                            '                            <span aria-hidden="true">&times;</span>' +
-                            '                        </button>' +
-                            '                    </div>' +
-                            '                    <div class="modal-body">' +
-                            '                        <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>' +
-                                                        <?php if (!empty($offers)) :?>
-                            '                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>' +
-                            '                            <select id="em-join-offer">' +
-                                                            <?php foreach ($offers as $offer) :?>
-                            '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
-                                                            <?php endforeach; ?>
-                            '                            </select>' +
-                                                        <?php endif; ?>
-                            '                    </div>' +
-                            '                    <div class="modal-footer">' +
-                            '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Evoyer la demande de contact</button>' +
-                            '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
-                            '                    </div>' +
-                            '                </div>' +
-                            '            </div>');
                     }
 
                 } else {
@@ -347,7 +313,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         });
     }
 
-    function breakUp() {
+    function breakUp(action) {
         var data = {
             fnum : '<?php echo $fnum; ?>'
         };
@@ -355,8 +321,11 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         jQuery.ajax({
             type: 'POST',
             dataType: 'json',
-            url: 'index.php?option=com_emundus&controller=cifre&task=breakup',
+            url: 'index.php?option=com_emundus&controller=cifre&task=breakup&action='+action,
             data: data,
+            beforeSend: function () {
+                jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
+            },
             success: function(result) {
                 if (result.status) {
 

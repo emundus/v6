@@ -32,16 +32,16 @@ defined('_JEXEC') or die;
                             <div class="em-contact-request-contact-item"><strong><?php echo JText::_('NAME'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->name; ?> </div>
                             <div class="em-contact-request-contact-item"><strong><?php echo JText::_('EMAIL'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->email; ?> </div>
                         </div>
-                        <div class="em-buttons-<?php echo $offer->link_id; ?>">
+                        <div id="em-buttons-<?php echo $offer->link_id; ?>">
                             <?php if ($offer->state == '1') :?>
                                 <button type="button" class="btn btn-primary" onclick="reply('<?php echo $offer->link_id; ?>')">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_REPLY'); ?>
                                 </button>
-                                <button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
+                                <button type="button" class="btn btn-primary" onclick="breakUp('ignore', '<?php echo $offer->link_id; ?>')">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_IGNORE'); ?>
                                 </button>
                             <?php elseif ($offer->state == '2') :?>
-                                <button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
+                                <button type="button" class="btn btn-primary" onclick="breakUp('breakup', '<?php echo $offer->link_id; ?>')">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?>
                                 </button>
                             <?php endif; ?>
@@ -82,11 +82,11 @@ defined('_JEXEC') or die;
                                 <button type="button" class="btn btn-primary" onclick="retry('<?php echo $offer->link_id; ?>')">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RETRY'); ?>
                                 </button>
-                                <button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
+                                <button type="button" class="btn btn-primary" onclick="breakUp('cancel', '<?php echo $offer->link_id; ?>')">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_CANCEL'); ?>
                                 </button>
                             <?php elseif ($offer->state == '2') :?>
-                                <button type="button" class="btn btn-primary" onclick="breakUp('<?php echo $offer->link_id; ?>')">
+                                <button type="button" class="btn btn-primary" onclick="breakUp('breakup', '<?php echo $offer->link_id; ?>')">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?>
                                 </button>
                             <?php endif; ?>
@@ -115,7 +115,7 @@ defined('_JEXEC') or die;
                 success: function(result) {
                     if (result.status) {
                         // When we successfully change the status, we simply dynamically change the button.
-                        jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-danger" onclick="breakUp(id)"> <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?> </button>');
+                        jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-danger" onclick="breakUp(\'breakup\','+id+')"> <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?> </button>');
                     } else {
                         var actionText = document.getElementById('em-action-text-'+id);
                         actionText.classList.remove('hidden');
@@ -156,12 +156,12 @@ defined('_JEXEC') or die;
         }
 
 
-        function breakUp(id) {
+        function breakUp(action, id) {
 
             jQuery.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: 'index.php?option=com_emundus&controller=cifre&task=breakupbyid',
+                url: 'index.php?option=com_emundus&controller=cifre&task=breakupbyid&action='+action,
                 data: { id : id },
                 beforeSend: function () {
                     jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled> ... </button>');
