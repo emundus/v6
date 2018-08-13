@@ -32,7 +32,7 @@ defined('_JEXEC') or die;
                             <div class="em-contact-request-contact-item"><strong><?php echo JText::_('NAME'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->name; ?> </div>
                             <div class="em-contact-request-contact-item"><strong><?php echo JText::_('EMAIL'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->email; ?> </div>
                         </div>
-                        <div class="em-buttons-<?php echo $offer->link_id; ?>">
+                        <div id="em-buttons-<?php echo $offer->link_id; ?>">
                             <?php if ($offer->state == '1') :?>
                                 <button type="button" class="btn btn-primary" onclick="reply('<?php echo $offer->link_id; ?>')">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_REPLY'); ?>
