@@ -465,6 +465,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 		}
 
 		$jinput = $application->input;
+		$action = $jinput->get->get('action', 'breakup');
 		$fnum   = $jinput->post->get('fnum', null);
 
 		if (empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
@@ -489,7 +490,13 @@ class EmundusControllerCifre extends JControllerLegacy {
 				'OFFER_NAME' => $offerInformation->titre,
 			];
 
-			$email_to_send = 75;
+			// Send a different email based on the context of cancellation.
+			if ($action == 'cancel')
+				$email_to_send = 77;
+			elseif ($action == 'ignore')
+				$email_to_send = 78;
+			else
+				$email_to_send = 75;
 
 			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
 			exit;
@@ -515,6 +522,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 		}
 
 		$jinput = $application->input;
+		$action = $jinput->get->get('action', 'breakup');
 		$id = $jinput->post->get('id', null);
 
 		if (empty($id)) {
@@ -544,6 +552,14 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$fnum = $link->fnum_from;
 			}
 
+			// Send a different email based on the context of cancellation.
+			if ($action == 'cancel')
+				$email_to_send = 77;
+			elseif ($action == 'ignore')
+				$email_to_send = 78;
+			else
+				$email_to_send = 75;
+
 			// If no fnum: We are user_to and fnum_from does not exist: send to user_from about fnum_to
 			if (empty($fnum)) {
 				
@@ -552,8 +568,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 				// This gets additional information about the offer, for example the title.
 				$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
-
-				$email_to_send = 75;
 
 				// We cannot use the usual mailing function in c_messages because the recipient is not an fnum.
 				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
@@ -623,7 +637,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 				} else {
 
 					$sent[] = $user_from->email;
-					$log    = [
+					$log = [
 						'user_id_from' => $this->user->id,
 						'user_id_to'   => $user_from->id,
 						'subject'      => $subject,
@@ -654,8 +668,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_NAME'      => $offerInformation->titre,
 				];
-
-				$email_to_send = 75;
 
 				echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
 				exit;
