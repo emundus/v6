@@ -71,3 +71,6 @@ Serveur linux
 	
 	* install alyn for image deskewing
 	pip install alyn
+	
+	* install pyPDF
+	apt-get install python-PyPDF2
