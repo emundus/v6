@@ -7,6 +7,8 @@ Serveur linux
 
 - Installer python 2.7:
 	apt-get install python2.7
+- Installer pip
+	apt-get install python-pip
 
 - Installer les librairies dépendantes:
 	* install poppler on server
@@ -27,7 +29,7 @@ Serveur linux
 	pip install pillow
 
 	* install cv2
-	apt-get install libopencv-dev python3-opencv
+	apt-get install libopencv-dev python-opencv
 
 	* install pytesseract ocr
 	pip install pytesseract
@@ -69,3 +71,6 @@ Serveur linux
 	
 	* install alyn for image deskewing
 	pip install alyn
+	
+	* install pyPDF
+	apt-get install python-PyPDF2
