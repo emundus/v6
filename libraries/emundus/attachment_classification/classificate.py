@@ -100,14 +100,6 @@ def isPhoto(imagePath):
 	if imagePath.lower().endswith('.gif'):
 		im = Image.open(imagePath)
 		img = im.convert('RGB')
-		pix = img.load()
-		for y in range(img.size[1]):
-			for x in range(img.size[0]):
-				if pix[x, y][0] < 102 or pix[x, y][1] < 102 or pix[x, y][2] < 102:
-					pix[x, y] = (0, 0, 0, 255)
-				else:
-					pix[x, y] = (255, 255, 255, 255)
-
 		img.save(imagePath[:-4]+'.jpg')
 		imagePath = imagePath[:-4]+'.jpg'
 	# Read the image
@@ -119,8 +111,10 @@ def isPhoto(imagePath):
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 	if (len(faces) > 0 and getClassResult(image) == "photo") or (len(faces) > 0 and image_to_string(image) == ""):
+		del faces
 		return 1
 	else:
+		del faces
 		return 0
 	
 	
@@ -155,8 +149,10 @@ def isPassport(imagePath, fname, lname, end_date):
 	if (names_similarity >= 75 and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d"))) \
 		or (fname.upper() in pass_names and lname.upper() in pass_names and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d")))\
 		or lname_similarity >= 75 and fname.upper() in pass_names and int(passdata['expiration_date']) > int(end_date.strftime("%y%m%d")) :
+		del names_similarity,form_names, pass_names, passdata, lname_similarity
 		return 1
 	else:
+		del names_similarity,form_names, pass_names, passdata, lname_similarity
 		return 0
 	
 
