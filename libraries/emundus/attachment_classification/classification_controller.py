@@ -9,7 +9,7 @@ from time import gmtime, strftime, sleep
 import tarfile
 import socket
 import progressbar
-import PyPDF2
+#import PyPDF2
 import classificate as cl
 
 
@@ -148,6 +148,7 @@ if os.path.exists(filename):
 			bar.update(i)
 			sleep(0.2)
 		bar.finish()
+		del data
 		print "end photos processing"
 		
 		# get passports
@@ -220,6 +221,7 @@ if os.path.exists(filename):
 			bar.update(i)
 			sleep(0.2)
 		bar.finish()
+		del data
 		print "end passports processing"
 	
 		# get CV
@@ -294,6 +296,7 @@ if os.path.exists(filename):
 			bar.update(i)
 			sleep(0.2)
 		bar.finish()
+		del data
 		print "end CV processing"
 		
 		# get motivation
@@ -367,5 +370,7 @@ if os.path.exists(filename):
 			bar.update(i)
 			sleep(0.2)
 		bar.finish()
+		del data
 		print "end motivation processing"
-		
+	f.close()
+	
