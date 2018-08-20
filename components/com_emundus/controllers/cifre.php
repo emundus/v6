@@ -546,11 +546,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			// Either we are user_from: send to fnum_to about fnum_to
 			// Or we are user_to and fnum_from exists: send to fnum_from about fnum_from
-			if ($this->user->id == $link->user_from) {
+			if ($this->user->id == $link->user_from)
 				$fnum = $link->fnum_to;
-			} else {
+			else
 				$fnum = $link->fnum_from;
-			}
 
 			// Send a different email based on the context of cancellation.
 			if ($action == 'cancel')
