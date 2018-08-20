@@ -14,8 +14,9 @@ defined('_JEXEC') or die;
 
 	<?php if (!empty($offers)) :?>
 		<span class="em-contact-request col-md-12">
-			<div class="em-highlight"><?php echo count($offers->to) > 1 ?JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFERS'):JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFER'); ?></div>
-			<?php foreach ($offers->to as $offer) :?>
+			<div class="em-highlight"><?php echo count($offers) > 1 ?JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFERS'):JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFER'); ?></div>
+			<?php foreach ($offers as $offer) :?>
+
 				<div class="col-md-5 em-contact-request-card" id="<?php echo $offer->fnum; ?>">
 					<div class="col-md-8 em-bottom-space">
                         <div class="em-contact-request-heading"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_OFFER_NAME'); ?></div>
@@ -27,11 +28,6 @@ defined('_JEXEC') or die;
 					</div>
 
 					<div class="col-md-8 em-bottom-space">
-                        <div class="em-contact-request-contact">
-                            <div class="em-contact-request-heading"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_FROM'); ?></div>
-                            <div class="em-contact-request-contact-item"><strong><?php echo JText::_('NAME'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->name; ?> </div>
-                            <div class="em-contact-request-contact-item"><strong><?php echo JText::_('EMAIL'); ?>:</strong> <?php echo JFactory::getUser($offer->user_from)->email; ?> </div>
-                        </div>
                         <div id="em-buttons-<?php echo $offer->fnum; ?>">
                             <!-- TODO: Add a URL to the offer page by getting the ID required in the model. -->
                             <a type="button" class="btn btn-primary" href="<?php echo JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>">

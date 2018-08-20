@@ -480,7 +480,7 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 		$query
-			->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre')])
+			->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 			->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
@@ -491,8 +491,6 @@ class EmundusModelCifre extends JModelList {
 			->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('err.id'))
 			->where($where);
 		$this->db->setQuery($query);
-
-		echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
 
 		try {
 			$results = $this->db->loadObjectList();
