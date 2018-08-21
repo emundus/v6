@@ -15,15 +15,17 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 class EmundusModelMessages extends JModelList {
-
+    var $user = null;
     /**
      * Constructor
      *
      * @since 3.8.6
      */
-    public function __construct() {
-
-    }
+    public function __construct($config = array())
+	{
+        $this->user = JFactory::getSession()->get('emundusUser');
+		parent::__construct($config);
+	}
 
     /**
      * Gets all published message templates of a certain type.
@@ -547,6 +549,74 @@ class EmundusModelMessages extends JModelList {
             return false;
         }
 
+    }
+
+
+
+
+
+
+    ///// All functions from here are for the messages view
+
+    // get all contacts the current user has received or sent a message
+    public function getContacts($user = null) {
+
+        if(empty($user))
+            $user = $this->user->id;
+        $db = JFactory::getDbo();
+
+        $query = "  select jos_messages.*, U2.name as name_from, U.name as name_to
+                    from jos_messages
+                    LEFT JOIN jos_users U ON U.id = jos_messages.user_id_to 
+                    LEFT JOIN jos_users U2 ON U2.id = jos_messages.user_id_from 
+                    where (jos_messages.folder_id = 2) 
+                    AND(least(`user_id_from`, `user_id_to`), greatest(`user_id_from`, `user_id_to`), `date_time`)       
+                    in 
+                    (
+                        select 
+                           least(`user_id_from`, `user_id_to`) as x, greatest(`user_id_from`, `user_id_to`) as y, 
+                           max(`date_time`) as msg_time
+                        from jos_messages 
+                        group by x, y
+                    )
+                    AND (`user_id_to` = " . $user . " OR `user_id_from` = " . $user . ")
+                    ORDER BY jos_messages.date_time DESC ";
+
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting candidate file attachment name in model/messages at query: '.$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    // load messages between two users ( messages with folder_id 2 )
+    public function loadMessages($id, $user = null) {
+        if(empty($user))
+            $user = $this->user->id;
+
+        $db = JFactory::getDbo();
+
+        $query = "SELECT m.* from jos_messages m 
+                  WHERE (m.folder_id = 2) 
+                  AND ((m.user_id_from = " . $user ." AND m.user_id_to = " . $id .") 
+                  OR (m.user_id_from = " . $id ." AND m.user_id_to = " . $user .")) 
+                  ORDER BY m.date_time ASC 
+                  LIMIT 100";
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting candidate file attachment name in model/messages at query: '.$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 
 }

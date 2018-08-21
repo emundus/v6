@@ -589,4 +589,5 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    }
     }
 
+
 }

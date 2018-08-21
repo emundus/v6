@@ -41,7 +41,7 @@ $email_list = array();
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-	<div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ?></div>
+	<div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
 	<img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
 </div>
 
