@@ -489,9 +489,10 @@ class EmundusModelCifre extends JModelList {
 			->leftJoin($this->db->quoteName('#__emundus_recherche', 'er').' ON '.$this->db->quoteName('er.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat', 'err').' ON '.$this->db->quoteName('err.parent_id').' = '.$this->db->quoteName('er.id'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('err.id'))
-			->where($where);
-		$this->db->setQuery($query);
+			->where($where)
+			->group([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id')]);
 
+		$this->db->setQuery($query);
 		try {
 			$results = $this->db->loadObjectList();
 			shuffle($results);
@@ -502,9 +503,24 @@ class EmundusModelCifre extends JModelList {
 
 		// If we have not gotten enough (or any) results, we need to rerun the query but with less constraints on the WHERE.
 		// Why? Because we want to suggest the results with the most pertinance to the user, and if there arent enough: suggest something anyways
-		if (sizeof($results) < 4) {
+		if (is_array($results) && sizeof($results) < 4) {
 
-			// Same query except we are using JUST the fallback where.
+			// Here we are making sure that we do not get the same fnums are before, to avoid duplicates.
+			$noDuplicates = array();
+			if (sizeof($results) > 0) {
+				foreach ($results as $result) {
+					$noDuplicates[] = $result->fnum;
+				}
+			}
+
+			// If we have found results in the previous query: append them to the WHERE to avoid getting them again.
+			if (!empty($noDuplicates)) {
+				$where = $fallbackWhere.' AND '.$this->db->quoteName('cc.fnum').' NOT IN ('.implode(',', $noDuplicates).')';
+			} else {
+				$where = $fallbackWhere;
+			}
+
+			// Same query except we are using JUST the fallback where, this means that we are getting more results but less related to the user's situation.
 			$query = $this->db->getQuery(true);
 			$query
 				->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
@@ -515,7 +531,8 @@ class EmundusModelCifre extends JModelList {
 				->leftJoin($this->db->quoteName('#__emundus_recherche', 'er').' ON '.$this->db->quoteName('er.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
 				->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat', 'err').' ON '.$this->db->quoteName('err.parent_id').' = '.$this->db->quoteName('er.id'))
 				->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('err.id'))
-				->where($fallbackWhere);
+				->where($where)
+				->group([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id')]);
 			$this->db->setQuery($query);
 
 			try {
