@@ -106,6 +106,11 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$jinput = $application->input;
 		$fnum = $jinput->post->get('fnum', null);
 		$linkedOffer = $jinput->post->get('linkedOffer', null);
+		$message = $jinput->post->getString('message', '');
+
+		if (!empty($message))
+			$message = "Message de l'utilisateur : ".$message;
+
 		// If there is an entry in the contact table then that means we already have a link with this person
 		if (!empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
 			echo json_encode((object)['status' => false, 'msg' => 'Vous avez déja contacté cette personne pour cette offre.']);
@@ -135,7 +140,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'LINKED_OFFER_NAME' => $linkedOffer->titre,
 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_NAME' => $offerInformation->titre,
-					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>"
+					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>",
+					'OFFER_MESSAGE' => $message
 				];
 
 				$email_to_send = 72;
@@ -145,7 +151,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$post = [
 					'USER_NAME' => $this->user->name,
 					'OFFER_USER_NAME' => $fnum['name'],
-					'OFFER_NAME' => $offerInformation->titre
+					'OFFER_NAME' => $offerInformation->titre,
+					'OFFER_MESSAGE' => $message
 				];
 
 				$email_to_send = 71;
