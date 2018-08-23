@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-if($this->message_contacts[0]->user_id_to == $this->user_id)
+if ($this->message_contacts[0]->user_id_to == $this->user_id)
     $id = $this->message_contacts[0]->user_id_from;
 else
     $id = $this->message_contacts[0]->user_id_to;
@@ -18,37 +18,37 @@ else
 
 
 <div id="em-contacts">
-    <?php if(empty($this->message_contacts)):?>
+    <?php if (empty($this->message_contacts)) :?>
         <div class="no-messages"><?php echo JText::_('NO_MESSAGES'); ?></div>
-    <?php else:?>
+    <?php else :?>
     <ul id="list">
         <?php foreach ($this->message_contacts as $message_contact) :?>
         <li>
-            <?php if($message_contact->user_id_to == $this->user_id):?>
-                <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
-                    <?php if($message_contact->state == 1) :?>
-                        <p id="unread-contact-<?php echo $message_contact->user_id_from ; ?>" class='unread-contact' ><i class="fas fa-circle" id="unread-icon"></i><?php  echo $message_contact->name_from ." : " . date("d-m-Y", strtotime($message_contact->date_time)) ; ?></p>
-                        <?php echo "<p id='contact-message'>" . strip_tags($message_contact->message) ."</p>" ;?>
-                    <?php else:?>
-                        <p class="read-contact"><?php  echo $message_contact->name_from ." : " ; ?></p>
-                        <?php echo date("d-m-Y", strtotime($message_contact->date_time)) ; ?>
-                        <?php echo "<p id='contact-message'>" . strip_tags($message_contact->message) ."</p>" ;?>
-                    <?php endif;?>
+            <?php if ($message_contact->user_id_to == $this->user_id) :?>
+                <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_from; ?>">
+                    <?php if ($message_contact->state == 1) :?>
+                        <p id="unread-contact-<?php echo $message_contact->user_id_from; ?>" class='unread-contact'><i class="fas fa-circle" id="unread-icon"></i><?php echo $message_contact->name_from." : ".date("d-m-Y", strtotime($message_contact->date_time)); ?></p>
+                        <?php echo "<p id='contact-message'>".strip_tags($message_contact->message)."</p>" ;?>
+                    <?php else :?>
+                        <p class="read-contact"><?php  echo $message_contact->name_from." : "; ?></p>
+                        <?php echo date("d-m-Y", strtotime($message_contact->date_time)); ?>
+                        <?php echo "<p id='contact-message'>".strip_tags($message_contact->message)."</p>"; ?>
+                    <?php endif; ?>
                 </div>
 
             <?php endif; ?>
 
-            <?php if($message_contact->user_id_from == $this->user_id):?>
-                <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
-                        <?php echo $message_contact->name_to ." : " . date("d-m-Y", strtotime($message_contact->date_time)); ?>
-                        <?php echo "<p id='contact-message'>" . strip_tags($message_contact->message) ."</p>" ;?>
+            <?php if ($message_contact->user_id_from == $this->user_id) :?>
+                <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_to; ?>">
+                        <?php echo $message_contact->name_to." : ".date("d-m-Y", strtotime($message_contact->date_time)); ?>
+                        <?php echo "<p id='contact-message'>".strip_tags($message_contact->message)."</p>"; ?>
                 </div>
             <?php endif; ?>
             <hr>
         </li>
-        <?php endforeach ; ?>
+        <?php endforeach; ?>
     </ul>
-    <?php endif;?>
+    <?php endif; ?>
 </div>
 
 <div id="em-chat"></div>
@@ -57,7 +57,6 @@ else
 <script type="text/javascript">
     $(document).ready(function() {
         var id = '<?php echo $id; ?>';
-        console.log('#unread-contact-'+id);
         $.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&view=messages&format=raw&layout=chat',
@@ -69,7 +68,7 @@ else
                 $('#em-chat').html(result);
                 var icon = document.getElementById('unread-icon');
                 var bold = document.getElementById('unread-contact-'+id);
-                if(icon && bold) {
+                if (icon && bold) {
                     icon.parentNode.removeChild(icon);
                     $(bold).removeClass('unread-contact').addClass('read-contact');
                 }
@@ -96,7 +95,7 @@ else
                 $('#em-chat').html(result);
                 var icon = document.getElementById('unread-icon');
                 var bold = document.getElementById('unread-contact-'+id);
-                if(icon && bold) {
+                if (icon && bold) {
                     icon.parentNode.removeChild(icon);
                     $(bold).removeClass('unread-contact').addClass('read-contact');
                 }
@@ -137,8 +136,11 @@ else
         height: 150px;
     }
 
-    .unread-contact {font-weight: bold;}
-    .read-contact span {font-weight: normal;}
-
+    .unread-contact {
+        font-weight: bold;
+    }
+    .read-contact span {
+        font-weight: normal;
+    }
 
 </style>

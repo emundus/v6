@@ -79,7 +79,7 @@ else
         tinyMCE.triggerSave();
         var message = tinyMCE.activeEditor.getContent();
         var receiver = '<?php echo $receiver; ?>';
-        
+
         if (message.length != 0  && strip(message).replace(/\s/g, '').length != 0) {
             // remove white spaces
             message = message.replace(/ &nbsp;/g,'').replace(/&nbsp;/g,'').replace(/&nbsp; /g,'');
