@@ -561,8 +561,9 @@ class EmundusModelMessages extends JModelList {
     // get all contacts the current user has received or sent a message
     public function getContacts($user = null) {
 
-        if(empty($user))
+        if (empty($user))
             $user = $this->user->id;
+
         $db = JFactory::getDbo();
 
         $query = "  select jos_messages.*, U2.name as name_from, U.name as name_to
@@ -579,9 +580,8 @@ class EmundusModelMessages extends JModelList {
                         from jos_messages 
                         group by x, y
                     )
-                    AND (`user_id_to` = " . $user . " OR `user_id_from` = " . $user . ")
+                    AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
                     ORDER BY jos_messages.date_time DESC ";
-
 
         try {
 
@@ -595,36 +595,36 @@ class EmundusModelMessages extends JModelList {
     }
 
     // load messages between two users ( messages with folder_id 2 )
-    public function loadMessages($id, $user = null) {
-        if(empty($user))
-            $user = $this->user->id;
+    public function loadMessages($user1, $user2 = null) {
+
+        if (empty($user2))
+	        $user2 = $this->user->id;
 
         $db = JFactory::getDbo();
 
         // update message state to read
-        $update = $db->getQuery(true);
+        $query = $db->getQuery(true);
 
-        $fields = array(
-            $db->quoteName('state') . ' = 0'
-        );
-        $update->update($db->quoteName('#__messages'))->set($fields);
+	    $query
+		    ->update($db->quoteName('#__messages'))
+		    ->set([$db->quoteName('state') . ' = 0'])
+		    ->where('('.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('user_id_from').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')');
 
         try {
 
-            $db->setQuery($update);
+            $db->setQuery($query);
             $db->execute();
 
         } catch (Exception $e) {
-            JLog::add('Error loading messages at query: '.$query, JLog::ERROR, 'com_emundus');
+            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 
-        $query = "SELECT m.* from jos_messages m 
-                  WHERE (m.folder_id = 2) 
-                  AND ((m.user_id_from = " . $user ." AND m.user_id_to = " . $id .") 
-                  OR (m.user_id_from = " . $id ." AND m.user_id_to = " . $user .")) 
-                  ORDER BY m.date_time ASC 
-                  LIMIT 100";
+        $query->select($db->quoteName('*'))
+            ->from($db->quoteName('#__messages'))
+	        ->where($db->quoteName('folder_id').' = 2 AND (('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.'))')
+	        ->order($db->quoteName('date_time').' ASC')
+            ->setLimit('100');
 
         try {
 
@@ -632,14 +632,15 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error loading messages at query: '.$query, JLog::ERROR, 'com_emundus');
+            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 
     }
 
     public function sendMessage($receiver, $message, $user = null) {
-        if(empty($user))
+
+        if (empty($user))
             $user = $this->user->id;
 
         $db = JFactory::getDbo();
@@ -666,10 +667,5 @@ class EmundusModelMessages extends JModelList {
             JLog::add('Error sending message at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
-
-
     }
-
 }
-
-?>

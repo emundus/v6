@@ -38,7 +38,7 @@ class EmundusViewMessages extends JViewLegacy {
 		$current_user = JFactory::getUser();
 
     	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id))
-			die (JText::_('RESTRICTED_ACCESS'));
+			die(JText::_('RESTRICTED_ACCESS'));
 
 
         $m_messages = new EmundusModelMessages();
@@ -52,4 +52,3 @@ class EmundusViewMessages extends JViewLegacy {
 
     }
 }
-?>

@@ -16,7 +16,7 @@ $editor = JFactory::getEditor('tinymce');
 $wysiwyg = $editor->display('message_body', '', '100%', '110', '20', '20', false, 'message_body', null, null, array('mode' => 'simple'));
 
 $receiver = null;
-if($this->getMessages[0]->user_id_to == $this->user_id)
+if ($this->getMessages[0]->user_id_to == $this->user_id)
     $receiver = $this->getMessages[0]->user_id_from;
 else
     $receiver = $this->getMessages[0]->user_id_to;
@@ -31,27 +31,27 @@ else
 </script>
 
 <div id="em-messagerie">
-    <?php if(empty($this->getMessages)):?>
+    <?php if (empty($this->getMessages)) :?>
             <div class="no-messages"><?php echo JText::_('NO_MESSAGES_WITH'); ?></div>
     <?php else:?>
-    <ul class="message-list">
-        <?php foreach ($this->getMessages as $getMessage) :?>
-            <li>
-                <?php if($getMessage->user_id_to == $this->user_id):?>
-                    <div class="em-contact em-contact-left">
-                        <?php echo "<p class='message'>" . $getMessage->message . "</p>"; ?>
-                    </div>
-                <?php endif; ?>
+        <ul class="message-list">
+            <?php foreach ($this->getMessages as $getMessage) :?>
+                <li>
+                    <?php if ($getMessage->user_id_to == $this->user_id) :?>
+                        <div class="em-contact em-contact-left">
+                            <?php echo "<p class='message'>".$getMessage->message."</p>"; ?>
+                        </div>
+                    <?php endif; ?>
 
-                <?php if($getMessage->user_id_from == $this->user_id):?>
-                    <div class="em-contact em-contact-right">
-                        <?php  echo "<p>" . $getMessage->message . "</p>"; ?>
-                    </div>
-                <?php endif; ?>
-            </li>
-        <hr id="separator">
-        <?php endforeach ; ?>
-    </ul>
+                    <?php if ($getMessage->user_id_from == $this->user_id) :?>
+                        <div class="em-contact em-contact-right">
+                            <?php  echo "<p>".$getMessage->message."</p>"; ?>
+                        </div>
+                    <?php endif; ?>
+                </li>
+            <hr id="separator">
+            <?php endforeach ; ?>
+        </ul>
     <?php endif;?>
 </div>
 
@@ -62,8 +62,7 @@ else
 
 <script type="text/javascript">
 
-    function strip(html)
-    {
+    function strip(html) {
         var tmp = document.createElement("DIV");
         tmp.innerHTML = html;
         return tmp.textContent || tmp.innerText;
@@ -80,13 +79,10 @@ else
         tinyMCE.triggerSave();
         var message = tinyMCE.activeEditor.getContent();
         var receiver = '<?php echo $receiver; ?>';
-
-
-        //console.log(messageTrim);
-        if(message.length != 0  && strip(message).replace(/\s/g, '').length != 0) {
+        
+        if (message.length != 0  && strip(message).replace(/\s/g, '').length != 0) {
             // remove white spaces
             message = message.replace(/ &nbsp;/g,'').replace(/&nbsp;/g,'').replace(/&nbsp; /g,'');
-            console.log(message);
             $.ajax({
                 type: 'POST',
                 url: 'index.php?option=com_emundus&controller=messages&task=sendMessage',
@@ -102,9 +98,8 @@ else
 
                     $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
 
-                    if(contactMessage) {
+                    if (contactMessage)
                         contactMessage.innerHTML = strip(message);
-                    }
                 },
                 error: function () {
                     // handle error
@@ -112,13 +107,11 @@ else
                 }
             });
         }
-
     };
 
 </script>
 
 <style>
-
 
     #em-messagerie {
         float: right;
@@ -170,6 +163,5 @@ else
         height: 0px;
         border: 0px;
     }
-
 
 </style>
