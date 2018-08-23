@@ -590,4 +590,22 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
 
+    // send message in chat
+    public function sendMessage() {
+
+        $m_messages = new EmundusModelMessages();
+
+        $jinput = JFactory::getApplication()->input;
+        $message = $jinput->post->getRaw('message', null);
+        $receiver = $jinput->post->get('receiver', null);
+        $message = str_replace("&nbsp;","",$message);
+        $string = preg_replace('/>\s+</', "><", $message);
+        var_dump(trim($string)).die();
+
+        echo json_encode((object)[
+            'status' => $m_messages->sendMessage($receiver,$message),
+        ]);
+        exit;
+    }
+
 }

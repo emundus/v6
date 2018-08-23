@@ -601,6 +601,24 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
+        // update message state to read
+        $update = $db->getQuery(true);
+
+        $fields = array(
+            $db->quoteName('state') . ' = 0'
+        );
+        $update->update($db->quoteName('#__messages'))->set($fields);
+
+        try {
+
+            $db->setQuery($update);
+            $db->execute();
+
+        } catch (Exception $e) {
+            JLog::add('Error loading messages at query: '.$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
         $query = "SELECT m.* from jos_messages m 
                   WHERE (m.folder_id = 2) 
                   AND ((m.user_id_from = " . $user ." AND m.user_id_to = " . $id .") 
@@ -614,9 +632,42 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting candidate file attachment name in model/messages at query: '.$query, JLog::ERROR, 'com_emundus');
+            JLog::add('Error loading messages at query: '.$query, JLog::ERROR, 'com_emundus');
             return false;
         }
+
+    }
+
+    public function sendMessage($receiver, $message, $user = null) {
+        if(empty($user))
+            $user = $this->user->id;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+
+        $columns = array('user_id_from', 'user_id_to', 'folder_id', 'date_time', 'state', 'priority', 'message');
+
+        $values = array($user, $receiver, 2, $db->quote(date("Y-m-d H:i:s")), 1, 0, $db->quote($message));
+
+        $query
+            ->insert($db->quoteName('#__messages'))
+            ->columns($db->quoteName($columns))
+            ->values(implode(',', $values));
+
+        try {
+
+            $db->setQuery($query);
+            $db->execute();
+
+            return true;
+
+        } catch (Exception $e) {
+            JLog::add('Error sending message at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+
     }
 
 }
