@@ -33,6 +33,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -56,7 +57,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	public function getActionButton($fnum) {
 
 		// If the user is looking at his own cifre offer, no button.
-		if (empty($fnum) ||$this->user->id == (int)substr($fnum, -7))
+		if (empty($fnum) || $this->user->id == (int)substr($fnum, -7))
 			return false;
 
 		// The contact status is the 'level' of link they have together.
@@ -105,6 +106,11 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$jinput = $application->input;
 		$fnum = $jinput->post->get('fnum', null);
 		$linkedOffer = $jinput->post->get('linkedOffer', null);
+		$message = $jinput->post->getString('message', '');
+
+		if (!empty($message))
+			$message = "Message de l'utilisateur : ".$message;
+
 		// If there is an entry in the contact table then that means we already have a link with this person
 		if (!empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
 			echo json_encode((object)['status' => false, 'msg' => 'Vous avez déja contacté cette personne pour cette offre.']);
@@ -134,7 +140,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'LINKED_OFFER_NAME' => $linkedOffer->titre,
 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_NAME' => $offerInformation->titre,
-					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>"
+					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>",
+					'OFFER_MESSAGE' => $message
 				];
 
 				$email_to_send = 72;
@@ -144,7 +151,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$post = [
 					'USER_NAME' => $this->user->name,
 					'OFFER_USER_NAME' => $fnum['name'],
-					'OFFER_NAME' => $offerInformation->titre
+					'OFFER_NAME' => $offerInformation->titre,
+					'OFFER_MESSAGE' => $message
 				];
 
 				$email_to_send = 71;
@@ -281,6 +289,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 		// Add the contact request into the DB.
 		if ($this->m_cifre->acceptContactRequest((int)substr($fnum, -7), $this->user->id, $fnum)) {
 
+			// Send a chat message to the user in order to start a conversation thread.
+			$m_messages = new EmundusModelMessages();
+			$m_messages->sendMessage((int)substr($fnum, -7), JText::_('COM_EMUNDUS_CIFRE_CONTACT_MESSAGE'), $this->user->id);
+
 			$fnum = $this->m_files->getFnumInfos($fnum);
 			
 			// This gets additional information about the offer, for example the title.
@@ -341,6 +353,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		// Log the act of having contacted the person.
 		EmundusModelLogs::log($this->user->id, $link->user_from, $link->fnum_from, 34, 'c', 'COM_EMUNDUS_LOGS_CONTACT_REQUEST_ACCEPTED');
+
+		// Send a chat message to the user in order to start a conversation thread.
+		$m_messages = new EmundusModelMessages();
+		$m_messages->sendMessage($link->user_from, JText::_('COM_EMUNDUS_CIFRE_CONTACT_MESSAGE'), $this->user->id);
 
 		if (!empty($link->fnum_from)) {
 

@@ -15,15 +15,17 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 class EmundusModelMessages extends JModelList {
-
+    var $user = null;
     /**
      * Constructor
      *
      * @since 3.8.6
      */
-    public function __construct() {
-
-    }
+    public function __construct($config = array())
+	{
+        $this->user = JFactory::getSession()->get('emundusUser');
+		parent::__construct($config);
+	}
 
     /**
      * Gets all published message templates of a certain type.
@@ -549,6 +551,121 @@ class EmundusModelMessages extends JModelList {
 
     }
 
-}
 
-?>
+
+
+
+
+    ///// All functions from here are for the messages view
+
+    // get all contacts the current user has received or sent a message
+    public function getContacts($user = null) {
+
+        if (empty($user))
+            $user = $this->user->id;
+
+        $db = JFactory::getDbo();
+
+        $query = "  select jos_messages.*, U2.name as name_from, U.name as name_to
+                    from jos_messages
+                    LEFT JOIN jos_users U ON U.id = jos_messages.user_id_to 
+                    LEFT JOIN jos_users U2 ON U2.id = jos_messages.user_id_from 
+                    where (jos_messages.folder_id = 2) 
+                    AND(least(`user_id_from`, `user_id_to`), greatest(`user_id_from`, `user_id_to`), `date_time`)       
+                    in 
+                    (
+                        select 
+                           least(`user_id_from`, `user_id_to`) as x, greatest(`user_id_from`, `user_id_to`) as y, 
+                           max(`date_time`) as msg_time
+                        from jos_messages 
+                        group by x, y
+                    )
+                    AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
+                    ORDER BY jos_messages.date_time DESC ";
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error getting candidate file attachment name in model/messages at query: '.$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    // load messages between two users ( messages with folder_id 2 )
+    public function loadMessages($user1, $user2 = null) {
+
+        if (empty($user2))
+	        $user2 = $this->user->id;
+
+        $db = JFactory::getDbo();
+
+        // update message state to read
+        $query = $db->getQuery(true);
+
+	    $query
+		    ->update($db->quoteName('#__messages'))
+		    ->set([$db->quoteName('state') . ' = 0'])
+		    ->where('('.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('user_id_from').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')');
+
+        try {
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {
+            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        $query->select($db->quoteName('*'))
+            ->from($db->quoteName('#__messages'))
+	        ->where($db->quoteName('folder_id').' = 2 AND (('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.'))')
+	        ->order($db->quoteName('date_time').' ASC')
+            ->setLimit('100');
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
+    public function sendMessage($receiver, $message, $user = null) {
+
+        if (empty($user))
+            $user = $this->user->id;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+
+        $columns = array('user_id_from', 'user_id_to', 'folder_id', 'date_time', 'state', 'priority', 'message');
+
+        $values = array($user, $receiver, 2, $db->quote(date("Y-m-d H:i:s")), 1, 0, $db->quote($message));
+
+        $query
+            ->insert($db->quoteName('#__messages'))
+            ->columns($db->quoteName($columns))
+            ->values(implode(',', $values));
+
+        try {
+
+            $db->setQuery($query);
+            $db->execute();
+
+            return true;
+
+        } catch (Exception $e) {
+            JLog::add('Error sending message at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+}

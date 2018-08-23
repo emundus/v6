@@ -109,27 +109,33 @@ class plgSystemEmundus_period extends JPlugin
         define('EMUNDUS_PATH_REL', $applicant_files_path);
         define('EMUNDUS_PHOTO_AID', 10);
 
-        if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) ) {
+        if (!$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id)) {
 
             $id_applicants  = $eMConfig->get('id_applicants', '0');
             $applicants     = explode(',', $id_applicants);
-            $r              = JRequest::getVar('r', null, 'GET', 'none',0);
 
-            $id     = JRequest::getVar('id', null, 'GET', 'none',0);
-            $option = JRequest::getVar('option', null, 'GET', 'none',0);
-            $task   = JRequest::getVar('task', null, 'POST', 'none',0);
-            $task_get = JRequest::getVar('task', null, 'GET', 'none',0);
-            $view   = JRequest::getVar('view', null, 'GET', 'none',0);
+            $jinput = $app->input;
+            $r      = $jinput->get->get('r', null);
+            $id     = $jinput->get->get('id', null);
+            $option = $jinput->get->get('option', null);
+            $task   = $jinput->get('task', null);
+            $view   = $jinput->get->get('view', null);
 
-            $no_profile = (empty($user->profile) || !isset($user->profile))?1:0;
+            $no_profile = (empty($user->profile) || !isset($user->profile)) ? 1 : 0;
 
             if ($no_profile)
                 $user->applicant = 1;
 
-            if ( $r != 1 && $user->applicant==1 && !in_array($user->id, $applicants) ) {
-                if($no_profile && $task != "user.logout" && $task_get != "cancel_renew"  && $task_get != "openfile" && $option != 'com_users' && $option != 'com_content') {
-                    die($app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0&r=1"));
-                }
+            // Get plugin param which defines if we should always redirect the user or not.
+	        $plugin = JPluginHelper::getPlugin('system', 'emundus_period');
+	        $params = new JRegistry($plugin->params);
+
+            if ($params->get('force_redirect','1') == 1) {
+	            if ($r != 1 && $user->applicant == 1 && !in_array($user->id, $applicants)) {
+		            if ($no_profile && $task != "user.logout" && $task != "cancel_renew" && $task != "openfile" && $option != 'com_users' && $option != 'com_content') {
+			            die($app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0&r=1"));
+		            }
+	            }
             }
         }
     }

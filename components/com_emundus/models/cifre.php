@@ -525,6 +525,7 @@ class EmundusModelCifre extends JModelList {
 			$query
 				->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+				->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
 				->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
 				->leftJoin($this->db->quoteName('#__emundus_projet', 'ep').' ON '.$this->db->quoteName('ep.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
 				->leftJoin($this->db->quoteName('#__emundus_projet_620_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('ep.id'))

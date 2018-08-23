@@ -213,6 +213,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                                     <?php endforeach; ?>
                                 </select>
                             <?php endif; ?>
+                            <textarea id="em-contact-message" placeholder="Ajouter un méssage (facultatif)"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton('contact')">Envoyer la demande de contact</button>
@@ -266,6 +267,12 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                     data.linkedOffer = linkedOffer;
 
             }
+
+            // Get the attached message if there is one.
+            var message = document.getElementById('em-contact-message').value;
+            if (message != null && message != '' && typeof message != 'undefined')
+                data.message = message;
+
         }
 
         jQuery.ajax({
@@ -289,17 +296,12 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
                     // When we successfully change the status, we simply dynamically change the button.
 
-                    if (action == 'contact') {
+                    if (action == 'contact')
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
-                    }
-
-                    else if (action == 'retry') {
+                    else if (action == 'retry')
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > Méssage envoyé </button>');
-                    }
-
-                    else if (action == 'reply') {
+                    else if (action == 'reply')
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"> Couper contact </button>');
-                    }
 
                 } else {
                     var actionText = document.getElementById('em-action-text');
@@ -353,6 +355,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 		                                                <?php endforeach; ?>
                         '                            </select>' +
 		                                            <?php endif; ?>
+                        '                       <textarea class="em-contact-message" placeholder="Ajouter un méssage (facultatif)"></textarea>'+
                         '                    </div>' +
                         '                    <div class="modal-footer">' +
                         '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Evoyer la demande de contact</button>' +
