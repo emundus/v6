@@ -34,30 +34,30 @@ else
     <?php if (empty($this->getMessages)) :?>
             <div class="no-messages"><?php echo JText::_('NO_MESSAGES_WITH'); ?></div>
     <?php else:?>
-        <ul class="message-list">
-            <?php foreach ($this->getMessages as $getMessage) :?>
-                <li>
-                    <?php if ($getMessage->user_id_to == $this->user_id) :?>
-                        <div class="em-contact em-contact-left">
-                            <?php echo "<p class='message'>".$getMessage->message."</p>"; ?>
-                        </div>
-                    <?php endif; ?>
+    <ul class="message-list">
+        <?php foreach ($this->getMessages as $getMessage) :?>
+            <li>
+                <?php if($getMessage->user_id_to == $this->user_id):?>
+                    <div class="em-message-bubble em-contact-left">
+                        <?php echo "<p class='message'>" . $getMessage->message . "</p>"; ?>
+                    </div>
+                <?php endif; ?>
 
-                    <?php if ($getMessage->user_id_from == $this->user_id) :?>
-                        <div class="em-contact em-contact-right">
-                            <?php  echo "<p>".$getMessage->message."</p>"; ?>
-                        </div>
-                    <?php endif; ?>
-                </li>
-            <hr id="separator">
-            <?php endforeach ; ?>
-        </ul>
+                <?php if($getMessage->user_id_from == $this->user_id):?>
+                    <div class="em-message-bubble em-contact-right">
+                        <?php  echo "<p>" . $getMessage->message . "</p>"; ?>
+                    </div>
+                <?php endif; ?>
+            </li>
+        <hr id="separator">
+        <?php endforeach ; ?>
+    </ul>
     <?php endif;?>
 </div>
 
 <div id="em-message">
     <?php echo $wysiwyg; ?>
-    <button type="button" class="btn" id="sendMessage" onclick="sendMessage()">Send</button>
+    <button type="button" class="btn" id="sendMessage" onclick="sendMessage()"><?php echo JText::_('SEND'); ?></button>
 </div>
 
 <script type="text/javascript">
@@ -93,8 +93,9 @@ else
                 success: function (result) {
                     var messageList = $('.message-list');
                     var contactMessage = document.getElementById('contact-message');
+                    tinyMCE.activeEditor.setContent('');
 
-                    messageList.append('<li><div class="em-contact em-contact-right"><p>'+ message + '</p></div></li><hr id="separator">');
+                    messageList.append('<li><div class="em-message-bubble em-contact-right"><p>'+ message + '</p></div></li><hr id="separator">');
 
                     $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
 
@@ -129,7 +130,7 @@ else
         width: 100%;
     }
 
-    .em-contact {
+    .em-message-bubble {
         border-radius: 25px;
         border-width: 1px;
         margin-left: 1%;
@@ -142,17 +143,23 @@ else
     .em-contact-right {
         float: right;
         display: inline-block;
-        border-color: #00AF64;
-        background-color: #00AF64;
+        border-radius: 75px 75px 0px 75px;
+        -moz-border-radius: 75px 75px 0px 75px;
+        -webkit-border-radius: 75px 75px 0px 75px;
+        border: 2px solid #0b64b3;
+        margin-right: 5px;
 
     }
     .em-contact-left {
         float: left;
         display: inline-block;
-        background-color: #0AA5DF;
+        border-radius: 75px 75px 75px 0px;
+        -moz-border-radius: 75px 75px 75px 0px;
+        -webkit-border-radius: 75px 75px 75px 0px;
+        border: 2px solid #17693d;
     }
 
-    .em-contact p {
+    .em-message-bubble p {
         word-wrap: break-word;
         word-break: break-all;
     }
@@ -163,5 +170,14 @@ else
         height: 0px;
         border: 0px;
     }
+
+    .toggle-editor {
+        display: none;
+    }
+
+    #sendMessage{
+        float: right;
+    }
+
 
 </style>
