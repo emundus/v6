@@ -13,4 +13,14 @@
 		<filename plugin="emundus_period">emundus_period.php</filename>
 		<filename>index.html</filename>
 	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="force_redirect" type="radio" size="5" default="1" label="Force redirect" description="Force the redirection to the new file page.">
+					<option value="1">JENABLED</option>
+					<option value="0">JDISABLED</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
 </extension>

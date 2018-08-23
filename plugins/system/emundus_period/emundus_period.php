@@ -126,10 +126,16 @@ class plgSystemEmundus_period extends JPlugin
             if ($no_profile)
                 $user->applicant = 1;
 
-            if ($r != 1 && $user->applicant == 1 && !in_array($user->id, $applicants)) {
-                if ($no_profile && $task != "user.logout" && $task != "cancel_renew"  && $task != "openfile" && $option != 'com_users' && $option != 'com_content') {
-                    die($app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0&r=1"));
-                }
+            // Get plugin param which defines if we should always redirect the user or not.
+	        $plugin = JPluginHelper::getPlugin('system', 'emundus_period');
+	        $params = new JRegistry($plugin->params);
+
+            if ($params->get('force_redirect','1') == 1) {
+	            if ($r != 1 && $user->applicant == 1 && !in_array($user->id, $applicants)) {
+		            if ($no_profile && $task != "user.logout" && $task != "cancel_renew" && $task != "openfile" && $option != 'com_users' && $option != 'com_content') {
+			            die($app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0&r=1"));
+		            }
+	            }
             }
         }
     }
