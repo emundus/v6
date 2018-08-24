@@ -48,6 +48,7 @@ class EmundusViewMessages extends JViewLegacy {
 
         $this->user_id = $current_user->id;
         $this->user_name = $current_user->name;
+
 		parent::display($tpl);
 
     }

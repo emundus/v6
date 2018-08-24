@@ -27,7 +27,12 @@ else
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/js/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript">tinyMCE.init({selector: "textarea.tinymce", theme: "modern",menubar:false,statusbar: false,
-        toolbar: 'undo redo | styleselect | bold italic | link image'})
+        toolbar: 'undo redo | styleselect | bold italic | link image', plugins: [
+            "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
+            "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+            "table contextmenu directionality emoticons template textcolor paste placeholder"
+        ]
+    })
 </script>
 
 <div id="em-messagerie">
@@ -126,9 +131,7 @@ else
         height: inherit;
     }
 
-    #em-message {
-        width: 100%;
-    }
+
 
     .em-message-bubble {
         border-radius: 25px;
@@ -162,6 +165,8 @@ else
     .em-message-bubble p {
         word-wrap: break-word;
         word-break: break-all;
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
     #separator {
@@ -173,6 +178,10 @@ else
 
     .toggle-editor {
         display: none;
+    }
+    #em-message{
+        display: inline-block;
+        width: 100%;
     }
 
     #sendMessage{
