@@ -20,40 +20,40 @@ else
 <div id="em-contacts">
     <?php if (empty($this->message_contacts)) :?>
         <div class="no-messages"><?php echo JText::_('NO_MESSAGES'); ?></div>
-    <?php else:?>
+    <?php else :?>
     <ul>
         <?php foreach ($this->message_contacts as $message_contact) :?>
         <li>
-            <?php if($message_contact->user_id_to == $this->user_id):?>
-                <?php if($message_contact->photo_from == null) :?>
+            <?php if ($message_contact->user_id_to == $this->user_id) :?>
+                <?php if ($message_contact->photo_from == null) :?>
                     <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_from) ?>"></div>
-                <?endif;?>
+                <?php endif; ?>
                 <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
-                    <?php if($message_contact->state == 1) :?>
+                    <?php if ($message_contact->state == 1) :?>
                         <p class='unread-contact' id="unread-contact-<?php echo $message_contact->user_id_from ; ?>"><i class="fas fa-circle" id="unread-icon"></i><?php  echo $message_contact->name_from ." : " ; ?></p>
                         <p class='unread-contact' id="unread-date-<?php echo $message_contact->user_id_from ; ?>"><?php echo date("N M Y", strtotime($message_contact->date_time)) ;?></p>
                         <p class='unread-contact contact-message' id="unread-message-<?php echo $message_contact->user_id_from ; ?>"><?php echo strip_tags($message_contact->message)  ;?></p>
-                    <?php else:?>
+                    <?php else :?>
                         <p class="read-contact"><?php  echo $message_contact->name_from ." : " ; ?></p>
                         <p class="read-contact"><?php echo date("N M Y", strtotime($message_contact->date_time)) ; ?></p>
                         <p class='read-contact contact-message'><?php echo strip_tags($message_contact->message)  ;?></p>
-                    <?php endif;?>
+                    <?php endif; ?>
                 </div>
 
             <?php endif; ?>
 
-            <?php if($message_contact->user_id_from == $this->user_id):?>
-                <?php if($message_contact->photo_to == null) :?>
+            <?php if ($message_contact->user_id_from == $this->user_id) :?>
+                <?php if ($message_contact->photo_to == null) :?>
                     <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_to) ?>"></div>
-                <?endif;?>
+                <?php endif; ?>
                 <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
                         <p class="read-contact"><?php echo $message_contact->name_to ." : "; ?></p>
                         <p class="read-contact"> <?php echo date("N M Y", strtotime($message_contact->date_time)) ;?></p>
                         <p class="read-contact contact-message" id=''><?php echo strip_tags($message_contact->message) ;?></p>
                 </div>
             <?php endif; ?>
-        </li>
-            <hr>
+            </li>
+        <hr>
         <?php endforeach ; ?>
     </ul>
     <?php endif; ?>
