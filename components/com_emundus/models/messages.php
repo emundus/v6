@@ -629,6 +629,7 @@ class EmundusModelMessages extends JModelList {
             return false;
         }
 
+	    $query = $db->getQuery(true);
         $query->select('*')
             ->from($db->quoteName('#__messages'))
 	        ->where($db->quoteName('folder_id').' = 2 AND (('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.'))')
