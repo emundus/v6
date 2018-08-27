@@ -602,6 +602,34 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
+
+    public function updateMessages($lastId, $user = null) {
+        if (empty($user))
+            $user = $this->user->id;
+
+        $db = JFactory::getDbo();
+
+        // update message state to read
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('#__messages'))
+            ->where($db->quoteName('message_id') . ' > ' . $lastId . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user . ' AND ' . $db->quoteName('state') . ' = 1 ')
+            ->order(' message_id DESC');
+
+        try {
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
     // load messages between two users ( messages with folder_id 2 )
     public function loadMessages($user1, $user2 = null) {
 

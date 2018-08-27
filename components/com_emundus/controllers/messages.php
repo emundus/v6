@@ -590,6 +590,8 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
 
+/////// chat functions
+
     // send message in chat
     public function sendMessage() {
 
@@ -604,6 +606,35 @@ class EmundusControllerMessages extends JControllerLegacy {
         echo json_encode((object)[
             'status' => $m_messages->sendMessage($receiver, $message),
         ]);
+        exit;
+    }
+
+    // update message list
+    public function updatemessages() {
+
+        $m_messages = new EmundusModelMessages();
+
+        $jinput = JFactory::getApplication()->input;
+        $lastId = $jinput->post->get('id', null);
+        $messages = $m_messages->updateMessages($lastId);
+
+
+        if(!empty($messages)) {
+            foreach ($messages as $message) {
+                $message->date_time = date("d/m/Y", strtotime($message->date_time));
+                $message->message = strip_tags($message->message);
+            }
+            echo json_encode((object)[
+                'status' => 'true',
+                'messages' => $messages
+            ]);
+        }
+        else {
+            echo json_encode((object)[
+                'status' => 'false'
+            ]);
+        }
+
         exit;
     }
 

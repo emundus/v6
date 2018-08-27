@@ -10,6 +10,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+$lastId = $this->message_contacts[0]->message_id;
 if ($this->message_contacts[0]->user_id_to == $this->user_id)
     $id = $this->message_contacts[0]->user_id_from;
 else
@@ -21,49 +22,109 @@ else
     <?php if (empty($this->message_contacts)) :?>
         <div class="no-messages"><?php echo JText::_('NO_MESSAGES'); ?></div>
     <?php else :?>
-    <ul>
+    <ul id="em-message-list">
         <?php foreach ($this->message_contacts as $message_contact) :?>
-        <li>
-            <?php if ($message_contact->user_id_to == $this->user_id) :?>
-                <?php if ($message_contact->photo_from == null) :?>
-                    <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_from) ?>"></div>
-                <?php endif; ?>
-                <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
-                    <?php if ($message_contact->state == 1) :?>
-                        <p class='unread-contact' id="unread-contact-<?php echo $message_contact->user_id_from ; ?>"><i class="fas fa-circle" id="unread-icon"></i><?php  echo $message_contact->name_from ." : " ; ?></p>
-                        <p class='unread-contact' id="unread-date-<?php echo $message_contact->user_id_from ; ?>"><?php echo date("N M Y", strtotime($message_contact->date_time)) ;?></p>
-                        <p class='unread-contact contact-message' id="unread-message-<?php echo $message_contact->user_id_from ; ?>"><?php echo strip_tags($message_contact->message)  ;?></p>
-                    <?php else :?>
-                        <p class="read-contact"><?php  echo $message_contact->name_from ." : " ; ?></p>
-                        <p class="read-contact"><?php echo date("N M Y", strtotime($message_contact->date_time)) ; ?></p>
-                        <p class='read-contact contact-message'><?php echo strip_tags($message_contact->message)  ;?></p>
-                    <?php endif; ?>
-                </div>
 
+            <?php if ($message_contact->user_id_to == $this->user_id) :?>
+                <li  class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
+                    <?php if ($message_contact->photo_from == null) :?>
+                        <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_from) ?>"></div>
+                    <?php endif; ?>
+                    <div class="em-contact" >
+                        <?php if ($message_contact->state == 1) :?>
+                            <p class="unread-contact" id="contact-<?php echo $message_contact->user_id_from ; ?>-name"><i class="circle outline" id="unread-icon"></i><?php  echo $message_contact->name_from ." : " ; ?></p>
+                            <p class='unread-contact' id="contact-<?php echo $message_contact->user_id_from ; ?>-date"><?php echo date("d/m/Y", strtotime($message_contact->date_time)) ;?></p>
+                            <p class="unread-contact contact-message" id="contact-<?php echo $message_contact->user_id_from ; ?>-message"><?php echo strip_tags($message_contact->message)  ;?></p>
+                        <?php else :?>
+                            <p class="read-contact" id="contact-<?php echo $message_contact->user_id_from ; ?>-name"><?php  echo $message_contact->name_from ." : " ; ?></p>
+                            <p class="read-contact" id="contact-<?php echo $message_contact->user_id_from ; ?>-date"><?php echo date("d/m/Y", strtotime($message_contact->date_time)) ; ?></p>
+                            <p class='read-contact contact-message' id="contact-<?php echo $message_contact->user_id_from ; ?>-message"><?php echo strip_tags($message_contact->message)  ;?></p>
+                        <?php endif; ?>
+                    </div>
+                </li>
             <?php endif; ?>
 
             <?php if ($message_contact->user_id_from == $this->user_id) :?>
-                <?php if ($message_contact->photo_to == null) :?>
-                    <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_to) ?>"></div>
-                <?php endif; ?>
-                <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
-                        <p class="read-contact"><?php echo $message_contact->name_to ." : "; ?></p>
-                        <p class="read-contact"> <?php echo date("N M Y", strtotime($message_contact->date_time)) ;?></p>
-                        <p class="read-contact contact-message" id=''><?php echo strip_tags($message_contact->message) ;?></p>
-                </div>
+                <li id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
+                    <?php if ($message_contact->photo_to == null) :?>
+                        <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_to) ?>"></div>
+                    <?php endif; ?>
+                    <div class="em-contact" id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
+                            <p class="read-contact" id="contact-<?php echo $message_contact->user_id_from ; ?>-name"><?php echo $message_contact->name_to ." : "; ?></p>
+                            <p class="read-contact" id="contact-<?php echo $message_contact->user_id_from ; ?>-date"> <?php echo date("d/m/Y", strtotime($message_contact->date_time)) ;?></p>
+                            <p class="read-contact contact-message" id="contact-<?php echo $message_contact->user_id_from ; ?>-message"><?php echo strip_tags($message_contact->message) ;?></p>
+                    </div>
+                </li>
             <?php endif; ?>
-            </li>
-        <hr>
+
         <?php endforeach ; ?>
     </ul>
     <?php endif; ?>
 </div>
 
-<div id="em-chat"><img src="media\com_emundus\images\icones\loader-line.gif" id="em-loader"/></div>
+<div id="em-chat" class="em-chat-<?php echo $id; ?>"><img src="media\com_emundus\images\icones\loader-line.gif" id="em-loader"/></div>
 
 
 <script type="text/javascript">
+    var lastId = '<?php echo $lastId; ?>';
+
+    function strip(html)
+    {
+        var tmp = document.createElement("DIV");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+    }
+
+    function updateMessages() {
+
+        var chatClass = document.getElementById("em-chat").className.match(/\d+/)[0];
+
+        $.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=messages&task=updatemessages',
+            data : {
+                id : lastId
+            },
+            success: function (result) {
+                result = JSON.parse(result);
+                if(result.status == 'true') {
+                    lastId = result.messages[0].message_id;
+                    for( key in result.messages) {
+                        var user_from = result.messages[key].user_id_from;
+                        $('#contact-'+user_from+'-name').removeClass('read-contact');
+                        $('#contact-'+user_from+'-name').addClass('unread-contact');
+
+                        $('#contact-'+user_from+'-date').removeClass('read-contact');
+                        $('#contact-'+user_from+'-date').addClass('unread-contact');
+                        $('#contact-'+user_from+'-date').text(result.messages[key].date_time);
+
+                        $('#contact-'+user_from+'-message').removeClass('read-contact');
+                        $('#contact-'+user_from+'-message').addClass('unread-contact');
+                        $('#contact-'+user_from+'-message').text(result.messages[key].message);
+
+                        $('#em-contact-'+user_from).prependTo('#em-message-list');
+
+                        if(user_from = chatClass) {
+                            var messageList = $('.message-list');
+                            var contactMessage = document.getElementById('contact-message');
+                            tinyMCE.activeEditor.setContent('');
+
+                            messageList.append('<li><div class="em-message-bubble em-contact-left"><p>'+ result.messages[key].message + '</p></div></li><hr id="separator">');
+
+                            $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
+                        }
+                    }
+                }
+            },
+            error: function () {
+                // handle error
+                $("#em-contacts").append('<span class="alert"> <?php echo JText::_('ERROR'); ?> </span>')
+            }
+        });
+
+    }
     $(document).ready(function() {
+        setInterval(updateMessages, 10000);
         var id = '<?php echo $id; ?>';
         if(id != null && id != '') {
             $.ajax({
@@ -76,9 +137,9 @@ else
 
                     $('#em-chat').html(result);
                     var icon = document.getElementById('unread-icon');
-                    var boldName = document.getElementById('unread-contact-'+id);
-                    var boldDate = document.getElementById('unread-date-'+id);
-                    var boldMessage = document.getElementById('unread-message-'+id);
+                    var boldName = document.getElementById('contact-'+id+'-name');
+                    var boldDate = document.getElementById('contact-'+id+'-date');
+                    var boldMessage = document.getElementById('contact-'+id+'-message');
                     if(icon && boldName && boldDate && boldMessage) {
                         icon.parentNode.removeChild(icon);
                         $(boldName).removeClass('unread-contact').addClass('read-contact');
@@ -93,14 +154,18 @@ else
             });
         }
         else {
+            var message_icon = '<i class="comments outline" id ="em-chat-no-message"></i>';
             $('#em-loader').hide();
             $('#em-chat').css({'backgroundColor' : '#f0f0f0', 'height': '750px'});
+            $('#em-chat').append(message_icon);
         }
+
 
     });
 
-    $('.em-contact').on("click", function() {
+    $('.em-list-item').on("click", function() {
         $('#em-chat').html("<img src='media/com_emundus/images/icones/loader-line.gif' id='em-loader'/>");
+        var chatClass = document.getElementById("em-chat").className;
         var id = $(this)[0].id;
         id = id.match(/\d+/)[0];
 
@@ -113,12 +178,16 @@ else
             success: function (result) {
 
                 $('#em-chat').html(result);
-                var icon = document.getElementById('unread-icon');
-                var boldName = document.getElementById('unread-contact-'+id);
-                var boldDate = document.getElementById('unread-date-'+id);
-                var boldMessage = document.getElementById('unread-message-'+id);
-                if(icon && boldName && boldDate && boldMessage) {
-                    icon.parentNode.removeChild(icon);
+                $('#em-chat').removeClass(chatClass);
+                $('#em-chat').addClass('em-chat-'+id);
+
+
+                //var icon = document.getElementById('unread-icon');
+                var boldName = document.getElementById('contact-'+id+'-name');
+                var boldDate = document.getElementById('contact-'+id+'-date');
+                var boldMessage = document.getElementById('contact-'+id+'-message');
+                if( boldName && boldDate && boldMessage) {
+                    //icon.parentNode.removeChild(icon);
                     $(boldName).removeClass('unread-contact').addClass('read-contact');
                     $(boldDate).removeClass('unread-contact').addClass('read-contact');
                     $(boldMessage).removeClass('unread-contact').addClass('read-contact');
@@ -151,6 +220,7 @@ else
         border-radius: 60px;
     }
 
+
     .contact-photo:before {
         font-family: 'FontAwesome';
         color: #909090;
@@ -162,37 +232,15 @@ else
         display: inline-block;
     }
 
-    .contact-photo-Futur-doctorant:before {
-        font-family: 'FontAwesome';
-        color: #909090;
-        content: "\f19d";
-        top: 0;
-        font-size: 3rem;
-        margin-left: 11px;
-        margin-top: -8px;
-        display: inline-block;
+    #unread-icon {
+        font-size: 1em;
+        color: #00AF64;
+        margin-right: 5px;
     }
 
-    .contact-photo-Chercheur:before {
-        font-family: 'FontAwesome';
-        color: #909090;
-        content: "\f0c3";
-        top: 0;
-        font-size: 3rem;
-        margin-left: 18px;
-        margin-top: -10px;
-        display: inline-block;
-    }
+    #em-chat-no-message {
+        border: solid 1px white;
 
-    .contact-photo-Acteur-public-ou-associé:before {
-        font-family: 'FontAwesome';
-        color: #909090;
-        content: "\f19c";
-        top: 0;
-        font-size: 3rem;
-        margin-left: 15px;
-        margin-top: -10px;
-        display: inline-block;
     }
 
     .contact-message {
@@ -212,7 +260,8 @@ else
         margin-top: 10px;
         margin-left: 15px;
         float: left;
-        width: 50%;
+        width: 60%;
+        border-bottom: 1px solid #e5e5e5;
     }
 
     #em-contacts li {
@@ -238,5 +287,33 @@ else
     .unread-contact {font-weight: bold;}
     .read-contact {font-weight: normal;}
 
+    .em-message-bubble {
+        border-radius: 25px;
+        border-width: 1px;
+        margin-left: 1%;
+        max-width: 80%;
+        list-style-position: inside;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .em-contact-left {
+        float: left;
+        display: inline-block;
+        border-radius: 75px 75px 75px 0px;
+        -moz-border-radius: 75px 75px 75px 0px;
+        -webkit-border-radius: 75px 75px 75px 0px;
+        border: 2px solid #17693d;
+    }
+
+    .em-message-bubble p {
+        word-wrap: break-word;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .em-message-bubble img{
+        border-radius: 60px;
+    }
 
 </style>
