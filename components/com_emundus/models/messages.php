@@ -566,10 +566,18 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = "  select jos_messages.*, U2.name as name_from, U.name as name_to
+        $query = "  select jos_messages.*, user_from.name as name_from, sp_from.label as profile_from, user_to.name as name_to, sp_to.label as profile_to, uploadTo.attachment_id as photo_to, uploadFrom.attachment_id as photo_from
                     from jos_messages
-                    LEFT JOIN jos_users U ON U.id = jos_messages.user_id_to 
-                    LEFT JOIN jos_users U2 ON U2.id = jos_messages.user_id_from 
+                    LEFT JOIN jos_users user_to ON user_to.id = jos_messages.user_id_to 
+                    LEFT JOIN jos_users user_from ON user_from.id = jos_messages.user_id_from 
+                    LEFT JOIN jos_emundus_users eu_to ON eu_to.user_id = user_to.id
+                    LEFT JOIN jos_emundus_users eu_from ON eu_from.user_id = user_from.id
+                    LEFT JOIN jos_emundus_setup_profiles sp_to ON sp_to.id =  eu_to.profile
+                    LEFT JOIN jos_emundus_setup_profiles sp_from ON sp_from.id =  eu_from.profile
+                    
+                    LEFT JOIN jos_emundus_uploads uploadTo ON uploadTo.user_id = user_to.id AND uploadTo.attachment_id = 10
+					LEFT JOIN jos_emundus_uploads uploadFrom ON uploadFrom.user_id = user_from.id AND uploadFrom.attachment_id = 10
+                  
                     where (jos_messages.folder_id = 2) 
                     AND(least(`user_id_from`, `user_id_to`), greatest(`user_id_from`, `user_id_to`), `date_time`)       
                     in 
@@ -610,6 +618,7 @@ class EmundusModelMessages extends JModelList {
 		    ->set([$db->quoteName('state') . ' = 0'])
 		    ->where('('.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('user_id_from').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')');
 
+
         try {
 
             $db->setQuery($query);
@@ -620,12 +629,11 @@ class EmundusModelMessages extends JModelList {
             return false;
         }
 
-        $query->select($db->quoteName('*'))
+        $query->select('*')
             ->from($db->quoteName('#__messages'))
 	        ->where($db->quoteName('folder_id').' = 2 AND (('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.'))')
 	        ->order($db->quoteName('date_time').' ASC')
             ->setLimit('100');
-
         try {
 
             $db->setQuery($query);
