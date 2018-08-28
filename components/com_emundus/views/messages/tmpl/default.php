@@ -68,13 +68,6 @@ else
 <script type="text/javascript">
     var lastId = '<?php echo $lastId; ?>';
 
-    function strip(html)
-    {
-        var tmp = document.createElement("DIV");
-        tmp.innerHTML = html;
-        return tmp.textContent || tmp.innerText || "";
-    }
-
     function updateMessages() {
 
         var chatClass = document.getElementById("em-chat").className.match(/\d+/)[0];
@@ -109,7 +102,7 @@ else
                             var contactMessage = document.getElementById('contact-message');
                             tinyMCE.activeEditor.setContent('');
 
-                            messageList.append('<li><div class="em-message-bubble em-contact-left"><p>'+ result.messages[key].message + '</p></div></li><hr id="separator">');
+                            messageList.append('<li><div class="em-message-bubble em-contact-left"><p style="margin-top: 15px; margin-bottom: 15px !important;">'+ result.messages[key].message + '</p></div></li><hr id="separator">');
 
                             $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
                         }
@@ -288,7 +281,6 @@ else
     .read-contact {font-weight: normal;}
 
     .em-message-bubble {
-        border-radius: 25px;
         border-width: 1px;
         margin-left: 1%;
         max-width: 80%;
@@ -304,6 +296,17 @@ else
         -moz-border-radius: 75px 75px 75px 0px;
         -webkit-border-radius: 75px 75px 75px 0px;
         border: 2px solid #17693d;
+    }
+
+    .em-contact-right {
+        float: right;
+        display: inline-block;
+        border-radius: 75px 75px 0px 75px;
+        -moz-border-radius: 75px 75px 0px 75px;
+        -webkit-border-radius: 75px 75px 0px 75px;
+        border: 2px solid #0b64b3;
+        margin-right: 5px;
+
     }
 
     .em-message-bubble p {

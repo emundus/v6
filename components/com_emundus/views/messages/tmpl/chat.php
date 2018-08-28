@@ -45,7 +45,7 @@ else
             <li>
                 <?php if($getMessage->user_id_to == $this->user_id):?>
                     <div class="em-message-bubble em-contact-left">
-                        <?php echo "<p class='message'>" . $getMessage->message . "</p>"; ?>
+                        <?php echo "<p>" . $getMessage->message . "</p>"; ?>
                     </div>
                 <?php endif; ?>
 
@@ -135,7 +135,6 @@ else
 
 
     .em-message-bubble {
-        border-radius: 25px;
         border-width: 1px;
         margin-left: 1%;
         max-width: 80%;
