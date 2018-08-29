@@ -11,10 +11,14 @@
 defined('_JEXEC') or die('Restricted access');
 
 $lastId = $this->message_contacts[0]->message_id;
-if ($this->message_contacts[0]->user_id_to == $this->user_id)
-    $id = $this->message_contacts[0]->user_id_from;
-else
-    $id = $this->message_contacts[0]->user_id_to;
+$id = JFactory::getApplication()->input->get->get('chatid',null);
+if(empty($id)) {
+    if ($this->message_contacts[0]->user_id_to == $this->user_id)
+        $id = $this->message_contacts[0]->user_id_from;
+    else
+        $id = $this->message_contacts[0]->user_id_to;
+}
+
 ?>
 
 
@@ -147,7 +151,7 @@ else
             });
         }
         else {
-            var message_icon = '<i class="comments outline" id ="em-chat-no-message"></i>';
+            var message_icon = '<i class="comments outline icon" id ="em-chat-no-message"></i>';
             $('#em-loader').hide();
             $('#em-chat').css({'backgroundColor' : '#f0f0f0', 'height': '750px'});
             $('#em-chat').append(message_icon);
@@ -232,8 +236,12 @@ else
     }
 
     #em-chat-no-message {
-        border: solid 1px white;
-
+        font-size: 150px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 200px;
+        color: #909090;
     }
 
     .contact-message {

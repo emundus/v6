@@ -20,26 +20,19 @@ defined('_JEXEC') or die;
 
     #messageDropdownIcon {
         background-color: #<?php echo $primary_color; ?>;
-        border: solid 1px white;
         color: #<?php echo $secondary_color; ?>;
+        cursor: pointer;
+
     }
 
     #messageDropdownIcon:hover,
     #messageDropdownIcon.active {
-        border: 1px solid;
+        //border: 1px solid;
         box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
         outline-color: rgba(255, 255, 255, 0);
         outline-offset: 15px;
         background-color: #<?php echo $secondary_color; ?>;
-        color: #fff;
-    }
-
-
-    #em-contacts {
-        float: left;
-        width: 25%;
-        height: 750px;
-        overflow-y: scroll;
+        color: #<?php echo $primary_color; ?>;
     }
 
     .contact-photo {
@@ -114,7 +107,7 @@ defined('_JEXEC') or die;
 
             <?php if ($message_contact->user_id_to == $user->id) :?>
                 <li  class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
-                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages">
+                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_from ; ?>">
                     <?php if ($message_contact->photo_from == null) :?>
                         <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_from) ?>"></div>
                     <?php endif; ?>
@@ -135,7 +128,7 @@ defined('_JEXEC') or die;
 
             <?php if ($message_contact->user_id_from == $user->id) :?>
                 <li id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
-                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages">
+                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_from ; ?>">
                     <?php if ($message_contact->photo_to == null) :?>
                         <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_to) ?>"></div>
                     <?php endif; ?>
@@ -153,35 +146,46 @@ defined('_JEXEC') or die;
 </div>
 
 
-<script>
+<script type="text/javascript">
     // This counters all of the issues linked to using BootstrapJS.
-    document.getElementById('messageDropdownLabel').onclick = function(e) {
+    document.getElementById('messageDropdownLabel').addEventListener('click', function (e) {
         e.stopPropagation();
         var dropdown = document.getElementById('messageDropdown');
-        var icon = document.getElementById('userDropdownIcon');
+        var icon = document.getElementById('messageDropdownIcon');
+
+        // get user_dropdown module elements
+        var userDropdown = document.getElementById('userDropdown');
+        var userIcon = document.getElementById('userDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
             dropdown.classList.remove('open');
             icon.classList.remove('active');
+            icon.classList.remove('open');
         } else {
+            // remove message classes if message module is on page
+            if(userDropdown||userIcon) {
+                userDropdown.classList.remove('open');
+                userIcon.classList.remove('active');
+                userIcon.classList.remove('open');
+            }
             dropdown.classList.add('open');
             icon.classList.add('open');
         }
-    };
+    });
 
-    document.onclick = function (e) {
+    document.addEventListener('click', function (e) {
         e.stopPropagation();
         var dropdown = document.getElementById('messageDropdown');
-        var icon = document.getElementById('userDropdownIcon');
+        var icon = document.getElementById('messageDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
             dropdown.classList.remove('open');
             icon.classList.remove('active');
+            icon.classList.remove('open');
         }
-    };
-
-    jQuery(document).click(function(){
-        jQuery("#messageDropdownMenu").hide();
     });
+
+
+
 </script>
 
