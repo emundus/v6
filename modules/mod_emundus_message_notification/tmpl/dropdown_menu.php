@@ -70,6 +70,10 @@ defined('_JEXEC') or die;
         width: 50%;
     }
 
+    #em-message-list {
+        max-height: 320px;
+        overflow-y: scroll;
+    }
     #em-contacts li {
         margin-bottom: -30px;
         height: 110px;
@@ -84,6 +88,17 @@ defined('_JEXEC') or die;
         margin-bottom: 10px;
     }
 
+    .em-link-messages {
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
+        padding-top: 50px;
+        text-align: center;
+        text-decoration: underline;
+        font-weight: bold !important;
+    }
+
+
 
     .unread-contact {font-weight: bold;}
     .read-contact {font-weight: normal;}
@@ -96,7 +111,10 @@ defined('_JEXEC') or die;
         <i class="big circular envelope outline icon" id="messageDropdownIcon"></i>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="em-message-list">
-        <?php foreach ($message_contacts as $message_contact) :?>
+        <?php if(empty($message_contacts)) :?>
+            <li><p style="text-align: center"><?php echo JText::_("NO_MESSAGES");?></p></li>
+        <?php else:?>
+            <?php foreach ($message_contacts as $message_contact) :?>
 
             <?php if ($message_contact->user_id_to == $user->id) :?>
                 <li  class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
@@ -135,6 +153,9 @@ defined('_JEXEC') or die;
             <?php endif; ?>
 
         <?php endforeach ; ?>
+            <li class="em-list-item "><a class="em-link-messages" href="/index.php?option=com_emundus&view=messages"><?php echo JText::_('SHOW_ALL'); ?></a></li>
+        <?php endif;?>
+
     </ul>
 </div>
 

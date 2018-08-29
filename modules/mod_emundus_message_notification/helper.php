@@ -67,7 +67,8 @@ class modEmundusMessageNotificationHelper {
                     group by x, y
                 )
                 AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
-                ORDER BY jos_messages.date_time DESC ";
+                ORDER BY jos_messages.date_time DESC 
+                LIMIT 50";
 
 
         $db->setQuery($query);
