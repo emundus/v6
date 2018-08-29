@@ -62,13 +62,6 @@ defined('_JEXEC') or die;
         text-overflow: ellipsis;
     }
 
-    #em-chat {
-        float: right;
-        width: 75%;
-        height: 600px;
-        scroll-behavior: auto;
-    }
-
     .em-contact {
         height: 90px;
         margin-top: 10px;

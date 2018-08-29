@@ -29,6 +29,7 @@
 				>
 				<option value="default">default</option>
 				<option value="dropdown_menu">dropdown_menu</option>
+				<option value="list">list</option>
 				</field>
 			</fieldset>
 		</fields>
