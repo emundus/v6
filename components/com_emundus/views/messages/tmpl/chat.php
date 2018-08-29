@@ -18,6 +18,7 @@ $wysiwyg = $editor->display('message_body', '', '100%', '110', '20', '20', false
 $receiver = null;
 if ($this->getMessages[0]->user_id_to == $this->user_id)
     $receiver = $this->getMessages[0]->user_id_from;
+
 else
     $receiver = $this->getMessages[0]->user_id_to;
 ?>
@@ -26,11 +27,11 @@ else
 <link rel="stylesheet" href="/components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/js/tinymce.min.js"></script>
-<script data-cfasync="false" type="text/javascript">tinyMCE.init({selector: "textarea.tinymce", theme: "modern",menubar:false,statusbar: false,
-        toolbar: 'undo redo | styleselect | bold italic | link image', plugins: [
+<script data-cfasync="false" type="text/javascript">tinyMCE.init({selector: "textarea.tinymce", theme: "modern",mobile: { theme: 'mobile' }, menubar:false,statusbar: false,
+        toolbar: 'undo redo | styleselect | bold italic', plugins: [
             "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
             "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-            "table contextmenu directionality emoticons template textcolor paste placeholder"
+            "table contextmenu directionality emoticons template textcolor paste"
         ]
     })
 </script>
@@ -44,7 +45,7 @@ else
             <li>
                 <?php if($getMessage->user_id_to == $this->user_id):?>
                     <div class="em-message-bubble em-contact-left">
-                        <?php echo "<p class='message'>" . $getMessage->message . "</p>"; ?>
+                        <?php echo "<p>" . $getMessage->message . "</p>"; ?>
                     </div>
                 <?php endif; ?>
 
@@ -134,13 +135,16 @@ else
 
 
     .em-message-bubble {
-        border-radius: 25px;
         border-width: 1px;
         margin-left: 1%;
         max-width: 80%;
         list-style-position: inside;
         padding-left: 10px;
         padding-right: 10px;
+    }
+
+    .em-message-bubble img{
+        border-radius: 60px;
     }
 
     .em-contact-right {
@@ -164,7 +168,6 @@ else
 
     .em-message-bubble p {
         word-wrap: break-word;
-        word-break: break-all;
         margin-left: 10px;
         margin-right: 10px;
     }

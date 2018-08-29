@@ -81,21 +81,31 @@ defined('_JEXEC') or die;
 
 <script>
     // This counters all of the issues linked to using BootstrapJS.
-    document.getElementById('userDropdownLabel').onclick = function(e) {
+    document.getElementById('userDropdownLabel').addEventListener('click', function (e) {
         e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
+
+        // get message module elements
+        var messageDropdown = document.getElementById('messageDropdown');
+        var messageIcon = document.getElementById('messageDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
             dropdown.classList.remove('open');
             icon.classList.remove('active');
         } else {
+            // remove message classes if message module is on page
+            if(messageDropdown||messageIcon) {
+                messageDropdown.classList.remove('open');
+                messageIcon.classList.remove('active');
+                messageIcon.classList.remove('open');
+            }
             dropdown.classList.add('open');
             icon.classList.add('open');
         }
-    };
+    });
 
-    document.onclick = function (e) {
+    document.addEventListener('click', function (e) {
         e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
@@ -104,6 +114,6 @@ defined('_JEXEC') or die;
             dropdown.classList.remove('open');
             icon.classList.remove('active');
         }
-    };
+    });
 </script>
 

@@ -40,12 +40,13 @@ class EmundusViewMessages extends JViewLegacy {
     	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id))
 			die(JText::_('RESTRICTED_ACCESS'));
 
+        $document = JFactory::getDocument();
+        $document->addStyleSheet('/media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
         $m_messages = new EmundusModelMessages();
 
         // load all of the contacts
         $this->message_contacts = $m_messages->getContacts();
-
         $this->user_id = $current_user->id;
         $this->user_name = $current_user->name;
 
