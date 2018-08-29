@@ -26,8 +26,13 @@ $document->addStyleSheet('/media/com_emundus/lib/Semantic-UI-CSS-master/semantic
 $messages = $helper->getMessages($user->id);
 $message_contacts = $helper->getContacts($user->id);
 
-if($messages != "0") {
-    require JModuleHelper::getLayoutPath('mod_emundus_message_notification',$params->get('layout', 'default'));
-}
+$layout = $params->get('layout','default');
 
+if($layout == 'default') {
+    if($messages != "0") {
+        require JModuleHelper::getLayoutPath('mod_emundus_message_notification', $layout);
+    }
+}
+else
+    require JModuleHelper::getLayoutPath('mod_emundus_message_notification', $layout);
 
