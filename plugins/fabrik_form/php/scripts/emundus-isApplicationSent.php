@@ -184,7 +184,7 @@ if (!$mainframe->isAdmin()) {
 					if (count($groups) > 0) {
 						foreach ($groups as $key => $group) {
 							$group_params = json_decode($group->gparams);
-							if ($group_params->repeat_group_button == 1) {
+							if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 								$data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
 								$data[$group->group_id]['group_id'] = $group->group_id;
 								$data[$group->group_id]['element_name'][] = $group->name;
