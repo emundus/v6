@@ -49,7 +49,7 @@ if(empty($id)) {
             <?php endif; ?>
 
             <?php if ($message_contact->user_id_from == $this->user_id) :?>
-                <li id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
+                <li class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
                     <?php if ($message_contact->photo_to == null) :?>
                         <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_to) ?>"></div>
                     <?php endif; ?>
@@ -268,6 +268,7 @@ if(empty($id)) {
     #em-contacts li {
         margin-bottom: -30px;
         height: 110px;
+        cursor: pointer;
     }
 
     .em-contact p {
