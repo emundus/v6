@@ -566,30 +566,37 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = "  select jos_messages.*, user_from.name as name_from, sp_from.label as profile_from, user_to.name as name_to, sp_to.label as profile_to, uploadTo.attachment_id as photo_to, uploadFrom.attachment_id as photo_from
-                    from jos_messages
-                    LEFT JOIN jos_users user_to ON user_to.id = jos_messages.user_id_to 
-                    LEFT JOIN jos_users user_from ON user_from.id = jos_messages.user_id_from 
-                    LEFT JOIN jos_emundus_users eu_to ON eu_to.user_id = user_to.id
-                    LEFT JOIN jos_emundus_users eu_from ON eu_from.user_id = user_from.id
-                    LEFT JOIN jos_emundus_setup_profiles sp_to ON sp_to.id =  eu_to.profile
-                    LEFT JOIN jos_emundus_setup_profiles sp_from ON sp_from.id =  eu_from.profile
+        $query = "  select jos_messages.*, sender.name as name_from, sp_sender.label as profile_from, recipient.name as name_to, sp_recipient.label as profile_to, recipientUpload.attachment_id as photo_to, senderUpload.attachment_id as photo_from
                     
-                    LEFT JOIN jos_emundus_uploads uploadTo ON uploadTo.user_id = user_to.id AND uploadTo.attachment_id = 10
-					LEFT JOIN jos_emundus_uploads uploadFrom ON uploadFrom.user_id = user_from.id AND uploadFrom.attachment_id = 10
-                  
-                    where (jos_messages.folder_id = 2) 
-                    AND(least(`user_id_from`, `user_id_to`), greatest(`user_id_from`, `user_id_to`), `date_time`)       
-                    in 
-                    (
-                        select 
-                           least(`user_id_from`, `user_id_to`) as x, greatest(`user_id_from`, `user_id_to`) as y, 
-                           max(`date_time`) as msg_time
-                        from jos_messages 
-                        group by x, y
-                    )
-                    AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
-                    ORDER BY jos_messages.date_time DESC ";
+                    FROM    jos_messages
+                    
+                            INNER JOIN jos_emundus_users AS sender ON sender.user_id = jos_messages.user_id_from
+                            INNER JOIN jos_emundus_users AS recipient ON recipient.user_id = jos_messages.user_id_to
+                    
+                            LEFT JOIN jos_emundus_setup_profiles sp_recipient ON sp_recipient.id =  recipient.profile
+                            LEFT JOIN jos_emundus_setup_profiles sp_sender ON sp_sender.id =  sender.profile
+                            
+                            LEFT JOIN jos_emundus_uploads recipientUpload ON recipientUpload.user_id = recipient.user_id AND recipientUpload.attachment_id = 10
+                            LEFT JOIN jos_emundus_uploads senderUpload ON senderUpload.user_id = sender.user_id AND senderUpload.attachment_id = 10
+                    
+                            INNER JOIN ( SELECT MAX(message_id) AS most_recent_message_id
+                                         FROM   jos_messages
+                                        WHERE folder_id = 2
+                                         GROUP BY CASE WHEN user_id_from > user_id_to
+                                                       THEN user_id_to
+                                                       ELSE user_id_from
+                                                  END,
+                                                  CASE WHEN user_id_from < user_id_to
+                                                     THEN user_id_to
+                                                     ELSE user_id_from
+                                                  END) T ON T.most_recent_message_id = jos_messages.message_id
+                    
+                    WHERE   user_id_from = " . $user . "
+                            OR user_id_to = " . $user . "
+                            
+                            
+                    
+                    ORDER BY date_time DESC ";
 
         try {
 
@@ -602,7 +609,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-
+    // gets all messages received after the message $lastID
     public function updateMessages($lastId, $user = null) {
         if (empty($user))
             $user = $this->user->id;
@@ -675,6 +682,7 @@ class EmundusModelMessages extends JModelList {
 
     }
 
+    // sends message folder_id=2 from user_from to user_to and sets stats to 1
     public function sendMessage($receiver, $message, $user = null) {
 
         if (empty($user))
