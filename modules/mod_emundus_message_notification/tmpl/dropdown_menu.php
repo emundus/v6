@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 <style>
 
     #messageDropdown {
-        margin-top: -30px;
+        margin-top: -40px;
     }
 
     #messageDropdownIcon {

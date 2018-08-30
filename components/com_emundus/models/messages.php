@@ -602,7 +602,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-
+    // gets all messages received after the message $lastID
     public function updateMessages($lastId, $user = null) {
         if (empty($user))
             $user = $this->user->id;
@@ -675,6 +675,7 @@ class EmundusModelMessages extends JModelList {
 
     }
 
+    // sends message folder_id=2 from user_from to user_to and sets stats to 1
     public function sendMessage($receiver, $message, $user = null) {
 
         if (empty($user))
