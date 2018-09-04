@@ -805,6 +805,9 @@ function back(){
 
 $(document).ready(function()
 {
+        $('.em-check-all-all').hide(); 
+        $('#check').removeClass('em-check-all-all');
+
     var lastVal = new Object();
     $(document).on('click', function() {
         if (!$('ul.dropdown-menu.open').hasClass('just-open')) {
@@ -1044,8 +1047,14 @@ $(document).ready(function()
                     $.ajaxQ.abortAll();
                     addElement();
                     break;
-                case 'em-close-file': $.ajaxQ.abortAll(); document.location.hash = "close";
-                    $('.alert.alert-warning').remove();
+
+                case 'em-close-file': 
+                    $.ajaxQ.abortAll(); 
+                    document.location.hash = "close";
+                    $('.em-check:checked').prop('checked', false);
+                    $('.nav.navbar-nav').hide();
+                    reloadActions('files', undefined, false);
+
                 case 'em-mini-file':
                     $.ajaxQ.abortAll();
                     $('#em-appli-block').remove();
@@ -3710,7 +3719,7 @@ $(document).ready(function()
 
                 // Display the button on the top of the modal.
                 $('#can-val').empty();
-                $('#can-val').append('<a class="btn btn-success btn-large" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL')+'</a>');
+                $('#can-val').append('<a class="btn btn-success btn-large" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
                 $('#can-val').show();
 
                 if ($('#em-check-all-all').is(':checked')) {
@@ -3838,6 +3847,7 @@ $(document).ready(function()
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
+                $('.modal-body').attr("style","height : 300px");
                 //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=gettags';
                 $.ajax({
                     type:'get',

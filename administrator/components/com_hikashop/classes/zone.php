@@ -144,7 +144,7 @@ class hikashopZoneClass extends hikashopClass{
 		return (int)$zone->zone_currency_id;
 	}
 
-	function getOrderZones(&$order) {
+	function getOrderZones(&$order, $force = null) {
 		$fieldClass = hikashop_get('class.field');
 		$fields = $fieldClass->getData('frontcomp', 'address');
 
@@ -153,9 +153,13 @@ class hikashopZoneClass extends hikashopClass{
 			$field = 'address_state';
 		}
 
-		$type = 'shipping_address';
-		if(empty($order->shipping_address) && !empty($order->billing_address)) {
-			$type = 'billing_address';
+		if(in_array($force, array('billing_address','shipping_address'))) {
+			$type = $force;
+		} else {
+			$type = 'shipping_address';
+			if(empty($order->shipping_address) && !empty($order->billing_address)) {
+				$type = 'billing_address';
+			}
 		}
 
 		if(empty($order->$type) || empty($order->$type->$field)) {

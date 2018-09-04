@@ -134,6 +134,12 @@ class EmundusModelJobs extends JModelList
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
+        $service = $app->getUserStateFromRequest($this->context . '.filter.service', 'filter_service');
+        $this->setState('filter.service', $service);
+
+        $etablissement = $app->getUserStateFromRequest($this->context . '.filter.etablissement', 'filter_etablissement');
+        $this->setState('filter.etablissement', $etablissement);
+
         $domaine = $app->getUserStateFromRequest($this->context . '.filter.domaine', 'filter_domaine');
         $this->setState('filter.domaine', $domaine);
 
@@ -263,6 +269,13 @@ class EmundusModelJobs extends JModelList
             $query->where(' a.domaine LIKE '.$domaine);
         }
 
+        // Filter by domain
+        $service = $this->getState('filter.service');
+        if (!empty($service)) {
+            $service = $db->Quote('%' . $db->escape($service, true) . '%');
+            $query->where(' a.service LIKE '.$service);
+        }
+
 		//Filtering etablissement
 		$filter_etablissement = $this->state->get("filter.etablissement");
 		if ($filter_etablissement)
@@ -273,7 +286,7 @@ class EmundusModelJobs extends JModelList
 		$orderDirn = $this->state->get('list.direction');
 		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))		
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-//echo $query->dump();
+
 		return $query;
 	}
 

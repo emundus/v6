@@ -82,8 +82,6 @@ class EmundusModelCifre extends JModelList {
 	 * @return Mixed An array of objects.
 	 */
 	function getOffer($fnum) {
-		//$eMConfig = JComponentHelper::getParams('com_emundus');
-		//$listID = $eMConfig->get('fabrikListID');
 
 		if (empty($fnum))
 			return false;
@@ -128,6 +126,60 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * This function gets all of the contact requests that are destined to the user.
+	 * @param null $user Int The user who has received the contact requests.
+	 * @return Mixed An array of objects.
+	 */
+	function getContactToUser($user) {
+
+		if (empty($user))
+			return false;
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select([$this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('cl.user_to').' = ' . $user);
+
+		$this->db->setQuery($query);
+		try {
+			return $this->db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting offers to user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+	/**
+	 * This function gets all of the contact requests that are sent by the user.
+	 * @param null $user Int The user who has sent the contact requests.
+	 * @return Mixed An array of objects.
+	 */
+	function getContactFromUser($user) {
+
+		if (empty($user))
+			return false;
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select([$this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('cl.user_from').' = ' . $user);
+
+		$this->db->setQuery($query);
+		try {
+			return $this->db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting offers to user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -299,5 +351,203 @@ class EmundusModelCifre extends JModelList {
 			JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
+	}
+
+	/**
+	 * Gets the CIFRE link by ID.
+	 *
+	 * @param Int $id the ID of the link to get.
+	 * @return Mixed
+	 */
+	public function getLinkByID($id) {
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select('*')
+			->from($this->db->quoteName('#__emundus_cifre_links'))
+			->where($this->db->quoteName('id').'='.$id);
+		$this->db->setQuery($query);
+
+
+		try {
+			return $this->db->loadObject();
+		} catch (Exception $e) {
+			JLog::add('Error getting CIFRE link by ID in m/CIFRE at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+	}
+
+
+	/**
+	 * Gets the CIFRE link by ID.
+	 *
+	 * @param Int $id the ID of the link to get.
+	 * @param Int $state The state to set the link to.
+	 * @return Boolean
+	 */
+	public function setLinkState($id, $state = 0) {
+
+		$query = $this->db->getQuery(true);
+
+		$query
+			->update($this->db->quoteName('#__emundus_cifre_links'))
+			->set([$this->db->quoteName('state').' = '.$state])
+			->where([$this->db->quoteName('id').'='.$id]);
+		$this->db->setQuery($query);
+
+		try {
+			$this->db->execute();
+			return true;
+		} catch (Exception $e) {
+			JLog::add('Error updating CIFRE link state in m/CIFRE at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+
+	/**
+	 * Gets suggestions of potential offers that may interest the user
+	 *
+	 * @param Int $user_id The ID of the user we are getting suggestions for.
+	 * @param Int $user_profile The profile of the user
+	 * @return Mixed
+	 */
+	public function getSuggestions($user_id, $user_profile) {
+
+		if (empty($user_id) || empty($user_profile))
+			return false;
+
+		// Using the information about the users location or thematics that he has chosen.
+		$query = $this->db->getQuery(true);
+		$query
+			->select($this->db->quoteName('dep.department'))
+			->from($this->db->quoteName('#__emundus_users', 'eu'))
+			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat', 'eur').' ON '.$this->db->quoteName('eur.parent_id').' = '.$this->db->quoteName('eu.id'))
+			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('eur.id'))
+			->where($this->db->quoteName('eu.user_id').' = '.$user_id);
+		$this->db->setQuery($query);
+
+		try {
+			$departments = $this->db->loadColumn();
+		} catch (Exception $e) {
+			JLog::add('Error getting departments in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		}
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select($this->db->quoteName('t.thematic','thematics'))
+			->from($this->db->quoteName('#__emundus_users', 'eu'))
+			->leftJoin($this->db->quoteName('#__emundus_users_600_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('eu.id'))
+			->where($this->db->quoteName('eu.user_id').' = '.$user_id);
+		$this->db->setQuery($query);
+
+		try {
+			$thematics = $this->db->loadColumn();
+		} catch (Exception $e) {
+			JLog::add('Error getting thematics in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		}
+
+		// Dynamically build a WHERE based on information about the user.
+		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cl.user_to').' != '.$user_id.' AND '.$this->db->quoteName('cl.user_from').' != '.$user_id;
+		if ($user_profile == 1006)
+			$fallbackWhere .= ' AND '.$this->db->quoteName('er.futur_doctorant_yesno').' = 1 ';
+		elseif ($user_profile == 1007)
+			$fallbackWhere .= ' AND ('.$this->db->quoteName('er.equipe_recherche_direction_yesno').' = 1 OR '.$this->db->quoteName('er.equipe_recherche_codirection_yesno').' = 1) ';
+		elseif ($user_profile == 1008)
+			$fallbackWhere .= ' AND '.$this->db->quoteName('er.acteur_publique_yesno').' = 1 ';
+
+		// Dynamically add a WHERE clause that can allow for the retrieval of offers, this where can change if not enough results are loaded.
+		$thematicsOrLocations = '';
+		if ((!empty($thematics) && $thematics[0] !== null) || (!empty($departments) && $departments[0] !== null)) {
+
+			$thematicsOrLocations .= ' AND ( ';
+
+			if (!empty($thematics) && $thematics[0] !== null) {
+				$thematicsOrLocations .= $this->db->quoteName('t.themes') . ' IN (' . implode(',', $thematics) . ') ';
+				if (!empty($departments) && $departments[0] !== null) {
+					$thematicsOrLocations .= ' OR ' . $this->db->quoteName('dep.department') . ' IN (' . implode(',', $departments) . ') ';
+				}
+			}
+			elseif (!empty($departments) && $departments[0] !== null) {
+				$thematicsOrLocations .= $this->db->quoteName('dep.department') . ' IN (' . implode(',', $departments) . ') ';
+			}
+
+			$thematicsOrLocations .= ' )';
+		}
+
+		$where = $fallbackWhere.' '.$thematicsOrLocations;
+
+		$query = $this->db->getQuery(true);
+		$query
+			->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+			->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
+			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'ep').' ON '.$this->db->quoteName('ep.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_projet_620_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('ep.id'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'er').' ON '.$this->db->quoteName('er.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat', 'err').' ON '.$this->db->quoteName('err.parent_id').' = '.$this->db->quoteName('er.id'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('err.id'))
+			->where($where)
+			->group([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id')]);
+
+		$this->db->setQuery($query);
+		try {
+			$results = $this->db->loadObjectList();
+			shuffle($results);
+		} catch (Exception $e) {
+			JLog::add('Error getting cifre suggestions in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			$results = [];
+		}
+
+		// If we have not gotten enough (or any) results, we need to rerun the query but with less constraints on the WHERE.
+		// Why? Because we want to suggest the results with the most pertinance to the user, and if there arent enough: suggest something anyways
+		if (is_array($results) && sizeof($results) < 4) {
+
+			// Here we are making sure that we do not get the same fnums are before, to avoid duplicates.
+			$noDuplicates = array();
+			if (sizeof($results) > 0) {
+				foreach ($results as $result) {
+					$noDuplicates[] = $result->fnum;
+				}
+			}
+
+			// If we have found results in the previous query: append them to the WHERE to avoid getting them again.
+			if (!empty($noDuplicates)) {
+				$where = $fallbackWhere.' AND '.$this->db->quoteName('cc.fnum').' NOT IN ('.implode(',', $noDuplicates).')';
+			} else {
+				$where = $fallbackWhere;
+			}
+
+			// Same query except we are using JUST the fallback where, this means that we are getting more results but less related to the user's situation.
+			$query = $this->db->getQuery(true);
+			$query
+				->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+				->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
+				->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
+				->leftJoin($this->db->quoteName('#__emundus_projet', 'ep').' ON '.$this->db->quoteName('ep.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
+				->leftJoin($this->db->quoteName('#__emundus_projet_620_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('ep.id'))
+				->leftJoin($this->db->quoteName('#__emundus_recherche', 'er').' ON '.$this->db->quoteName('er.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
+				->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat', 'err').' ON '.$this->db->quoteName('err.parent_id').' = '.$this->db->quoteName('er.id'))
+				->leftJoin($this->db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('err.id'))
+				->where($where)
+				->group([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id')]);
+			$this->db->setQuery($query);
+
+			try {
+				$res = $this->db->loadObjectList();
+				shuffle($res);
+				$results = array_merge($results, $res);
+			} catch (Exception $e) {
+				JLog::add('Error getting cifre suggestions in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		// return a randomized, 4 element long array.
+		$results = array_slice($results, 0, 4);
+		shuffle($results);
+		return $results;
 	}
 }

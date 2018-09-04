@@ -83,9 +83,8 @@ if (!$mainframe->isAdmin()) {
 				if ($can_edit) {
 					$reload_url = false;
 				}
-			}
-			//try to access detail view or other
-			else {
+			} else {
+				//try to access detail view or other
 				if ($can_read) {
 					$reload_url = false;
 				}
@@ -94,48 +93,48 @@ if (!$mainframe->isAdmin()) {
 		}
 	}
 
-	if (isset($user->fnum) && !empty($user->fnum)){
+	if (isset($user->fnum) && !empty($user->fnum)) {
 
-			if( in_array($user->id, $applicants) ){
+			if (in_array($user->id, $applicants)) {
 				if ($reload_url) {
 					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 				}
 
-			}else{
-				if($is_dead_line_passed ){
+			} else {
+				if ($is_dead_line_passed) {
 					if ($reload_url) {
 						JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
 						$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 					}
-				}else{
-					if($is_app_sent){
-						if($can_edit_until_deadline != 0 ){
+				} else {
+					if ($is_app_sent) {
+						if ($can_edit_until_deadline != 0) {
 							if ($reload_url) {
 								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 							}
-						}else{
+						} else {
 							if ($reload_url) {
 								$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 							}
 						}
-					}else{
+					} else {
 						if ($reload_url) {
 							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 						}
 					}
 				}
 			}
-	} else{
+	} else {
 
-		if($can_edit == 1){
+		if ($can_edit == 1) {
 			return;
-		}else{
-			if($can_read == 1){
+		} else {
+			if ($can_read == 1) {
 				if ($reload < 3) {
 					$reload++;
 					$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
 				}
-			}else{
+			} else {
 				JError::raiseNotice('ACCESS_DENIED', JText::_('ACCESS_DENIED'));
 				$mainframe->redirect("index.php");
 			}
@@ -158,8 +157,7 @@ if (!$mainframe->isAdmin()) {
 			}
 
 			// check if data stored for current user
-			try
-	        {
+			try {
 				$query = 'SELECT '.implode(',', $elements).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
 				$db->setQuery( $query );
 				$stored = $db->loadAssoc();
@@ -168,15 +166,14 @@ if (!$mainframe->isAdmin()) {
 					$parent_id = $stored['id'];
 					unset($stored['id']);
 					unset($stored['fnum']);
-					try
-			        {
+
+					try {
 						$query = 'INSERT INTO '.$table->db_table_name.' (`fnum`, `'.implode('`,`', array_keys($stored)).'`) VALUES('.$db->Quote($rowid).', '.implode(',', $db->Quote($stored)).')';
 						$db->setQuery( $query );
 						$db->execute();
 						$id = $db->insertid();
-					}
-			        catch(Exception $e)
-			        {
+
+					} catch (Exception $e) {
 			            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 			            JLog::add($error, JLog::ERROR, 'com_emundus');
 			        }
@@ -187,7 +184,7 @@ if (!$mainframe->isAdmin()) {
 					if (count($groups) > 0) {
 						foreach ($groups as $key => $group) {
 							$group_params = json_decode($group->gparams);
-							if ($group_params->repeat_group_button == 1) {
+							if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 								$data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
 								$data[$group->group_id]['group_id'] = $group->group_id;
 								$data[$group->group_id]['element_name'][] = $group->name;
@@ -196,8 +193,8 @@ if (!$mainframe->isAdmin()) {
 						}
 						if (count($data) > 0) {
 							foreach ($data as $key => $d) {
-								try
-							    {
+
+								try {
 									$query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
 									$db->setQuery( $query );
 									$stored = $db->loadAssoc();
@@ -206,21 +203,18 @@ if (!$mainframe->isAdmin()) {
 										// update form data
 										unset($stored['id']);
 										unset($stored['parent_id']);
-										try
-								        {
+
+										try {
 											$query = 'INSERT INTO '.$d['table'].' (`parent_id`, `'.implode('`,`', array_keys($stored)).'`) VALUES('.$id.', '.implode(',', $db->Quote($stored)).')';
 											$db->setQuery( $query );
 											$db->execute();
-										}
-								        catch(Exception $e)
-								        {
+										} catch (Exception $e) {
 								            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 								            JLog::add($error, JLog::ERROR, 'com_emundus');
 								        }
 								    }
-							    }
-						        catch(Exception $e)
-						        {
+
+								} catch (Exception $e) {
 						            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 						            JLog::add($error, JLog::ERROR, 'com_emundus');
 						        }
@@ -257,8 +251,8 @@ if (!$mainframe->isAdmin()) {
 								unset($row['id']);
 								unset($row['fnum']);
 								unset($row['nbmax']);
-								try
-						        {
+
+								try {
 						        	$query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
 			                        $db->setQuery( $query );
 			                        $cpt = $db->loadResult();
@@ -276,23 +270,18 @@ if (!$mainframe->isAdmin()) {
 											$db->execute();
 										}
 									}
-								}
-						        catch(Exception $e)
-						        {
+
+								} catch (Exception $e) {
 						            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 						            JLog::add($error, JLog::ERROR, 'com_emundus');
 						        }
 						    }
 					    }
 					}
-					if ($reload_url) {
-						$reload++;
-						$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
-					}
+					$reload++;
+					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 			    }
-			}
-	        catch(Exception $e)
-	        {
+			} catch(Exception $e) {
 	            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 	            JLog::add($error, JLog::ERROR, 'com_emundus');
 	        }

@@ -68,21 +68,26 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                         
                         $class = "";
                         $color = "";
+                        $meaning = "";
                         if($attachment->is_validated == -2){
                             $class = "glyphicon-unchecked";
                             $color = "gray";
+                            $meaning = JText::_('UNCHECKED');
                         }
-                        if($attachment->is_validated == null){
+                        elseif($attachment->is_validated == null){
                             $class = "glyphicon-unchecked";
                             $color = "gray";
+                            $meaning = JText::_('UNCHECKED');
                         }
                         elseif($attachment->is_validated == 1){
                             $class = "glyphicon-ok";
                             $color = "green";
+                            $meaning = JText::_('VALID');
                         }
                         else{
                             $class = "glyphicon-warning-sign";
                             $color = "orange";
+                            $meaning = JText::_('INVALID');
                         }
                         echo '<tr>
                                   <td>'.$checkbox.' '.$i.'</td>
@@ -91,7 +96,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                   <td>'.$attachment->description.'</td>
                                   <td>'.$attachment->campaign_label.'</td>
                                   <td>'.$attachment->year.'</td>
-                                  <td><p class="is-validated" id="'.$attachment->aid.'"><span class="glyphicon '.$class.'" style="color:'.$color.'"></span></p></td>
+                                  <td><p class="is-validated" id="'.$attachment->aid.'" title="'.$meaning.'"><span class="glyphicon '.$class.'" style="color:'.$color.'"></span></p></td>
                                 </tr>';
 
                         $i++;
@@ -332,14 +337,17 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         var state = -2
         if($("#"+id+" span").hasClass("glyphicon-unchecked")){
             $("#"+id+" span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
+            $("#"+id).attr('title',Joomla.JText._('VALID'));
             state = 1
         }else{
             if($("#"+id+" span").hasClass("glyphicon-ok")){
                 $("#"+id+" span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange"); 
+                $("#"+id).attr('title',Joomla.JText._('INVALID'));
                 state = 0     
             }else{
                 if($("#"+id+" span").hasClass("glyphicon-warning-sign")){
                     $("#"+id+" span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");  
+                    $("#"+id).attr('title',Joomla.JText._('UNCHECKED'))
                     state = -2
                 }
             } 

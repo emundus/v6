@@ -221,12 +221,9 @@ class EmundusControllerStats extends JControllerLegacy {
 
         $m_stats = new EmundusModelStats();
         $files = $m_stats->getFiles();
-        
         foreach ($files as $file) {
             $array[$file['value']] += $file['nb'];
         }
-
-
 
         echo json_encode((object) [
             'status' => true,

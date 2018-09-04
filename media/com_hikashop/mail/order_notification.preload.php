@@ -410,7 +410,7 @@ ob_start();
 
 	$sep = '';
 	if(hikashop_level(2)) {
-		$fields = $fieldsClass->getFields('display:field_order_notification=1',$data->cart,'order','');
+		$fields = $fieldsClass->getFields('display:mail_order_notif=1',$data->cart,'order','');
 		foreach($fields as $fieldName => $oneExtraField) {
 			if($oneExtraField->field_type != 'customtext' && empty($data->cart->$fieldName))
 				continue;

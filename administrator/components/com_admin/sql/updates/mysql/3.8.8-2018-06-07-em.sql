@@ -12,12 +12,12 @@ CREATE TABLE IF NOT EXISTS `jos_emundus_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `jos_emundus_logs`
- ADD PRIMARY KEY (`id`), ADD KEY `actions` (`action_id`), ADD KEY `fnum to` (`fnum_to`), ADD KEY `user from` (`user_id_from`), ADD KEY `user to` (`user_id_to`);
+  ADD PRIMARY KEY (`id`), ADD KEY `actions` (`action_id`), ADD KEY `fnum to` (`fnum_to`), ADD KEY `user from` (`user_id_from`), ADD KEY `user to` (`user_id_to`);
 
 
 ALTER TABLE `jos_emundus_logs`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `jos_emundus_logs`
-ADD CONSTRAINT `user from` FOREIGN KEY (`user_id_from`) REFERENCES `jos_emundus_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT `user to` FOREIGN KEY (`user_id_to`) REFERENCES `jos_emundus_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `user from` FOREIGN KEY (`user_id_from`) REFERENCES `jos_emundus_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `user to` FOREIGN KEY (`user_id_to`) REFERENCES `jos_emundus_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;

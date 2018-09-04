@@ -91,8 +91,12 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                 <th class="align-left">
                     <?php echo JHtml::_('grid.sort',  'COM_EMUNDUS_JOBS_DOMAINE', 'a.domaine', $listDirn, $listOrder); ?>
                 </th>
-
-
+                <th class="align-left">
+                    <?php echo JHtml::_('grid.sort',  'COM_EMUNDUS_JOBS_ETABLISSEMENT', 'a.etablissement', $listDirn, $listOrder); ?>
+                </th>
+                <th class="align-left">
+                    <?php echo JHtml::_('grid.sort',  'COM_EMUNDUS_JOBS_SERVICE', 'a.service', $listDirn, $listOrder); ?>
+                </th>
                 <?php if (!$user->guest): ?>
                     <th class="align-center">
                         <?php echo JHtml::_('grid.sort',  'COM_EMUNDUS_JOBS_ACTIONS', 'step', $listDirn, $listOrder); ?>
@@ -128,7 +132,12 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                     <td>
                         <?php echo $item->domaine; ?>
                     </td>
-
+                    <td>
+                        <?php echo $item->etablissement; ?>
+                    </td>
+                    <td>
+                        <?php echo $item->service; ?>
+                    </td>
                     <?php if (!$user->guest): ?>
                         <td class="align-left">
                             <?php if ($canEdit || $canDelete): ?>

@@ -4,7 +4,7 @@ CREATE TABLE `jos_emundus_cifre_links` (
   `user_from` int(11) NOT NULL,
   `fnum_to` varchar(28) NOT NULL,
   `fnum_from` varchar(28) DEFAULT NULL,
-  `time_date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `time_date_created` timestamp DEFAULT NULL,
   `time_date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `state` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -18,6 +18,9 @@ ALTER TABLE `jos_emundus_cifre_links`
   ADD UNIQUE KEY `fnum_to` (`fnum_to`,`fnum_from`),
   ADD UNIQUE KEY `user_to` (`user_to`,`user_from`,`fnum_to`,`fnum_from`),
   ADD KEY `user_from` (`user_from`);
+
+ALTER TABLE `jos_emundus_cifre_links`
+  ADD PRIMARY KEY (`id`);
 
 
 ALTER TABLE `jos_emundus_cifre_links`

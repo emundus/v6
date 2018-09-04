@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="install" group="hikashoppayment">
 	<name>Hikashop ePay Payment Plugin</name>
-	<creationDate>31 juillet 2018</creationDate>
+	<creationDate>07 août 2018</creationDate>
 	<version>3.5.1</version>
 	<author>ePay - Michael Korsgaard</author>
 	<authorEmail>support@epay.dk</authorEmail>

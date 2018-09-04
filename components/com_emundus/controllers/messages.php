@@ -370,11 +370,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                                 break;
 
                             }
-
                         }
-
                     }
-
                 }
             }
 
@@ -497,7 +494,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         
         // Get any candidate files included in the message.
-        if(!empty($template->candidate_file)) {
+        if (!empty($template->candidate_file)) {
             foreach ($template->candidate_file as $candidate_file) {
 
                 $filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
@@ -517,7 +514,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    // Files generated using the Letters system. Requires attachment creation and doc generation rights.
         // Get from DB and generate using the tags.
-        if(!empty($template->setup_letters)) {
+        if (!empty($template->setup_letters)) {
             foreach ($template->setup_letters as $setup_letter) {
 
                 $letter = $m_messages->get_letter($setup_letter);
@@ -590,6 +587,55 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 		    return true;
 	    }
+    }
+
+
+/////// chat functions
+
+    // send message in chat
+    public function sendMessage() {
+
+        $m_messages = new EmundusModelMessages();
+
+        $jinput = JFactory::getApplication()->input;
+        $message = $jinput->post->getRaw('message', null);
+        $receiver = $jinput->post->get('receiver', null);
+        $message = str_replace("&nbsp;", "", $message);
+        $string = preg_replace('/>\s+</', "><", $message);
+
+        echo json_encode((object)[
+            'status' => $m_messages->sendMessage($receiver, $message),
+        ]);
+        exit;
+    }
+
+    // update message list
+    public function updatemessages() {
+
+        $m_messages = new EmundusModelMessages();
+
+        $jinput = JFactory::getApplication()->input;
+        $lastId = $jinput->post->get('id', null);
+        $messages = $m_messages->updateMessages($lastId);
+
+
+        if(!empty($messages)) {
+            foreach ($messages as $message) {
+                $message->date_time = date("d/m/Y", strtotime($message->date_time));
+                $message->message = strip_tags($message->message);
+            }
+            echo json_encode((object)[
+                'status' => 'true',
+                'messages' => $messages
+            ]);
+        }
+        else {
+            echo json_encode((object)[
+                'status' => 'false'
+            ]);
+        }
+
+        exit;
     }
 
 }

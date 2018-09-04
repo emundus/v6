@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="quickicon">
 	<name>HikaShop Quick Icon</name>
-	<creationDate>31 juillet 2018</creationDate>
+	<creationDate>07 août 2018</creationDate>
 	<version>3.5.1</version>
 	<author>Obsidev</author>
 	<authorEmail>jerome@obsidev.com</authorEmail>
