@@ -594,6 +594,7 @@ function delete_file()
 	$mainframe = JFactory::getApplication();	
 	$mainframe->setUserState('contenido', "vacio");
 	
+	$jinput = $mainframe->input;	
 	$jinput->set('view', 'malwarescan');
 	parent::display();	
 }

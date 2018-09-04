@@ -6,24 +6,7 @@ defined('_JEXEC') or die();
 	var cont_otp = 0;
 	
 	jQuery(document).ready(function() {	
-		<?php
-			$version4 = version_compare(JVERSION, '3.20', '>')
-		?>
-		
-		var version4 = "<?php echo $version4; ?>";
-		
-		if ( version4 ) {
-			//Move the form to the right on Joomla 4
-			jQuery(function() {
-			   jQuery('.dropdown-submenu').hover( function(){
-					jQuery('#adminForm').css('margin-left', '150px');
-			   },
-			   function(){
-					jQuery('#adminForm').css('margin-left', '');
-			   });
-			});
-		}
-		
+			
 		// Add timer to close system messages
 		window.setTimeout(function () {
 			jQuery("#system-message-container").fadeTo(500, 0).slideUp(500, function () {

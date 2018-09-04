@@ -190,6 +190,14 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				case "Uploadinstall":
 					$this->Upload_install($request['body']['data']);
 					break;
+				
+				case "Connect":
+					$this->Connect();
+					break;
+					
+				case "UpdateConnect":
+					$this->UpdateConnect($request['body']['data']);
+					break;
 					
 				case self::CIPHER_AESCBC256:
 									
@@ -412,7 +420,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Chequeamos si existe el fichero kickstart
 		$kickstart = $this->check_kickstart();
 		// Chequeamos si el segundo factor de autenticación está habilitado
-		$two_factor = $this->get_two_factor_status();
+		$two_factor = $this->get_two_factor_status(true);
 		
 		// Añadimos la información sobre las extensiones no actualizadas. Esta opción no es necesaria cuando escogemos la opción 'System Info'
 		if ( $opcion ) {
@@ -489,40 +497,71 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	}
 	
 	// Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
-	function get_two_factor_status() {
+	function get_two_factor_status($overall=false) {
 		$enabled = 0;
 		
-		$methods = JAuthenticationHelper::getTwoFactorMethods();
+		/* Si la variable "overall" es false utilizamos el método getTwoFactorMethods para obtener la información de los plugins; si es true no podemos usar ese método ya que necesitamos que el usuario esté logado */
+		if (!$overall) {
+			$methods = JAuthenticationHelper::getTwoFactorMethods();
 		
-		if (count($methods) > 1) {
-			$enabled = 1;
-			// Chequeamos que al menos un Super usuario tenga el método habilitado
-			
-			$db = JFactory::getDBO();
-			$query = 'SELECT user_id FROM #__user_usergroup_map WHERE group_id="8"';
-			$db->setQuery( $query );
-			$db->execute();	
-			$super_users_ids = $db->loadColumn();
-			
-			if ( version_compare(JVERSION, '3.20', 'lt') ) {
-				JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_users/models', 'UsersModel');
-
-				// @var UsersModelUser $model
-				$model = JModelLegacy::getInstance('User', 'UsersModel', array('ignore_request' => true));
-			} else {
-				$model = new UserModel(array('ignore_request' => true));
-			}
-									
-			foreach ($super_users_ids as $user_id) {
-				$otpConfig = $model->getOtpConfig($user_id);
-		
-				// Check if the user has enabled two factor authentication
-				if (!empty($otpConfig->method) && !($otpConfig->method === 'none')) {					
-					$enabled = 2;
+			if (count($methods) > 1) {
+				$enabled = 1;
+				// Chequeamos que al menos un Super usuario tenga el método habilitado
+				try {
+					$db = JFactory::getDBO();
+					$query = 'SELECT user_id FROM #__user_usergroup_map WHERE group_id="8"';
+					$db->setQuery( $query );
+					$db->execute();	
+					$super_users_ids = $db->loadColumn();
+				} catch (Exception $e) {
+					return 1;
 				}
-			}	
+				
+				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+					JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_users/models', 'UsersModel');
+
+					// @var UsersModelUser $model
+					$model = JModelLegacy::getInstance('User', 'UsersModel', array('ignore_request' => true));
+				} else {
+					$model = new UserModel(array('ignore_request' => true));
+				}
+				
+				foreach ($super_users_ids as $user_id) {
+					$otpConfig = $model->getOtpConfig($user_id);
+				
+					// Check if the user has enabled two factor authentication
+					if (!empty($otpConfig->method) && !($otpConfig->method === 'none')) {					
+						$enabled = 2;
+					}
+				}				
+			}			
+		} else {
 			
+			try {				
+				$db = $this->getDbo();
+				$query = $db->getQuery(true)
+					->select(array($db->quoteName('enabled')))
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_totp'));
+				$db->setQuery($query);
+				$enabled = $db->loadResult();
+			} catch (Exception $e) {				
+			}
+			
+			if ( $enabled == 0 ) {
+				try {					
+					$query = $db->getQuery(true)
+						->select(array($db->quoteName('enabled')))
+						->from($db->quoteName('#__extensions'))
+						->where($db->quoteName('name').' = '.$db->quote('plg_twofactorauth_yubikey'));
+					$db->setQuery($query);
+					$enabled = $db->loadResult();
+				} catch (Exception $e) {				
+				}
+			}
 		}
+		
+		
 		
 		return $enabled;
 	}
@@ -2376,6 +2415,133 @@ ENDDATA;
 		JFactory::getApplication()->flushAssets();
 
 		return true;
+	}
+	
+	/* Función que devuelve información sobre ips a añadir y ataques detenidos para el plugin "Connect"  */
+	private function Connect() {
+	
+		require_once JPATH_ROOT. DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'cpanel.php';
+		$cpanel_model = new SecuritycheckprosModelCpanel();
+				
+		$attacks_today = $cpanel_model->LogsByDate('today');
+		$attacks_yesterday = $cpanel_model->LogsByDate('yesterday');
+		$attacks_last_7_days = $cpanel_model->LogsByDate('last_7_days');
+		$attacks_last_month = $cpanel_model->LogsByDate('last_month');
+		$attacks_this_month = $cpanel_model->LogsByDate('this_month');		
+		$attacks_last_year = $cpanel_model->LogsByDate('last_year');
+		$attacks_this_year = $cpanel_model->LogsByDate('this_year');		
+		
+		$attacks = array(
+			'today'	=>	$attacks_today,
+			'yesterday'		=> $attacks_yesterday,
+			'last_7_days'		=> $attacks_last_7_days,
+			'this_month'		=> $attacks_this_month,
+			'last_month'		=> $attacks_last_month,
+			'this_year'		=> $attacks_this_year,
+			'last_year'		=> $attacks_last_year
+		);
+		
+		// Ruta al fichero de información
+		$file_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.'cc_info.php';
+		
+		// Hay información que consumir
+		if ( file_exists($file_path) ) {
+			$str=file_get_contents($file_path);
+			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+			$ips = str_replace("#<?php die('Forbidden.'); ?>",'',$str);
+			// Una vez extraida la información eliminamos el fichero
+			unlink($file_path);
+		} else {
+			$ips = null;
+		}
+				
+		$this->data = array(
+			'ips'		=>  $ips,
+			'attacks'	=>	 $attacks
+		);
+	}
+	
+	/* Función que añade una IP a la lista negra dinámica */
+	function actualizar_lista_dinamica($attack_ip){
+	
+		// Creamos el nuevo objeto query
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		
+		// Chequeamos si la IP tiene un formato válido
+		$ip_valid = filter_var($attack_ip, FILTER_VALIDATE_IP);
+		
+		// Sanitizamos la entrada
+		$attack_ip = $db->escape($attack_ip);
+				
+		// Validamos si el valor devuelto es una dirección IP válida
+		if ( (!empty($attack_ip)) && ($ip_valid) ) {
+			try {				
+				$query = "INSERT INTO `#__securitycheckpro_dynamic_blacklist` (`ip`, `timeattempt`) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE `timeattempt` = NOW(), `counter` = `counter` + 1;";
+				
+				$db->setQuery( $query );		
+				$result = $db->execute();				
+			} catch (Exception $e) {				
+			}			
+			
+		} else {
+			return JText::_('COM_SECURITYCHECKPRO_INVALID_FORMAT');;
+		}
+	}
+	
+	/* Función que añade ips a la lista negra pasados por el plugin "Connect"  */
+	private function UpdateConnect($data) {
+				
+		// Desencriptamos los datos recibidos, que vendrán en formato json
+		$response = $this->decrypt($data[0], $this->password);
+		$ips_passed = json_decode($response,true);
+		$message = "";		
+
+		require_once JPATH_ROOT. DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'firewallconfig.php';
+		$firewall_config_model = new SecuritycheckprosModelFirewallConfig();
+
+		if ( $ips_passed ) {
+			if ( count($ips_passed['whitelist']) ) {
+				$message .= "<b>" . JText::_( 'COM_SECURITYCHECKPRO_WHITELIST' ) . "</b><br/>";
+			}
+			foreach ($ips_passed['whitelist'] as $whitelist) {
+				$returned_message = $firewall_config_model->manage_list('whitelist','add',$blacklist,true,true);
+				if ( !empty($returned_message) ) {
+					$message .= $whitelist . ": " . $returned_message . "<br/>";
+				} else {
+					$message .= $whitelist . ": OK" . "<br/>";
+				}
+			}
+			
+			if ( count($ips_passed['blacklist']) ) {
+				$message .= "<b>" . JText::_( 'COM_SECURITYCHECKPRO_BLACKLIST' ) . "</b><br/>";
+			}
+			foreach ($ips_passed['blacklist'] as $blacklist) {
+				$returned_message = $firewall_config_model->manage_list('blacklist','add',$blacklist,true,true);
+				if ( !empty($returned_message) ) {
+					$message .= $blacklist . ": " . $returned_message . "<br/>";
+				} else {
+					$message .= $blacklist . ": OK" . "<br/>";
+				}
+			}
+			
+			if ( count($ips_passed['dynamic_blacklist']) ) {
+				$message .= "<b>" . JText::_( 'COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST' ) . "</b><br/>";
+			}			
+			foreach ($ips_passed['dynamic_blacklist'] as $dynamic_blacklist) {	
+				$returned_message = $this->actualizar_lista_dinamica($dynamic_blacklist);
+				if ( !empty($returned_message) ) {
+					$message .= $dynamic_blacklist . ": " . $returned_message . "<br/>";
+				} else {
+					$message .= $dynamic_blacklist . ": OK" . "<br/>";
+				}
+			}
+		}
+						
+		// Devolvemos el resultado
+		$this->data = array(
+			'UpdateConnect'		=> $message
+		);
 	}
 	
 }

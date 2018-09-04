@@ -12,17 +12,20 @@ defined('_JEXEC') or die();
 					<span aria-hidden="true">&times;</span>
 				</button>
 			  </div>
-			  <div class="modal-body">	
+			  <div class="modal-body">
+				<? ob_start(); ?>			  
 				<textarea rows="10" class="table">		
 				<?php 
 				$contenido = "There is no log info";
 				if ( !empty($this->log_filename) ) {
 						if ( file_exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.$this->log_filename) ) {
-						$contenido = file_get_contents(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.$this->log_filename);
-					}			
-				}									
-				echo $contenido;
-				?></textarea>	
+							$contenido = file_get_contents(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.$this->log_filename);		
+							$contenido = filter_var($contenido, FILTER_SANITIZE_SPECIAL_CHARS);
+						}			
+				}		
+				echo $contenido;				
+				?></textarea>
+				<? echo ob_get_clean(); ?>
 			  </div>
 				<div class="modal-footer">					
 					<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>

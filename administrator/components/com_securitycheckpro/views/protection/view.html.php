@@ -32,14 +32,14 @@ $server = $mainframe->getUserState("server",'apache');
 
 if ( ($server == 'apache') || ($server == 'iis') ) {
 	if ( $model->ExistsFile('.htaccess.original') ) {
-		JToolBarHelper::custom('restore_htaccess','redo-2','redo-2','COM_SECURITYCHECKPRO_RESTORE_HTACCESS');
+		JToolBarHelper::custom('restore_htaccess','redo-2','redo-2','COM_SECURITYCHECKPRO_RESTORE_HTACCESS',false);
 	}
 	if ( $model->ExistsFile('.htaccess') ) {
-		JToolBarHelper::custom('delete_htaccess','file-remove','file-remove','COM_SECURITYCHECKPRO_DELETE_HTACCESS');
+		JToolBarHelper::custom('delete_htaccess','file-remove','file-remove','COM_SECURITYCHECKPRO_DELETE_HTACCESS',false);
 	}
-	JToolBarHelper::custom('protect','key','key','COM_SECURITYCHECKPRO_PROTECT');
+	JToolBarHelper::custom('protect','key','key','COM_SECURITYCHECKPRO_PROTECT',false);
 } else if ( $server == 'nginx' ) {
-	JToolBarHelper::custom('generate_rules','key','key','COM_SECURITYCHECKPRO_GENERATE_RULES');
+	JToolBarHelper::custom('generate_rules','key','key','COM_SECURITYCHECKPRO_GENERATE_RULES',false);
 }
 
 JToolBarHelper::apply();

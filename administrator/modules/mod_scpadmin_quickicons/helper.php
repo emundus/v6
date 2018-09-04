@@ -218,6 +218,9 @@ abstract class modScpadminQuickIconsHelper
 				} else { 
 					$check_not_readed_logs_image = 'fapro fa-inbox-in';
 					$document = JFactory::getDocument();
+					// Add style to avoid fapro icons not to be shown aligned to fa icons
+					$style = '.quick-icons a .fapro { margin: 5px auto -3px !important; }';
+					$document->addStyleDeclaration($style);
 					$document->addScriptDeclaration("
 						function scp_logs() {
 						var link     = document.getElementById('plg_quickicon_scp_logs'),

@@ -419,7 +419,14 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_ekrishta','component','2.10','==','3.0.0','>=','EkRishta Component','Sql injection Vulnerability','Jun 13 2018','Version 2.10','none','No details'),
 ('com_cb','component','2.1.4','<=','3.0.0','>=','Community Builder Component','XSS Vulnerability','Jun 14 2018','Version 2.1.4 and previous','update','2.1.5'),
 ('com_jomres','component','9.11.2','==','3.0.0','>=','Jomres Component','CSRF Vulnerability','Jun 19 2018','Version 9.11.2','none','No details'),
-('Joomla!','core','3.8.8','<=','3.0.0','>=','Joomla! multiple vulnerabilities','2 security vulnerabilities','Jun 26 2018','Joomla! versions 1.5.0 through 3.8.8','update','3.8.9');
+('Joomla!','core','3.8.8','<=','3.0.0','>=','Joomla! multiple vulnerabilities','2 security vulnerabilities','Jun 26 2018','Joomla! versions 1.5.0 through 3.8.8','update','3.8.9'),
+('com_medialibrary','component','4.0.12','<=','3.0.0','>=','MediaLibrary Free Component','SQL Injection Vulnerability','Jul 06 2018','Version 4.0.12 and previous','update','4.0.21'),
+('com_advertisementboard','component','3.1.0','<=','3.0.0','>=','Advertisement Board Component','SQL Injection Vulnerability','Jul 06 2018','Version 3.1.0 and previous','update','3.4.1'),
+('com_kunena','component','5.1.1','<=','3.0.0','>=','Kunena Component','Attachments Vulnerability','Jul 16 2018','Version 5.0.0 through 5.1.1','update','5.1.2'),
+('com_jbusinessdirectory','component','4.9.3','<=','3.0.0','>=','J-Business Directory Component','SQL Injection Vulnerability','Aug 12 2018','Version 4.9.3 and previous','update','4.9.4'),
+('com_jcomments','component','3.0.5','<=','3.0.0','>=','JComments Component','Input Validation Vulnerability','Aug 17 2018','Version 3.0.5 and previous','update','3.0.6'),
+('com_mobile','component','2.1.24','==','3.0.0','>=','Mobilejoomla Component','Malicious redirects Vulnerability','Aug 17 2018','Version 2.1.24','update','2.1.25'),
+('Joomla!','core','3.8.11','<=','3.0.0','>=','Joomla! multiple vulnerabilities','3 security vulnerabilities','Aug 28 2018','Joomla! versions 1.5.0 through 3.8.11','update','3.8.12');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
@@ -438,7 +445,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.16');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.23');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,

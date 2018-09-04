@@ -525,7 +525,7 @@ public function protect()
 		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Content-Security-Policy protection";
 			$rules .= PHP_EOL . "<IfModule mod_headers.c>";
-			$rules .= PHP_EOL . 'Header set X-Frame-Options "' . $csp_policy . '"';		
+			$rules .= PHP_EOL . 'Header set Content-Security-Policy "' . $csp_policy . '"';		
 			$rules .= PHP_EOL . "</IfModule>";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Content-Security-Policy protection" . PHP_EOL;	
 		
