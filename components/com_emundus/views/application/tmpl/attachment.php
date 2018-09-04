@@ -207,7 +207,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             }
         });
     });*/
-
+    $(document).off('click', '#em_application_attachments_all');
     $(document).on('click', '#em_application_attachments_all', function(e)
     {
         if($(this).is(':checked'))
@@ -220,6 +220,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         }
     });
 
+    $(document).off('click', '#em_delete_attachments');
     $(document).on('click', '#em_delete_attachments', function(e)
     {
         if(e.handle === true) {
@@ -279,6 +280,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
     });
 
+    $(document).off('click', '#em_export_pdf');
     $(document).on('click', '#em_export_pdf', function()
     {
         var checkedInput = getJsonChecked();
@@ -332,7 +334,8 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         }*/
     });
 
-    $(".is-validated").click(function () { 
+
+    $(".is-validated").click(function () {
         var id = $(this).attr("id")
         var state = -2
         if($("#"+id+" span").hasClass("glyphicon-unchecked")){
