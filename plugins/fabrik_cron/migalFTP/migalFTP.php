@@ -74,6 +74,9 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 				unlink(min($product_files));
 
 			$parsed_json = json_decode($product_json);
+			if (empty($parsed_json))
+				return false;
+
 			// TODO: Begin the DB queries here.
 
 		}
@@ -113,6 +116,11 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 
 			$json_array = json_decode($session_json, true);
 
+			// If the format is invalid then the value will be null.
+			// This helps catch potential issues with the Migal system.
+			if (empty($parsed_json))
+				return false;
+
 
 			// To separate the data into 3 parts we need to organize the objects.
 			$to_create = array();
@@ -145,6 +153,7 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 
 
 			// Now that we have all the data sorted into the correct slots it's time to build the MEATY queries.
+			// UNPUBLISH
 			if (!empty($to_delete)) {
 
 				// Deleting consists of simply setting published to 0.
@@ -152,9 +161,10 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 
 				$in = array();
 				foreach ($to_delete as $item) {
-					$in[] = $item['session_code'];
+					$in[] = $item['numsession'];
 				}
 
+				// Unpublish teaching unit.
 				$query
 					->update($db->quoteName('#__emundus_setup_teaching_unity'))
 					->set($db->quote('published').' = 0')
@@ -165,15 +175,153 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 					$db->execute();
 				} catch (Exception $e) {
 					// TODO: Handle errors.
+					return false;
+				}
+
+				// TODO: Add session_code to setup campaigns.
+				// Unpublish registration period.
+				$query
+					->update($db->quoteName('#__emundus_setup_campaigns'))
+					->set($db->quote('published').' = 0')
+					->where($db->quoteName('session_code').' IN ('.implode(',', $in).')');
+
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					// TODO: Handle errors.
+					return false;
 				}
 
 			}
 
+
+
+			// UPDATE or DO NOTHING
 			if (!empty($to_update)) {
 
 			}
 
+
+
+			// INSERT
 			if (!empty($to_create)) {
+
+				// Get the highest ID for the campaigns table, this will be used to establish the foreign key between campaigns and teaching units.
+				$query = $db->getQuery(true);
+				$query
+					->select('MAX(id)')
+					->from($db->quoteName('#__emundus_setup_campaigns'));
+				$db->setQuery($query);
+				try {
+					$campaign_id = $db->loadResult();
+				} catch (Exception $e) {
+					return false;
+				}
+
+				// DB table struct for different tables.
+				$programme_columns = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url'];
+				$campaign_columns = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
+				$teaching_columns = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region'];
+
+				// Build all value lists for the different inserts at once, this avoids having to loop multiple times.
+				$programme_values = array();
+				$campaign_values = array();
+				$teaching_values = array();
+				foreach ($to_create as $item) {
+
+					$programme_values[] = implode(',', [
+						$db->quote($item['codeproduit']),
+						$db->quote($item['intituleproduit']),
+						$db->quote($item['observations']),
+						'1',
+						'FORMATION',
+						$db->quote($item['familleproduits']),
+						'1',
+						$db->quote($item['libellestageurl'])
+					]);
+
+					$campaign_values[] = implode(',', [
+						$db->quote($item['numsession']),
+						$db->quote($item['libellestage']),
+						$db->quote($item['observations']),
+						$db->quote($item['observations']),
+						'NOW()',
+						$db->quote($item['datedebutsession']['date']),
+						'1001',
+						$db->quote($item['codeproduit']),
+						'1'
+					]);
+
+					$teaching_values[] = implode(',', [
+						$db->quote($item['codeproduit']),
+						$db->quote($item['numsession']),
+						$db->quote($item['libellestage']),
+						$db->quote($item['observations']),
+						'1',
+						$db->quote($item['coutsession']),
+						$db->quote($item['datedebutsession']['date']),
+						$db->quote($item['datefinsession']['date']),
+						++$campaign_id,
+						$db->quote($item['nbjours']),
+						$db->quote($item['nbheures']),
+						$db->quote($item['nbheuresjoursession']),
+						$db->quote($item['effectif_mini']),
+						$db->quote($item['effectif_maxi']),
+						$db->quote($item['placedispo']['nbInscrit']),
+						$db->quote($item['titleseo']),
+						$db->quote($item['libellelieu']),
+						$db->quote($item['adresse1lieu'].' '.$item['adresse2lieu']),
+						$db->quote($item['cplieu']),
+						$db->quote($item['villelieu']),
+						$db->quote($item['region'])
+					]);
+
+				}
+
+				// Create a new programme for the session / product.
+				$query = $db->getQuery(true);
+				$query
+					->insert($db->quoteName('#__emundus_setup_programmes'))
+					->columns($programme_columns)
+					->values($programme_values);
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					// TODO: Handle errors.
+					return false;
+				}
+
+				// Create a new registration period for the session.
+				// This period will run from now until the session starts.
+				$query = $db->getQuery(true);
+				$query
+					->insert($db->quoteName('#__emundus_setup_campaigns'))
+					->columns($campaign_columns)
+					->values($campaign_values);
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					// TODO: Handle errors.
+					return false;
+				}
+
+				// Here we add the meatiest part of the data to the teaching_unity table.
+				// This will contain things like occupants, location, price, etc...
+				$query = $db->getQuery(true);
+				$query
+					->insert($db->quoteName('#__emundus_setup_teaching_unity'))
+					->columns($teaching_columns)
+					->values($teaching_values);
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					// TODO: Handle errors.
+					return false;
+				}
 
 			}
 		}
