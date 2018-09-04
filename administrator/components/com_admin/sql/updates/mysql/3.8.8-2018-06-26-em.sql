@@ -4,7 +4,7 @@ CREATE TABLE `jos_emundus_cifre_links` (
   `user_from` int(11) NOT NULL,
   `fnum_to` varchar(28) NOT NULL,
   `fnum_from` varchar(28) DEFAULT NULL,
-  `time_date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `time_date_created` timestamp DEFAULT NULL,
   `time_date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `state` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
