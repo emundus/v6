@@ -151,9 +151,9 @@ class PlgSystemurl_Inspector extends JPlugin
 			}elseif ( $action_inspector == 2) {
 				// Add to blacklist
 				JLoader::register('SecuritycheckproModel', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php');
-				require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'firewalllists.php';	
-				$firewalllists_object = new SecuritycheckprosModelFirewallLists();
-				$firewalllists_object->manage_list('blacklist','add',$remote_ip,false);
+				require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'firewallconfig.php';	
+				$firewallconfig_object = new SecuritycheckprosModelFirewallConfig();
+				$firewallconfig_object->manage_list('blacklist','add',$remote_ip,false);
 				
 				// Redireccionamos para evitar que las peticiones continuen
 				$error_403 = self::$lang_firewall->_('COM_SECURITYCHECKPRO_403_ERROR');

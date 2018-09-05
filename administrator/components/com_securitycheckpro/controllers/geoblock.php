@@ -21,7 +21,8 @@ public function save()
 	
 	/* Obtenemos los datos del formulario */
 	$jinput = JFactory::getApplication()->input;
-	$data = $jinput->get('post');
+	$data = $jinput->getArray($_POST);
+	
 		
 	/* Continentes seleccionados */
 	if ( array_key_exists('continent',$data) ) {

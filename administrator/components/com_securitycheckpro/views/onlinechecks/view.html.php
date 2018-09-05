@@ -20,7 +20,7 @@ function display($tpl = null)
 {
 
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_ONLINE_CHECK_LOGS'), 'securitycheckpro' );
-JToolBarHelper::custom('download_log_file', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_DOWNLOAD_LOG');
+JToolBarHelper::custom('download_log_file', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_DOWNLOAD_LOG',false);
 JToolBarHelper::custom('delete_files','remove','remove','COM_SECURITYCHECKPRO_DELETE_FILE');
 JToolBarHelper::custom('view_log','eye','eye','COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_MESSAGE');
 

@@ -176,7 +176,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 								<td>
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_YELLOW_COLOR' ); ?>
 								</td>
-								<td><span class="badge badge-important"> </span>
+								<td><span class="badge badge-danger"> </span>
 								</td>
 								<td>
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_RED_COLOR' ); ?>

@@ -479,7 +479,7 @@ if ( strstr($server,"iis") ) { ?>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_YELLOW_COLOR' ); ?>
 												</td>
-												<td><span class="badge badge-important"> </span>
+												<td><span class="badge badge-danger"> </span>
 												</td>
 												<td>
 													<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RED_COLOR' ); ?>

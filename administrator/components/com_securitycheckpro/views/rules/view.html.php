@@ -26,7 +26,7 @@ public function display($tpl = null)
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'), 'securitycheckpro' );
 JToolBarHelper::publish('apply_rules', JText::_('COM_SECURITYCHECKPRO_RULES_APPLY'), true);
 JToolBarHelper::unpublish('not_apply_rules', JText::_('COM_SECURITYCHECKPRO_RULES_NOT_APPLY'), true);
-JToolBarHelper::custom('rules_logs','users','users','COM_SECURITYCHECKPRO_RULES_VIEW_LOGS');
+JToolBarHelper::custom('rules_logs','users','users','COM_SECURITYCHECKPRO_RULES_VIEW_LOGS',false);
 
 // Filtro por tipo de extensión
 $this->state= $this->get('State');
