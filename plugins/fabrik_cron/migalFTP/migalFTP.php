@@ -345,7 +345,7 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 							$db = JFactory::getDbo();
 
 							// JDatabase PDO does not support multiple table updates, we must resort to standard SQL.
-							$query = 'UPDATE '.$db->quoteName('#__emundus_setup_campaigns', 'c').' '.$db->quoteName('#__emundus_setup_programmes', 'p').' '.$db->quoteName('#__emundus_setup_teaching_unity', 't').
+							$query = 'UPDATE '.$db->quoteName('#__emundus_setup_campaigns', 'c').', '.$db->quoteName('#__emundus_setup_programmes', 'p').', '.$db->quoteName('#__emundus_setup_teaching_unity', 't').
 									' SET '.implode(',', $fields).
 									' WHERE p.code LIKE '.$db->quote($db_item['code']).' AND c.session_code LIKE '.$db->quote($db_item['session_code']).' AND t.session_code LIKE '.$db->quote($db_item['session_code']);
 							$db->setQuery($query);
@@ -380,6 +380,18 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 						JLog::add('Error getting max ID in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
+					// Ge the list of programme codes that already exist in order to avoid creating duplicates.
+					$query = $db->getQuery(true);
+					$query
+						->select($db->quoteName('code'))
+						->from($db->quoteName('#__emundus_setup_programmes'));
+					$db->setQuery($query);
+					try {
+						$programme_codes = $db->loadColumn();
+					} catch (Exception $e) {
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+					}
+
 					if (empty($campaign_id))
 						$campaign_id = 0;
 
@@ -394,7 +406,8 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 					$teaching_values = array();
 					foreach ($to_create as $item) {
 
-						if (!array_key_exists($db->quote($item['codeproduit']), $programme_values)) {
+						// Only add programme if it does not already exist in DB and has not already been added.
+						if (!in_array($item['codeproduit'], $programme_codes) && !array_key_exists($item['codeproduit'], $programme_values)) {
 							$programme_values[$item['codeproduit']] = implode(',', [
 								$db->quote($item['codeproduit']),
 								$db->quote($item['intituleproduit']),
