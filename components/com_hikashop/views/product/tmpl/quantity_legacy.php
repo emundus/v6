@@ -23,7 +23,7 @@ if((int)$this->config->get('show_quantity_field') == -2) {
 
 $wishlistEnabled = $this->config->get('enable_wishlist', 1);
 $hideForGuest = ($this->config->get('hide_wishlist_guest', 1) && hikashop_loadUser() == null);
-$showFree = ($this->config->get('display_add_to_wishlist_for_free_products', 1) || (!$this->config->get('display_add_to_wishlist_for_free_products', 1) && !empty($this->row->prices) && $this->row->prices[0]->price_value != '0'));
+$showFree = ($this->config->get('display_add_to_wishlist_for_free_products', 1) || (!$this->config->get('display_add_to_wishlist_for_free_products', 1) && !empty($this->row->prices) && isset($this->row->prices[0]) && $this->row->prices[0]->price_value != '0'));
 
 if(!isset($this->cart))
 	$this->cart = hikashop_get('helper.cart');

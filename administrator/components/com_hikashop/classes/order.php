@@ -1335,6 +1335,9 @@ class hikashopOrderClass extends hikashopClass {
 		} elseif($checkUser) {
 			if(empty($order->customer->user_cms_id) || (int)$order->customer->user_cms_id == 0){
 				$token = hikaInput::get()->getVar('order_token');
+				if(empty($token))
+					$token = $app->getUserState('com_hikashop.order_token');
+
 				if(empty($order->order_token) || $token != $order->order_token){
 					return null;
 				}
@@ -2000,8 +2003,7 @@ class hikashopOrderClass extends hikashopClass {
 			unset($order->$r);
 		}
 
-		$order->order_parent_id = (int)$order_id;
-		$order->order_status = $config->get('order_created_status', 'created');;
+		$order->order_status = $config->get('order_created_status', 'created');
 
 		if(!empty($order->order_payment_params->recurring) && !empty($order->order_payment_params->recurring['products'])) {
 			$order_products = $order->order_payment_params->recurring['products'];

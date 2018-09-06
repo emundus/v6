@@ -1,4 +1,16 @@
 <?php die() ?>
+Admin Tools 5.1.4
+================================================================================
++ PHPShield feature now will block additional stream wrappers
+- Remove IP workarounds "recommended setting" notice due to high rate of false detections
+~ Removed legacy menu params that could cause issues with future versions of Joomla! (3.9 and later)
+~ web.config Maker: add automatic dynamic compression of XML, XHTML and RSS documents
+# [MEDIUM] The feature to check for leaked passwords was enabled for every user group, ignoring the settings
+# [MEDIUM] HTTP Referer Policy language strings were untranslated because of the use of an extra "R" in the code
+# [LOW] User re-activation email always displays the username as "Guest"
+# [LOW] Options requiring .htaccess support shown to IIS and NginX users
+# [LOW] web.config Maker: "Remove Apache and PHP version signature" causes a server error
+
 Admin Tools 5.1.3
 ================================================================================
 # [HIGH] IP Workarounds were always enabled

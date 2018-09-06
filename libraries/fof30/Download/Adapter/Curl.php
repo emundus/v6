@@ -86,6 +86,18 @@ class Curl extends AbstractAdapter implements DownloadInterface
 			curl_setopt($ch, CURLOPT_RANGE, "$from-$to");
 		}
 
+		if (!is_array($params))
+		{
+			$params = array();
+		}
+
+		// Work around LiteSpeed sending compressed output under HTTP/2 when no encoding was requested
+		// See https://github.com/joomla/joomla-cms/issues/21423#issuecomment-410941000
+		if (!array_key_exists(CURLOPT_ACCEPT_ENCODING, $params))
+		{
+			$params[CURLOPT_ACCEPT_ENCODING] = 'identity';
+		}
+
 		if (!empty($params))
 		{
 			foreach ($params as $k => $v)

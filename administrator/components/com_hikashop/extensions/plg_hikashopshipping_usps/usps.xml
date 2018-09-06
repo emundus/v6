@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashopshipping">
 	<name>Hikashop USPS Shipping Plugin</name>
-	<creationDate>07 août 2018</creationDate>
+	<creationDate>03 septembre 2018</creationDate>
 	<version>3.5.1</version>
 	<author>Jeff Johnson</author>
 	<authorEmail>jeffcj@gmail.com</authorEmail>

@@ -32,6 +32,7 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
             'adminpw'            => 'AdminPassword',
             'badwords'           => 'BadWords',
             'badword'            => 'BadWords',
+            'cpanel'             => 'ControlPanel',
             'cleantmp'           => 'CleanTempDirectory',
             'dbchcol'            => 'ChangeDBCollation',
             'dbtools'            => 'DatabaseTools',

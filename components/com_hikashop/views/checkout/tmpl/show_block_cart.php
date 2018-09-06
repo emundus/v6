@@ -262,6 +262,9 @@ defined('_JEXEC') or die('Restricted access');
 				for($j = $min_quantity; $j <= $max_quantity; $j += $min_quantity) {
 					$values[$j] = JHTML::_('select.option', $j, $j);
 				}
+				if(!isset($values[$product->cart_product_quantity]))
+					$values[$product->cart_product_quantity] = JHTML::_('select.option', $product->cart_product_quantity, $product->cart_product_quantity);
+
 				$onchange = 'onchange="window.hikashop.checkQuantity(this); var qty_field = document.getElementById(\'hikashop_checkout_quantity_'.$product->cart_product_id.'\'); if (qty_field && qty_field.value != \''.$product->cart_product_quantity.'\'){'.$input.'return window.checkout.submitCart('.$this->step.','.$this->module_position.'); } return false;"';
 				$ret = JHTML::_('select.genericlist', $values, 'checkout[cart][item]['.$product->cart_product_id.']', 'id="hikashop_checkout_quantity_'.$product->cart_product_id.'" data-hk-qty-old="'. $product->cart_product_quantity.'" '.$onchange, 'value', 'text', $product->cart_product_quantity);
 				echo str_replace('id="checkoutcartitem'.$product->cart_product_id.'"', '', $ret);

@@ -2,7 +2,7 @@
 <extension type="module" client="administrator" method="upgrade" version="3.1" position="cpanel">
 	<name>HikaShop Dashboard</name>
 	<author>Hikari Software / Obsidev</author>
-	<creationDate>07 août 2018</creationDate>
+	<creationDate>03 septembre 2018</creationDate>
 	<version>3.5.1</version>
 	<copyright>(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<authorEmail>dev@hikashop.com</authorEmail>

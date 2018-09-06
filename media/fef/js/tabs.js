@@ -14,11 +14,14 @@ if (typeof akeeba.fef === 'undefined')
     akeeba.fef = {};
 }
 
-akeeba.fef.forEach = function (array, callback, scope) {
-    for (var i = 0; i < array.length; i++) {
-        callback.call(scope, i, array[i]);
-    }
-};
+if (typeof akeeba.fef.forEach === 'undefined')
+{
+	akeeba.fef.forEach = function (array, callback, scope) {
+		for (var i = 0; i < array.length; i++) {
+			callback.call(scope, i, array[i]);
+		}
+	};
+}
 
 /**
  * Activates the tab interface for specific HTML elements

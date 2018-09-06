@@ -450,7 +450,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 
 		$i = 0;
 		foreach($cart->products as $product) {
-			$tic = $this->getCode($product, $cart->products);
+			$tic = $this->getCode($product, $cart);
 			if(!$tic)
 				$tic = (int)$this->plugin_options['default_tic'];
 
@@ -987,13 +987,24 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		return $address;
 	}
 
-	protected function getCode(&$product, &$products){
-		if(!empty($product->product_taxability_code) && $product->product_taxability_code!= '-1' && $product->product_taxability_code!=='')
+	protected function getCode(&$product, &$cart){
+		if(!empty($product->product_taxability_code) && $product->product_taxability_code!= '-1')
 			return (int)$product->product_taxability_code;
 
-		if(!empty($product->cart_product_parent_id) && isset($products[$product->cart_product_parent_id]) && !empty($products[$product->cart_product_parent_id]->product_taxability_code) && $products[$product->cart_product_parent_id]->product_taxability_code != '-1'){
-			return (int)$products[$product->cart_product_parent_id]->product_taxability_code;
+		if(!empty($cart->full_products)) {
+			$fp =& $cart->full_products;
+			if(isset($fp[$product->cart_product_id]) && !empty($fp[$product->cart_product_id]->product_taxability_code) && $fp[$product->cart_product_id]->product_taxability_code != '-1')
+				return (int)$fp[$product->cart_product_id]->product_taxability_code;
 		}
+
+		$p =& $cart->products;
+		if(!empty($product->cart_product_parent_id) && isset($p[$product->cart_product_parent_id])) {
+			if(!empty($p[$product->cart_product_parent_id]->product_taxability_code) && $p[$product->cart_product_parent_id]->product_taxability_code != '-1')
+				return (int)$p[$product->cart_product_parent_id]->product_taxability_code;
+			if(isset($fp) && isset($fp[$p[$product->cart_product_parent_id]->cart_product_id]) && !empty($fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code) && $fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code != '-1')
+				return (int)$fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code;
+		}
+
 		return false;
 	}
 
@@ -1039,7 +1050,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 			if(empty($product->cart_product_quantity))
 				continue;
 			$i++;
-			$tic = $this->getCode($product, $cart->products);
+			$tic = $this->getCode($product, $cart);
 			if(!$tic)
 				$tic = (int)$this->plugin_options['default_tic'];
 
@@ -1059,7 +1070,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 			if(empty($product->cart_product_quantity))
 				continue;
 			$i++;
-			$tic = $this->getCode($product, $cart->products);
+			$tic = $this->getCode($product, $cart);
 			if(!$tic)
 				$tic = (int)$this->plugin_options['default_tic'];
 			$cart->products[$k]->taxcloud_id = $i;
@@ -1164,7 +1175,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 					if(empty($product->cart_product_quantity))
 						continue;
 					if($item->CartItemIndex <= 0) {
-						$tic = $this->getCode($product, $cart->products);
+						$tic = $this->getCode($product, $cart);
 						if(!$tic)
 							$tic = (int)$this->plugin_options['default_tic'];
 					if(!isset($rates[$tic]) ) {
@@ -1181,7 +1192,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 					if((int)$product->taxcloud_id == $item->CartItemIndex) {
 						if(!isset($product->prices[0]))
 							continue;
-						$tic = $this->getCode($product, $cart->products);
+						$tic = $this->getCode($product, $cart);
 						if(!$tic)
 							$tic = (int)$this->plugin_options['default_tic'];
 

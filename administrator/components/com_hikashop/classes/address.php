@@ -273,7 +273,7 @@ class hikashopAddressClass extends hikashopClass {
 		if(empty($addressData->address_id) || (int)$addressData->address_id > 0) {
 
 			if($new) {
-				if($addressData->address_published && in_array(@$addressData->address_type, array('', 'both'))) {
+				if((!isset($addressData->address_published) || !empty($addressData->address_published)) && in_array(@$addressData->address_type, array('', 'both'))) {
 					$config = hikashop_config();
 					if($config->get('distinguish_new_addresses', 1) && !$config->get('checkout_legacy',0)) {
 						$addressData->address_type = 'billing';

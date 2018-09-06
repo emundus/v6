@@ -1034,7 +1034,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1808071517] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1809031413] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
