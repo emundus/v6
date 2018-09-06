@@ -167,7 +167,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 		$student->candidature_posted = 1;
 
 		// Send emails defined in trigger
-		$step = 1;
+		$step = $this->getParam('emundusconfirmpost_status', '1');
 		$code = array($student->code);
 		$to_applicant = '0,1';
 		$trigger_emails = $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
