@@ -129,7 +129,7 @@ public function getOverall($info,$opcion) {
 			if ( $info['firewall_options']['forbid_new_admins'] == 1 ) {
 				$overall = $overall + 5;
 			}			
-			if ( $info['twofactor_enabled'] > 1 ) {
+			if ( $info['twofactor_enabled'] >= 1 ) {
 				$overall = $overall + 10;
 			}
 			if ( $info['htaccess_protection']['xframe_options'] == 1 ) {

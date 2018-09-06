@@ -419,7 +419,7 @@ function hideIt(){
 								<?php } ?>
 							</div>
 						</div>
-						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_STS_OPTIONS_EXPLAIN') ?></footer></blockquote>
+						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
 							<label for="csp_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT'); ?></label>

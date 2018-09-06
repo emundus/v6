@@ -576,5 +576,4 @@ public static function modal($selector='a.modal', $params = array())
         return;
 }
 
-
 }

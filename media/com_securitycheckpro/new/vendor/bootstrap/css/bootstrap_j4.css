@@ -656,7 +656,7 @@ tbody.collapse2.show {
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   list-style: none;
-  background-color: #e9ecef;
+  background-color: #d4e1ef;
   border-radius: 0.25rem;
 }
 
@@ -1103,7 +1103,7 @@ div.modal {
   min-height: 1px;
   padding-right: 10px;
   padding-left: 10px;
-  margin-left: 30px;
+  /*margin-left: 30px;*/
 }
 
 .col {

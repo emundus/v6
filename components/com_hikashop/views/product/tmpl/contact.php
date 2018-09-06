@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 	<fieldset>
 		<div class="" style="float:left">
 			<h1><?php
-if(!empty($this->product)) {
+if(!empty($this->product->product_id)) {
 	$doc = JFactory::getDocument();
 	$doc->setMetaData( 'robots', 'noindex' );
 	if(!empty($this->product->images)) {

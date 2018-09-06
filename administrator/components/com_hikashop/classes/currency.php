@@ -984,7 +984,7 @@ class hikashopCurrencyClass extends hikashopClass{
 	function convertPrices(&$prices,$currencies,$currency_id,$main_currency){
 		$unset = array();
 		foreach($prices as $k2 => $price){
-			if($price->price_currency_id!=$currency_id){
+			if(!empty($price->price_currency_id) && $price->price_currency_id!=$currency_id) {
 				if(isset($currencies[$price->price_currency_id]) && isset($currencies[$currency_id]) && isset($currencies[$main_currency])){
 					$prices[$k2]->price_orig_value = $price->price_value;
 					$prices[$k2]->price_orig_value_with_tax = @$price->price_value_with_tax;
@@ -2218,8 +2218,9 @@ class hikashopCurrencyClass extends hikashopClass{
 					$discount->discount_value_without_tax = $discount->discount_flat_amount_without_tax = $discount->discount_flat_amount;
 					$untaxed = null;
 					if($discount_before_tax) {
-						$untaxed = $discount->discount_flat_amount;
-						$discount->discount_flat_amount = $this->getTaxedPrice($discount->discount_flat_amount, $zone_id, $taxes, $round);
+						$discount->discount_flat_amount = $this->getTaxedPrice($discount->discount_flat_amount_without_tax, $zone_id, $taxes, $round);
+						$discount->discount_value_without_tax = $discount->discount_flat_amount_without_tax;
+						$untaxed = $discount->discount_flat_amount_without_tax;
 					} else if($floating_tax) {
 						$untaxed = $discount->discount_flat_amount;
 					}
@@ -2370,7 +2371,7 @@ class hikashopCurrencyClass extends hikashopClass{
 			$zone_id = hikashop_getZone(null);
 
 		foreach($usable_rates as &$rate) {
-			if(!empty($rate->shipping_tax_id) && bccomp($rate->shipping_price, 0, 5)) {
+			if((!empty($rate->shipping_tax_id) || !empty($rate->shipping_params->shipping_tax) ) && bccomp($rate->shipping_price, 0, 5)) {
 				if(!empty($rate->taxes_added))
 					continue;
 

@@ -610,6 +610,7 @@ class checkoutController extends checkoutLegacyController {
 		unset($old_messages);
 
 		$this->app->setUserState('com_hikashop.order_id', $order->order_id);
+		$this->app->setUserState('com_hikashop.order_token', @$order->order_token);
 		hikaInput::get()->set('order_token', $order->order_token );
 
 		if(!empty($order->options->remove_cart) || $this->config->get('clean_cart') == 'order_created' || $order->order_status == $this->config->get('order_confirmed_status', 'confirmed') ) {

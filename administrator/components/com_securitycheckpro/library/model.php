@@ -20,6 +20,7 @@ if(!class_exists('JoomlaCompatModel')) {
 }
 
 define('SCP_CACERT_PEM', __DIR__ . '/cacert.pem');
+define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
 
 class SecuritycheckproModel extends JoomlaCompatModel
 {
@@ -1026,6 +1027,7 @@ function getxml_response($product,$downloadid) {
 					
 	// Leemos el contenido del archivo xml 
 	$ch = curl_init($xmlfile);
+	curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
 	curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 	curl_setopt($ch, CURLOPT_FAILONERROR, true);				
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1066,6 +1068,7 @@ function getxml_response($product,$downloadid) {
 			$url .= "?dlid=" . $downloadid;
 												
 			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
 			curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 			curl_setopt($ch, CURLOPT_FAILONERROR, true);				
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

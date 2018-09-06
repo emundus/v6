@@ -257,7 +257,7 @@ class hikashopDiscountClass extends hikashopClass {
 		$config = hikashop_config();
 		$price = 'price_value';
 		$price_without_discount = 'price_value_without_discount';
-		if(!empty($coupon->discount_tax_id) && !$config->get('discount_before_tax', 1)) {
+		if(((!empty($coupon->discount_tax_id) || !empty($coupon->discount_tax)) && !$config->get('coupon_before_tax', 1)) || $config->get('floating_tax_prices', 0) ) {
 			$price = 'price_value_with_tax';
 			$price_without_discount = 'price_value_without_discount_with_tax';
 		}

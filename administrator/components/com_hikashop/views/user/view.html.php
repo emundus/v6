@@ -208,7 +208,7 @@ class UserViewUser extends hikashopView {
 function updateCustomFeesPanel(active) {
 	var el = document.getElementById("custom_fees_panel");
 	if(!el) return;
-	el.style.display = (active == 1) ? "" : "none";;
+	el.style.display = (active == 1) ? "" : "none";
 }
 ';
 		$doc = JFactory::getDocument();

@@ -243,6 +243,7 @@ function tarea_comprobacion() {
 			// Leemos el contenido del archivo xml (si existe la función curl_init)
 			if ( function_exists('curl_init') ) {
 				$ch = curl_init($xmlfile);
+				curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
 				curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 				curl_setopt($ch, CURLOPT_FAILONERROR, true);				
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

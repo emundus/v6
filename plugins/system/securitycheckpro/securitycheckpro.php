@@ -64,9 +64,9 @@ class plgSystemSecuritycheckpro extends JPlugin{
 				
 	}
 	
-	
 	/* Función para grabar los logs en la BBDD */
 	function grabar_log($logs_attacks,$ip,$tag_description,$description,$type,$uri,$original_string,$username,$component){
+		
 		if ($logs_attacks){
 			$db = JFactory::getDBO();
 			
@@ -125,13 +125,18 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			$geolocation = $lang->_('COM_SECURITYCHECKPRO_COUNTRY_LABEL') . ': ' . $db->escape($geo["country_name"]) . ' | ' . $lang->_('COM_SECURITYCHECKPRO_CONTINENT_LABEL') . ': ' . $db->escape($geo["continent_name"]);
 			
 			if ( ((!($result_tag_description == $tag_description )) || (!($result_original_string == $original_string )) || (!($result_ip == $ip ))) && (($logs_recorded < $logs_per_ip) || ($logs_per_ip == 0)) ){
-				$sql = "INSERT INTO `#__securitycheckpro_logs` (`ip`, `geolocation`, `username`, `time`, `tag_description`, `description`, `type`, `uri`, `component`, `original_string` ) VALUES ('{$ip}', '{$geolocation}', '{$username}', now(), '{$tag_description}', '{$description}', '{$type}', '{$uri}', '{$component}', '{$original_string}')";
-				$db->setQuery($sql);
-				$db->execute();
 				
+				try {
+					$sql = "INSERT INTO `#__securitycheckpro_logs` (`ip`, `geolocation`, `username`, `time`, `tag_description`, `description`, `type`, `uri`, `component`, `original_string` ) VALUES ('{$ip}', '{$geolocation}', '{$username}', now(), '{$tag_description}', '{$description}', '{$type}', '{$uri}', '{$component}', '{$original_string}')";
+					$db->setQuery($sql);
+					$db->execute();
+				} catch (Exception $e) {
+					return false;
+				}
+								
 				/* Si el parámetro '$tag_description' es 'IP_BLOCKED', comprobamos el campo 'blacklist_email' para ver si tenemos que mandar un correo 
 				electrónico cuando se bloquea un ip en la lista negra */
-				if ( $tag_description == 'IP_BLOCKED' ) {
+				if ( ($tag_description == 'IP_BLOCKED') || ($tag_description == 'IP_BLOCKED_DINAMIC') ) {
 					$blacklist_email = $this->pro_plugin->getValue('blacklist_email',0,'pro_plugin');
 				}
 				
@@ -780,10 +785,24 @@ class plgSystemSecuritycheckpro extends JPlugin{
 				
 		// Validamos si el valor devuelto es una dirección IP válida
 		if ( (!empty($attack_ip)) && ($ip_valid) ) {
-			$query = "INSERT INTO `#__securitycheckpro_dynamic_blacklist` (`ip`, `timeattempt`) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE `timeattempt` = NOW(), `counter` = `counter` + 1;";
+			try {				
+				$query = "INSERT INTO `#__securitycheckpro_dynamic_blacklist` (`ip`, `timeattempt`) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE `timeattempt` = NOW(), `counter` = `counter` + 1;";
+				
+				$db->setQuery( $query );		
+				$result = $db->execute();
+				
+				require_once JPATH_ROOT.DIRECTORY_SEPARATOR.'administrator'.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'firewallconfig.php';
+				$firewall_model = new SecuritycheckprosModelFirewallConfig();
+				
+				// Chequeamos si hemos de añadir la ip al fichero que será consumido por el plugin 'connect'
+				$control_center_enabled = $firewall_model->control_center_enabled();
 			
-			$db->setQuery( $query );		
-			$result = $db->execute();	
+				if ( $control_center_enabled ) {
+					$firewall_model->añadir_info_control_center($attack_ip,'dynamic_blacklist');
+				}
+			} catch (Exception $e) {				
+			}			
+			
 		} else {
 			return false;
 		}
@@ -970,6 +989,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$this->pasar_a_historico($dynamic_blacklist_time);
 		
 		$aparece_lista_negra_dinamica = $this->chequear_ip_en_lista_dinamica($attack_ip,$dynamic_blacklist_counter);
+		$add_access_attempts_logs = $this->pro_plugin->getValue('add_access_attempts_logs',0,'pro_plugin');
 						
 		if ( $aparece_lista_negra_dinamica ) {
 			
@@ -977,9 +997,11 @@ class plgSystemSecuritycheckpro extends JPlugin{
 			$is_otp = self::check_otp_params();
 				
 			if ( !$is_otp ) {			
-				// Grabamos una entrada en el log con el intento de acceso de la ip prohibida 
-				$access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
-				$this->grabar_log($logs_attacks,$attack_ip,'IP_BLOCKED_DINAMIC',$access_attempt,'IP_BLOCKED_DINAMIC',$request_uri,$not_applicable,'---','---');
+				// Grabamos una entrada en el log con el intento de acceso de la ip prohibida
+				if ($add_access_attempts_logs) {
+					$access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
+					$this->grabar_log($logs_attacks,$attack_ip,'IP_BLOCKED_DINAMIC',$access_attempt,'IP_BLOCKED_DINAMIC',$request_uri,$not_applicable,'---','---');
+				}
 								
 				// Redirección a nuestra página de "Prohibido" 
 				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');

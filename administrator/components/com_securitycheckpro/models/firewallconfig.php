@@ -80,8 +80,67 @@ function deleteip_dynamic_blacklist() {
 	JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_DELETED_FROM_LIST',$deleted_elements));
 }
 
+/* Función que chequea si la opción de control center está habilitada en el firewall */
+	function control_center_enabled() {
+		$db = JFactory::getDBO();
+		try {
+			$query = $db->getQuery(true);
+			$query 
+				->select($db->quoteName('storage_value'))
+				->from($db->quoteName('#__securitycheckpro_storage'))
+				->where($db->quoteName('storage_key').' = '.$db->quote('controlcenter'));
+			$db->setQuery($query);
+			$res = $db->loadResult();
+		} catch (Exception $e) {
+			return false;	
+		}
+		
+		if(!empty($res)) {
+			$res = json_decode($res, true);		
+		}
+		
+		
+		try {
+			return $res['control_center_enabled'];
+		} catch (Exception $e) {
+			return false;	
+		}
+	}
+
+/* Función que añade una ip al fichero que será consumido por el control center si el plugin 'Connect' está habilitado */
+	function añadir_info_control_center($ip,$option) {
+		// Ruta al fichero de información
+		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
+		
+		$str=file_get_contents($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php');
+		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+		$str = str_replace("#<?php die('Forbidden.'); ?>",'',$str);
+		$info_to_add = json_decode($str,true);
+		
+		if (!$info_to_add) {
+			$info_to_add = array(
+				'dynamic_blacklist'	=>	array(),
+				'blacklist'		=> array(),		
+				'whitelist'		=> array()
+			);
+			
+			array_push($info_to_add[$option],$ip);
+			$info_to_add = json_encode($info_to_add);
+		} else {
+			try{
+				array_push($info_to_add[$option],$ip);					
+				$info_to_add = json_encode($info_to_add);
+			} catch (Exception $e) {				
+				return false;	
+			}
+		}
+		
+		// Sobreescribimos el contenido del fichero
+		file_put_contents($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php', "#<?php die('Forbidden.'); ?>" . PHP_EOL . $info_to_add);	
+	}
+
 /* Función para añadir una ip a una lista */
-function manage_list($type,$action,$ip=null,$check_own=true){
+function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 
 	// Inicializamos las variables
 	$query = null;
@@ -93,7 +152,7 @@ function manage_list($type,$action,$ip=null,$check_own=true){
 			
 	$db = JFactory::getDBO();
 	
-	// Podemos pasar la IP como argumetno; en ese caso no necesitamos capturar los valores del formulario
+	// Podemos pasar la IP como argumento; en ese caso no necesitamos capturar los valores del formulario
 	if ( is_null($ip) ) {
 		// Creamos el objeto JInput para obtener las variables del formulario
 		$jinput = JFactory::getApplication()->input;
@@ -118,6 +177,7 @@ function manage_list($type,$action,$ip=null,$check_own=true){
 					$ip_to_add = $ip;
 				}				
 			}
+			
 			// Chequeamos el formato de la entrada
 			//IPv4
 			if ( strstr($ip_to_add,'*') ) { // Si existe algún comodín, lo reemplazamos por el dígito '0'
@@ -133,10 +193,14 @@ function manage_list($type,$action,$ip=null,$check_own=true){
 			}
 			
 			if ( !$ip_valid ) {
-				JError::raiseWarning(100,JText::_('COM_SECURITYCHECKPRO_INVALID_FORMAT'));
-				break;
+				if (!$remote) {
+					JError::raiseWarning(100,JText::_('COM_SECURITYCHECKPRO_INVALID_FORMAT'));
+					break;
+				} else {
+					return JText::_('COM_SECURITYCHECKPRO_INVALID_FORMAT');
+				}
 			}
-			
+						
 			// Get the client IP to see if the user wants to block his own IP
 			$client_ip = "";
 			if ( isset($_SERVER["REMOTE_ADDR"]) ) {
@@ -151,11 +215,16 @@ function manage_list($type,$action,$ip=null,$check_own=true){
 			if ( $check_own ){
 				if ( ($ip_to_add == $client_ip) && ($type == 'blacklist') ){
 					if ( is_null($ip) ) {
-						JError::raiseWarning(100,JText::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP'));
+						JError::raiseWarning(100,JText::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP'));						
+						break;
+					} else {
+						if ($remote) {
+							return JText::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP');
+						}
 					}
-					break;
+					
 				}
-			}		
+			}				
 						
 			$aparece_lista = $this->chequear_ip_en_lista($ip_to_add,$params[$type]);
 			if (!$aparece_lista) {
@@ -167,11 +236,21 @@ function manage_list($type,$action,$ip=null,$check_own=true){
 				$added_elements++;
 			}
 			
-			if ($added_elements > 0) {
-				JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ADDED_TO_LIST',$added_elements));
+			if ($added_elements > 0) {				
+				if (!$remote) {
+					JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ADDED_TO_LIST',$added_elements));
+					// Chequeamos si hemos de añadir la ip al fichero que será consumido por el plugin 'connect'
+					$control_center_enabled = $this->control_center_enabled();
+				
+					if ( $control_center_enabled ) {
+						$this->añadir_info_control_center($ip_to_add,$type);
+					}
+				} 
 			} else {
 				if ( is_null($ip) ) {
-					JError::raiseNotice(100,JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED',1));
+					if (!$remote) {
+						JError::raiseNotice(100,JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED',1));
+					}
 				}
 			}
 			break;
@@ -507,7 +586,7 @@ function import_whitelist()
 function send_email_test(){
 	// Obtenemos las variables del formulario...
 	$jinput = JFactory::getApplication()->input;
-	$data = $jinput->get('post');
+	$data = $jinput->getArray($_POST);
 	
 	//... y las filtramos
 	$subject = filter_var($data['email_subject'], FILTER_SANITIZE_STRING);

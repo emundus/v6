@@ -1996,7 +1996,8 @@ $jamssFileNames = array(
 					if ( (array_key_exists('extension',$info)) && ($info['extension'] == 'php') ) {
 						$length = strlen($content);
 						$number_of_spaces = substr_count($content,' ');
-						if ( ($number_of_spaces/$length) < 0.001 ) {
+						$number_of_new_lines = substr_count($content, PHP_EOL);
+						if ( (($number_of_spaces/$length) < 0.001 ) || (($number_of_new_lines/$length) < 0.001) ) {
 							// Update the variable to stop looking for more malware patterns
 							$malware_found = true;
 							$pattern[1] = "Obfuscated file";
@@ -2007,7 +2008,7 @@ $jamssFileNames = array(
 							$resultado[0][2] = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),$pattern[2],$pattern[1],'Not applicable',$pattern[3]);
 							$resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
 							$resultado[0][4] = '0';	
-						}
+						} 
 					}					
 			}
 					
@@ -2755,7 +2756,7 @@ private function look_for_results($apikey,$malwarescan_data,$opcion) {
 				);
 
 				//Build options array.
-				$options = array(
+				$options = array(					
 					CURLOPT_URL     => $api,
 					CURLOPT_HTTPHEADER  => $headers,
 					CURLOPT_RETURNTRANSFER  => true,
@@ -2809,7 +2810,7 @@ private function look_for_results($apikey,$malwarescan_data,$opcion) {
 				);
 
 				// Build options array.
-				$options = array(
+				$options = array(					
 					CURLOPT_URL     => $api,
 					CURLOPT_HTTPHEADER  => $headers,
 					CURLOPT_RETURNTRANSFER  => true,
@@ -3273,7 +3274,8 @@ function view_file()
 		if ( count($paths) > 1 ) {
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SELECT_ONLY_ONE_FILE'),'error');	
 		} else {
-			$file_content = file_get_contents($paths[0]);		
+			$file_content = file_get_contents($paths[0]);
+			$file_content = filter_var($file_content, FILTER_SANITIZE_SPECIAL_CHARS);			
 			$contenido = $mainframe->setUserState('contenido', $file_content);				
 		}		
 	}
