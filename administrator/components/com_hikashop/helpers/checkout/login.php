@@ -429,7 +429,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function checkMarker($markerName, $oldMarkers, $newMarkers, &$controller, $params) {
-		if(!in_array($markerName, array('billing_address', 'shipping_address', 'user')))
+		if(!in_array($markerName, array('billing_address', 'billing_addresses', 'shipping_address', 'shipping_addresses','user')))
 			return true;
 
 		if(!empty($params['register_done'])){

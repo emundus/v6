@@ -368,7 +368,10 @@ class hikashopCheckoutHelper {
 		$payments = md5(serialize(@$cart->usable_methods->payment));
 		$shippings = md5(serialize(@$cart->usable_methods->shipping));
 		$address_override = md5(serialize($this->getShippingAddressOverride()));
-		$order_fields = md5(serialize(@$cart->order_fields));
+		$fields = null;
+		if(!empty($cart->order_fields))
+		    $fields = array_keys($cart->order_fields);
+		$order_fields = md5(serialize($fields));
 		$billing_addreses = md5(serialize(@$cart->usable_addresses->billing));
 		$shipping_addreses = md5(serialize(@$cart->usable_addresses->shipping));
 

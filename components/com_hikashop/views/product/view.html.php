@@ -2267,6 +2267,12 @@ class ProductViewProduct extends HikaShopView {
 		$config =& hikashop_config();
 		$this->assignRef('config',$config);
 
+		$menu	= $app->getMenu()->getActive();
+
+		if($menu->getParams()->get('show_page_heading'))
+			$this->title = $menu->getParams()->get('page_heading');
+
+
 		$imageHelper = hikashop_get('helper.image');
 		$this->assignRef('imageHelper',$imageHelper);
 

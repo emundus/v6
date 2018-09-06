@@ -486,6 +486,12 @@ class Ip
 				return $_SERVER['HTTP_CLIENT_IP'];
 			}
 
+			// CLI applications
+			if (!array_key_exists('REMOTE_ADDR', $_SERVER))
+			{
+				return '';
+			}
+
 			// Normal, non-proxied server or server behind a transparent proxy
 			return $_SERVER['REMOTE_ADDR'];
 		}
@@ -528,7 +534,7 @@ class Ip
 			return getenv('REMOTE_ADDR');
 		}
 
-		// Catch-all case for broken servers, apparently
+		// Catch-all case for broken servers and CLI applications
 		return '';
 	}
 

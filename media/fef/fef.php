@@ -61,6 +61,7 @@ class AkeebaFEFHelper
 
 		self::loadCSS('fef/style.min.css');
 		self::loadJS('fef/tabs.min.js');
+		self::loadJS('fef/dropdown.min.js');
 
 		self::$loaded = true;
 	}
@@ -93,7 +94,7 @@ class AkeebaFEFHelper
 				'version'     => self::getMediaVersion(),
 				'relative'    => true,
 				'detectDebug' => true,
-			], true, false, false, true);
+			], false, false, false, true);
 		}
 		// Joomla! 3.7 is broken. We have to use the new method AND MAKE SURE $attribs IS NOT EMPTY.
 		else
@@ -102,7 +103,7 @@ class AkeebaFEFHelper
 				'version'       => self::getMediaVersion(),
 				'relative'      => true,
 				'detectDebug'   => true,
-				'framework'     => true,
+				'framework'     => false,
 				'pathOnly'      => false,
 				'detectBrowser' => true,
 			], [

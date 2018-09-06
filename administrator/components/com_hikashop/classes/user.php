@@ -700,13 +700,32 @@ class hikashopUserClass extends hikashopClass {
 
 			$ret['user_id'] = (isset($userInDB->user_id) ? (int)$userInDB->user_id : 0);
 
+			$app = JFactory::getApplication();
+	    	$old_messages = $app->getMessageQueue();
+
 			if(!empty($ret['user_id'])) {
 				$userInDB->user_created_ip = hikashop_getIP();
-				$this->save($userInDB);
+				$ret['user_id'] = $this->save($userInDB);
 			} else {
 				$ret['user_id'] = $this->save($userData);
 			}
 
+			if(empty($ret['user_id'])) {
+				$ret['status'] = false;
+    			$new_messages = $app->getMessageQueue();
+
+    			if(count($old_messages) < count($new_messages)) {
+    				$new_messages = array_slice($new_messages, count($old_messages));
+
+    				foreach($new_messages as $msg) {
+    					$ret['messages'][] = array(
+    						$msg['message'],
+    					    $msg['type']
+    					);
+    				}
+    			}
+				return $ret;
+			}
 			$query = 'UPDATE '.hikashop_table('address').' AS hk_addr '.
 					' SET hk_addr.address_published = 0 '.
 					' WHERE hk_addr.address_user_id='.(int)$ret['user_id'].' AND hk_addr.address_published = 1';
