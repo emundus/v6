@@ -21,7 +21,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.migalFTP
  * @since       3.0
  */
-class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
+class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 	/**
 	 * Check if the user can use the plugin
 	 *
