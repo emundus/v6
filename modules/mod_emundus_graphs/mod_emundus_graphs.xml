@@ -100,6 +100,15 @@
 						size="60"
 					/>
 
+					<field
+							name="mod_em_list_id10"
+							type="text"
+							default=""
+							label="MOD_EM_LIST_ID10"
+							description="MOD_EM_LIST_ID10_DESC"
+							size="60"
+					/>
+
 				</fieldset>
 			</fields>
 		</config>

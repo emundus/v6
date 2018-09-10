@@ -97,4 +97,20 @@ class modEmundusGraphsHelper {
 		    return false;
 	    }
     }
+
+    /// Get all projects and accepeted projects for each profile ( Custom Hesam )  from jos_emundus_stats_relation_realise_accepte_par_profil
+    public function getProjects() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')->from($db->quoteName('#__emundus_stats_relation_realise_accepte_par_profil'));
+        $db->setQuery($query);
+
+        try {
+            return $db->loadAssoc();
+        } catch(Exception $e) {
+            JLog::add('Error getting relationship stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 }
