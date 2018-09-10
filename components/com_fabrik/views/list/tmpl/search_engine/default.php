@@ -16,6 +16,31 @@ $doc->addStyleSheet('media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css')
 $doc->addScript('media/com_emundus/lib/chosen/chosen.jquery.js');
 $doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
 
+// Helper function to convert html > ul > li to a PHP array
+function ul_to_array($ul) {
+
+	if (is_string($ul)) {
+
+		// encode & appropiately to avoid parsing warnings
+		$ul = preg_replace('/&(?!#?[a-z0-9]+;)/', '&amp;', $ul);
+		if (!$ul = simplexml_load_string($ul))
+			return false;
+		return ul_to_array($ul);
+
+	} elseif (is_object($ul)) {
+
+		$output = array();
+		foreach ($ul->li as $li) {
+			$output[] = (isset($li->ul)) ? ul_to_array($li->ul) : (string) $li;
+		}
+		return $output;
+
+	} else {
+		return false;
+	}
+}
+
+
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
 
@@ -103,13 +128,8 @@ echo $this->table->intro;
                         <tbody>
 
 						<?php
-						$region=""; $department=""; $chercheur=""; $cherches=""; $themes="";
 						$gCounter = 0;
-						//var_dump($data);die;
 						foreach ($data as $d) {
-							$region 	= $d['data_regions___name'];
-							$department = $d['data_departements___departement_nom'];
-							$chercheur 	= strtolower($d['jos_emundus_setup_profiles___label']);
 
 							$cherches = [];
 							if ($d['jos_emundus_recherche___futur_doctorant_yesno'] == 'oui')
@@ -120,28 +140,27 @@ echo $this->table->intro;
 								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_direction_yesno'];
 							if ($d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'] == 'oui')
 								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
-							$cherches = strtolower(implode('</b> et <b>', $cherches));
 
-							$themes = $d['data_thematics___thematic'];
+							$themes = ul_to_array($d['data_thematics___thematic']);
+							$departments = ul_to_array($d['data_departements___departement_nom']);
+
 							?>
                             <tr>
                                 <td>
                                     <div class="em-search-engine-div-data">
-                                        <div><?php if (!empty(strip_tags($region))) :?>En région <i><b><?php echo $region; ?></b></i>,<?php endif; if (!empty(strip_tags($department))) :?> <?php if (empty(strip_tags($region))) :?> Dans <?php else :?> dans <?php endif; ?> le(s) département(s) <i><b><?php echo $department; ?></b></i>, <?php endif; if (empty(strip_tags($region)) && empty(strip_tags($department))) :?> Un <?php else :?> un <?php endif; ?><i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i><?php if (!empty(strip_tags($themes))) :?> sur le(s) thème(s) <i><b><?php echo $themes; ?></b></i><?php endif; ?></div>
-                                        <hr>
-                                        <ul>
-                                            <li>id : <?php echo strip_tags($d['jos_emundus_projet___id']); ?></li>
-                                            <li>date : <?php echo $d['jos_emundus_campaign_candidature___date_submitted']; ?></li>
-                                            <li>déposé part : <?php echo $d['jos_emundus_setup_profiles___label']; ?></li>
-                                            <li>thematiques : <?php echo $d['data_thematics___thematic']; ?></li>
-                                            <li>région : <?php echo $d['data_regions___name']; ?></li>
-                                            <li>département : <?php echo $d['data_departements___departement_nom']; ?></li>
-                                            <li>recherche futur doctorant : <?php echo $d['jos_emundus_recherche___futur_doctorant_yesno']; ?></li>
-                                            <li>recherche acteur publique : <?php echo $d['jos_emundus_recherche___acteur_public_yesno']; ?></li>
-                                            <li>recherche équipe de recherche direction : <?php echo $d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno']; ?></li>
-                                            <li>recherche équipe de recherche codirection : <?php echo $d['jos_emundus_recherche___equipe_de_recherche_direction_yesno']; ?></li>
-                                        </ul>
-                                        <hr>
+                                        <div class="em-search-engine-result-title"><?php echo $d['jos_emundus_projet___titre']; ?></div>
+                                        <div class="em-search-engine-deposant">
+                                            <i class="fa fa-user"></i> <strong>Déposant : </strong> <?php echo strtolower($d['jos_emundus_setup_profiles___label']); ?>
+                                        </div>
+                                        <div class="em-search-engine-addressed">
+                                            <i class="fa fa-users"></i> <strong>Projet adressé à : &nbsp;</strong><?php echo strtolower(implode( '&#32;-&#32;', $cherches)); ?>
+                                        </div>
+                                        <div class="em-search-engine-thematics">
+                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?implode('</div> - <div class="em-highlight">', $themes):'Aucun thématique'; ?></div>
+                                        </div>
+                                        <div class="em-search-engine-departments">
+                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?implode('</div> - <div class="em-highlight">', $departments):'Aucun département'; ?></div>
+                                        </div>
                                         <?php if (JFactory::getUser()->guest) :?>
                                             <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
                                         <?php else :?>
