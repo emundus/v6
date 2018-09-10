@@ -52,8 +52,8 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 		$rows_updated = 0;
 
 		$params = $this->getParams();
-		$product_url = $params->get('productURL', null);
-		$session_url = $params->get('sessionURL', null);
+		$product_url = $params->get('product_url', null);
+		$session_url = $params->get('session_url', null);
 
 		if (empty($product_url) && empty($session_url))
 			return false;
