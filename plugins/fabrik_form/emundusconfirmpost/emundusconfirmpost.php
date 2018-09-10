@@ -26,7 +26,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @since       3.0
  */
 
-class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
+class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 {
 	/**
 	 * Status field
