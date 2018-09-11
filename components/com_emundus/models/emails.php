@@ -369,8 +369,10 @@ class EmundusModelEmails extends JModelList
         //get logo
         $template   = $app->getTemplate(true);
         $params     = $template->params;
+        $logo       = $params->get('logo');
 
-        $logo       = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+        if (!empty($logo))
+            $logo   = json_decode(str_replace("'", "\"", $logo->custom->image), true);
         $logo       = !empty($logo['path']) ? $logo['path'] : "";
 
         $patterns = array(
