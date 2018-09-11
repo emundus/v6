@@ -229,6 +229,9 @@ class EmundusModelEmails extends JModelList
                     $body = $this->setTagsFabrik($body, array($student->fnum));
                     //$attachment[] = $path_file;
 
+	                if ($trigger_email[$student->code]['tmpl']['Template'] != false)
+		                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['Template']);
+
                     // If the email sender has the same domain as the system sender address.
                     if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
                         $mail_from_address = $from;
