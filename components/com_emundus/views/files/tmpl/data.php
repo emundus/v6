@@ -87,7 +87,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<?php echo $this->accessObj[$line['fnum']->val]?>
 									<?php elseif ($k == "id_tag"):?>
 										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
-									<?php else:?>
+                                    <?php elseif (array_key_exists($k, $this->colsSup)) :?>
+                                        <?php echo @$this->colsSup[$k][$line['fnum']->val] ?>
+									<?php else :?>
 										<?php if ($value->type == 'text' ) :?>
 											<?php echo strip_tags($value->val); ?>
 										<?php elseif ($value->type == "date")  :?>
