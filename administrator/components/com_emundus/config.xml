@@ -176,6 +176,16 @@
 		<field name="bookedPrefix" type="text" required="false" label="COM_EMUNDUS_BOOKEDPREFIX_LABEL" description="COM_EMUNDUS_BOOKEDPREFIX_DESC" class="inputbox" default="BOOKED" />
 	</fieldset>
 
+	<fieldset label="COM_EMUNDUS_GOOGLE_MAPS" name="maps" description="COM_EMUNDUS_GOOGLE_MAPS_DESC">
+		<field name="GoogleMaps"
+			   type="text"
+			   class="input-xlarge"
+			   size="40"
+			   label="GOOGLE_MAPS_API"
+			   description="GOOGLE_MAPS_API_DESC"
+		/>
+	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 		<field name="ametys_integration" menu="hide" type="list" default="0" label="COM_EMUNDUS_AMETYS" description="COM_EMUNDUS_AMETYS_DESC">
 			<option value="0">JNO</option>
