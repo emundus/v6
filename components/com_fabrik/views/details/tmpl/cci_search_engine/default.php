@@ -68,6 +68,97 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
 <!-- TODO: Do before style foreach theme -->
 <style>
+
+    .em-offre-title {
+        margin-left: 5px;
+    }
+
+    .details-table {
+        display: inline-block;
+        float: inherit;
+        border: none;
+        margin-bottom: 0px;
+    }
+
+    .details-table td {
+        max-width: 365px;
+        border: none;
+    }
+
+    .partner {
+        display: inline-block;
+        position: absolute;
+    }
+
+    .em-details-icon {
+        display: inline-block;
+    }
+
+    .em-details-icon svg, .em-option-price svg, .em-option-documents svg, .em-option-certificate svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .em-icon-dse svg path {
+        fill: #52BDD5 !important;
+    }
+
+    .em-icon-achat svg path {
+        fill: #C0A512 !important;
+    }
+
+    .em-icon-compétences-et-formation svg path {
+        fill: #0483A2 !important;
+    }
+
+    .em-people-detail {
+        display: inline-block;
+        max-width: 75%;
+        margin-left: 5px;
+        line-height: 20px;
+        margin-top: 10px;
+    }
+
+    /* date details */
+    .em-date-detail {
+        display: inline-block;
+        line-height: 25px;
+    }
+
+    .em-date {
+        margin-left: 10px;
+        font-weight: bold;
+        margin-top: 7px;
+    }
+
+    .em-days {
+        margin-left: 10px;
+        margin-top: -15px;
+    }
+
+    /* requirements details */
+    .em-requirements-detail {
+        display: inline-block;
+        position: absolute;
+        max-width: 15%;
+        margin-left: 5px;
+        line-height: 20px;
+        margin-top: 12px;
+    }
+
+    /* location details */
+    .em-location-detail{
+        display: inline-block;
+        margin-top: 5px;
+        margin-left: 10px;
+        font-weight: bold;
+        position: absolute;
+    }
+
+
+
+
+
     .em-top-theme {
         width: 350px;
         color: white;
@@ -92,16 +183,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         fill: #55AD32 !important;
     }
 
-    #details {
-        display: inline-block;
-        width: 80%;
-    }
-
-    .em-details {
-        width: 49%;
-        display: inline-block;
-    }
-
     .em-offer {
         width: 80%;
     }
@@ -114,11 +195,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         display: inline-block;
     }
 
-    #partner {
-        display: inline-block;
-        width: 19%;
-    }
-
     .em-details-icon {
         display: inline-block;
     }
@@ -126,35 +202,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     .em-details-icon svg, .em-option-price svg, .em-option-documents svg, .em-option-certificate svg {
         width: 40px;
         height: 40px;
-    }
-
-    .top-details {
-         height: 75px;
-         margin-top: 5px;
-         margin-bottom: 10px;
-     }
-
-    .bottom-details {
-         height: 75px;
-         margin-bottom: 10px;
-     }
-
-    #em-people-detail {
-        display: inline-block;
-        position: absolute;
-        max-width: 10%;
-        max-height: 55px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-left: 5px;
-        line-height: 20px;
-    }
-
-    /* date details */
-    #em-date-detail {
-        display: inline-block;
-        position: absolute;
-        line-height: 13px;
     }
 
     .em-date {
@@ -167,30 +214,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         margin-left: 10px;
         margin-top: -15px;
     }
-
-    /* requirements details */
-    #em-requirements-detail {
-        display: inline-block;
-        position: absolute;
-        max-width: 15%;
-        max-height: 55px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-left: 5px;
-        line-height: 20px;
-        margin-top: 10px;
-    }
-
-    /* location details */
-    #em-location-detail{
-        cursor: pointer;
-        display: inline-block;
-        position: absolute;
-        margin-top: -10px;
-        margin-left: 10px;
-        font-weight: bold;
-    }
-
 
     .offer-icon {
         display: inline-block;
@@ -447,96 +470,90 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
         <hr style="width: 97%; margin-bottom: 10px;">
 
-        <div id="details">
-            <div class="top-details">
-                <div class="em-details" id="people">
+        <table class="details-table g-block size-80">
+
+            <tr>
+                <td>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $public_svg; ?>
                     </div>
-                    <div id="em-people-detail">
-                            <?php
-                                if($this->data['jos_emundus_setup_teaching_unity___audiance_raw'] == null)
-                                    echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  $this->data['jos_emundus_setup_programme___programmes_raw'];
-                                else
-                                    echo $this->data['jos_emundus_setup_teaching_unity___audiance_raw'];
-                            ?>
+                    <div class="em-people-detail">
+                        <?php
+                        if($this->data['jos_emundus_setup_teaching_unity___audiance'] == null)
+                            echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  $this->data['jos_emundus_setup_programme___programmes'];
+                        else
+                            echo $this->data['jos_emundus_setup_teaching_unity___audiance'];
+                        ?>
                     </div>
+                </td>
 
-                </div>
-
-                <div class="em-details" id="date">
+                <td>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $date_svg; ?>
                     </div>
-                    <div id="em-date-detail">
+                    <div class="em-date-detail">
                         <p class="em-date">
                             <?php
-                                setlocale(LC_ALL, 'fr_FR');
-                                $start_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
-                                $end_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                $start_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
-                                $end_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                $days = $this->data['jos_emundus_setup_teaching_unity___days_raw'];
+                            setlocale(LC_ALL, 'fr_FR');
+                            $start_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
+                            $end_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                            $start_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
+                            $end_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                            $days = $this->data['jos_emundus_setup_teaching_unity___days_raw'];
 
-                                if($days > 1) {
-                                    if($start_month == $end_month && $start_year == $end_year)
-                                        echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                    elseif ($start_month != $end_month && $start_year == $end_year)
-                                        echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                    elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                        echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                            if($days > 1) {
+                                if($start_month == $end_month && $start_year == $end_year)
+                                    echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                elseif ($start_month != $end_month && $start_year == $end_year)
+                                    echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                                    echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
 
-                                }
+                            }
 
                             ?>
                         </p>
                         <p class="em-days">
                             <?php
-                                if($days > 1)
-                                    echo $days . " jours";
-                                elseif($days = "NULL")
-                                    echo 'Pas de jours définis';
-                                else
-                                    echo $days . " jour";
-
+                            if($days > 1)
+                                echo $days . " jours";
+                            else
+                                echo $days . " jour";
                             ?>
                         </p>
                     </div>
-                </div>
-            </div>
+                </td>
+            </tr>
 
-            <div class="bottom-details">
-
-                <div class="em-details" id="requirements">
+            <tr>
+                <td>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $prerequis_svg; ?>
                     </div>
-                    <div id="em-requirements-detail">
+                    <div class="em-requirements-detail">
                         <?php
-                          if($this->data['jos_emundus_setup_teaching_unity___prerequisite_raw'] == null)
-                              echo "Pas de prérequis nécessaire";
-                          else
-                              echo $this->data['jos_emundus_setup_teaching_unity___prerequisite_raw'];
+                        if($this->data['jos_emundus_setup_teaching_unity___prerequisite'] == null)
+                            echo "Pas de prérequis nécessaire";
+                        else
+                            echo $this->data['jos_emundus_setup_teaching_unity___prerequisite'];
                         ?>
                     </div>
-                </div>
+                </td>
 
-                <div class="em-details" id="location" data-toggle="modal" data-target="#gmaps">
-                    <div class="em-details-icon em-icon-<?php echo $theme?>" >
+                <td data-toggle="modal" data-target="#gmaps" style="cursor: pointer;">
+                    <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $lieu_svg; ?>
                     </div>
-                    <div id="em-location-detail">
-                        <p>
-                            <?php echo ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___location_city_raw'])); ?>
-                        </p>
+                    <div class="em-location-detail">
+                        <?php echo ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___location_city'])); ?>
                     </div>
-                </div>
+                </td>
+            </tr>
+        </table>
 
-            </div>
-        </div>
-
-        <div id="partner">
+        <div class="partner g-block size-19">
             <p>notre partenaire expert</p>
+            <img src="templates/g5_helium/images/LogoPartenaires/logo_ABRC_100_40.jpg">
             <!-- TODO: get partners photo -->
         </div>
 
