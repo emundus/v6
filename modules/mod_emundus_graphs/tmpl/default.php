@@ -9,14 +9,52 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'Chart.min.js');
 $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS.'css'.DS.'bootstrap.min.css');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-master'.DS.'semantic.min.css');
+
 ?>
 <div class="container">
+
+    <div class="explination">
+        <b>Bienvenu sur votre tableau de bord</b>
+        <p>Vous pouvez désormais consulter les différentes statistiques de votre plateforme à partir de cette page.</p>
+        <p>Vous avez la possibilité de choisir et changer la période pour chaque graphe, les données en relation changeront dynamiquement. </p>
+    </div>
+
+
+    <!-- Shows connexion info  -->
+    <div class="row" id="connectionRow" style="display:none;">
+        <div class="col-md-12">
+            <canvas id="co" ></canvas>
+        </div>
+
+        <div class="col-md-6" style="padding-left: 10%;">
+            <table>
+                <tr><td><?php echo JText::_("PERIODE"); ?></td>
+                    <td>
+                        <select class="periodeCo" >
+                            <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
+                            <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
+                            <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
+                            <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
+                            <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
+                            <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6" style="padding-left: 10%;">
+            <div id='summaryConnexion'>
+                <p id='countConnexion'><i><?php echo JText::_("CONNEXION_TOTAL"); ?></i></p>
+            </div>
+        </div>
+
+    </div>
 
     <!-- Shows user info  -->
     <div class="row" id="userRow" style="display:none;">
         
         <div class="col-md-12">
-            <canvas id="users" ></canvas>
+            <canvas id="users"></canvas>
         </div>
     
         <div class="col-md-6" style="padding-left: 10%;" >
@@ -49,88 +87,88 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         </div>
 
         <div class="col-md-6" id="userSummary"  >
-            <p id='userCount'><i><?php echo JText::_("USER_GRAPH_LABEL");?></i></p>
+            <p id='userCount'><i><?php echo JText::_("USER_GRAPH_TOTAL");?></i></p>
         </div>
         <div class="col-md-12">
             <hr style='width: 100%; border-top: 5px solid #fff;'>
         </div>
         
     </div>
+
+
+
 
     
 
     <!-- Shows offer info  -->   
     <div class="row" id="offerRow" style="display:none;">
-        <div class="col-md-12" id="offresDiv">
-            <canvas id="candLigne"></canvas>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12" id="offresDiv">
+                    <canvas id="candLigne"></canvas>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" style="padding-left: 10%;">
+                    <table>
+                        <tr><td><?php echo JText::_("PERIODE"); ?></td>
+                            <td>
+                                <select class="periodeCand" >
+                                    <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
+                                    <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
+                                    <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
+                                    <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
+                                    <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
+                                    <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="summaryOffres">
+                        <p id='countConsultation'><i><?php echo JText::_("CONSULT_TOTAL"); ?></i></p>
+                    </div>
+                </div>
+
+                <div class="col-md-6" >
+                    <div id="summaryCandidature" >
+                        <p id='countCandidature'><i><?php echo JText::_("CANDIDATE_TOTAL"); ?></i></p>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
 
-        <div class="col-md-6" style="padding-left: 10%;">
-            <table>
-            <tr><td><?php echo JText::_("PERIODE"); ?></td>
-                <td>
-                    <select class="periodeCand" >
-                        <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
-                        <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
-                        <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
-                        <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
-                        <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
-                        <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
-                    </select>
-                </td>
-            </tr>
-            </table>
-        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <canvas id="projects"  height="400"></canvas>
+                </div>
+            </div>
 
-        <div class="col-md-3">
-            <div id="summaryOffres">
-                <p id='countConsultation'><i><?php echo JText::_("CONSULT_TOTAL"); ?></i></p>
+            <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12" id="summaryProjects">
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <div class="col-md-3" >
-            <div id="summaryCandidature" >
-                    <p id='countCandidature'><i><?php echo JText::_("CANDIDATE_TOTAL"); ?></i></p>
-            </div>
-        </div>
 
-        <div class="col-md-12">
-            <hr style='width: 100%; border-top: 5px solid #fff;'>
-        </div>
+
+
     </div>
 
 
-    <!-- Shows connexion info  -->
-    <div class="row" id="connectionRow" style="display:none;">
-        <div class="col-md-12">
-            <canvas id="co" ></canvas>
-        </div>
-        
-        <div class="col-md-6" style="padding-left: 10%;">
-            <table>
-            <tr><td><?php echo JText::_("PERIODE"); ?></td>
-                <td>
-                    <select class="periodeCo" >
-                        <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
-                        <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
-                        <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
-                        <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
-                        <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
-                        <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
-                    </select>
-                </td>
-            </tr>
-            </table>
-        </div>
-        <div class="col-md-6" style="padding-left: 10%;">
-            <div id='summaryConnexion'>
-                <p id='countConnexion'><i><?php echo JText::_("CONNEXION_TOTAL"); ?></i></p>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <hr style='width: 100%; border-top: 5px solid #fff;'>
-        </div>
-    </div>
+
 
     <!-- Shows relation info  -->
     <div class="row" id="relationRow" style="display:none;">
@@ -223,31 +261,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
 </div>
 
-
-
-    
-  <!--  <hr style='width: 100%; border-top: 21px solid #fff;'>
-     <div id="avancement" style="float: left; width: 50%;">
-        <h3>Avancement des dossiers</h3>
-        <table>
-            <tr><td><div style="float: left;border-style: groove;">
-            <p id="attenteActeur">Nombre de dossiers en attente d'un acteur: </p>
-        </div>
-        Exporter les données</td></tr>
-        <tr><td><div style="border-style: groove; float: left;">
-            <p id="finalise">Nombre de dossiers finalisés: </p>
-        </div>
-        Exporter les données</td></tr>
-        <tr><td><div style="float: left;border-style: groove;">
-            <p id="validation">Nombre de dossiers en attente de validation: </p>
-        </div>
-        Exporter les données</td></tr>
-        </table>
-    </div>
-    -->
-</div>
-
-
 <script type="text/javascript">
 
     var compteChart;
@@ -257,6 +270,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     var genderChart;
     var nationChart;
     var filesChart;
+    var projectChart;
     // global options for graphs so it doesn't show decimals
     var options = {
         yAxes: [{
@@ -369,6 +383,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     if (compteChart != undefined || compteChart != null)
                         compteChart.destroy();
                     var elem = document.getElementById('users');
+                    elem.height = 400;
                     
                     compteChart = new Chart(elem, {
                         type: 'line',
@@ -387,7 +402,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                                 fontSize: 20
                             },
                             elements: { point: { radius: 1 } } ,
-                            scales: options
+                            scales: options,
+                            maintainAspectRatio: false
                         }
                     });
 
@@ -397,6 +413,161 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                 console.log(jqXHR.responseText);
             }
         }); 
+    }
+
+    // Project function
+    function  afficheProjets() {
+
+        if (projectChart != undefined || projectChart != null)
+            projectChart.destroy();
+
+        var elem = document.getElementById('projects');
+
+
+
+        projectChart = new Chart(elem, {
+            type: 'bar',
+            data: {
+                labels: ['Future Doctorant', 'Chercheur', 'Acteur public ou associé'],
+                datasets: [
+                    // Future Doctorant
+                    {
+                        label: 'Nombre de demande de mise en relation par des chercheurs acceptés',
+                        data: [<?php echo $projects["future_to_chercheur_accept"];?>,0,0],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 1,
+                        stack: 1
+                    },
+                    {
+                        label: 'Nombre de demande de mise en relation par des chercheurs',
+                        data: [<?php echo $projects["future_to_chercheur_total"];?>,0,0],
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        stack: 1
+                    },
+
+                    {
+                        label: "Nombre de demande de mise en relation par des acteurs public",
+                        backgroundColor: "rgba(66, 244, 235,0.2)",
+                        data: [<?php echo $projects["future_to_public_total"];?>, 0, 0],
+                        stack: 2
+                    },
+                    {
+                        label: "Nombre de demande de mise en relation par des acteurs public acceptés",
+                        backgroundColor: "rgba(65, 98, 244,0.2)",
+                        data: [<?php echo $projects["future_to_public_accept"];?>, 0, 0],
+                        stack: 2
+                    },
+
+                    // Chercheurs
+                    {
+                        label: 'Nombre de demande de mise en relation par des Future Doctorants acceptés',
+                        data: [0,<?php echo $projects["chercheur_to_future_accept"];?>,0],
+                        backgroundColor: 'rgba(226, 138, 138, 0.2)',
+                        borderWidth: 1,
+                        stack: 1,
+                        fillOpacity: .3
+                    },
+                    {
+                        label: 'Nombre de demande de mise en relation par des Future Doctorants',
+                        data: [0,<?php echo $projects["chercheur_to_future_total"];?>,0],
+                        backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                        stack: 1
+                    },
+
+                    {
+                        label: "Nombre de demande de mise en relation par des acteurs public",
+                        backgroundColor: "rgba(99,255,132,0.2)",
+                        data: [0, <?php echo $projects["chercheur_to_public_total"];?>, 0],
+                        stack: 2
+                    },
+                    {
+                        label: "Nombre de demande de mise en relation par des acteurs public acceptés",
+                        backgroundColor: "rgba(201, 0, 232,0.2)",
+                        data: [0, <?php echo $projects["chercheur_to_public_accept"];?>, 0],
+                        stack: 2
+                    },
+
+                    // Acteurs public
+                    {
+                        label: 'Nombre de demande de mise en relation par des Future Doctorants acceptés',
+                        data: [0,0,<?php echo $projects["public_to_future_accept"];?>],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 1,
+                        stack: 1,
+                        fillOpacity: .3
+                    },
+                    {
+                        label: 'Nombre de demande de mise en relation par des Future Doctorants',
+                        data: [0,0,<?php echo $projects["public_to_future_total"];?>],
+                        backgroundColor: "rgba(99,255,132,0.2)",
+                        fillOpacity: .3,
+                        stack: 1
+                    },
+
+                    {
+                        label: "Nombre de demande de mise en relation par des chercheurs",
+                        backgroundColor: "rgba(99,255,132,0.2)",
+                        data: [0, 0, <?php echo $projects["public_to_chercheur_total"];?>],
+                        fillOpacity: .3,
+                        stack: 2
+                    },
+                    {
+                        label: "Nombre de demande de mise en relation par des chercheurs acceptés",
+                        backgroundColor: "rgba(252, 248, 0,0.2)",
+                        data: [0, 0, <?php echo $projects["public_to_chercheur_accept"];?>],
+                        fillOpacity: .3,
+                        stack: 2
+                    }
+                ]
+            },
+
+            options: {
+                maintainAspectRatio: false,
+                legend: {
+                    display: false
+                },
+                title:{
+                    display: true,
+                    text: "<?php echo JText::_("PROJECT_TITLE"); ?>",
+                    fontSize: 20
+                },
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+
+                    yAxes: [{
+
+                        id: "bar-y-axis1",
+                        stacked: false,
+                        ticks: {
+                            beginAtZero: true,
+                            userCallback: function (label, index, labels) {
+                                // when the floored value is the same as the value we have a whole number
+                                if (Math.floor(label) === label) {
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                        {
+                            id: "bar-y-axis2",
+                            display:false,
+                            stacked: true,
+                            ticks: {
+                                beginAtZero: true,
+                                userCallback: function (label, index, labels) {
+                                    // when the floored value is the same as the value we have a whole number
+                                    if (Math.floor(label) === label) {
+                                        return label;
+                                    }
+                                }
+                            }
+                        }]
+                }
+            }
+        });
+        elem.height = 400;
     }
 
     // Account function uses 2 ajax functions, consultation and candidate
@@ -430,7 +601,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
                             document.getElementById("countConsultation").append(resultOffre.countOffre);
 
-                            var ctxLine = document.getElementById('candLigne').getContext('2d');
+                            var ctxLine = document.getElementById('candLigne');
+                            ctxLine.height = 400;
                             // destroy old canvas causing hover problems
                             if (offreChart != undefined || offreChart != null)
                                 offreChart.destroy();
@@ -453,9 +625,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                                     ]
                                 },
                                 options: {
+                                    maintainAspectRatio: false,
                                     title:{
                                         display: true,
-                                        text: "Offres",
+                                        text: "<?php echo JText::_('OFFER_TITLE'); ?>",
                                         fontSize: 20
                                     },
                                     scales: {
@@ -525,7 +698,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         connexionChart.destroy();
 
                     var elem = document.getElementById('co');
-
+                    elem.height = 400;
                     connexionChart = new Chart(elem, {
                         type: 'line',
                         data: {
@@ -537,9 +710,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                             }]
                         },
                         options: {
+                            maintainAspectRatio: false,
                             title:{
                                 display: true,
-                                text: "Nombre de connexions",
+                                text: "<?php echo JText::_("CONNECTION_TITLE") ;?>",
                                 fontSize: 20
                             },
                             elements: { point: { radius: 1 } } ,
@@ -591,17 +765,19 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         relationChart.destroy();
 
                     var elem = document.getElementById('rel');
+                    elem.height = 400;
                     relationChart = new Chart(elem, {
                         type: 'line',
                         data: {
                             labels: result.datearray,
                             datasets: [{
-                                label: "Nombre de relations établies",
+                                label: "<?php echo JText::_('RELATION_TITLE') ;?>",
                                 data: result.countarray,
                                 borderColor: 'rgb(232, 128, 32)'
                             }]
                         },
                         options: {
+                            maintainAspectRatio: false,
                             title:{
                                 display: true,
                                 text: "Relations établies",
@@ -632,6 +808,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         genderChart.destroy();
 
                     var elem = document.getElementById('gender');
+                    elem.height = 400;
+
                     genderChart = new Chart(elem, {
                         type: 'pie',
                         data: {
@@ -647,6 +825,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                             ]
                         },
                         options: {
+                            maintainAspectRatio: false,
                             title:{
                                 display: true,
                                 text: "Genres",
@@ -677,6 +856,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     var colorArray = setColorGradient(result.nationality.length);
 
                     var elem = document.getElementById('nationality');
+                    elem.height = 400;
 
                     nationChart = new Chart(elem, {
                         type: 'bar',
@@ -688,6 +868,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                             }],
                         },
                         options: {
+                            maintainAspectRatio: false,
                             legend: {
                                 display: false,
                             },
@@ -729,6 +910,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                 var colorArray = setColorGradient(nbArray.length);
                 console.log(colorArray);
                 var elem = document.getElementById('files');
+                elem.height = 400;
+
                 filesChart = new Chart(elem, {
                     type: 'pie',
                     data: {
@@ -741,6 +924,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         labels: valArray
                     },
                     options: {
+                        maintainAspectRatio: false,
                         title:{
                             display: true,
                             text: "Dossiers",
@@ -798,6 +982,24 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
     jQuery(document).ready(function () {
 
+
+        var projectButton = document.createElement("div");
+        projectButton.className = "btn";
+
+        var ProjectIcon = document.createElement("i");
+        ProjectIcon.className ="search icon";
+        projectButton.append(ProjectIcon);
+
+        var ProjectClick = document.createElement("a");
+        var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID10"); ?>");
+        ProjectClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id10');?>&Itemid=0' );
+        ProjectClick.append(text);
+        projectButton.append(ProjectClick);
+        document.getElementById("summaryProjects").append(projectButton);
+        document.getElementById("summaryProjects").append(document.createElement("br"));
+
+
+        afficheProjets();
         jQuery('#viewTable').each(function() {
             if(jQuery(this).find('tr').children("td").length < 2) {
                 jQuery(this).hide();
@@ -888,6 +1090,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
             var valuePeriodecompte = jQuery('.periodeCompte').val();
             var value = jQuery('.compte').val();
+
             afficheComptes(value, valuePeriodecompte);
         }
 
@@ -944,6 +1147,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             document.getElementById("summaryConnexion").append(button);
 
             var valuePeriodeCo = jQuery('.periodeCo').val();
+
             afficheConnections(valuePeriodeCo);
         }
 
@@ -1005,6 +1209,17 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         display: none;
     }
 
+    .explination {
+        text-align: center;
+        background-color: rgb(233, 233, 233);
+        border-radius: 15px 15px 15px 15px;
+        -moz-border-radius: 15px 15px 15px 15px;
+        -webkit-border-radius: 15px 15px 15px 15px;
+        border: 0px solid #000000;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+    }
+
     table {
         border: none;
     }
@@ -1019,22 +1234,47 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     }
 
     #userSummary p {
-        margin-bottom: -2px;
+        margin-bottom: 0px;
     }
 
     #summaryOffres p {
-        margin-bottom: -2px;
+        margin-bottom: 0px;
     }
 
     #summaryCandidature p {
-        margin-bottom: -2px;
+        margin-bottom: 0px;
     }
 
     #summaryConnexion p {
-        margin-bottom: -2px;
+        margin-bottom: 0px;
     }
 
     #summaryRelation p {
-        margin-bottom: -2px;
+        margin-bottom: 0px;
+    }
+
+    #projects {
+        height: 400px !important;
+    }
+
+    #connectionRow {
+        margin-bottom: 35px;
+    }
+
+    #userRow {
+        margin-bottom: 35px;
+    }
+
+    #relationRow {
+        margin-top: 35px;
+    }
+
+    #summaryCandidature {
+        margin-left: 10px;
+    }
+
+    #summaryProjects {
+        margin-top: 20px;
+        margin-left: 30%;
     }
 </style>

@@ -1728,7 +1728,7 @@ class EmundusHelperFiles
                                 <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
-                if($select_id==$filter->id)
+                if ($select_id == $filter->id)
                     $filters .= '<option value="'.$filter->id.'" selected="true" >'.$filter->name.'</option>';
                 else
                     $filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
@@ -1770,7 +1770,7 @@ class EmundusHelperFiles
         return $filters;
     }
 
-    public  function getEmundusFilters($id = null)
+    public function getEmundusFilters($id = null)
     {
         $itemid = JFactory::getApplication()->input->get('Itemid');
         $user = JFactory::getUser();
@@ -1787,11 +1787,11 @@ class EmundusHelperFiles
         else return array();
     }
 
-    public  function createTagsList($tags) {
+    public function createTagsList($tags) {
         $tagsList = array();
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
-            if(!isset($tagsList[$fnum]))
+            if (!isset($tagsList[$fnum]))
                 $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
             else
                 $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
@@ -1799,8 +1799,40 @@ class EmundusHelperFiles
         return $tagsList;
     }
 
-    public  function createEvaluatorList($join, $model)
-    {
+	/** Create a list of HTML text using the tag system.
+ 	 * This function replaces the tags found in an HTML block with information from the fnums.
+	 * @param $html String The block of text containing the tags to be replaced.
+	 * @param $fnums array The list of fnums to use for the tags.
+	 */
+    public function createHTMLList($html, $fnums) {
+
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+	    $m_emails = new EmundusModelEmails();
+	    $m_files = new EmundusModelFiles();
+
+    	$htmlList = array();
+    	foreach ($fnums as $fnum) {
+    		if (!isset($htmlList[$fnum])) {
+
+	            $fnum = $m_files->getFnumInfos($fnum);
+			    $post = [
+				    'FNUM'           => $fnum['fnum'],
+				    'USER_NAME'      => $fnum['name'],
+				    'CAMPAIGN_LABEL' => $fnum['label'],
+				    'SITE_URL'       => JURI::base(),
+				    'USER_EMAIL'     => $fnum['email']
+			    ];
+
+			    $tags = $m_emails->setTags($fnum['applicant_id'], $post);
+			    $htmlList[$fnum['fnum']] = preg_replace($tags['patterns'], $tags['replacements'], $html);
+			    $htmlList[$fnum['fnum']] = $m_emails->setTagsFabrik($htmlList[$fnum['fnum']], [$fnum['fnum']]);
+		    }
+		}
+		return $htmlList;
+    }
+
+    public function createEvaluatorList($join, $model) {
         $evaluators = array();
 
         $groupEval = $model->getEvaluatorsFromGroup();

@@ -250,6 +250,17 @@ class EmundusViewFiles extends JViewLegacy
                             case 'photos':
                                 $displayPhoto = true;
                                 break;
+						    case 'module':
+						    	// Get every module without a positon.
+							    $mod_emundus_custom = array();
+						    	foreach (JModuleHelper::getModules('') as $module) {
+						    		if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $app->input->get('Itemid', null))) {
+						    			$mod_emundus_custom[$module->title] = $module->content;
+									    $data[0][$module->title] = JText::_($module->title);
+									    $colsSup[$module->title] = array();
+								    }
+							    }
+						    	break;
 					    }
 				    }
 				/*	$hasAccess = false;
@@ -338,7 +349,7 @@ class EmundusViewFiles extends JViewLegacy
 									    $line[$key] = $userObj;
 								    }
 							    }
-								elseif ($key === 'overall' || $key === 'id_tag' || $key === 'access') $line[$key] = "";
+								elseif ($key === 'overall' || $key === 'id_tag' || $key === 'access' || (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom))) $line[$key] = "";
 						    }
 					    }
 					   /* if($hasAccess)
@@ -349,20 +360,27 @@ class EmundusViewFiles extends JViewLegacy
 					    $i++;
 					}
 
-					if(isset($colsSup['overall']))
+					if (isset($colsSup['overall']))
 					{
 						// $m_evaluation = new EmundusModelEvaluation;
 						//$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
-					if(isset($colsSup['id_tag']))
+					if (isset($colsSup['id_tag']))
 					{
 						$tags = $m_files->getTagsByFnum($fnumArray);
 						$colsSup['id_tag'] = $h_files->createTagsList($tags);
 					}
 
-                    if(isset($colsSup['access']))
+                    if (isset($colsSup['access']))
 				    {
 					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
+				    }
+				    if (!empty($mod_emundus_custom)) {
+				    	foreach ($mod_emundus_custom as $key => $module) {
+				    		if (isset($colsSup[$key])) {
+							    $colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
+						    }
+					    }
 				    }
                   //var_dump($fnumArray);echo '<hr>';
 			    }

@@ -10,7 +10,7 @@
 	<version>3.8.1</version>
 	<description>PLG_FABRIK_CRON_MIGALFTP_DESCRIPTION</description>
 	<files>
-		<filename plugin="migalFTP">migalFTP.php</filename>
+		<filename plugin="migal_ftp">migal_ftp.php</filename>
 		<folder>forms</folder>
 		<folder>files</folder>
 		<filename>index.html</filename>

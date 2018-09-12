@@ -21,7 +21,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.migalFTP
  * @since       3.0
  */
-class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
+class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 	/**
 	 * Check if the user can use the plugin
 	 *
@@ -52,8 +52,8 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 		$rows_updated = 0;
 
 		$params = $this->getParams();
-		$product_url = $params->get('productURL', null);
-		$session_url = $params->get('sessionURL', null);
+		$product_url = $params->get('product_url', null);
+		$session_url = $params->get('session_url', null);
 
 		if (empty($product_url) && empty($session_url))
 			return false;
@@ -177,7 +177,7 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 					// Deleting consists of simply setting published to 0.
 					$in = array();
 					foreach ($to_delete as $item) {
-						$in[] = $item['numsession'];
+						$in[] = $item['session_code'];
 					}
 
 					// Unpublish teaching unit.
@@ -459,19 +459,21 @@ class PlgFabrik_CronmigalFTP extends PlgFabrik_Cron {
 
 					}
 
-					// Create a new programme for the session / product.
-					$query
-						->insert($db->quoteName('#__emundus_setup_programmes'))
-						->columns($programme_columns)
-						->values($programme_values);
-					$db->setQuery($query);
-					try {
-						$db->execute();
-					} catch (Exception $e) {
-						JLog::add('Error inserting programme data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+					if (!empty($programme_values)) {
+						// Create a new programme for the session / product.
+						$query
+							->insert($db->quoteName('#__emundus_setup_programmes'))
+							->columns($programme_columns)
+							->values($programme_values);
+						$db->setQuery($query);
+						try {
+							$db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error inserting programme data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						}
+						$rows_updated += $db->getAffectedRows();
+						JLog::add('INSERT programme data with query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 					}
-					$rows_updated += $db->getAffectedRows();
-					JLog::add('INSERT programme data with query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 
 					// Create a new registration period for the session.
 					// This period will run from now until the session starts.
