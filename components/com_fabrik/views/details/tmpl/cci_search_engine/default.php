@@ -15,6 +15,11 @@ defined('_JEXEC') or die('Restricted access');
 // If we are not logged in: we cannot access this page and so we are redirected to the login page.
 $user = JFactory::getUser();
 
+// GET Google Maps API key
+$eMConfig   = JComponentHelper::getParams('com_fabrik');
+$API        = $eMConfig->get("google_api_key", null, "string");
+
+
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 $m_files = new EmundusModelFiles();
 $form = $this->form;
@@ -28,13 +33,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 	</div>
 <?php endif;
 
-    var_dump($this->data);
+    $city = $this->data['jos_emundus_setup_teaching_unity___location_city_raw'];
+    $zip = $this->data['jos_emundus_setup_teaching_unity___location_zip_raw'];
+    $address = $this->data['jos_emundus_setup_teaching_unity___location_address_raw'];
+    $addTitle = $this->data['jos_emundus_setup_teaching_unity___location_title_raw'];
+
     echo $this->plugintop;
     echo $this->loadTemplate('buttons');
     echo $this->loadTemplate('relateddata');
 
     // TODO: GET Themes from GESCOF
-    $theme = $this->data['jos_emundus_setup_teaching_unity___programmes_ro_raw'][0];
+    $theme = strtolower(str_replace(' ','-',trim($this->data['jos_emundus_setup_programmes___programmes_raw'])));
+    $theme =html_entity_decode($theme, ENT_QUOTES);
 
     // GETS all svg icons
     $date_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_dates.svg");
@@ -49,26 +59,128 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_public.svg");
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
-    //var_dump($this->data).die();
+
+    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
+
+
 ?>
 
 
 <!-- TODO: Do before style foreach theme -->
 <style>
+
+    .em-offre-title {
+        margin-left: 5px;
+    }
+
+    .details-table {
+        display: inline-block;
+        float: inherit;
+        border: none;
+        margin-bottom: 0px;
+    }
+
+    .details-table td {
+        max-width: 365px;
+        border: none;
+    }
+
+    .partner {
+        display: inline-block;
+        position: absolute;
+    }
+
+    .em-details-icon {
+        display: inline-block;
+    }
+
+    .em-details-icon svg, .em-option-price svg, .em-option-documents svg, .em-option-certificate svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .em-icon-dse svg path {
+        fill: #52BDD5 !important;
+    }
+
+    .em-icon-achat svg path {
+        fill: #C0A512 !important;
+    }
+
+    .em-icon-compétences-et-formation svg path {
+        fill: #0483A2 !important;
+    }
+
+    .em-people-detail {
+        display: inline-block;
+        max-width: 75%;
+        margin-left: 5px;
+        line-height: 20px;
+        margin-top: 10px;
+    }
+
+    /* date details */
+    .em-date-detail {
+        display: inline-block;
+        line-height: 25px;
+    }
+
+    .em-date {
+        margin-left: 10px;
+        font-weight: bold;
+        margin-top: 7px;
+    }
+
+    .em-days {
+        margin-left: 10px;
+        margin-top: -15px;
+    }
+
+    /* requirements details */
+    .em-requirements-detail {
+        display: inline-block;
+        position: absolute;
+        max-width: 15%;
+        margin-left: 5px;
+        line-height: 20px;
+        margin-top: 12px;
+    }
+
+    /* location details */
+    .em-location-detail{
+        display: inline-block;
+        margin-top: 5px;
+        margin-left: 10px;
+        font-weight: bold;
+        position: absolute;
+    }
+
+
+
+
+
+    .em-top-theme {
+        width: 350px;
+        color: white;
+        padding-left: 10px;
+    }
+
+
     /* TODO: do for each theme  */
+    .em-icon-dse svg path {
+        fill: #52BDD5 !important;
+    }
+
+    .em-icon-achat svg path {
+        fill: #C0A512 !important;
+    }
+
+    .em-icon-compétences-et-formation svg path {
+        fill: #0483A2 !important;
+    }
+
     .em-icon-RECHERCHE svg path {
         fill: #55AD32 !important;
-    }
-
-
-    #details {
-        display: inline-block;
-        width: 80%;
-    }
-
-    .em-details {
-        width: 49%;
-        display: inline-block;
     }
 
     .em-offer {
@@ -83,11 +195,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         display: inline-block;
     }
 
-    #partner {
-        display: inline-block;
-        width: 19%;
-    }
-
     .em-details-icon {
         display: inline-block;
     }
@@ -97,66 +204,16 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         height: 40px;
     }
 
-    .top-details {
-         height: 75px;
-         margin-top: 5px;
-         margin-bottom: 10px;
-     }
-
-    .bottom-details {
-         height: 75px;
-         margin-bottom: 10px;
-     }
-
-    #em-people-detail {
-        display: inline-block;
-        position: absolute;
-        max-width: 15%;
-        max-height: 55px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-left: 5px;
-        line-height: 20px;
-    }
-
-    /* date details */
-    #em-date-detail {
-        display: inline-block;
-        position: absolute;
-    }
-
     .em-date {
         margin-left: 10px;
         font-weight: bold;
+        margin-top: 7px;
     }
 
     .em-days {
         margin-left: 10px;
         margin-top: -15px;
     }
-
-    /* requirements details */
-    #em-requirements-detail {
-        display: inline-block;
-        position: absolute;
-        max-width: 15%;
-        max-height: 55px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-left: 5px;
-        line-height: 20px;
-        margin-top: 10px;
-    }
-
-    /* location details */
-    #em-location-detail{
-        display: inline-block;
-        position: absolute;
-        margin-top: 10px;
-        margin-left: 10px;
-        font-weight: bold;
-    }
-
 
     .offer-icon {
         display: inline-block;
@@ -233,6 +290,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     .em-option-title {
         font-weight: bold;
+        line-height: 20px;
     }
 
     .em-option-details p {
@@ -319,16 +377,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     .em-themes {
         width: 100%;
         height: auto;
-        margin-bottom: 5px;
         cursor: pointer;
+        margin-bottom: 5px;
+        color: white;
+        padding-left: 5px;
     }
 
-    .em-themes p{
-        color: white;
-        font-size: 15px;
-        padding: 2px;
-        margin-left: 10px;
-    }
 
     .em-theme-management {
         background-color: #81266B;
@@ -364,7 +418,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     .em-statuts {
         width: 100%;
-        margin-top: 10px;
+        margin-top: 20px;
         height: auto;
         margin-bottom: 20px;
     }
@@ -375,16 +429,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         height: auto;
         background-color: #e2e2d0;
         cursor: pointer;
-    }
-
-    .em-statut p {
-        margin-left: 10px;
+        padding-left: 5px;
     }
 
     .em-certification {
         width: 100%;
         background-color: #e2e2d0;
         height: 250px;
+    }
+
+    #map{
+        height: 300px;
+        width: 600px;
     }
 
 </style>
@@ -394,101 +450,110 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <!-- TODO: Get categories from cci and make div  before the title -->
 <div class="g-grid">
     <div class="g-block size-70" id="offer">
-        <div class="em-theme"></div>
+        <?php
+        switch ($theme) {
+            case 'dse':
+                echo "<div class=\"em-top-theme em-theme-accounting\">COMPTABILITÉ • GESTION</div>";
+                break;
+            case 'achat':
+                echo "<div class=\"em-top-theme em-theme-buy\">ACHATS • APPROVISIONNEMENTS</div>";
+                break;
+            case 'compétences-et-formation':
+                echo "<div class=\"em-top-theme em-theme-formation\">FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</div>";
+                break;
+        }
+        ?>
+
         <p class="em-offre-title">
-            <?php echo "<b>" . $this->data['jos_emundus_setup_teaching_unity___label_raw'] . "</b>"; ?>
+            <?php echo "<b>" . $title . "</b>"; ?>
         </p>
 
         <hr style="width: 97%; margin-bottom: 10px;">
 
-        <div id="details">
-            <div class="top-details">
-                <div class="em-details" id="people">
+        <table class="details-table g-block size-80">
+
+            <tr>
+                <td>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $public_svg; ?>
                     </div>
-                    <div id="em-people-detail">
-                            <?php
-                                if($this->data['jos_emundus_setup_teaching_unity___audiance_raw'] == null)
-                                    echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  $this->data['jos_emundus_setup_programme___programmes_raw'];
-                                else
-                                    echo $this->data['jos_emundus_setup_teaching_unity___audiance_raw'];
-                            ?>
+                    <div class="em-people-detail">
+                        <?php
+                        if($this->data['jos_emundus_setup_teaching_unity___audiance'] == null)
+                            echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  $this->data['jos_emundus_setup_programme___programmes'];
+                        else
+                            echo $this->data['jos_emundus_setup_teaching_unity___audiance'];
+                        ?>
                     </div>
+                </td>
 
-                </div>
-
-                <div class="em-details" id="date">
+                <td>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $date_svg; ?>
                     </div>
-                    <div id="em-date-detail">
+                    <div class="em-date-detail">
                         <p class="em-date">
                             <?php
-                                setlocale(LC_ALL, 'fr_FR');
-                                $start_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
-                                $end_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                $start_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
-                                $end_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                $days = $this->data['jos_emundus_setup_teaching_unity___days_raw'];
+                            setlocale(LC_ALL, 'fr_FR');
+                            $start_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
+                            $end_month = date('m',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                            $start_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw']));
+                            $end_year = date('y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                            $days = $this->data['jos_emundus_setup_teaching_unity___days_raw'];
 
+                            if($days > 1) {
+                                if($start_month == $end_month && $start_year == $end_year)
+                                    echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                elseif ($start_month != $end_month && $start_year == $end_year)
+                                    echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                                    echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
 
-                                if($days > 1) {
-                                    if($start_month == $end_month && $start_year == $end_year)
-                                        echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                    elseif ($start_month != $end_month && $start_year == $end_year)
-                                        echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                    elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                        echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
-
-                                }
+                            }
 
                             ?>
                         </p>
                         <p class="em-days">
                             <?php
-                                if($days > 1)
-                                    echo $days . " jours";
-                                else
-                                    echo $days . " jour";
+                            if($days > 1)
+                                echo $days . " jours";
+                            else
+                                echo $days . " jour";
                             ?>
                         </p>
                     </div>
-                </div>
-            </div>
+                </td>
+            </tr>
 
-            <div class="bottom-details">
-
-                <div class="em-details" id="requirements">
+            <tr>
+                <td>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $prerequis_svg; ?>
                     </div>
-                    <div id="em-requirements-detail">
+                    <div class="em-requirements-detail">
                         <?php
-                          if($this->data['jos_emundus_setup_teaching_unity___prerequisite_raw'] == null)
-                              echo "Pas de prérequis nécessaire";
-                          else
-                              echo $this->data['jos_emundus_setup_teaching_unity___prerequisite_raw'];
+                        if($this->data['jos_emundus_setup_teaching_unity___prerequisite'] == null)
+                            echo "Pas de prérequis nécessaire";
+                        else
+                            echo $this->data['jos_emundus_setup_teaching_unity___prerequisite'];
                         ?>
                     </div>
-                </div>
+                </td>
 
-                <div class="em-details" id="location">
+                <td data-toggle="modal" data-target="#gmaps" style="cursor: pointer;">
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $lieu_svg; ?>
                     </div>
-                    <div id="em-location-detail">
-                        <p>
-                            <?php echo ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___location_city_raw'])); ?>
-                        </p>
+                    <div class="em-location-detail">
+                        <?php echo ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___location_city'])); ?>
                     </div>
-                </div>
+                </td>
+            </tr>
+        </table>
 
-            </div>
-        </div>
-
-        <div id="partner">
+        <div class="partner g-block size-19">
             <p>notre partenaire expert</p>
+            <img src="templates/g5_helium/images/LogoPartenaires/logo_ABRC_100_40.jpg">
             <!-- TODO: get partners photo -->
         </div>
 
@@ -554,8 +619,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
             <div class="em-option" id="em-option-inter">
                 <div class="em-option-details">
-                    <?php echo "<p class='em-option-title'>" . $this->data['jos_emundus_setup_teaching_unity___label_raw'] . "</p>"; ?>
-                    <?php echo "<p style='margin-top: -10px;'>réf. " . $this->data['jos_emundus_setup_teaching_unity___code_raw'] . "</p>"; ?>
+                    <?php echo "<p class='em-option-title'>" . $title . "</p>"; ?>
+                    <?php echo "<p style='margin-top: -20px;'>réf. " . $this->data['jos_emundus_setup_teaching_unity___code_raw'] . "</p>"; ?>
                 </div>
 
                 <div class="em-option-price">
@@ -581,7 +646,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
             <div class="em-option hide" id="em-option-intra">
                 <div class="em-option-details">
-                    <?php echo "<p class='em-option-title'>" . $this->data['jos_emundus_setup_teaching_unity___label_raw'] . "</p>"; ?>
+                    <?php echo "<p class='em-option-title'>" . $title . "</p>"; ?>
                     <?php echo "<p style='margin-top: -10px;'>réf. " . $this->data['jos_emundus_setup_teaching_unity___code_raw'] . "</p>"; ?>
                 </div>
 
@@ -636,14 +701,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             <div><b>Les formations</b></div>
             <div style="margin-top: -10px;"><b>par domaines de compétences</b></div>
 
-            <div class="em-themes em-theme-management"><p>MANAGEMENT • RESSOURCES HUMAINES</p></div>
-            <div class="em-themes em-theme-quality"><p>QUALITÉ • PERFORMANCE</p></div>
-            <div class="em-themes em-theme-sale"><p>VENTE • DÉVELOPPEMENT COMMERCIAL</p></div>
-            <div class="em-themes em-theme-buy"><p>ACHATS • APPROVISIONNEMENTS</p></div>
-            <div class="em-themes em-theme-formation"><p>FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</p></div>
-            <div class="em-themes em-theme-digital"><p>DIGITAL • BUREAUTIQUE</p></div>
-            <div class="em-themes em-theme-accounting"><p>COMPTABILITÉ • GESTION</p></div>
-            <div class="em-themes em-theme-language"><p>LANGUES</p></div>
+            <div class="em-themes em-theme-management">MANAGEMENT • RESSOURCES HUMAINES</div>
+            <div class="em-themes em-theme-quality">QUALITÉ • PERFORMANCE</div>
+            <div class="em-themes em-theme-sale">VENTE • DÉVELOPPEMENT COMMERCIAL</div>
+            <div class="em-themes em-theme-buy">ACHATS • APPROVISIONNEMENTS</div>
+            <div class="em-themes em-theme-formation">FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</div>
+            <div class="em-themes em-theme-digital">DIGITAL • BUREAUTIQUE</div>
+            <div class="em-themes em-theme-accounting">COMPTABILITÉ • GESTION</div>
+            <div class="em-themes em-theme-language">LANGUES</div>
 
 
 
@@ -654,11 +719,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             <div><b>Vous êtes...</b></div>
 
 
-            <div class="em-statut" id="dirigeant"><p>DIRIGEANT</p></div>
-            <div class="em-statut" id="salarie"><p>SALARIÉ</p></div>
-            <div class="em-statut" id="hotel-restaurant"><p>HÔTELIER / RESTAURATEUR</p></div>
-            <div class="em-statut" id="immobilier"><p>PROFESSIONNEL DE L’IMMOBILIER</p></div>
-            <div class="em-statut" id="entreprise"><p>CRÉATEUR / REPRENEUR D’ENTREPRISE</p></div>
+            <div class="em-statut" id="dirigeant">DIRIGEANT</div>
+            <div class="em-statut" id="salarie">SALARIÉ</div>
+            <div class="em-statut" id="hotel-restaurant">HÔTELIER / RESTAURATEUR</div>
+            <div class="em-statut" id="immobilier">PROFESSIONNEL DE L’IMMOBILIER</div>
+            <div class="em-statut" id="entreprise">CRÉATEUR / REPRENEUR D’ENTREPRISE</div>
 
         </div>
 
@@ -667,14 +732,82 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         </div>
 
     </div>
+
+
+    <div class="modal fade" id="gmaps">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="back" >
+                <div class="modal-header">
+                    <h4><?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?><h4>
+                </div>
+                <div class="modal-body">
+                    <div id="map"></div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+        </div>
 </div>
-
-
-
 
 <script>
 
+    var geocoder;
+    var map;
+    var address = "<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>";
+
+    function initMap() {
+        geocoder = new google.maps.Geocoder();
+        var latlng = new google.maps.LatLng(-34.397, 150.644);
+        var myOptions = {
+            zoom: 8,
+            center: latlng,
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            },
+            navigationControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("map"), myOptions);
+        if (geocoder) {
+            geocoder.geocode({
+                'address': address
+            }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+                        map.setCenter(results[0].geometry.location);
+
+                        var infowindow = new google.maps.InfoWindow({
+                            content: '<b>' + address + '</b>',
+                            size: new google.maps.Size(150, 50)
+                        });
+
+                        var marker = new google.maps.Marker({
+                            position: results[0].geometry.location,
+                            map: map,
+                            title: address
+                        });
+                        google.maps.event.addListener(marker, 'click', function() {
+                            infowindow.open(map, marker);
+                        });
+
+                    } else {
+                        alert("No results found");
+                    }
+                } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+    }
+    google.maps.event.addDomListener(window, 'load', initMap());
+
     jQuery(document).ready(function() {
+       // var latLong = getLatLong("<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>");
+
+
+
     });
 
     document.getElementById("em-option-menu-inter").addEventListener('click', function (e) {
@@ -735,6 +868,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     });
 
 </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $API; ?>&callback=initMap"></script>
+
+
 
 <?php
 echo $this->pluginbottom;

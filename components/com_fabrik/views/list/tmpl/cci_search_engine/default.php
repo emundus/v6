@@ -19,6 +19,8 @@ $doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+
+
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;
@@ -42,7 +44,141 @@ endif;
 // Intro outside of form to allow for other lists/forms to be injected.
 echo $this->table->intro;
 
+// GETS all svg icons
+$date_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_dates.svg");
+$diplomant_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_diplomant.svg");
+$duree_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_duree.svg");
+$intervenant_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_intervenant.svg");
+$lieu_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_lieu.svg");
+$objectif_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_objectifs.svg");
+$pointscles_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_pointscles.svg");
+$prerequis_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_prerequis.svg");
+$prix_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_prix.svg");
+$public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_public.svg");
+$telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
+
+
+
+
 ?>
+
+<style>
+    .main {
+        width: 100%;
+    }
+
+    .form {
+        width: 100%;
+    }
+
+    .em-offre-title {
+        font-size: 22px;
+    }
+
+    .details-table {
+        display: inline-block;
+        float: inherit;
+        border: none;
+        margin-bottom: 0px;
+    }
+
+    .details-table td {
+        max-width: 365px;
+        border: none;
+    }
+
+    .partner {
+        display: inline-block;
+        position: absolute;
+    }
+
+    .em-details-icon {
+        display: inline-block;
+    }
+
+    .em-details-icon svg, .em-option-price svg, .em-option-documents svg, .em-option-certificate svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .em-icon-dse svg path {
+        fill: #52BDD5 !important;
+    }
+
+    .em-icon-achat svg path {
+        fill: #C0A512 !important;
+    }
+
+    .em-icon-compétences-et-formation svg path {
+        fill: #0483A2 !important;
+    }
+
+    .em-people-detail {
+        display: inline-block;
+        max-width: 75%;
+        margin-left: 5px;
+        line-height: 20px;
+        margin-top: 10px;
+    }
+
+    /* date details */
+    .em-date-detail {
+        display: inline-block;
+        line-height: 25px;
+    }
+
+    .em-date {
+        margin-left: 10px;
+        font-weight: bold;
+        margin-top: 7px;
+    }
+
+    .em-days {
+        margin-left: 10px;
+        margin-top: -15px;
+    }
+
+    /* requirements details */
+    .em-requirements-detail {
+        display: inline-block;
+        position: absolute;
+        max-width: 15%;
+        margin-left: 5px;
+        line-height: 20px;
+        margin-top: 12px;
+    }
+
+    /* location details */
+    .em-location-detail{
+        display: inline-block;
+        margin-top: 5px;
+        margin-left: 10px;
+        font-weight: bold;
+        position: absolute;
+    }
+
+    .em-themes {
+        width: 350px;
+        display: inline-block;
+        padding-left: 10px;
+        color: white;
+    }
+
+    .em-theme-accounting {
+        background-color: #52BDD5;
+    }
+
+    .em-theme-buy {
+        background-color: #C0A512;
+    }
+
+    .em-theme-formation {
+        background-color: #0483A2;
+    }
+
+
+
+</style>
 
 <div class="main">
     <div class="form">
@@ -77,7 +213,7 @@ echo $this->table->intro;
 						}
 						$i = $i + 1;
 					}
-				} ?>
+				}?>
 
                 <div class="em-search-engine-filters">
 					<?php if ($this->showFilters && $this->bootShowFilters)
@@ -88,76 +224,143 @@ echo $this->table->intro;
                 <div class="em-search-engine-data">
                     <table>
                         <thead>
-                        <tr>
-                            <td><h3>RESULTAT DE LA RECHERCHE</h3></td>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr class="fabrik___heading">
-                            <td colspan="<?php echo count($this->headings);?>">
-								<?php echo $this->nav;?>
-                            </td>
-                        </tr>
-                        </tfoot>
-
-                        <tbody>
-
-						<?php
-						$region=""; $department=""; $chercheur=""; $cherches=""; $themes="";
-						$gCounter = 0;
-						//var_dump($data);die;
-						foreach ($data as $d) {
-							$region 	= $d['data_regions___name'];
-							$department = $d['data_departements___departement_nom'];
-							$chercheur 	= strtolower($d['jos_emundus_setup_profiles___label']);
-
-							$cherches = [];
-							if ($d['jos_emundus_recherche___futur_doctorant_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___futur_doctorant_yesno'];
-							if ($d['jos_emundus_recherche___acteur_public_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___acteur_public_yesno'];
-							if ($d['jos_emundus_recherche___equipe_de_recherche_direction_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_direction_yesno'];
-							if ($d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
-							$cherches = strtolower(implode('</b> et <b>', $cherches));
-
-							$themes = $d['data_thematics___thematic'];
-							?>
                             <tr>
-                                <td>
-                                    <div class="em-search-engine-div-data">
-                                        <div><?php if (!empty(strip_tags($region))) :?>En région <i><b><?php echo $region; ?></b></i>,<?php endif; if (!empty(strip_tags($department))) :?> <?php if (empty(strip_tags($region))) :?> Dans <?php else :?> dans <?php endif; ?> le(s) département(s) <i><b><?php echo $department; ?></b></i>, <?php endif; if (empty(strip_tags($region)) && empty(strip_tags($department))) :?> Un <?php else :?> un <?php endif; ?><i><b><?php echo $chercheur; ?></b></i> cherche <i><b><?php echo $cherches; ?></b></i><?php if (!empty(strip_tags($themes))) :?> sur le(s) thème(s) <i><b><?php echo $themes; ?></b></i><?php endif; ?></div>
-                                        <hr>
-                                        <ul>
-                                            <li>id : <?php echo strip_tags($d['jos_emundus_projet___id']); ?></li>
-                                            <li>date : <?php echo $d['jos_emundus_campaign_candidature___date_submitted']; ?></li>
-                                            <li>déposé part : <?php echo $d['jos_emundus_setup_profiles___label']; ?></li>
-                                            <li>thematiques : <?php echo $d['data_thematics___thematic']; ?></li>
-                                            <li>région : <?php echo $d['data_regions___name']; ?></li>
-                                            <li>département : <?php echo $d['data_departements___departement_nom']; ?></li>
-                                            <li>recherche futur doctorant : <?php echo $d['jos_emundus_recherche___futur_doctorant_yesno']; ?></li>
-                                            <li>recherche acteur publique : <?php echo $d['jos_emundus_recherche___acteur_public_yesno']; ?></li>
-                                            <li>recherche équipe de recherche direction : <?php echo $d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno']; ?></li>
-                                            <li>recherche équipe de recherche codirection : <?php echo $d['jos_emundus_recherche___equipe_de_recherche_direction_yesno']; ?></li>
-                                        </ul>
-                                        <hr>
-                                        <?php if (JFactory::getUser()->guest) :?>
-                                            <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
-                                        <?php else :?>
-                                            <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
-                                        <?php endif; ?>
-                                    </div>
+                                <td><h3>RESULTAT DE LA RECHERCHE</h3></td>
+                            </tr>
+                        </thead>
+
+                        <tfoot>
+                            <tr class="fabrik___heading">
+                                <td colspan="<?php echo count($this->headings);?>">
+                                    <?php echo $this->nav;?>
                                 </td>
                             </tr>
-                            <?php
-                            unset($cherches);
-                            unset($themes);
-                            $gCounter++;
-                        }
+                        </tfoot>
 
-						?>
-                        </tbody>
+                                <?php
+                                $gCounter = 0;
+                                foreach ($data as $d) {
+                                    $title = ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___label']));
+                                    $theme = strtolower(str_replace(' ','-',$d['jos_emundus_setup_programmes___programmes']));
+                                    $theme =html_entity_decode($theme, ENT_QUOTES);
+                                    switch ($theme) {
+                                        case 'dse':
+                                            $div = "<div class=\"em-themes em-theme-accounting\">COMPTABILITÉ • GESTION</div>";
+                                            break;
+                                        case 'achat':
+                                            $div = "<div class=\"em-themes em-theme-buy\">ACHATS • APPROVISIONNEMENTS</div>";
+                                            break;
+                                        case 'compétences-et-formation':
+                                            $div = "<div class=\"em-themes em-theme-formation\">FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</div>";
+                                            break;
+                                    }
+
+                                    ?>
+                                    <table class="details-table g-block size-80">
+                                        <tr>
+                                            <?php echo $div; ?>
+                                            <p class="em-offre-title">
+                                                <?php echo "<b>" . $title . "</b>"; ?>
+                                            </p>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                                                    <?php echo $public_svg; ?>
+                                                </div>
+                                                <div class="em-people-detail">
+                                                    <?php
+                                                    if($d['jos_emundus_setup_teaching_unity___audiance'] == null)
+                                                        echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  $d['jos_emundus_setup_programme___programmes'];
+                                                    else
+                                                        echo $d['jos_emundus_setup_teaching_unity___audiance'];
+                                                    ?>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                                                    <?php echo $date_svg; ?>
+                                                </div>
+                                                <div class="em-date-detail">
+                                                    <p class="em-date">
+                                                        <?php
+                                                        setlocale(LC_ALL, 'fr_FR');
+                                                        $start_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
+                                                        $end_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
+                                                        $start_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
+                                                        $end_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
+                                                        $days = $d['jos_emundus_setup_teaching_unity___days'];
+                                                        if($days > 1) {
+                                                            if($start_month == $end_month && $start_year == $end_year)
+                                                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
+                                                            elseif ($start_month != $end_month && $start_year == $end_year)
+                                                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
+                                                            elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                                                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
+
+                                                        }
+
+                                                        ?>
+                                                    </p>
+                                                    <p class="em-days">
+                                                        <?php
+                                                        if($days > 1)
+                                                            echo $days . " jours";
+                                                        else
+                                                            echo $days . " jour";
+                                                        ?>
+                                                    </p>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                                                    <?php echo $prerequis_svg; ?>
+                                                </div>
+                                                <div class="em-requirements-detail">
+                                                    <?php
+                                                    if($d['jos_emundus_setup_teaching_unity___prerequisite'] == null)
+                                                        echo "Pas de prérequis nécessaire";
+                                                    else
+                                                        echo $d['jos_emundus_setup_teaching_unity___prerequisite'];
+                                                    ?>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                                                    <?php echo $lieu_svg; ?>
+                                                </div>
+                                                <div class="em-location-detail">
+                                                    <?php echo ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city'])); ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <div class="partner g-block size-19">
+                                        <p>notre partenaire expert</p>
+                                        <img src="templates/g5_helium/images/LogoPartenaires/logo_ABRC_100_40.jpg">
+                                        <!-- TODO: get partners photo -->
+                                    </div>
+
+                                    <?php if (JFactory::getUser()->guest) :?>
+                                        <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
+                                    <?php else :?>
+                                        <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
+                                    <?php endif; ?>
+
+                                    <?php
+                                    echo "<hr>";
+                                    $gCounter++;
+                                }
+
+                                ?>
+
+
 						<?php if ($this->hasCalculations) : ?>
                             <tfoot>
                             <tr class="fabrik_calculations">
@@ -187,6 +390,7 @@ echo $this->table->intro;
     </div>
 
     <script>
+
         jQuery(document).ready(function(){
             jQuery('select.fabrik_filter[multiple]').chosen({
                 placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
