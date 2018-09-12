@@ -20,7 +20,8 @@ $viewArray = [
     "jos_emundus_stats_nombre_relations_etablies" => "Nombre de relations établies",
     "jos_emundus_stats_nationality" => "Nationalité",
     "jos_emundus_stats_gender" => "Genre",
-    "jos_emundus_stats_files" => "Dossiers"
+    "jos_emundus_stats_files" => "Dossiers",
+    "jos_emundus_stats_relation_realise_accepte_par_profil" => " Nombre de demandes réalisée/acceptées par profil"
 ];
 
 
@@ -33,6 +34,7 @@ $consult = 'false';
 $comptes = 'false';
 $con = 'false';
 $rels = 'false';
+$proj= 'false';
 
 // Loop to check which views are in the Db
 foreach ($viewArray as $key => $value) {
@@ -88,9 +90,16 @@ foreach ($viewArray as $key => $value) {
             case 'jos_emundus_stats_gender':
                 $gender = 'true';
             break;
+
+            case 'jos_emundus_stats_relation_realise_accepte_par_profil':
+                $proj= 'true';
+                $projects = $helper->getProjects();
+            break;
         }
     }
 }
+
+//
 
 
 require(JModuleHelper::getLayoutPath('mod_emundus_graphs','default.php'));

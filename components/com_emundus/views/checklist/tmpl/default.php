@@ -5,7 +5,8 @@ JHTML::_('behavior.modal');
 
 $user = JFactory::getSession()->get('emundusUser');
 $chemin = EMUNDUS_PATH_REL;
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$jinput = JFactory::getApplication()->input;
+$itemid = $jinput->get('Itemid', null);
 
 if ($this->show_info_panel) :
     //if applicant not yet selected
@@ -327,7 +328,7 @@ function OnSubmitForm() {
     }
     switch(document.pressed) {
         case 'sendAttachment':
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&duplicate=<?php echo $duplicate; ?>&Itemid=<?php echo $itemid; ?>"
+            document.checklistForm.action ="index.php?option=com_emundus&task=upload&duplicate=<?php echo $duplicate; ?>&Itemid=<?php echo $itemid; ?>";
         break;
         default: return false;
     }

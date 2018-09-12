@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusconfirmpost" label="PLG_FABRIK_FORM_EMUNDUSCONFIRMPOST_FIELDS">
+
+			<field name="emundusconfirmpost_status" type="field" default="1" description="PLG_FABRIK_FORM_EMUNDUSCONFIRMPOST_STATUS_DESC" label="PLG_FABRIK_FORM_EMUNDUSCONFIRMPOST_STATUS_LABEL" />
+
+		</fieldset>
+	</fields>
+</form>
