@@ -801,7 +801,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             });
         }
     }
-    google.maps.event.addDomListener(window, 'load', initMap());
+    
 
     jQuery(document).ready(function() {
        // var latLong = getLatLong("<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>");
