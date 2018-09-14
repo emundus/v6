@@ -72,6 +72,9 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
         width: 100%;
     }
 
+    .em-theme-title {
+        display: inline-block;
+    }
     .em-offre-title {
         font-size: 22px;
     }
@@ -96,6 +99,24 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
     .em-details-icon {
         display: inline-block;
     }
+
+    /* TODO: do for each theme  */
+    .em-icon-dse svg path {
+        fill: #52BDD5 !important;
+    }
+
+    .em-icon-achat svg path {
+        fill: #C0A512 !important;
+    }
+
+    .em-icon-compétences-et-formation svg path {
+        fill: #0483A2 !important;
+    }
+
+    .em-icon-qualité svg path {
+        fill: #55AD32 !important;
+    }
+
 
     .em-details-icon svg, .em-option-price svg, .em-option-documents svg, .em-option-certificate svg {
         width: 40px;
@@ -153,9 +174,12 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
         height: auto;
         cursor: pointer;
         margin-bottom: 5px;
-        color: white;
         padding-left: 5px;
         font-size: 13px;
+    }
+
+    .em-themes a {
+        color: white;
     }
 
     .em-theme-management {
@@ -302,20 +326,22 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                     $title = ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___label']));
                                     $theme = strtolower(str_replace(' ','-',$d['jos_emundus_setup_programmes___programmes']));
                                     $theme =html_entity_decode($theme, ENT_QUOTES);
+
+                                    // TODO: CASE FOR EACH THEME
                                     switch ($theme) {
                                         case 'dse':
-                                            $div = "<div class=\"em-themes em-theme-accounting\">COMPTABILITÉ • GESTION</div>";
+                                            $div = "<div class=\"em-themes em-theme-title em-theme-accounting\"><a href=\"rechercher?category=dse\">COMPTABILITÉ • GESTION</a></div>";
                                             break;
                                         case 'achat':
-                                            $div = "<div class=\"em-themes em-theme-buy\">ACHATS • APPROVISIONNEMENTS</div>";
+                                            $div = "<div class=\"em-themes em-theme-title em-theme-buy\"><a href=\"rechercher?category=achat\">ACHATS • APPROVISIONNEMENTS</a></div>";
                                             break;
                                         case 'compétences-et-formation':
-                                            $div = "<div class=\"em-themes em-theme-formation\">FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</div>";
+                                            $div = " <div class=\"em-themes em-theme-title em-theme-formation\"><a href=\"rechercher?category=cf\">FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</a></div>";
                                             break;
                                     }
 
                                     ?>
-                                    <table class="details-table g-block size-80">
+                                    <table class="details-table g-block size-100">
                                         <tr>
                                             <?php echo $div; ?>
                                             <p class="em-offre-title">
