@@ -347,11 +347,8 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                         <!-- TODO: get partners photo -->
                                     </div>
 
-                                    <?php if (JFactory::getUser()->guest) :?>
-                                        <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
-                                    <?php else :?>
-                                        <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
-                                    <?php endif; ?>
+                                    <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
+
 
                                     <?php
                                     echo "<hr>";
