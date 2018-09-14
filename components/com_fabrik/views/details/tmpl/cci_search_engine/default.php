@@ -279,7 +279,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     .em-option-details {
         padding-top: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 35px;
     }
 
     .em-option-title {
@@ -337,7 +337,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     #sur-mesure-details {
         height: 300px;
-        max-width: 60%;
+        max-width: inherit;
     }
 
     #sur-mesure-details b {
@@ -489,6 +489,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             cursor: pointer;
         }
 
+        .em-option-details {
+            padding-top: 10px;
+            margin-bottom: 60px;
+        }
+
     }
 
     @media screen and (max-width:959px) and (min-width: 771px) {
@@ -501,6 +506,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             display: inline-flex;
             background-color: #bbc0c3;
             cursor: pointer;
+        }
+
+        .em-option-details {
+            padding-top: 10px;
+            margin-bottom: 60px;
         }
 
     }
@@ -691,9 +701,13 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         </table>
 
         <div class="partner g-block size-19">
+            <?php if($partenaire == '' || $partenaire == null) :?>
+                <p>Pas de partenaire pour cette formation</p>
+            <?php else:?>
             <p>notre partenaire expert</p>
-            <img src="templates/g5_helium/images/LogoPartenaires/logo_ABRC_100_40.jpg">
+            <img src="images/custom/ccirs/partenaires/">
             <!-- TODO: get partners photo -->
+            <?php endif;?>
         </div>
 
         <hr style="width: 97%; margin-top: 0px;">
@@ -775,7 +789,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div class="em-option-buttons">
                     <button class="em-option-login">s'inscrire</button>
 
-                    <button class="em-option-contact">être contacté par un conseiller</button>
+                    <button class="em-option-contact">être contacté</button>
                 </div>
 
 
@@ -802,26 +816,31 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div class="em-option-buttons">
                     <button class="em-option-login">demander un devis</button>
 
-                    <button class="em-option-contact">être contacté par un conseiller</button>
+                    <button class="em-option-contact">être contacté</button>
                 </div>
 
             </div>
 
             <div class="em-option hide" id="em-option-sur-mesure">
                 <div class="em-option-details" id="sur-mesure-details">
-                    <b style="color: white"> Vous êtess intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
+                    <b style="color: white"> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
                     <br>
                     <br>
                     <b style="color: white"> Nous pouvons élaborer une formation sur-mesure pour répondre au mieux à vos objectifs.</b>
                 </div>
 
-                <button class="em-option-contact" >être contacté par un conseiller</button>
+                <button class="em-option-contact" >être contacté</button>
 
             </div>
         </div>
 
             <div id="em-certification">
-                <!-- TODO: GET CERTIFICATES!!!-->
+                <?php if($certificat == '' || $certificat == null) :?>
+                    <p style="padding-top: 100px; margin-left: 5px;">Pas de certification pour cette formation</p>
+                <?php else:?>
+                    <img src="images/custom/ccirs/certifications/">
+                    <!-- TODO: get partners photo -->
+                <?php endif;?>
             </div>
         </div>
 
