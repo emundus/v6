@@ -63,6 +63,11 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 ?>
 
 <style>
+
+    #g-sidebar {
+        display: none !important;
+    }
+
     .main {
         width: 100%;
     }
@@ -342,9 +347,13 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                     </table>
 
                                     <div class="partner g-block size-19">
-                                        <p>notre partenaire expert</p>
-                                        <img src="templates/g5_helium/images/LogoPartenaires/logo_ABRC_100_40.jpg">
-                                        <!-- TODO: get partners photo -->
+                                        <?php if($partenaire == '' || $partenaire == null) :?>
+                                            <p>Pas de partenaire pour cette formation</p>
+                                        <?php else:?>
+                                            <p>notre partenaire expert</p>
+                                            <img src="images/custom/ccirs/partenaires/">
+                                            <!-- TODO: get partners photo -->
+                                        <?php endif;?>
                                     </div>
 
                                     <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
