@@ -178,7 +178,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         fill: #0483A2 !important;
     }
 
-    .em-icon-RECHERCHE svg path {
+    .em-icon-qualité svg path {
         fill: #55AD32 !important;
     }
 
@@ -377,12 +377,13 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         height: auto;
         cursor: pointer;
         margin-bottom: 5px;
-        color: white;
         padding-left: 5px;
         font-size: 13px;
     }
 
-
+    .em-themes a {
+        color: white;
+    }
     .em-theme-management {
         background-color: #81266B;
     }
