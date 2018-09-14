@@ -64,10 +64,6 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
 <style>
 
-    #g-sidebar {
-        display: none !important;
-    }
-
     .main {
         width: 100%;
     }
@@ -106,16 +102,92 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
         height: 40px;
     }
 
-    .em-icon-dse svg path {
-        fill: #52BDD5 !important;
+    .em-search {
+        background-color: #e2e2d0;
+        display: block;
+        width: 100%;
+        height: 120px;
+        margin-top: 10px;
     }
 
-    .em-icon-achat svg path {
-        fill: #C0A512 !important;
+    .em-search-bar {
+        display: inline;
     }
 
-    .em-icon-compétences-et-formation svg path {
-        fill: #0483A2 !important;
+    .em-search b {
+        display: block;
+        padding-top: 10px;
+        padding-bottom: 15px;
+        margin-left: 15px;
+        font-size: 15px;
+    }
+
+    .searchButton {
+        width: 20%;
+        height: 41px;
+        color: #566268;
+        font-size: 20px;
+        margin-top: -10px;
+        margin-right: -4px;
+    }
+
+    #formation-search {
+        display: inline-block;
+        width: 75%;
+        border: none;
+        border-radius: 0px;
+    }
+
+    .em-statut {
+        width: 100%;
+        margin-bottom: 5px;
+        height: auto;
+        background-color: #e2e2d0;
+        cursor: pointer;
+        padding-left: 5px;
+        font-size: 13px;
+    }
+
+    .em-themes {
+        width: 100%;
+        height: auto;
+        cursor: pointer;
+        margin-bottom: 5px;
+        color: white;
+        padding-left: 5px;
+        font-size: 13px;
+    }
+
+    .em-theme-management {
+        background-color: #81266B;
+    }
+
+    .em-theme-quality {
+        background-color: #55AD32;
+    }
+
+    .em-theme-sale {
+        background-color: #DC4A14;
+    }
+
+    .em-theme-buy {
+        background-color: #C0A512;
+    }
+
+    .em-theme-formation {
+        background-color: #0483A2;
+    }
+
+    .em-theme-digital {
+        background-color: #F5A405;
+    }
+
+    .em-theme-accounting {
+        background-color: #52BDD5;
+    }
+
+    .em-theme-language {
+        background-color: #E50043;
     }
 
     .em-people-detail {
@@ -162,24 +234,6 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
         position: absolute;
     }
 
-    .em-themes {
-        width: 350px;
-        display: inline-block;
-        padding-left: 10px;
-        color: white;
-    }
-
-    .em-theme-accounting {
-        background-color: #52BDD5;
-    }
-
-    .em-theme-buy {
-        background-color: #C0A512;
-    }
-
-    .em-theme-formation {
-        background-color: #0483A2;
-    }
 
 
 
@@ -345,16 +399,6 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                             </td>
                                         </tr>
                                     </table>
-
-                                    <div class="partner g-block size-19">
-                                        <?php if($partenaire == '' || $partenaire == null) :?>
-                                            <p>Pas de partenaire pour cette formation</p>
-                                        <?php else:?>
-                                            <p>notre partenaire expert</p>
-                                            <img src="images/custom/ccirs/partenaires/">
-                                            <!-- TODO: get partners photo -->
-                                        <?php endif;?>
-                                    </div>
 
                                     <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
 
