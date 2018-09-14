@@ -196,7 +196,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					$rows_updated += $db->getAffectedRows();
 
 					// Unpublish registration period.
-					$db->setQuery($query);
+					$db->getQuery(true);
 					$query
 						->update($db->quoteName('#__emundus_setup_campaigns'))
 						->set($db->quote('published').' = 0')

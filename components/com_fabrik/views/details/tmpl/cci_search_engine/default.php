@@ -81,13 +81,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     }
 
     .details-table td {
-        max-width: 365px;
+        max-width: 350px;
         border: none;
     }
 
     .partner {
         display: inline-block;
-        position: absolute;
     }
 
     .em-details-icon {
@@ -241,12 +240,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         display: block;
     }
 
-    .em-option-menu {
-         width: 26%;
-         display: inline-flex;
-         background-color: #bbc0c3;
-         cursor: pointer;
-     }
+    #em-option-sur-mesure {
+        padding-bottom: 10px;
+    }
+
+
 
     .em-option-menu.active {
         background-color: #566268;
@@ -262,15 +260,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     }
 
-    #em-option-menu-intra {
-        padding-bottom: 20px;
-        margin-left: 36px;
-        margin-right: 35px;
-    }
 
     #em-option-menu-inter {
         padding-bottom: 20px;
     }
+
 
     .em-option {
         width: 100%;
@@ -310,6 +304,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         color: white;
         margin-left: 10px;
         margin-top: 0px;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .em-option-buttons {
@@ -381,6 +379,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         margin-bottom: 5px;
         color: white;
         padding-left: 5px;
+        font-size: 13px;
     }
 
 
@@ -430,9 +429,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         background-color: #e2e2d0;
         cursor: pointer;
         padding-left: 5px;
+        font-size: 13px;
     }
 
-    .em-certification {
+    #em-certification {
         width: 100%;
         background-color: #e2e2d0;
         height: 250px;
@@ -443,13 +443,152 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         width: 600px;
     }
 
+    .searchButton {
+        width: 20%;
+        height: 41px;
+        color: #566268;
+        font-size: 20px;
+        margin-top: -10px;
+        margin-right: -4px;
+    }
+
+    #formation-search {
+        display: inline-block;
+        width: 75%;
+        border: none;
+        border-radius: 0px;
+    }
+
+    @media screen and (min-width: 1200px) {
+        #em-option-menu-intra {
+            padding-bottom: 20px;
+            margin-left: 26px;
+            margin-right: 26px;
+        }
+
+        .em-option-menu {
+            width: 80px;
+            display: inline-flex;
+            background-color: #bbc0c3;
+            cursor: pointer;
+        }
+
+    }
+
+    @media screen and (max-width:1200px) and (min-width: 960px) {
+        #em-option-menu-intra {
+            padding-bottom: 20px;
+            margin-left: 2px;
+            margin-right: 5px;
+        }
+
+        .em-option-menu {
+            width: 75px;
+            display: inline-flex;
+            background-color: #bbc0c3;
+            cursor: pointer;
+        }
+
+    }
+
+    @media screen and (max-width:959px) and (min-width: 771px) {
+        #em-option-menu-intra {
+            padding-bottom: 20px;
+        }
+
+        .em-option-menu {
+            width: 61px;
+            display: inline-flex;
+            background-color: #bbc0c3;
+            cursor: pointer;
+        }
+
+    }
+
+    @media screen and (max-width:770px) and (min-width: 768px) {
+        #em-option-menu-intra {
+            padding-bottom: 20px;
+
+        }
+
+        .em-option-menu {
+            width: 61px;
+            display: inline-flex;
+            background-color: #bbc0c3;
+            cursor: pointer;
+        }
+
+    }
+
+    @media screen and (max-width:767px) and (min-width: 500px) {
+        #em-option-menu-intra {
+            padding-bottom: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        #em-option-menu-sur-mesure {
+            padding-bottom: 20px;
+        }
+
+        .em-option-menu {
+            width: 144px;
+            display: inline-flex;
+            background-color: #bbc0c3;
+            cursor: pointer;
+        }
+
+    }
+
+    @media screen and (max-width:490px) and (min-width: 415px){
+        #em-option-menu-intra {
+            padding-bottom: 20px;
+            margin-left: 13%;
+            margin-right: 13%;
+        }
+
+        #em-option-menu-sur-mesure {
+            padding-bottom: 20px;
+        }
+
+        .em-option-menu {
+            width: 24%;
+            display: inline-flex;
+            background-color: #bbc0c3;
+            cursor: pointer;
+        }
+
+    }
+
+    @media screen and (max-width:415px) {
+        #em-option-menu-intra {
+            padding-bottom: 20px;
+            margin-left: 14%;
+            margin-right: 14%;
+        }
+
+
+
+        .em-option-menu {
+            width: 23%;
+            display: inline-flex;
+            background-color: #bbc0c3;
+            cursor: pointer;
+        }
+
+    }
+
+
+    .platform-content {
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+
 </style>
 
 
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
-<div class="g-grid">
-    <div class="g-block size-70" id="offer">
         <?php
         switch ($theme) {
             case 'dse':
@@ -470,7 +609,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
         <hr style="width: 97%; margin-bottom: 10px;">
 
-        <table class="details-table g-block size-80">
+        <table class="details-table g-block size-78">
 
             <tr>
                 <td>
@@ -598,12 +737,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
             </div>
 
-        </div>
-    </div>
 
-    <div class="g-block size-30" id="aside">
 
-        <div class="em-options">
+        <div style="display: none;">
+            <div class="em-options" id="em-formation-options">
 
             <div class="em-option-menu active" id="em-option-menu-inter">
                 <b>INTER</b>
@@ -647,7 +784,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             <div class="em-option hide" id="em-option-intra">
                 <div class="em-option-details">
                     <?php echo "<p class='em-option-title'>" . $title . "</p>"; ?>
-                    <?php echo "<p style='margin-top: -10px;'>réf. " . $this->data['jos_emundus_setup_teaching_unity___code_raw'] . "</p>"; ?>
+                    <?php echo "<p style='margin-top: -20px;'>réf. " . $this->data['jos_emundus_setup_teaching_unity___code_raw'] . "</p>"; ?>
                 </div>
 
                 <div class="em-option-price">
@@ -683,55 +820,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             </div>
         </div>
 
-        <div class="em-search">
-
-            <b>cherchez une formation</b>
-
-            <div class="em-search-bar">
-                <div class="ui icon input" style="width: 90%; margin-left: 15px;">
-                    <i class="search icon"></i>
-                    <input type="text" placeholder="Search..">
-                </div>
+            <div id="em-certification">
+                <!-- TODO: GET CERTIFICATES!!!-->
             </div>
-
         </div>
 
-        <div class="em-formations">
-
-            <div><b>Les formations</b></div>
-            <div style="margin-top: -10px;"><b>par domaines de compétences</b></div>
-
-            <div class="em-themes em-theme-management">MANAGEMENT • RESSOURCES HUMAINES</div>
-            <div class="em-themes em-theme-quality">QUALITÉ • PERFORMANCE</div>
-            <div class="em-themes em-theme-sale">VENTE • DÉVELOPPEMENT COMMERCIAL</div>
-            <div class="em-themes em-theme-buy">ACHATS • APPROVISIONNEMENTS</div>
-            <div class="em-themes em-theme-formation">FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</div>
-            <div class="em-themes em-theme-digital">DIGITAL • BUREAUTIQUE</div>
-            <div class="em-themes em-theme-accounting">COMPTABILITÉ • GESTION</div>
-            <div class="em-themes em-theme-language">LANGUES</div>
 
 
 
-
-        </div>
-
-        <div class="em-statuts">
-            <div><b>Vous êtes...</b></div>
-
-
-            <div class="em-statut" id="dirigeant">DIRIGEANT</div>
-            <div class="em-statut" id="salarie">SALARIÉ</div>
-            <div class="em-statut" id="hotel-restaurant">HÔTELIER / RESTAURATEUR</div>
-            <div class="em-statut" id="immobilier">PROFESSIONNEL DE L’IMMOBILIER</div>
-            <div class="em-statut" id="entreprise">CRÉATEUR / REPRENEUR D’ENTREPRISE</div>
-
-        </div>
-
-        <div class="em-certification em-certification-<?php echo $theme?>">
-
-        </div>
-
-    </div>
 
 
     <div class="modal fade" id="gmaps">
@@ -801,13 +897,16 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             });
         }
     }
-    google.maps.event.addDomListener(window, 'load', initMap());
 
-    jQuery(document).ready(function() {
-       // var latLong = getLatLong("<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>");
 
 
 
+    jQuery(document).ready(function() {
+        var options = document.getElementById("formation-options");
+        options.appendChild(document.getElementById("em-formation-options"));
+
+        var certificate = document.getElementById("formation-certification");
+        certificate.appendChild(document.getElementById("em-certification"));
     });
 
     document.getElementById("em-option-menu-inter").addEventListener('click', function (e) {
