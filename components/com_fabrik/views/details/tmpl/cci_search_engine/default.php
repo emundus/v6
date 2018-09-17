@@ -885,7 +885,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     function initMap() {
         if(addy.replace(/\s/g,'') != "") {
-            console.log(addy);
             geocoder = new google.maps.Geocoder();
             var latlng = new google.maps.LatLng(-34.397, 150.644);
             var myOptions = {
