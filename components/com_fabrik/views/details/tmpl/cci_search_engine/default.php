@@ -694,14 +694,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
                 </td>
 
-                <td id="em-location-table" <?php echo (!empty($d['jos_emundus_setup_teaching_unity___location_city']))?'data-toggle="modal" data-target="#gmaps" style="cursor: pointer;"':''; ?>>
+                <td id="em-location-table" <?php echo (!empty($city))?'data-toggle="modal" data-target="#gmaps" style="cursor: pointer;"':''; ?>>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $lieu_svg; ?>
                     </div>
                     <div class="em-location-detail">
                         <?php
-                        if(!empty($d['jos_emundus_setup_teaching_unity___location_city']))
-                            echo ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city']));
+                        if(!empty($city))
+                            echo ucfirst(strtolower($city));
                         else
                             echo "Pas de localisation";
                         ?>
@@ -880,8 +880,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     var geocoder;
     var map;
     var addy = "<?php echo $address; ?>";
-    var address = "<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>";
 
+    var address = "<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>";
 
     function initMap() {
         if(addy.replace(/\s/g,'') != "") {
