@@ -184,7 +184,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					$query = $db->getQuery(true);
 					$query
 						->update($db->quoteName('#__emundus_setup_teaching_unity'))
-						->set($db->quote('published').' = 0')
+						->set($db->quoteName('published').' = 0')
 						->where($db->quoteName('session_code').' IN ('.implode(',', $in).')');
 					$db->setQuery($query);
 					try {
@@ -199,7 +199,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					$query = $db->getQuery(true);
 					$query
 						->update($db->quoteName('#__emundus_setup_campaigns'))
-						->set($db->quote('published').' = 0')
+						->set($db->quoteName('published').' = 0')
 						->where($db->quoteName('session_code').' IN ('.implode(',', $in).')');
 					$db->setQuery($query);
 					try {
