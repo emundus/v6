@@ -694,12 +694,17 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
                 </td>
 
-                <td data-toggle="modal" data-target="#gmaps" style="cursor: pointer;">
+                <td id="em-location-table" <?php echo (!empty($d['jos_emundus_setup_teaching_unity___location_city']))?'data-toggle="modal" data-target="#gmaps" style="cursor: pointer;"':''; ?>>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $lieu_svg; ?>
                     </div>
                     <div class="em-location-detail">
-                        <?php echo ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___location_city'])); ?>
+                        <?php
+                        if(!empty($d['jos_emundus_setup_teaching_unity___location_city']))
+                            echo ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city']));
+                        else
+                            echo "Pas de localisation";
+                        ?>
                     </div>
                 </td>
             </tr>
@@ -874,52 +879,58 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     var geocoder;
     var map;
+    var addy = "<?php echo $address; ?>";
     var address = "<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>";
 
+
     function initMap() {
-        geocoder = new google.maps.Geocoder();
-        var latlng = new google.maps.LatLng(-34.397, 150.644);
-        var myOptions = {
-            zoom: 8,
-            center: latlng,
-            mapTypeControl: true,
-            mapTypeControlOptions: {
-                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-            },
-            navigationControl: true,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(document.getElementById("map"), myOptions);
-        if (geocoder) {
-            geocoder.geocode({
-                'address': address
-            }, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
-                        map.setCenter(results[0].geometry.location);
+        if(addy.replace(/\s/g,'') != "") {
+            console.log(addy);
+            geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(-34.397, 150.644);
+            var myOptions = {
+                zoom: 8,
+                center: latlng,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+                },
+                navigationControl: true,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            map = new google.maps.Map(document.getElementById("map"), myOptions);
+            if (geocoder) {
+                geocoder.geocode({
+                    'address': address
+                }, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+                            map.setCenter(results[0].geometry.location);
 
-                        var infowindow = new google.maps.InfoWindow({
-                            content: '<b>' + address + '</b>',
-                            size: new google.maps.Size(150, 50)
-                        });
+                            var infowindow = new google.maps.InfoWindow({
+                                content: '<b>' + address + '</b>',
+                                size: new google.maps.Size(150, 50)
+                            });
 
-                        var marker = new google.maps.Marker({
-                            position: results[0].geometry.location,
-                            map: map,
-                            title: address
-                        });
-                        google.maps.event.addListener(marker, 'click', function() {
-                            infowindow.open(map, marker);
-                        });
+                            var marker = new google.maps.Marker({
+                                position: results[0].geometry.location,
+                                map: map,
+                                title: address
+                            });
+                            google.maps.event.addListener(marker, 'click', function() {
+                                infowindow.open(map, marker);
+                            });
 
+                        } else {
+                            alert("No results found");
+                        }
                     } else {
-                        alert("No results found");
+                        alert("Geocode was not successful for the following reason: " + status);
                     }
-                } else {
-                    alert("Geocode was not successful for the following reason: " + status);
-                }
-            });
+                });
+            }
         }
+
     }
 
 
@@ -989,6 +1000,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             document.getElementById("em-option-sur-mesure").classList.remove('hide');
         }
     });
+
+
 
 </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $API; ?>&callback=initMap"></script>
