@@ -177,7 +177,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					// Deleting consists of simply setting published to 0.
 					$in = array();
 					foreach ($to_delete as $item) {
-						$in[] = $item['session_code'];
+						$in[] = $db->quote($item['session_code']);
 					}
 
 					// Unpublish teaching unit.
@@ -196,7 +196,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					$rows_updated += $db->getAffectedRows();
 
 					// Unpublish registration period.
-					$db->getQuery(true);
+					$query = $db->getQuery(true);
 					$query
 						->update($db->quoteName('#__emundus_setup_campaigns'))
 						->set($db->quote('published').' = 0')
@@ -218,9 +218,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 					$query = $db->getQuery(true);
 					$query
-						->select(['t.*', $db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.description', 'desc')])
+						->select(['t.*', $db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('c.description', 'desc')])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
+						->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON c.session_code = t.session_code')
 						->where($db->quoteName('t.session_code').' IN ('.implode(',', $db->quote(array_keys($to_update))).')');
 					$db->setQuery($query);
 					try {
