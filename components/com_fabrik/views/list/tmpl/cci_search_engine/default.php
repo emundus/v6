@@ -7,8 +7,6 @@
  * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
-
-// No direct access
 defined('_JEXEC') or die('Restricted access');
 
 $doc = JFactory::getDocument();
@@ -87,7 +85,6 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
     }
 
     .details-table td {
-        max-width: 365px;
         border: none;
     }
 
@@ -259,10 +256,18 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
     }
 
 
+    .limit {
+        display: inline-block;
+    }
+
+    .pagination {
+        display: inline-block;
+        margin-left: 10%;
+    }
+
 
 
 </style>
-
 <div class="main">
     <div class="form">
         <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
@@ -284,13 +289,19 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 				if (!empty($this->rows[0])) {
 					foreach ($this->rows[0] as $k => $v) {
 						foreach ($this->headings as $key => $val) {
-							if (array_key_exists($key, $v->data)) {
+                            $raw = $key.'_raw';
+							if (array_key_exists($raw, $v->data)) {
 								if (strcasecmp($v->data->$key, "1") == 0)
-									$data[$i][$val] = $v->data->$key;
-								else
-									$data[$i][$key] = $v->data->$key;
+                                    $data[$i][$val] = $v->data->$key;
+
+								else {
+                                    $data[$i][$key] = $v->data->$key;
+                                    $data[$i][$raw] = $v->data->$raw;
+                                }
+
 							}
 						}
+
 						if (array_key_exists('fabrik_view_url', $v->data)) {
 							$data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
 						}
@@ -312,18 +323,10 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                             </tr>
                         </thead>
 
-                        <tfoot>
-                            <tr class="fabrik___heading">
-                                <td colspan="<?php echo count($this->headings);?>">
-                                    <?php echo $this->nav;?>
-                                </td>
-                            </tr>
-                        </tfoot>
-
                                 <?php
                                 $gCounter = 0;
                                 foreach ($data as $d) {
-                                    $title = ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___label']));
+                                    $title = ucfirst(mb_strtolower($d['jos_emundus_setup_teaching_unity___label_raw'],  'UTF-8'));
                                     $theme = strtolower(str_replace(' ','-',$d['jos_emundus_setup_programmes___programmes']));
                                     $theme =html_entity_decode($theme, ENT_QUOTES);
 
@@ -383,8 +386,11 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                                 echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
                                                             elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
                                                                 echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
-
                                                         }
+                                                        elseif ($days = 1)
+                                                            echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
+                                                        else
+                                                            echo "Pas de jours définis";
 
                                                         ?>
                                                     </p>
@@ -392,7 +398,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                         <?php
                                                         if($days > 1)
                                                             echo $days . " jours";
-                                                        else
+                                                        elseif($days = 1)
                                                             echo $days . " jour";
                                                         ?>
                                                     </p>
@@ -420,7 +426,12 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                     <?php echo $lieu_svg; ?>
                                                 </div>
                                                 <div class="em-location-detail">
-                                                    <?php echo ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city'])); ?>
+                                                    <?php
+                                                        if(!empty($d['jos_emundus_setup_teaching_unity___location_city']))
+                                                            echo ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city']));
+                                                        else
+                                                            echo "Pas de localisation";
+                                                    ?>
                                                 </div>
                                             </td>
                                         </tr>
@@ -436,8 +447,16 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
                                 ?>
 
+                        <tfoot>
+                            <tr class="fabrik___heading">
+                                <td colspan="<?php echo count($this->headings);?>">
+                                    <?php echo $this->nav;?>
+                                </td>
+                            </tr>
+                        </tfoot>
 
-						<?php if ($this->hasCalculations) : ?>
+
+                        <?php if ($this->hasCalculations) : ?>
                             <tfoot>
                             <tr class="fabrik_calculations">
 

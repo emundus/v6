@@ -660,6 +660,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                     echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
 
                             }
+                            elseif ($days = 1)
+                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
+                            else
+                                echo "Pas de jours définis";
 
                             ?>
                         </p>
