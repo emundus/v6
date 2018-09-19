@@ -273,8 +273,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$query = $db->getQuery(true);
 								$query
 									->insert($db->quoteName('#__emundus_setup_thematiques'))
-									->columns(['title', 'color', 'published'])
-									->values($db->quote($update_item['familleproduits']).', "default", 0');
+									->columns(['title', 'color', 'published', 'order'])
+									->values($db->quote($update_item['familleproduits']).', "default", 0, '.(max(array_keys($categories))+1));
 								$db->setQuery($query);
 								try {
 									$db->execute();
@@ -495,8 +495,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$query = $db->getQuery(true);
 							$query
 								->insert($db->quoteName('#__emundus_setup_thematiques'))
-								->columns(['title', 'color', 'published'])
-								->values($db->quote($item['familleproduits']).', "default", 0');
+								->columns(['title', 'color', 'published', 'order'])
+								->values($db->quote($item['familleproduits']).', "default", 0, '.(max(array_keys($categories))+1));
 							$db->setQuery($query);
 							try {
 								$db->execute();
