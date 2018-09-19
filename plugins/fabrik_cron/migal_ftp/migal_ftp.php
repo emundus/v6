@@ -396,7 +396,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						JLog::add('Error getting max ID in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
-					// Ge the list of programme codes that already exist in order to avoid creating duplicates.
+					// Get the list of programme codes that already exist in order to avoid creating duplicates.
 					$query = $db->getQuery(true);
 					$query
 						->select($db->quoteName('code'))
@@ -406,6 +406,19 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						$programme_codes = $db->loadColumn();
 					} catch (Exception $e) {
 						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+					}
+
+					// Get the list of programmes allowed to be imported form the table.
+					$query = $db->getQuery(true);
+					$query
+						->select($db->quoteName('code'))
+						->from($db->quoteName('#__emundus_setup_programmes_to_import'));
+					$db->setQuery($query);
+					try {
+						$programmes_to_import = $db->loadColumn();
+					} catch (Exception $e) {
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						$programmes_to_import = null;
 					}
 
 					if (empty($campaign_id))
@@ -421,6 +434,13 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					$campaign_values = array();
 					$teaching_values = array();
 					foreach ($to_create as $item) {
+
+						// If the product is not found in the list of programmes to import: skip.
+						// If the list of products to import is empty we are assuming importation of everything.
+						if (!empty($programmes_to_import) && !in_array($item['codeproduit'], $programmes_to_import)) {
+							JLog::add('Skipped product '.$item['codeproduit'].' due to not present in jos_emundus_setup_programmes_to_import', JLog::INFO, 'com_emundus');
+							continue;
+						}
 
 						// Only add programme if it does not already exist in DB and has not already been added.
 						if (!in_array($item['codeproduit'], $programme_codes) && !array_key_exists($item['codeproduit'], $programme_values)) {
