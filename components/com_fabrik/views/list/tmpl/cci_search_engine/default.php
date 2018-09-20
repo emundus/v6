@@ -13,10 +13,17 @@ $doc = JFactory::getDocument();
 $doc->addStyleSheet('media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 $doc->addScript('media/com_emundus/lib/chosen/chosen.jquery.js');
 $doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
+$doc->addStyleSheet('templates/g5_helium/custom/css/moteur-de-recherche.css');
 
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+function jsonDecode($val) {
+    if(empty(json_decode($val)))
+        return $val;
+    else
+        return json_decode($val);
+}
 
 
 if ($pageClass !== '') :
@@ -62,210 +69,6 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
 <style>
 
-    .main {
-        width: 100%;
-    }
-
-    .form {
-        width: 100%;
-    }
-
-    .em-theme-title {
-        display: inline-block;
-    }
-    .em-offre-title {
-        font-size: 22px;
-    }
-
-    .details-table {
-        display: inline-block;
-        float: inherit;
-        border: none;
-        margin-bottom: 0px;
-    }
-
-    .details-table td {
-        border: none;
-    }
-
-    .partner {
-        display: inline-block;
-        position: absolute;
-    }
-
-    .em-details-icon {
-        display: inline-block;
-    }
-
-    /* TODO: do for each theme  */
-    .em-icon-dse svg path {
-        fill: #52BDD5 !important;
-    }
-
-    .em-icon-achat svg path {
-        fill: #C0A512 !important;
-    }
-
-    .em-icon-compétences-et-formation svg path {
-        fill: #0483A2 !important;
-    }
-
-    .em-icon-qualité svg path {
-        fill: #55AD32 !important;
-    }
-
-
-    .em-details-icon svg, .em-option-price svg, .em-option-documents svg, .em-option-certificate svg {
-        width: 40px;
-        height: 40px;
-    }
-
-    .em-search {
-        background-color: #e2e2d0;
-        display: block;
-        width: 100%;
-        height: 120px;
-        margin-top: 10px;
-    }
-
-    .em-search-bar {
-        display: inline;
-    }
-
-    .em-search b {
-        display: block;
-        padding-top: 10px;
-        padding-bottom: 15px;
-        margin-left: 15px;
-        font-size: 15px;
-    }
-
-    .searchButton {
-        width: 20%;
-        height: 41px;
-        color: #566268;
-        font-size: 20px;
-        margin-top: -10px;
-        margin-right: -4px;
-    }
-
-    #formation-search {
-        display: inline-block;
-        width: 75%;
-        border: none;
-        border-radius: 0px;
-    }
-
-    .em-statut {
-        width: 100%;
-        margin-bottom: 5px;
-        height: auto;
-        background-color: #e2e2d0;
-        cursor: pointer;
-        padding-left: 5px;
-        font-size: 13px;
-    }
-
-    .em-themes {
-        width: 100%;
-        height: auto;
-        cursor: pointer;
-        margin-bottom: 5px;
-        padding-left: 5px;
-        font-size: 13px;
-    }
-
-    .em-themes a {
-        color: white;
-    }
-
-    .em-theme-management {
-        background-color: #81266B;
-    }
-
-    .em-theme-quality {
-        background-color: #55AD32;
-    }
-
-    .em-theme-sale {
-        background-color: #DC4A14;
-    }
-
-    .em-theme-buy {
-        background-color: #C0A512;
-    }
-
-    .em-theme-formation {
-        background-color: #0483A2;
-    }
-
-    .em-theme-digital {
-        background-color: #F5A405;
-    }
-
-    .em-theme-accounting {
-        background-color: #52BDD5;
-    }
-
-    .em-theme-language {
-        background-color: #E50043;
-    }
-
-    .em-people-detail {
-        display: inline-block;
-        max-width: 75%;
-        margin-left: 5px;
-        line-height: 20px;
-        margin-top: 10px;
-    }
-
-    /* date details */
-    .em-date-detail {
-        display: inline-block;
-        line-height: 25px;
-    }
-
-    .em-date {
-        margin-left: 10px;
-        font-weight: bold;
-        margin-top: 7px;
-    }
-
-    .em-days {
-        margin-left: 10px;
-        margin-top: -15px;
-    }
-
-    /* requirements details */
-    .em-requirements-detail {
-        display: inline-block;
-        position: absolute;
-        max-width: 15%;
-        margin-left: 5px;
-        line-height: 20px;
-        margin-top: 12px;
-    }
-
-    /* location details */
-    .em-location-detail{
-        display: inline-block;
-        margin-top: 5px;
-        margin-left: 10px;
-        font-weight: bold;
-        position: absolute;
-    }
-
-
-    .limit {
-        display: inline-block;
-    }
-
-    .pagination {
-        display: inline-block;
-        margin-left: 10%;
-    }
-
-
 
 </style>
 <div class="main">
@@ -286,25 +89,25 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
 				$data = array();
 				$i = 0;
-				if (!empty($this->rows[0])) {
-					foreach ($this->rows[0] as $k => $v) {
+
+
+				if (!empty($this->rows)) {
+					foreach ($this->rows as $k => $v) {
 						foreach ($this->headings as $key => $val) {
                             $raw = $key.'_raw';
-							if (array_key_exists($raw, $v->data)) {
-								if (strcasecmp($v->data->$key, "1") == 0)
-                                    $data[$i][$val] = $v->data->$key;
+							if (array_key_exists($raw, $v[0]->data)) {
+								if (strcasecmp($v[0]->data->$key, "1") == 0)
+                                    $data[$i][$val] = $v[0]->data->$key;
 
 								else {
-                                    $data[$i][$key] = $v->data->$key;
-                                    $data[$i][$raw] = $v->data->$raw;
+                                    $data[$i][$key] = $v[0]->data->$key;
+                                    $data[$i][$raw] = $v[0]->data->$raw;
                                 }
-
 							}
 						}
-
-						if (array_key_exists('fabrik_view_url', $v->data)) {
-							$data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
-						}
+                        if (array_key_exists('fabrik_view_url', $v[0]->data)) {
+                            $data[$i]['fabrik_view_url'] = $v[0]->data->fabrik_view_url;
+                        }
 						$i = $i + 1;
 					}
 				}?>
@@ -326,8 +129,10 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                 <?php
                                 $gCounter = 0;
                                 foreach ($data as $d) {
-                                    $title = ucfirst(mb_strtolower($d['jos_emundus_setup_teaching_unity___label_raw'],  'UTF-8'));
-                                    $theme = strtolower(str_replace(' ','-',$d['jos_emundus_setup_programmes___programmes']));
+                                    $title = ucfirst(mb_strtolower(jsonDecode($d['jos_emundus_setup_programmes___label_raw'])));
+
+
+                                    $theme = mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_programmes___programmes_raw']));
                                     $theme =html_entity_decode($theme, ENT_QUOTES);
 
                                     // TODO: CASE FOR EACH THEME
@@ -344,29 +149,27 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                     }
 
                                     ?>
-                                    <table class="details-table g-block size-100">
-                                        <tr>
-                                            <?php echo $div; ?>
-                                            <p class="em-offre-title">
-                                                <?php echo "<b>" . $title . "</b>"; ?>
-                                            </p>
-                                        </tr>
-                                        <tr>
-                                            <td>
+                                    <div class="details-table g-block size-100">
+                                        <?php echo $div; ?>
+                                        <h1 class="em-offre-title">
+                                            <?php echo "<a href='".$d['fabrik_view_url']."' >" . $title . "</a>"; ?>
+                                        </h1>
+                                        <div>
+                                            <div class="people-div g-block size-50">
                                                 <div class="em-details-icon em-icon-<?php echo $theme?>">
                                                     <?php echo $public_svg; ?>
                                                 </div>
                                                 <div class="em-people-detail">
                                                     <?php
-                                                    if($d['jos_emundus_setup_teaching_unity___audiance'] == null)
-                                                        echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  $d['jos_emundus_setup_programme___programmes'];
-                                                    else
-                                                        echo $d['jos_emundus_setup_teaching_unity___audiance'];
+                                                        if($d['jos_emundus_setup_teaching_unity___audiance_raw'] == null)
+                                                            echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  str_replace('-', ' ', $theme);
+                                                        else
+                                                            echo $d['jos_emundus_setup_teaching_unity___audiance_raw'];
                                                     ?>
                                                 </div>
-                                            </td>
+                                            </div>
 
-                                            <td>
+                                            <div class="date-div g-block size-49">
                                                 <div class="em-details-icon em-icon-<?php echo $theme?>">
                                                     <?php echo $date_svg; ?>
                                                 </div>
@@ -374,23 +177,41 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                     <p class="em-date">
                                                         <?php
                                                         setlocale(LC_ALL, 'fr_FR');
-                                                        $start_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
-                                                        $end_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
-                                                        $start_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
-                                                        $end_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
-                                                        $days = $d['jos_emundus_setup_teaching_unity___days'];
-                                                        if($days > 1) {
+                                                        $dateArray =jsonDecode($d['jos_emundus_setup_campaigns___start_date_raw']);
+                                                        $start_month = date('m',strtotime($d['jos_emundus_setup_campaigns___start_date_raw']));
+                                                        $end_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                        $start_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']));
+                                                        $end_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                        $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
+                                                        if(sizeof($dateArray) > 1) {
+                                                            $lastEl = array_values(array_slice($dateArray, -1))[0];
+                                                            $start_month = date('m',strtotime($dateArray[0]));
+                                                            $end_month = date('m',strtotime($lastEl));
+                                                            $start_year = date('Y',strtotime($dateArray[0]));
+                                                            $end_year = date('Y',strtotime($lastEl));
+
                                                             if($start_month == $end_month && $start_year == $end_year)
-                                                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
-                                                            elseif ($start_month != $end_month && $start_year == $end_year)
-                                                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
+                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year;
+                                                            elseif($start_month != $end_month && $start_year == $end_year)
+                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $start_year;
                                                             elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end']));
+                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $end_year;
                                                         }
-                                                        elseif ($days = 1)
-                                                            echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
-                                                        else
-                                                            echo "Pas de jours définis";
+                                                        else {
+                                                            if($days > 1) {
+                                                                if($start_month == $end_month && $start_year == $end_year)
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                                elseif ($start_month != $end_month && $start_year == $end_year)
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])). " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                                elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+
+                                                            }
+                                                            elseif ($days = 1)
+                                                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']));
+                                                            else
+                                                                echo "Pas de jours définis";
+                                                        }
 
                                                         ?>
                                                     </p>
@@ -403,41 +224,38 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                         ?>
                                                     </p>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </div>
 
-                                        <tr>
-                                            <td>
-                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
-                                                    <?php echo $prerequis_svg; ?>
-                                                </div>
-                                                <div class="em-requirements-detail">
-                                                    <?php
-                                                    if($d['jos_emundus_setup_teaching_unity___prerequisite'] == null)
-                                                        echo "Pas de prérequis nécessaire";
-                                                    else
-                                                        echo $d['jos_emundus_setup_teaching_unity___prerequisite'];
-                                                    ?>
-                                                </div>
-                                            </td>
-
-                                            <td>
+                                        <div>
+                                            <div class="location-div g-block size-50">
                                                 <div class="em-details-icon em-icon-<?php echo $theme?>">
                                                     <?php echo $lieu_svg; ?>
                                                 </div>
                                                 <div class="em-location-detail">
                                                     <?php
-                                                        if(!empty($d['jos_emundus_setup_teaching_unity___location_city']))
-                                                            echo ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city']));
+                                                        $cityArray = jsonDecode($d['jos_emundus_setup_teaching_unity___location_city_raw']);
+                                                        if(!empty($d['jos_emundus_setup_teaching_unity___location_city_raw'])) {
+                                                            if (sizeof($cityArray) > 1) {
+                                                                $cityArray = array_unique($cityArray);
+                                                                $len = count($cityArray);
+                                                                foreach ($cityArray as $cities) {
+                                                                    echo str_replace(" cedex", "", ucfirst(strtolower($cities)));
+                                                                    if ($len > 1) echo ', ';
+                                                                    $len--;
+                                                                }
+                                                            } else
+                                                                echo str_replace(" cedex", "", ucfirst(strtolower($cityArray)));
+                                                        }
                                                         else
                                                             echo "Pas de localisation";
                                                     ?>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                    <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
+                                    <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">En savoir plus</a></div>
 
 
                                     <?php
