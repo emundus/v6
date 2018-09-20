@@ -161,10 +161,10 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                 </div>
                                                 <div class="em-people-detail">
                                                     <?php
-                                                    if($d['jos_emundus_setup_teaching_unity___audiance_raw'] == null)
-                                                        echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  str_replace('-', ' ', $theme);
-                                                    else
-                                                        echo $d['jos_emundus_setup_teaching_unity___audiance_raw'];
+                                                        if($d['jos_emundus_setup_teaching_unity___audiance_raw'] == null)
+                                                            echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  str_replace('-', ' ', $theme);
+                                                        else
+                                                            echo $d['jos_emundus_setup_teaching_unity___audiance_raw'];
                                                     ?>
                                                 </div>
                                             </div>
@@ -184,18 +184,18 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                         $end_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
                                                         $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
                                                         if(sizeof($dateArray) > 1) {
-
+                                                            $lastEl = array_values(array_slice($dateArray, -1))[0];
                                                             $start_month = date('m',strtotime($dateArray[0]));
-                                                            $end_month = date('m',strtotime($dateArray[1]));
+                                                            $end_month = date('m',strtotime($lastEl));
                                                             $start_year = date('Y',strtotime($dateArray[0]));
-                                                            $end_year = date('Y',strtotime($dateArray[1]));
+                                                            $end_year = date('Y',strtotime($lastEl));
 
                                                             if($start_month == $end_month && $start_year == $end_year)
                                                                 echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year;
                                                             elseif($start_month != $end_month && $start_year == $end_year)
-                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' à ' . ucfirst(strftime('%B',strtotime($dateArray[1]))) . ' ' . $start_year;
+                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $start_year;
                                                             elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year . ' à ' . ucfirst(strftime('%B',strtotime($dateArray[1]))) . ' ' . $end_year;
+                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $end_year;
                                                         }
                                                         else {
                                                             if($days > 1) {
@@ -237,6 +237,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                         $cityArray = jsonDecode($d['jos_emundus_setup_teaching_unity___location_city_raw']);
                                                         if(!empty($d['jos_emundus_setup_teaching_unity___location_city_raw'])) {
                                                             if (sizeof($cityArray) > 1) {
+                                                                $cityArray = array_unique($cityArray);
                                                                 $len = count($cityArray);
                                                                 foreach ($cityArray as $cities) {
                                                                     echo str_replace(" cedex", "", ucfirst(strtolower($cities)));
