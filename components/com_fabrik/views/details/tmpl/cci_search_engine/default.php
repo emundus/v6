@@ -178,7 +178,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         fill: #0483A2 !important;
     }
 
-    .em-icon-RECHERCHE svg path {
+    .em-icon-qualité svg path {
         fill: #55AD32 !important;
     }
 
@@ -279,7 +279,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     .em-option-details {
         padding-top: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 35px;
     }
 
     .em-option-title {
@@ -337,7 +337,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     #sur-mesure-details {
         height: 300px;
-        max-width: 60%;
+        max-width: inherit;
     }
 
     #sur-mesure-details b {
@@ -377,12 +377,13 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         height: auto;
         cursor: pointer;
         margin-bottom: 5px;
-        color: white;
         padding-left: 5px;
         font-size: 13px;
     }
 
-
+    .em-themes a {
+        color: white;
+    }
     .em-theme-management {
         background-color: #81266B;
     }
@@ -489,6 +490,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             cursor: pointer;
         }
 
+        .em-option-details {
+            padding-top: 10px;
+            margin-bottom: 60px;
+        }
+
     }
 
     @media screen and (max-width:959px) and (min-width: 771px) {
@@ -501,6 +507,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             display: inline-flex;
             background-color: #bbc0c3;
             cursor: pointer;
+        }
+
+        .em-option-details {
+            padding-top: 10px;
+            margin-bottom: 60px;
         }
 
     }
@@ -649,6 +660,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                     echo strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($this->data['jos_emundus_setup_teaching_unity___date_end_raw']));
 
                             }
+                            elseif ($days = 1)
+                                echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start']));
+                            else
+                                echo "Pas de jours définis";
 
                             ?>
                         </p>
@@ -679,21 +694,30 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
                 </td>
 
-                <td data-toggle="modal" data-target="#gmaps" style="cursor: pointer;">
+                <td id="em-location-table" <?php echo (!empty($city))?'data-toggle="modal" data-target="#gmaps" style="cursor: pointer;"':''; ?>>
                     <div class="em-details-icon em-icon-<?php echo $theme?>">
                         <?php echo $lieu_svg; ?>
                     </div>
                     <div class="em-location-detail">
-                        <?php echo ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___location_city'])); ?>
+                        <?php
+                        if(!empty($city))
+                            echo ucfirst(strtolower($city));
+                        else
+                            echo "Pas de localisation";
+                        ?>
                     </div>
                 </td>
             </tr>
         </table>
 
         <div class="partner g-block size-19">
+            <?php if($partenaire == '' || $partenaire == null) :?>
+                <p>Pas de partenaire pour cette formation</p>
+            <?php else:?>
             <p>notre partenaire expert</p>
-            <img src="templates/g5_helium/images/LogoPartenaires/logo_ABRC_100_40.jpg">
+            <img src="images/custom/ccirs/partenaires/">
             <!-- TODO: get partners photo -->
+            <?php endif;?>
         </div>
 
         <hr style="width: 97%; margin-top: 0px;">
@@ -775,7 +799,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div class="em-option-buttons">
                     <button class="em-option-login">s'inscrire</button>
 
-                    <button class="em-option-contact">être contacté par un conseiller</button>
+                    <button class="em-option-contact">être contacté</button>
                 </div>
 
 
@@ -802,26 +826,31 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div class="em-option-buttons">
                     <button class="em-option-login">demander un devis</button>
 
-                    <button class="em-option-contact">être contacté par un conseiller</button>
+                    <button class="em-option-contact">être contacté</button>
                 </div>
 
             </div>
 
             <div class="em-option hide" id="em-option-sur-mesure">
                 <div class="em-option-details" id="sur-mesure-details">
-                    <b style="color: white"> Vous êtess intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
+                    <b style="color: white"> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
                     <br>
                     <br>
                     <b style="color: white"> Nous pouvons élaborer une formation sur-mesure pour répondre au mieux à vos objectifs.</b>
                 </div>
 
-                <button class="em-option-contact" >être contacté par un conseiller</button>
+                <button class="em-option-contact" >être contacté</button>
 
             </div>
         </div>
 
             <div id="em-certification">
-                <!-- TODO: GET CERTIFICATES!!!-->
+                <?php if($certificat == '' || $certificat == null) :?>
+                    <p style="padding-top: 100px; margin-left: 5px;">Pas de certification pour cette formation</p>
+                <?php else:?>
+                    <img src="images/custom/ccirs/certifications/">
+                    <!-- TODO: get partners photo -->
+                <?php endif;?>
             </div>
         </div>
 
@@ -850,52 +879,57 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     var geocoder;
     var map;
+    var addy = "<?php echo $address; ?>";
+
     var address = "<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>";
 
     function initMap() {
-        geocoder = new google.maps.Geocoder();
-        var latlng = new google.maps.LatLng(-34.397, 150.644);
-        var myOptions = {
-            zoom: 8,
-            center: latlng,
-            mapTypeControl: true,
-            mapTypeControlOptions: {
-                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-            },
-            navigationControl: true,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(document.getElementById("map"), myOptions);
-        if (geocoder) {
-            geocoder.geocode({
-                'address': address
-            }, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
-                        map.setCenter(results[0].geometry.location);
+        if(addy.replace(/\s/g,'') != "") {
+            geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(-34.397, 150.644);
+            var myOptions = {
+                zoom: 8,
+                center: latlng,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+                },
+                navigationControl: true,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            map = new google.maps.Map(document.getElementById("map"), myOptions);
+            if (geocoder) {
+                geocoder.geocode({
+                    'address': address
+                }, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+                            map.setCenter(results[0].geometry.location);
 
-                        var infowindow = new google.maps.InfoWindow({
-                            content: '<b>' + address + '</b>',
-                            size: new google.maps.Size(150, 50)
-                        });
+                            var infowindow = new google.maps.InfoWindow({
+                                content: '<b>' + address + '</b>',
+                                size: new google.maps.Size(150, 50)
+                            });
 
-                        var marker = new google.maps.Marker({
-                            position: results[0].geometry.location,
-                            map: map,
-                            title: address
-                        });
-                        google.maps.event.addListener(marker, 'click', function() {
-                            infowindow.open(map, marker);
-                        });
+                            var marker = new google.maps.Marker({
+                                position: results[0].geometry.location,
+                                map: map,
+                                title: address
+                            });
+                            google.maps.event.addListener(marker, 'click', function() {
+                                infowindow.open(map, marker);
+                            });
 
+                        } else {
+                            alert("No results found");
+                        }
                     } else {
-                        alert("No results found");
+                        alert("Geocode was not successful for the following reason: " + status);
                     }
-                } else {
-                    alert("Geocode was not successful for the following reason: " + status);
-                }
-            });
+                });
+            }
         }
+
     }
 
 
@@ -965,6 +999,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             document.getElementById("em-option-sur-mesure").classList.remove('hide');
         }
     });
+
+
 
 </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $API; ?>&callback=initMap"></script>

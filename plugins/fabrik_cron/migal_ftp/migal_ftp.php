@@ -177,14 +177,14 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					// Deleting consists of simply setting published to 0.
 					$in = array();
 					foreach ($to_delete as $item) {
-						$in[] = $item['session_code'];
+						$in[] = $db->quote($item['session_code']);
 					}
 
 					// Unpublish teaching unit.
 					$query = $db->getQuery(true);
 					$query
 						->update($db->quoteName('#__emundus_setup_teaching_unity'))
-						->set($db->quote('published').' = 0')
+						->set($db->quoteName('published').' = 0')
 						->where($db->quoteName('session_code').' IN ('.implode(',', $in).')');
 					$db->setQuery($query);
 					try {
@@ -196,10 +196,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					$rows_updated += $db->getAffectedRows();
 
 					// Unpublish registration period.
-					$db->getQuery(true);
+					$query = $db->getQuery(true);
 					$query
 						->update($db->quoteName('#__emundus_setup_campaigns'))
-						->set($db->quote('published').' = 0')
+						->set($db->quoteName('published').' = 0')
 						->where($db->quoteName('session_code').' IN ('.implode(',', $in).')');
 					$db->setQuery($query);
 					try {
@@ -218,15 +218,29 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 					$query = $db->getQuery(true);
 					$query
-						->select(['t.*', $db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ')])
+						->select(['t.*', $db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('c.description', 'desc')])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
+						->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON c.session_code = t.session_code')
 						->where($db->quoteName('t.session_code').' IN ('.implode(',', $db->quote(array_keys($to_update))).')');
 					$db->setQuery($query);
 					try {
 						$db_array = $db->loadAssocList();
 					} catch (Exception $e) {
 						JLog::add('Error getting data for update comparisons at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+					}
+
+					// Get the list of categories.
+					$query = $db->getQuery(true);
+					$query
+						->select([$db->quoteName('id'), $db->quoteName('title')])
+						->from($db->quoteName('#__emundus_setup_thematiques'));
+					$db->setQuery($query);
+					try {
+						$categories = $db->loadAssocList('id','title');
+					} catch (Exception $e) {
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						$categories = null;
 					}
 
 					foreach ($db_array as $db_item) {
@@ -251,8 +265,27 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$fields[] = $db->quoteName('p.url').' = '.$db->quote($update_item['libellestageurl']);
 
 						// Product family = programme programmes
-						if ($db_item['categ'] != $update_item['familleproduits'])
-							$fields[] = $db->quoteName('p.programmes').' = '.$db->quote($update_item['familleproduits']);
+						// Updating the category involves checking if the category exists in the other table.
+						$category = array_search($update_item['familleproduits'], $categories);
+						if ($db_item['categ'] != $category) {
+							if ($category == 0) {
+								// If no category exists: INSERT
+								$query = $db->getQuery(true);
+								$query
+									->insert($db->quoteName('#__emundus_setup_thematiques'))
+									->columns(['title', 'color', 'published', 'order'])
+									->values($db->quote($update_item['familleproduits']).', "default", 0, '.(max(array_keys($categories))+1));
+								$db->setQuery($query);
+								try {
+									$db->execute();
+									$category = $db->insertid();
+									$categories[$category] = $update_item['familleproduits'];
+								} catch (Exception $e) {
+									JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+								}
+							}
+							$fields[] = $db->quoteName('p.programmes').' = '.$category;
+						}
 
 						// Product code = programme code
 						if ($db_item['code'] != $update_item['codeproduit']) {
@@ -264,9 +297,12 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						// Product observations = programme notes, campaign description, teaching_unit notes
 						if ($db_item['notes'] != $update_item['observations']) {
 							$fields[] = $db->quoteName('p.notes').' = '.$db->quote($update_item['observations']);
-							$fields[] = $db->quoteName('c.description').' = '.$db->quote($update_item['observations']);
-							$fields[] = $db->quoteName('c.short_description').' = '.$db->quote($update_item['observations']);
 							$fields[] = $db->quoteName('t.notes').' = '.$db->quote($update_item['observations']);
+						}
+
+						if ($db_item['desc'] != $update_item['resumeproduit']) {
+							$fields[] = $db->quoteName('c.description').' = '.$db->quote($update_item['resumeproduit']);
+							$fields[] = $db->quoteName('c.short_description').' = '.$db->quote($update_item['resumeproduit']);
 						}
 
 						// Session price = teaching unit price
@@ -335,9 +371,21 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['prerequisite'] != $update_item['prerequis'])
 							$fields[] = $db->quoteName('t.prerequisite').' = '.$db->quote($update_item['prerequis']);
 
-						// Session prerequisites = teaching unit prerequisites
+						// Session public type = teaching unit audience
 						if ($db_item['audience'] != $update_item['typepublic'])
 							$fields[] = $db->quoteName('t.audience').' = '.$db->quote($update_item['typepublic']);
+
+						// Session commercial tagline = teaching unit tagline
+						if ($db_item['tagline'] != $update_item['accrochecom'])
+							$fields[] = $db->quoteName('t.tagline').' = '.$db->quote($update_item['accrochecom']);
+
+						// Session objectives = teaching unit objectives
+						if ($db_item['objectives'] != $update_item['objectifs'])
+							$fields[] = $db->quoteName('t.objectives').' = '.$db->quote($update_item['objectifs']);
+
+						// Session content = teaching unit content
+						if ($db_item['content'] != $update_item['contenu'])
+							$fields[] = $db->quoteName('t.content').' = '.$db->quote($update_item['contenu']);
 
 						// If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
@@ -380,7 +428,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						JLog::add('Error getting max ID in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
-					// Ge the list of programme codes that already exist in order to avoid creating duplicates.
+					if (empty($campaign_id))
+						$campaign_id = 0;
+
+					// Get the list of programme codes that already exist in order to avoid creating duplicates.
 					$query = $db->getQuery(true);
 					$query
 						->select($db->quoteName('code'))
@@ -392,19 +443,69 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
-					if (empty($campaign_id))
-						$campaign_id = 0;
+					// Get the list of programmes allowed to be imported form the table.
+					$query = $db->getQuery(true);
+					$query
+						->select($db->quoteName('code'))
+						->from($db->quoteName('#__emundus_setup_programmes_to_import'));
+					$db->setQuery($query);
+					try {
+						$programmes_to_import = $db->loadColumn();
+					} catch (Exception $e) {
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						$programmes_to_import = null;
+					}
+
+					// Get the list of categories.
+					$query = $db->getQuery(true);
+					$query
+						->select([$db->quoteName('id'),$db->quoteName('title')])
+						->from($db->quoteName('#__emundus_setup_thematiques'));
+					$db->setQuery($query);
+					try {
+						$categories = $db->loadAssocList('id','title');
+					} catch (Exception $e) {
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						$categories = null;
+					}
 
 					// DB table struct for different tables.
 					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url'];
 					$campaign_columns   = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
-					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'prerequisite', 'audience'];
+					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'prerequisite', 'audience', 'tagline', 'objectives', 'content'];
 
 					// Build all value lists for the different inserts at once, this avoids having to loop multiple times.
 					$programme_values = array();
 					$campaign_values = array();
 					$teaching_values = array();
 					foreach ($to_create as $item) {
+
+						// If the product is not found in the list of programmes to import: skip.
+						// If the list of products to import is empty we are assuming importation of everything.
+						if (!empty($programmes_to_import) && !in_array($item['codeproduit'], $programmes_to_import)) {
+							JLog::add('Skipped product '.$item['codeproduit'].' due to not present in jos_emundus_setup_programmes_to_import', JLog::INFO, 'com_emundus');
+							continue;
+						}
+
+						// Array search returns FALSE (0) if it does not find the key.
+						// Else it will return the ID of the category with the name in the JSON.
+						$category = array_search($item['familleproduits'], $categories);
+						if ($category == 0) {
+							// If no category exists: INSERT
+							$query = $db->getQuery(true);
+							$query
+								->insert($db->quoteName('#__emundus_setup_thematiques'))
+								->columns(['title', 'color', 'published', 'order'])
+								->values($db->quote($item['familleproduits']).', "default", 0, '.(max(array_keys($categories))+1));
+							$db->setQuery($query);
+							try {
+								$db->execute();
+								$category = $db->insertid();
+								$categories[$category] = $item['familleproduits'];
+							} catch (Exception $e) {
+								JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+							}
+						}
 
 						// Only add programme if it does not already exist in DB and has not already been added.
 						if (!in_array($item['codeproduit'], $programme_codes) && !array_key_exists($item['codeproduit'], $programme_values)) {
@@ -413,7 +514,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['intituleproduit']),
 								$db->quote($item['observations']),
 								'1',
-								$db->quote($item['familleproduits']),
+								$category,
 								'1',
 								$db->quote($item['libellestageurl'])
 							]);
@@ -422,8 +523,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						$campaign_values[] = implode(',', [
 							$db->quote($item['numsession']),
 							$db->quote($item['libellestage']),
-							$db->quote($item['observations']),
-							$db->quote($item['observations']),
+							$db->quote($item['resumeproduit']),
+							$db->quote($item['resumeproduit']),
 							'NOW()',
 							$db->quote($item['datedebutsession']['date']),
 							'1001',
@@ -454,13 +555,17 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$db->quote($item['villelieu']),
 							$db->quote($item['region']),
 							$db->quote($item['prerequis']),
-							$db->quote($item['typepublic'])
+							$db->quote($item['typepublic']),
+							$db->quote($item['accrochecom']),
+							$db->quote($item['objectifs']),
+							$db->quote($item['contenu'])
 						]);
 
 					}
 
 					if (!empty($programme_values)) {
 						// Create a new programme for the session / product.
+						$query = $db->getQuery(true);
 						$query
 							->insert($db->quoteName('#__emundus_setup_programmes'))
 							->columns($programme_columns)

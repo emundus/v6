@@ -51,7 +51,8 @@ class EmundusModelStats extends JModelLegacy {
                                         FROM `jos_emundus_logs` `el`
                                         WHERE (`el`.`action_id` = 32)
                                         GROUP BY  `el`.`fnum_to`,date_format(`el`.`timestamp`,'%Y%m%d')";
-                   
+
+                    $label = JText::_("jos_emundus_stats_nombre_candidature_offre");
                 break;
 
                 case 'jos_emundus_stats_nombre_comptes':
@@ -72,6 +73,8 @@ class EmundusModelStats extends JModelLegacy {
                                         FROM `jos_emundus_setup_profiles`
                                         WHERE (`jos_emundus_setup_profiles`.`published` = 1))
                                     GROUP BY  `eu`.`profile`,date_format(`eu`.`registerDate`,'%Y%m%d')";
+
+                        $label = JText::_("jos_emundus_stats_nombre_comptes");
                 break;
 
                 case 'jos_emundus_stats_nombre_connexions':
@@ -86,6 +89,8 @@ class EmundusModelStats extends JModelLegacy {
                                     FROM `jos_emundus_logs` `el`
                                     WHERE (`el`.`action_id` = -(2))
                                     GROUP BY  date_format(`el`.`timestamp`,'%Y%m%d')";
+
+                    $label = JText::_("jos_emundus_stats_nombre_connexions");
                 break;
 
                 case 'jos_emundus_stats_nombre_consult_offre':
@@ -104,7 +109,9 @@ class EmundusModelStats extends JModelLegacy {
                                             FROM `jos_emundus_logs` `el`
                                             WHERE (`el`.`action_id` = 33)
                                             GROUP BY  `el`.`fnum_to`,date_format(`el`.`timestamp`,'%Y%m%d')";
-                break;
+
+                    $label = JText::_("jos_emundus_stats_nombre_consult_offre");
+                    break;
 
                 case 'jos_emundus_stats_nombre_relations_etablies':
                     $columnNames = array('nombre_rel_etablies', '_date', '_day', '_week', '_month','_year');
@@ -134,6 +141,8 @@ class EmundusModelStats extends JModelLegacy {
                                     WHERE ((`epd`.`nationality` is not null) 
                                         AND (`ecc`.`submitted` = 1)) 
                                     GROUP BY `epd`.`nationality`";
+
+                    $label = JText::_("jos_emundus_stats_nationality");
                 break;
 
                 case 'jos_emundus_stats_gender':
@@ -151,6 +160,8 @@ class EmundusModelStats extends JModelLegacy {
                                     WHERE ((`epd`.`gender` is NOT null)
                                         AND (`ecc`.`submitted` = 1))
                                     GROUP BY  `epd`.`gender`";
+
+                    $label = JText::_("jos_emundus_stats_gender");
                 break;
 
                 case 'jos_emundus_stats_files':
@@ -170,7 +181,8 @@ class EmundusModelStats extends JModelLegacy {
                                     LEFT JOIN `jos_emundus_setup_status` `ess` on((`ess`.`step` = `ecc`.`status`)))
                                     LEFT JOIN `jos_users` `u` on((`u`.`id` = `ecc`.`user_id`)))
                                     GROUP BY  `ecc`.`campaign_id`,`ecc`.`status`";
-                    
+
+                    $label = JText::_("jos_emundus_stats_files");
                 break;
             }
             
@@ -181,7 +193,7 @@ class EmundusModelStats extends JModelLegacy {
                     return $db->loadResult();
 
                 }catch(Exception $e) {
-                    JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
+                    JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
                 }
             }
             else {
@@ -192,7 +204,7 @@ class EmundusModelStats extends JModelLegacy {
                         $query = "CREATE VIEW " . $view . " AS " . $query;
                     
                 }catch(Exception $e) {
-                    JLog::add('Error getting stats on account types at m/stats in query: '.$tables, JLog::ERROR, 'com_emundus');
+                    JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
                     return false;
                 }
 
@@ -201,7 +213,7 @@ class EmundusModelStats extends JModelLegacy {
                             
                     $db->execute();
                     // Fuction which creates Entitre fabrik and returns the List id so we can link it after
-                    $listId = $this->createFabrik($view, $columnNames);
+                    $listId = $this->createFabrik($view, $columnNames,$label);
                     return $listId;
                 } catch(Exception $e) {
                     JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
@@ -212,7 +224,7 @@ class EmundusModelStats extends JModelLegacy {
 
 
     // Creating A complete Fabrik model. 
-    public function createFabrik($view, $columnNames) {
+    public function createFabrik($view, $columnNames,$label) {
         
         $db = JFactory::getDbo();
         $currentTime = JFactory::getDate();
@@ -223,7 +235,7 @@ class EmundusModelStats extends JModelLegacy {
         $columns = array('label', 'record_in_database', 'error', 'intro', 'created', 'created_by',
                         'created_by_alias', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'publish_up', 'publish_down', 'reset_button_label', 'submit_button_label', 'form_template', 'view_only_template', 'published', 'private', 'params');
 
-        $values = array($db->quote($view), 1, $db->quote(''), $db->quote(''), $db->quote($currentTime),(int)$user->id,
+        $values = array($db->quote($label), 1, $db->quote(''), $db->quote(''), $db->quote($currentTime),(int)$user->id,
         $db->quote($user->name), $db->quote($currentTime), (int)$user->id, 0, $db->quote('0000-00-00 00:00:00'), $db->quote('0000-00-00 00:00:00'), $db->quote('0000-00-00 00:00:00'), $db->quote(''), $db->quote('Sauvegarder'), $db->quote('bootstrap'),  $db->quote('bootstrap'), 1, 1,  $db->quote('{"outro":"","reset_button":"0","reset_button_label":"Remise \u00e0 z\u00e9ro","reset_button_class":"btn-warning","reset_icon":"","reset_icon_location":"before","copy_button":"0","copy_button_label":"Save as copy","copy_button_class":"","copy_icon":"","copy_icon_location":"before","goback_button":"0","goback_button_label":"Retour","goback_button_class":"","goback_icon":"","goback_icon_location":"before","apply_button":"0","apply_button_label":"Appliquer","apply_button_class":"","apply_icon":"","apply_icon_location":"before","delete_button":"0","delete_button_label":"Effacer","delete_button_class":"btn-danger","delete_icon":"","delete_icon_location":"before","submit_button":"1","submit_button_label":"Sauvegarder","save_button_class":"btn-primary","save_icon":"","save_icon_location":"before","submit_on_enter":"0","labels_above":"0","labels_above_details":"0","pdf_template":"admin","pdf_orientation":"portrait","pdf_size":"letter","show_title":"1","print":"","email":"","pdf":"","admin_form_template":"","admin_details_template":"","note":"","show_referring_table_releated_data":"0","tiplocation":"tip","process_jplugins":"2","ajax_validations":"0","ajax_validations_toggle_submit":"0","submit_success_msg":"","suppress_msgs":"0","show_loader_on_submit":"0","spoof_check":"1","multipage_save":"0"}'));
 
         $formQuery
