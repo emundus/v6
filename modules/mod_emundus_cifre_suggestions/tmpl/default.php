@@ -26,15 +26,15 @@ defined('_JEXEC') or die;
                                 <?php echo '<b>'.JText::_('NO_TITLE').'</b>'; ?>
                             <?php endif; ?>
                         </div>
-					</div>
 
-					<div class="em-bottom-space">
-                        <div id="em-buttons-<?php echo $offer->fnum; ?>">
-                            <a type="button" class="btn btn-primary" href="<?php echo JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>">
-                                <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW'); ?>
-                            </a>
+                        <div class="em-bottom-space">
+                            <div id="em-buttons-<?php echo $offer->fnum; ?>">
+                                <a type="button" class="btn btn-primary" href="<?php echo JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>">
+                                    <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW'); ?>
+                                </a>
+                            </div>
                         </div>
-					</div>
+                    </div>
 				</div>
 			<?php endforeach; ?>
 		</span>
