@@ -177,8 +177,8 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                     <p class="em-date">
                                                         <?php
                                                         setlocale(LC_ALL, 'fr_FR');
-                                                        $dateArray =jsonDecode($d['jos_emundus_setup_campaigns___start_date_raw']);
-                                                        $start_month = date('m',strtotime($d['jos_emundus_setup_campaigns___start_date_raw']));
+                                                        $dateArray =jsonDecode($d['jos_emundus_setup_teaching_unity___date_start_raw']);
+                                                        $start_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']));
                                                         $end_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
                                                         $start_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']));
                                                         $end_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
