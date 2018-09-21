@@ -90,19 +90,14 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 				$data = array();
 				$i = 0;
 
-
+				
 				if (!empty($this->rows)) {
 					foreach ($this->rows as $k => $v) {
 						foreach ($this->headings as $key => $val) {
                             $raw = $key.'_raw';
 							if (array_key_exists($raw, $v[0]->data)) {
-								if (strcasecmp($v[0]->data->$key, "1") == 0)
-                                    $data[$i][$val] = $v[0]->data->$key;
-
-								else {
-                                    $data[$i][$key] = $v[0]->data->$key;
-                                    $data[$i][$raw] = $v[0]->data->$raw;
-                                }
+							    $data[$i][$key] = $v[0]->data->$key;
+                                $data[$i][$raw] = $v[0]->data->$raw;
 							}
 						}
                         if (array_key_exists('fabrik_view_url', $v[0]->data)) {
@@ -110,7 +105,8 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                         }
 						$i = $i + 1;
 					}
-				}?>
+				}
+				?>
 
                 <div class="em-search-engine-filters">
 					<?php if ($this->showFilters && $this->bootShowFilters)
@@ -130,81 +126,65 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                 $gCounter = 0;
                                 foreach ($data as $d) {
                                     $title = ucfirst(mb_strtolower(jsonDecode($d['jos_emundus_setup_programmes___label_raw'])));
-
-
-                                    $theme = mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_programmes___programmes_raw']));
-                                    $theme =html_entity_decode($theme, ENT_QUOTES);
-
-                                    // TODO: CASE FOR EACH THEME
-                                    switch ($theme) {
-                                        case 'dse':
-                                            $div = "<div class=\"em-themes em-theme-title em-theme-accounting\"><a href=\"rechercher?category=dse\">COMPTABILITÉ • GESTION</a></div>";
-                                            break;
-                                        case 'achat':
-                                            $div = "<div class=\"em-themes em-theme-title em-theme-buy\"><a href=\"rechercher?category=achat\">ACHATS • APPROVISIONNEMENTS</a></div>";
-                                            break;
-                                        case 'compétences-et-formation':
-                                            $div = " <div class=\"em-themes em-theme-title em-theme-formation\"><a href=\"rechercher?category=cf\">FORMATIONS RÉGLEMENTAIRES • SÉCURITÉ</a></div>";
-                                            break;
-                                    }
-
                                     ?>
                                     <div class="details-table g-block size-100">
-                                        <?php echo $div; ?>
+                                        <div class="em-themes em-theme-title em-theme-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
+                                            <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $d['jos_emundus_setup_thematiques___label_raw'] ?></a>
+                                        </div>
                                         <h1 class="em-offre-title">
                                             <?php echo "<a href='".$d['fabrik_view_url']."' >" . $title . "</a>"; ?>
                                         </h1>
                                         <div>
                                             <div class="people-div g-block size-50">
-                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                                                <div class="em-details-icon em-icon-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
                                                     <?php echo $public_svg; ?>
                                                 </div>
                                                 <div class="em-people-detail">
                                                     <?php
-                                                        if($d['jos_emundus_setup_teaching_unity___audiance_raw'] == null)
-                                                            echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  str_replace('-', ' ', $theme);
+                                                        if (!empty($d['jos_emundus_setup_programmes___audiance_raw']))
+                                                            echo $d['jos_emundus_setup_programmes___audiance_raw'];
                                                         else
-                                                            echo $d['jos_emundus_setup_teaching_unity___audiance_raw'];
+                                                            echo "Aucun public précisé."
                                                     ?>
                                                 </div>
                                             </div>
 
                                             <div class="date-div g-block size-49">
-                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                                                <div class="em-details-icon em-icon-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
                                                     <?php echo $date_svg; ?>
                                                 </div>
                                                 <div class="em-date-detail">
                                                     <p class="em-date">
                                                         <?php
                                                         setlocale(LC_ALL, 'fr_FR');
-                                                        $dateArray =jsonDecode($d['jos_emundus_setup_campaigns___start_date_raw']);
-                                                        $start_month = date('m',strtotime($d['jos_emundus_setup_campaigns___start_date_raw']));
-                                                        $end_month = date('m',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
-                                                        $start_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']));
-                                                        $end_year = date('y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                        $dateArray = jsonDecode($d['jos_emundus_setup_teaching_unity___date_start_raw']);
+                                                        $start_month = date('m', strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']));
+                                                        $end_month = date('m', strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                        $start_year = date('y', strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']));
+                                                        $end_year = date('y', strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
                                                         $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
-                                                        if(sizeof($dateArray) > 1) {
+                                                        if (sizeof($dateArray) > 1) {
                                                             $lastEl = array_values(array_slice($dateArray, -1))[0];
                                                             $start_month = date('m',strtotime($dateArray[0]));
                                                             $end_month = date('m',strtotime($lastEl));
                                                             $start_year = date('Y',strtotime($dateArray[0]));
                                                             $end_year = date('Y',strtotime($lastEl));
 
-                                                            if($start_month == $end_month && $start_year == $end_year)
+                                                            if ($start_month == $end_month && $start_year == $end_year)
                                                                 echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year;
-                                                            elseif($start_month != $end_month && $start_year == $end_year)
+                                                            elseif ($start_month != $end_month && $start_year == $end_year)
                                                                 echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $start_year;
                                                             elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
                                                                 echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $end_year;
                                                         }
                                                         else {
-                                                            if($days > 1) {
-                                                                if($start_month == $end_month && $start_year == $end_year)
-                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                            if ($days > 1) {
+                                                                if ($start_month == $end_month && $start_year == $end_year)
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
                                                                 elseif ($start_month != $end_month && $start_year == $end_year)
-                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])). " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']))) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
                                                                 elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
 
                                                             }
                                                             elseif ($days = 1)
@@ -217,10 +197,10 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                     </p>
                                                     <p class="em-days">
                                                         <?php
-                                                        if($days > 1)
-                                                            echo $days . " jours";
-                                                        elseif($days = 1)
-                                                            echo $days . " jour";
+                                                        if ($days > 1)
+                                                            echo "Durée de la formation : ".$days." jours";
+                                                        elseif ($days = 1)
+                                                            echo "Durée de la formation : ".$days." jour";
                                                         ?>
                                                     </p>
                                                 </div>
@@ -229,13 +209,13 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
                                         <div>
                                             <div class="location-div g-block size-50">
-                                                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                                                <div class="em-details-icon em-icon-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
                                                     <?php echo $lieu_svg; ?>
                                                 </div>
                                                 <div class="em-location-detail">
                                                     <?php
                                                         $cityArray = jsonDecode($d['jos_emundus_setup_teaching_unity___location_city_raw']);
-                                                        if(!empty($d['jos_emundus_setup_teaching_unity___location_city_raw'])) {
+                                                        if (!empty($d['jos_emundus_setup_teaching_unity___location_city_raw'])) {
                                                             if (sizeof($cityArray) > 1) {
                                                                 $cityArray = array_unique($cityArray);
                                                                 $len = count($cityArray);
