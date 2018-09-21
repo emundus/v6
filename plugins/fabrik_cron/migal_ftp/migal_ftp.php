@@ -218,7 +218,11 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 					$query = $db->getQuery(true);
 					$query
-						->select(['t.*', $db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('c.description', 'desc')])
+						->select([
+							't.*',
+							$db->quoteName('c.description', 'desc'),
+							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf')
+						])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
 						->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON c.session_code = t.session_code')
@@ -369,23 +373,26 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Session prerequisites = teaching unit prerequisites
 						if ($db_item['prerequisite'] != $update_item['prerequis'])
-							$fields[] = $db->quoteName('t.prerequisite').' = '.$db->quote($update_item['prerequis']);
+							$fields[] = $db->quoteName('p.prerequisite').' = '.$db->quote($update_item['prerequis']);
 
 						// Session public type = teaching unit audience
 						if ($db_item['audience'] != $update_item['typepublic'])
-							$fields[] = $db->quoteName('t.audience').' = '.$db->quote($update_item['typepublic']);
+							$fields[] = $db->quoteName('p.audience').' = '.$db->quote($update_item['typepublic']);
 
 						// Session commercial tagline = teaching unit tagline
 						if ($db_item['tagline'] != $update_item['accrochecom'])
-							$fields[] = $db->quoteName('t.tagline').' = '.$db->quote($update_item['accrochecom']);
+							$fields[] = $db->quoteName('p.tagline').' = '.$db->quote($update_item['accrochecom']);
 
 						// Session objectives = teaching unit objectives
 						if ($db_item['objectives'] != $update_item['objectifs'])
-							$fields[] = $db->quoteName('t.objectives').' = '.$db->quote($update_item['objectifs']);
+							$fields[] = $db->quoteName('p.objectives').' = '.$db->quote($update_item['objectifs']);
 
 						// Session content = teaching unit content
 						if ($db_item['content'] != $update_item['contenu'])
-							$fields[] = $db->quoteName('t.content').' = '.$db->quote($update_item['contenu']);
+							$fields[] = $db->quoteName('p.content').' = '.$db->quote($update_item['contenu']);
+
+						if ($db_item['numcpf'] != $update_item['numcpf'])
+							$fields[] = $db->quoteName('p.numcpf').' = '.$db->quote($update_item['numcpf']);
 
 						// If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
@@ -470,9 +477,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					}
 
 					// DB table struct for different tables.
-					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url'];
+					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf'];
 					$campaign_columns   = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
-					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'prerequisite', 'audience', 'tagline', 'objectives', 'content'];
+					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region'];
 
 					// Build all value lists for the different inserts at once, this avoids having to loop multiple times.
 					$programme_values = array();
@@ -516,7 +523,13 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								'1',
 								$category,
 								'1',
-								$db->quote($item['libellestageurl'])
+								$db->quote($item['libellestageurl']),
+								$db->quote($item['prerequis']),
+								$db->quote($item['typepublic']),
+								$db->quote($item['accrochecom']),
+								$db->quote($item['objectifs']),
+								$db->quote($item['contenu']),
+								$db->quote($item['numcpf'])
 							]);
 						}
 
@@ -553,12 +566,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$db->quote($item['adresse1lieu'].' '.$item['adresse2lieu']),
 							$db->quote($item['cplieu']),
 							$db->quote($item['villelieu']),
-							$db->quote($item['region']),
-							$db->quote($item['prerequis']),
-							$db->quote($item['typepublic']),
-							$db->quote($item['accrochecom']),
-							$db->quote($item['objectifs']),
-							$db->quote($item['contenu'])
+							$db->quote($item['region'])
 						]);
 
 					}
