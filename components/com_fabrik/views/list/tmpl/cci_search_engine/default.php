@@ -200,11 +200,11 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                         else {
                                                             if($days > 1) {
                                                                 if($start_month == $end_month && $start_year == $end_year)
-                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
                                                                 elseif ($start_month != $end_month && $start_year == $end_year)
-                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])). " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw']))) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
                                                                 elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])). " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
+                                                                    echo strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_start_raw'])) . " au " . strftime('%e',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw'])) . " " . ucfirst(strftime('%B',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']))) . " " . date('Y',strtotime($d['jos_emundus_setup_teaching_unity___date_end_raw']));
 
                                                             }
                                                             elseif ($days = 1)
@@ -218,9 +218,9 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                     <p class="em-days">
                                                         <?php
                                                         if($days > 1)
-                                                            echo $days . " jours";
+                                                            echo "Durée de la formation : " . $days . " jours";
                                                         elseif($days = 1)
-                                                            echo $days . " jour";
+                                                            echo "Durée de la formation : " . $days . " jour";
                                                         ?>
                                                     </p>
                                                 </div>
