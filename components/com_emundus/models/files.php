@@ -3070,4 +3070,36 @@ die();*/
         }
     }
 
+
+    /*
+     * CCIRS functions
+     * function to get all sessions linked to a program
+     *
+     */
+
+    public function programSessions($program) {
+        try
+        {
+            $db = JFactory::getDbo();
+
+            $query = $db->getQuery(true);
+
+            $query
+                ->select('t.*')
+                ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
+                ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
+                ->where($db->quoteName('p.id') . ' = ' . $program .
+                    ' AND ' . $db->quoteName('t.published') . ' = ' . 1 .
+                    ' AND ' . $db->quoteName('t.date_start') . ' >= ' . date("Y-m-d"));
+
+            $db->setQuery($query);
+            return $db->loadAssocList() ;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+        }
+    }
+
 }
