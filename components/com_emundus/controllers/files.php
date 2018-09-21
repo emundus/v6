@@ -2565,8 +2565,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function generatedoc()
-    {
+    public function generatedoc() {
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', "");
         $code   = $jinput->getString('code', "");
@@ -2589,8 +2588,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $res->files = array();
         $fnumsInfos = $m_files->getFnumsTagsInfos($fnumsArray);
 
-        switch($tmpl[0]['template_type'])
-        {
+        switch ($tmpl[0]['template_type']) {
             case 1:
                 //Simple FILE
                 $res->status = false;
@@ -2614,8 +2612,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php
 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
-                try
-                {
+                try {
                     $phpWord = new \PhpOffice\PhpWord\PhpWord();
                     $preprocess = $phpWord->loadTemplate(JPATH_BASE.$tmpl[0]['file']);
                     //$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
@@ -2663,7 +2660,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
                             }
                         }
-                        elseif($elt['plugin'] == "birthday") {
+                        elseif ($elt['plugin'] == "birthday") {
                             foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                 $val = explode(',', $val['val']);
                                 foreach ($val as $k => $v) {
@@ -2685,9 +2682,9 @@ class EmundusControllerFiles extends JControllerLegacy
                             foreach ($setupTags as $tag) {
                                 $val = "";
                                 $lowerTag = strtolower($tag);
-                                if(array_key_exists($lowerTag, $const))
+                                if (array_key_exists($lowerTag, $const))
                                     $preprocess->setValue($tag, $const[$lowerTag]);
-                                elseif(!empty(@$fnumsInfos[$fnum][$lowerTag]))
+                                elseif (!empty(@$fnumsInfos[$fnum][$lowerTag]))
                                     $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
                                 else {
                                     $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], null, $fnum, '');
@@ -2709,22 +2706,18 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $preprocess->setValue($tag, htmlspecialchars($val));
                                 }
                             }
-                            foreach($idFabrik as $id)
-                            {
-                                if(isset($fabrikValues[$id][$fnum]))
-                                {
+                            foreach ($idFabrik as $id) {
+                                if (isset($fabrikValues[$id][$fnum])) {
                                     $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
                                     $preprocess->setValue($id, $value);
                                 }
-                                else
-                                {
+                                else {
                                     $preprocess->setValue($id, '');
                                 }
                             }
 
                             $rand = rand(0, 1000000);
-                            if(!file_exists(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id']))
-                            {
+                            if (!file_exists(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'])) {
                                 mkdir(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'], 0775);
                             }
 
@@ -2740,8 +2733,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                     echo json_encode($res);
                 }
-                catch(Exception $e)
-                {
+                catch(Exception $e) {
                     $res->status = false;
                     $res->msg = JText::_("AN_ERROR_OCURRED").':'. $e->getMessage();
                     echo json_encode($res);
@@ -2753,8 +2745,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
     }
 
-    public function exportzipdoc()
-    {
+    public function exportzipdoc() {
         $jinput = JFactory::getApplication()->input;
         $idFiles = explode(",", $jinput->getStrings('ids', ""));
         $m_files = $this->getModel('Files');
@@ -2766,13 +2757,10 @@ class EmundusControllerFiles extends JControllerLegacy
         if (extension_loaded('zip')) {
             $zip = new ZipArchive();
 
-            if($zip->open($path, ZipArchive::CREATE) == TRUE)
-            {
-                foreach($files as $key => $file)
-                {
+            if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+                foreach ($files as $key => $file) {
                     $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
-                    if(!$zip->addFile($filename, $file['filename']))
-                    {
+                    if (!$zip->addFile($filename, $file['filename'])) {
                         continue;
                     }
                 }
@@ -2785,16 +2773,14 @@ class EmundusControllerFiles extends JControllerLegacy
             require_once(JPATH_BASE.DS.'libraries'.DS.'pclzip-2-8-2'.DS.'pclzip.lib.php');
             $zip = new PclZip($path);
 
-            foreach($files as $key => $file)
-            {
+            foreach ($files as $key => $file) {
                 $user = JFactory::getUser($file['user_id']);
                 $dir = $file['fnum'].'_'.$user->name;
                 $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
 
                 $zip->add($filename, PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);
 
-                if(!$zip->addFile($filename, $file['filename']))
-                {
+                if (!$zip->addFile($filename, $file['filename'])) {
                     continue;
                 }
             }
@@ -2815,8 +2801,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function exportonedoc()
-    {
+    public function exportonedoc() {
         require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -2835,8 +2820,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $wordPHP = new \PhpOffice\PhpWord\PhpWord();
 
         $docs = array();
-        foreach($files as $key => $file)
-        {
+        foreach ($files as $key => $file) {
             $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
             $tmpName = JPATH_BASE.DS.'tmp'.DS.$file['filename'];
             $document = $wordPHP->loadTemplate($filename);
@@ -2856,10 +2840,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $pdf = new ConcatPdf();
         $pdf->setFiles($docs);
         $pdf->concat();
-        if(isset($docs))
-        {
-            foreach($docs as $fn)
-            {
+        if (isset($docs)) {
+            foreach ($docs as $fn) {
                 unlink($fn);
             }
         }
@@ -2867,11 +2849,11 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function getPDFProgrammes(){
+    public function getPDFProgrammes() {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $html = '';
-        $session     = JFactory::getSession();
+        $session = JFactory::getSession();
         $jinput = JFactory::getApplication()->input;
         $m_files = new EmundusModelFiles;
 
@@ -2885,9 +2867,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $m_campaigns = new EmundusModelCampaign;
 
-        if(!empty($fnums)){
-            foreach($fnums as $fnum){
-                if($fnum != "em-check-all"){
+        if (!empty($fnums)) {
+            foreach ($fnums as $fnum) {
+                if ($fnum != "em-check-all") {
                     $campaign  = $m_campaigns->getCampaignByFnum($fnum);
                     $programme = $m_campaigns->getProgrammeByCampaignID((int)$campaign->id);
                     $option = '<option value="'.$programme['code'].'">'.$programme['label'].'</option>';
@@ -2901,7 +2883,8 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object)(array('status' => true, 'html' => $html)));
         exit;
     }
-    public function getPDFCampaigns(){
+
+    public function getPDFCampaigns() {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $html = '';
@@ -3064,4 +3047,75 @@ class EmundusControllerFiles extends JControllerLegacy
 
     }
 
+	/**
+ 	 * Generates or (if it exists already) loads the PDF for a certain GesCOF product.
+	 */
+    function getproductpdf() {
+
+    	require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+
+    	$h_export = new EmundusHelperExport();
+
+    	$jinput = JFactory::getApplication()->input;
+    	$product_code = $jinput->post->get('product_code', null);
+
+    	$filename = JPATH_BASE.DS.'images'.DS.'product_pdf'.DS.'formation-'.$product_code.'.pdf';
+
+    	// PDF is rebuilt every time, this is because the information on the PDF probably changes ofter.
+    	if (file_exists($filename))
+    		unlink($filename);
+
+    	// The PDF template is saved in the Joomla backoffice as an article.
+		$article = $h_export->getArticle(58);
+
+		if (empty($article)) {
+			echo json_encode((object)['status' => false, 'msg' => 'Article not found.']);
+			exit;
+		}
+
+		// TODO: Build massive SELECT which gets all of the info for products and sessions.
+		$query = $this->_db->getQuery(true);
+		$query
+			->select([
+				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'),
+				$this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
+				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours_per_day','hpd'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_title','l_title'), $this->_db->quoteName('tu.location_zip','l_zip'), $this->_db->quoteName('tu.location_city','l_city')
+			])
+			->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
+			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
+			->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity','tu').' ON '.$this->_db->quoteName('tu.code').' = '.$this->_db->quoteName('p.code'))
+			->where($this->_db->quoteName('p.code').' = '.$product_code);
+		$this->_db->setQuery($query);
+
+		try {
+			$product = $this->_db->loadResult();
+		} catch (Exception $e) {
+			echo json_encode((object)['status' => false, 'msg' => 'Error getting product information.']);
+			exit;
+		}
+		
+		echo '<pre>'; var_dump($product); echo '</pre>'; die;
+
+	    // Build the variables found in the article.
+	    $post = [
+	    	'[PRODUCT_CODE]' => $product_code,
+	    	'[PRODUCT_NAME]' => $product->name,
+	    ];
+
+
+	    $html = preg_replace(array_keys($post), $post, preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $article))));
+
+	    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+	    $filename = generatePDFfromHTML($html, $filename);
+
+	    if ($filename == false) {
+		    echo json_encode((object)['status' => false, 'msg' => 'Error generating PDF.']);
+		    exit;
+	    } else {
+		    echo json_encode((object)['status' => true, 'filename' => $filename]);
+		    exit;
+	    }
+
+
+    }
 }

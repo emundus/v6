@@ -1379,4 +1379,108 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	} else
 		$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_header.pdf', 'F');
 }
-?>
+
+
+
+/** Generate a PDF file from HTML.
+ * This is a general function which takes an HTML string and builds a PDF from it.
+ *
+ * @param String $html The HTML to generate the pdf file from.
+ * @param String $path The path to export the file to, if none is supplied a path will be generated.
+ * @return String The path to the generated PDF or false if export fails.
+ */
+function generatePDFfromHTML($html, $path = null) {
+
+	set_time_limit(0);
+	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+
+	$db = JFactory::getDBO();
+	$config = JFactory::getConfig();
+	$app = JFactory::getApplication();
+
+	$files = array();
+
+	$m_application 	= new EmundusModelApplication;
+	$m_campaign 	= new EmundusModelCampaign;
+	$m_emails 		= new EmundusModelEmails;
+
+
+	if (class_exists('MYPDF') === false || !class_exists('MYPDF')) {
+		// Extend the TCPDF class to create custom Header and Footer
+		class MYPDF extends TCPDF {
+
+			var $logo = "";
+			var $logo_footer = "";
+			var $footer = "";
+
+			//Page header
+			public function Header() {
+				// Logo
+				if (is_file($this->logo))
+					$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+				// Set font
+				$this->SetFont('helvetica', 'B', 16);
+				// Title
+				$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+			}
+
+			// Page footer
+			public function Footer() {
+				// Position at 15 mm from bottom
+				$this->SetY(-15);
+				// Set font
+				$this->SetFont('helvetica', 'I', 8);
+				// Page number
+				$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+				// footer
+				$this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+				//logo
+				if (is_file($this->logo_footer))
+					$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+
+			}
+		}
+	}
+
+	$error = 0;
+
+	// Generate a random file name in case one isn't supplied.
+	if (empty($path))
+		$path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'pdf'.substr(md5(microtime()),rand(0,26),5).'.pdf';
+
+	if (!file_exists(dirname($path))) {
+		mkdir(dirname($path), 0755, true);
+		chmod(dirname($path), 0755);
+	}
+
+	$htmldata = "";
+	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+	$pdf->SetCreator(PDF_CREATOR);
+	$pdf->SetAuthor(PDF_AUTHOR);
+	$pdf->SetTitle(basename($path));
+
+	// set margins
+	$pdf->SetMargins(5, 40, 5);
+
+	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+	$pdf->SetFont('helvetica', '', 8);
+
+	$pdf->AddPage();
+
+	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
+	@chdir('tmp');
+
+	$pdf->Output($path, 'F');
+
+	if ($error == 0)
+		return $path;
+	else
+		return false;
+
+}
