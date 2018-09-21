@@ -90,19 +90,14 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 				$data = array();
 				$i = 0;
 
-
+				
 				if (!empty($this->rows)) {
 					foreach ($this->rows as $k => $v) {
 						foreach ($this->headings as $key => $val) {
                             $raw = $key.'_raw';
 							if (array_key_exists($raw, $v[0]->data)) {
-								if (strcasecmp($v[0]->data->$key, "1") == 0)
-                                    $data[$i][$val] = $v[0]->data->$key;
-
-								else {
-                                    $data[$i][$key] = $v[0]->data->$key;
-                                    $data[$i][$raw] = $v[0]->data->$raw;
-                                }
+							    $data[$i][$key] = $v[0]->data->$key;
+                                $data[$i][$raw] = $v[0]->data->$raw;
 							}
 						}
                         if (array_key_exists('fabrik_view_url', $v[0]->data)) {
@@ -110,7 +105,8 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                         }
 						$i = $i + 1;
 					}
-				}?>
+				}
+				?>
 
                 <div class="em-search-engine-filters">
 					<?php if ($this->showFilters && $this->bootShowFilters)
