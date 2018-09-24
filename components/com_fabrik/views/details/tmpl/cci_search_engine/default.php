@@ -49,11 +49,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     echo $this->loadTemplate('buttons');
     echo $this->loadTemplate('relateddata');
 
-
-    // TODO: GET Themes from GESCOF
-    $theme = strtolower(str_replace(' ','-',trim($this->data['jos_emundus_setup_thematiques___color_raw'])));
-    $theme =html_entity_decode($theme, ENT_QUOTES);
-
     // GETS all svg icons
     $date_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_dates.svg");
     $diplomant_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_diplomant.svg");
@@ -70,43 +65,33 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
 
-    $objective = $this->data['jos_emundus_setup_programmes_objectives_raw'];
-    $content = $this->data['jos_emundus_setup_programmes_content_raw'];
-
 ?>
-
-
-<style>
-  
-
-</style>
 
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
-    <div class="em-themes em-theme-title em-theme-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
-        <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $d['jos_emundus_setup_thematiques___label_raw'] ?></a>
+    <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
+        <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$this->data['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
 
-        <div class="g-block size-78">
-            <h1><?php echo $title; ?></h1>
-            <?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?>
-            <br>
-            <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?>
+    <div class="g-block size-78">
+        <h1><?php echo $title; ?></h1>
+        <?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?>
+        <br>
+        <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?>
+    </div>
 
+    <?php if (!empty($partenaire)) :?>
+        <div class="partner g-block size-19">
+            <p>notre partenaire expert</p>
+            <img src="images/custom/ccirs/partenaires/">
+            <!-- TODO: get partners photo -->
         </div>
+    <?php endif; ?>
 
-        <?php if($partenaire != '' || $partenaire != null) :?>
-            <div class="partner g-block size-19">
-                <p>notre partenaire expert</p>
-                <img src="images/custom/ccirs/partenaires/">
-                <!-- TODO: get partners photo -->
-            </div>
-        <?php endif; ?>
-
-        <div class="em-details g-block size-95 em-details-<?php echo $theme?>">
+        <div class="em-details g-block size-95 em-details-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
 
             <div class="duree-div">
-                <div class="em-duree-icon em-icon-<?php echo $theme?>">
+                <div class="em-duree-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
                     <?php echo $duree_svg; ?>
                 </div>
                 <div class="em-days">
@@ -116,21 +101,21 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
 
             <div class="prerequisite-div">
-                <div class="em-details-icon em-icon-<?php echo $theme?>">
+                <div class="em-details-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
                     <?php echo $prerequis_svg; ?>
                 </div>
                 <div class="em-reqs">
                     <?php
-                    if($this->data['jos_emundus_setup_teaching_unity___prerequisite'] == null)
+                    if (trim($this->data['jos_emundus_setup_programmes___prerequisite_raw']) == '')
                         echo "<p>Pas de prérequis nécessaire</p>";
                     else
-                        echo "<p>" . $this->data['jos_emundus_setup_teaching_unity___prerequisite'] . "</p>";
+                        echo "<p>" . $this->data['jos_emundus_setup_programmes___prerequisite_raw'] . "</p>";
                     ?>
                 </div>
             </div>
 
             <div class="doc-div">
-                <div class="em-doc-icon em-icon-<?php echo $theme?>">
+                <div class="em-doc-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
                     <?php echo $telechargement_svg; ?>
                 </div>
                 <div class="em-docs">
@@ -144,62 +129,62 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
             <div id="public">
 
-                <div class="offer-icon em-icon-<?php echo $theme?>">
+                <div class="offer-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
                     <?php echo $public_svg; ?>
                 </div>
                 <div id="offer-details">
                     <h2>Publics</h2>
                     <?php
-                    if($d['jos_emundus_setup_teaching_unity___audiance_raw'] == null)
-                        echo "Toute personne amenée à travailler dans le cadre d’une démarche " .  str_replace('-', ' ', $theme);
+                    if (trim($this->data['jos_emundus_setup_programmes___audiance_raw']) != '')
+	                    echo $this->data['jos_emundus_setup_programmes___audiance_raw'];
                     else
-                        echo $d['jos_emundus_setup_teaching_unity___audiance_raw'];
+	                    echo "Aucun public précisé."
                     ?>
                 </div>
 
             </div>
 
-            <?php if(!empty($objective)) :?>
+            <?php if (trim($this->data['jos_emundus_setup_programmes___objectives_raw']) != '') :?>
                 <div id="objectif">
 
-                <div class="offer-icon em-icon-<?php echo $theme?>">
+                <div class="offer-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
                     <?php echo $objectif_svg; ?>
                 </div>
 
                 <div id="objectif-details">
                     <h2>Objectifs</h2>
-                    <!-- TODO: Here goes the objectifs-->
+                    <?php echo $this->data['jos_emundus_setup_programmes___objectives_raw']; ?>
                 </div>
 
             </div>
             <?php endif; ?>
 
-            <?php if(!empty($content)) :?>
+            <?php if (trim($this->data['jos_emundus_setup_programmes___content_raw']) != '') :?>
                 <div id="keys">
-                <div class="offer-icon em-icon-<?php echo $theme?>">
-                    <?php echo $pointscles_svg; ?>
-                </div>
+                    <div class="offer-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
+                        <?php echo $pointscles_svg; ?>
+                    </div>
 
-                <div id="key-details">
-                    <h2>Points clés</h2>
-                    <!-- TODO: Here goes the keys-->
-                </div>
+                    <div id="key-details">
+                        <h2>Points clés</h2>
+	                    <?php echo $this->data['jos_emundus_setup_programmes___content_raw']; ?>
+                    </div>
 
-            </div>
+                </div>
             <?php endif; ?>
 
 
-            <?php if(!empty($certificate)) :?>
+            <?php if (!empty($certificate)) :?>
                 <div id="certificate">
-                <div class="offer-icon em-icon-<?php echo $theme?>">
-                    <?php echo $diplomant_svg; ?>
-                </div>
+                    <div class="offer-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
+                        <?php echo $diplomant_svg; ?>
+                    </div>
 
-                <div id="certificate-details">
-                    <h3>Certification ou diplôme</h3>
-                    <!-- TODO: Here goes the certification that is based on the theme -->
+                    <div id="certificate-details">
+                        <h3>Certification ou diplôme</h3>
+                        <!-- TODO: Here goes the certification that is based on the theme -->
+                    </div>
                 </div>
-            </div>
             <?php endif; ?>
 
 
@@ -234,7 +219,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             $start_year = date('y',strtotime($session['date_start']));
                             $end_year = date('y',strtotime($session['date_end']));
 
-                            if($start_month == $end_month && $start_year == $end_year)
+                            if ($start_month == $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
                             elseif ($start_month != $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_start']))) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
@@ -246,7 +231,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             <div>
                                 <p><?php echo intval($session['price']) . " €" ;?></p>
 
-                                <?php if($session['occupants'] < $session['max_occupants']) :?>
+                                <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
                                         <button class="em-option-contact">être contacté</button>
                                         <button class="em-option-login">s'inscrire</button>
@@ -257,23 +242,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
-
-
                         </div>
 
                     <?php endforeach; ?>
 
                     <ul id="pagin"></ul>
-
-
-
                 </div>
 
                 <div class="em-option hide" id="em-option-intra">
-                    <?php if(sizeof($sessions) > 1) :?>
+                    <?php if (sizeof($sessions) > 1) :?>
                         <div class="session-select">
                             <select class="sessions">
-                                <?php $i=0; foreach ($sessions as $session) :?>
+                                <?php $i = 0; foreach ($sessions as $session) :?>
                                     <option class="dropdown-item" value="<?php echo $i++; ?>" > <?php echo date('d/m/Y',strtotime($session['date_start'])) . " à " . str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))); ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -298,27 +278,26 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div class="em-option-buttons">
                         <button class="em-option-login">demander un devis</button>
-
                         <button class="em-option-contact">être contacté</button>
                     </div>
 
                 </div>
 
                 <div class="em-option hide" id="em-option-sur-mesure">
-                    <?php if(sizeof($sessions) > 1) :?>
+                    <?php if (sizeof($sessions) > 1) :?>
                         <div class="session-select">
                             <select class="sessions">
-                                <?php $i=0; foreach ($sessions as $session) :?>
+                                <?php $i = 0; foreach ($sessions as $session) :?>
                                     <option class="dropdown-item" value="<?php echo $i++; ?>" > <?php echo date('d/m/Y',strtotime($session['date_start'])) . " à " . str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                     <?php endif; ?>
                     <div class="em-option-details" id="sur-mesure-details">
-                        <b style="color: white"> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
+                        <b> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
                         <br>
                         <br>
-                        <b style="color: white"> Nous pouvons élaborer une formation sur-mesure pour répondre au mieux à vos objectifs.</b>
+                        <b> Nous pouvons élaborer une formation sur-mesure pour répondre au mieux à vos objectifs.</b>
                     </div>
 
                     <button class="em-option-contact" >être contacté</button>
@@ -327,18 +306,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             </div>
 
             <div id="em-certification">
-                <?php if($certificat == '' || $certificat == null) :?>
+                <?php if (empty($cartificat)) :?>
                     <p>Pas de certification pour cette formation</p>
-                <?php else:?>
+                <?php else :?>
                     <img src="images/custom/ccirs/certifications/">
                     <!-- TODO: get partners photo -->
-                <?php endif;?>
+                <?php endif; ?>
             </div>
         </div>
-
-
-
-
 
 
     <div class="modal fade" id="gmaps" tabindex="-1" aria-hidden="true" style="display: none;">
@@ -359,7 +334,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
 <script>
 
-
     var sessions = <?php echo json_encode($sessions); ?>;
 
     //Pagination
@@ -367,20 +341,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     var pageCount =  sessions.length / pageSize;
 
-    if(pageCount > 1) {
-        for(var i = 0 ; i<pageCount;i++){
+    if (pageCount > 1) {
+        for (var i = 0 ; i<pageCount;i++) {
             jQuery("#pagin").append('<li><a href="#">'+(i+1)+'</a></li> ');
         }
     }
 
-    jQuery("#pagin li").first().find("a").addClass("current")
+    jQuery("#pagin li").first().find("a").addClass("current");
     showPage = function(page) {
         jQuery(".formation").hide();
         jQuery(".formation").each(function(n) {
             if (n >= pageSize * (page - 1) && n < pageSize * page)
                 jQuery(this).show();
         });
-    }
+    };
 
     showPage(1);
 
@@ -451,7 +425,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
 
     jQuery(document).ready(function() {
-        if(sessions[0]['days'] > 1)
+        if (sessions[0]['days'] > 1)
             document.getElementById("days").append((sessions[0]['days']) + " jours");
         else
             document.getElementById("days").append((sessions[0]['days']) + " jour");
@@ -461,8 +435,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
         var certificate = document.getElementById("formation-certification");
         certificate.appendChild(document.getElementById("em-certification"));
-
-
     });
 
     document.getElementById("em-option-menu-inter").addEventListener('click', function (e) {
@@ -473,7 +445,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         var mesure = document.getElementById("em-option-sur-mesure");
 
         if (!$(this).classList.contains('active')) {
-            if(intraMenu||mesureMenu) {
+            if (intraMenu || mesureMenu) {
                 intraMenu.classList.remove('active');
                 mesureMenu.classList.remove('active');
                 intra.classList.add('hide');
@@ -492,7 +464,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         var mesure = document.getElementById("em-option-sur-mesure");
 
         if (!$(this).classList.contains('active')) {
-            if(interMenu||mesureMenu) {
+            if (interMenu || mesureMenu) {
                 interMenu.classList.remove('active');
                 mesureMenu.classList.remove('active');
                 inter.classList.add('hide');
@@ -511,7 +483,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         var intra = document.getElementById("em-option-intra");
 
         if (!$(this).classList.contains('active')) {
-            if(interMenu||intraMenu) {
+            if (interMenu || intraMenu) {
                 interMenu.classList.remove('active');
                 intraMenu.classList.remove('active');
                 inter.classList.add('hide');

@@ -129,7 +129,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                     ?>
                                     <div class="details-table g-block size-100">
                                         <div class="em-themes em-theme-title em-theme-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
-                                            <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $d['jos_emundus_setup_thematiques___label_raw'] ?></a>
+                                            <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $d['jos_emundus_setup_thematiques___label_raw']; ?></a>
                                         </div>
                                         <h1 class="em-offre-title">
                                             <?php echo "<a href='".$d['fabrik_view_url']."' >" . $title . "</a>"; ?>
@@ -173,7 +173,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                                             if ($start_month == $end_month && $start_year == $end_year)
                                                                 echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year;
                                                             elseif ($start_month != $end_month && $start_year == $end_year)
-                                                                echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $start_year;
+                                                                echo "Plusieurs sessions de " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $start_year;
                                                             elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
                                                                 echo "Plusieurs sessions en " . ucfirst(strftime('%B',strtotime($dateArray[0]))) . ' ' . $start_year . ' à ' . ucfirst(strftime('%B',strtotime($lastEl))) . ' ' . $end_year;
                                                         }
