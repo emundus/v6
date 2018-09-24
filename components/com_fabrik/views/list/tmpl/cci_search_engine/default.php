@@ -19,7 +19,7 @@ $doc->addStyleSheet('templates/g5_helium/custom/css/moteur-de-recherche.css');
 $pageClass = $this->params->get('pageclass_sfx', '');
 
 function jsonDecode($val) {
-    if(empty(json_decode($val)))
+    if (empty(json_decode($val)))
         return $val;
     else
         return json_decode($val);
@@ -126,23 +126,37 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                 $gCounter = 0;
                                 foreach ($data as $d) {
                                     $title = ucfirst(mb_strtolower(jsonDecode($d['jos_emundus_setup_programmes___label_raw'])));
+
+                                    // Parse theme info because Fabrik groups them if there are multiple.
+                                    $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
+                                    if (is_array($theme_color))
+                                        $theme_color = $theme_color[0];
+
+                                    $theme_title = jsonDecode($d['jos_emundus_setup_thematiques___title_raw']);
+	                                if (is_array($theme_title))
+		                                $theme_title = $theme_title[0];
+
+	                                $theme_label = jsonDecode($d['jos_emundus_setup_thematiques___label_raw']);
+	                                if (is_array($theme_label))
+		                                $theme_label = $theme_label[0];
+
                                     ?>
                                     <div class="details-table g-block size-100">
-                                        <div class="em-themes em-theme-title em-theme-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
-                                            <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $d['jos_emundus_setup_thematiques___label_raw']; ?></a>
+                                        <div class="em-themes em-theme-title em-theme-<?php echo $theme_color; ?>">
+                                            <a href="rechercher?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $theme_title))));?>"><?php echo $theme_label; ?></a>
                                         </div>
                                         <h1 class="em-offre-title">
                                             <?php echo "<a href='".$d['fabrik_view_url']."' >" . $title . "</a>"; ?>
                                         </h1>
                                         <div>
                                             <div class="people-div g-block size-50">
-                                                <div class="em-details-icon em-icon-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
+                                                <div class="em-details-icon em-icon-<?php echo $theme_color; ?>">
                                                     <?php echo $public_svg; ?>
                                                 </div>
                                                 <div class="em-people-detail">
                                                     <?php
-                                                        if (!empty($d['jos_emundus_setup_programmes___audiance_raw']))
-                                                            echo $d['jos_emundus_setup_programmes___audiance_raw'];
+                                                        if (!empty($d['jos_emundus_setup_programmes___audience_raw']))
+                                                            echo $d['jos_emundus_setup_programmes___audience_raw'];
                                                         else
                                                             echo "Aucun public précisé."
                                                     ?>
@@ -150,7 +164,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                             </div>
 
                                             <div class="date-div g-block size-49">
-                                                <div class="em-details-icon em-icon-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
+                                                <div class="em-details-icon em-icon-<?php echo $theme_color; ?>">
                                                     <?php echo $date_svg; ?>
                                                 </div>
                                                 <div class="em-date-detail">
@@ -209,7 +223,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
                                         <div>
                                             <div class="location-div g-block size-50">
-                                                <div class="em-details-icon em-icon-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
+                                                <div class="em-details-icon em-icon-<?php echo $theme_color; ?>">
                                                     <?php echo $lieu_svg; ?>
                                                 </div>
                                                 <div class="em-location-detail">

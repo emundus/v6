@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
     <h4>Les formations</h4>
     <div><b>par domaines de compétences</b></div>
     <?php foreach ($categories as $category) :?>
-        <div class="em-themes em-theme-<?php echo $category->color ?>"><a href="<?php echo $search_page; ?>?category=<?php echo $category->title; ?>"><?php echo $category->label; ?></a></div>
+        <div class="em-themes em-theme-<?php echo $category->color ?>"><a href="<?php echo $search_page; ?>?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $category->title)))); ?>"><?php echo $category->label; ?></a></div>
     <?php endforeach; ?>
 
 </div>
