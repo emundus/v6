@@ -267,7 +267,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         </div>
 
                         <div class="price-details">
-                            <p><?php echo $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'];?> € </p>
+                            <p><?php echo $this->data['jos_emundus_setup_teaching_unity___price_raw'];?> € </p>
                             <p>Par personne</p>
                         </div>
                     </div>
