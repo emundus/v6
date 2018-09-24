@@ -70,7 +70,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
     <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
-        <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$this->data['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
+        <a href="rechercher?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-',$this->data['jos_emundus_setup_thematiques___title_raw']))));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
 
     <div class="g-block size-78">
