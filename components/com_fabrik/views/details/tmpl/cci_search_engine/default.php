@@ -368,9 +368,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 /*
     var geocoder;
     var map;
-    var addy = "*/<?php// echo $address; ?>/*";
+    var addy = "echo $address;";
 
-    var address = "*/<?php //echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>/*";
+    var address = "//echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city;";
 
     function initMap() {
         if(addy.replace(/\s/g,'') != "") {
