@@ -135,8 +135,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div id="offer-details">
                     <h2>Publics</h2>
                     <?php
-                    if (trim($this->data['jos_emundus_setup_programmes___audiance_raw']) != '')
-	                    echo $this->data['jos_emundus_setup_programmes___audiance_raw'];
+                    if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '')
+	                    echo $this->data['jos_emundus_setup_programmes___audience_raw'];
                     else
 	                    echo "Aucun public précisé."
                     ?>
