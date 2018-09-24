@@ -51,7 +51,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
 
     // TODO: GET Themes from GESCOF
-    $theme = strtolower(str_replace(' ','-',trim($this->data['jos_emundus_setup_programmes___programmes_raw'])));
+    $theme = strtolower(str_replace(' ','-',trim($this->data['jos_emundus_setup_thematiques___color_raw'])));
     $theme =html_entity_decode($theme, ENT_QUOTES);
 
     // GETS all svg icons
@@ -84,7 +84,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
     <div class="em-themes em-theme-title em-theme-<?php echo $d['jos_emundus_setup_thematiques___color_raw']; ?>">
-        <a href="rechercher?category=<?php echo $d['jos_emundus_setup_thematiques___title_raw'];?>"><?php echo $d['jos_emundus_setup_thematiques___label_raw'] ?></a>
+        <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$d['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $d['jos_emundus_setup_thematiques___label_raw'] ?></a>
     </div>
 
         <div class="g-block size-78">
@@ -363,14 +363,16 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     var sessions = <?php echo json_encode($sessions); ?>;
 
     //Pagination
-    pageSize = 2;
+    pageSize = 4;
 
     var pageCount =  sessions.length / pageSize;
 
-    for(var i = 0 ; i<pageCount;i++){
-
-        jQuery("#pagin").append('<li><a href="#">'+(i+1)+'</a></li> ');
+    if(pageCount > 1) {
+        for(var i = 0 ; i<pageCount;i++){
+            jQuery("#pagin").append('<li><a href="#">'+(i+1)+'</a></li> ');
+        }
     }
+
     jQuery("#pagin li").first().find("a").addClass("current")
     showPage = function(page) {
         jQuery(".formation").hide();
