@@ -286,7 +286,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                    
                     <div class="em-option-details" id="sur-mesure-details">
                         <div class="top-paragraph">
-                            <b> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
+                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoin spécifiques?</b>
                         </div>
 
                         <div class="bottom-paragraph">
