@@ -250,30 +250,29 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
 
                 <div class="em-option hide" id="em-option-intra">
-                    <?php if (sizeof($sessions) > 1) :?>
-                        <div class="session-select">
-                            <select class="sessions">
-                                <?php $i = 0; foreach ($sessions as $session) :?>
-                                    <option class="dropdown-item" value="<?php echo $i++; ?>" > <?php echo date('d/m/Y',strtotime($session['date_start'])) . " à " . str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))); ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                    <div class="em-option-location">
+                        <div class="location-icon">
+                            <?php echo $lieu_svg; ?>
                         </div>
-                    <?php endif; ?>
-                    <div class="em-option-details">
-                        <?php echo "<p class='em-option-title'>" . $title . "</p>"; ?>
-                        <?php echo "<p style='margin-top: -20px;'>réf. " . $this->data['jos_emundus_setup_teaching_unity___code_raw'] . "</p>"; ?>
+
+                        <div class="location-details">
+                            <p>Dans votre entreprise</p>
+                            <p>pour <?php echo $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'];?> personnes minimum</p>
+                        </div>
                     </div>
 
                     <div class="em-option-price">
-                        <?php echo $prix_svg . '<p style="font-weight: bold;">' . intval($this->data['jos_emundus_setup_teaching_unity___price_raw']) . ' € net de taxe tarif par personne</p> <p style="margin-top: 20px;">(' . $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'] . ' personnes minimum)</p>'; ?>
+                        <div class="price-icon">
+                            <?php echo $prix_svg; ?>
+                        </div>
+
+                        <div class="price-details">
+                            <p><?php echo $this->data['jos_emundus_setup_teaching_unity___price_raw'];?> € </p>
+                            <p>Par personne</p>
+                        </div>
                     </div>
 
-                    <div class="em-option-certificate">
-                        <?php echo $diplomant_svg . '<b style="display: inline-block;">INTRA Certificat</b>'; ?>
-                    </div>
-
-                    <div class="em-option-documents">
-                        <?php echo $telechargement_svg . '<b style="display: inline-block;">INTRA list of docs</b>'; ?>
+                    <div class="em-option-price">
                     </div>
 
                     <div class="em-option-buttons">
@@ -284,20 +283,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
 
                 <div class="em-option hide" id="em-option-sur-mesure">
-                    <?php if (sizeof($sessions) > 1) :?>
-                        <div class="session-select">
-                            <select class="sessions">
-                                <?php $i = 0; foreach ($sessions as $session) :?>
-                                    <option class="dropdown-item" value="<?php echo $i++; ?>" > <?php echo date('d/m/Y',strtotime($session['date_start'])) . " à " . str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    <?php endif; ?>
+                   
                     <div class="em-option-details" id="sur-mesure-details">
-                        <b> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
-                        <br>
-                        <br>
-                        <b> Nous pouvons élaborer une formation sur-mesure pour répondre au mieux à vos objectifs.</b>
+                        <div class="top-paragraph">
+                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoin spécifiques?</b>
+                        </div>
+
+                        <div class="bottom-paragraph">
+                            <b> Nous pouvons élaborer pour vous une formation sur-mesure.</b>
+                        </div>
                     </div>
 
                     <button class="em-option-contact" >être contacté</button>
