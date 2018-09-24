@@ -267,7 +267,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         </div>
 
                         <div class="price-details">
-                            <p><?php echo $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'];?> € </p>
+                            <p><?php echo $this->data['jos_emundus_setup_teaching_unity___price_raw'];?> € </p>
                             <p>Par personne</p>
                         </div>
                     </div>
@@ -286,7 +286,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                    
                     <div class="em-option-details" id="sur-mesure-details">
                         <div class="top-paragraph">
-                            <b> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
+                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoin spécifiques?</b>
                         </div>
 
                         <div class="bottom-paragraph">
