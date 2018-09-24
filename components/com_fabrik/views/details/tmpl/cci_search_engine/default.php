@@ -391,12 +391,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     });
 
 
-
+/*
     var geocoder;
     var map;
-    var addy = "<?php echo $address; ?>";
+    var addy = "*/<?php// echo $address; ?>/*";
 
-    var address = "<?php echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>";
+    var address = "*/<?php //echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>/*";
 
     function initMap() {
         if(addy.replace(/\s/g,'') != "") {
@@ -447,7 +447,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     }
 
-
+*/
 
 
     jQuery(document).ready(function() {
@@ -525,7 +525,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
 
 </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $API; ?>&callback=initMap"></script>
+  <!--  <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php //echo $API; ?>&callback=initMap"></script> -->
 
 
 
