@@ -283,15 +283,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
 
                 <div class="em-option hide" id="em-option-sur-mesure">
-                    <?php if (sizeof($sessions) > 1) :?>
-                        <div class="session-select">
-                            <select class="sessions">
-                                <?php $i = 0; foreach ($sessions as $session) :?>
-                                    <option class="dropdown-item" value="<?php echo $i++; ?>" > <?php echo date('d/m/Y',strtotime($session['date_start'])) . " à " . str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    <?php endif; ?>
+                   
                     <div class="em-option-details" id="sur-mesure-details">
                         <div class="top-paragraph">
                             <b> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
