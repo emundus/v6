@@ -109,7 +109,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     if (trim($this->data['jos_emundus_setup_programmes___prerequisite_raw']) == '')
                         echo "<p>Pas de prérequis nécessaire</p>";
                     else
-                        echo "<p>" . $this->data['jos_emundus_setup_programmes___prerequisite_raw'] . "</p>";
+                        echo html_entity_decode($this->data['jos_emundus_setup_programmes___prerequisite_raw']);
                     ?>
                 </div>
             </div>
@@ -136,7 +136,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <h2>Publics</h2>
                     <?php
                     if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '')
-	                    echo $this->data['jos_emundus_setup_programmes___audience_raw'];
+	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
                     else
 	                    echo "Aucun public précisé."
                     ?>
@@ -153,7 +153,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                 <div id="objectif-details">
                     <h2>Objectifs</h2>
-                    <?php echo $this->data['jos_emundus_setup_programmes___objectives_raw']; ?>
+                    <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']); ?>
                 </div>
 
             </div>
@@ -167,7 +167,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div id="key-details">
                         <h2>Points clés</h2>
-	                    <?php echo $this->data['jos_emundus_setup_programmes___content_raw']; ?>
+	                    <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___content_raw']); ?>
                     </div>
 
                 </div>

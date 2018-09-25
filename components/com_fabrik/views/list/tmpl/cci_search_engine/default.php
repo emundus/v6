@@ -115,18 +115,14 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                 </div>
 
                 <div class="em-search-engine-data">
-                    <table>
-                        <thead>
-                            <tr>
-                                <?php if(sizeof($data) > 1) :?>
-                                    <td><h3><?php echo sizeof($data) ;?> formations trouvées</h3></td>
-                                <?php elseif (sizeof($data) == 1) :?>
-                                    <td><h3><?php echo sizeof($data) ;?> formation trouvée</h3></td>
-                                <?php else :?>
-                                    <td><h3>Pas de formations trouvées</h3></td>
-                                <?php endif; ?>
-                            </tr>
-                        </thead>
+
+                        <?php if(sizeof($data) > 1) :?>
+                            <h2><?php echo sizeof($data) ;?> formations trouvées</h2>
+                        <?php elseif (sizeof($data) == 1) :?>
+                            <h2><?php echo sizeof($data) ;?> formation trouvée</h2>
+                        <?php else :?>
+                            <h2>Pas de formations trouvées</h2>
+                        <?php endif; ?>
 
                                 <?php
                                 $gCounter = 0;
@@ -160,9 +156,9 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                     <div class="g-block size-100 <?php echo $class; ?>">
                                         <div class="em-top-details">
                                             <div class="em-title">
-                                                <h1 class="em-offre-title">
+                                                <h3 class="em-offre-title">
                                                     <?php echo "<a href='".$d['fabrik_view_url']."' >" . $title . "</a>"; ?>
-                                                </h1>
+                                                </h3>
                                             </div>
 
                                             <div class="em-themes em-theme-title em-theme-<?php echo $theme_color; ?>">
