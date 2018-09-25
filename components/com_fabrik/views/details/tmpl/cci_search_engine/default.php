@@ -63,7 +63,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
-    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
+    $title = ucfirst(strtolower($this->data['jos_emundus_setup_programmes___label_raw']));
 
 ?>
 
