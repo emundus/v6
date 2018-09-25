@@ -63,7 +63,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
-    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
+    $title = ucfirst(strtolower($this->data['jos_emundus_setup_programmes___label_raw']));
 
 ?>
 
@@ -75,9 +75,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     <div class="g-block size-78">
         <h1><?php echo $title; ?></h1>
-        <?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?>
+            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?></p>
         <br>
-        <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?>
+            <p><?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
     <?php if (!empty($partenaire)) :?>
@@ -109,7 +109,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     if (trim($this->data['jos_emundus_setup_programmes___prerequisite_raw']) == '')
                         echo "<p>Pas de prérequis nécessaire</p>";
                     else
-                        echo "<p>" . $this->data['jos_emundus_setup_programmes___prerequisite_raw'] . "</p>";
+                        echo html_entity_decode($this->data['jos_emundus_setup_programmes___prerequisite_raw']);
                     ?>
                 </div>
             </div>
@@ -136,9 +136,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <h2>Publics</h2>
                     <?php
                     if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '')
-	                    echo $this->data['jos_emundus_setup_programmes___audience_raw'];
+	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
                     else
-	                    echo "Aucun public précisé."
+	                    echo "<p>Aucun public précisé.</p>"
                     ?>
                 </div>
 
@@ -153,7 +153,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                 <div id="objectif-details">
                     <h2>Objectifs</h2>
-                    <?php echo $this->data['jos_emundus_setup_programmes___objectives_raw']; ?>
+                    <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']); ?>
                 </div>
 
             </div>
@@ -167,7 +167,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div id="key-details">
                         <h2>Points clés</h2>
-	                    <?php echo $this->data['jos_emundus_setup_programmes___content_raw']; ?>
+	                    <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___content_raw']); ?>
                     </div>
 
                 </div>
@@ -228,8 +228,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
-                            <div>
-                                <p><?php echo intval($session['price']) . " €" ;?></p>
+
+                            <?php
+                                if(($session['max_occupants'] - $session['occupants']) <= 3)
+                                    echo "<p class='places'>dernières places disponibles</p>";
+                            ?>
+
+                                <p>
+                                    <?php
+                                        if(!empty($session['tax_rate']))
+                                            echo intval($session['price']) . " € HT" ;
+                                        else
+                                            echo intval($session['price']) . " € net" ;
+                                    ?>
+                                </p>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
@@ -241,7 +253,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                         <button class="em-option-complet" disabled>Complet</button>
                                     </div>
                                 <?php endif; ?>
-                            </div>
                         </div>
 
                     <?php endforeach; ?>
@@ -267,12 +278,16 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         </div>
 
                         <div class="price-details">
-                            <p><?php echo $this->data['jos_emundus_setup_teaching_unity___price_raw'];?> € </p>
+                            <p>
+                                <?php
+                                if(!empty($session['tax_rate']))
+                                    echo intval($session['price']) . " € HT" ;
+                                else
+                                    echo intval($session['price']) . " € net" ;
+                                ?>
+                            </p>
                             <p>Par personne</p>
                         </div>
-                    </div>
-
-                    <div class="em-option-price">
                     </div>
 
                     <div class="em-option-buttons">
@@ -286,7 +301,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                    
                     <div class="em-option-details" id="sur-mesure-details">
                         <div class="top-paragraph">
-                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoin spécifiques?</b>
+                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoins spécifiques?</b>
                         </div>
 
                         <div class="bottom-paragraph">
