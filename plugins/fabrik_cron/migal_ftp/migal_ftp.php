@@ -221,7 +221,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						->select([
 							't.*',
 							$db->quoteName('c.description', 'desc'),
-							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf')
+							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname')
 						])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
@@ -391,8 +391,19 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['content'] != $update_item['contenu'])
 							$fields[] = $db->quoteName('p.content').' = '.$db->quote($update_item['contenu']);
 
+						// CPF number
 						if ($db_item['numcpf'] != $update_item['numcpf'])
 							$fields[] = $db->quoteName('p.numcpf').' = '.$db->quote($update_item['numcpf']);
+
+						// Manager name
+						if ($db_item['manager_lastname'] != $update_item['ur_nom'])
+							$fields[] = $db->quoteName('p.manager_lastname').' = '.$db->quote($update_item['ur_nom']);
+						if ($db_item['manager_firstname'] != $update_item['ur_prenom'])
+							$fields[] = $db->quoteName('p.manager_firstname').' = '.$db->quote($update_item['ur_prenom']);
+
+						// Tax rate
+						if ($db_item['tax_rate'] != $update_item['tauxtvaproduit'])
+							$fields[] = $db->quoteName('t.tax_rate').' = '.$db->quote($update_item['tauxtvaproduit']);
 
 						// If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
@@ -477,9 +488,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					}
 
 					// DB table struct for different tables.
-					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf'];
+					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname'];
 					$campaign_columns   = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
-					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region'];
+					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'tax_rate'];
 
 					// Build all value lists for the different inserts at once, this avoids having to loop multiple times.
 					$programme_values = array();
@@ -529,7 +540,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['accrochecom']),
 								$db->quote($item['objectifs']),
 								$db->quote($item['contenu']),
-								$db->quote($item['numcpf'])
+								$db->quote($item['numcpf']),
+								$db->quote($item['ur_nom']),
+								$db->quote($item['ur_prenom'])
 							]);
 						}
 
@@ -566,7 +579,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$db->quote($item['adresse1lieu'].' '.$item['adresse2lieu']),
 							$db->quote($item['cplieu']),
 							$db->quote($item['villelieu']),
-							$db->quote($item['region'])
+							$db->quote($item['region']),
+							$db->quote($item['tauxtvaproduit'])
 						]);
 
 					}
