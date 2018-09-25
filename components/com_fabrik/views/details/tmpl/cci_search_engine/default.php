@@ -75,9 +75,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     <div class="g-block size-78">
         <h1><?php echo $title; ?></h1>
-        <?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?>
+            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?></p>
         <br>
-        <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?>
+            <p><?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
     <?php if (!empty($partenaire)) :?>
@@ -138,7 +138,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '')
 	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
                     else
-	                    echo "Aucun public précisé."
+	                    echo "<p>Aucun public précisé.</p>"
                     ?>
                 </div>
 
@@ -281,7 +281,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                    
                     <div class="em-option-details" id="sur-mesure-details">
                         <div class="top-paragraph">
-                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoin spécifiques?</b>
+                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoins spécifiques?</b>
                         </div>
 
                         <div class="bottom-paragraph">
