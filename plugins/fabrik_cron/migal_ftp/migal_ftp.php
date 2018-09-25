@@ -221,7 +221,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						->select([
 							't.*',
 							$db->quoteName('c.description', 'desc'),
-							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname')
+							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname'), $db->quoteName('p.pedagogie', 'pedagogie')
 						])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
@@ -405,6 +405,14 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['tax_rate'] != $update_item['tauxtvaproduit'])
 							$fields[] = $db->quoteName('t.tax_rate').' = '.$db->quote($update_item['tauxtvaproduit']);
 
+						// Pedagogie
+						if ($db_item['pedagogie'] != $update_item['pedagogie'])
+							$fields[] = $db->quoteName('p.pedagogie').' = '.$db->quote($update_item['pedagogie']);
+
+						// Intervenant
+						if ($db_item['intervenant'] != $update_item['typeintervenant'])
+							$fields[] = $db->quoteName('t.intervenant').' = '.$db->quote($update_item['typeintervenant']);
+
 						// If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
 
@@ -488,9 +496,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					}
 
 					// DB table struct for different tables.
-					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname'];
+					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname', 'pedagogie'];
 					$campaign_columns   = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
-					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'tax_rate'];
+					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'tax_rate', 'intervenant'];
 
 					// Build all value lists for the different inserts at once, this avoids having to loop multiple times.
 					$programme_values = array();
@@ -542,7 +550,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['contenu']),
 								$db->quote($item['numcpf']),
 								$db->quote($item['ur_nom']),
-								$db->quote($item['ur_prenom'])
+								$db->quote($item['ur_prenom']),
+								$db->quote($item['pedagogie'])
 							]);
 						}
 
@@ -580,7 +589,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$db->quote($item['cplieu']),
 							$db->quote($item['villelieu']),
 							$db->quote($item['region']),
-							$db->quote($item['tauxtvaproduit'])
+							$db->quote($item['tauxtvaproduit']),
+							$db->quote($item['typeintervenant'])
 						]);
 
 					}
