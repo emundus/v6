@@ -511,6 +511,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 product_code: code
             },
             success: function (result) {
+                result = JSON.parse(result);
                 if (result.status) {
                     window.location = result.filename;
                 } else {

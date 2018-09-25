@@ -1394,19 +1394,12 @@ function generatePDFfromHTML($html, $path = null) {
 	set_time_limit(0);
 	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$db = JFactory::getDBO();
 	$config = JFactory::getConfig();
 	$app = JFactory::getApplication();
 
 	$files = array();
-
-	$m_application 	= new EmundusModelApplication;
-	$m_campaign 	= new EmundusModelCampaign;
-	$m_emails 		= new EmundusModelEmails;
 
 
 	if (class_exists('MYPDF') === false || !class_exists('MYPDF')) {
@@ -1450,19 +1443,18 @@ function generatePDFfromHTML($html, $path = null) {
 
 	// Generate a random file name in case one isn't supplied.
 	if (empty($path))
-		$path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'pdf'.substr(md5(microtime()),rand(0,26),5).'.pdf';
+		$path = DS.'images'.DS.'emundus'.DS.'pdf'.substr(md5(microtime()),rand(0,26),5).'.pdf';
 
-	if (!file_exists(dirname($path))) {
-		mkdir(dirname($path), 0755, true);
-		chmod(dirname($path), 0755);
+	if (!file_exists(dirname(JPATH_BASE.$path))) {
+		mkdir(dirname(JPATH_BASE.$path), 0755, true);
+		chmod(dirname(JPATH_BASE.$path), 0755);
 	}
 
-	$htmldata = "";
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor(PDF_AUTHOR);
-	$pdf->SetTitle(basename($path));
+	$pdf->SetTitle(basename(JPATH_BASE.$path));
 
 	// set margins
 	$pdf->SetMargins(5, 40, 5);
@@ -1472,11 +1464,11 @@ function generatePDFfromHTML($html, $path = null) {
 
 	$pdf->AddPage();
 
-	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
 	@chdir('tmp');
 
-	$pdf->Output($path, 'F');
+	$pdf->Output(JPATH_BASE.$path, 'F');
 
 	if ($error == 0)
 		return $path;

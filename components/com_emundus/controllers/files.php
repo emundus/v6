@@ -3059,11 +3059,11 @@ class EmundusControllerFiles extends JControllerLegacy
     	$jinput = JFactory::getApplication()->input;
     	$product_code = $jinput->post->get('product_code', null);
 
-    	$filename = JPATH_BASE.DS.'images'.DS.'product_pdf'.DS.'formation-'.$product_code.'.pdf';
+    	$filename = DS.'images'.DS.'product_pdf'.DS.'formation-'.$product_code.'.pdf';
 
     	// PDF is rebuilt every time, this is because the information on the PDF probably changes ofter.
-    	if (file_exists($filename))
-    		unlink($filename);
+    	if (file_exists(JPATH_BASE.$filename))
+    		unlink(JPATH_BASE.$filename);
 
     	// The PDF template is saved in the Joomla backoffice as an article.
 		$article = $h_export->getArticle(58);
