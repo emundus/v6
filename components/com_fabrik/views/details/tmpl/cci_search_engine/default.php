@@ -228,7 +228,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
-                                <p><?php echo intval($session['price']) . " €" ;?></p>
+
+                            <?php
+                                if(($session['max_occupants'] - $session['occupants']) <= 3)
+                                    echo "<p class='places'>dernières places disponibles</p>";
+                            ?>
+
+                                <p>
+                                    <?php
+                                        if(!empty($session['tax_rate']))
+                                            echo intval($session['price']) . " € HT" ;
+                                        else
+                                            echo intval($session['price']) . " € net" ;
+                                    ?>
+                                </p>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
@@ -265,7 +278,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         </div>
 
                         <div class="price-details">
-                            <p><?php echo $this->data['jos_emundus_setup_teaching_unity___price_raw'];?> € </p>
+                            <p>
+                                <?php
+                                if(!empty($session['tax_rate']))
+                                    echo intval($session['price']) . " € HT" ;
+                                else
+                                    echo intval($session['price']) . " € net" ;
+                                ?>
+                            </p>
                             <p>Par personne</p>
                         </div>
                     </div>
