@@ -169,21 +169,23 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                                         <div class="em-bottom-details">
 
                                             <div class="em-people-details">
-                                                <?php
-                                                if (!empty($d['jos_emundus_setup_programmes___audience_raw']))
-                                                    echo $d['jos_emundus_setup_programmes___audience_raw'];
-                                                else
-                                                    echo "Aucun public précisé."
-                                                ?>
+                                                <p>
+                                                    <?php
+                                                    if (!empty($d['jos_emundus_setup_programmes___audience_raw']))
+                                                        echo $d['jos_emundus_setup_programmes___audience_raw'];
+                                                    else
+                                                        echo "Aucun public précisé."
+                                                    ?>
+                                                </p>
                                             </div>
 
                                             <div  class="em-day-details">
                                                 <p>
                                                     <?php
                                                     if ($days > 1)
-                                                        echo "Durée de la formation : ".$days." jours";
+                                                        echo $days." jours";
                                                     elseif ($days = 1)
-                                                        echo "Durée de la formation : ".$days." jour";
+                                                        echo $days." jour";
                                                     ?>
                                                 </p>
                                             </div>
