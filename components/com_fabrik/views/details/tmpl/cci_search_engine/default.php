@@ -228,7 +228,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
-                            <div>
                                 <p><?php echo intval($session['price']) . " €" ;?></p>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
@@ -241,7 +240,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                         <button class="em-option-complet" disabled>Complet</button>
                                     </div>
                                 <?php endif; ?>
-                            </div>
                         </div>
 
                     <?php endforeach; ?>
@@ -266,13 +264,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             <?php echo $prix_svg; ?>
                         </div>
 
+                        <?php echo $prix_svg . '<p style="font-weight: bold;">' . intval($this->data['jos_emundus_setup_teaching_unity___price_raw']) . ' € net de taxe tarif par personne</p> <p style="margin-top: 20px;">(' . $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'] . ' personnes minimum)</p>'; ?>
+                    </div>
+
+                    <div class="em-option-price">
+                        <div class="price-icon">
+                            <?php echo $prix_svg; ?>
+                        </div>
+
                         <div class="price-details">
                             <p><?php echo $this->data['jos_emundus_setup_teaching_unity___price_raw'];?> € </p>
                             <p>Par personne</p>
                         </div>
-                    </div>
-
-                    <div class="em-option-price">
                     </div>
 
                     <div class="em-option-buttons">
