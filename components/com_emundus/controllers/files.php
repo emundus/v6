@@ -3050,7 +3050,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	/**
  	 * Generates or (if it exists already) loads the PDF for a certain GesCOF product.
 	 */
-    function getproductpdf() {
+    public function getproductpdf() {
 
     	require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
@@ -3077,30 +3077,35 @@ class EmundusControllerFiles extends JControllerLegacy
 		$query = $this->_db->getQuery(true);
 		$query
 			->select([
-				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'),
+				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager','manager'),
 				$this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
 				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours_per_day','hpd'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_title','l_title'), $this->_db->quoteName('tu.location_zip','l_zip'), $this->_db->quoteName('tu.location_city','l_city')
 			])
 			->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity','tu').' ON '.$this->_db->quoteName('tu.code').' = '.$this->_db->quoteName('p.code'))
-			->where($this->_db->quoteName('p.code').' = '.$product_code);
+			->where($this->_db->quoteName('p.code').' LIKE '.$this->_db->quote($product_code));
 		$this->_db->setQuery($query);
 
 		try {
-			$product = $this->_db->loadResult();
+			$product = $this->_db->loadAssocList();
 		} catch (Exception $e) {
 			echo json_encode((object)['status' => false, 'msg' => 'Error getting product information.']);
 			exit;
 		}
-		
-		echo '<pre>'; var_dump($product); echo '</pre>'; die;
 
 	    // Build the variables found in the article.
 	    $post = [
-	    	'[PRODUCT_CODE]' => $product_code,
-	    	'[PRODUCT_NAME]' => $product->name,
+	    	'[PRODUCT_CODE]' => str_replace('FOR', '', $product_code),
+	    	'[PRODUCT_NAME]' => $product[0]['name'],
+			'[PRODUCT_OBJECTIVES]' => $product[0]['objectives'],
+		    '[PRODUCT_PREREQUISITES]' => $product[0]['prerec'],
+		    '[PRODUCT_AUDIENCE]' => $product[0]['audience'],
+		    '[PRODUCT_CONTENT]' => $product[0]['content'],
+		    '[PRODUCT_MANAGER]' => $product[0]['manager'],
 	    ];
+
+		echo '<pre>'; var_dump($post); echo '</pre>'; die;
 
 
 	    $html = preg_replace(array_keys($post), $post, preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $article))));

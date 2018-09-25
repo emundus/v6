@@ -345,7 +345,7 @@ class EmundusHelperExport
 
 		$query = $db->getQuery(true);
 		$query
-			->select($db->quoteName('c.fulltext'))
+			->select($db->quoteName('c.introtext'))
 			->from($db->quoteName('#__content','c'))
 			->where($db->quoteName('c.id').' = '.intval($id));
 		$db->setQuery($query);
