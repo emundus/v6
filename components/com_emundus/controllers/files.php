@@ -3073,7 +3073,6 @@ class EmundusControllerFiles extends JControllerLegacy
 			exit;
 		}
 
-		// TODO: Build massive SELECT which gets all of the info for products and sessions.
 		$query = $this->_db->getQuery(true);
 		$query
 			->select([
@@ -3115,26 +3114,26 @@ class EmundusControllerFiles extends JControllerLegacy
 	    // Build the variables found in the article.
 	    setlocale(LC_ALL, 'fr_FR');
 	    $post = [
-	    	'[PRODUCT_CODE]' => str_replace('FOR', '', $product_code),
-	    	'[PRODUCT_NAME]' => ucfirst(mb_strtolower($product[0]['name'])),
-			'[PRODUCT_OBJECTIVES]' => $product[0]['objectives'],
-		    '[PRODUCT_PREREQUISITES]' => $product[0]['prerec'],
-		    '[PRODUCT_AUDIENCE]' => $product[0]['audience'],
-		    '[PRODUCT_CONTENT]' => $product[0]['content'],
-		    '[PRODUCT_MANAGER]' => $product[0]['manager_firstname'].' '.mb_strtoupper($product[0]['manager_lastname']),
-		    '[EXPORT_DATE]' => date('d F Y'),
-		    '[DAYS]' => intval($product[0]['days']),
-		    '[TOTAL_HOURS]' => $product[0]['days'] * $product[0]['hpd'],
-		    '[COST]' => $product[0]['price'].' € '.(!empty($product[0]['tax_rate'])?'HT':'net de taxe'),
-		    '[DATES_AND_LOCATIONS]' => $sessions,
-		    '[EFFECTIFS]' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
-		    '[INTERVENANT]' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
-		    '[PEDAGOGIE]' => $product[0]['pedagogie'],
-		    '[CPF]' => $product[0]['cpf']
+	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
+	    	'/{PRODUCT_NAME}/' => ucfirst(mb_strtolower($product[0]['name'])),
+			'/{PRODUCT_OBJECTIVES}/' => $product[0]['objectives'],
+		    '/{PRODUCT_PREREQUISITES}/' => $product[0]['prerec'],
+		    '/{PRODUCT_AUDIENCE}/' => $product[0]['audience'],
+		    '/{PRODUCT_CONTENT}/' => $product[0]['content'],
+		    '/{PRODUCT_MANAGER}/' => $product[0]['manager_firstname'].' '.mb_strtoupper($product[0]['manager_lastname']),
+		    '/{EXPORT_DATE}/' => date('d F Y'),
+		    '/{DAYS}/' => intval($product[0]['days']),
+		    '/{TOTAL_HOURS}/' => $product[0]['days'] * $product[0]['hpd'],
+		    '/{COST}/' => $product[0]['price'].' € '.(!empty($product[0]['tax_rate'])?'HT':'net de taxe'),
+		    '/{DATES_AND_LOCATIONS}/' => $sessions,
+		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
+		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
+		    '/{PEDAGOGIE}/' => $product[0]['pedagogie'],
+		    '/{CPF}/' => $product[0]['cpf']
 	    ];
 
 
-	    $html = preg_replace(array_keys($post), $post, preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $article))));
+	    $html = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $article))));
 
 	    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
 	    $filename = generatePDFfromHTML($html, $filename);
