@@ -230,7 +230,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
 
                             <?php
-                                if(($session['max_occupants'] - $session['occupants']) <= 3)
+                                if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
                                     echo "<p class='places'>dernières places disponibles</p>";
                             ?>
 
