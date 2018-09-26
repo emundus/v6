@@ -334,4 +334,28 @@ class EmundusHelperExport
 		return $tmpName;
 	}
 
+	/**
+	 * Gets the content of a Joomla article.
+	 * Used for defining articles as PDF templates.
+	 * @param $id
+	 */
+	function getArticle($id) {
+
+		$db = JFactory::getDBO();
+
+		$query = $db->getQuery(true);
+		$query
+			->select($db->quoteName('c.introtext'))
+			->from($db->quoteName('#__content','c'))
+			->where($db->quoteName('c.id').' = '.intval($id));
+		$db->setQuery($query);
+
+		try {
+			return $db->loadResult();
+		} catch (Exception $e) {
+			return null;
+		}
+
+	}
+
 }

@@ -114,7 +114,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
             </div>
 
-            <div class="doc-div">
+            <div class="doc-div" onclick="getProductPDF('<?php echo $this->data['jos_emundus_setup_programmes___code_raw']; ?>')">
                 <div class="em-doc-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
                     <?php echo $telechargement_svg; ?>
                 </div>
@@ -503,7 +503,26 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         }
     });
 
-
+    function getProductPDF(code) {
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=files&task=getproductpdf',
+            data: {
+                product_code: code
+            },
+            success: function (result) {
+                result = JSON.parse(result);
+                if (result.status) {
+                    window.location = result.filename;
+                } else {
+                    alert(result);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
 
 </script>
   <!--  <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php //echo $API; ?>&callback=initMap"></script> -->
