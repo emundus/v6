@@ -21,7 +21,7 @@ css-compiled/joomla.css	fd0272ba11253502b90fe2ca6d4d7a02
 css/nucleus-ie9.css	f9f73d38e73190dea88df4791c3ead8e
 particles/analytics.html.twig	5329898587326a451694ed09a37b236c
 particles/analytics.yaml	5249294c22ad79c6519fc4abe9644ba1
-particles/assets.html.twig	72d5a6577d6f57019305d36e9d93191b
+particles/assets.html.twig	c3db29fbbb5685b1cb21874da96f9a3e
 particles/assets.yaml	8ff9023dfd52a2224fe2a78982f76dca
 particles/branding.html.twig	162bcc6af168b8c113a3d365c8e6c7b4
 particles/branding.yaml	e17cb1fcbad0c9af4d9119f8544d3bc9
@@ -36,8 +36,8 @@ particles/lightcase.html.twig	a612dbb34c71524d934349ffa1bf3914
 particles/lightcase.yaml	3d5cd1bf65bb343e6ca6e3b1e897531c
 particles/logo.html.twig	e0f5fee9fd7015abd875fd99d6135731
 particles/logo.yaml	797cd68a2d91cf95f9161b43414b142d
-particles/menu.html.twig	8e0748c66ff3ef8d7fe5d4c03000c379
-particles/menu.yaml	0427a39a097f9983a42cf51520bfd7cc
+particles/menu.html.twig	c6a885b5d18fe4988f667ad721a933c5
+particles/menu.yaml	0202c706c582f78b5fe197168ea95957
 particles/messages.yaml	9a57ab2745b1c23d47a8d346f49fe0f6
 particles/mobile-menu.html.twig	69bcf29977af79736ef1f3eac86bf62f
 particles/mobile-menu.yaml	851c59ad228856aa6b43666b642e46d7
@@ -46,8 +46,8 @@ particles/social.yaml	0dbf67c62249092d41c9b3eba42373cc
 particles/spacer.yaml	72f62ba43d554bf9b8590362d9c4543f
 particles/totop.html.twig	11a8a23eadbf449ec87e062f90d6777f
 particles/totop.yaml	c0207346fe89effdad46d3306a308e1a
-particles/contentarray.html.twig	b96d04ac775d021672344e76184c0a73
-particles/contentarray.yaml	3e2f6536070e3574c19a79f9e7166bc8
+particles/contentarray.html.twig	2c2a71a36379c342dbf8b3c3b759fd60
+particles/contentarray.yaml	e289832666644314275cdb858134f853
 particles/frameworks.html.twig	6d1cb1e84bb2550b1ac39eb26db89342
 particles/frameworks.yaml	77bb88085b1470166523f23cf0fa94e4
 particles/module.html.twig	56c551dc497a256f5a49ae1e940bb168

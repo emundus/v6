@@ -51,6 +51,7 @@ class Licensed extends Generic
         parent::__construct($namespace, $type, $folder, $basePath);
 
         $this->license = @strtolower($this->manifest->alledia->license);
+
         // Make sure we are using the correct namespace
         $this->namespace = @$this->manifest->alledia->namespace;
 
@@ -75,7 +76,7 @@ class Licensed extends Generic
      */
     public function isFree()
     {
-        return ! $this->isPro();
+        return !$this->isPro();
     }
 
     /**
