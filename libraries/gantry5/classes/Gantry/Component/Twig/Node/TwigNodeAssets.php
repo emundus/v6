@@ -11,13 +11,13 @@
  * Gantry Framework code that extends GPL code is considered GNU/GPLv2 and later
  */
 
-namespace Gantry\Component\Twig;
+namespace Gantry\Component\Twig\Node;
 
-class TwigNodeAssets extends \Twig_Node implements \Twig_NodeOutputInterface
+class TwigNodeAssets extends \Twig_Node implements \Twig_NodeCaptureInterface
 {
     protected $tagName = 'assets';
 
-    public function __construct(\Twig_NodeInterface $body = null, \Twig_Node_Expression $location = null, \Twig_Node_Expression $variables = null, $lineno, $tag = null)
+    public function __construct(\Twig_Node $body = null, \Twig_Node_Expression $location = null, \Twig_Node_Expression $variables = null, $lineno = 0, $tag = null)
     {
         parent::__construct(['body' => $body, 'location' => $location, 'variables' => $variables], [], $lineno, $tag);
     }
@@ -50,6 +50,6 @@ class TwigNodeAssets extends \Twig_Node implements \Twig_NodeOutputInterface
             ->write("ob_start();\n")
             ->subcompile($this->getNode('body'))
             ->write("\$content = ob_get_clean();\n")
-            ->write("echo \$assetFunction(\$content, \$location, \$priority);\n");
+            ->write("\$assetFunction(\$content, \$location, \$priority);\n");
     }
 }

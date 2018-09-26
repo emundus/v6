@@ -20,6 +20,7 @@ use SimpleXMLElement;
 
 /**
  * Generic extension class
+ *
  * @todo : Make this class compatible with non-Alledia extensions
  */
 class Generic
@@ -83,21 +84,21 @@ class Generic
     /**
      * The manifest information
      *
-     * @var Registry
+     * @var object
      */
     public $manifest;
 
     /**
      * The manifest information as SimpleXMLElement
      *
-     * @var \SimpleXMLElement
+     * @var SimpleXMLElement
      */
     public $manifestXml;
 
     /**
      * The config information
      *
-     * @var \SimpleXMLElement
+     * @var SimpleXMLElement
      */
     public $config;
 
@@ -123,13 +124,15 @@ class Generic
 
     /**
      * Get information about this extension from the database
+     *
+     * @return void
      */
     protected function getDataFromDatabase()
     {
         $element = $this->getElementToDb();
 
         // Load the extension info from database
-        $db = JFactory::getDbo();
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true)
             ->select(array(
                 $db->qn('extension_id'),
@@ -149,15 +152,16 @@ class Generic
         $row = $db->loadObject();
 
         if (is_object($row)) {
-            $this->id = $row->extension_id;
-            $this->name = $row->name;
-            $this->enabled = (bool) $row->enabled;
-            $this->params = new Registry($row->params);
+            $this->id      = $row->extension_id;
+            $this->name    = $row->name;
+            $this->enabled = (bool)$row->enabled;
+            $this->params  = new Registry($row->params);
+
         } else {
-            $this->id = null;
-            $this->name = null;
+            $this->id      = null;
+            $this->name    = null;
             $this->enabled = false;
-            $this->params = new Registry();
+            $this->params  = new Registry();
         }
     }
 
@@ -168,7 +172,7 @@ class Generic
      */
     public function isEnabled()
     {
-        return (bool) $this->enabled;
+        return (bool)$this->enabled;
     }
 
     /**
@@ -284,7 +288,7 @@ class Generic
      *
      * @param bool $force If true, force to load the manifest, ignoring the cached one
      *
-     * @return Registry
+     * @return SimpleXMLElement
      */
     public function getManifestAsSimpleXML($force = false)
     {
@@ -306,14 +310,14 @@ class Generic
      *
      * @param bool $force If true, force to load the manifest, ignoring the cached one
      *
-     * @return Registry
+     * @return object
      */
     public function getManifest($force = false)
     {
         if (!isset($this->manifest) || $force) {
             $xml = $this->getManifestAsSimpleXML($force);
             if (!empty($xml)) {
-                $this->manifest = (object) json_decode(json_encode($xml));
+                $this->manifest = (object)json_decode(json_encode($xml));
             } else {
                 $this->manifest = false;
             }
@@ -351,14 +355,14 @@ class Generic
      */
     public function getUpdateURL()
     {
-        $db = JFactory::getDbo();
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true)
             ->select('sites.location')
             ->from('#__update_sites AS sites')
-            ->join('LEFT', '#__update_sites_extensions AS extensions ON (sites.update_site_id = extensions.update_site_id)')
+            ->leftJoin('#__update_sites_extensions AS extensions ON (sites.update_site_id = extensions.update_site_id)')
             ->where('extensions.extension_id = ' . $this->id);
-        $db->setQuery($query);
-        $row = $db->loadResult();
+
+        $row = $db->setQuery($query)->loadResult();
 
         return $row;
     }
@@ -373,23 +377,23 @@ class Generic
         $db = JFactory::getDbo();
 
         // Get the update site id
-        $join = $db->qn('#__update_sites_extensions') . ' AS extensions '
+        $join  = $db->qn('#__update_sites_extensions') . ' AS extensions '
             . 'ON (sites.update_site_id = extensions.update_site_id)';
         $query = $db->getQuery(true)
             ->select('sites.update_site_id')
             ->from($db->qn('#__update_sites') . ' AS sites')
-            ->join('LEFT', $join)
+            ->leftJoin($join)
             ->where('extensions.extension_id = ' . $this->id);
-        $db->setQuery($query);
-        $siteId = (int) $db->loadResult();
+
+        $siteId = (int)$db->setQuery($query)->loadResult();
 
         if (!empty($siteId)) {
             $query = $db->getQuery(true)
                 ->update($db->qn('#__update_sites'))
                 ->set($db->qn('location') . ' = ' . $db->q($url))
                 ->where($db->qn('update_site_id') . ' = ' . $siteId);
-            $db->setQuery($query);
-            $db->execute();
+
+            $db->setQuery($query)->execute();
         }
     }
 
@@ -400,13 +404,14 @@ class Generic
      */
     public function storeParams()
     {
-        $db     = JFactory::getDbo();
-        $params = $db->q($this->params->toString());
-        $id     = $db->q($this->id);
+        $db = JFactory::getDbo();
 
-        $query = "UPDATE `#__extensions` SET params = {$params} WHERE extension_id = {$id}";
-        $db->setQuery($query);
-        $db->execute();
+        $updateObject = (object)array(
+            'params'       => $this->params->toString(),
+            'extension_id' => $this->id
+        );
+
+        $db->updateObject('#__extensions', $updateObject, array('extension_id'));
     }
 
     /**
@@ -426,10 +431,14 @@ class Generic
      */
     public function getId()
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
-    // @TODO: Move to the licensed class?
+    /**
+     * @TODO: Move to the licensed class?
+     *
+     * @return string
+     */
     public function getFooterMarkup()
     {
         // Check if we have a dedicated config.xml file
@@ -453,7 +462,7 @@ class Generic
                 require_once $this->getExtensionPath() . '/form/fields/customfooter.php';
             }
 
-            $field = new JFormFieldCustomFooter();
+            $field                = new JFormFieldCustomFooter();
             $field->fromInstaller = true;
             return $field->getInputUsingCustomElement($footerElement[0]);
         }
@@ -468,6 +477,10 @@ class Generic
      */
     public function getVersion()
     {
-        return $this->manifest->version;
+        if (!empty($this->manifest->version)) {
+            return $this->manifest->version;
+        }
+
+        return null;
     }
 }

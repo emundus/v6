@@ -17,14 +17,17 @@ class Request
      * POST request
      *
      * @access public
-     * @param string $url - url
-     * @param array $data - post data
+     *
+     * @param string $url
+     * @param array  $data
+     *
      * @return string
      */
     public function post($url, $data = array())
     {
         if ($this->hasCURL()) {
             return $this->postCURL($url, $data);
+
         } else {
             return $this->postFOpen($url, $data);
         }
@@ -47,8 +50,10 @@ class Request
      * POST request with curl
      *
      * @access protected
-     * @param string $url - url
-     * @param array $data - post data
+     *
+     * @param string $url
+     * @param array  $data
+     *
      * @return string
      */
     protected function postCURL($url, $data = array())
@@ -71,16 +76,18 @@ class Request
      * POST request with fopen
      *
      * @access protected
-     * @param string $url - url
-     * @param array $data - post data
+     *
+     * @param string $url
+     * @param array  $data
+     *
      * @return string
      */
     protected function postFOpen($url, $data = array())
     {
         $stream = fopen($url, 'r', false, stream_context_create(array(
             'http' => array(
-                'method' => 'POST',
-                'header' => 'Content-type: application/x-www-form-urlencoded',
+                'method'  => 'POST',
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
                 'content' => http_build_query(
                     $data
                 )

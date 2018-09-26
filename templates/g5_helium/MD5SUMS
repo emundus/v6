@@ -133,7 +133,7 @@ fonts/rockettheme-apps/rockettheme-apps.ttf	2185692f8168ab2fa54c0923be97f190
 fonts/rockettheme-apps/rockettheme-apps.woff	f1258374fedaa30401743337048a64bb
 fonts/rockettheme-apps/rockettheme-apps.woff2	0b76f0674592d3d4653e6524045e890e
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
-gantry/theme.yaml	7507c2905faf35a537708fb112f95f0c
+gantry/theme.yaml	255c1b6e826e6bbe7f1f68cfab86a53d
 images/above/img01.jpeg	45d1bc6fa1ac764f15b937a1e1e9a377
 images/above/img02.jpeg	c08f1ce863d7c69e1b73ce49f8b48416
 images/header/img01.jpg	fb3b9862ecc04e7206e246659e68f2af
@@ -158,13 +158,13 @@ layouts/default.yaml	15fd05bda30a83f05ccfde7b970d716f
 layouts/home_-_particles.yaml	83439c33dd1e3ee0c16fae1d0bfba5b8
 particles/contentcubes.html.twig	9e0caa29709930da5340b13f3d0fe6bb
 particles/contentcubes.yaml	286ea382c0919026540047d4e0eea53b
-particles/contenttabs.html.twig	0e3fb88150268b4889603c451a03e52e
+particles/contenttabs.html.twig	79e65ef13245781f3544620a751dfa71
 particles/contenttabs.yaml	788cc99146d2f08683391eb83f33007a
 particles/copyright.html.twig	b0524afc8f1f531702585117a770d2dc
 particles/copyright.yaml	d317213bf88779adbe3d89885a1b1f2c
 particles/horizontalmenu.html.twig	af11beb3720496aaf9d52a0dcea6718e
 particles/horizontalmenu.yaml	1916d0a5cf34d6e2ac31e736dec6db7c
-particles/owlcarousel.html.twig	706275cce9b7160097734e9001b8325a
+particles/owlcarousel.html.twig	7dcd3886128a662dff2aaa2eda9aabef
 particles/owlcarousel.yaml	8cdc062111b5dec46011eb7334834f1a
 particles/totop.html.twig	b129b99b62916d5ab4b5df2985721182
 scss/configuration/_base.scss	eca6279273f288549eee4130846fe2cf
@@ -188,7 +188,7 @@ scss/helium/sections/_aside.scss	d38b7309fc3a662b033a3299eb764944
 scss/helium/sections/_expanded.scss	089d57ec191c986e98fa3967b8033099
 scss/helium/sections/_features.scss	cd05dfae19562cbf00a4b5edab2b97cd
 scss/helium/sections/_footer.scss	15d226de243605a9a48925251004f552
-scss/helium/sections/_header.scss	b86fc799115e0eb042bf5485ed70cf30
+scss/helium/sections/_header.scss	0f5d5d2df6cccf1835e9025b489fb8c1
 scss/helium/sections/_intro.scss	d3c816a0dcc244c458bdaa5ed5284d0d
 scss/helium/sections/_main.scss	77a09834b25a9ba42dbd594dd284a3b3
 scss/helium/sections/_mainnav.scss	dbba082389905bfb82b39ff977e77d11
@@ -226,7 +226,7 @@ scss/helium-joomla/styles/_typography.scss	0b0932fba47fd357da1932af6e67f6ea
 scss/helium-joomla/styles/_utilities.scss	316a86fa70365d3c43c1a1478fd83778
 scss/helium-joomla.scss	ee7359a81b356bbbf418d1567c6d1384
 fields/warning.php	0a3e1660ee4c98680b66da0b0a89afd3
-html/layouts/joomla/system/message.php	e588cc8bdc4d512c8f1d9165eb350648
+html/layouts/joomla/system/message.php	3494bfce49bf9003cca682d85302a9fb
 html/modules.php	fab91d244c6000af5b67a7d77639a9ba
 includes/gantry.php	9d8fa5a4d2d331d2645e9f955f942dc5
 includes/theme.php	76ab9d923190ebc699ce3d4d64266681
@@ -244,5 +244,5 @@ offline.php	7fd679a21d75cf105ca8afe1a2d3b720
 template_preview.png	ab4cfffd01e4869e58539c047dd9b084
 template_thumbnail.png	927912da2d23c09c87d8613905b38b74
 install.php	c987ee4ddf87202e5ba6b96769427736
-templateDetails.xml	0899f30ca2fb29cfa5224b8ea1d55b5b
+templateDetails.xml	9e4e7a82aee8a018a33429bc2458656e
 MD5SUMS	d41d8cd98f00b204e9800998ecf8427e

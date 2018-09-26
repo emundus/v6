@@ -63,21 +63,21 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
-    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
+    $title = ucfirst(strtolower($this->data['jos_emundus_setup_programmes___label_raw']));
 
 ?>
 
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
     <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
-        <a href="rechercher?category=<?php echo html_entity_decode(mb_strtolower(str_replace(' ','-',$this->data['jos_emundus_setup_thematiques___title_raw'])));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
+        <a href="rechercher?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-',$this->data['jos_emundus_setup_thematiques___title_raw']))));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
 
     <div class="g-block size-78">
         <h1><?php echo $title; ?></h1>
-        <?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?>
+            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?></p>
         <br>
-        <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?>
+            <p><?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
     <?php if (!empty($partenaire)) :?>
@@ -109,12 +109,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     if (trim($this->data['jos_emundus_setup_programmes___prerequisite_raw']) == '')
                         echo "<p>Pas de prérequis nécessaire</p>";
                     else
-                        echo "<p>" . $this->data['jos_emundus_setup_programmes___prerequisite_raw'] . "</p>";
+                        echo html_entity_decode($this->data['jos_emundus_setup_programmes___prerequisite_raw']);
                     ?>
                 </div>
             </div>
 
-            <div class="doc-div">
+            <div class="doc-div" onclick="getProductPDF('<?php echo $this->data['jos_emundus_setup_programmes___code_raw']; ?>')">
                 <div class="em-doc-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
                     <?php echo $telechargement_svg; ?>
                 </div>
@@ -136,9 +136,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <h2>Publics</h2>
                     <?php
                     if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '')
-	                    echo $this->data['jos_emundus_setup_programmes___audience_raw'];
+	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
                     else
-	                    echo "Aucun public précisé."
+	                    echo "<p>Aucun public précisé.</p>"
                     ?>
                 </div>
 
@@ -153,7 +153,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                 <div id="objectif-details">
                     <h2>Objectifs</h2>
-                    <?php echo $this->data['jos_emundus_setup_programmes___objectives_raw']; ?>
+                    <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']); ?>
                 </div>
 
             </div>
@@ -167,7 +167,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div id="key-details">
                         <h2>Points clés</h2>
-	                    <?php echo $this->data['jos_emundus_setup_programmes___content_raw']; ?>
+	                    <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___content_raw']); ?>
                     </div>
 
                 </div>
@@ -228,8 +228,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
-                            <div>
-                                <p><?php echo intval($session['price']) . " €" ;?></p>
+
+                            <?php
+                                if(($session['max_occupants'] - $session['occupants']) <= 3)
+                                    echo "<p class='places'>dernières places disponibles</p>";
+                            ?>
+
+                                <p>
+                                    <?php
+                                        if(!empty($session['tax_rate']))
+                                            echo intval($session['price']) . " € HT" ;
+                                        else
+                                            echo intval($session['price']) . " € net" ;
+                                    ?>
+                                </p>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
@@ -241,7 +253,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                         <button class="em-option-complet" disabled>Complet</button>
                                     </div>
                                 <?php endif; ?>
-                            </div>
                         </div>
 
                     <?php endforeach; ?>
@@ -250,30 +261,33 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
 
                 <div class="em-option hide" id="em-option-intra">
-                    <?php if (sizeof($sessions) > 1) :?>
-                        <div class="session-select">
-                            <select class="sessions">
-                                <?php $i = 0; foreach ($sessions as $session) :?>
-                                    <option class="dropdown-item" value="<?php echo $i++; ?>" > <?php echo date('d/m/Y',strtotime($session['date_start'])) . " à " . str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))); ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                    <div class="em-option-location">
+                        <div class="location-icon">
+                            <?php echo $lieu_svg; ?>
                         </div>
-                    <?php endif; ?>
-                    <div class="em-option-details">
-                        <?php echo "<p class='em-option-title'>" . $title . "</p>"; ?>
-                        <?php echo "<p style='margin-top: -20px;'>réf. " . $this->data['jos_emundus_setup_teaching_unity___code_raw'] . "</p>"; ?>
+
+                        <div class="location-details">
+                            <p>Dans votre entreprise</p>
+                            <p>pour <?php echo $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'];?> personnes minimum</p>
+                        </div>
                     </div>
 
                     <div class="em-option-price">
-                        <?php echo $prix_svg . '<p style="font-weight: bold;">' . intval($this->data['jos_emundus_setup_teaching_unity___price_raw']) . ' € net de taxe tarif par personne</p> <p style="margin-top: 20px;">(' . $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'] . ' personnes minimum)</p>'; ?>
-                    </div>
+                        <div class="price-icon">
+                            <?php echo $prix_svg; ?>
+                        </div>
 
-                    <div class="em-option-certificate">
-                        <?php echo $diplomant_svg . '<b style="display: inline-block;">INTRA Certificat</b>'; ?>
-                    </div>
-
-                    <div class="em-option-documents">
-                        <?php echo $telechargement_svg . '<b style="display: inline-block;">INTRA list of docs</b>'; ?>
+                        <div class="price-details">
+                            <p>
+                                <?php
+                                if(!empty($session['tax_rate']))
+                                    echo intval($session['price']) . " € HT" ;
+                                else
+                                    echo intval($session['price']) . " € net" ;
+                                ?>
+                            </p>
+                            <p>Par personne</p>
+                        </div>
                     </div>
 
                     <div class="em-option-buttons">
@@ -284,20 +298,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
 
                 <div class="em-option hide" id="em-option-sur-mesure">
-                    <?php if (sizeof($sessions) > 1) :?>
-                        <div class="session-select">
-                            <select class="sessions">
-                                <?php $i = 0; foreach ($sessions as $session) :?>
-                                    <option class="dropdown-item" value="<?php echo $i++; ?>" > <?php echo date('d/m/Y',strtotime($session['date_start'])) . " à " . str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    <?php endif; ?>
+                   
                     <div class="em-option-details" id="sur-mesure-details">
-                        <b> Vous êtes intéressé par cette thématique mais vous avez besoin de spécifiques?</b>
-                        <br>
-                        <br>
-                        <b> Nous pouvons élaborer une formation sur-mesure pour répondre au mieux à vos objectifs.</b>
+                        <div class="top-paragraph">
+                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoins spécifiques?</b>
+                        </div>
+
+                        <div class="bottom-paragraph">
+                            <b> Nous pouvons élaborer pour vous une formation sur-mesure.</b>
+                        </div>
                     </div>
 
                     <button class="em-option-contact" >être contacté</button>
@@ -368,9 +377,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 /*
     var geocoder;
     var map;
-    var addy = "*/<?php// echo $address; ?>/*";
+    var addy = "echo $address;";
 
-    var address = "*/<?php //echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city; ?>/*";
+    var address = "//echo $addTitle . ' ' . $address . ' ' . $zip . ' ' . $city;";
 
     function initMap() {
         if(addy.replace(/\s/g,'') != "") {
@@ -494,7 +503,26 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         }
     });
 
-
+    function getProductPDF(code) {
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=files&task=getproductpdf',
+            data: {
+                product_code: code
+            },
+            success: function (result) {
+                result = JSON.parse(result);
+                if (result.status) {
+                    window.location = result.filename;
+                } else {
+                    alert(result);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
 
 </script>
   <!--  <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php //echo $API; ?>&callback=initMap"></script> -->
