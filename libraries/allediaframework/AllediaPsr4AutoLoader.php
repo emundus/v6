@@ -22,9 +22,9 @@ if (!class_exists('\\Alledia\\Framework\\AutoLoader')) {
 class AllediaPsr4AutoLoader extends AutoLoader
 {
     /**
-     * @param string      $prefix
-     * @param string     $baseDir
-     * @param bool $prepend
+     * @param string $prefix
+     * @param string $baseDir
+     * @param bool   $prepend
      *
      * @return void
      *
