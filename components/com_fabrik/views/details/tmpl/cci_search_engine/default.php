@@ -290,7 +290,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
 
                     <div class="em-option-buttons">
-                        <a href="http://google.com" class="em-option-login">demander un devis</a>
+                        <a href="/demande-de-pre-inscription" class="em-option-login">demander un devis</a>
                         <a href="https://cci-rs.emundus.fr/fr/demande-de-contact" class="em-option-contact">être contacté</a>
                     </div>
 
