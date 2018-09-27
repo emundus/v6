@@ -312,15 +312,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                 </div>
             </div>
-
-            <div id="em-certification">
-                <?php if (empty($cartificat)) :?>
-                    <p>Pas de certification pour cette formation</p>
-                <?php else :?>
-                    <img src="images/custom/ccirs/certifications/">
-                    <!-- TODO: get partners photo -->
-                <?php endif; ?>
-            </div>
         </div>
 
 
@@ -441,8 +432,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         var options = document.getElementById("formation-options");
         options.appendChild(document.getElementById("em-formation-options"));
 
-        var certificate = document.getElementById("formation-certification");
-        certificate.appendChild(document.getElementById("em-certification"));
     });
 
     document.getElementById("em-option-menu-inter").addEventListener('click', function (e) {
