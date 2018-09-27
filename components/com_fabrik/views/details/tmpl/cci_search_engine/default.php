@@ -75,9 +75,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     <div class="g-block size-78">
         <h1><?php echo $title; ?></h1>
-            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?></p>
-        <br>
-            <p><?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
+            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
+            <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
     <?php if (!empty($partenaire)) :?>
@@ -230,7 +229,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
 
                             <?php
-                                if(($session['max_occupants'] - $session['occupants']) <= 3)
+                                if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
                                     echo "<p class='places'>dernières places disponibles</p>";
                             ?>
 
@@ -245,8 +244,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
-                                        <button class="em-option-contact">être contacté</button>
-                                        <button class="em-option-login">s'inscrire</button>
+                                        <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
+                                        <a href="/demande-de-pre-inscription" class="em-option-login">s'inscrire</a>
                                     </div>
                                 <?php else: ?>
                                     <div class="em-option-buttons">
@@ -291,8 +290,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
 
                     <div class="em-option-buttons">
-                        <button class="em-option-login">demander un devis</button>
-                        <button class="em-option-contact">être contacté</button>
+                        <a href="/demande-de-pre-inscription" class="em-option-login">demander un devis</a>
+                        <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
                     </div>
 
                 </div>
@@ -309,7 +308,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         </div>
                     </div>
 
-                    <button class="em-option-contact" >être contacté</button>
+                    <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
 
                 </div>
             </div>
