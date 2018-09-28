@@ -8,39 +8,44 @@
 
 namespace Alledia\Framework\Content;
 
-use Alledia\Framework\Object;
+use Alledia\Framework\Base;
 use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die();
 
-class Tag extends Object
+class Tag extends Base
 {
     /**
      * The unparsed tag string
+     *
      * @var string
      */
     protected $unparsedString;
 
     /**
      * The tag name
+     *
      * @var string
      */
     protected $name;
 
     /**
      * The tag content
+     *
      * @var string
      */
     protected $content = '';
 
     /**
      * The regex used to find the tag
+     *
      * @var string
      */
     protected $regex;
 
     /**
      * The tag params
+     *
      * @var Registry
      */
     public $params;
@@ -50,6 +55,8 @@ class Tag extends Object
      *
      * @param string $name
      * @param string $unparsedString
+     *
+     * @return void
      */
     public function __construct($name, $unparsedString)
     {
@@ -63,7 +70,8 @@ class Tag extends Object
     /**
      * Return the regex used to find tags inside a text.
      *
-     * @param  string $tagName
+     * @param string $tagName
+     *
      * @return string
      */
     public static function getRegex($tagName)
@@ -74,6 +82,8 @@ class Tag extends Object
 
     /**
      * Parse this tag storing the content and params.
+     *
+     * @return void
      */
     protected function parse()
     {
@@ -89,7 +99,7 @@ class Tag extends Object
      */
     protected function parseContent()
     {
-        $content =  '';
+        $content = '';
 
         if (!empty($this->unparsedString)) {
             if (strpos($this->unparsedString, '{' . $this->name) !== false) {
@@ -104,8 +114,10 @@ class Tag extends Object
     }
 
     /**
-    * Parse inline parameters from the tag
-    */
+     * Parse inline parameters from the tag
+     *
+     * @return Registry
+     */
     protected function parseParams()
     {
         // Remove the tag name, extracting only the tag attributes
@@ -113,7 +125,7 @@ class Tag extends Object
         $inlineParams = trim(preg_replace('/\}[a-z0-9\s]*\{\/' . $this->name . '\}/', '', $inlineParams));
 
         // Parse the inline params
-        $regex = '/([a-z0-9\_]*)(?:="([^"]*)")?\s?/i';
+        $regex  = '/([a-z0-9\_]*)(?:="([^"]*)")?\s?/i';
         $parsed = new Registry();
         if (preg_match_all($regex, $inlineParams, $vars)) {
             $fullParams  = $vars[0];
@@ -150,11 +162,17 @@ class Tag extends Object
         return $this->content;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return Registry
+     */
     public function getParams()
     {
         return $this->params;

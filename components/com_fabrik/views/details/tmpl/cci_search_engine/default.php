@@ -63,7 +63,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
-    $title = ucfirst(strtolower($this->data['jos_emundus_setup_programmes___label_raw']));
+    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
 
 ?>
 
@@ -75,9 +75,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     <div class="g-block size-78">
         <h1><?php echo $title; ?></h1>
-            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?></p>
-        <br>
-            <p><?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
+            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
+            <?php if(!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
     <?php if (!empty($partenaire)) :?>
@@ -214,12 +213,17 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             <b><?php
 
                             setlocale(LC_ALL, 'fr_FR.utf8');
+                            $start_day = date('d',strtotime($session['date_start']));
+                            $end_day = date('d',strtotime($session['date_end']));
                             $start_month = date('m',strtotime($session['date_start']));
                             $end_month = date('m',strtotime($session['date_end']));
                             $start_year = date('y',strtotime($session['date_start']));
                             $end_year = date('y',strtotime($session['date_end']));
 
-                            if ($start_month == $end_month && $start_year == $end_year)
+
+                            if($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
+                                echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+                            elseif ($start_month == $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
                             elseif ($start_month != $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_start']))) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
@@ -229,10 +233,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
 
-                            <?php
-                                if(($session['max_occupants'] - $session['occupants']) <= 3)
-                                    echo "<p class='places'>dernières places disponibles</p>";
-                            ?>
+
 
                                 <p>
                                     <?php
@@ -243,10 +244,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                     ?>
                                 </p>
 
+                            <?php
+                            if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
+                                echo "<p class='places'>dernières places disponibles</p>";
+                            ?>
+
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
-                                        <button class="em-option-contact">être contacté</button>
-                                        <button class="em-option-login">s'inscrire</button>
+                                        <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
+                                        <a href="/demande-de-pre-inscription?session=<?php echo $session['code']; ?>" class="em-option-login">s'inscrire</a>
                                     </div>
                                 <?php else: ?>
                                     <div class="em-option-buttons">
@@ -291,8 +297,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
 
                     <div class="em-option-buttons">
-                        <button class="em-option-login">demander un devis</button>
-                        <button class="em-option-contact">être contacté</button>
+                        <a href="/demande-de-pre-inscription?session=<?php echo $session['code']; ?>" class="em-option-login">demander un devis</a>
+                        <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
                     </div>
 
                 </div>
@@ -309,18 +315,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         </div>
                     </div>
 
-                    <button class="em-option-contact" >être contacté</button>
+                    <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
 
                 </div>
-            </div>
-
-            <div id="em-certification">
-                <?php if (empty($cartificat)) :?>
-                    <p>Pas de certification pour cette formation</p>
-                <?php else :?>
-                    <img src="images/custom/ccirs/certifications/">
-                    <!-- TODO: get partners photo -->
-                <?php endif; ?>
             </div>
         </div>
 
@@ -352,11 +349,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#pagin").append('<li><a href="#">'+(i+1)+'</a></li> ');
+            jQuery("#pagin").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#pagin li").first().find("a").addClass("current");
+    jQuery("#pagin li").first().find("p").addClass("current");
     showPage = function(page) {
         jQuery(".formation").hide();
         jQuery(".formation").each(function(n) {
@@ -367,8 +364,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     showPage(1);
 
-    jQuery("#pagin li a").click(function() {
-        jQuery("#pagin li a").removeClass("current");
+    jQuery("#pagin li p").click(function() {
+        jQuery("#pagin li p").removeClass("current");
         jQuery(this).addClass("current");
         showPage(parseInt(jQuery(this).text()))
     });
@@ -442,8 +439,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         var options = document.getElementById("formation-options");
         options.appendChild(document.getElementById("em-formation-options"));
 
-        var certificate = document.getElementById("formation-certification");
-        certificate.appendChild(document.getElementById("em-certification"));
     });
 
     document.getElementById("em-option-menu-inter").addEventListener('click', function (e) {

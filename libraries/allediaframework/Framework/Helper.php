@@ -9,11 +9,10 @@
 namespace Alledia\Framework;
 
 use Alledia\Framework\Joomla\Extension\Helper as ExtensionHelper;
-use Alledia\Framework\Factory;
-use JLog;
+use ReflectionException;
+use ReflectionMethod;
 
 defined('_JEXEC') or die();
-
 
 abstract class Helper
 {
@@ -23,12 +22,13 @@ abstract class Helper
      * @todo Move this method for the class Alledia\Framework\Joomla\Extension\Helper, but keep as deprecated
      *
      * @param  string $license
-     * @return array
+     *
+     * @return object[]
      */
     public static function getAllediaExtensions($license = '')
     {
         // Get the extensions ids
-        $db = \JFactory::getDbo();
+        $db    = \JFactory::getDbo();
         $query = $db->getQuery(true)
             ->select(
                 array(
@@ -51,25 +51,26 @@ abstract class Helper
                 'OR'
             )
             ->group($db->quoteName('extension_id'));
-        $db->setQuery($query);
-        $rows = $db->loadObjectList();
+
+        $rows = $db->setQuery($query)->loadObjectList();
 
         $extensions = array();
 
         foreach ($rows as $row) {
             $fullElement = $row->element;
 
-             // Fix the element for plugins
+            // Fix the element for plugins
             if ($row->type === 'plugin') {
-                $fullElement = ExtensionHelper::getFullElementFromInfo($row->type, $row->element, $row->folder) ;
+                $fullElement = ExtensionHelper::getFullElementFromInfo($row->type, $row->element, $row->folder);
             }
 
             $extensionInfo = ExtensionHelper::getExtensionInfoFromElement($fullElement);
             $extension     = new Joomla\Extension\Licensed($extensionInfo['namespace'], $row->type, $row->folder);
 
             if (!empty($license)) {
-                if ($license === 'pro' && ! $extension->isPro()) {
+                if ($license === 'pro' && !$extension->isPro()) {
                     continue;
+
                 } elseif ($license === 'free' && $extension->isPro()) {
                     continue;
                 }
@@ -81,24 +82,37 @@ abstract class Helper
         return $extensions;
     }
 
+    /**
+     * @return string
+     */
     public static function getJoomlaVersionCssClass()
     {
         return 'joomla' . (version_compare(JVERSION, '3.0', 'lt') ? '25' : '3x');
     }
 
+    /**
+     * @param string $className
+     * @param string $methodName
+     * @param array  $params
+     *
+     * @return mixed
+     * @throws ReflectionException
+     */
     public static function callMethod($className, $methodName, $params = array())
     {
         $result = true;
 
         if (method_exists($className, $methodName)) {
-            $method = new \ReflectionMethod($className, $methodName);
+            $method = new ReflectionMethod($className, $methodName);
 
             if ($method->isStatic()) {
                 $result = call_user_func_array("{$className}::{$methodName}", $params);
+
             } else {
                 // Check if we have a singleton class
                 if (method_exists($className, 'getInstance')) {
                     $instance = $className::getInstance();
+
                 } else {
                     $instance = new $className;
                 }

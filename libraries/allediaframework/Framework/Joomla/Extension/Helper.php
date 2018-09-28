@@ -19,10 +19,16 @@ abstract class Helper
 {
     /**
      * Build a string representing the element
+     *
+     * @param string $type
+     * @param string $element
+     * @param string $folder
+     *
+     * @return string
      */
     public static function getFullElementFromInfo($type, $element, $folder = null)
     {
-        $prefixes    = array(
+        $prefixes = array(
             'component' => 'com',
             'plugin'    => 'plg',
             'template'  => 'tpl',
@@ -42,6 +48,11 @@ abstract class Helper
         return $fullElement;
     }
 
+    /**
+     * @param string $element
+     *
+     * @return array
+     */
     public static function getExtensionInfoFromElement($element)
     {
         $result = array(
@@ -66,7 +77,7 @@ abstract class Helper
         $result['prefix'] = $element[0];
 
         if (array_key_exists($result['prefix'], $types)) {
-            $result['type']  = $types[$result['prefix']];
+            $result['type'] = $types[$result['prefix']];
 
             if ($result['prefix'] === 'plg') {
                 $result['group'] = $element[1];
@@ -79,7 +90,7 @@ abstract class Helper
 
         $result['namespace'] = preg_replace_callback(
             '/^(os[a-z])(.*)/i',
-            function($matches) {
+            function ($matches) {
                 return strtoupper($matches[1]) . $matches[2];
             },
             $result['name']
@@ -88,6 +99,11 @@ abstract class Helper
         return $result;
     }
 
+    /**
+     * @param string $element
+     *
+     * @return bool
+     */
     public static function loadLibrary($element)
     {
         $extension = static::getExtensionForElement($element);
@@ -96,9 +112,14 @@ abstract class Helper
             return $extension->loadLibrary();
         }
 
-        return null;
+        return false;
     }
 
+    /**
+     * @param string $element
+     *
+     * @return string
+     */
     public static function getFooterMarkup($element)
     {
         if (is_string($element)) {

@@ -3,7 +3,7 @@ blueprints/gantry/theme/configuration.yaml	a0854a80c8b78af96c4373decbda5385
 blueprints/gantry/theme/details.yaml	dfdacb33d214d21c040018dcf0170049
 blueprints/menu/menu.yaml	97bfc9e993a9459303397d6be3a99cda
 blueprints/menu/menuitem.yaml	08be6856e2d7d9d5613bdfe578494eef
-css-compiled/g-admin.css	fe145b5d8486ca30b4db1c51ed844e61
+css-compiled/g-admin.css	8e1563c36623c087eebae479555a0bb0
 css-compiled/joomla-g-admin.css	1a508223be25b9dbb42e4199a3330a24
 fonts/roboto_bold_macroman/Roboto-Bold-webfont.eot	ecdd509cadbf1ea78b8d2e31ec52328c
 fonts/roboto_bold_macroman/Roboto-Bold-webfont.svg	375c4f3bd35840adee24a1535bbb2018
@@ -37,8 +37,8 @@ images/layouts/home.png	a245e5c2401d8eb641357e8e37b372cc
 images/layouts/offline.png	62be3bedd74a07f5e038fe62accc4432
 images/placeholder.png	85a94268260d40f95f690d88c97178b7
 images/gantrylogo.png	83b6b9f4fcc3a651964d4dee8fe89bd7
-js/google-fonts.json	4747a6e3f9e4c74a5ea7962b9b086d1b
-js/main.js	f594af483b85513285f713ed5c307455
+js/google-fonts.json	25e33c75b3752ef610d98cf18765411f
+js/main.js	23ba8be7fe5cf66163689d2470728fe2
 js/tooltips.js	2462fb34ec347c0391c56569c1c5b419
 scss/admin/fields/_colorpicker.scss	96ea1c8ac356d1aab97b8b9c0e78f0d2
 scss/admin/fields/_filepicker.scss	2bb78a1b746b9d669af2dfd7a4d16933
@@ -71,7 +71,7 @@ scss/admin/_page-settings.scss	53beed4a8ff9f7772a68c9555a72e8d4
 scss/admin/_popover.scss	a35bad80b55e88450820fab7b89830ed
 scss/admin/_positions.scss	25ee9a57b3f1cbb190529a5d955aa808
 scss/admin/_rtl.scss	6f5d97973e52d01e37fde52e0027d633
-scss/admin/_selectize.scss	1d81a4763642916c93ce207cc73d015b
+scss/admin/_selectize.scss	e4f129379ba439a2e17338d0b05878ef
 scss/admin/_settings.scss	e99133517607982fb1cd9f4914986277
 scss/admin/_styles.scss	b7a6515df72095188a1d3d5b039427d2
 scss/admin/_toastr.scss	b3e2edd76420e9022be78ba96afcdf20
@@ -91,7 +91,7 @@ scss/joomla-admin/_settings.scss	4776ba55c47fcc8c191d12a04065013a
 scss/joomla-admin/_typography.scss	d97f5b2f072c5d6396622eb178fa442f
 scss/admin.scss	0bbc4dbb53ea8249d8f641d4558cac14
 scss/joomla-admin.scss	d268416e36ffbea612dcb5d9b792e1d2
-templates/ajax/filepicker/files.html.twig	e9cf2c735376e69a20a76a566e62672c
+templates/ajax/filepicker/files.html.twig	4b6eae1535fe3d8c7c299841ddedcef4
 templates/ajax/filepicker/subfolders.html.twig	07d26e95143e376a0fe4f109bbe6fa09
 templates/ajax/changelog.html.twig	3c899acc49d030261ea73f211667c4a8
 templates/ajax/confirm-deletion.html.twig	ecbace9b902c20e89d6f5b25683d43d6
@@ -107,10 +107,10 @@ templates/forms/fields/button/group/group.html.twig	d41d8cd98f00b204e9800998ecf8
 templates/forms/fields/button/button.html.twig	35333d3e63b204be65c64f96fe935737
 templates/forms/fields/checkboxes/checkboxes.html.twig	e8d8971d3dace64b80d4aafad705a7ad
 templates/forms/fields/collection/keyvalue.html.twig	23e105fb84f67d9ee1c916e986a16bef
-templates/forms/fields/collection/list.html.twig	606c6f431af8057e1a43fea485aeb2c1
+templates/forms/fields/collection/list.html.twig	3befc4e6cbe76d2fa194b197ede4763a
 templates/forms/fields/collection/list.yaml	e5eb64a5b2f8303cb2af0715108e4693
-templates/forms/fields/container/set.html.twig	6dd56a85f5417304fb4560dab306ce46
-templates/forms/fields/container/tabs.html.twig	5e9ea4cae16f72c20e5a23dc18e42849
+templates/forms/fields/container/set.html.twig	0198dd1805698230ded89e3dec2c07db
+templates/forms/fields/container/tabs.html.twig	5de70def71dbf8e38843af3f9689516a
 templates/forms/fields/enable/enable.html.twig	8249c58915ab6a15e0992201908372d0
 templates/forms/fields/gantry/atoms.html.twig	efea3df9a31e5418e2bfec0fd81faff9
 templates/forms/fields/gantry/inherit.html.twig	2f5ead1111664d0362ebb9055a4aa285
@@ -118,11 +118,11 @@ templates/forms/fields/gantry/module.html.twig	62df42d0e8b09f2d5e24097708137b98
 templates/forms/fields/gantry/outlines.html.twig	01b4ec897540b3129a483ac186e721d9
 templates/forms/fields/gantry/particle.html.twig	3b50fa8626ac19c1eeb003befd94c7d4
 templates/forms/fields/gantry/particles.html.twig	d81dc028cd9e497581d26bbd25bff757
-templates/forms/fields/input/group/group.html.twig	d80ebb9e2c84829d63af5485b1acc1b7
+templates/forms/fields/input/group/group.html.twig	e4fba4dc985df95d10b7246099042641
 templates/forms/fields/input/block-variations.html.twig	b55a12ca025b960be2c1e64c6e1d7d2e
 templates/forms/fields/input/checkbox.html.twig	94aa3bb44b3afb51fb042ae870661e19
 templates/forms/fields/input/color.html.twig	2f20ece35b23654615a7ea25ef539284
-templates/forms/fields/input/colorpicker.html.twig	0401757b0337e362956a5ca05e481128
+templates/forms/fields/input/colorpicker.html.twig	9348c294f479f01d24147a1461555acb
 templates/forms/fields/input/date.html.twig	29e45bb9fdca401af868c78cf3470767
 templates/forms/fields/input/datetime-local.html.twig	a1b6506c572a6f92329804616a005676
 templates/forms/fields/input/datetime.html.twig	768c8af3f16dd4eaff874f3aad9a1054
@@ -165,8 +165,8 @@ templates/forms/fields/toggle/toggle.html.twig	1a8c35f29646125d9f8c156f289bc275
 templates/forms/fields/unknown/unknown.html.twig	f294610d6136cad14069a3b340ed94be
 templates/forms/fields/joomla/categories.html.twig	05162c250db522fbe1e631f50dc8c0d4
 templates/forms/fields/README.md	79ce8b98acc4ae5d580f62bc5a7d798b
-templates/forms/field.html.twig	1e7aeb493493036619bc4430e81504eb
-templates/forms/fields.html.twig	6bf28875cb64c8985c49f1f6aeb591ee
+templates/forms/field.html.twig	80e14c8a83fa699b97fa49159654858e
+templates/forms/fields.html.twig	2d337ada2194d8a90105917f7b6c9549
 templates/forms/form.html.twig	0a8c133af6200a61d4fff9e2f8fe4768
 templates/forms/input.html.twig	9ff0067c56b1e88763fe3cca7dfe8402
 templates/forms/override.html.twig	7b430815f614b48deb5e96beed774a20
@@ -174,7 +174,7 @@ templates/layouts/css-warnings.html.twig	d45a3783788fd5a3af4d671b00570f5d
 templates/layouts/outline.html.twig	33962565fd401989756f00af3e3cf31a
 templates/layouts/picker.html.twig	fc58fa1fd58262c24145ece873c3ebcf
 templates/layouts/position.html.twig	37b0fe8cd9525e5453d77b23d1299013
-templates/layouts/switcher.html.twig	cb8a28bfd804bc3f604ac5fcfbb4cb62
+templates/layouts/switcher.html.twig	b5a56c4192ff49d3bda9fddca85425df
 templates/menu/base.html.twig	358ddeb1d09f4738fb2c5989eac62b61
 templates/menu/columns.html.twig	0eff002a7a9f4a5da819fe70b2f3ce55
 templates/menu/empty.html.twig	0d787eff5f3aac2da1d9c9447b4ec7d0
@@ -196,7 +196,7 @@ templates/pages/configurations/layouts/particle.html.twig	b9ab5b93ef40a53fbab5d8
 templates/pages/configurations/layouts/section.html.twig	0cc0c30422977e5a007dc3dbc2a0fdc4
 templates/pages/configurations/page/atoms.html.twig	0d2455fbccf2ab3e5ed5ec2b265c4b85
 templates/pages/configurations/page/page.html.twig	42553a850fd68e9f8118bc1e79a72527
-templates/pages/configurations/settings/field.html.twig	9319e8eb7b21693fa482a44a954b0041
+templates/pages/configurations/settings/field.html.twig	63440a64662739cdbcf970f847752eb6
 templates/pages/configurations/settings/item.html.twig	162f83b2a33f91dc75e13e2a2439d46d
 templates/pages/configurations/settings/settings.html.twig	08f56b547b746985aa68bfc2d24c985b
 templates/pages/configurations/styles/field.html.twig	5c29498cae8420ea02934039550553d4
@@ -230,7 +230,7 @@ templates/partials/php_unsupported.html.twig	fc9f221c528c36f9357f416eba41733a
 templates/partials/updates.html.twig	e199020e3d3aa73c4dccd17b1e9ad914
 templates/partials/page.html.twig	75b2371c5b46e269899d17a40a9b78ea
 templates/error.html.twig	0592663bbec026aa1009720041a6e834
-translations/en/nucleus.yaml	9e54eddeb3fc7c19b27c06f5425c6b59
+translations/en/nucleus.yaml	abff57f4af243d6e0724559d8a2a7cb4
 translations/en/platform.yaml	13fcf4359e383c9e9e382195737348c6
 language/en-GB/en-GB.com_gantry5.ini	4cafa11114a90897677e20555901324e
 language/en-GB/en-GB.com_gantry5.sys.ini	1b323ed9c4a083e2652935665e50b4dd
