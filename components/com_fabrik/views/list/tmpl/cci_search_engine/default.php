@@ -116,10 +116,10 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
                 <div class="em-search-engine-data">
 
-                        <?php if(sizeof($data) > 1) :?>
-                            <h2><?php echo sizeof($data) ;?> formations trouvées</h2>
-                        <?php elseif (sizeof($data) == 1) :?>
-                            <h2><?php echo sizeof($data) ;?> formation trouvée</h2>
+                        <?php if($this->navigation->total > 1) :?>
+                            <h2><?php echo $this->navigation->total; ?> formations trouvées</h2>
+                        <?php elseif ($this->navigation->total == 1) :?>
+                            <h2><?php echo $this->navigation->total ;?> formation trouvée</h2>
                         <?php else :?>
                             <h2>Pas de formations trouvées</h2>
                         <?php endif; ?>
