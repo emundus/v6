@@ -212,7 +212,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         <div class="formation">
                             <b><?php
 
-                            setlocale(LC_ALL, 'fr_FR');
+                            setlocale(LC_ALL, 'fr_FR.utf8');
                             $start_day = date('d',strtotime($session['date_start']));
                             $end_day = date('d',strtotime($session['date_end']));
                             $start_month = date('m',strtotime($session['date_start']));
