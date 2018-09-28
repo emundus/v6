@@ -342,11 +342,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#pagin").append('<li><a href="#">'+(i+1)+'</a></li> ');
+            jQuery("#pagin").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#pagin li").first().find("a").addClass("current");
+    jQuery("#pagin li").first().find("p").addClass("current");
     showPage = function(page) {
         jQuery(".formation").hide();
         jQuery(".formation").each(function(n) {
@@ -357,8 +357,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     showPage(1);
 
-    jQuery("#pagin li a").click(function() {
-        jQuery("#pagin li a").removeClass("current");
+    jQuery("#pagin li p").click(function() {
+        jQuery("#pagin li p").removeClass("current");
         jQuery(this).addClass("current");
         showPage(parseInt(jQuery(this).text()))
     });
