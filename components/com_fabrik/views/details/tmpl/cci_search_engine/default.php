@@ -63,7 +63,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
-    $title = ucfirst(strtolower($this->data['jos_emundus_setup_programmes___label_raw']));
+    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
 
 ?>
 
@@ -76,7 +76,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="g-block size-78">
         <h1><?php echo $title; ?></h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
-            <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
+            <?php if(!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
     <?php if (!empty($partenaire)) :?>
@@ -213,12 +213,17 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             <b><?php
 
                             setlocale(LC_ALL, 'fr_FR');
+                            $start_day = date('d',strtotime($session['date_start']));
+                            $end_day = date('d',strtotime($session['date_end']));
                             $start_month = date('m',strtotime($session['date_start']));
                             $end_month = date('m',strtotime($session['date_end']));
                             $start_year = date('y',strtotime($session['date_start']));
                             $end_year = date('y',strtotime($session['date_end']));
 
-                            if ($start_month == $end_month && $start_year == $end_year)
+
+                            if($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
+                                echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+                            elseif ($start_month == $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
                             elseif ($start_month != $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_start']))) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
@@ -228,10 +233,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
 
-                            <?php
-                                if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
-                                    echo "<p class='places'>dernières places disponibles</p>";
-                            ?>
+
 
                                 <p>
                                     <?php
@@ -241,6 +243,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                             echo intval($session['price']) . " € net" ;
                                     ?>
                                 </p>
+
+                            <?php
+                            if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
+                                echo "<p class='places'>dernières places disponibles</p>";
+                            ?>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
