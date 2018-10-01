@@ -63,17 +63,35 @@ $public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS
 $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
+$category = JFactory::getApplication()->input->get->get('category');
+if(!empty($category)) {
+    $db = JFactory::getDbo();
+    $query = $db->getQuery(true);
 
+    $query
+        ->select('*')
+        ->from($db->quoteName('#__emundus_setup_thematiques'))
+        ->where($db->quoteName('title') . ' LIKE ' . $db->quote($category));
+
+    $db->setQuery($query);
+    $category = $db->loadAssoc();
+}
 
 ?>
 
-<style>
-
-
-</style>
 <div class="main">
+
     <div class="form">
+
         <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+
+            <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
+                <?php echo $category['label']; ?>
+            </div>
+            <form action="/rechercher">
+                <button type="submit"><span aria-hidden="true">&times;</span></button>
+            </form>
+
 
 			<?php
 			if ($this->hasButtons)

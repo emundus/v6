@@ -16,8 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 $user = JFactory::getUser();
 $doc = JFactory::getDocument();
 // GET Google Maps API key
-$eMConfig   = JComponentHelper::getParams('com_fabrik');
-$API        = $eMConfig->get("google_api_key", null, "string");
+//$eMConfig   = JComponentHelper::getParams('com_fabrik');
+//$API        = $eMConfig->get("google_api_key", null, "string");
 
 
 $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
@@ -28,7 +28,6 @@ $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css'
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
-//var_dump($sessions);
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -70,7 +69,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
     <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
-        <a href="rechercher?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-',$this->data['jos_emundus_setup_thematiques___title_raw']))));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
+        <a href="rechercher?category=<?php echo $this->data['jos_emundus_setup_thematiques___title_raw'];?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
 
     <div class="g-block size-78">
