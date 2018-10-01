@@ -270,7 +270,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Product family = programme programmes
 						// Updating the category involves checking if the category exists in the other table.
-						$category = array_search($update_item['familleproduits'], $categories);
+						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['familleproduits'])))), $categories);
 						if ($db_item['categ'] != $category) {
 							if ($category == 0) {
 								// If no category exists: INSERT
@@ -278,12 +278,12 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$query
 									->insert($db->quoteName('#__emundus_setup_thematiques'))
 									->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order')])
-									->values($db->quote($update_item['familleproduits']).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1));
+									->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['familleproduits']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1));
 								$db->setQuery($query);
 								try {
 									$db->execute();
 									$category = $db->insertid();
-									$categories[$category] = $update_item['familleproduits'];
+									$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['familleproduits']))));
 								} catch (Exception $e) {
 									JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 								}
@@ -432,8 +432,6 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$rows_updated += $db->getAffectedRows();
 							JLog::add('UPDATED data for DB item ['.$db_item['session_code'].'] in query: '.$query, JLog::INFO, 'com_emundus');
 
-						} else {
-							JLog::add('No data to update for item ID ['.$db_item['session_code'].']', JLog::INFO, 'com_emundus');
 						}
 					}
 				}
@@ -515,19 +513,19 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Array search returns FALSE (0) if it does not find the key.
 						// Else it will return the ID of the category with the name in the JSON.
-						$category = array_search($item['familleproduits'], $categories);
+						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['familleproduits'])))), $categories);
 						if ($category == 0) {
 							// If no category exists: INSERT
 							$query = $db->getQuery(true);
 							$query
 								->insert($db->quoteName('#__emundus_setup_thematiques'))
 								->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order')])
-								->values($db->quote($item['familleproduits']).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1));
+								->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['familleproduits']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1));
 							$db->setQuery($query);
 							try {
 								$db->execute();
 								$category = $db->insertid();
-								$categories[$category] = $item['familleproduits'];
+								$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['familleproduits']))));
 							} catch (Exception $e) {
 								JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 							}
