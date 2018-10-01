@@ -83,14 +83,16 @@ if(!empty($category)) {
 
     <div class="form">
 
-        <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
-
+        <div class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+            <?php if(!empty($category)) :?>
             <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
                 <?php echo $category['label']; ?>
             </div>
-            <form action="/rechercher">
-                <button type="submit"><span aria-hidden="true">&times;</span></button>
-            </form>
+            <div>
+                <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+            </div>
+
+            <?php endif; ?>
 
 
 			<?php
