@@ -264,6 +264,11 @@ if(!empty($category)) {
                 placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
                 no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
             });
+
+            <?php if(!empty(JFactory::getApplication()->input->post->get('search'))) :?>
+                var searchValue = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
+                document.getElementById("formation-search").value = searchValue;
+            <?php endif; ?>
         });
     </script>
 
