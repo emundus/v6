@@ -507,9 +507,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             success: function (result) {
                 result = JSON.parse(result);
                 if (result.status) {
-                    window.location = result.filename;
+                    var win = window.open(result.filename, '_blank');
+                    win.focus();
                 } else {
-                    alert(result);
+                    alert(result.msg);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
