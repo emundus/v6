@@ -80,12 +80,10 @@ if(!empty($category)) {
 ?>
 
 <div class="main">
-
     <div class="form">
+        <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
 
-        <div class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
-
-            <?php if(!empty($category)) :?>
+            <?php if (!empty($category)) :?>
                 <div class="theme-filter">
                     <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
                         <?php echo $category['label']; ?>
@@ -98,6 +96,12 @@ if(!empty($category)) {
 			if ($this->hasButtons)
 				echo $this->loadTemplate('buttons');
 			?>
+
+            <div class="em-search-engine-filters">
+		        <?php if ($this->showFilters && $this->bootShowFilters)
+			        echo $this->layoutFilters();
+		        ?>
+            </div>
 
 
             <div class="fabrikDataContainer">
@@ -128,15 +132,9 @@ if(!empty($category)) {
 				}
 				?>
 
-                <div class="em-search-engine-filters">
-					<?php if ($this->showFilters && $this->bootShowFilters)
-						echo $this->layoutFilters();
-					?>
-                </div>
-
                 <div class="em-search-engine-data">
 
-                        <?php if($this->navigation->total > 1) :?>
+                        <?php if ($this->navigation->total > 1) :?>
                             <h2><?php echo $this->navigation->total; ?> formations trouvées</h2>
                         <?php elseif ($this->navigation->total == 1) :?>
                             <h2><?php echo $this->navigation->total ;?> formation trouvée</h2>
@@ -165,9 +163,8 @@ if(!empty($category)) {
 		                                $theme_label = $theme_label[0];
 
 
-	                                if(($gCounter % 2) == 1) {
+	                                if (($gCounter % 2) == 1)
 	                                    $class = "light-stripe";
-                                    }
                                     else
                                         $class = "dark-stripe";
                                     ?>
