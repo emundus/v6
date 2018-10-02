@@ -126,7 +126,7 @@ if ($locallang == "fr-FR") {
 							<a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
 							<?php
 								// The register URL does not work  with SEF, this workaround helps counter this.
-								if ($sef == 1)
+								if ($sef == 0)
 									$register_url = "index.php?option=com_users&view=registration&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
 								else
 									$register_url = "registration?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
