@@ -22,6 +22,10 @@
 		<fields name="params">
 			<fieldset name="basic" label="Options">
 				<field type="text" name="search_page" label="MOD_EM_CATEGORY_SEARCH_PAGE" description="MOD_EM_CATEGORY_SEARCH_PAGE_DESC"/>
+				<field type="list" name="tmpl" label="MOD_EM_CATEGORY_SEARCH_LAYOUT" description="MOD_EM_CATEGORY_SEARCH_LAYOUT_DESC">
+					<option value="default">DEFAULT</option>
+					<option value="fullWidth">WIDESCREEN</option>
+				</field>
 			</fieldset>
 		</fields>
 	</config>

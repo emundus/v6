@@ -18,4 +18,4 @@ $categories = $helper->loadCategories();
 $search_page = $params->get('search_page');
 
 if (!empty($categories))
-	require JModuleHelper::getLayoutPath('mod_emundus_category_search', 'default');
+	require JModuleHelper::getLayoutPath('mod_emundus_category_search', $params->get('tmpl','default'));
