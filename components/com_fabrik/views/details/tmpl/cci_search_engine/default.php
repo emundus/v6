@@ -16,8 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 $user = JFactory::getUser();
 $doc = JFactory::getDocument();
 // GET Google Maps API key
-$eMConfig   = JComponentHelper::getParams('com_fabrik');
-$API        = $eMConfig->get("google_api_key", null, "string");
+//$eMConfig   = JComponentHelper::getParams('com_fabrik');
+//$API        = $eMConfig->get("google_api_key", null, "string");
 
 
 $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
@@ -28,7 +28,6 @@ $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css'
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
-//var_dump($sessions);
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -63,20 +62,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
-    $title = ucfirst(strtolower($this->data['jos_emundus_setup_programmes___label_raw']));
+    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
 
 ?>
 
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
     <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
-        <a href="rechercher?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-',$this->data['jos_emundus_setup_thematiques___title_raw']))));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
+        <a href="rechercher?category=<?php echo $this->data['jos_emundus_setup_thematiques___title_raw'];?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
 
     <div class="g-block size-78">
         <h1><?php echo $title; ?></h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
-            <?php echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
+            <?php if(!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
     <?php if (!empty($partenaire)) :?>
@@ -212,13 +211,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         <div class="formation">
                             <b><?php
 
-                            setlocale(LC_ALL, 'fr_FR');
+                            setlocale(LC_ALL, 'fr_FR.utf8');
+                            $start_day = date('d',strtotime($session['date_start']));
+                            $end_day = date('d',strtotime($session['date_end']));
                             $start_month = date('m',strtotime($session['date_start']));
                             $end_month = date('m',strtotime($session['date_end']));
                             $start_year = date('y',strtotime($session['date_start']));
                             $end_year = date('y',strtotime($session['date_end']));
 
-                            if ($start_month == $end_month && $start_year == $end_year)
+
+                            if($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
+                                echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+                            elseif ($start_month == $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
                             elseif ($start_month != $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_start']))) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
@@ -228,10 +232,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
 
-                            <?php
-                                if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
-                                    echo "<p class='places'>dernières places disponibles</p>";
-                            ?>
+
 
                                 <p>
                                     <?php
@@ -242,10 +243,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                     ?>
                                 </p>
 
+                            <?php
+                            if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
+                                echo "<p class='places'>dernières places disponibles</p>";
+                            ?>
+
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
                                         <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
-                                        <a href="/demande-de-pre-inscription" class="em-option-login">s'inscrire</a>
+                                        <a href="/demande-de-pre-inscription?session=<?php echo $session['code']; ?>" class="em-option-login">s'inscrire</a>
                                     </div>
                                 <?php else: ?>
                                     <div class="em-option-buttons">
@@ -290,7 +296,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
 
                     <div class="em-option-buttons">
-                        <a href="/demande-de-pre-inscription" class="em-option-login">demander un devis</a>
+                        <a href="/demande-de-pre-inscription?session=<?php echo $session['code']; ?>" class="em-option-login">demander un devis</a>
                         <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
                     </div>
 
@@ -311,15 +317,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
 
                 </div>
-            </div>
-
-            <div id="em-certification">
-                <?php if (empty($cartificat)) :?>
-                    <p>Pas de certification pour cette formation</p>
-                <?php else :?>
-                    <img src="images/custom/ccirs/certifications/">
-                    <!-- TODO: get partners photo -->
-                <?php endif; ?>
             </div>
         </div>
 
@@ -351,11 +348,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#pagin").append('<li><a href="#">'+(i+1)+'</a></li> ');
+            jQuery("#pagin").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#pagin li").first().find("a").addClass("current");
+    jQuery("#pagin li").first().find("p").addClass("current");
     showPage = function(page) {
         jQuery(".formation").hide();
         jQuery(".formation").each(function(n) {
@@ -366,8 +363,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     showPage(1);
 
-    jQuery("#pagin li a").click(function() {
-        jQuery("#pagin li a").removeClass("current");
+    jQuery("#pagin li p").click(function() {
+        jQuery("#pagin li p").removeClass("current");
         jQuery(this).addClass("current");
         showPage(parseInt(jQuery(this).text()))
     });
@@ -441,8 +438,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         var options = document.getElementById("formation-options");
         options.appendChild(document.getElementById("em-formation-options"));
 
-        var certificate = document.getElementById("formation-certification");
-        certificate.appendChild(document.getElementById("em-certification"));
     });
 
     document.getElementById("em-option-menu-inter").addEventListener('click', function (e) {
@@ -512,9 +507,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             success: function (result) {
                 result = JSON.parse(result);
                 if (result.status) {
-                    window.location = result.filename;
+                    var win = window.open(result.filename, '_blank');
+                    win.focus();
                 } else {
-                    alert(result);
+                    alert(result.msg);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {

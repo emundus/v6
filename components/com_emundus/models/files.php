@@ -3091,7 +3091,8 @@ die();*/
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
                 ->where($db->quoteName('p.id') . ' = ' . $program .
                     ' AND ' . $db->quoteName('t.published') . ' = ' . 1 .
-                    ' AND ' . $db->quoteName('t.date_start') . ' >= ' . date("Y-m-d"));
+                    ' AND ' . $db->quoteName('t.date_start') . ' >= ' . date("Y-m-d"))
+                ->order('date_start ASC');;
 
             $db->setQuery($query);
             return $db->loadAssocList() ;

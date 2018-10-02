@@ -63,22 +63,42 @@ $public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS
 $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
 
+$category = JFactory::getApplication()->input->get->get('category');
+if(!empty($category)) {
+    $db = JFactory::getDbo();
+    $query = $db->getQuery(true);
 
+    $query
+        ->select('*')
+        ->from($db->quoteName('#__emundus_setup_thematiques'))
+        ->where($db->quoteName('title') . ' LIKE ' . $db->quote($category));
+
+    $db->setQuery($query);
+    $category = $db->loadAssoc();
+}
 
 ?>
 
-<style>
-
-
-</style>
 <div class="main">
+
     <div class="form">
-        <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+
+        <div class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+
+            <?php if(!empty($category)) :?>
+                <div class="theme-filter">
+                    <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
+                        <?php echo $category['label']; ?>
+                    </div>
+                    <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+                </div>
+            <?php endif; ?>
 
 			<?php
 			if ($this->hasButtons)
 				echo $this->loadTemplate('buttons');
 			?>
+
 
             <div class="fabrikDataContainer">
 
@@ -116,10 +136,10 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
                 <div class="em-search-engine-data">
 
-                        <?php if(sizeof($data) > 1) :?>
-                            <h2><?php echo sizeof($data) ;?> formations trouvées</h2>
-                        <?php elseif (sizeof($data) == 1) :?>
-                            <h2><?php echo sizeof($data) ;?> formation trouvée</h2>
+                        <?php if($this->navigation->total > 1) :?>
+                            <h2><?php echo $this->navigation->total; ?> formations trouvées</h2>
+                        <?php elseif ($this->navigation->total == 1) :?>
+                            <h2><?php echo $this->navigation->total ;?> formation trouvée</h2>
                         <?php else :?>
                             <h2>Pas de formations trouvées</h2>
                         <?php endif; ?>
@@ -244,6 +264,11 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
                 placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
                 no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
             });
+
+            <?php if(!empty(JFactory::getApplication()->input->post->get('search'))) :?>
+                var searchValue = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
+                document.getElementById("formation-search").value = searchValue;
+            <?php endif; ?>
         });
     </script>
 
