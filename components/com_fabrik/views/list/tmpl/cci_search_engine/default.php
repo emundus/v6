@@ -80,12 +80,10 @@ if(!empty($category)) {
 ?>
 
 <div class="main">
-
     <div class="form">
+        <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
 
-        <div class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
-
-            <?php if(!empty($category)) :?>
+            <?php if (!empty($category)) :?>
                 <div class="theme-filter">
                     <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
                         <?php echo $category['label']; ?>
@@ -98,6 +96,12 @@ if(!empty($category)) {
 			if ($this->hasButtons)
 				echo $this->loadTemplate('buttons');
 			?>
+
+            <div class="em-search-engine-filters">
+		        <?php if ($this->showFilters && $this->bootShowFilters)
+			        echo $this->layoutFilters();
+		        ?>
+            </div>
 
 
             <div class="fabrikDataContainer">
@@ -128,15 +132,9 @@ if(!empty($category)) {
 				}
 				?>
 
-                <div class="em-search-engine-filters">
-					<?php if ($this->showFilters && $this->bootShowFilters)
-						echo $this->layoutFilters();
-					?>
-                </div>
-
                 <div class="em-search-engine-data">
 
-                        <?php if($this->navigation->total > 1) :?>
+                        <?php if ($this->navigation->total > 1) :?>
                             <h2><?php echo $this->navigation->total; ?> formations trouvées</h2>
                         <?php elseif ($this->navigation->total == 1) :?>
                             <h2><?php echo $this->navigation->total ;?> formation trouvée</h2>
@@ -165,9 +163,8 @@ if(!empty($category)) {
 		                                $theme_label = $theme_label[0];
 
 
-	                                if(($gCounter % 2) == 1) {
+	                                if (($gCounter % 2) == 1)
 	                                    $class = "light-stripe";
-                                    }
                                     else
                                         $class = "dark-stripe";
                                     ?>
@@ -265,11 +262,45 @@ if(!empty($category)) {
                 no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
             });
 
-            <?php if(!empty(JFactory::getApplication()->input->post->get('search'))) :?>
+            <?php if (!empty(JFactory::getApplication()->input->post->get('search'))) :?>
                 var searchValue = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
                 document.getElementById("formation-search").value = searchValue;
             <?php endif; ?>
-        });
-    </script>
 
+            singleToggleCheckboxes();
+        });
+
+        function singleToggleCheckboxes() {
+
+            var cpfContainer = jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"]');
+            cpfContainer.children().hide();
+
+            cpfContainer.append('' +
+                '<div class="row-fluid">\n' +
+                    '<div class="fabrikgrid_checkbox span12">' +
+                        '<label for="cpfCheckbox" class="checkbox">\n' +
+                        '\t<input type="checkbox" class="fabrikinput  fabrik_filter" name="cpfCheckbox" id="cpfCheckbox"  onchange="toggleCPF(this);"><span>éligible au CPF</span></label>\n' +
+                    '</div>\n' +
+                '</div>')
+
+            var certContainer = jQuery('[data-filter-row="jos_emundus_setup_programmes___certificate"]');
+            certContainer.children().hide();
+
+            certContainer.append('' +
+                '<div class="row-fluid">\n' +
+                    '<div class="fabrikgrid_checkbox span12">' +
+                        '<label for="certCheckbox" class="checkbox">\n' +
+                        '\t<input type="checkbox" class="fabrikinput  fabrik_filter" name="certCheckbox" id="certCheckbox"  onchange="toggleCert(this);"><span>certifiante ou diplômante</span></label>\n' +
+                    '</div>\n' +
+                '</div>')
+
+        }
+        
+        function toggleCPF(checkbox) {
+            jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"] input:checkbox').not(checkbox).prop('checked', checkbox.checked);
+        }
+        function toggleCert(checkbox) {
+            jQuery('[data-filter-row="jos_emundus_setup_programmes___certificate"] input:checkbox').not(checkbox).prop('checked', checkbox.checked);
+        }
+    </script>
 </div>
