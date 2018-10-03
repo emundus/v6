@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 <div class="fabrikButtonsContainer row-fluid">
-<ul class="nav nav-pills  pull-left">
+<ul class="nav em-nav-centered">
 
 <?php if ($this->showAdd) :?>
 
@@ -64,9 +64,9 @@ if ($this->showFilters && $this->toggleFilters) :?>
 				<?php
 		else:
 		?>
-		<a href="#" class="toggleFilters" data-filter-mode="<?php echo $this->filterMode;?>">
-			<?php echo $this->buttons->filter;?>
-			<span><?php echo FText::_('COM_FABRIK_FILTER');?></span>
+		<a href="#" class="toggleFilters" data-filter-mode="<?php echo $this->filterMode;?>" onclick="toggleFilterText()">
+            <i class="fas fa-chevron-down fa-border" id="filterChevron"></i>
+			<span id="filterText">Afficher plus de critères</span>
 		</a>
 			<?php endif;
 		?>
@@ -109,17 +109,7 @@ if ($this->showPDF) :?>
 			<li><a href="<?php echo $this->pdfLink;?>" class="pdfButton">
 				<?php echo FabrikHelperHTML::icon('icon-file', FText::_('COM_FABRIK_PDF'));?>
 			</a></li>
-<?php endif;
-if ($this->emptyLink) :?>
-		<li>
-			<a href="<?php echo $this->emptyLink?>" class="doempty">
-			<?php echo $this->buttons->empty;?>
-			<?php echo FText::_('COM_FABRIK_EMPTY')?>
-			</a>
-		</li>
-<?php
-endif;
-?>
+<?php endif; ?>
 </ul>
 <?php if (array_key_exists('all', $this->filters) || $this->filter_action != 'onchange') {
 ?>
@@ -136,8 +126,7 @@ endif;
 	<?php
 	};?>
 
-	<?php };
-	?>
+	<?php }; ?>
 	</div>
 	</li>
 </ul>
@@ -145,3 +134,24 @@ endif;
 }
 ?>
 </div><br>
+
+<?php if ($this->showFilters && $this->toggleFilters) :?>
+<script>
+    function toggleFilterText() {
+
+        var filterChevron = document.getElementById('filterChevron');
+        var filterText = document.getElementById('filterText');
+
+        if (filterChevron.classList.contains("fa-chevron-down")) {
+            filterChevron.classList.remove("fa-chevron-down");
+            filterChevron.classList.add("fa-chevron-up");
+            filterText.innerText = "Afficher moins de critères";
+        } else {
+            filterChevron.classList.remove("fa-chevron-up");
+            filterChevron.classList.add("fa-chevron-down");
+            filterText.innerText = "Afficher plus de critères";
+        }
+
+    }
+</script>
+<?php endif; ?>
