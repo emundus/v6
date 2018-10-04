@@ -68,7 +68,9 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 <div class="em-offre-author">
     <h1 class="em-offre-title"> Le déposant </h1>
     <div class="em-offre-subtitle">Profil du déposant</div>
-    <strong>Nom : </strong><div class="em-offre-author-name"><?php echo $author->name; ?></div>
+    <div class="em-offre-author">
+        <strong>Nom : </strong><div class="em-offre-author-name"><?php echo $author->name; ?></div>
+    </div>
 
     <?php
     // We need to change up the page based on if the person is viewing an offer from a lab, a future PHd, or a municiplaity.
@@ -81,18 +83,20 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         $m_cifre = new EmundusModelCifre();
         $laboratoire = $m_cifre->getUserLaboratory($author->id);
         ?>
-        <strong>Laboratoire :</strong>
-        <div class="em-offre-institution">
-            <?php
-            if (!empty($laboratoire->website)) {
-                $parse = parse_url($laboratoire->website, PHP_URL_SCHEME) === null ? 'http://' . $laboratoire->website: $laboratoire->website;
-                echo '<a target="_blank " href="'.$parse.'">';
-            }
+        <div class="em-offre-inst">
+            <strong>Laboratoire :</strong>
+            <div class="em-offre-institution">
+                <?php
+                if (!empty($laboratoire->website)) {
+                    $parse = parse_url($laboratoire->website, PHP_URL_SCHEME) === null ? 'http://' . $laboratoire->website: $laboratoire->website;
+                    echo '<a target="_blank " href="'.$parse.'">';
+                }
 
-            echo $laboratoire->name;
-            if (!empty($laboratoire->website))
-                echo '</a>';
-            ?>
+                echo $laboratoire->name;
+                if (!empty($laboratoire->website))
+                    echo '</a>';
+                ?>
+            </div>
         </div>
         <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
     <?php elseif ($profile == '1008') :?>
@@ -101,17 +105,19 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         $m_cifre = new EmundusModelCifre();
         $institution = $m_cifre->getUserInstitution($author->id);
         ?>
-        <strong>Structure :</strong>
-        <div class="em-offre-institution">
-            <?php
-            if (!empty($institution->website)) {
-                $parse = parse_url($institution->website, PHP_URL_SCHEME) === null ? 'http://' . $institution->website: $institution->website;
-                echo '<a target="_blank " href="'.$parse.'">';
-            }
-            echo $institution->nom_de_structure;
-            if (!empty($institution->website))
-                echo '</a>';
-            ?>
+        <div class="em-offre-inst">
+            <strong>Structure :</strong>
+            <div class="em-offre-institution">
+                <?php
+                if (!empty($institution->website)) {
+                    $parse = parse_url($institution->website, PHP_URL_SCHEME) === null ? 'http://' . $institution->website: $institution->website;
+                    echo '<a target="_blank " href="'.$parse.'">';
+                }
+                echo $institution->nom_de_structure;
+                if (!empty($institution->website))
+                    echo '</a>';
+                ?>
+            </div>
         </div>
         <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Cliquez ici pour plus d'information</a>
     <?php endif; ?>
