@@ -15,7 +15,6 @@ $doc = JFactory::getDocument();
 $doc->addStyleSheet('media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 $doc->addScript('media/com_emundus/lib/chosen/chosen.jquery.js');
 $doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
-
 // Helper function to convert html > ul > li to a PHP array
 function ul_to_array($ul) {
 
@@ -111,23 +110,32 @@ echo $this->table->intro;
                 </div>
 
                 <div class="em-search-engine-data">
+
                     <table>
+                        <?php if(!empty($data)) :?>
                         <thead>
                         <tr>
                             <td><h3>RESULTAT DE LA RECHERCHE</h3></td>
                         </tr>
                         </thead>
                         <tfoot>
+
                         <tr class="fabrik___heading">
                             <td colspan="<?php echo count($this->headings);?>">
 								<?php echo $this->nav;?>
                             </td>
                         </tr>
                         </tfoot>
-
+<? endif; ?>
                         <tbody>
 
 						<?php
+                        if(empty($data)) { ?>
+                           <div>
+                               <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond</p>
+                               <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
+                           </div>
+                        <? }
 						$gCounter = 0;
 						foreach ($data as $d) {
 
@@ -156,7 +164,7 @@ echo $this->table->intro;
                                             <i class="fa fa-users"></i> <strong>Projet adressé à : &nbsp;</strong><?php echo strtolower(implode( '&#32;-&#32;', $cherches)); ?>
                                         </div>
                                         <div class="em-search-engine-thematics">
-                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?implode('</div> - <div class="em-highlight">', $themes):'Aucun thématique'; ?></div>
+                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?implode('</div> - <div class="em-highlight">', $themes):'Aucune thématique'; ?></div>
                                         </div>
                                         <div class="em-search-engine-departments">
                                             <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?implode('</div> - <div class="em-highlight">', $departments):'Aucun département'; ?></div>
@@ -176,7 +184,9 @@ echo $this->table->intro;
                         }
 
 						?>
+
                         </tbody>
+
 						<?php if ($this->hasCalculations) : ?>
                             <tfoot>
                             <tr class="fabrik_calculations">
@@ -198,6 +208,12 @@ echo $this->table->intro;
                             </tfoot>
 						<?php endif ?>
                     </table>
+                    <?php if(!empty($data)) :?>
+                        <div>
+                            <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond</p>
+                            <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
 				<?php print_r($this->hiddenFields);?>
@@ -212,7 +228,6 @@ echo $this->table->intro;
                 placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
                 no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
             });
-        });
     </script>
 
 </div>
