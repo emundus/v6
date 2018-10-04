@@ -20,7 +20,7 @@ $db = JFactory::getDBO();
 // 1008 = municipality
 if ($profile == 1007) {
 
-	$institution_id = $data['jos_emundus_users___ecole_doctorale_raw'][0];
+	$institution_id = $data['jos_emundus_users___laboratoire_raw'][0];
 
 	// Time to get the category ID from the inserted lab
 	$query = $db->getQuery(true);
@@ -40,7 +40,7 @@ if ($profile == 1007) {
 		// Initialize a new category
 		$category = JTable::getInstance('Category');
 		$category->extension = 'com_contact';
-		$category->title = $institution->name;
+		$category->title = $data['jos_emundus_users___laboratoire'];
 		$category->description = '';
 		$category->published = 1;
 		$category->access = 1;
@@ -100,7 +100,7 @@ if ($profile == 1007) {
 		// Initialize a new category
 		$category = JTable::getInstance('Category');
 		$category->extension = 'com_contact';
-		$category->title = $institution->nom_de_structure;
+		$category->title = $data['jos_emundus_users___nom_de_structure'];
 		$category->description = '';
 		$category->published = 1;
 		$category->access = 1;
@@ -146,7 +146,7 @@ if ($profile == 1007) {
 $query = $db->getQuery(true);
 $columns = ['user', 'institution', 'profile', 'cat_id'];
 $values = [$data['jos_emundus_users___user_id_raw'], $institution_id, $profile, $institution->catid];
-$query->insert($db->quoteName('#__emundus_users_institutions'))->columns($db->quoteName($columns))->values(implode(',', $values));
+$query->insert($db->quoteName('#__emundus_users_institutions'))->columns($db->quoteName($columns))->values(implode(',', $db->quote($values)));
 $db->setQuery($query);
 
 try {
