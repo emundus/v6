@@ -26,7 +26,7 @@ $uri = JUri::getInstance();
             <div class="col-md-4 em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
 
                 <div class="em-hesam-application-card-details">
-                    <div class="col-xs-6 col-md-12 em-bottom-space em-top-space">
+                    <div class="col-md-12 em-bottom-space em-top-space">
                         <span class="label label-<?php echo $application->class; ?>"><?php echo $application->value; ?></span>
                     </div>
 
