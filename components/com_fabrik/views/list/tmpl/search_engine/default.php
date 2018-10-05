@@ -49,19 +49,17 @@ endif;
 
 if ($this->tablePicker != '') : ?>
     <div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
-<?php
-endif;
+<?php endif;
 
-if ($this->params->get('show_page_heading')) :
-	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
-endif;
+if ($this->params->get('show_page_heading')) :?>
+    <h1><?php echo $this->params->get('page_heading');?> </h1>
+<?php endif; ?>
 
-if ($this->showTitle == 1) : ?>
+<?php if ($this->showTitle == 1) : ?>
     <div class="page-header">
         <h1><?php echo $this->table->label;?></h1>
     </div>
-<?php
-endif;
+<?php endif;
 
 // Intro outside of form to allow for other lists/forms to be injected.
 echo $this->table->intro;
@@ -112,30 +110,29 @@ echo $this->table->intro;
                 <div class="em-search-engine-data">
 
                     <table>
-                        <?php if(!empty($data)) :?>
-                        <thead>
-                        <tr>
-                            <td><h3>RESULTAT DE LA RECHERCHE</h3></td>
-                        </tr>
-                        </thead>
-                        <tfoot>
+						<?php if (!empty($data)) :?>
+                            <thead>
+                            <tr>
+                                <td><h3>RESULTAT DE LA RECHERCHE</h3></td>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                                <tr class="fabrik___heading">
+                                    <td colspan="<?php echo count($this->headings);?>">
+                                        <?php echo $this->nav;?>
+                                    </td>
+                                </tr>
+                            </tfoot>
+						<?php endif; ?>
 
-                        <tr class="fabrik___heading">
-                            <td colspan="<?php echo count($this->headings);?>">
-								<?php echo $this->nav;?>
-                            </td>
-                        </tr>
-                        </tfoot>
-<? endif; ?>
                         <tbody>
+						<?php if (empty($data)) :?>
+                            <div>
+                                <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond</p>
+                                <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
+                            </div>
+						<?php endif;
 
-						<?php
-                        if(empty($data)) { ?>
-                           <div>
-                               <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond</p>
-                               <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
-                           </div>
-                        <? }
 						$gCounter = 0;
 						foreach ($data as $d) {
 
@@ -169,20 +166,19 @@ echo $this->table->intro;
                                         <div class="em-search-engine-departments">
                                             <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?implode('</div> - <div class="em-highlight">', $departments):'Aucun département'; ?></div>
                                         </div>
-                                        <?php if (JFactory::getUser()->guest) :?>
+										<?php if (JFactory::getUser()->guest) :?>
                                             <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
-                                        <?php else :?>
+										<?php else :?>
                                             <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
-                                        <?php endif; ?>
+										<?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
-                            <?php
-                            unset($cherches);
-                            unset($themes);
-                            $gCounter++;
-                        }
-
+							<?php
+							unset($cherches);
+							unset($themes);
+							$gCounter++;
+						}
 						?>
 
                         </tbody>
@@ -208,26 +204,26 @@ echo $this->table->intro;
                             </tfoot>
 						<?php endif ?>
                     </table>
-                    <?php if(!empty($data)) :?>
+					<?php if (!empty($data)) :?>
                         <div>
                             <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond</p>
                             <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
                         </div>
-                    <?php endif; ?>
+					<?php endif; ?>
                 </div>
 
 				<?php print_r($this->hiddenFields);?>
             </div>
         </form>
     </div>
-
-    <script>
-        jQuery(document).ready(function(){
-            jQuery('select.fabrik_filter[multiple]').chosen({
-                placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
-                placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
-                no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
-            });
-    </script>
-
 </div>
+
+<script>
+    jQuery(document).ready(function(){
+        jQuery('select.fabrik_filter[multiple]').chosen({
+            placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
+            placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
+            no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
+        });
+    });
+</script>

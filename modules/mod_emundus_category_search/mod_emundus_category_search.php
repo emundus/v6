@@ -16,6 +16,7 @@ require_once dirname(__FILE__).'/helper.php';
 $helper = new modEmundusCategorySearchHelper();
 $categories = $helper->loadCategories();
 $search_page = $params->get('search_page');
+$heading = $params->get('heading');
 
 if (!empty($categories))
 	require JModuleHelper::getLayoutPath('mod_emundus_category_search', $params->get('tmpl','default'));

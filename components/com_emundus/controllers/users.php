@@ -61,7 +61,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		//$db = JFactory::getDBO();
 
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('ACCESS_DENIED')));
+			echo json_encode((object)array('status' => false, 'uid' => $current_user->id, 'msg' => JText::_('ACCESS_DENIED')));
 			exit;
 		}
 
