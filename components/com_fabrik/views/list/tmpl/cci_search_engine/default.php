@@ -145,9 +145,8 @@ if(!empty($category)) {
                                 <?php
                                 $gCounter = 0;
                                 foreach ($data as $d) {
-                                    $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
 
-                                    $title = ucfirst(mb_strtolower(jsonDecode($d['jos_emundus_setup_programmes___label_raw'])));
+                                    $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
 
                                     // Parse theme info because Fabrik groups them if there are multiple.
                                     $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
@@ -174,7 +173,7 @@ if(!empty($category)) {
                                         <div class="em-top-details">
                                             <div class="em-title">
                                                 <h3 class="em-offre-title">
-                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >" . $title . "</a>"; ?>
+                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$d['jos_emundus_setup_teaching_unity___label_raw']."</a>"; ?>
                                                 </h3>
                                             </div>
 
