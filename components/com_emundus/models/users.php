@@ -859,7 +859,7 @@ class EmundusModelUsers extends JModelList
                 return $user->id;
             }
 
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }

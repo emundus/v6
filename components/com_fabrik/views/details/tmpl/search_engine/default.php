@@ -68,7 +68,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 <div class="em-offre-author">
     <h1 class="em-offre-title"> Le déposant </h1>
     <div class="em-offre-subtitle">Profil du déposant</div>
-    <div class="em-offre-author">
+    <div class="em-offre-author-profile">
         <strong>Nom : </strong><div class="em-offre-author-name"><?php echo $author->name; ?></div>
     </div>
 
