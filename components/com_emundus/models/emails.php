@@ -28,6 +28,8 @@ class EmundusModelEmails extends JModelList
         parent::__construct();
         $this->_db = JFactory::getDBO();
         $this->_user = JFactory::getSession()->get('emundusUser');
+
+	    JLog::addLogger(['text_file' => 'com_emundus.email.error.php'], JLog::ERROR);
     }
 
     /**
