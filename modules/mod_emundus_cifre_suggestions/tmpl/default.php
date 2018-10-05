@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
 
                         <div class="em-bottom-space">
                             <div id="em-buttons-<?php echo $offer->fnum; ?>">
-                                <a type="button" class="btn btn-primary" href="<?php echo JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>">
+                                <a role="button" class="btn btn-primary" href="<?php echo JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>">
                                     <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW'); ?>
                                 </a>
                             </div>
