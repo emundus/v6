@@ -110,10 +110,8 @@ if(!empty($category)) {
 					echo $c;
 				}
 
-
 				$data = array();
 				$i = 0;
-
 				
 				if (!empty($this->rows)) {
 					foreach ($this->rows as $k => $v) {
@@ -139,11 +137,16 @@ if(!empty($category)) {
                         <?php elseif ($this->navigation->total == 1) :?>
                             <h2><?php echo $this->navigation->total ;?> formation trouvée</h2>
                         <?php else :?>
-                            <h2>Pas de formations trouvées</h2>
+                            <h2>
+                                Pas de formations trouvées <br>
+                                Il existe forcément une formation adaptée à votre demande. <br>
+                                Appelez-nous au <a href="tel:+33546847092">05 46 84 70 92</a>
+                            </h2>
                         <?php endif; ?>
 
                                 <?php
                                 $gCounter = 0;
+
                                 foreach ($data as $d) {
 
                                     $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
@@ -217,9 +220,11 @@ if(!empty($category)) {
 
                         <tfoot>
                             <tr class="fabrik___heading">
+                                <?php if (!empty($data)) :?>
                                 <td colspan="<?php echo count($this->headings);?>">
                                     <?php echo $this->nav;?>
                                 </td>
+                                <?php endif; ?>
                             </tr>
                         </tfoot>
 
