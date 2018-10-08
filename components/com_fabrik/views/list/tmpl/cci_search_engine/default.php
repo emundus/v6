@@ -179,7 +179,7 @@ if(!empty($category)) {
                                         <div class="em-top-details">
                                             <div class="em-title">
                                                 <h3 class="em-offre-title">
-                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$titre."</a>"; ?>
+                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?>
                                                 </h3>
                                             </div>
 
