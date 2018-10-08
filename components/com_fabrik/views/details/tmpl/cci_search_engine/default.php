@@ -44,6 +44,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $address = $this->data['jos_emundus_setup_teaching_unity___location_address_raw'];
     $addTitle = $this->data['jos_emundus_setup_teaching_unity___location_title_raw'];
     $partenaire = trim(strtolower($this->data['jos_emundus_setup_programmes___partner_raw']));
+    $certificate = trim(strtolower($this->data['jos_emundus_setup_programmes___certificate_raw']));
+
     echo $this->plugintop;
     echo $this->loadTemplate('buttons');
     echo $this->loadTemplate('relateddata');
@@ -179,7 +181,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div id="certificate-details">
                         <h3>Certification ou diplôme</h3>
-                        <!-- TODO: Here goes the certification that is based on the theme -->
+                        <img src="images/custom/ccirs/certifications/<?php echo $certificate; ?>.png">
                     </div>
                 </div>
             <?php endif; ?>
