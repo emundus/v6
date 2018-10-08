@@ -112,7 +112,7 @@ if(!empty($category)) {
 
 				$data = array();
 				$i = 0;
-				
+
 				if (!empty($this->rows)) {
 					foreach ($this->rows as $k => $v) {
 						foreach ($this->headings as $key => $val) {
@@ -150,6 +150,9 @@ if(!empty($category)) {
                                 foreach ($data as $d) {
 
                                     $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
+	                                $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
+	                                if (is_array($title))
+		                                $title = $title[0];
 
                                     // Parse theme info because Fabrik groups them if there are multiple.
                                     $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
@@ -176,7 +179,7 @@ if(!empty($category)) {
                                         <div class="em-top-details">
                                             <div class="em-title">
                                                 <h3 class="em-offre-title">
-                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$d['jos_emundus_setup_teaching_unity___label_raw']."</a>"; ?>
+                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$titre."</a>"; ?>
                                                 </h3>
                                             </div>
 
@@ -299,7 +302,7 @@ if(!empty($category)) {
                 '</div>')
 
         }
-        
+
         function toggleCPF(checkbox) {
             jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"] input:checkbox').not(checkbox).prop('checked', checkbox.checked);
         }
