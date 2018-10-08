@@ -36,37 +36,69 @@ else
     })
 </script>
 
-<div id="em-messagerie">
-    <?php if (empty($this->getMessages)) :?>
+<div id="chat" class="">
+    <button class="navbar-toggler toggler-example" id="burger" type="button" onclick="burgerClick()"   aria-controls="navbarSupportedContent1"
+            aria-expanded="false" aria-label="Toggle navigation"><span class="dark-blue-text"><i class="angle left icon"></i></span></button>
+    <div id="em-messagerie">
+
+        <?php if (empty($this->getMessages)) :?>
             <div class="no-messages"><?php echo JText::_('NO_MESSAGES_WITH'); ?></div>
-    <?php else:?>
-    <ul class="message-list">
-        <?php foreach ($this->getMessages as $getMessage) :?>
-            <li>
-                <?php if($getMessage->user_id_to == $this->user_id):?>
-                    <div class="em-message-bubble em-contact-left">
-                        <?php echo "<p>" . $getMessage->message . "</p>"; ?>
-                    </div>
-                <?php endif; ?>
+        <?php else:?>
+            <ul class="message-list">
+                <?php foreach ($this->getMessages as $getMessage) :?>
+                    <li>
+                        <?php if($getMessage->user_id_to == $this->user_id):?>
+                            <div class="em-message-bubble em-contact-left">
+                                <?php echo "<p>" . $getMessage->message . "</p>"; ?>
+                            </div>
+                        <?php endif; ?>
 
-                <?php if($getMessage->user_id_from == $this->user_id):?>
-                    <div class="em-message-bubble em-contact-right">
-                        <?php  echo "<p>" . $getMessage->message . "</p>"; ?>
-                    </div>
-                <?php endif; ?>
-            </li>
-        <hr id="separator">
-        <?php endforeach ; ?>
-    </ul>
-    <?php endif;?>
+                        <?php if($getMessage->user_id_from == $this->user_id):?>
+                            <div class="em-message-bubble em-contact-right">
+                                <?php  echo "<p>" . $getMessage->message . "</p>"; ?>
+                            </div>
+                        <?php endif; ?>
+                    </li>
+                    <hr id="separator">
+                <?php endforeach ; ?>
+            </ul>
+        <?php endif;?>
+    </div>
+
+    <div id="em-message">
+        <?php echo $wysiwyg; ?>
+        <button type="button" class="btn" id="sendMessage" onclick="sendMessage()"><?php echo JText::_('SEND'); ?></button>
+    </div>
 </div>
 
-<div id="em-message">
-    <?php echo $wysiwyg; ?>
-    <button type="button" class="btn" id="sendMessage" onclick="sendMessage()"><?php echo JText::_('SEND'); ?></button>
-</div>
 
 <script type="text/javascript">
+    function burgerClick () {
+
+        var contactList = document.getElementById("em-contacts");
+        var chat = document.getElementById("chat");
+        var chat2 = document.getElementById("em-chat");
+        if(contactList.className === 'hideContent'){
+          //  document.getElementById("em-loader").style.display = "none";
+            jQuery(contactList).toggleClass('showContent');
+            jQuery(contactList).toggleClass('hideContent');
+            jQuery(chat2).toggleClass('hideChat');
+            jQuery(chat).toggleClass('hideChat');
+            jQuery(chat).toggleClass('showChat');
+            jQuery(chat2).toggleClass('showChat');
+
+        } else {
+
+            jQuery(contactList).toggleClass('showContent');
+            jQuery(contactList).toggleClass('hideContent');
+            jQuery(chat).toggleClass('hideChat');
+            jQuery(chat).toggleClass('showChat');
+            jQuery(chat2).toggleClass('hideChat');
+            jQuery(chat2).toggleClass('showChat');
+
+
+        }
+    }
 
     function strip(html) {
         var tmp = document.createElement("DIV");
@@ -118,78 +150,3 @@ else
 
 </script>
 
-<style>
-
-    #em-messagerie {
-        float: right;
-        width: 100%;
-        height: inherit;
-        overflow-y: scroll;
-        max-height: inherit;
-    }
-
-    .message-list{
-        height: inherit;
-    }
-
-
-
-    .em-message-bubble {
-        border-width: 1px;
-        margin-left: 1%;
-        max-width: 80%;
-        list-style-position: inside;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .em-message-bubble img{
-        border-radius: 60px;
-    }
-
-    .em-contact-right {
-        float: right;
-        display: inline-block;
-        border-radius: 75px 75px 0px 75px;
-        -moz-border-radius: 75px 75px 0px 75px;
-        -webkit-border-radius: 75px 75px 0px 75px;
-        border: 2px solid #0b64b3;
-        margin-right: 5px;
-
-    }
-    .em-contact-left {
-        float: left;
-        display: inline-block;
-        border-radius: 75px 75px 75px 0px;
-        -moz-border-radius: 75px 75px 75px 0px;
-        -webkit-border-radius: 75px 75px 75px 0px;
-        border: 2px solid #17693d;
-    }
-
-    .em-message-bubble p {
-        word-wrap: break-word;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-
-    #separator {
-        display: inline-block;
-        width: 100%;
-        height: 0px;
-        border: 0px;
-    }
-
-    .toggle-editor {
-        display: none;
-    }
-    #em-message{
-        display: inline-block;
-        width: 100%;
-    }
-
-    #sendMessage{
-        float: right;
-    }
-
-
-</style>

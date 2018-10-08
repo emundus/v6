@@ -21,8 +21,9 @@ if(empty($id)) {
 
 ?>
 
+<div class="showContent" id="em-contacts">
 
-<div id="em-contacts">
+
     <?php if (empty($this->message_contacts)) :?>
         <div class="no-messages"><?php echo JText::_('NO_MESSAGES'); ?></div>
     <?php else :?>
@@ -31,9 +32,7 @@ if(empty($id)) {
 
             <?php if ($message_contact->user_id_to == $this->user_id) :?>
                 <li  class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
-                    <?php if ($message_contact->photo_from == null) :?>
                         <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_from) ?>"></div>
-                    <?php endif; ?>
                     <div class="em-contact" >
                         <?php if ($message_contact->state == 1) :?>
                             <p class="unread-contact" id="contact-<?php echo $message_contact->user_id_from ; ?>-name"><i class="circle outline" id="unread-icon"></i><?php  echo $message_contact->name_from ." : " ; ?></p>
@@ -70,6 +69,7 @@ if(empty($id)) {
 
 
 <script type="text/javascript">
+
     var lastId = '<?php echo $lastId; ?>';
 
     function updateMessages() {
@@ -121,6 +121,11 @@ if(empty($id)) {
 
     }
     $(document).ready(function() {
+        var chat = document.getElementById("chat");
+        var chat2 = document.getElementById("em-chat");
+        jQuery(chat).toggleClass('hideChat');
+        jQuery(chat2).toggleClass('hideChat');
+
         setInterval(updateMessages, 10000);
         var id = '<?php echo $id; ?>';
         if(id != null && id != '') {
@@ -161,7 +166,29 @@ if(empty($id)) {
     });
 
     $('.em-list-item').on("click", function() {
-        $('#em-chat').html("<img src='media/com_emundus/images/icones/loader-line.gif' id='em-loader'/>");
+        var contactList = document.getElementById("em-contacts");
+        var chat = document.getElementById("chat");
+        var chat2 = document.getElementById("em-chat");
+
+
+        if(contactList.className === 'hideContent'){
+            //  document.getElementById("em-loader").style.display = "none";
+            jQuery(contactList).toggleClass('showContent');
+            jQuery(contactList).toggleClass('hideContent');
+            jQuery(chat).toggleClass('showChat');
+            jQuery(chat).toggleClass('hideChat');
+            jQuery(chat2).toggleClass('showChat');
+            jQuery(chat2).toggleClass('hideChat');
+        } else {
+            jQuery(contactList).toggleClass('showContent');
+            jQuery(contactList).toggleClass('hideContent');
+            jQuery(chat).toggleClass('showChat');
+            jQuery(chat).toggleClass('hideChat');
+            jQuery(chat2).toggleClass('showChat');
+            jQuery(chat2).toggleClass('hideChat');
+        }
+
+        $('#em-chat').html("<img src='media/com_emundus/images/icones/loader-line.gif' class='hideLoader' id='em-loader'/>");
         var chatClass = document.getElementById("em-chat").className;
         var id = $(this)[0].id;
         id = id.match(/\d+/)[0];
@@ -175,10 +202,10 @@ if(empty($id)) {
             success: function (result) {
 
                 $('#em-chat').html(result);
-                $('#em-chat').removeClass(chatClass);
-                $('#em-chat').addClass('em-chat-'+id);
+                $('#em-chat').toggleClass(chatClass);
+                $('#em-chat').toggleClass('em-chat-'+id);
 
-
+                jQuery(chat2).toggleClass('showChat');
                 //var icon = document.getElementById('unread-icon');
                 var boldName = document.getElementById('contact-'+id+'-name');
                 var boldDate = document.getElementById('contact-'+id+'-date');
@@ -199,133 +226,3 @@ if(empty($id)) {
 
 
 </script>
-
-<style>
-    #em-contacts {
-        float: left;
-        width: 25%;
-        height: 750px;
-        overflow-y: scroll;
-    }
-
-    .contact-photo {
-        height: 80px;
-        width: 80px;
-        float: left;
-        margin-top: 14px;
-        background-color: #f0f0f0;
-        border-radius: 60px;
-    }
-
-
-    .contact-photo:before {
-        font-family: 'FontAwesome';
-        color: #909090;
-        content: "\f007";
-        top: 0;
-        font-size: 3rem;
-        margin-left: 23px;
-        margin-top: -10px;
-        display: inline-block;
-    }
-
-    #unread-icon {
-        font-size: 1em;
-        color: #00AF64;
-        margin-right: 5px;
-    }
-
-    #em-chat-no-message {
-        font-size: 150px;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 200px;
-        color: #909090;
-    }
-
-    .contact-message {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    #em-chat {
-        float: right;
-        width: 75%;
-        height: 600px;
-        scroll-behavior: auto;
-    }
-
-    .em-contact {
-        height: 90px;
-        margin-top: 10px;
-        margin-left: 15px;
-        float: left;
-        width: 60%;
-        border-bottom: 1px solid #e5e5e5;
-    }
-
-    #em-contacts li {
-        margin-bottom: -30px;
-        height: 110px;
-        cursor: pointer;
-    }
-
-    .em-contact p {
-        margin-top: 7px;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    #em-loader{
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 250px;
-        display: block;
-    }
-
-    .unread-contact {font-weight: bold;}
-    .read-contact {font-weight: normal;}
-
-    .em-message-bubble {
-        border-width: 1px;
-        margin-left: 1%;
-        max-width: 80%;
-        list-style-position: inside;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .em-contact-left {
-        float: left;
-        display: inline-block;
-        border-radius: 75px 75px 75px 0px;
-        -moz-border-radius: 75px 75px 75px 0px;
-        -webkit-border-radius: 75px 75px 75px 0px;
-        border: 2px solid #17693d;
-    }
-
-    .em-contact-right {
-        float: right;
-        display: inline-block;
-        border-radius: 75px 75px 0px 75px;
-        -moz-border-radius: 75px 75px 0px 75px;
-        -webkit-border-radius: 75px 75px 0px 75px;
-        border: 2px solid #0b64b3;
-        margin-right: 5px;
-
-    }
-
-    .em-message-bubble p {
-        word-wrap: break-word;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-
-    .em-message-bubble img{
-        border-radius: 60px;
-    }
-
-</style>

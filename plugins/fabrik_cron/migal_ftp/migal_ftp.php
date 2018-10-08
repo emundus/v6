@@ -221,7 +221,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						->select([
 							't.*',
 							$db->quoteName('c.description', 'desc'),
-							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname'), $db->quoteName('p.pedagogie', 'pedagogie')
+							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname'), $db->quoteName('p.pedagogie', 'pedagogie'), $db->quoteName('p.certificate', 'certificate'), $db->quoteName('p.partner', 'partner'), $db->quoteName('p.target', 'target')
 						])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
@@ -270,20 +270,20 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Product family = programme programmes
 						// Updating the category involves checking if the category exists in the other table.
-						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['familleproduits'])))), $categories);
+						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6'])))), $categories);
 						if ($db_item['categ'] != $category) {
 							if ($category == 0) {
 								// If no category exists: INSERT
 								$query = $db->getQuery(true);
 								$query
 									->insert($db->quoteName('#__emundus_setup_thematiques'))
-									->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order')])
-									->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['familleproduits']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1));
+									->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
+									->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($update_item['produit6']));
 								$db->setQuery($query);
 								try {
 									$db->execute();
 									$category = $db->insertid();
-									$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['familleproduits']))));
+									$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6']))));
 								} catch (Exception $e) {
 									JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 								}
@@ -412,6 +412,18 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						// Intervenant
 						if ($db_item['intervenant'] != $update_item['typeintervenant'])
 							$fields[] = $db->quoteName('t.intervenant').' = '.$db->quote($update_item['typeintervenant']);
+						
+						// Certificate
+						if ($db_item['certificate'] != $update_item['produit9'])
+							$fields[] = $db->quoteName('p.certificate').' = '.$db->quote($update_item['produit9']);
+
+						// Partner
+						if ($db_item['partner'] != $update_item['produit8'])
+							$fields[] = $db->quoteName('p.partner').' = '.$db->quote($update_item['produit8']);
+
+						// Target
+						if ($db_item['target'] != $update_item['produit7'])
+							$fields[] = $db->quoteName('p.target').' = '.$db->quote($update_item['produit7']);
 
 						// If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
@@ -494,7 +506,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					}
 
 					// DB table struct for different tables.
-					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname', 'pedagogie'];
+					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname', 'pedagogie', 'certificate', 'partner', 'target'];
 					$campaign_columns   = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
 					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'tax_rate', 'intervenant'];
 
@@ -513,19 +525,19 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Array search returns FALSE (0) if it does not find the key.
 						// Else it will return the ID of the category with the name in the JSON.
-						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['familleproduits'])))), $categories);
+						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6'])))), $categories);
 						if ($category == 0) {
 							// If no category exists: INSERT
 							$query = $db->getQuery(true);
 							$query
 								->insert($db->quoteName('#__emundus_setup_thematiques'))
-								->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order')])
-								->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['familleproduits']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1));
+								->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
+								->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($item['produit6']));
 							$db->setQuery($query);
 							try {
 								$db->execute();
 								$category = $db->insertid();
-								$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['familleproduits']))));
+								$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6']))));
 							} catch (Exception $e) {
 								JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 							}
@@ -549,7 +561,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['numcpf']),
 								$db->quote($item['ur_nom']),
 								$db->quote($item['ur_prenom']),
-								$db->quote($item['pedagogie'])
+								$db->quote($item['pedagogie']),
+								$db->quote($item['produit9']),
+								$db->quote($item['produit8']),
+								$db->quote($item['produit7'])
 							]);
 						}
 
