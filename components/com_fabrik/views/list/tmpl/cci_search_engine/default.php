@@ -294,14 +294,7 @@ if(!empty($category)) {
                 '</div>');
 
             // Precheck the checkbox in case data is already selected in the session.
-            var checks = jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"] input:checkbox').not('#cpfCheckbox');
-            var check = false;
-            checks.forEach(function (checkbox){
-               if (checkbox.prop('checked', checkbox.checked)) {
-                   check = true;
-               }
-            });
-            if (check)
+            if (jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"] input:checkbox:checked').not('#cpfCheckbox').length > 0)
                 jQuery('#cpfCheckbox').prop('checked', true);
 
             // Build a single checkbox that controls multiple.
@@ -316,15 +309,8 @@ if(!empty($category)) {
                 '</div>');
 
             // Precheck the checkbox in case data is already selected in the session.
-            checks = jQuery('[data-filter-row="jos_emundus_setup_jos_emundus_setup_programmes___certificateprogrammes___numcpf"] input:checkbox').not('#cpfCheckbox');
-            check = false;
-            checks.forEach(function (checkbox){
-                if (checkbox.prop('checked', checkbox.checked)) {
-                    check = true;
-                }
-            });
-            if (check)
-                jQuery('#cpfCheckbox').prop('checked', true);
+            if (jQuery('[data-filter-row="jos_emundus_setup_programmes___certificate"] input:checkbox:checked').not('#certCheckbox').length > 0)
+                jQuery('#certCheckbox').prop('checked', true);
 
         }
 
