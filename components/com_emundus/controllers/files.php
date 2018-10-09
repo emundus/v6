@@ -3076,7 +3076,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		$query = $this->_db->getQuery(true);
 		$query
 			->select([
-				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'),
+				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'),
 				$this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
 				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours_per_day','hpd'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant')
 			])
@@ -3101,19 +3101,26 @@ class EmundusControllerFiles extends JControllerLegacy
 			$end_year = date('y',strtotime($session['date_end']));
 
 			if ($start_month == $end_month && $start_year == $end_year)
-				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
 			elseif ($start_month != $end_month && $start_year == $end_year)
-				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_start']))) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
 			elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
 
 			$sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
 		}
 		$sessions .= '</ul>';
 
+	    $partner = str_replace(' ', '-', trim(strtolower($product[0]['partner'])));
+		if (!empty($partner))
+			$partner = '<img src="images/custom/ccirs/partenaires/'.$partner.'.png" height="100px">';
+		else
+			$partner = '';
+
 	    // Build the variables found in the article.
 	    setlocale(LC_ALL, 'fr_FR');
 	    $post = [
+	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
 	    	'/{PRODUCT_NAME}/' => ucfirst(mb_strtolower($product[0]['name'])),
 			'/{PRODUCT_OBJECTIVES}/' => $product[0]['objectives'],
@@ -3132,10 +3139,10 @@ class EmundusControllerFiles extends JControllerLegacy
 	    ];
 
 
-	    $html = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $article))));
+	    $body = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $article))));
 
 	    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-	    $filename = generatePDFfromHTML($html, $filename);
+	    $filename = generatePDFfromHTML($body, $filename);
 
 	    if ($filename == false) {
 		    echo json_encode((object)['status' => false, 'msg' => 'Error generating PDF.']);
