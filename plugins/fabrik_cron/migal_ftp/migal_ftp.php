@@ -264,6 +264,12 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['product_name'] != $update_item['intituleproduit'])
 							$fields[] = $db->quoteName('p.label').' = '.$db->quote($update_item['intituleproduit']);
 
+						// Session label = Teaching unit & campaign label
+						if ($db_item['label'] != $update_item['libellestage']) {
+							$fields[] = $db->quoteName('t.label').' = '.$db->quote($update_item['libellestage']);
+							$fields[] = $db->quoteName('c.label').' = '.$db->quote($update_item['libellestage']);
+						}
+
 						// Product url = programme url
 						if ($db_item['url'] != $update_item['libellestageurl'])
 							$fields[] = $db->quoteName('p.url').' = '.$db->quote($update_item['libellestageurl']);
