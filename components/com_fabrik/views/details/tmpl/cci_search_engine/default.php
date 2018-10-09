@@ -43,8 +43,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $zip = $this->data['jos_emundus_setup_teaching_unity___location_zip_raw'];
     $address = $this->data['jos_emundus_setup_teaching_unity___location_address_raw'];
     $addTitle = $this->data['jos_emundus_setup_teaching_unity___location_title_raw'];
-    $partenaire = trim(strtolower($this->data['jos_emundus_setup_programmes___partner_raw']));
-    $certificate = trim(strtolower($this->data['jos_emundus_setup_programmes___certificate_raw']));
+    $partenaire = str_replace(' ', '-', trim(strtolower($this->data['jos_emundus_setup_programmes___partner_raw'])));
+    $certificate = str_replace(' ', '-', trim(strtolower($this->data['jos_emundus_setup_programmes___certificate_raw'])));
 
     echo $this->plugintop;
     echo $this->loadTemplate('buttons');
@@ -63,9 +63,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_public.svg");
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
-
-    $title = ucfirst(strtolower($this->data['jos_emundus_setup_teaching_unity___label_raw']));
-
+    $title = $this->data['jos_emundus_setup_teaching_unity___label_raw'];
 ?>
 
 <!-- Title -->
@@ -77,7 +75,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="g-block size-100">
         <h1><?php echo $title; ?></h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
-            <?php if(!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
+            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
         <div class="em-details g-block size-95 em-details-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
@@ -221,23 +219,21 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             $end_year = date('y',strtotime($session['date_end']));
 
 
-                            if($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
-                                echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
+                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
                             elseif ($start_month == $end_month && $start_year == $end_year)
-                                echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+                                echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
                             elseif ($start_month != $end_month && $start_year == $end_year)
-                                echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_start']))) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
                             elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                echo strftime('%e',strtotime($session['date_start'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . ucfirst(strftime('%B',strtotime($session['date_end']))) . " " . date('Y',strtotime($session['date_end']));
+                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
                             ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
 
-
-
                                 <p>
                                     <?php
-                                        if(!empty($session['tax_rate']))
+                                        if (!empty($session['tax_rate']))
                                             echo intval($session['price']) . " € HT" ;
                                         else
                                             echo intval($session['price']) . " € net" ;
@@ -245,7 +241,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                 </p>
 
                             <?php
-                            if(($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
+                            if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
                                 echo "<p class='places'>dernières places disponibles</p>";
                             ?>
 
@@ -286,7 +282,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         <div class="price-details">
                             <p>
                                 <?php
-                                if(!empty($session['tax_rate']))
+                                if (!empty($session['tax_rate']))
                                     echo intval($session['price']) . " € HT" ;
                                 else
                                     echo intval($session['price']) . " € net" ;
