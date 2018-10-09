@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
     <?php echo $heading; ?>
     <div class="em-themes">
         <?php foreach ($categories as $category) :?>
-            <div class="em-theme-<?php echo $category->color ?>"><a href="<?php echo $search_page; ?>?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $category->title)))); ?>" title="<?php echo $category->label; ?>"><?php echo $category->label; ?></a></div>
+            <a href="<?php echo $search_page; ?>?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $category->title)))); ?>" class="em-theme-<?php echo $category->color ?>" title="<?php echo $category->label; ?>"><?php echo $category->label; ?></a>
         <?php endforeach; ?>
     </div>
 </div>
