@@ -43,6 +43,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $zip = $this->data['jos_emundus_setup_teaching_unity___location_zip_raw'];
     $address = $this->data['jos_emundus_setup_teaching_unity___location_address_raw'];
     $addTitle = $this->data['jos_emundus_setup_teaching_unity___location_title_raw'];
+    $partenaire = trim(strtolower($this->data['jos_emundus_setup_programmes___partner_raw']));
+    $certificate = trim(strtolower($this->data['jos_emundus_setup_programmes___certificate_raw']));
 
     echo $this->plugintop;
     echo $this->loadTemplate('buttons');
@@ -72,19 +74,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         <a href="rechercher?category=<?php echo $this->data['jos_emundus_setup_thematiques___title_raw'];?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
 
-    <div class="g-block size-78">
+    <div class="g-block size-100">
         <h1><?php echo $title; ?></h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
             <?php if(!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF: " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
-
-    <?php if (!empty($partenaire)) :?>
-        <div class="partner g-block size-19">
-            <p>notre partenaire expert</p>
-            <img src="images/custom/ccirs/partenaires/">
-            <!-- TODO: get partners photo -->
-        </div>
-    <?php endif; ?>
 
         <div class="em-details g-block size-95 em-details-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
 
@@ -96,7 +90,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <p id="days"></p>
                 </div>
             </div>
-
 
             <div class="prerequisite-div">
                 <div class="em-details-icon em-icon-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
@@ -120,6 +113,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <p>fiche pédagogique</p>
                 </div>
             </div>
+
+            <?php if (!empty($partenaire)) :?>
+                <div class="partner">
+                    <b>Notre partenaire expert</b>
+                    <img src="images/custom/ccirs/partenaires/<?php echo $partenaire; ?>.png">
+                    <!-- TODO: get partners photo -->
+                </div>
+            <?php endif; ?>
 
         </div>
 
@@ -180,7 +181,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div id="certificate-details">
                         <h3>Certification ou diplôme</h3>
-                        <!-- TODO: Here goes the certification that is based on the theme -->
+                        <img src="images/custom/ccirs/certifications/<?php echo $certificate; ?>.png">
                     </div>
                 </div>
             <?php endif; ?>

@@ -112,7 +112,7 @@ if(!empty($category)) {
 
 				$data = array();
 				$i = 0;
-				
+
 				if (!empty($this->rows)) {
 					foreach ($this->rows as $k => $v) {
 						foreach ($this->headings as $key => $val) {
@@ -150,6 +150,9 @@ if(!empty($category)) {
                                 foreach ($data as $d) {
 
                                     $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
+	                                $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
+	                                if (is_array($title))
+		                                $title = $title[0];
 
                                     // Parse theme info because Fabrik groups them if there are multiple.
                                     $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
@@ -176,7 +179,7 @@ if(!empty($category)) {
                                         <div class="em-top-details">
                                             <div class="em-title">
                                                 <h3 class="em-offre-title">
-                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$d['jos_emundus_setup_teaching_unity___label_raw']."</a>"; ?>
+                                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?>
                                                 </h3>
                                             </div>
 
@@ -267,44 +270,81 @@ if(!empty($category)) {
             });
 
             <?php if (!empty(JFactory::getApplication()->input->post->get('search'))) :?>
-                var searchValue = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
-                document.getElementById("formation-search").value = searchValue;
+                document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
             <?php endif; ?>
 
+            // This fixes the issue with Fakrik not having GREATER or LESS THAN in date filters.
+            fixDateRangeFilters();
+
+            // This fixes the issue with Fabrik not having CONTAINS checkbox.
             singleToggleCheckboxes();
         });
 
         function singleToggleCheckboxes() {
 
+            // Build a single checkbox that controls multiple.
             var cpfContainer = jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"]');
             cpfContainer.children().hide();
-
             cpfContainer.append('' +
                 '<div class="row-fluid">\n' +
                     '<div class="fabrikgrid_checkbox span12">' +
                         '<label for="cpfCheckbox" class="checkbox">\n' +
                         '\t<input type="checkbox" class="fabrikinput  fabrik_filter" name="cpfCheckbox" id="cpfCheckbox"  onchange="toggleCPF(this);"><span>éligible au CPF</span></label>\n' +
                     '</div>\n' +
-                '</div>')
+                '</div>');
 
+            // Precheck the checkbox in case data is already selected in the session.
+            var checks = jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"] input:checkbox').not('#cpfCheckbox');
+            var check = false;
+            checks.forEach(function (checkbox){
+               if (checkbox.prop('checked', checkbox.checked)) {
+                   check = true;
+               }
+            });
+            if (check)
+                jQuery('#cpfCheckbox').prop('checked', true);
+
+            // Build a single checkbox that controls multiple.
             var certContainer = jQuery('[data-filter-row="jos_emundus_setup_programmes___certificate"]');
             certContainer.children().hide();
-
             certContainer.append('' +
                 '<div class="row-fluid">\n' +
                     '<div class="fabrikgrid_checkbox span12">' +
                         '<label for="certCheckbox" class="checkbox">\n' +
                         '\t<input type="checkbox" class="fabrikinput  fabrik_filter" name="certCheckbox" id="certCheckbox"  onchange="toggleCert(this);"><span>certifiante ou diplômante</span></label>\n' +
                     '</div>\n' +
-                '</div>')
+                '</div>');
+
+            // Precheck the checkbox in case data is already selected in the session.
+            checks = jQuery('[data-filter-row="jos_emundus_setup_jos_emundus_setup_programmes___certificateprogrammes___numcpf"] input:checkbox').not('#cpfCheckbox');
+            check = false;
+            checks.forEach(function (checkbox){
+                if (checkbox.prop('checked', checkbox.checked)) {
+                    check = true;
+                }
+            });
+            if (check)
+                jQuery('#cpfCheckbox').prop('checked', true);
 
         }
-        
+
         function toggleCPF(checkbox) {
             jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"] input:checkbox').not(checkbox).prop('checked', checkbox.checked);
         }
         function toggleCert(checkbox) {
             jQuery('[data-filter-row="jos_emundus_setup_programmes___certificate"] input:checkbox').not(checkbox).prop('checked', checkbox.checked);
+        }
+
+        function fixDateRangeFilters() {
+
+            var dateStart = jQuery('input[id="jos_emundus_setup_teaching_unity___date_start_306_com_fabrik_306_filter_range_1_list.filter.0"]');
+            dateStart.parent().parent().hide();
+            dateStart.val("3030-01-01");
+
+            var dateEnd = jQuery('input[id="jos_emundus_setup_teaching_unity___date_end_306_com_fabrik_306_filter_range_0_list.filter.0"]');
+            dateEnd.parent().parent().hide();
+            dateEnd.val("1970-01-02");
+
         }
     </script>
 </div>
