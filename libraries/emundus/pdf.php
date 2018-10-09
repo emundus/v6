@@ -1387,9 +1387,10 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
  *
  * @param String $html The HTML to generate the pdf file from.
  * @param String $path The path to export the file to, if none is supplied a path will be generated.
+ * @param String $footer HTML for the footer of the PDF.
  * @return String The path to the generated PDF or false if export fails.
  */
-function generatePDFfromHTML($html, $path = null) {
+function generatePDFfromHTML($html, $path = null, $footer = '') {
 
 	set_time_limit(0);
 	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -1427,10 +1428,8 @@ function generatePDFfromHTML($html, $path = null) {
 				$this->SetY(-15);
 				// Set font
 				$this->SetFont('helvetica', 'I', 8);
-				// Page number
-				$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
 				// footer
-				$this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+				$this->writeHTMLCell($w=0, $h=0, $x='', $y=260, $this->footer.' Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages().'</p>', $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 				//logo
 				if (is_file($this->logo_footer))
 					$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -1455,16 +1454,17 @@ function generatePDFfromHTML($html, $path = null) {
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor(PDF_AUTHOR);
 	$pdf->SetTitle(basename(JPATH_BASE.$path));
+	$pdf->footer = $footer;
 
 	// set margins
 	$pdf->SetMargins(5, 40, 5);
 
-	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+	$pdf->SetAutoPageBreak(true, 50);
 	$pdf->SetFont('helvetica', '', 8);
 
 	$pdf->AddPage();
 
-	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+	$pdf->writeHTMLCell($w=0, $h=30, $x='', $y=10, $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
 	@chdir('tmp');
 
