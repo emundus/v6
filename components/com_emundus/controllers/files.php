@@ -3118,7 +3118,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			$partner = '';
 
 	    // Build the variables found in the article.
-	    setlocale(LC_ALL, 'fr_FR');
+	    setlocale(LC_ALL, 'fr_FR.utf8');
 	    $post = [
 	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
