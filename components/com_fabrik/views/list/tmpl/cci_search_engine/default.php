@@ -149,7 +149,7 @@ if(!empty($category)) {
 
                                 foreach ($data as $d) {
 
-                                    $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
+                                    $days = jsonDecode($d['jos_emundus_setup_teaching_unity___days_raw'])[0];
 	                                $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
 	                                if (is_array($title))
 		                                $title = $title[0];
