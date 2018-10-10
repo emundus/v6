@@ -138,7 +138,7 @@ if(!empty($category)) {
                             <h2><?php echo $this->navigation->total ;?> formation trouvée</h2>
                         <?php else :?>
                             <h2>
-                                Pas de formations trouvées <br>
+                                Aucune formation trouvée <br>
                                 Il existe forcément une formation adaptée à votre demande. <br>
                                 Appelez-nous au <a href="tel:+33546847092">05 46 84 70 92</a>
                             </h2>
