@@ -1169,25 +1169,27 @@ class EmundusController extends JControllerLegacy {
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        // Check if the user is an applicant and it is his file.
-        if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid) {
+	    // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
+	    if (!empty(JFactory::getUser($uid)->id)) {
+		    $db = JFactory::getDBO();
+		    $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
+		    $db->setQuery($query);
+		    $fileInfo = $db->loadObject();
+		    if (empty($fileInfo))
+			    $fileInfo->fnum = explode('_', $file)[0];
+	    }
 
-            $db = JFactory::getDBO();
-            $query = $db->getQuery(true);
-
-            // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
-            $query = 'SELECT can_be_viewed FROM #__emundus_uploads WHERE user_id = '.$uid.' AND filename like '.$db->Quote($file);
-            $db->setQuery($query);
-            $can_be_viewed = $db->loadResult();
-            if ($can_be_viewed != 1)
-                die (JText::_( 'ACCESS_DENIED' ));
-
-        }
-
-        // If the user has the rights to open attachments.
-        elseif (!EmundusHelperAccess::asAccessAction(4,'r')) {
-            die (JText::_('ACCESS_DENIED'));
-        }
+	    // Check if the user is an applicant and it is his file.
+	    if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid) {
+		    if ($fileInfo->can_be_viewed != 1)
+			    die (JText::_( 'ACCESS_DENIED' ));
+	    }
+	    // If the user has the rights to open attachments.
+	    elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
+		    die (JText::_('ACCESS_DENIED'));
+	    } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r')) {
+		    die (JText::_('ACCESS_DENIED'));
+	    }
 
         // Otherwise, open the file if it exists.
         $file = JPATH_BASE.DS.$url;
