@@ -3113,12 +3113,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
 	    $partner = str_replace(' ', '-', trim(strtolower($product[0]['partner'])));
 		if (!empty($partner))
-			$partner = '<img src="images/custom/ccirs/partenaires/'.$partner.'.png" height="100px">';
+			$partner = '<img src="images/custom/ccirs/partenaires/'.$partner.'.png" height="50">';
 		else
 			$partner = '';
 
 	    // Build the variables found in the article.
-	    setlocale(LC_ALL, 'fr_FR');
+	    setlocale(LC_ALL, 'fr_FR.utf8');
 	    $post = [
 	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
@@ -3140,9 +3140,13 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
 	    $body = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $article))));
+	    $footer = '<p>La CCI Rochefort et Saintonge (CCIRS) se réserve le droit d’adapter les informations de cette fiche.</br>
+					La CCIRS est un organisme de formation enregistré sous le numéro 5417 P00 1017, certifié « Facilitateur en Acquisition de Compétences » sous la référence CPS FAC 041</p>
+					<p>{PRODUCT_MANAGER} - competencesetformation@rochefort.cci.fr - 05 46 84 70 92 - www.competencesetformation.fr</p> <p>Fiche pédagogique éditée le 19 septembre 2018 - ';
+	    $footer = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $footer))));
 
 	    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-	    $filename = generatePDFfromHTML($body, $filename);
+	    $filename = generatePDFfromHTML($body, $filename, $footer);
 
 	    if ($filename == false) {
 		    echo json_encode((object)['status' => false, 'msg' => 'Error generating PDF.']);
