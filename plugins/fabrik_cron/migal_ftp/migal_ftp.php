@@ -255,8 +255,16 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						// In case the programme has been unpublished (has gone through the DELETE procedure): republish it.
 						if ($db_item['published'] == '0') {
 							$fields[] = $db->quoteName('p.published').' = 1';
-							$fields[] = $db->quoteName('c.published').' = 1';
-							$fields[] = $db->quoteName('t.published').' = 1';
+							if ($update_item['publicationsession'] == false) {
+								$fields[] = $db->quoteName('c.published').' = 1';
+								$fields[] = $db->quoteName('t.published').' = 1';
+							}
+						}
+
+						// Items which are set to NOT be displayed need to be unpublished.
+						if ($db_item['published'] == '1' && $update_item['publicationsession'] == true) {
+							$fields[] = $db->quoteName('t.published').' = 0';
+							$fields[] = $db->quoteName('c.published').' = 0';
 						}
 
 						// Compare each field and update those which have differences.
@@ -420,12 +428,12 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$fields[] = $db->quoteName('t.intervenant').' = '.$db->quote($update_item['typeintervenant']);
 						
 						// Certificate
-						if ($db_item['certificate'] != $update_item['produit9'])
-							$fields[] = $db->quoteName('p.certificate').' = '.$db->quote($update_item['produit9']);
-
-						// Partner
-						if ($db_item['partner'] != $update_item['produit8'])
-							$fields[] = $db->quoteName('p.partner').' = '.$db->quote($update_item['produit8']);
+						if ($db_item['certificate'] != $update_item['produit9'] || $db_item['partner'] != $update_item['produit8']) {
+							if (!empty($update_item['produit9']))
+								$fields[] = $db->quoteName('p.certificate').' = '.$db->quote($update_item['produit9']);
+							elseif (!empty($update_item['produit8']))
+								$fields[] = $db->quoteName('p.partner').' = '.$db->quote($update_item['produit8']);
+						}
 
 						// Target
 						if ($db_item['target'] != $update_item['produit7'])
@@ -550,6 +558,12 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						}
 
 						// Only add programme if it does not already exist in DB and has not already been added.
+						$partner = '';
+						if (!empty($item['produit8']))
+							$partner = $item['produit8'];
+						elseif (!empty($item['produit9']))
+							$partner = $item['produit9'];
+
 						if (!in_array($item['codeproduit'], $programme_codes) && !array_key_exists($item['codeproduit'], $programme_values)) {
 							$programme_values[$item['codeproduit']] = implode(',', [
 								$db->quote($item['codeproduit']),
@@ -568,8 +582,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['ur_nom']),
 								$db->quote($item['ur_prenom']),
 								$db->quote($item['pedagogie']),
-								$db->quote($item['produit9']),
-								$db->quote($item['produit8']),
+								$db->quote(''),
+								$db->quote($partner),
 								$db->quote($item['produit7'])
 							]);
 						}
@@ -586,12 +600,16 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							'1'
 						]);
 
+						if ($item['publicationsession'] == true)
+							$published = '0';
+						else
+							$published = '1';
 						$teaching_values[] = implode(',', [
 							$db->quote($item['codeproduit']),
 							$db->quote($item['numsession']),
 							$db->quote($item['libellestage']),
 							$db->quote($item['observations']),
-							'1',
+							$published,
 							$db->quote($item['coutsession']),
 							$db->quote($item['datedebutsession']['date']),
 							$db->quote($item['datefinsession']['date']),
@@ -611,7 +629,6 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$db->quote($item['tauxtvaproduit']),
 							$db->quote($item['typeintervenant'])
 						]);
-
 					}
 
 					if (!empty($programme_values)) {
