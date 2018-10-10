@@ -427,11 +427,11 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['intervenant'] != $update_item['typeintervenant'])
 							$fields[] = $db->quoteName('t.intervenant').' = '.$db->quote($update_item['typeintervenant']);
 						
-						// Certificate
-						if ($db_item['certificate'] != $update_item['produit9'] || $db_item['partner'] != $update_item['produit8']) {
-							if (!empty($update_item['produit9']))
-								$fields[] = $db->quoteName('p.certificate').' = '.$db->quote($update_item['produit9']);
-							elseif (!empty($update_item['produit8']))
+						// Partner
+						if ($db_item['partner'] != $update_item['produit9'] || $db_item['partner'] != $update_item['produit8']) {
+							if (!empty($update_item['produit9']) && $db_item['partner'] != $update_item['produit9'])
+								$fields[] = $db->quoteName('p.partner').' = '.$db->quote($update_item['produit9']);
+							elseif (!empty($update_item['produit8']) && $db_item['partner'] != $update_item['produit8'])
 								$fields[] = $db->quoteName('p.partner').' = '.$db->quote($update_item['produit8']);
 						}
 
