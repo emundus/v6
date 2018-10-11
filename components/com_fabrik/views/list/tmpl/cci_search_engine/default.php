@@ -64,6 +64,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
 
 $category = JFactory::getApplication()->input->get->get('category');
+$cible = JFactory::getApplication()->input->get->get('cible');
 if(!empty($category)) {
     $db = JFactory::getDbo();
     $query = $db->getQuery(true);
@@ -77,6 +78,36 @@ if(!empty($category)) {
     $category = $db->loadAssoc();
 }
 
+if (!empty($cible)) {
+    switch ($cible) {
+        case 'dirigeant' :
+            $cible = "DIRIGEANT";
+        break;
+
+        case 'salarie':
+            $cible = "SALARIÉ";
+        break;
+
+        case 'hotel-restaurant' :
+            $cible = "HÔTELIER - RESTAURATEUR";
+        break;
+
+        case 'immobilier' :
+            $cible = "PROFESSIONNEL DE L’IMMOBILIER";
+        break;
+
+        case 'createur' :
+            $cible = "CRÉATEUR - REPRENEUR D’ENTREPRISE";
+        break;
+
+        default:
+            $cible = strtolower($cible);
+        break;
+
+    }
+}
+
+
 ?>
 
 <div class="main">
@@ -87,6 +118,15 @@ if(!empty($category)) {
                 <div class="theme-filter">
                     <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
                         <?php echo $category['label']; ?>
+                    </div>
+                    <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($cible)) :?>
+                <div class="theme-filter">
+                    <div class="em-filter-cible">
+                        <?php echo $cible; ?>
                     </div>
                     <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
                 </div>
