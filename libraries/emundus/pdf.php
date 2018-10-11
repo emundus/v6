@@ -1457,7 +1457,7 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
 	$pdf->footer = $footer;
 
 	// set margins
-	$pdf->SetMargins(5, 40, 5);
+	$pdf->SetMargins(15, 40, 15);
 
 	$pdf->SetAutoPageBreak(true, 50);
 	$pdf->SetFont('helvetica', '', 8);
