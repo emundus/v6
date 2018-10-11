@@ -64,6 +64,7 @@ $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."c
 
 
 $category = JFactory::getApplication()->input->get->get('category');
+$cible = JFactory::getApplication()->input->get->get('cible');
 if(!empty($category)) {
     $db = JFactory::getDbo();
     $query = $db->getQuery(true);
@@ -77,6 +78,36 @@ if(!empty($category)) {
     $category = $db->loadAssoc();
 }
 
+if (!empty($cible)) {
+    switch ($cible) {
+        case 'dirigeant' :
+            $cible = "DIRIGEANT";
+        break;
+
+        case 'salarie':
+            $cible = "SALARIÉ";
+        break;
+
+        case 'hotel-restaurant' :
+            $cible = "HÔTELIER - RESTAURATEUR";
+        break;
+
+        case 'immobilier' :
+            $cible = "PROFESSIONNEL DE L’IMMOBILIER";
+        break;
+
+        case 'createur' :
+            $cible = "CRÉATEUR - REPRENEUR D’ENTREPRISE";
+        break;
+
+        default:
+            $cible = strtoupper($cible);
+        break;
+
+    }
+}
+
+
 ?>
 
 <div class="main">
@@ -87,6 +118,15 @@ if(!empty($category)) {
                 <div class="theme-filter">
                     <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
                         <?php echo $category['label']; ?>
+                    </div>
+                    <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($cible)) :?>
+                <div class="theme-filter">
+                    <div class="em-filter-cible">
+                        <?php echo $cible; ?>
                     </div>
                     <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
                 </div>
@@ -149,7 +189,9 @@ if(!empty($category)) {
 
                                 foreach ($data as $d) {
 
-                                    $days = $d['jos_emundus_setup_teaching_unity___days_raw'];
+                                    $days = jsonDecode($d['jos_emundus_setup_teaching_unity___days_raw']);
+                                    if (is_array($days))
+                                        $days = $days[0];
 	                                $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
 	                                if (is_array($title))
 		                                $title = $title[0];
@@ -204,9 +246,9 @@ if(!empty($category)) {
                                             <div  class="em-day-details">
                                                 <p>
                                                     <?php
-                                                    if ($days > 1)
+                                                    if (floatval($days) > 1)
                                                         echo $days." jours";
-                                                    elseif ($days = 1)
+                                                    elseif (floatval($days) == 1)
                                                         echo $days." jour";
                                                     ?>
                                                 </p>
@@ -269,7 +311,7 @@ if(!empty($category)) {
                 no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
             });
 
-            <?php if (!empty(JFactory::getApplication()->input->post->get('search'))) :?>
+            <?php if (!empty(JFactory::getApplication()->input->post->getString('search'))) :?>
                 document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
             <?php endif; ?>
 
