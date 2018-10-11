@@ -101,7 +101,7 @@ if (!empty($cible)) {
         break;
 
         default:
-            $cible = strtolower($cible);
+            $cible = strtoupper($cible);
         break;
 
     }
