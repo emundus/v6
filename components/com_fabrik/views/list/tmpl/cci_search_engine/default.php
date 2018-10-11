@@ -149,7 +149,9 @@ if(!empty($category)) {
 
                                 foreach ($data as $d) {
 
-                                    $days = jsonDecode($d['jos_emundus_setup_teaching_unity___days_raw'])[0];
+                                    $days = jsonDecode($d['jos_emundus_setup_teaching_unity___days_raw']);
+                                    if (is_array($days))
+                                        $days = $days[0];
 	                                $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
 	                                if (is_array($title))
 		                                $title = $title[0];
@@ -204,9 +206,9 @@ if(!empty($category)) {
                                             <div  class="em-day-details">
                                                 <p>
                                                     <?php
-                                                    if ($days > 1)
+                                                    if (floatval($days) > 1)
                                                         echo $days." jours";
-                                                    elseif ($days = 1)
+                                                    elseif (floatval($days) == 1)
                                                         echo $days." jour";
                                                     ?>
                                                 </p>

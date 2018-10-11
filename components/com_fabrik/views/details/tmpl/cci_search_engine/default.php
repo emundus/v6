@@ -88,9 +88,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div class="em-days">
                     <p id="days">
                         <?php
-                        if ($days > 1)
+                        if (floatval($days) > 1)
                             echo $days." jours";
-                        elseif ($days = 1)
+                        elseif (floatval($days) == 1)
                             echo $days." jour";
                         ?>
                     </p>
