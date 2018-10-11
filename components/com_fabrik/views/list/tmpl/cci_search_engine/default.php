@@ -365,11 +365,11 @@ if (!empty($cible)) {
 
         function fixDateRangeFilters() {
 
-            var dateStart = jQuery('input[id="jos_emundus_setup_teaching_unity___date_start_306_com_fabrik_306_filter_range_1_.0"]');
+            var dateStart = jQuery('input[id^="jos_emundus_setup_teaching_unity___date_start_306_com_fabrik_306_filter_range_1_.0"]');
             dateStart.parent().parent().hide();
             dateStart.val("3030-01-01");
 
-            var dateEnd = jQuery('input[id="jos_emundus_setup_teaching_unity___date_end_306_com_fabrik_306_filter_range_0_.0"]');
+            var dateEnd = jQuery('input[id^="jos_emundus_setup_teaching_unity___date_end_306_com_fabrik_306_filter_range_0_.0"]');
             dateEnd.parent().parent().hide();
             dateEnd.val("1970-01-02");
 
