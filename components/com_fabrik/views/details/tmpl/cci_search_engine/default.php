@@ -44,6 +44,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $address = $this->data['jos_emundus_setup_teaching_unity___location_address_raw'];
     $addTitle = $this->data['jos_emundus_setup_teaching_unity___location_title_raw'];
     $partenaire = str_replace(' ', '-', trim(strtolower($this->data['jos_emundus_setup_programmes___partner_raw'])));
+    $days = trim($this->data['jos_emundus_setup_teaching_unity___days_raw']);
     $certificate = str_replace(' ', '-', trim(strtolower($this->data['jos_emundus_setup_programmes___certificate_raw'])));
 
     echo $this->plugintop;
@@ -85,7 +86,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <?php echo $duree_svg; ?>
                 </div>
                 <div class="em-days">
-                    <p id="days"></p>
+                    <p id="days">
+                        <?php
+                        if ($days > 1)
+                            echo $days." jours";
+                        elseif ($days = 1)
+                            echo $days." jour";
+                        ?>
+                    </p>
                 </div>
             </div>
 
@@ -233,10 +241,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                                 <p>
                                     <?php
-                                        if (!empty($session['tax_rate']))
-                                            echo intval($session['price']) . " € HT" ;
-                                        else
-                                            echo intval($session['price']) . " € net" ;
+                                        if ($partenaire == 'esi')
+                                            echo intval($session['price']) . " € TTC" ;
+                                        else {
+                                            if (!empty($session['tax_rate']))
+                                                echo intval($session['price']) . " € HT" ;
+                                            else
+                                                echo intval($session['price']) . " € net" ;
+                                        }
                                     ?>
                                 </p>
 
@@ -427,10 +439,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
 
     jQuery(document).ready(function() {
-        if (sessions[0]['days'] > 1)
-            document.getElementById("days").append((sessions[0]['days']) + " jours");
-        else
-            document.getElementById("days").append((sessions[0]['days']) + " jour");
 
         var options = document.getElementById("formation-options");
         options.appendChild(document.getElementById("em-formation-options"));

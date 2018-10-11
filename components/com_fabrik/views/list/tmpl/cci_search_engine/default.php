@@ -269,7 +269,7 @@ if(!empty($category)) {
                 no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
             });
 
-            <?php if (!empty(JFactory::getApplication()->input->post->get('search'))) :?>
+            <?php if (!empty(JFactory::getApplication()->input->post->getString('search'))) :?>
                 document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
             <?php endif; ?>
 
