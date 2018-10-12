@@ -241,14 +241,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                                 <p>
                                     <?php
-                                        if ($partenaire == 'esi')
-                                            echo intval($session['price']) . " € TTC" ;
-                                        else {
-                                            if (!empty($session['tax_rate']))
-                                                echo intval($session['price']) . " € HT" ;
-                                            else
-                                                echo intval($session['price']) . " € net" ;
-                                        }
+                                        $TTC = floatval($session['price'])+(floatval($session['price'])*floatval($session['tax_rate']));
+                                        if (!empty($session['tax_rate']))
+                                            echo $TTC . " € HT" ;
+                                        else
+                                            echo intval($session['price']) . " € net" ;
                                     ?>
                                 </p>
 
