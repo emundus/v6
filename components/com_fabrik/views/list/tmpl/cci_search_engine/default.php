@@ -312,7 +312,7 @@ if (!empty($cible)) {
             });
 
             <?php if (!empty(JFactory::getApplication()->input->post->getString('search'))) :?>
-                document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
+                document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->getString('search'); ?>';
             <?php endif; ?>
 
             // This fixes the issue with Fakrik not having GREATER or LESS THAN in date filters.
