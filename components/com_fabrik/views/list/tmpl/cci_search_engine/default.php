@@ -312,7 +312,7 @@ if (!empty($cible)) {
             });
 
             <?php if (!empty(JFactory::getApplication()->input->post->getString('search'))) :?>
-                document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->get('search'); ?>';
+                document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->getString('search'); ?>';
             <?php endif; ?>
 
             // This fixes the issue with Fakrik not having GREATER or LESS THAN in date filters.
@@ -365,11 +365,11 @@ if (!empty($cible)) {
 
         function fixDateRangeFilters() {
 
-            var dateStart = jQuery('input[id="jos_emundus_setup_teaching_unity___date_start_306_com_fabrik_306_filter_range_1_.0"]');
+            var dateStart = jQuery('input[id^="jos_emundus_setup_teaching_unity___date_start_306_com_fabrik_306_filter_range_1_"]');
             dateStart.parent().parent().hide();
             dateStart.val("3030-01-01");
 
-            var dateEnd = jQuery('input[id="jos_emundus_setup_teaching_unity___date_end_306_com_fabrik_306_filter_range_0_.0"]');
+            var dateEnd = jQuery('input[id^="jos_emundus_setup_teaching_unity___date_end_306_com_fabrik_306_filter_range_0_"]');
             dateEnd.parent().parent().hide();
             dateEnd.val("1970-01-02");
 
