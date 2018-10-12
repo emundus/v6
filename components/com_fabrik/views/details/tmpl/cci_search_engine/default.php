@@ -73,7 +73,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         <a href="rechercher?category=<?php echo $this->data['jos_emundus_setup_thematiques___title_raw'];?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
 
-    <div class="g-block size-100">
+    <div class="g-block size-95">
         <h1><?php echo $title; ?></h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
             <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
