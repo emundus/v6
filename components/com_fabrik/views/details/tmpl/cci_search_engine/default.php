@@ -503,6 +503,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         jQuery.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&controller=files&task=getproductpdf',
+            async: false,
             data: {
                 product_code: code
             },
