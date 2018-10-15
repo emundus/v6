@@ -217,7 +217,13 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                         <div class="formation">
                             <b><?php
-
+                            $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))));
+                                $town =  ucwords(strtolower($town), '\',. ');
+                                $beforeComma = strpos($town, "D'");
+                                if (!empty($beforeComma)) {
+                                    $replace = strpbrk($town, "D'");
+                                    $town = substr_replace($town,lcfirst($replace), $beforeComma);
+                                }
                             setlocale(LC_ALL, 'fr_FR.utf8');
                             $start_day = date('d',strtotime($session['date_start']));
                             $end_day = date('d',strtotime($session['date_end']));
@@ -237,7 +243,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
                             ?>
                             </b>
-                            <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
+                            <p><?php echo $town ;?></p>
 
                                 <p>
                                     <?php
