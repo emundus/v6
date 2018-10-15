@@ -19,7 +19,6 @@ $doc = JFactory::getDocument();
 //$eMConfig   = JComponentHelper::getParams('com_fabrik');
 //$API        = $eMConfig->get("google_api_key", null, "string");
 
-
 $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
@@ -65,6 +64,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
     $title = $this->data['jos_emundus_setup_teaching_unity___label_raw'];
+
+    $document = JFactory::getDocument();
+    $document->setTitle($title);
+    $document->setDescription(substr(html_entity_decode(strip_tags(html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']))), 0, 200));
 ?>
 
 <!-- Title -->
@@ -123,8 +126,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             <?php if (!empty($partenaire)) :?>
                 <div class="partner">
                     <b>Notre partenaire expert</b>
-                    <img src="images/custom/ccirs/partenaires/<?php echo $partenaire; ?>.png">
-                    <!-- TODO: get partners photo -->
+                    <img src="images/custom/ccirs/partenaires/<?php echo $partenaire; ?>.png" alt="Logo partenaire <?php echo $partenaire; ?>">
                 </div>
             <?php endif; ?>
 
@@ -187,7 +189,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div id="certificate-details">
                         <h3>Certification ou diplôme</h3>
-                        <img src="images/custom/ccirs/certifications/<?php echo $certificate; ?>.png">
+                        <img src="images/custom/ccirs/certifications/<?php echo $certificate; ?>.png" alt="Logo certificat <?php echo $certificate; ?>">
                     </div>
                 </div>
             <?php endif; ?>
