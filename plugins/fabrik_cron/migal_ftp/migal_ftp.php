@@ -484,11 +484,12 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					// Get the list of programme codes that already exist in order to avoid creating duplicates.
 					$query = $db->getQuery(true);
 					$query
-						->select($db->quoteName('code'))
-						->from($db->quoteName('#__emundus_setup_programmes'));
+						->select([$db->quoteName('p.code'), $db->quoteName('tu.session_code')])
+						->from($db->quoteName('#__emundus_setup_programmes','p'))
+						->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'tu').' ON '.$db->quoteName('tu.code').' LIKE '.$db->quoteName('p.code'));
 					$db->setQuery($query);
 					try {
-						$programme_codes = $db->loadColumn();
+						$programme_codes = $db->loadAssocList('code');
 					} catch (Exception $e) {
 						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
@@ -564,7 +565,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						elseif (!empty($item['produit9']))
 							$partner = $item['produit9'];
 
-						if (!in_array($item['codeproduit'], $programme_codes) && !array_key_exists($item['codeproduit'], $programme_values)) {
+						if (!in_array($item['codeproduit'], array_unique(array_keys($programme_codes))) && !array_key_exists($item['codeproduit'], $programme_values)) {
 							$programme_values[$item['codeproduit']] = implode(',', [
 								$db->quote($item['codeproduit']),
 								$db->quote($item['intituleproduit']),
@@ -588,47 +589,49 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							]);
 						}
 
-						$campaign_values[] = implode(',', [
-							$db->quote($item['numsession']),
-							$db->quote($item['libellestage']),
-							$db->quote($item['resumeproduit']),
-							$db->quote($item['resumeproduit']),
-							'NOW()',
-							$db->quote($item['datedebutsession']['date']),
-							'1001',
-							$db->quote($item['codeproduit']),
-							'1'
-						]);
+						if (!in_array($item['numsession'], $campaign_values) && !in_array($item['numsession'], $programme_codes)) {
+							$campaign_values[] = implode(',', [
+								$db->quote($item['numsession']),
+								$db->quote($item['libellestage']),
+								$db->quote($item['resumeproduit']),
+								$db->quote($item['resumeproduit']),
+								'NOW()',
+								$db->quote($item['datedebutsession']['date']),
+								'1001',
+								$db->quote($item['codeproduit']),
+								'1'
+							]);
 
-						if ($item['publicationsession'] == true)
-							$published = '0';
-						else
-							$published = '1';
-						$teaching_values[] = implode(',', [
-							$db->quote($item['codeproduit']),
-							$db->quote($item['numsession']),
-							$db->quote($item['libellestage']),
-							$db->quote($item['observations']),
-							$published,
-							$db->quote($item['coutsession']),
-							$db->quote($item['datedebutsession']['date']),
-							$db->quote($item['datefinsession']['date']),
-							++$campaign_id,
-							$db->quote($item['nbjours']),
-							$db->quote($item['nbheures']),
-							$db->quote($item['nbheuresjoursession']),
-							$db->quote($item['effectif_mini']),
-							$db->quote($item['effectif_maxi']),
-							$db->quote($item['placedispo']['nbInscrit']),
-							$db->quote($item['titleseo']),
-							$db->quote($item['libellelieu']),
-							$db->quote($item['adresse1lieu'].' '.$item['adresse2lieu']),
-							$db->quote($item['cplieu']),
-							$db->quote($item['villelieu']),
-							$db->quote($item['region']),
-							$db->quote($item['tauxtvaproduit']),
-							$db->quote($item['typeintervenant'])
-						]);
+							if ($item['publicationsession'] == true)
+								$published = '0';
+							else
+								$published = '1';
+							$teaching_values[] = implode(',', [
+								$db->quote($item['codeproduit']),
+								$db->quote($item['numsession']),
+								$db->quote($item['libellestage']),
+								$db->quote($item['observations']),
+								$published,
+								$db->quote($item['coutsession']),
+								$db->quote($item['datedebutsession']['date']),
+								$db->quote($item['datefinsession']['date']),
+								++$campaign_id,
+								$db->quote($item['nbjours']),
+								$db->quote($item['nbheures']),
+								$db->quote($item['nbheuresjoursession']),
+								$db->quote($item['effectif_mini']),
+								$db->quote($item['effectif_maxi']),
+								$db->quote($item['placedispo']['nbInscrit']),
+								$db->quote($item['titleseo']),
+								$db->quote($item['libellelieu']),
+								$db->quote($item['adresse1lieu'].' '.$item['adresse2lieu']),
+								$db->quote($item['cplieu']),
+								$db->quote($item['villelieu']),
+								$db->quote($item['region']),
+								$db->quote($item['tauxtvaproduit']),
+								$db->quote($item['typeintervenant'])
+							]);
+						}
 					}
 
 					if (!empty($programme_values)) {
