@@ -234,7 +234,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             elseif ($start_month != $end_month && $start_year == $end_year)
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
                             elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
                             ?>
                             </b>
                             <p><?php echo str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))) ;?></p>
@@ -243,7 +243,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                     <?php
                                         $TTC = floatval($session['price'])+(floatval($session['price'])*floatval($session['tax_rate']));
                                         if (!empty($session['tax_rate']))
-                                            echo $TTC . " € HT" ;
+                                            echo $TTC . " € TTC" ;
                                         else
                                             echo intval($session['price']) . " € net" ;
                                     ?>
