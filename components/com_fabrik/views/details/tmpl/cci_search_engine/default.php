@@ -126,8 +126,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             <?php if (!empty($partenaire)) :?>
                 <div class="partner">
                     <b>Notre partenaire expert</b>
-                    <img src="images/custom/ccirs/partenaires/<?php echo $partenaire; ?>.png">
-                    <!-- TODO: get partners photo -->
+                    <img src="images/custom/ccirs/partenaires/<?php echo $partenaire; ?>.png" alt="Logo partenaire <?php echo $partenaire; ?>">
                 </div>
             <?php endif; ?>
 
@@ -190,7 +189,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                     <div id="certificate-details">
                         <h3>Certification ou diplôme</h3>
-                        <img src="images/custom/ccirs/certifications/<?php echo $certificate; ?>.png">
+                        <img src="images/custom/ccirs/certifications/<?php echo $certificate; ?>.png" alt="Logo certificat <?php echo $certificate; ?>">
                     </div>
                 </div>
             <?php endif; ?>
