@@ -243,7 +243,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                     <?php
                                         $TTC = floatval($session['price'])+(floatval($session['price'])*floatval($session['tax_rate']));
                                         if (!empty($session['tax_rate']))
-                                            echo $TTC . " € HT" ;
+                                            echo $TTC . " € TTC" ;
                                         else
                                             echo intval($session['price']) . " € net" ;
                                     ?>
