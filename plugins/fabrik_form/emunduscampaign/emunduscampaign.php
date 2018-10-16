@@ -188,7 +188,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 		$m_profile->initEmundusSession();
 
-		$url = $this->getParam('emunduscampaign_redirect_url', 'index.php');
+		$url = $this->getParam('emunduscampaign_redirect_url', null);
 		if (empty($url))
 			$url = 'index.php?option=com_emundus&task=openfile&fnum='.$fnum;
 		$app->redirect($url,  JText::_('FILE_OK'));
