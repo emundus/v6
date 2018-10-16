@@ -408,10 +408,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @param      $fnum
 	 * @param      $email_id
 	 * @param null $post
-	 *
+	 * @param null $attachments
+     *
 	 * @return bool
 	 */
-    function sendEmail($fnum, $email_id, $post = null) {
+    function sendEmail($fnum, $email_id, $post = null, $attachments = []) {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
@@ -458,7 +459,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
-	    $toAttach = [];
+	    if(is_array($attachments))
+	        $toAttach = $attachments;
+	    else
+	        $toAttach[] = $attachments;
+
+
 
 	    // In case no post value is supplied
 	    if (empty($post)) {
@@ -560,7 +566,6 @@ class EmundusControllerMessages extends JControllerLegacy {
             }
         }
 	    
-
 	    $mailer->addAttachment($toAttach);
 	    // Send and log the email.
         $send = $mailer->Send();
