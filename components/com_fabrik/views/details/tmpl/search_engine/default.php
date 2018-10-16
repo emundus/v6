@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 // If we are not logged in: we cannot access this page and so we are redirected to the login page.
 $user = JFactory::getUser();
+
 if ($user->guest) {
 	JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())), JText::_('JGLOBAL_YOU_MUST_LOGIN_FIRST'), 'warning');
 	return;
@@ -119,7 +120,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                 ?>
             </div>
         </div>
-        <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Cliquez ici pour plus d'information</a>
+        <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
     <?php endif; ?>
 </div>
 
@@ -219,7 +220,37 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                                     <?php endforeach; ?>
                                 </select>
                             <?php endif; ?>
-                            <textarea id="em-contact-message" placeholder="Ajouter un méssage (facultatif)"></textarea>
+                            <textarea id="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>
+
+                            <?php if ($user->profile == '1006') :?>
+                            <!-- Upload a file from computer -->
+                            <div id="em-attachment-list">
+                                <div id="cv-upload_file">
+                                    <span id="em-filename">Ajouter votre CV</span>
+                                    <label for="em-cv_to_upload">
+                                        <input type="file" id="em-cv_to_upload">
+                                    </label>
+                                </div>
+
+                                <span class="input-group-btn">
+							    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Cliquez ici pour sauvegarder</a>
+						    </span>
+
+                                <!-- Upload a file from computer -->
+                                <div id="lm-upload_file">
+                                    <span id="em-filename">Ajouter votre lettre de motivation</span>
+                                    <label for="em-lm_to_upload">
+                                        <input type="file" id="em-lm_to_upload">
+                                    </label>
+                                </div>
+                            </div>
+
+
+                            <span class="input-group-btn">
+							    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Cliquez ici pour sauvegarder</a>
+						    </span>
+
+                            <?php endif; ?>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton('contact')">Envoyer la demande de contact</button>
@@ -278,6 +309,15 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             var message = document.getElementById('em-contact-message').value;
             if (message != null && message != '' && typeof message != 'undefined')
                 data.message = message;
+
+            var CV = jQuery('#cv-upload_file').find('.hidden').text();
+            if (CV != null && CV != '' && typeof CV != 'undefined')
+                data.CV = CV;
+
+            var ML = jQuery('#lm-upload_file').find('.hidden').text();
+            if (ML != null && ML != '' && typeof ML != 'undefined')
+                data.ML = ML;
+
 
         }
 
@@ -380,6 +420,106 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                 console.log(jqXHR.responseText);
             }
         });
+    }
+
+    // Add file to the list being attached.
+    function cvAddFile() {
+        // We need to get the file uploaded by the user.
+
+        var cv = jQuery("#em-cv_to_upload")[0].files[0];
+        var cvId = jQuery("#cv-upload_file");
+        var uploadcv = new Upload(cv, cvId);
+
+        // Verification of style size and type can be done here.
+        uploadcv.doUpload();
+    }
+
+    // Add file to the list being attached.
+    function lmAddFile() {
+        // We need to get the file uploaded by the user.
+        var lm = jQuery("#em-lm_to_upload")[0].files[0];
+        var lmId = jQuery("#lm-upload_file");
+        var uploadlm = new Upload(lm, lmId);
+
+        // Verification of style size and type can be done here.
+        uploadlm.doUpload();
+    }
+
+    // Helper function for uploading a file via AJAX.
+    var Upload = function (file, id) {
+        this.file = file;
+        this.id = id;
+    };
+
+    Upload.prototype.getType = function() {
+        return this.file.type;
+    };
+    Upload.prototype.getSize = function() {
+        return this.file.size;
+    };
+    Upload.prototype.getName = function() {
+        return this.file.name;
+    };
+
+    Upload.prototype.doUpload = function () {
+
+        var that = this;
+        var formData = new FormData();
+
+        // add assoc key values, this will be posts values
+        formData.append("file", this.file, this.getName());
+        formData.append("upload_file", true);
+
+        jQuery.ajax({
+            type: "POST",
+            url: "index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
+            xhr: function () {
+                var myXhr = jQuery.ajaxSettings.xhr();
+                if (myXhr.upload) {
+                    myXhr.upload.addEventListener('progress', that.progressHandling, false);
+                }
+                return myXhr;
+            },
+            success: function (data) {
+                data = JSON.parse(data);
+                if (data.status) {
+                    jQuery(".list-group-item").remove();
+                    jQuery(that.id).append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><i class="fa fa-times"></i></span></li>');
+                } else {
+                    jQuery(that.id).append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+                }
+            },
+            error: function (error) {
+                // handle error
+                this.id.append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+            },
+            async: true,
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            timeout: 60000
+        });
+    };
+
+
+    function removeAttachment(element) {
+
+        element = jQuery(element);
+
+        if (element.parent().hasClass('candidate_file')) {
+
+            // Remove 'disabled' attr from select options.
+            jQuery('#em-select_candidate_file option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+
+        } else if (element.parent().hasClass('setup_letters')) {
+
+            // Remove 'disabled' attr from select options.
+            jQuery('#em-select_setup_letters option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+
+        }
+
+        jQuery(element).parent().remove();
     }
 
 </script>

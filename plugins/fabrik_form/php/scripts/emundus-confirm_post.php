@@ -110,7 +110,7 @@ if ($export_pdf == 1) {
         // Check if application form is in custom order
         if (!empty($application_form_order)) {
             $application_form_order = explode(',',$application_form_order);
-            $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, $application_form_order);
+            $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, null, null, $application_form_order);
         } else
             $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1);
 
