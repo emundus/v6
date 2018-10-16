@@ -172,7 +172,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 					$db->execute();
 
 					// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-					if ($sef_url == true)
+					if ($sef_url === 'true')
 						$link_upload = $baseurl.$url.'?keyid='.$key.'&sid='.$student->id;
 					else
 						$link_upload = $baseurl.$url.'&keyid='.$key.'&sid='.$student->id;
