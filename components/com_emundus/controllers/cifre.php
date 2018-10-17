@@ -107,15 +107,14 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$fnum = $jinput->post->get('fnum', null);
 		$linkedOffer = $jinput->post->get('linkedOffer', null);
 		$message = $jinput->post->getString('message', '');
-		$cv = $jinput->post->getString('CV', null);
-		$ml = $jinput->post->getString('ML', null);
+		$cv = $jinput->post->getPath('CV', null);
+		$ml = $jinput->post->getPath('ML', null);
 
 		// check if the files are on the serveur
         if (file_exists(JPATH_BASE.DS.$cv))
             $toAttach[] = JPATH_BASE.DS.$cv;
         if (file_exists(JPATH_BASE.DS.$ml))
             $toAttach[] = JPATH_BASE.DS.$ml;
-
 
 		if (!empty($message))
 			$message = "Message de l'utilisateur : ".$message;

@@ -223,10 +223,11 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                             <textarea id="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>
 
                             <?php if ($user->profile == '1006') :?>
+                            <hr>
                             <!-- Upload a file from computer -->
                             <div id="em-attachment-list">
                                 <div id="cv-upload_file">
-                                    <span id="em-filename">Ajouter votre CV</span>
+                                    <h4 id="em-filename">Ajouter votre CV</h4>
                                     <label for="em-cv_to_upload">
                                         <input type="file" id="em-cv_to_upload">
                                     </label>
@@ -235,10 +236,10 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                                 <span class="input-group-btn">
 							    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Cliquez ici pour sauvegarder</a>
 						    </span>
-
+                            <hr>
                                 <!-- Upload a file from computer -->
                                 <div id="lm-upload_file">
-                                    <span id="em-filename">Ajouter votre lettre de motivation</span>
+                                    <h4 id="em-filename">Ajouter votre lettre de motivation</h4>
                                     <label for="em-lm_to_upload">
                                         <input type="file" id="em-lm_to_upload">
                                     </label>
@@ -317,7 +318,6 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             var ML = jQuery('#lm-upload_file').find('.hidden').text();
             if (ML != null && ML != '' && typeof ML != 'undefined')
                 data.ML = ML;
-
 
         }
 
@@ -483,7 +483,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
             success: function (data) {
                 data = JSON.parse(data);
                 if (data.status) {
-                    jQuery(".list-group-item").remove();
+                    jQuery(that.id).find('.list-group-item').remove();
                     jQuery(that.id).append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><i class="fa fa-times"></i></span></li>');
                 } else {
                     jQuery(that.id).append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
