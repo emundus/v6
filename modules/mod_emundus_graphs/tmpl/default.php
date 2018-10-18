@@ -433,60 +433,66 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     // Future Doctorant
                     {
                         label: 'Nombre de demande de mise en relation par des chercheurs acceptés',
-                        data: [<?php echo $projects["future_to_chercheur_accept"];?>,0,0],
+                        data: [<?php echo intval($projects["future_to_chercheur_accept"]);?>,0,0],
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderWidth: 1,
-                        stack: 1
+                        stack: 1,
+                        xAxisID: "bar-x-axis1"
                     },
                     {
                         label: 'Nombre de demande de mise en relation par des chercheurs',
-                        data: [<?php echo $projects["future_to_chercheur_total"];?>,0,0],
+                        data: [<?php echo intval($projects["future_to_chercheur_total"]);?>,0,0],
                         backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                        stack: 1
+                        borderWidth: 1,
+                        stack: 1,
+                        xAxisID: "bar-x-axis2"
                     },
-
                     {
                         label: "Nombre de demande de mise en relation par des acteurs public",
-                        backgroundColor: "rgba(66, 244, 235,0.2)",
-                        data: [<?php echo $projects["future_to_public_total"];?>, 0, 0],
-                        stack: 2
+                        data: [<?php echo intval($projects["future_to_public_total"]);?>, 0, 0],
+                        backgroundColor: 'rgba(200, 155, 86, 0.2)',
+                        borderWidth: 1,
+                        stack: 2,
+                        xAxisID: "bar-x-axis3"
                     },
                     {
                         label: "Nombre de demande de mise en relation par des acteurs public acceptés",
-                        backgroundColor: "rgba(65, 98, 244,0.2)",
-                        data: [<?php echo $projects["future_to_public_accept"];?>, 0, 0],
-                        stack: 2
+                        data: [<?php echo intval($projects["future_to_public_accept"]);?>, 0, 0],
+                        backgroundColor: 'rgba(155, 200, 126, 0.2)',
+                        borderWidth: 1,
+                        stack: 2,
+                        xAxisID: "bar-x-axis4"
                     },
-
                     // Chercheurs
                     {
                         label: 'Nombre de demande de mise en relation par des Future Doctorants acceptés',
-                        data: [0,<?php echo $projects["chercheur_to_future_accept"];?>,0],
+                        data: [0,6,0],
                         backgroundColor: 'rgba(226, 138, 138, 0.2)',
                         borderWidth: 1,
                         stack: 1,
-                        fillOpacity: .3
+                        xAxisID: "bar-x-axis5"
                     },
                     {
                         label: 'Nombre de demande de mise en relation par des Future Doctorants',
-                        data: [0,<?php echo $projects["chercheur_to_future_total"];?>,0],
+                        data: [0,4,0],
                         backgroundColor: 'rgba(255, 0, 0, 0.2)',
-                        stack: 1
+                        stack: 1,
+                        xAxisID: "bar-x-axis6"
                     },
-
                     {
                         label: "Nombre de demande de mise en relation par des acteurs public",
                         backgroundColor: "rgba(99,255,132,0.2)",
-                        data: [0, <?php echo $projects["chercheur_to_public_total"];?>, 0],
-                        stack: 2
+                        data: [0,10, 0],
+                        stack: 2,
+                        xAxisID: "bar-x-axis7"
                     },
                     {
                         label: "Nombre de demande de mise en relation par des acteurs public acceptés",
                         backgroundColor: "rgba(201, 0, 232,0.2)",
-                        data: [0, <?php echo $projects["chercheur_to_public_accept"];?>, 0],
-                        stack: 2
+                        data: [0,3, 0],
+                        stack: 2,
+                        xAxisID: "bar-x-axis8"
                     },
-
                     // Acteurs public
                     {
                         label: 'Nombre de demande de mise en relation par des Future Doctorants acceptés',
@@ -494,35 +500,41 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderWidth: 1,
                         stack: 1,
-                        fillOpacity: .3
+                        xAxisID: "bar-x-axis9"
                     },
                     {
                         label: 'Nombre de demande de mise en relation par des Future Doctorants',
                         data: [0,0,<?php echo $projects["public_to_future_total"];?>],
                         backgroundColor: "rgba(99,255,132,0.2)",
                         fillOpacity: .3,
-                        stack: 1
+                        stack: 1,
+                        xAxisID: "bar-x-axis10"
                     },
-
                     {
                         label: "Nombre de demande de mise en relation par des chercheurs",
                         backgroundColor: "rgba(99,255,132,0.2)",
                         data: [0, 0, <?php echo $projects["public_to_chercheur_total"];?>],
-                        fillOpacity: .3,
-                        stack: 2
+                        stack: 2,
+                        xAxisID: "bar-x-axis11"
                     },
                     {
                         label: "Nombre de demande de mise en relation par des chercheurs acceptés",
                         backgroundColor: "rgba(252, 248, 0,0.2)",
                         data: [0, 0, <?php echo $projects["public_to_chercheur_accept"];?>],
-                        fillOpacity: .3,
-                        stack: 2
+                        stack: 2,
+                        xAxisID: "bar-x-axis12"
                     }
                 ]
             },
 
+
             options: {
+                hover: {
+                    mode: 'nearest',
+                    intersect: false
+                },
                 maintainAspectRatio: false,
+
                 legend: {
                     display: false
                 },
@@ -531,13 +543,142 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     text: "<?php echo JText::_("PROJECT_TITLE"); ?>",
                     fontSize: 20
                 },
+
                 scales: {
-                    xAxes: [{
-                        stacked: true,
-                    }],
+                    xAxes: [
+                        {
+                            stacked: true,
+                            id: "bar-x-axis1",
+                            type: 'category',
+                            categoryPercentage: 0.4,
+                            barPercentage: 6.8,
+                        }, {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis2",
+                            // these are needed because the bar controller defaults set only the first x axis properties
+                            type: 'category',
+                            categoryPercentage: 0.48,
+                            barPercentage: 4,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis3",
+                            type: 'category',
+                            categoryPercentage: -0.7,
+                            barPercentage: 4.1,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis4",
+                            type: 'category',
+                            categoryPercentage: -1,
+                            barPercentage: 2,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis5",
+                            // these are needed because the bar controller defaults set only the first x axis properties
+                            type: 'category',
+                            categoryPercentage: 1.4,
+                            barPercentage: 2,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis6",
+                            type: 'category',
+                            categoryPercentage: 4.2,
+                            barPercentage: 0.45,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis7",
+                            type: 'category',
+                            categoryPercentage: 4.7,
+                            barPercentage: 0.7,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis8",
+                            type: 'category',
+                            categoryPercentage: 1.6,
+                            barPercentage: 1.3,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis9",
+                            // these are needed because the bar controller defaults set only the first x axis properties
+                            type: 'category',
+                            categoryPercentage: -0.9,
+                            barPercentage: 3.2,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis10",
+                            type: 'category',
+                            categoryPercentage: -0.65,
+                            barPercentage: 2.8,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis11",
+                            type: 'category',
+                            categoryPercentage: 0.6,
+                            barPercentage: 6.1,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        },
+                        {
+                            display: false,
+                            stacked: true,
+                            id: "bar-x-axis12",
+                            type: 'category',
+                            categoryPercentage: 0.5,
+                            barPercentage: 4.5,
+                            gridLines: {
+                                offsetGridLines: true
+                            }
+                        }
+                    ],
 
                     yAxes: [{
-
                         id: "bar-y-axis1",
                         stacked: false,
                         ticks: {
@@ -548,22 +689,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                                     return label;
                                 }
                             }
-                        }
-                    },
-                        {
-                            id: "bar-y-axis2",
-                            display:false,
-                            stacked: true,
-                            ticks: {
-                                beginAtZero: true,
-                                userCallback: function (label, index, labels) {
-                                    // when the floored value is the same as the value we have a whole number
-                                    if (Math.floor(label) === label) {
-                                        return label;
-                                    }
-                                }
-                            }
-                        }]
+                        },
+
+                    }]
+
                 }
             }
         });
@@ -681,13 +810,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
                         //make sure we are not checking the last date in the labels array
                         if (i + 1 < result.datearray.length) {
-                            var date1 = moment(result.datearray[i], "YYYY-MM-DD");
-                            var date2 = moment(result.datearray[i + 1], "YYYY-MM-DD");
-
+                            var date1 = moment(result.datearray[i], "DD/MM/YYYY");
+                            var date2 = moment(result.datearray[i + 1], "DD/MM/YYYY");
+                            console.log(date1);
                             //if the current date +1 is not the same as it's next neighbor we have to add in a new one
                             if (!date1.add(1, "days").isSame(date2)) {
                                 //add the label
-                                result.datearray.splice(i + 1, 0, date1.format("YYYY-MM-DD"));
+                                result.datearray.splice(i + 1, 0, date1.format("DD/MM/YYYY"));
                                 //add the data
                                 result.countarray.splice(i + 1, 0, 0);
                             }
@@ -704,7 +833,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         data: {
                             labels: result.datearray,
                             datasets: [{
-                                label: "Nombre de connections effectuées",
+                                label: "Nombre de connexions effectuées",
                                 data: result.countarray,
                                 borderColor: 'rgb(89, 90, 109)'
                             }]
@@ -908,7 +1037,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                 }
 
                 var colorArray = setColorGradient(nbArray.length);
-                console.log(colorArray);
                 var elem = document.getElementById('files');
                 elem.height = 400;
 

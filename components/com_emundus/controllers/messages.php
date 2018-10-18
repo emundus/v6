@@ -459,7 +459,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
-	    if(is_array($attachments))
+	    if(!empty($attachments) && is_array($attachments))
 	        $toAttach = $attachments;
 	    else
 	        $toAttach[] = $attachments;
@@ -565,8 +565,9 @@ class EmundusControllerMessages extends JControllerLegacy {
     
             }
         }
-	    
-	    $mailer->addAttachment($toAttach);
+
+        if(!empty($toAttach))
+	        $mailer->addAttachment($toAttach);
 	    // Send and log the email.
         $send = $mailer->Send();
         
