@@ -165,43 +165,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
 </div>
 
-
-
-
-<!-- Shows relation info  -->
-<div class="row" id="relationRow" style="display:none;">
-
-    <div class="col-md-12">
-        <canvas id="rel" ></canvas>
-    </div>
-
-    <div class="col-md-6" style="padding-left: 10%;">
-        <table>
-            <tr><td><?php echo JText::_("PERIODE"); ?></td>
-                <td>
-                    <select class="periodeRel" >
-                        <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
-                        <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
-                        <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
-                        <option value='3'><?php echo JText::_("PERIODE_3_MONTH"); ?></option>
-                        <option value='4'><?php echo JText::_("PERIODE_6_MONTH"); ?></option>
-                        <option value='5'><?php echo JText::_("PERIODE_1_YEAR"); ?></option>
-                    </select>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="col-md-6" style="padding-left: 10%;">
-        <div id='summaryRelation'>
-            <p id='countRelations'><i><?php echo JText::_("RELATION_TOTAL"); ?></i></p>
-        </div>
-    </div>
-    <div class="col-md-12">
-        <hr style='width: 100%; border-top: 5px solid #fff;'>
-    </div>
-</div>
-
 <!-- Shows gender info  -->
 <div class="row" id="genderRow" style="display:none;">
 
@@ -663,65 +626,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             }
         });
     }
-    // Relation function
-    function afficheRelations(periode) {
-        jQuery.ajax({
-            type: "post",
-            url: "index.php?option=com_emundus&controller=stats&task=getrelations",
-            dataType: 'json',
-            data:({periode: periode}),
-            success: function (result) {
-                if (result.status) {
-                    if (document.getElementById("countRelations").childNodes.length > 1)
-                        document.getElementById("countRelations").childNodes[1].remove();
-                    document.getElementById("countRelations").append(result.count);
-                    // Loop to get missing dates and create new value (0) for those dates
-                    for (var i = 0; i < result.datearray.length; i++) {
-                        //make sure we are not checking the last date in the labels array
-                        if (i + 1 < result.datearray.length) {
-                            var date1 = moment(result.datearray[i], "YYYY-MM-DD");
-                            var date2 = moment(result.datearray[i + 1], "YYYY-MM-DD");
-                            //if the current date +1 is not the same as it's next neighbor we have to add in a new one
-                            if (!date1.add(1, "days").isSame(date2)) {
-                                //add the label
-                                result.datearray.splice(i + 1, 0, date1.format("YYYY-MM-DD"));
-                                //add the data
-                                result.countarray.splice(i + 1, 0, 0);
-                            }
-                        }
-                    }
-                    if (relationChart != undefined || relationChart != null)
-                        relationChart.destroy();
-                    var elem = document.getElementById('rel');
-                    elem.height = 400;
-                    relationChart = new Chart(elem, {
-                        type: 'line',
-                        data: {
-                            labels: result.datearray,
-                            datasets: [{
-                                label: "<?php echo JText::_('RELATION_TITLE') ;?>",
-                                data: result.countarray,
-                                borderColor: 'rgb(232, 128, 32)'
-                            }]
-                        },
-                        options: {
-                            maintainAspectRatio: false,
-                            title:{
-                                display: true,
-                                text: "Relations établies",
-                                fontSize: 20
-                            },
-                            elements: { point: { radius: 1 } } ,
-                            scales: options
-                        }
-                    });
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR.responseText);
-            }
-        });
-    }
+
     function afficheGenre() {
         jQuery.ajax({
             type: "post",
@@ -1014,22 +919,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             var valuePeriodeCo = jQuery('.periodeCo').val();
             afficheConnections(valuePeriodeCo);
         }
-        if (<?php echo $rels; ?>) {
-            document.getElementById("relationRow").setAttribute("style", "display:block;");
-            var button = document.createElement("div");
-            button.className = "btn";
-            var icon = document.createElement("i");
-            icon.className ="search icon";
-            button.append(icon);
-            exportRel = document.createElement("a");
-            text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID6"); ?>");
-            exportRel.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id6');?>&Itemid=0' );
-            exportRel.append(text);
-            button.append(exportRel);
-            document.getElementById("summaryRelation").append(button);
-            var valuePeriodeRel = jQuery('.periodeRel').val();
-            afficheRelations(valuePeriodeRel);
-        }
+
     });
 
     jQuery('.compte').on('change', function () {
@@ -1051,10 +941,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         var valuePeriodeCand = jQuery(this).val();
         afficheConnections(valuePeriodeCand);
     });
-    jQuery('.periodeRel').on('change',function () {
-        var valuePeriodeRel = jQuery(this).val();
-        afficheRelations(valuePeriodeRel);
-    });
+
 </script>
 
 <style type='text/css'>
@@ -1105,9 +992,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     }
     #userRow {
         margin-bottom: 35px;
-    }
-    #relationRow {
-        margin-top: 35px;
     }
     #summaryCandidature {
         margin-left: 10px;
