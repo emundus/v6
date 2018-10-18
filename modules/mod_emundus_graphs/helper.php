@@ -98,7 +98,7 @@ class modEmundusGraphsHelper {
 	    }
     }
 
-    /// Get all projects and accepeted projects for each profile ( Custom Hesam )  from jos_emundus_stats_relation_realise_accepte_par_profil
+    /// Get all projects and accepted projects for each profile ( Custom Hesam )  from jos_emundus_stats_relation_realise_accepte_par_profil
     public function getProjects() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
