@@ -24,6 +24,7 @@ $viewArray = [
     "jos_emundus_stats_relation_realise_accepte_par_profil" => " Nombre de demandes réalisée/acceptées par profil"
 ];
 
+$tableField ="";
 
 // Set values to false, in quotes because sending it to Js, and Js doesn't show any value if false
 $nationality = 'false';
@@ -47,6 +48,7 @@ foreach ($viewArray as $key => $value) {
         if ($viewCount)
             $tableField .= '<tr><td>'.$value.'</td><td><button type="button" class="btn btn-primary" id="'.$key.'" onClick="addView(\''.$key.'\')">+</button></td></tr>';
     } else {
+
         switch($key) {
             case 'jos_emundus_stats_nombre_candidature_offre':
                 $cand ='true';
@@ -96,6 +98,7 @@ foreach ($viewArray as $key => $value) {
                 $projects = $helper->getProjects();
             break;
         }
+
     }
 }
 
