@@ -881,6 +881,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $template 	= $app->getTemplate(true);
     $params     = $template->params;
 
+    if (!empty($params->get('logo')->custom->image))
     $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
     $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
 
