@@ -53,7 +53,21 @@ $uri = JUri::getInstance();
                             <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                         <?php endif; ?>
                     </div>
+
+                    <div class="col-md-12 em-bottom-space">
+                        <?php if ($application->status == 1) : ?>
+                            <a id="complete" class="btn btn-success btn-xs" onClick="completefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('COMPLETE_APPLICATION'); ?>">
+                                <i class="check icon"></i> <?php echo JText::_('COMPLETE_APPLICATION'); ?>
+                            </a>
+                        <?php elseif ($application->status == 2) : ?>
+                            <a id="complete" class="btn btn-success btn-xs" onClick="publishfile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('PUBLISH_APPLICATION'); ?>">
+                                <i class="check icon"></i> <?php echo JText::_('PUBLISH_APPLICATION'); ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
+
+
             </div>
 		<?php endforeach;  ?>
     </div>
@@ -96,6 +110,20 @@ $uri = JUri::getInstance();
     function deletefile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
             url = "<?php echo JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='; ?>";
+            document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
+        }
+    }
+
+    function completefile(fnum) {
+        if (confirm("<?php echo JText::_('CONFIRM_COMPLETE_FILE'); ?>")) {
+            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=completefile&fnum='; ?>";
+            document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
+        }
+    }
+
+    function publishfile(fnum) {
+        if (confirm("<?php echo JText::_('CONFIRM_PUBLISH_FILE'); ?>")) {
+            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=publishfile&fnum='; ?>";
             document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
         }
     }
