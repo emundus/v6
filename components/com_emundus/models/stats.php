@@ -39,6 +39,11 @@ class EmundusModelStats extends JModelLegacy {
                     $query =  " SELECT uuid() AS `id`,
                                                 count(`el`.`id`) AS `nombre`,
                                                 `el`.`fnum_to` AS `num_offre`,
+                                                date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
+                                                date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
+                                                date_format(`el`.`timestamp`,'%u') AS `_week`,
+                                                date_format(`el`.`timestamp`,'%b') AS `_month`,
+                                                date_format(`el`.`timestamp`,'%Y') AS `_year`,
                                             (SELECT `jos_emundus_projet`.`titre`
                                                 FROM `jos_emundus_projet`
                                                 WHERE (convert(`jos_emundus_projet`.`fnum`
@@ -99,6 +104,11 @@ class EmundusModelStats extends JModelLegacy {
                     $query =    " SELECT uuid() AS `id`,
                                                     count(`el`.`id`) AS `nombre`,
                                                     `el`.`fnum_to` AS `num_offre`,
+                                                    date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
+                                                date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
+                                                date_format(`el`.`timestamp`,'%u') AS `_week`,
+                                                date_format(`el`.`timestamp`,'%b') AS `_month`,
+                                                date_format(`el`.`timestamp`,'%Y') AS `_year`,
                                                 (SELECT `jos_emundus_projet`.`titre`
                                                 FROM `jos_emundus_projet`
                                                 WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`,
