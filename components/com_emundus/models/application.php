@@ -1227,7 +1227,7 @@ class EmundusModelApplication extends JModelList
 
                 try {
 
-                    $this->_db->setQuery( $query );
+                    $this->_db->setQuery($query);
                     $groupes = $this->_db->loadObjectList();
 
                 } catch (Exception $e) {
@@ -1376,12 +1376,12 @@ class EmundusModelApplication extends JModelList
                             //$nb_lignes = 0;
                             $t_elt = array();
                             foreach ($elements as &$element) {
-                                $t_elt[] = $element->name;
+                            	$t_elt[] = $element->name;
                                 $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
                             }
                             unset($element);
-                            //$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
-                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
+
+                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE list_id='.$itemt->table_id.' AND group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
 
                             try {
                                 $this->_db->setQuery($query);
@@ -1396,13 +1396,12 @@ class EmundusModelApplication extends JModelList
                                         WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                             else
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
 
                             //$forms .= $query;
                             try {
                                 $this->_db->setQuery($query);
                                 $repeated_elements = $this->_db->loadObjectList();
-
                             } catch (Exception $e) {
                                 JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                 throw $e;
@@ -1479,7 +1478,7 @@ class EmundusModelApplication extends JModelList
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
-                                                $this->_db->setQuery( $query );
+                                                $this->_db->setQuery($query);
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
 
