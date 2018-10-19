@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,15 +45,24 @@ class plgSystemHikashopproductInsert extends JPlugin {
 		if($app->isAdmin())
 			return true;
 
-		$layout = JRequest::getString('layout');
-		$ctrl = JRequest::getString('ctrl');
-		$task = JRequest::getString('task');
-		$function = JRequest::getString('function');
+		if(version_compare(JVERSION,'3.0','>=')) {
+			$layout = $app->input->getString('layout');
+			$ctrl = $app->input->getString('ctrl');
+			$task = $app->input->getString('task');
+			$function = $app->input->getString('function');
+		} else {
+			$layout = JRequest::getString('layout');
+			$ctrl = JRequest::getString('ctrl');
+			$task = JRequest::getString('task');
+			$function = JRequest::getString('function');
+		}
 
 		if($layout == 'edit' || $ctrl == 'plugins' && $task == 'trigger' && $function == 'productDisplay')
 			return true;
 
-		$body = JResponse::getBody();
+		$body = null;
+		if(class_exists('JResponse'))
+			$body = JResponse::getBody();
 		$alternate_body = false;
 		if(empty($body) && method_exists($app,'getBody')) {
 			$body = $app->getBody();
@@ -254,7 +263,8 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			$pattern = '#\{product\}(.*)\{\/product\}#Uis';
 			$replacement = '';
 
-			$body = JResponse::getBody();
+			if(class_exists('JResponse'))
+				$body = JResponse::getBody();
 			$alternate_body = false;
 			if(empty($body)) {
 				$body = $app->getBody();

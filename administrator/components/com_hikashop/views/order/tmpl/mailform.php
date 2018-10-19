@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -137,4 +137,4 @@ window.hikashop.ready(function(){
 					</table>
 					<input type="hidden" name="data[order][mail][reply_email]" value="<?php echo $this->element->mail->reply_email;?>" />
 					<input type="hidden" name="data[order][mail][html]" value="<?php echo $this->element->mail->html;?>" />
-					<input type="hidden" name="data[order][mail][mail_name]" value="<?php echo $this->element->mail->mail_name;?>" />
+					<input type="hidden" name="data[order][mail][mail_name]" value="<?php echo @$this->element->mail->mail_name;?>" />

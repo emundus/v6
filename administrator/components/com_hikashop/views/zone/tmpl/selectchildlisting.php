@@ -1,31 +1,29 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><fieldset>
+?><div style="min-height: 50px;">
+	<h1 style="float:left;"><?php echo JText::_('SELECT_SUBZONES'); ?></h1>
 	<div class="toolbar" id="toolbar" style="float: right;">
 		<?php if(!in_array($this->type,array('discount','shipping','payment','config','tax'))){?>
-			<button class="btn" type="button" onclick="submitbutton('newchild');"><img src="<?php echo HIKASHOP_IMAGES; ?>new.png"/><?php echo JText::_('HIKA_NEW'); ?></button>
+			<button class="btn btn-primary" type="button" onclick="submitbutton('newchild');"><i class="fa fa-plus"></i> <?php echo JText::_('HIKA_NEW'); ?></button>
 		<?php }?>
-		<button class="btn" type="button" onclick="if(document.adminForm.boxchecked.value==0){alert('<?php echo JText::_( 'PLEASE_SELECT_SOMETHING',true ); ?>');}else{submitbutton('addchild');}"><img src="<?php echo HIKASHOP_IMAGES; ?>add.png"/><?php echo JText::_('OK'); ?></button>
+		<button class="btn btn-success" type="button" onclick="if(document.adminForm.boxchecked.value==0){alert('<?php echo JText::_( 'PLEASE_SELECT_SOMETHING',true ); ?>');}else{submitbutton('addchild');}"><i class="fa fa-save"></i> <?php echo JText::_('OK'); ?></button>
 	</div>
-</fieldset>
+</div>
 <div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=zone&amp;tmpl=component" method="post"  name="adminForm" id="adminForm">
-	<table>
+	<table width="100%">
 		<tr>
-			<td width="100%">
-				<?php echo JText::_( 'FILTER' ); ?>:
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" onchange="document.adminForm.submit();" />
-				<button class="btn" onclick="this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
-				<button class="btn" onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
+			<td>
+				<?php echo $this->loadHkLayout('search'); ?>
 			</td>
-			<td nowrap="nowrap">
+			<td nowrap="nowrap" style="text-align:right;">
 				<?php echo $this->filters->country; ?>
 				<?php echo $this->filters->type; ?>
 			</td>
@@ -41,10 +39,7 @@ defined('_JEXEC') or die('Restricted access');
 					<input type="checkbox" name="toggle" value="" onclick="hikashop.checkAll(this);" />
 				</th>
 				<th class="title">
-					<?php echo JHTML::_('grid.sort', JText::_('ZONE_NAME_ENGLISH'), 'a.zone_name_english', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value,'selectchildlisting' ); ?>
-				</th>
-				<th class="title">
-					<?php echo JHTML::_('grid.sort', JText::_('HIKA_NAME'), 'a.zone_name', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value,'selectchildlisting' ); ?>
+					<?php echo JHTML::_('grid.sort', JText::_('ZONE_NAME_ENGLISH'), 'a.zone_name_english', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value,'selectchildlisting' ) . ' / ' . JHTML::_('grid.sort', JText::_('HIKA_NAME'), 'a.zone_name', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value,'selectchildlisting' ); ?>
 				</th>
 				<th class="title">
 					<?php echo JHTML::_('grid.sort', JText::_('ZONE_CODE_2'), 'a.zone_code_2', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value,'selectchildlisting' ); ?>
@@ -93,9 +88,7 @@ defined('_JEXEC') or die('Restricted access');
 						<?php if(in_array($this->type,array('discount','shipping','payment','config','tax'))){?>
 							</a>
 						<?php }?>
-					</td>
-					<td>
-						<?php echo $row->zone_name; ?>
+						<?php echo ' / ' . $row->zone_name; ?>
 					</td>
 					<td class="hk_center">
 						<?php echo $row->zone_code_2; ?>

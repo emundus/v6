@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,7 @@ class hikashopDatabaseHelper {
 		$err = false;
 
 		try {
-			$this->db->query();
+			$this->db->execute();
 		}catch(Exception $e) {
 			$err = true;
 		}
@@ -41,7 +41,7 @@ class hikashopDatabaseHelper {
 				$err = 0;
 
 				try {
-					$this->db->query();
+					$this->db->execute();
 				}catch(Exception $e) {
 					$err++;
 				}
@@ -113,8 +113,9 @@ class hikashopDatabaseHelper {
 		ob_start();
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHikashopBeforeCheckDB', array(&$createTable, &$custom_fields, &$structure, &$this));
+		$app = JFactory::getApplication();
+		$obj =& $this;
+		$app->triggerEvent('onHikashopBeforeCheckDB', array(&$createTable, &$custom_fields, &$structure, &$obj));
 
 		$html = ob_get_clean();
 		if(!empty($html))
@@ -175,7 +176,7 @@ class hikashopDatabaseHelper {
 				$msg = '';
 				try {
 					$this->db->setQuery($createTable[$oneTableName]);
-					$isError = $this->db->query();
+					$isError = $this->db->execute();
 				} catch(Exception $e) {
 					$isError = null;
 					$msg = $e->getMessage();
@@ -245,7 +246,7 @@ class hikashopDatabaseHelper {
 				$msg = '';
 				try{
 					$this->db->setQuery('ALTER TABLE ' . $oneTableName . ' ADD ' . $structure[$oneTableName][$oneField]);
-					$isError = $this->db->query();
+					$isError = $this->db->execute();
 				} catch(Exception $e) {
 					$isError = null;
 					$msg = $e->getMessage();
@@ -346,7 +347,7 @@ class hikashopDatabaseHelper {
 						$query = 'DELETE FROM '.$oneTableName . $where.';';
 						try{
 							$this->db->setQuery($query);
-							$result = $this->db->query();
+							$result = $this->db->execute();
 						} catch(Exception $e) {
 							$ret[] = array(
 								'error',
@@ -367,7 +368,7 @@ class hikashopDatabaseHelper {
 				try{
 					$query = 'ALTER TABLE '.$oneTableName.' ADD PRIMARY KEY('.implode(',',$primary_keys).')';
 					$this->db->setQuery($query);
-					$result = $this->db->query();
+					$result = $this->db->execute();
 				} catch(Exception $e) {
 					$ret[] = array(
 						'error',
@@ -399,7 +400,7 @@ class hikashopDatabaseHelper {
 
 					$query.= 'auto_increment';
 					$this->db->setQuery($query);
-					$result = $this->db->query();
+					$result = $this->db->execute();
 				} catch(Exception $e) {
 					$ret[] = array(
 						'error',
@@ -435,7 +436,7 @@ class hikashopDatabaseHelper {
 				"(3, 1, 'tax', 'taxation category', '', 1, 2, 4, 7, 1, 'tax')";
 			try {
 				$this->db->setQuery($query);
-				$result = $this->db->query();
+				$result = $this->db->execute();
 			} catch(Exception $e) {
 				$result = -1;
 			}
@@ -480,7 +481,7 @@ class hikashopDatabaseHelper {
 			$msg = '';
 			try {
 				$this->db->setQuery($query);
-				$isError = $this->db->query();
+				$isError = $this->db->execute();
 			} catch(Exception $e) {
 				$isError = null;
 				$msg = $e->getMessage();
@@ -516,7 +517,7 @@ class hikashopDatabaseHelper {
 		$query = 'UPDATE `#__hikashop_product` set product_parent_id=0 WHERE product_type=\'main\';';
 		try {
 			$this->db->setQuery($query);
-			$result = $this->db->query();
+			$result = $this->db->execute();
 		} catch(Exception $e) {
 			$ret[] = array(
 				'error',
@@ -527,18 +528,15 @@ class hikashopDatabaseHelper {
 		$query = 'SELECT characteristic_id FROM `#__hikashop_characteristic`;';
 		try {
 			$this->db->setQuery($query);
-			if(!HIKASHOP_J25){
-				$characteristic_ids = $this->db->loadResultArray();
-			} else {
-				$characteristic_ids = $this->db->loadColumn();
-			}
+			$characteristic_ids = $this->db->loadColumn();
+
 			$where = '';
 			if(is_array($characteristic_ids) && count($characteristic_ids)){
 				$where = ' WHERE variant_characteristic_id NOT IN('.implode(',',$characteristic_ids).')';
 			}
 			$query = 'DELETE FROM `#__hikashop_variant`'.$where.';';
 			$this->db->setQuery($query);
-			$result = $this->db->query();
+			$result = $this->db->execute();
 			if($result){
 				$ret[] = array(
 					'success',
@@ -562,7 +560,7 @@ class hikashopDatabaseHelper {
 						' SELECT category_name, category_description, category_published, category_ordering, category_namekey FROM `#__hikashop_category` AS c '.
 						' WHERE c.category_type = \'status\' AND c.category_depth > 1';
 				$this->db->setQuery($query);
-				$result = $this->db->query();
+				$result = $this->db->execute();
 
 				if($result){
 					$ret[] = array(
@@ -581,11 +579,7 @@ class hikashopDatabaseHelper {
 		$query = 'SELECT DISTINCT order_status COLLATE utf8_bin FROM `#__hikashop_order` WHERE order_type = \'sale\'';
 		try{
 			$this->db->setQuery($query);
-			if(!HIKASHOP_J25) {
-				$statuses_in_orders = $this->db->loadResultArray();
-			} else {
-				$statuses_in_orders = $this->db->loadColumn();
-			}
+			$statuses_in_orders = $this->db->loadColumn();
 
 			$query = 'SELECT * FROM `#__hikashop_orderstatus`';
 			$this->db->setQuery($query);
@@ -620,7 +614,7 @@ class hikashopDatabaseHelper {
 				try{
 					$query = 'UPDATE `#__hikashop_order` SET order_status = ' . $this->db->Quote($new).' WHERE order_status = '.$this->db->Quote($old);
 					$this->db->setQuery($query);
-					$this->db->query();
+					$this->db->execute();
 					$ret[] = array(
 						'warning',
 						'Orders with order statuses `'.$old.'` changed to `'.$new.'`'
@@ -645,7 +639,7 @@ class hikashopDatabaseHelper {
 		$query = 'INSERT IGNORE INTO `#__hikashop_user` (`user_email`,`user_cms_id`,`user_created`) SELECT `email`, `id`,'.time().' FROM `#__users`';
 		$this->db->setQuery($query);
 		try{
-			$result = $this->db->query();
+			$result = $this->db->execute();
 			if($result){
 				$ret[] = array(
 					'success',
@@ -662,7 +656,7 @@ class hikashopDatabaseHelper {
 		$query = 'UPDATE `#__hikashop_user` AS hku JOIN `#__users` AS ju ON hku.`user_email`=ju.`email` SET hku.`user_cms_id`=ju.`id` WHERE hku.`user_cms_id`!=ju.`id`';
 		$this->db->setQuery($query);
 		try{
-			$result = $this->db->query();
+			$result = $this->db->execute();
 			if($result){
 				$ret[] = array(
 					'success',
@@ -676,7 +670,7 @@ class hikashopDatabaseHelper {
 			);
 		}
 
-		$dispatcher->trigger('onHikashopAfterCheckDB', array(&$ret));
+		$app->triggerEvent('onHikashopAfterCheckDB', array(&$ret));
 
 		$config = hikashop_config();
 		$cfgVersion = $config->get( 'version');
@@ -684,7 +678,7 @@ class hikashopDatabaseHelper {
 		if ( version_compare( $manifestVersion, $cfgVersion) > 0) {
 			$query = "UPDATE `#__hikashop_config` SET `config_value` = ".$this->db->Quote($manifestVersion)." WHERE config_namekey = 'version'";
 			$this->db->setQuery($query);
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		self::$check_results = $ret;
@@ -707,7 +701,7 @@ class hikashopDatabaseHelper {
 		$xmlFilesInDir = JFolder::files( $folder, $pattern);
 		if ( !empty( $xmlFilesInDir)) {
 			foreach ($xmlFilesInDir as $xmlfile) {
-				if ($data = JApplicationHelper::parseXMLInstallFile($folder.DS.$xmlfile)) {
+				if ($data = JInstaller::parseXMLInstallFile($folder.DS.$xmlfile)) {
 					if ( isset( $found_version)) {
 						if ( version_compare( $data['version'], $found_version) >= 0) {
 							$found_version = $data['version'];
@@ -724,7 +718,7 @@ class hikashopDatabaseHelper {
 		}
 		else {
 			$filename = dirname(dirname(__FILE__)) .DS. substr( basename( dirname(dirname(__FILE__)),'.php'), 4).'.xml';
-			if (file_exists($filename) && $data = JApplicationHelper::parseXMLInstallFile($filename)) {
+			if (file_exists($filename) && $data = JInstaller::parseXMLInstallFile($filename)) {
 				if (isset($data['version']) && !empty($data['version'])) {
 					$version = $data['version'];
 				}

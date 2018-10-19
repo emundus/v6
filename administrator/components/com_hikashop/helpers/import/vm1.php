@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -172,14 +172,14 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		if( $ret && $next ) {
 			$sql =  "UPDATE `#__hikashop_config` SET config_value=(config_value+1) WHERE config_namekey = 'vm_import_state'; ";
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 			$sql = "UPDATE `#__hikashop_config` SET config_value=0 WHERE config_namekey = 'vm_import_current';";
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 		} else if( $current != $this->options->current ) {
 			$sql =  "UPDATE `#__hikashop_config` SET config_value=".$this->options->current." WHERE config_namekey = 'vm_import_current';";
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		return $ret;
@@ -314,7 +314,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 				",('vm_import_last_vm_review',".$this->options->last_vm_review.",".$this->options->last_vm_review.")".
 				';';
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 		}
 	}
 
@@ -432,7 +432,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			",('vm_import_last_vm_review',".$this->options->last_vm_review.",".$this->options->last_vm_review.")".
 			';';
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 
 		echo '<p'.$this->titlefont.'>Import finished !</p>';
 		$class = hikashop_get('class.plugins');
@@ -440,11 +440,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		if($infos){
 			$pkey = reset($class->pkeys);
 			if(!empty($infos->$pkey)){
-				if(version_compare(JVERSION,'1.6','<')){
-					$url = JRoute::_('index.php?option=com_plugins&view=plugin&client=site&task=edit&cid[]='.$infos->$pkey);
-				}else{
-					$url = JRoute::_('index.php?option=com_plugins&view=plugin&layout=edit&extension_id='.$infos->$pkey);
-				}
+				$url = JRoute::_('index.php?option=com_plugins&view=plugin&layout=edit&extension_id='.$infos->$pkey);
 				echo '<p>You can publish the <a'.$this->linkstyle.' href="'.$url.'">VirtueMart Fallback Redirect Plugin</a> so that your old VirtueMart links are automatically redirected to HikaShop pages and thus not loose the ranking of your content on search engines.</p>';
 			}
 		}
@@ -462,9 +458,9 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		if(empty($table) )
 		{
 			$this->db->setQuery("CREATE TABLE IF NOT EXISTS `#__hikashop_vm_prod` (`vm_id` int(10) unsigned NOT NULL DEFAULT '0', `hk_id` int(11) unsigned NOT NULL DEFAULT '0', PRIMARY KEY (`vm_id`)) ENGINE=MyISAM");
-			$this->db->query();
+			$this->db->execute();
 			$this->db->setQuery("CREATE TABLE IF NOT EXISTS `#__hikashop_vm_cat` (`vm_id` int(10) unsigned NOT NULL DEFAULT '0', `hk_id` int(11) unsigned NOT NULL DEFAULT '0', PRIMARY KEY (`vm_id`)) ENGINE=MyISAM");
-			$this->db->query();
+			$this->db->execute();
 
 			$databaseHelper = hikashop_get('helper.database');
 			$databaseHelper->addColumns('address','`address_vm_order_info_id` INT(11) NULL');
@@ -500,7 +496,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmtr.tax_rate_id > ' . (int)$this->options->last_vm_taxrate;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported taxes: ' . $total . '</p>';
@@ -522,7 +518,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmtr.tax_rate_id > ' . (int)$this->options->last_vm_taxrate;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Taxes Categories: ' . $total . '</p>';
@@ -530,7 +526,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		if( $total > 0 ) {
 			$this->options->max_hk_cat += $total;
 			$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'vm_import_max_hk_cat'; ");
-			$this->db->query();
+			$this->db->execute();
 			$this->importRebuildTree();
 		}
 
@@ -548,7 +544,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmtr.tax_rate_id > ' . (int)$this->options->last_vm_taxrate;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Taxations: ' . $total . '</p>';
@@ -584,7 +580,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmm.manufacturer_id > ' . (int)$this->options->last_vm_manufacturer;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Manufacturers : ' . $total . '</p>';
@@ -593,7 +589,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		{
 			$this->options->max_hk_cat += $total;
 			$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'vm_import_max_hk_cat'; ");
-			$this->db->query();
+			$this->db->execute();
 			$this->importRebuildTree();
 		}
 		$ret = true;
@@ -629,7 +625,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		if( $data->category_keywords != 'C' ) {
 			foreach($statuses as $k => $v) {
 				$this->db->setQuery("UPDATE `#__hikashop_category` SET category_keywords = '".$k."' WHERE category_type = 'status' AND category_name = '".$v."'; ");
-				$this->db->query();
+				$this->db->execute();
 			}
 		}
 
@@ -663,7 +659,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			}
 
 			$this->db->setQuery($sql0);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 
 			if( $total > 0 )
@@ -673,7 +669,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 
 				$this->options->max_hk_cat = $id;
 				$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'vm_import_max_hk_cat'; ");
-				$this->db->query();
+				$this->db->execute();
 				$sql0 = '';
 			}
 			else
@@ -793,7 +789,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		if ($doQuery)
 		{
 			$this->db->setQuery($sql0);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 		}
 		else
@@ -806,13 +802,13 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			$rebuild = true;
 			$this->options->max_hk_cat += $total + 1;
 			$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'vm_import_max_hk_cat'; ");
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		if ($doSql1)
 		{
 			$this->db->setQuery($sql1);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Fallback links : ' . $total . '</p>';
 		}
@@ -823,7 +819,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		{
 			$sql2 .= ';';
 			$this->db->setQuery($sql2);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Categories files : ' . $total . '</p>';
 		}
@@ -960,31 +956,31 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmm.manufacturer_id > '.$this->options->last_vm_manufacturer.' OR vmm.product_id > '.$this->options->last_vm_prod.';';
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Inserted products: ' . $total . '</p>';
 
 		$this->db->setQuery($sql2);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Fallback links: ' . $total . '</p>';
 
 		$this->db->setQuery('SELECT MAX(vm_id) FROM `#__hikashop_vm_prod`');
-		$this->db->query();
+		$this->db->execute();
 		$max = (int)$this->db->loadResult();
 
 		$this->db->setQuery($sql3);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating products for parent links: ' . $total . '</p>';
 
 		$this->db->setQuery($sql4);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Inserted products files: ' . $total . '</p>';
 
 		$this->db->setQuery($sql5);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating products manufacturers: ' . $total . '</p>';
 
@@ -1019,7 +1015,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 				.'AND vm.product_id > ' . (int)$this->options->last_vm_prod
 		);
 
-		$ret = $this->db->query();
+		$ret = $this->db->execute();
 		$cpt = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Prices imported : ' . $cpt .'</p>';
@@ -1047,7 +1043,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmp.vm_id > ' . (int)$this->options->last_vm_prod . ' OR vmc.vm_id > ' . (int)$this->options->last_vm_cat;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Inserted products categories: ' . $total . '</p>';
@@ -1103,31 +1099,31 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		$sql6 = 'UPDATE `#__hikashop_address` AS a SET a.address_published = 1 WHERE address_published > 1;';
 
 		$this->db->setQuery($sql0);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Users: ' . $total . '</p>';
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported addresses: ' . $total . '</p>';
 
 		$this->db->setQuery($sql2);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported addresses countries: ' . $total . '</p>';
 
 		$this->db->setQuery($sql3);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported addresses states: ' . $total . '</p>';
 
 		$this->db->setQuery($sql4);
-		$this->db->query();
+		$this->db->execute();
 		$this->db->setQuery($sql5);
-		$this->db->query();
+		$this->db->execute();
 		$this->db->setQuery($sql6);
-		$this->db->query();
+		$this->db->execute();
 
 		$ret = true;
 
@@ -1223,7 +1219,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 
 			$sql0 = 'INSERT IGNORE INTO `#__hikashop_user` (`user_cms_id`,`user_email`) VALUES '.$string;
 			$this->db->setQuery($sql0);
-			$this->db->query();
+			$this->db->execute();
 
 			$sql0 = 'UPDATE `#__hikashop_order` AS hko '.
 					'INNER JOIN `'.$this->vmprefix.'vm_orders` AS vmo ON hko.order_vm_id = vmo.order_id '.
@@ -1233,7 +1229,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 					'WHERE hko.order_user_id = 0';
 
 			$this->db->setQuery($sql0);
-			$this->db->query();
+			$this->db->execute();
 			$guest = $this->db->getAffectedRows();
 		}
 
@@ -1288,43 +1284,43 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 				'WHERE a.order_vm_id > ' . (int)$this->options->last_vm_order;
 
 		$this->db->setQuery('SET SQL_BIG_SELECTS=1');
-		$this->db->query();
+		$this->db->execute();
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported orders: ' . $total . ' (including '.$guest.' guests)</p>';
 
 		$this->db->setQuery($sql2_1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported orders addresses: ' . $total . '</p>';
 
 		$this->db->setQuery($sql3);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating billing addresses: ' . $total . '</p>';
 
 		$this->db->setQuery($sql4);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating shipping addresses: ' . $total . '</p>';
 
 		$this->db->setQuery($sql5);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating order payments: ' . $total . '</p>';
 
 		$this->db->setQuery($sql2_2);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating orders: ' . $total;
 		$this->db->setQuery($sql2_3);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '/' . $total;
 		$this->db->setQuery($sql2_4);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '/' . $total . '</p>';
 
@@ -1362,7 +1358,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmoi.order_id > ' . (int)$this->options->last_vm_order . ';';
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Orders Items imported : '. $total .'</p>';
@@ -1436,7 +1432,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmf.file_id > '.$this->options->last_vm_pfile.';';
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Downloable files imported : ' . $total . '</p>';
 
@@ -1453,7 +1449,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			"WHERE hkf.file_type = 'file' AND (hkp.hk_id = hkf.file_ref_id) AND (vmd.product_id > ".$this->options->last_vm_prod.' OR vmd.order_id > ' . (int)$this->options->last_vm_order . ');';
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Downloable order files imported : ' . $total . '</p>';
@@ -1487,7 +1483,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		$sql = 'INSERT IGNORE INTO #__hikashop_discount (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT '.implode(',',$data).' FROM '.$this->vmprefix.'vm_coupons WHERE coupon_id > ' . (int)$this->options->last_vm_coupon;
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Discount codes / coupons imported : ' . $total . '</p>';
@@ -1513,7 +1509,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vmp.product_id > ' . (int)$this->options->last_vm_prod;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Discount product imported : ' . $total . '</p>';
@@ -1555,7 +1551,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'WHERE vpr.review_id > ' . (int)$this->options->last_vm_review . ';';
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 
 		$sql = 'SELECT hkvp.hk_id as hkid, vpr.review_id as vmvote FROM `#__vm_product_reviews` AS vpr '.
@@ -1564,7 +1560,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			'ORDER BY hkvp.hk_id; ';
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$data = $this->db->loadObjectList();
 
 		$continue = false;
@@ -1586,7 +1582,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 
 			$average = $sum / $divide;
 			$sql = 'UPDATE `#__hikashop_product` SET `product_average_score` = '.$average.', `product_total_vote` = '.$divide.' WHERE product_id = '.$d->hkid;
-			$this->db->query();
+			$this->db->execute();
 			$nbentries += $this->db->getAffectedRows();
 			$sum = $divide = 0;
 			$continue = false;

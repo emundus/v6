@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,27 +11,19 @@ defined('_JEXEC') or die('Restricted access');
 
 class hikashopSubscriptionType{
 	function __construct(){
-		if (!HIKASHOP_PHP5) {
-			$acl =& JFactory::getACL();
-		}else{
-			$acl = JFactory::getACL();
-		}
-		if(!HIKASHOP_J16){
-			$this->groups = $acl->get_group_children_tree( null, 'USERS', false );
-		}else{
-			$db = JFactory::getDBO();
-			$db->setQuery('SELECT a.*, a.title as text, a.id as value  FROM #__usergroups AS a ORDER BY a.lft ASC');
-			$this->groups = $db->loadObjectList('id');
-			foreach($this->groups as $id => $group){
-				if(isset($this->groups[$group->parent_id])){
-					$this->groups[$id]->level = intval(@$this->groups[$group->parent_id]->level) + 1;
-					$this->groups[$id]->text = str_repeat('- - ',$this->groups[$id]->level).$this->groups[$id]->text;
-				}
+		$db = JFactory::getDBO();
+		$db->setQuery('SELECT a.*, a.title as text, a.id as value  FROM #__usergroups AS a ORDER BY a.lft ASC');
+		$this->groups = $db->loadObjectList('id');
+		foreach($this->groups as $id => $group){
+			if(isset($this->groups[$group->parent_id])){
+				$this->groups[$id]->level = intval(@$this->groups[$group->parent_id]->level) + 1;
+				$this->groups[$id]->text = str_repeat('- - ',$this->groups[$id]->level).$this->groups[$id]->text;
 			}
 		}
-		$this->choice = array();
-		$this->choice[] = JHTML::_('select.option','none',JText::_('HIKA_NONE'));
-		$this->choice[] = JHTML::_('select.option','special',JText::_('HIKA_CUSTOM'));
+		$this->choice = array(
+			JHTML::_('select.option','none',JText::_('HIKA_NONE')),
+			JHTML::_('select.option','special',JText::_('HIKA_CUSTOM'))
+		);
 
 		$js = "function updateSubscription(map){
 			choice = document.adminForm['choice_'+map];
@@ -60,11 +52,7 @@ class hikashopSubscriptionType{
 			}
 		}";
 
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( $js );
 
 	}
@@ -73,11 +61,7 @@ class hikashopSubscriptionType{
 		$id = $type.'_'.$map;
 
 		$js ='window.hikashop.ready( function(){ updateSubscription(\''.$id.'\'); });';
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( $js );
 		if(empty($values)) $values = 'none';
 
@@ -88,7 +72,7 @@ class hikashopSubscriptionType{
 		$listAccess = '<div style="display:none" id="div_'.$id.'"><table>';
 		foreach($this->groups as $oneGroup){
 			$listAccess .= '<tr><td>';
-			if(version_compare(JVERSION,'1.6.0','>=') || !in_array($oneGroup->value,array(29,30))) $listAccess .= '<input type="radio" onchange="updateSubscription(\''.$id.'\');" value="'.$oneGroup->value.'" '.(in_array($oneGroup->value,$valuesArray) ? 'checked' : '').' name="special_'.$id.'" id="special_'.$id.'_'.$oneGroup->value.'"/>';
+			$listAccess .= '<input type="radio" onchange="updateSubscription(\''.$id.'\');" value="'.$oneGroup->value.'" '.(in_array($oneGroup->value,$valuesArray) ? 'checked' : '').' name="special_'.$id.'" id="special_'.$id.'_'.$oneGroup->value.'"/>';
 			$listAccess .= '</td><td><label for="special_'.$id.'_'.$oneGroup->value.'">'.$oneGroup->text.'</label></td></tr>';
 		}
 		$listAccess .= '</table></div>';

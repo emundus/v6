@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -98,11 +98,7 @@ class hikashopFileClass extends hikashopClass {
 						case 'category':
 							$query = 'SELECT file_path FROM '.hikashop_table(end($this->tables)).' WHERE file_ref_id = '.$pkey.' AND file_type=\'category\'';
 							$this->database->setQuery($query);
-							if(!HIKASHOP_J25){
-								$oldEntries = $this->database->loadResultArray();
-							} else {
-								$oldEntries = $this->database->loadColumn();
-							}
+							$oldEntries = $this->database->loadColumn();
 
 							if(!empty($oldEntries)) {
 								$oldEntriesQuoted = array();
@@ -111,11 +107,8 @@ class hikashopFileClass extends hikashopClass {
 								}
 								$query = 'SELECT file_path FROM '.hikashop_table('file').' WHERE file_path IN ('.implode(',',$oldEntriesQuoted).') AND file_ref_id != '.$pkey;
 								$this->database->setQuery($query);
-								if(!HIKASHOP_J25){
-									$keepEntries = $this->database->loadResultArray();
-								} else {
-									$keepEntries = $this->database->loadColumn();
-								}
+								$keepEntries = $this->database->loadColumn();
+
 								foreach($oldEntries as $old) {
 									if((empty($keepEntries) || !in_array($old,$keepEntries)) && JFile::exists($uploadPath . $old))
 										JFile::delete($uploadPath . $old);
@@ -176,7 +169,7 @@ class hikashopFileClass extends hikashopClass {
 				case 'category':
 					$query = 'DELETE FROM '.hikashop_table(end($this->tables)).' WHERE file_id NOT IN ('.implode(',',$ids).') AND file_ref_id = '.$pkey.' AND file_type=\'category\'';
 					$this->database->setQuery($query);
-					$this->database->query();
+					$this->database->execute();
 					break;
 			}
 		}
@@ -188,7 +181,7 @@ class hikashopFileClass extends hikashopClass {
 			$pkeys = array($pkeys);
 		if(!count($pkeys))
 			return;
-		JArrayHelper::toInteger($pkeys);
+		hikashop_toInteger($pkeys);
 		$uploadPath = $this->getPath($type);
 		$query = 'SELECT * FROM '.hikashop_table(end($this->tables)).' WHERE file_ref_id IN ('.implode(',',$pkeys).') AND file_type='.$this->database->Quote($type);
 		$this->database->setQuery($query);
@@ -203,11 +196,8 @@ class hikashopFileClass extends hikashopClass {
 			}
 			$query = 'SELECT file_path FROM '.hikashop_table(end($this->tables)).' WHERE file_path IN ('.implode(',',$paths).') AND file_id NOT IN ('.implode(',',$ids).')';
 			$this->database->setQuery($query);
-			if(!HIKASHOP_J25){
-				$stillUsed = $this->database->loadResultArray();
-			} else {
-				$stillUsed = $this->database->loadColumn();
-			}
+			$stillUsed = $this->database->loadColumn();
+
 			$config = hikashop_config();
 			if(!$ignoreFile && !$config->get('keep_category_product_images', 0)){
 				jimport('joomla.filesystem.folder');
@@ -233,7 +223,7 @@ class hikashopFileClass extends hikashopClass {
 			}
 			$query = 'DELETE FROM '.hikashop_table(end($this->tables)).' WHERE file_ref_id IN ('.implode(',',$pkeys).') AND file_type='.$this->database->Quote($type);
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 			$elements = array();
 			foreach($oldEntries as $old){
 				$elements[]=$old->file_id;
@@ -252,7 +242,7 @@ class hikashopFileClass extends hikashopClass {
 			$query .= ' AND file_pos='.(int)$file_pos;
 		}
 		$this->database->setQuery($query);
-		return $this->database->query();
+		return $this->database->execute();
 	}
 
 	function download($file_id, $order_id = 0, $file_pos = 1, $token = '') {
@@ -399,7 +389,7 @@ class hikashopFileClass extends hikashopClass {
 							$query = 'UPDATE '.hikashop_table('download').' SET download_number=download_number+1 WHERE file_id='.$file->file_id.' AND order_id='.$order_id.' AND file_pos='.$file_pos;
 						}
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 					}
 				}
 				$file->order_id = (int)$order_id;
@@ -424,15 +414,15 @@ class hikashopFileClass extends hikashopClass {
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
-		$dispatcher->trigger( 'onBeforeDownloadFile', array( &$filename, &$do, &$file, $options) );
+		$app->triggerEvent( 'onBeforeDownloadFile', array( &$filename, &$do, &$file, $options) );
 		if(!$do)
 			return false;
 
 		if(substr($filename, 0, 7) == 'http://' || substr($filename, 0, 8) == 'https://') {
 			header('location: '.$filename);
-			$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
+			$app->triggerEvent('onAfterDownloadFile', array(&$filename, &$file));
 			exit;
 		}
 		if(substr($filename, 0, 1) == '@' || substr($filename, 0, 1) == '#') {
@@ -469,7 +459,7 @@ class hikashopFileClass extends hikashopClass {
 				header('Pragma: public');
 				header('Content-Transfer-Encoding: binary');
 				header('X-Sendfile: ' . $filename);
-				$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
+				$app->triggerEvent('onAfterDownloadFile', array(&$filename, &$file));
 				exit;
 			}
 		}
@@ -516,7 +506,7 @@ class hikashopFileClass extends hikashopClass {
 					ob_flush();
 					unset($img->data);
 					unset($img);
-					$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
+					$app->triggerEvent('onAfterDownloadFile', array(&$filename, &$file));
 					exit;
 				}
 			}
@@ -560,7 +550,7 @@ class hikashopFileClass extends hikashopClass {
 		}
 
 		fclose($fp);
-		$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
+		$app->triggerEvent('onAfterDownloadFile', array(&$filename, &$file));
 		exit;
 	}
 
@@ -615,8 +605,8 @@ class hikashopFileClass extends hikashopClass {
 					if(substr($field_table, 0, 4) == 'plg.') {
 						$externalValues = array();
 						JPluginHelper::importPlugin('hikashop');
-						$dispatcher = JDispatcher::getInstance();
-						$dispatcher->trigger('onTableFieldsLoad', array( &$externalValues ) );
+						$app = JFactory::getApplication();
+						$app->triggerEvent('onTableFieldsLoad', array( &$externalValues ) );
 						$found = false;
 						foreach($externalValues as $external) {
 							if($external->value == $field_table) {
@@ -640,15 +630,12 @@ class hikashopFileClass extends hikashopClass {
 
 			if(!$found) {
 				JPluginHelper::importPlugin('hikashop');
-				$dispatcher = JDispatcher::getInstance();
-				$dispatcher->trigger('onFieldFileDownload', array( &$found, $name, $field_table, $field_namekey, $options ) );
+				$app = JFactory::getApplication();
+				$app->triggerEvent('onFieldFileDownload', array( &$found, $name, $field_table, $field_namekey, $options ) );
 			}
 
 			if(!$found) {
-				if(!HIKASHOP_J25)
-					$escaped_field_namekey = $this->database->nameQuote($field_namekey);
-				else
-					$escaped_field_namekey = $this->database->quoteName($field_namekey);
+				$escaped_field_namekey = $this->database->quoteName($field_namekey);
 
 				switch($field_table){
 					case 'order':

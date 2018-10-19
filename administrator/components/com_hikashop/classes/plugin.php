@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,12 +23,12 @@ class hikashopPluginClass extends hikashopClass {
 
 	function save(&$element, $reorder = true) {
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 		if(empty($element->payment_id))
-			$dispatcher->trigger('onBeforeHikaPluginCreate', array('plugin', &$element, &$do));
+			$app->triggerEvent('onBeforeHikaPluginCreate', array('plugin', &$element, &$do));
 		else
-			$dispatcher->trigger('onBeforeHikaPluginUpdate', array('plugin', &$element, &$do));
+			$app->triggerEvent('onBeforeHikaPluginUpdate', array('plugin', &$element, &$do));
 
 		if(!$do)
 			return false;
@@ -57,15 +57,89 @@ class hikashopPluginClass extends hikashopClass {
 			$query = 'SELECT plugin_type FROM ' . hikashop_table('plugin') . ' WHERE plugin_id = ' . (int)$element->plugin_id;
 			$db->setQuery($query);
 			$name = $db->loadResult();
-			if(!HIKASHOP_J16) {
-				$query = 'UPDATE '.hikashop_table('plugins',false).' SET published = 1 WHERE published = 0 AND element = ' . $db->Quote($name) . ' AND folder = ' . $db->Quote('hikashop');
-			} else {
-				$query = 'UPDATE '.hikashop_table('extensions',false).' SET enabled = 1 WHERE enabled = 0 AND type = ' . $db->Quote('plugin') . ' AND element = ' . $db->Quote($name) . ' AND folder = ' . $db->Quote('hikashop');
-			}
+
+			$query = 'UPDATE '.hikashop_table('extensions',false).' SET enabled = 1 WHERE enabled = 0 AND type = ' . $db->Quote('plugin') . ' AND element = ' . $db->Quote($name) . ' AND folder = ' . $db->Quote('hikashop');
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 		return $status;
+	}
+
+	public function fillListingColumns(&$rows, &$listing_columns, &$view, $type = null) {
+		if(empty($type))
+			$type = hikaInput::get()->getCmd('plugin_type', 'payment');
+		if(!in_array($type, array('payment', 'shipping')))
+			return false;
+
+		$listing_columns['price'] = array(
+			'name' => 'PRODUCT_PRICE',
+			'col' => 'col_display_price'
+		);
+		$listing_columns['restriction'] = array(
+			'name' => 'HIKA_RESTRICTIONS',
+			'col' => 'col_display_restriction'
+		);
+
+		if(empty($rows)) return;
+
+		$currency_field = $type.'_currency';
+		if($type == 'shipping')
+			$currency_field = 'shipping_currency_id';
+
+		foreach($rows as &$row) {
+			if(!empty($row->{$type.'_params'}) && is_string($row->{$type.'_params'}))
+				$row->plugin_params = hikashop_unserialize($row->{$type.'_params'});
+
+			$row->col_display_price = array();
+			$row->col_display_restriction = array();
+
+			if(bccomp($row->{$type.'_price'}, 0, 3)) {
+				if($type == 'shipping')
+					$row->col_display_price['fixed'] = $view->currencyClass->displayPrices(array($row), $type.'_price', $currency_field);
+				else
+					$row->col_display_price['fixed'] = $view->currencyClass->displayPrices(array($row), $type.'_price', array($type.'_params', $currency_field));
+			}
+			if(isset($row->plugin_params->{$type.'_percentage'}) && bccomp($row->plugin_params->{$type.'_percentage'}, 0, 3)) {
+				$row->col_display_price['percent'] = $row->plugin_params->{$type.'_percentage'};
+			}
+
+			if(!empty($row->plugin_params->{$type.'_min_volume'}))
+				$row->col_display_restriction['min_volume'] = array('name' => 'SHIPPING_MIN_VOLUME', 'value' => $row->plugin_params->{$type.'_min_volume'} . $row->plugin_params->{$type.'_size_unit'});
+			if(!empty($row->plugin_params->{$type.'_max_volume'}))
+				$row->col_display_restriction['max_volume'] = array('name' => 'SHIPPING_MAX_VOLUME', 'value' => $row->plugin_params->{$type.'_max_volume'} . $row->plugin_params->{$type.'_size_unit'});
+
+			if(!empty($row->plugin_params->{$type.'_min_weight'}))
+				$row->col_display_restriction['min_weight'] = array('name' => 'SHIPPING_MIN_WEIGHT', 'value' => $row->plugin_params->{$type.'_min_weight'} . $row->plugin_params->{$type.'_weight_unit'});
+			if(!empty($row->plugin_params->{$type.'_max_weight'}))
+				$row->col_display_restriction['max_weight'] = array('name' => 'SHIPPING_MAX_WEIGHT', 'value' => $row->plugin_params->{$type.'_max_weight'} . $row->plugin_params->{$type.'_weight_unit'});
+
+			if(isset($row->plugin_params->{$type.'_min_price'}) && bccomp($row->plugin_params->{$type.'_min_price'}, 0, 5)) {
+				$row->{$type.'_min_price'} = $row->plugin_params->{$type.'_min_price'};
+				$row->col_display_restriction['min_price'] = array('name' => 'SHIPPING_MIN_PRICE', 'value' => $view->currencyClass->displayPrices(array($row), $type.'_min_price', $currency_field));
+			}
+			if(isset($row->plugin_params->{$type.'_max_price'}) && bccomp($row->plugin_params->{$type.'_max_price'}, 0, 5)) {
+				$row->{$type.'_max_price'} = $row->plugin_params->{$type.'_max_price'};
+				$row->col_display_restriction['max_price'] = array('name' => 'SHIPPING_MAX_PRICE', 'value' => $view->currencyClass->displayPrices(array($row), $type.'_max_price', $currency_field));
+			}
+			if(!empty($row->plugin_params->{$type.'_zip_prefix'}))
+				$row->col_display_restriction['zip_prefix'] = array('name' => 'SHIPPING_PREFIX', 'value' => $row->plugin_params->{$type.'_zip_prefix'});
+			if(!empty($row->plugin_params->{$type.'_min_zip'}))
+				$row->col_display_restriction['min_zip'] = array('name' => 'SHIPPING_MIN_ZIP', 'value' => $row->plugin_params->{$type.'_min_zip'});
+			if(!empty($row->plugin_params->{$type.'_max_zip'}))
+				$row->col_display_restriction['max_zip'] = array('name' => 'SHIPPING_MAX_ZIP', 'value' => $row->plugin_params->{$type.'_max_zip'});
+			if(!empty($row->plugin_params->{$type.'_zip_suffix'}))
+				$row->col_display_restriction['zip_suffix'] = array('name' => 'SHIPPING_SUFFIX', 'value' => $row->plugin_params->{$type.'_zip_suffix'});
+			if(!empty($row->{$type.'_zone_namekey'})) {
+				if($view->zoneClass)
+					$view->zoneClass = hikashop_get('class.zone');
+				$zone = $view->zoneClass->get($row->{$type.'_zone_namekey'});
+				if(!empty($zone))
+					$row->col_display_restriction['zone'] = array('name' => 'ZONE', 'value' => $zone->zone_name_english);
+				else
+					$row->col_display_restriction['zone'] = array('name' => 'ZONE', 'value' => 'INVALID');
+			}
+		}
+		unset($row);
 	}
 
 	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {

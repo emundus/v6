@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -159,11 +159,7 @@ function switchDisplay(value,name,activevalue){
 			if(!empty($element->content_type) && !in_array($element->content_type, array('product','category'))) {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_('HIKA_MENU_TYPE_NOT_SUPPORTED'), 'error');
-				if(!HIKASHOP_J16) {
-					$url = JRoute::_('index.php?option=com_menus&task=edit&cid[]='.$cid, false);
-				} else {
-					$url = JRoute::_('index.php?option=com_menus&task=item.edit&id='.$cid, false);
-				}
+				$url = JRoute::_('index.php?option=com_menus&task=item.edit&id='.$cid, false);
 				$app->redirect($url);
 			}
 		}
@@ -180,11 +176,7 @@ function switchDisplay(value,name,activevalue){
 			if(!empty($element->content_type) && $element->content_type != 'product') {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_('HIKA_MODULE_TYPE_NOT_SUPPORTED'), 'error');
-				if(!HIKASHOP_J16) {
-					$url = JRoute::_('index.php?option=com_modules&task=edit&cid[]='.$id, false);
-				} else {
-					$url = JRoute::_('index.php?option=com_modules&task=item.edit&id='.$id, false);
-				}
+				$url = JRoute::_('index.php?option=com_modules&task=item.edit&id='.$id, false);
 				$app->redirect($url);
 			}
 		}
@@ -265,8 +257,8 @@ function switchDisplay(value,name,activevalue){
 		$element->content_type = $this->type;
 		$element->hikashop_params =& $this->element;
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHkContentParamsDisplay', array('menu', $this->name, &$element, &$extra_blocks));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onHkContentParamsDisplay', array('menu', $this->name, &$element, &$extra_blocks));
 		$this->assignRef('extra_blocks', $extra_blocks);
 	}
 
@@ -337,11 +329,7 @@ function switchDisplay(value,name,activevalue){
 		hikashop_setTitle(JText::_($this->nameForm), $this->icon, $this->ctrl.'&task='.$task.'&cid[]='.$cid);
 		$this->_loadCategory($element);
 		if(!empty($cid)) {
-			if(!HIKASHOP_J16) {
-				$url = JRoute::_('index.php?option=com_menus&task=edit&cid[]='.$element->id);
-			} else {
-				$url = JRoute::_('index.php?option=com_menus&task=item.edit&id='.$element->id);
-			}
+			$url = JRoute::_('index.php?option=com_menus&task=item.edit&id='.$element->id);
 			$this->toolbarJoomlaMenu = array('name'=>'link','icon'=>'upload','alt'=> JText::_('JOOMLA_MENU_OPTIONS'),'url'=>$url);
 		}
 
@@ -374,8 +362,8 @@ function setVisibleLayoutEffect(value) {
 			'layouts' => array()
 		);
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHkContentParamsDisplay', array('menu', $control, &$element, &$extra_blocks));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onHkContentParamsDisplay', array('menu', $control, &$element, &$extra_blocks));
 		$this->assignRef('extra_blocks', $extra_blocks);
 	}
 
@@ -389,20 +377,15 @@ function setVisibleLayoutEffect(value) {
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'id','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'desc',	'word' );
 		$database	= JFactory::getDBO();
-		if(version_compare(JVERSION,'1.6','<')){
-			$query = 'SELECT id FROM '.hikashop_table('components',false).' WHERE link=\'option='.HIKASHOP_COMPONENT.'\' LIMIT 1';
-			$database->setQuery($query);
-			$filters = array('(componentid='.$database->loadResult().' OR (componentid=0 AND link LIKE \'%option='.HIKASHOP_COMPONENT.'%\'))','type=\'component\'');
-			$searchMap = array('alias','link','name');
-		}else{
-			$query = 'SELECT extension_id FROM '.hikashop_table('extensions',false).' WHERE type=\'component\' AND element=\''.HIKASHOP_COMPONENT.'\' LIMIT 1';
-			$database->setQuery($query);
-			$filters = array('(component_id='.$database->loadResult().' OR (component_id=0 AND link LIKE \'%option='.HIKASHOP_COMPONENT.'%\'))','type=\'component\'','client_id=0');
-			$searchMap = array('alias','link','title');
-		}
+
+		$query = 'SELECT extension_id FROM '.hikashop_table('extensions',false).' WHERE type=\'component\' AND element=\''.HIKASHOP_COMPONENT.'\' LIMIT 1';
+		$database->setQuery($query);
+		$filters = array('(component_id='.$database->loadResult().' OR (component_id=0 AND link LIKE \'%option='.HIKASHOP_COMPONENT.'%\'))','type=\'component\'','client_id=0');
+		$searchMap = array('alias','link','title');
+
 		$filters[] = 'published > -2';
 		if(!empty($pageInfo->search)){
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
+			$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($pageInfo->search)),true).'%\'';
 			$filters[] =  implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal";
 		}
 		$order = '';

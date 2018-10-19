@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,12 +34,12 @@ class hikashopOrderstatusClass extends hikashopClass {
 			return false;
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 		if($new)
-			$dispatcher->trigger('onBeforeOrderstatusCreate', array( &$element, &$do) );
+			$app->triggerEvent('onBeforeOrderstatusCreate', array( &$element, &$do) );
 		else
-			$dispatcher->trigger('onBeforeOrderstatusUpdate', array( &$element, &$do) );
+			$app->triggerEvent('onBeforeOrderstatusUpdate', array( &$element, &$do) );
 
 		if(!$do)
 			return false;
@@ -49,9 +49,9 @@ class hikashopOrderstatusClass extends hikashopClass {
 			return false;
 
 		if($new)
-			$dispatcher->trigger('onAfterOrderstatusCreate', array( &$element ) );
+			$app->triggerEvent('onAfterOrderstatusCreate', array( &$element ) );
 		else
-			$dispatcher->trigger('onAfterOrderstatusUpdate', array( &$element ) );
+			$app->triggerEvent('onAfterOrderstatusUpdate', array( &$element ) );
 
 		return $status;
 	}

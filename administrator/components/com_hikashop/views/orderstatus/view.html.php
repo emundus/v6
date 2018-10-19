@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ class OrderstatusViewOrderstatus extends hikashopView
 	var $ctrl = 'orderstatus';
 	var $nameListing = 'HIKA_ORDERSTATUSES';
 	var $nameForm = 'HIKA_ORDERSTATUS';
-	var $icon = 'order';
+	var $icon = 'tasks';
 	var $triggerView = true;
 
 	public function display($tpl = null) {
@@ -134,8 +134,8 @@ class OrderstatusViewOrderstatus extends hikashopView
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onOrderStatusListingLoad', array(&$orderstatus_columns, &$rows));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onOrderStatusListingLoad', array(&$orderstatus_columns, &$rows));
 
 		$this->assignRef('orderstatus_columns', $orderstatus_columns);
 
@@ -207,9 +207,7 @@ class OrderstatusViewOrderstatus extends hikashopView
 		hikashop_setTitle($title, $this->icon, $this->ctrl);
 
 		$this->toolbar = array(
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION, '1.7', '>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')

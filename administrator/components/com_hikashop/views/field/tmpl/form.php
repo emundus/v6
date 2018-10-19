@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -177,7 +177,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php } ?>
 	</dl>
 </div></div>
-
+<div class="hkc-lg-clear"></div>
 <div class="hkc-xl-4 hkc-lg-6 hikashop_tile_block hikashop_field_edit_attributes"><div>
 	<div class="hikashop_tile_title"><?php echo JText::_('MAIN_ATTRIBUTES'); ?></div>
 	<dl class="hika_options large">
@@ -263,6 +263,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 	}
 ?>
+<div class="hkc-xl-clear"></div>
 <div class="hkc-xl-4 hkc-lg-6 hikashop_tile_block hikashop_field_edit_display" data-hk-displays="<?php echo implode(',', $filters); ?>"><div>
 	<div class="hikashop_tile_title"><?php echo JText::_('EXTRA_ATTRIBUTES'); ?></div>
 	<dl class="hika_options large">
@@ -454,7 +455,7 @@ defined('_JEXEC') or die('Restricted access');
 				<td><input type="text" name="field_values[title][]" value="<?php echo $this->escape($title); ?>" style="width:auto;"/></td>
 				<td><input type="text" name="field_values[value][]" value="<?php echo $this->escape($value->value); ?>" style="width:auto;"/></td>
 				<td>
-					<select name="field_values[disabled][]" class="no-chzn inputbox" style="width:auto;">
+					<select name="field_values[disabled][]" class="custom-select no-chzn inputbox" style="width:auto;">
 						<option <?php echo $no_selected; ?> value="0"><?php echo JText::_('HIKASHOP_NO'); ?></option>
 						<option <?php echo $yes_selected; ?> value="1"><?php echo JText::_('HIKASHOP_YES'); ?></option>
 					</select>
@@ -473,7 +474,7 @@ defined('_JEXEC') or die('Restricted access');
 				<td><input type="text" name="field_values[title][]" value="" style="width:auto;"/></td>
 				<td><input type="text" name="field_values[value][]" value="" style="width:auto;"/></td>
 				<td>
-					<select name="field_values[disabled][]" class="no-chzn inputbox" style="width:auto;">
+					<select name="field_values[disabled][]" class="custom-select no-chzn inputbox" style="width:auto;">
 						<option selected="selected" value="0"><?php echo JText::_('HIKASHOP_NO'); ?></option>
 						<option value="1"><?php echo JText::_('HIKASHOP_YES'); ?></option>
 					</select>
@@ -486,7 +487,7 @@ defined('_JEXEC') or die('Restricted access');
 				<td><input type="text" name="{TITLE}" value="" style="width:auto;"/></td>
 				<td><input type="text" name="{VALUE}" value="" style="width:auto;"/></td>
 				<td>
-					<select name="{DISABLED}" class="inputbox no-chzn" style="width:auto;">
+					<select name="{DISABLED}" class="custom-select no-chzn" style="width:auto;">
 						<option selected="selected" value="0"><?php echo JText::_('HIKASHOP_NO'); ?></option>
 						<option value="1"><?php echo JText::_('HIKASHOP_YES'); ?></option>
 					</select>

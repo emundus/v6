@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,6 +39,7 @@ class hikashopSpreadsheetHelper {
 		switch( strtolower($format) ) {
 			case 'xls':
 				$this->format = 1;
+				$this->buffer .= pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
 				break;
 
 			default:
@@ -46,6 +47,7 @@ class hikashopSpreadsheetHelper {
 				$this->format = 0;
 				$this->separator = $sep;
 				$this->decimal_separator = $decimal_separator;
+				$this->buffer .= chr(239) . chr(187) . chr(191);
 				break;
 		}
 
@@ -56,9 +58,6 @@ class hikashopSpreadsheetHelper {
 			$this->filename .= '.xls';
 		else
 			$this->filename .= '.csv';
-
-		if( $this->format == 1 )
-			$this->buffer .= pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
 	}
 
 	function send() {

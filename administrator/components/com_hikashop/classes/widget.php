@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -113,7 +113,7 @@ class hikashopWidgetClass extends hikashopClass {
 					}
 				}
 				$categories = hikaInput::get()->get('row_category', array(), 'array');
-				JArrayHelper::toInteger($categories);
+				hikashop_toInteger($categories);
 				$cat=array();
 				foreach($categories as $category){
 					$cat[]=$category;
@@ -126,7 +126,7 @@ class hikashopWidgetClass extends hikashopClass {
 				$widget->widget_params->categories = $cat;
 
 				$coupons = hikaInput::get()->get('row_coupon', array(), 'array');
-				JArrayHelper::toInteger($coupons);
+				hikashop_toInteger($coupons);
 				$coupons=serialize($coupons);
 				$widget->widget_params->coupons = $coupons;
 				$widget->widget_params->table[$theKey]=$table;
@@ -180,7 +180,7 @@ class hikashopWidgetClass extends hikashopClass {
 			}
 		}
 		$categories = hikaInput::get()->get('category', array(), 'array');
-		JArrayHelper::toInteger($categories);
+		hikashop_toInteger($categories);
 		$cat=array();
 		foreach($categories as $category){
 			$cat[]=$category;
@@ -192,11 +192,11 @@ class hikashopWidgetClass extends hikashopClass {
 		}
 
 		$products = hikaInput::get()->get('widget', array(), 'array');
-		JArrayHelper::toInteger($products);
+		hikashop_toInteger($products);
 		$prods=serialize($products);
 
 		$coupons = hikaInput::get()->get('coupon', array(), 'array');
-		JArrayHelper::toInteger($coupons);
+		hikashop_toInteger($coupons);
 		$coupons=serialize($coupons);
 
 		if(isset($formData['edit_row'])){
@@ -290,8 +290,10 @@ class hikashopWidgetClass extends hikashopClass {
 				header("Content-Disposition: attachment; filename=hikashopexport.csv");
 				header("Content-Transfer-Encoding: binary");
 				$eol= "\r\n";
+				echo chr(239) . chr(187) . chr(191);
 				$config =& hikashop_config();
 				$separator = $config->get('csv_separator',";");
+				$decimal_separator = $config->get('csv_decimal_separator','.');
 				echo implode($separator,$widget->exportFields).$eol;
 				$missing = array();
 				$convert_date = $config->get('convert_date','d-M-Y');
@@ -302,7 +304,7 @@ class hikashopWidgetClass extends hikashopClass {
 							if(isset($el->$field)){
 								if($convert_date && in_array($field,array('user_created','order_created','order_modified'))) $el->$field=hikashop_getDate($el->$field,$convert_date);
 								if($field == 'calculated_date')	$el->$field=hikashop_getDate($el->timestamp,'d-M-Y');
-								$line[]='"'.str_replace(array("\r", "\n", '"'),array('\r','\n', '""'),$el->$field).'"';
+								$line[]= $this->_getValue($el->$field, $separator, $decimal_separator);
 							}else{
 								$missing[$field]=$field;
 							}
@@ -326,7 +328,7 @@ class hikashopWidgetClass extends hikashopClass {
 						$line = array();
 						foreach($fieldsLeft as $field){
 							if($convert_date && in_array($field,array('user_created','order_created','order_modified'))) $el->$field=hikashop_getDate($el->$field,$convert_date);
-							$line[]='"'.str_replace(array("\r", "\n", '"'),array('\r','\n', '""'),$el->$field).'"';
+							$line[]= $this->_getValue($el->$field, $separator, $decimal_separator);
 						}
 						echo $encodingHelper->change(implode($separator,$line),'UTF-8',$widget->widget_params->format).$eol;
 					}
@@ -338,6 +340,29 @@ class hikashopWidgetClass extends hikashopClass {
 				$this->listing();
 			}
 		}
+	}
+
+	function _getValue($value, $separator, $decimal_separator) {
+		$ret = null;
+		if(is_numeric($value) && (preg_match('[^0-9]',$value) || ltrim($value, '0') === (string)$value) || '0' === (string)$value) {
+			$floatValue = (float)hikashop_toFloat($value);
+			if($floatValue == (int)$floatValue)
+				$ret .= (int)$value;
+			else
+				$ret .= number_format($floatValue, 5, $decimal_separator, '');
+		} else {
+			if(!empty($value) && in_array(substr($value, 0, 1), array('=','+','-','@')))
+				$value = "'".$value;
+
+			if( empty($value) ) {
+				$ret = '""';
+			} elseif( strpos($value, '"') !== false ) {
+				$ret = '"' . str_replace('"','""',$value) . '"';
+			} elseif(strpos($value, $separator) !== false || (strpos($value, "\n") !== false) || (trim($value) != $value) ) {
+				$ret = '"' . $value . '"';
+			}
+		}
+		return $ret;
 	}
 
 	function loadDatas(&$element){
@@ -825,12 +850,9 @@ class hikashopWidgetClass extends hikashopClass {
 						if($columnName=='prod.product_id'){
 							$query='SELECT product_id FROM '.hikashop_table('product').' WHERE product_parent_id IN ('.implode(',',$values).')';
 							$db->setQuery($query);
-							if(!HIKASHOP_J25){
-								$variants = $db->loadResultArray();
-							} else {
-								$variants = $db->loadColumn();
-							}
-							if(count($variants)) $values = array_merge($values,$variants);
+							$variants = $db->loadColumn();
+							if(count($variants))
+								$values = array_merge($values,$variants);
 						}
 
 						$filters[] = $columnName." IN (".implode(",",$values).")";

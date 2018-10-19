@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,102 +10,96 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(!isset($this->element['layout_type']))
 	$this->element['layout_type'] = 'inherit';
+
 ?>
-<div id="hikashop_main_content_<?php echo $this->type; ?>" class="hikashop_main_content hk-container-fluid item-menu-interface">
-	<!-- Menu edition -->
+<div id="hikashop_main_content_<?php echo $this->type; ?>" class="hikashop_main_content hk-container-fluid item-menu-interface hika_j<?php echo (int)HIKASHOP_JVERSION; ?>">
 	<div id="hikashop_menu_backend_page_edition">
-		<!-- Top part (Layout selection) -->
-		<?php
-		if($this->type == 'category'){
-			$class = 'hkc-xl-4';
-		}else{
-			$class = 'hkc-xl-3';
-		}
-		$this->layoutType->load();
-		?>
-		<div class="hkc-xl-12 hikashop_edit_display_type">
-		<?php
-		foreach($this->layoutType->values as $value){
-			$src = strtolower($value->value);
-			if($this->type == 'category' && $value->value == 'table') continue;
-			if($value->value == 'inherit' && $this->type == 'product')
-				$value->text = $value->text.' ('.$this->default_params['layout_type'].')';
-			if($value->value == 'inherit' && $this->type == 'category')
-				$value->text = $value->text.' (div)';
-		?>
-			<div class="<?php echo $class; ?> hikashop_menu_block_content_type hikashop_menu_edit_display_type_<?php echo $value->value; ?>" onclick="window.optionMgr.tabChange(this);" data-type="<?php echo $this->type; ?>_layout_choice" data-layout="<?php echo $this->type.'_'.$value->value; ?>">
+		<div class="hk-row-fluid hikashop_edit_display_type">
+<?php
+	$this->layoutType->load();
+	$grid_class = ($this->type == 'category') ? 'hkc-xl-4' : 'hkc-xl-3';
+	foreach($this->layoutType->values as $value) {
+		$src = strtolower($value->value);
+		if($this->type == 'category' && $value->value == 'table')
+			continue;
+		if($value->value == 'inherit' && $this->type == 'product')
+			$value->text = $value->text.' ('.$this->default_params['layout_type'].')';
+		if($value->value == 'inherit' && $this->type == 'category')
+			$value->text = $value->text.' (div)';
+?>
+			<div class="<?php echo $grid_class; ?> hikashop_menu_block_content_type hikashop_menu_edit_display_type_<?php echo $value->value; ?>" onclick="window.optionMgr.tabChange(this);" data-type="<?php echo $this->type; ?>_layout_choice" data-layout="<?php echo $this->type.'_'.$value->value; ?>">
 				<img class="hikashop_menu_block_img_unselected" src="<?php echo HIKASHOP_IMAGES; ?>icons/icon-24-<?php echo $src; ?>.png">
 				<img class="hikashop_menu_block_img_selected" src="<?php echo HIKASHOP_IMAGES; ?>icons/icon-24-<?php echo $src; ?>-selected.png">
 				<?php echo $value->text; ?>
 			</div>
-		<?php
-		}
-		?>
+<?php
+	}
+?>
 			<input type="hidden" id="data_menu__<?php echo $this->type; ?>_layout_type" name="<?php echo $this->name; ?>[layout_type]" value="<?php echo $this->element['layout_type']; ?>">
 		</div>
 
-		<!-- Middle part (Display options) -->
-		<div class="hkc-xl-12 hk-container hikashop_menu_block hikashop_menu_edit_display">
-<!--			<div class="hkc-xl-4 hikashop_menu_block hikashop_menu_edit_display_preview">
-			<?php
-				$this->setLayout('options_display_preview');
-				echo $this->loadTemplate();
-			?>
-			</div>
--->
-			<div class="hkc-xl-12 hikashop_menu_edit_display_settings">
-			<?php
-			foreach($this->layoutType->values as $value){
-				if($this->type == 'category' && $value->value == 'table') continue;
-				if($value->value == 'inherit') continue;
-				$this->setLayout('options_display_'.$value->value);
-				echo $this->loadTemplate();
-			}
-			?>
+		<div class="hikashop_menu_block hikashop_menu_edit_display">
+			<div class="hk-container-fluid hikashop_menu_edit_display_settings">
+<?php
+	foreach($this->layoutType->values as $value) {
+		if($this->type == 'category' && $value->value == 'table')
+			continue;
+		if($value->value == 'inherit')
+			continue;
+
+		$this->setLayout('options_display_'.$value->value);
+		echo $this->loadTemplate();
+	}
+?>
 			</div>
 		</div>
 
-		<!-- Bottom part (Generic options) -->
-		<div class="hkc-xl-12 hk-container hikashop_menu_block hikashop_menu_edit_general">
-		<?php
+		<div class="hk-row-fluid hikashop_menu_block hikashop_menu_edit_general">
+<?php
 		$this->setLayout('options_main');
 		echo $this->loadTemplate();
-		if($this->type == 'category'){
+
+		if($this->type == 'category') {
 			$this->setLayout('options_category');
 			echo $this->loadTemplate();
-		}elseif($this->type == 'product'){
+		} elseif($this->type == 'product') {
 			$this->setLayout('options_product');
 			echo $this->loadTemplate();
 		}
-		?>
+?>
 		</div>
 
-		<!-- Extra part (Carousel options & ...) -->
-		<div class="hkc-xl-12 hk-container hikashop_menu_block hikashop_menu_edit_extra" data-type="<?php echo $this->type; ?>" data-display-tab="div">
-		<?php
-			if(@$this->element['enable_carousel']){
-				$this->setLayout('options_product_extra');
-				echo $this->loadTemplate();
-			}
-		?>
+		<div class="hk-row-fluid hikashop_menu_block hikashop_menu_edit_extra" data-type="<?php echo $this->type; ?>" data-display-tab="div">
+<?php
+		if(@$this->element['enable_carousel']){
+			$this->setLayout('options_product_extra');
+			echo $this->loadTemplate();
+		}
+?>
 		</div>
 <?php
 if(!empty($this->extra_blocks['layouts'])) {
-	foreach($this->extra_blocks['layouts'] as $key => $r) {
-		if(is_string($r))
-			echo $r;
-		if(is_array($r)) {
-			if(!isset($r['name']) && isset($r[0]))
-				$r['name'] = $r[0];
-			if(!isset($r['value']) && isset($r[1]))
-				$r['value'] = $r[1];
 ?>
-		<div class="hkc-xl-12 hikashop_menu_block hikashop_menu_edit_<?php echo $key; ?>">
-<div class="hkc-xl-4 hikashop_menu_subblock hikashop_menu_edit_product">
+	<div class="hk-row-fluid hikashop_menu_block hikashop_menu_edit_extrablocks">
+<?php
+	foreach($this->extra_blocks['layouts'] as $key => $r) {
+		if(is_string($r)) {
+			echo $r;
+			continue;
+		}
+		if(!is_array($r))
+			continue;
+
+		if(!isset($r['name']) && isset($r[0]))
+			$r['name'] = $r[0];
+		if(!isset($r['value']) && isset($r[1]))
+			$r['value'] = $r[1];
+?>
+<div class="hkc-xl-4 hikashop_menu_subblock hikashop_menu_edit_extrablock_<?php echo $key; ?>">
 	<div class="hikashop_menu_subblock_content">
 		<div class="hikashop_menu_subblock_title hikashop_menu_edit_<?php echo $key; ?>_title"><?php echo JText::_(@$r['name']); ?></div>
 <?php
-			if(is_array($r['value'])) {
+		if(is_array($r['value'])) {
 ?>
 		<dl class="hika_options">
 <?php
@@ -118,16 +112,17 @@ if(!empty($this->extra_blocks['layouts'])) {
 ?>
 		</dl>
 <?php
-			} else {
-				echo $r['value'];
-			}
+		} else {
+			echo $r['value'];
+		}
 ?>
 	</div>
 </div>
-		</div>
 <?php
-		}
 	}
+?>
+	</div>
+<?php
 }
 ?>
 	</div>
@@ -248,7 +243,7 @@ window.optionMgr = {
 			}
 		}
 		hkjQuery('div[data-type=\''+info[0]+'_layout\']').css('display','none');
-		hkjQuery('div[data-layout=\''+val+'\']').css('display','inherit');
+		hkjQuery('div[data-layout=\''+val+'\']').css('display','');
 		hkjQuery('#data_menu__'+info[0]+'_layout_type').val(info[1]);
 		hkjQuery('div[data-type=\''+info[0]+'_layout_choice\']').removeClass('selected');
 		hkjQuery(el).addClass('selected');

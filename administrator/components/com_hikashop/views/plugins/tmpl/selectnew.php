@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,10 +39,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 $k = 0;
 
-if(!HIKASHOP_J25) {
-	$icon_yes = '<img src="images/tick.png" alt="Y"/>';
-	$icon_no = '<img src="images/publish_x.png" alt=""/>';
-} else if(!HIKASHOP_J30) {
+if(!HIKASHOP_J30) {
 	$icon_yes = '<img src="templates/hathor/images/admin/tick.png" alt="Y"/>';
 	$icon_no = '<img src="templates/hathor/images/admin/publish_x.png" alt=""/>';
 } else {
@@ -51,12 +48,7 @@ if(!HIKASHOP_J25) {
 }
 
 foreach($this->plugins as $i => &$row) {
-
-	if(!HIKASHOP_J16) {
-		$publishedid = 'published-'.$row->id;
-	} else {
-		$publishedid = 'enabled-'.$row->id;
-	}
+	$publishedid = 'enabled-'.$row->id;
 ?>
 		<tr class="row<?php echo $k; ?>">
 			<td class="hk_center"><?php

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,21 +12,21 @@ defined('_JEXEC') or die('Restricted access');
 <?php foreach($this->tables as $table){ ?>
 <div id="hikabase_<?php echo $table->table; ?>_massactions" style="display:none">
 	<div id="<?php echo $table->table; ?>_triggers_original">
-		<?php echo JHTML::_('select.genericlist', $table->typevaluesTriggers, "trigger[".$table->table."][type][__num__]", 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'trigger\',\''.$table->table.'\',__num__); refreshSelect(\''.$table->table.'\',\'trigger\', __num__) "', 'value', 'text','trigger'.$table->table.'__num__');
-				echo '<span><a style="cursor:  pointer;" onClick="selectTrigger=document.getElementById(\'trigger'.$table->table.'type__num__\') ;selectTrigger.options[0].selected=\'selected\'; document.getElementById(\''.$table->table.'trigger__num__\').style.display=\'none\'; numTriggers[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>';?>
+		<?php echo JHTML::_('select.genericlist', $table->typevaluesTriggers, "trigger[".$table->table."][type][__num__]", 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'trigger\',\''.$table->table.'\',__num__); refreshSelect(\''.$table->table.'\',\'trigger\', __num__) "', 'value', 'text','trigger'.$table->table.'__num__');
+				echo '<span><a style="cursor:  pointer;" onClick="selectTrigger=document.getElementById(\'trigger'.$table->table.'type__num__\') ;selectTrigger.options[0].selected=\'selected\'; document.getElementById(\''.$table->table.'trigger__num__\').style.display=\'none\'; numTriggers[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>';?>
 		<div class="hikamassactionarea" id="<?php echo $table->table; ?>triggerarea___num__"></div>
 	</div>
 	<?php echo implode('',$table->triggers_html); ?>
 	<div id="<?php echo $table->table; ?>_filters_original">
-		<?php echo JHTML::_('select.genericlist', $table->typevaluesFilters, "filter[".$table->table."][type][__num__]", 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'filter\',\''.$table->table.'\',__num__);countresults(\''.$table->table.'\',__num__); refreshSelect(\''.$table->table.'\',\'filter\', __num__) "', 'value', 'text','filter'.$table->table.'__num__');
-				echo '<span><a style="cursor:  pointer;" onClick="selectFilter=document.getElementById(\'filter'.$table->table.'type__num__\') ;selectFilter.options[0].selected=\'selected\';updateMassAction(\'filter\',\''.$table->table.'\',__num__); document.getElementById(\''.$table->table.'filter__num__\').style.display=\'none\'; numFilters[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>'; ?>
+		<?php echo JHTML::_('select.genericlist', $table->typevaluesFilters, "filter[".$table->table."][type][__num__]", 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'filter\',\''.$table->table.'\',__num__);countresults(\''.$table->table.'\',__num__); refreshSelect(\''.$table->table.'\',\'filter\', __num__) "', 'value', 'text','filter'.$table->table.'__num__');
+				echo '<span><a style="cursor:  pointer;" onClick="selectFilter=document.getElementById(\'filter'.$table->table.'type__num__\') ;selectFilter.options[0].selected=\'selected\';updateMassAction(\'filter\',\''.$table->table.'\',__num__); document.getElementById(\''.$table->table.'filter__num__\').style.display=\'none\'; numFilters[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>'; ?>
 		<span id="<?php echo $table->table; ?>countresult___num__"></span>
 		<div class="hikamassactionarea" id="<?php echo $table->table; ?>filterarea___num__"></div>
 	</div>
 	<?php echo implode('',$table->filters_html); ?>
 	<div id="<?php echo $table->table; ?>_actions_original">
-		<?php echo JHTML::_('select.genericlist', $table->typevaluesActions, "action[".$table->table."][type][__num__]", 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'action\',\''.$table->table.'\',__num__); refreshSelect(\''.$table->table.'\',\'action\', __num__) "', 'value', 'text','action'.$table->table.'__num__');
-				echo '<span><a style="cursor:  pointer;" onClick="selectAction=document.getElementById(\'action'.$table->table.'type__num__\') ;selectAction.options[0].selected=\'selected\';updateMassAction(\'action\',\''.$table->table.'\',__num__); document.getElementById(\''.$table->table.'action__num__\').style.display=\'none\'; numActions[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>';?>
+		<?php echo JHTML::_('select.genericlist', $table->typevaluesActions, "action[".$table->table."][type][__num__]", 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'action\',\''.$table->table.'\',__num__); refreshSelect(\''.$table->table.'\',\'action\', __num__) "', 'value', 'text','action'.$table->table.'__num__');
+				echo '<span><a style="cursor:  pointer;" onClick="selectAction=document.getElementById(\'action'.$table->table.'type__num__\') ;selectAction.options[0].selected=\'selected\';updateMassAction(\'action\',\''.$table->table.'\',__num__); document.getElementById(\''.$table->table.'action__num__\').style.display=\'none\'; numActions[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>';?>
 		<div class="hikamassactionarea" id="<?php echo $table->table; ?>actionarea___num__"></div>
 	</div>
 	<?php echo implode('',$table->actions_html); ?>
@@ -80,9 +80,9 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 		if(!empty($this->tables)) {
 			if(HIKASHOP_J30){
-				echo JHTML::_('hikaselect.radiolist', $this->tables, 'data[massaction][massaction_table]', 'class="inputbox" size="1" onclick="updateData(this.value);"', 'value', 'text',$this->element->massaction_table,false,false);
+				echo JHTML::_('hikaselect.radiolist', $this->tables, 'data[massaction][massaction_table]', 'class="custom-select" size="1" onclick="updateData(this.value);"', 'value', 'text',$this->element->massaction_table,false,false);
 			}else{
-				echo JHTML::_('hikaselect.radiolist', $this->tables, 'data[massaction][massaction_table]', 'class="inputbox" size="1" onclick="updateData(this.value);"', 'value', 'text',$this->element->massaction_table);
+				echo JHTML::_('hikaselect.radiolist', $this->tables, 'data[massaction][massaction_table]', 'class="custom-select" size="1" onclick="updateData(this.value);"', 'value', 'text',$this->element->massaction_table);
 			}
 		} else {
 			echo JText::_('ERR_NO_MASSACTION_TABLES');
@@ -106,15 +106,15 @@ defined('_JEXEC') or die('Restricted access');
 							echo '<div id="'.$table->table.'trigger'.$k.'" class="plugarea">';
 							$min = array_keys($this->loadedData->massaction_triggers);
 							if($k > $min[0]) echo JText::_('HIKA_AND').' ';
-							echo JHTML::_('select.genericlist', $table->typevaluesTriggers, 'trigger['.$table->table.'][type]['.$k.']', 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'trigger\',\''.$table->table.'\','.$k.');"', 'value', 'text',$triggers->name);
-							echo '<span><a style="cursor:pointer;" onClick="selectTrigger=document.getElementById(\'trigger'.$table->table.'type'.$k.'\') ;selectTrigger.options[0].selected=\'selected\'; document.getElementById(\''.$table->table.'trigger'.$k.'\').style.display=\'none\';numTriggers[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>';
+							echo JHTML::_('select.genericlist', $table->typevaluesTriggers, 'trigger['.$table->table.'][type]['.$k.']', 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'trigger\',\''.$table->table.'\','.$k.');"', 'value', 'text',$triggers->name);
+							echo '<span><a style="cursor:pointer;" onClick="selectTrigger=document.getElementById(\'trigger'.$table->table.'type'.$k.'\') ;selectTrigger.options[0].selected=\'selected\'; document.getElementById(\''.$table->table.'trigger'.$k.'\').style.display=\'none\';numTriggers[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>';
 							echo '</div>';
 						}
 					}
 				}else{
 					echo '<div id="'.$table->table.'trigger0" class="plugarea">';
-					echo JHTML::_('select.genericlist', $table->typevaluesTriggers, "trigger[".$table->table."][type][0]", 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'trigger\',\''.$table->table.'\',0);"', 'value', 'text');
-					echo '<span><a style="cursor:pointer;" onClick="selectTrigger=document.getElementById(\'trigger'.$table->table.'type0\') ;selectTrigger.options[0].selected=\'selected\'; document.getElementById(\''.$table->table.'trigger0\').style.display=\'none\';numTriggers[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>';
+					echo JHTML::_('select.genericlist', $table->typevaluesTriggers, "trigger[".$table->table."][type][0]", 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'trigger\',\''.$table->table.'\',0);"', 'value', 'text');
+					echo '<span><a style="cursor:pointer;" onClick="selectTrigger=document.getElementById(\'trigger'.$table->table.'type0\') ;selectTrigger.options[0].selected=\'selected\'; document.getElementById(\''.$table->table.'trigger0\').style.display=\'none\';numTriggers[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>';
 					echo '</div>';
 				}
 				if(HIKASHOP_J30 && false){
@@ -140,9 +140,9 @@ defined('_JEXEC') or die('Restricted access');
 								if($filter->name == 'limit'){
 									echo '<input type="hidden" name="filter['.$table->table.'][type]['.$k.']" value="limit"/>';
 								}else{
-									echo JHTML::_('select.genericlist', $table->typevaluesFilters, "filter[".$table->table."][type][$k]", 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'filter\',\''.$table->table.'\','.$k.');countresults(\''.$table->table.'\','.$k.');"', 'value', 'text',$filter->name);
+									echo JHTML::_('select.genericlist', $table->typevaluesFilters, "filter[".$table->table."][type][$k]", 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'filter\',\''.$table->table.'\','.$k.');countresults(\''.$table->table.'\','.$k.');"', 'value', 'text',$filter->name);
 									echo '<span id="'.$table->table.'countresult_'.$k.'"></span>';
-									echo '<span><a style="cursor:  pointer;" onClick="selectFilter=document.getElementById(\'filter'.$table->table.'type'.$k.'\') ;selectFilter.options[0].selected=\'selected\';updateMassAction(\'filter\',\''.$table->table.'\','.$k.'); document.getElementById(\''.$table->table.'filter'.$k.'\').style.display=\'none\'; numFilters[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>';
+									echo '<span><a style="cursor:  pointer;" onClick="selectFilter=document.getElementById(\'filter'.$table->table.'type'.$k.'\') ;selectFilter.options[0].selected=\'selected\';updateMassAction(\'filter\',\''.$table->table.'\','.$k.'); document.getElementById(\''.$table->table.'filter'.$k.'\').style.display=\'none\'; numFilters[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>';
 								}
 								echo $filter->html.'</div>';
 							}
@@ -169,9 +169,9 @@ defined('_JEXEC') or die('Restricted access');
 							if($filter->name == 'limit'){
 								echo '<input type="hidden" name="filter['.$table->table.'][type]['.$k.']" value="limit"/>';
 							}else{
-								echo JHTML::_('select.genericlist', $table->typevaluesFilters, "filter[".$table->table."][type][$k]", 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'filter\',\''.$table->table.'\','.$k.');countresults(\''.$table->table.'\','.$k.');"', 'value', 'text',$filter->name);
+								echo JHTML::_('select.genericlist', $table->typevaluesFilters, "filter[".$table->table."][type][$k]", 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'filter\',\''.$table->table.'\','.$k.');countresults(\''.$table->table.'\','.$k.');"', 'value', 'text',$filter->name);
 								echo '<span id="'.$table->table.'countresult_'.$k.'"></span>';
-								echo '<span><a style="cursor:  pointer;" onClick="selectFilter=document.getElementById(\'filter'.$table->table.'type'.$k.'\') ;selectFilter.options[0].selected=\'selected\';updateMassAction(\'filter\',\''.$table->table.'\','.$k.'); document.getElementById(\''.$table->table.'filter'.$k.'\').style.display=\'none\'; numFilters[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>';
+								echo '<span><a style="cursor:  pointer;" onClick="selectFilter=document.getElementById(\'filter'.$table->table.'type'.$k.'\') ;selectFilter.options[0].selected=\'selected\';updateMassAction(\'filter\',\''.$table->table.'\','.$k.'); document.getElementById(\''.$table->table.'filter'.$k.'\').style.display=\'none\'; numFilters[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>';
 							}
 							echo $filter->html.'</div>';
 							echo '</div></fieldset>';
@@ -237,8 +237,8 @@ defined('_JEXEC') or die('Restricted access');
 							echo '<div id="'.$table->table.'action'.$k.'" class="plugarea">';
 							$min = array_keys($this->loadedData->massaction_actions);
 							if($k > $min[0]) echo JText::_('HIKA_AND').' ';
-							echo JHTML::_('select.genericlist', $table->typevaluesActions, "action[".$table->table."][type][$k]", 'class="inputbox chzn-done not-processed" size="1" onchange="updateMassAction(\'action\',\''.$table->table.'\','.$k.');""', 'value', 'text',$action->name);
-							echo '<span><a style="cursor:  pointer;" onClick="selectAction=document.getElementById(\'action'.$table->table.'type'.$k.'\') ;selectAction.options[0].selected=\'selected\';updateMassAction(\'action\',\''.$table->table.'\','.$k.'); document.getElementById(\''.$table->table.'action'.$k.'\').style.display=\'none\'; numActions[\''.$table->table.'\']--;" ><img src="'.HIKASHOP_IMAGES.'delete2.png" style="margin:0px 0px 0px 3px;"/></a></span>';
+							echo JHTML::_('select.genericlist', $table->typevaluesActions, "action[".$table->table."][type][$k]", 'class="custom-select chzn-done not-processed" size="1" onchange="updateMassAction(\'action\',\''.$table->table.'\','.$k.');""', 'value', 'text',$action->name);
+							echo '<span><a style="cursor:  pointer;" onClick="selectAction=document.getElementById(\'action'.$table->table.'type'.$k.'\') ;selectAction.options[0].selected=\'selected\';updateMassAction(\'action\',\''.$table->table.'\','.$k.'); document.getElementById(\''.$table->table.'action'.$k.'\').style.display=\'none\'; numActions[\''.$table->table.'\']--;" ><i class="fa fa-times-circle" style="margin-left :3px;"></i></a></span>';
 							echo $action->html.'</div>';
 						}
 					}

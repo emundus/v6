@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -124,13 +124,15 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 			$app = JFactory::getApplication();
 			$checkout_custom = $app->getUserState(HIKASHOP_COMPONENT.'.checkout_custom', null);
 			if(is_string($checkout_custom))
-				$checkout_custom = json_decode(base64_decode($checkout_custom));
+				$checkout_custom = json_decode(base64_decode($checkout_custom), true);
 			if(empty($checkout_custom))
 				$checkout_custom = array();
 			if(!isset($checkout_custom[ $payment_id ]))
 				$checkout_custom[$payment_id] = array();
 
-			$checkout_custom[$payment_id][$field] = $data['payment']['custom'][$payment_id];
+			$plugin = hikashop_import('hikashoppayment', $cart->payment->payment_type);
+			$checkout_custom[$payment_id] = $plugin->onPaymentCustomSave($cart, $cart->payment, $data['payment']['custom'][$payment_id]);
+
 			$app->setUserState(HIKASHOP_COMPONENT.'.checkout_custom', base64_encode(json_encode($checkout_custom)));
 		}
 
@@ -148,7 +150,7 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 
 			if($paymentData !== false) {
 				$cartClass->updatePaymentCustom($cart->cart_id, $cart->payment->payment_id, $paymentData->custom_html);
-			}else{
+			} else {
 				$ret = false;
 				if(!$submitstep) {
 					$new_messages = $app->getMessageQueue();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,22 +11,22 @@ defined('_JEXEC') or die('Restricted access');
 <div id="hikashop_user_addresses_show">
 <?php } ?>
 	<dl class="hika_options large">
-		<dt><label><?php echo JText::_('HIKA_SELECT_DEFAULT_ADDRESS'); ?></label></dt>
+		<dt><label><?php echo JText::_('HIKASHOP_SELECT_DEFAULT_'.strtoupper($this->type).'_ADDRESS'); ?></label></dt>
 		<dd><?php
 
 	$current = 0;
 	$values = array();
-	if(!empty($this->addresses)) {
-		foreach($this->addresses as $k => $address) {
+	if(!empty($this->addresses[$this->type])) {
+		foreach($this->addresses[$this->type] as $k => $address) {
 			$addr = $this->addressClass->miniFormat($address, $this->fields['address']);
 			$values[] = JHTML::_('select.option', $k, $addr);
 			if(!empty($address->address_default))
-				$current = $address->address_default;
+				$current = $address->address_id;
 		}
 	}
 	if(empty($values))
 		$values = array(JHTML::_('select.option', '', JText::_('HIKA_NO_ADDRESS')));
-	echo JHTML::_('select.genericlist', $values, 'address_default', 'class="hikashop_default_address_dropdown" style="width:100%;"', 'value', 'text', $current, 'hikashop_default_address_selector');
+	echo JHTML::_('select.genericlist', $values, $this->type.'_address_default', 'class="hikashop_default_address_dropdown" style="width:100%;"', 'value', 'text', $current, 'hikashop_default_'.$this->type.'_address_selector');
 
 		?></dd>
 	</dl>
@@ -34,20 +34,22 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_user_addresses_list">
 <?php
 if(empty($this->edit_address)) {
-	foreach($this->addresses as $address) {
+	foreach($this->addresses[$this->type] as $address) {
 ?>
 	<div class="hikashop_user_address address_selection" id="hikashop_user_address_<?php echo $address->address_id; ?>">
 		<div class="hika_edit">
 <?php
 	echo $this->popup->display(
-		'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
+		'<i class="fas fa-pen"></i>',
 		'HIKA_EDIT',
 		hikashop_completeLink('user&task=editaddress&user_id='.$this->user->user_id.'&address_id='.$address->address_id,true),
-		'aedit_address_'.$address->address_id.'_link',
-		760, 480, '', '', 'link'
+		'edit_address_'.$address->address_id.'_link',
+		760, 480, 'title="'.JText::_('HIKA_EDIT').'"', '', 'link'
 	);
 ?>
-			<a href="<?php echo hikashop_completeLink('user&task=deleteaddress&address_id='.$address->address_id.'&'.hikashop_getFormToken().'=1');?>"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
+			<a href="<?php echo hikashop_completeLink('user&task=deleteaddress&address_id='.$address->address_id.'&'.hikashop_getFormToken().'=1');?>" title="<?php echo JText::_('HIKA_DELETE'); ?>">
+				<i class="fa fa-trash"></i>
+			</a>
 		</div>
 <?php
 	echo $this->addressClass->displayAddress($this->fields['address'], $address, 'order');
@@ -60,11 +62,11 @@ if(empty($this->edit_address)) {
 	<div class="hikashop_user_addresses_button">
 <?php
 	echo $this->popup->display(
-		JText::_('ADD'),
+		'<i class="fa fa-plus"></i> '.JText::_('ADD'),
 		'ADD',
-		hikashop_completeLink('user&task=editaddress&user_id='.$this->user->user_id.'',true),
+		hikashop_completeLink('user&task=editaddress&user_id='.$this->user->user_id.'&type='.$this->type,true),
 		'add_address_link',
-		760, 480, '', '', 'button'
+		760, 480, 'class="btn btn-success"', '', 'link'
 	);
 ?>
 	</div>

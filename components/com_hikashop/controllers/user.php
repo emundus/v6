@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -83,11 +83,11 @@ class userController extends hikashopController {
 
 			$old_messages = $app->getMessageQueue();
 
-			$error = $app->login($credentials, $options);
+			$result = $app->login($credentials, $options);
 
 			$user = JFactory::getUser();
 
-			if(JError::isError($error) || $user->guest) {
+			if($result !== true || $user->guest) {
 				$new_messages = $app->getMessageQueue();
 				if(count($old_messages) == count($new_messages)) {
 					$app->enqueueMessage(JText::_('LOGIN_NOT_VALID'), 'error');
@@ -225,11 +225,7 @@ class userController extends hikashopController {
 		if(!empty($Itemid))
 			$url = '&Itemid='.$Itemid;
 
-		if(!HIKASHOP_J16)
-			$url = 'index.php?option=com_user&view=login'.$url;
-		else
-			$url = 'index.php?option=com_users&view=login'.$url;
-
+		$url = 'index.php?option=com_users&view=login'.$url;
 		$app->redirect(JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('', false))), false));
 		return false;
 	}
@@ -247,7 +243,7 @@ class userController extends hikashopController {
 		}
 
 		if($allowUserRegistration == 0 || $userActivation == 0) {
-			JError::raiseError(403, JText::_('Access Forbidden'));
+			$app->enqueueMessage(JText::_('Access Forbidden'), 'error');
 			return false;
 		}
 
@@ -262,21 +258,17 @@ class userController extends hikashopController {
 			return false;
 		}
 
-		if(version_compare(JVERSION,'1.6', '<')) {
-			$result = JUserHelper::activateUser($activation);
+		if(HIKASHOP_J30) {
+			JModelLegacy::addIncludePath(HIKASHOP_ROOT . DS . 'components' . DS . 'com_users' . DS . 'models');
 		} else {
-			if(HIKASHOP_J30) {
-				JModelLegacy::addIncludePath(HIKASHOP_ROOT . DS . 'components' . DS . 'com_users' . DS . 'models');
-			} else {
-				JModel::addIncludePath(HIKASHOP_ROOT . DS . 'components' . DS . 'com_users' . DS . 'models');
-			}
-
-			$model = $this->getModel('Registration', 'UsersModel',array(),true);
-			$language = JFactory::getLanguage();
-			$language->load('com_users', JPATH_SITE, $language->getTag(), true);
-			if($model)
-				$result = $model->activate($activation);
+			JModel::addIncludePath(HIKASHOP_ROOT . DS . 'components' . DS . 'com_users' . DS . 'models');
 		}
+
+		$model = $this->getModel('Registration', 'UsersModel',array(),true);
+		$language = JFactory::getLanguage();
+		$language->load('com_users', JPATH_SITE, $language->getTag(), true);
+		if($model)
+			$result = $model->activate($activation);
 
 		if(!$result) {
 			$app->enqueueMessage(JText::_('HIKA_REG_ACTIVATE_NOT_FOUND'));
@@ -318,10 +310,7 @@ class userController extends hikashopController {
 			}
 		}
 
-		if(!HIKASHOP_J16)
-			$url = 'index.php?option=com_user&view=login'.$url_itemid;
-		else
-			$url = 'index.php?option=com_users&view=login'.$url_itemid;
+		$url = 'index.php?option=com_users&view=login'.$url_itemid;
 		$app->redirect(JRoute::_($url, false));
 	}
 }

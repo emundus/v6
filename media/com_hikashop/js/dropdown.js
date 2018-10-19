@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.5.1
+ * @version    4.0.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,8 +15,10 @@ if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
 	 * ========================= */
 	var toggle = '[data-toggle=hkdropdown]',
 		HKDropdown = function (element) {
-			var $el = $(element).on('click.dropdown.data-api', this.toggle);
-			$('html').on('click.dropdown.data-api', function () {
+			var $el = $(element).on('click.hkdropdown.data-api', this.toggle)
+				.on('mouseover.hkdropdown.data-api', this.toggle);
+			$('html').on('click.hkdropdown.data-api', function () {
+				$el.parent().parent().removeClass('hk-nav-hover');
 				$el.parent().removeClass('open');
 			});
 		};
@@ -24,17 +26,23 @@ if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
 	HKDropdown.prototype = {
 		constructor: HKDropdown,
 		toggle: function (e) {
-			var $this = $(this), $parent, isActive;
+			var $this = $(this), $parent, isActive, isHover;
 
 			if ($this.is('.disabled, :disabled')) return;
 			$parent = getParent($this);
 			isActive = $parent.hasClass('open');
+      		isHover = $parent.parent().hasClass('hk-nav-hover');
+      		if(!isHover && e.type == 'mouseover') return;
 			clearMenus();
-			if (!isActive) {
+			if ((!isActive && e.type != 'mouseover') || (isHover && e.type == 'mouseover')) {
 				if ('ontouchstart' in document.documentElement) {
 					// if mobile we we use a backdrop because click events don't delegate
 					$('<div class="hk-dropdown-backdrop"/>').insertBefore($(this)).on('click', clearMenus);
+					$this.on('hover', function () {
+						$('.hk-dropdown-backdrop').remove();
+          			});
 				}
+				$parent.parent().toggleClass('hk-nav-hover');
 				$parent.toggleClass('open');
 			}
 			$this.focus();
@@ -77,18 +85,19 @@ if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
 	};
 
 	function clearMenus() {
-		$('.hk-dropdown-backdrop').remove();
+		$(toggle).parent().parent().removeClass('hk-nav-hover');
 		$(toggle).each(function () {
 			getParent($(this)).removeClass('open');
 		});
+		$('.hk-dropdown-backdrop').remove();
 	}
 
 	function getParent($this) {
 		var selector = $this.attr('data-target'), $parent;
-
 		if (!selector) {
 			selector = $this.attr('href');
 			selector = selector && /#/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, ''); //strip for ie7;
+			if(selector == '#') selector = false;
 		}
 		$parent = selector && $(selector);
 		if (!$parent || !$parent.length) $parent = $this.parent();
@@ -123,7 +132,8 @@ if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
 		.on('click.hkdropdown.data-api', clearMenus)
 		.on('click.hkdropdown.data-api', '.hkdropdown form', function (e) { e.stopPropagation(); })
 		.on('click.hkdropdown.data-api', toggle, HKDropdown.prototype.toggle)
-		.on('keydown.hkdropdown.data-api', toggle + ', [role=menu]' , HKDropdown.prototype.keydown);
+		.on('keydown.hkdropdown.data-api', toggle + ', [role=menu]' , HKDropdown.prototype.keydown)
+		.on('mouseover.hkdropdown.data-api', toggle, HKDropdown.prototype.toggle);
 }(window.jQuery);
 
-hkjQuery(function(){ hkjQuery('[data-toggle="hk-dropdown"]').hkdropdown(); });
+hkjQuery(function(){ hkjQuery('[data-toggle="hkdropdown"]').hkdropdown(); });

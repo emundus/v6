@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -128,13 +128,13 @@ class hikashopConfigClass extends hikashopClass{
 
 		$query = 'REPLACE INTO '.hikashop_table('config').' (config_namekey,config_value'.($default?',config_default':'').') VALUES ' . implode(',', $params);
 		$this->database->setQuery($query);
-		return $this->database->query();
+		return $this->database->execute();
 	}
 
 	function reset() {
 		$query = 'UPDATE '.hikashop_table('config').' SET config_value = config_default';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 		$this->load();
 	}
 
@@ -145,17 +145,15 @@ class hikashopConfigClass extends hikashopClass{
 
 		$query = 'UPDATE '.hikashop_table('product').' SET product_average_score = ('.(int)$new_stars.' * product_average_score) / '.(int)$previous_stars.' WHERE product_average_score != 0';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 		$query = 'UPDATE '.hikashop_table('vote').' SET vote_rating = ('.(int)$new_stars.' * vote_rating) / '.(int)$previous_stars.' WHERE vote_rating != 0';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 	}
 
 	public function getAddressFormat($originalOnly=false){
-		if(!HIKASHOP_J25)
-			return;
 		if(!$originalOnly){
 			$db = JFactory::getDBO();
 			$query = "SELECT template FROM #__template_styles WHERE client_id = 0 AND home = 1";

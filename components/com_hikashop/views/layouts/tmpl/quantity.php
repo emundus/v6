@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,6 +43,8 @@ if(empty($quantityLayout) || $quantityLayout == 'inherit') {
 	$quantityLayout = $this->config->get('product_quantity_display', 'show_default_div');
 }
 
+hikashop_loadJslib('notify');
+hikashop_loadJslib('translations');
 $script = $this->params->get('onchange_script', 'window.hikashop.checkQuantity(this);');
 $extra_data = $this->params->get('extra_data', '');
 
@@ -112,6 +114,11 @@ switch($quantityLayout) {
 					if(!in_array($max_quantity, $r))
 						$r[] = $max_quantity;
 					$values = array_combine($r, $r);
+				}else{
+					$min_quantity = min($values);
+					$max_quantity = max($values);
+					if($current_quantity < $min_quantity)
+						$current_quantity = $min_quantity;
 				}
 				ksort($values);
 				echo JHTML::_('select.genericlist', $values, '', 'onchange="document.getElementById(\''.$id.'\').value = this.value;"', 'value', 'text', $current_quantity);

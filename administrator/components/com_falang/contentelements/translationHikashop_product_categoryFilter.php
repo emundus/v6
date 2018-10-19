@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -68,10 +68,10 @@ class translationHikashop_product_categoryFilter extends translationFilter
 			$categoryList["name"]= 'hikashop_product_category_filter_value';
 			$categoryList["type"]= 'hikashop_product_category';
 			$categoryList["options"] = $options;
-			$categoryList["html"] = JHTML::_('select.genericlist', $options, 'hikashop_product_category_filter_value', 'class="inputbox" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
+			$categoryList["html"] = JHTML::_('select.genericlist', $options, 'hikashop_product_category_filter_value', 'class="custom-select" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
 		} else {
 			$categoryList["title"]= JText::_('COM_FALANG_CATEGORY_FILTER');
-			$categoryList["html"] = JHTML::_('select.genericlist', $options, 'hikashop_product_category_filter_value', 'class="inputbox" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
+			$categoryList["html"] = JHTML::_('select.genericlist', $options, 'hikashop_product_category_filter_value', 'class="custom-select" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
 		}
 		return $categoryList;
 	}

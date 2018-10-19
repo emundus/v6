@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 				<label for="data_menu__<?php echo $this->type; ?>_show_image"><?php echo JText::_( 'SHOW_IMAGE' ); ?></label>
 			</dt>
 			<dd class="hikashop_option_value">
-				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_image]', 'class="inputbox"', @$this->element['show_image'] ); ?>
+				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_image]', 'class="custom-select"', @$this->element['show_image'] ); ?>
 			</dd>
 		</dl>
 		<dl class="hika_options">
@@ -24,7 +24,7 @@ defined('_JEXEC') or die('Restricted access');
 				<label for="data_menu__<?php echo $this->type; ?>_show_description"><?php echo JText::_( 'SHOW_DESCRIPTION' ); ?></label>
 			</dt>
 			<dd class="hikashop_option_value">
-				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_description]', 'class="inputbox"', @$this->element['show_description'] ); ?>
+				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_description]', 'class="custom-select"', @$this->element['show_description'] ); ?>
 			</dd>
 		</dl>
 		<dl class="hika_options">

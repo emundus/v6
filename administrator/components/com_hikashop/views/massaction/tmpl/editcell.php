@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -417,11 +417,10 @@ switch($this->type){
 		break;
 
 	default:
-		if(!isset($this->dispatcher)){
-			JPluginHelper::importPlugin('hikashop');
-			$this->dispatcher = JDispatcher::getInstance();
-		}
-		$this->dispatcher->trigger('onDisplayEditionSquaredMassAction'.$this->type,array(&$this));
+		JPluginHelper::importPlugin('hikashop');
+		$obj =& $this;
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onDisplayEditionSquaredMassAction'.$this->type,array(&$obj));
 		break;
 }
 ?>

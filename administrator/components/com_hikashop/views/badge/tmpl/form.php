@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,15 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 		$this->badge_position = "data[badge][badge_position]";
 
 	?>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-<div id="page-badge">
-	<table style="width:100%;margin:auto;">
-		<tr>
-			<td valign="top">
-<?php } else { ?>
-<div id="page-badge" class="row-fluid">
-	<div class="span6">
-<?php } ?>
+<div id="page-badge" class="hk-row-fluid hikashop_backend_tile_edition">
+	<div class="hkc-md-6 hikashop_tile_block"><div>
+		<div class="hikashop_tile_title"><?php echo JText::_('MAIN_INFORMATION'); ?></div>
 				<table class="admintable table" style="margin:auto">
 					<tr>
 						<td class="key">
@@ -139,13 +133,11 @@ defined('_JEXEC') or die('Restricted access');
 						</td>
 					</tr>
 				</table>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-			<td valign="top">
-<?php } else { ?>
+		</div>
 	</div>
-	<div class="span6">
-<?php } ?>
+	<div class="hkc-md-6">
+		<div class="hikashop_tile_block"><div>
+			<div class="hikashop_tile_title"><?php echo JText::_('HIKA_IMAGE'); ?></div>
 				<table class="admintable table" margin="auto">
 						<tr>
 							<td class="key">
@@ -207,9 +199,10 @@ defined('_JEXEC') or die('Restricted access');
 							</td>
 					</tr>
 				</table>
-
-				<fieldset class="adminform">
-					<legend><?php echo JText::_('ACCESS_LEVEL'); ?></legend>
+			</div>
+		</div>
+		<div class="hikashop_tile_block"><div>
+			<div class="hikashop_tile_title"><?php echo JText::_('ACCESS_LEVEL'); ?></div>
 <?php
 	if(hikashop_level(2)) {
 		$acltype = hikashop_get('type.acl');
@@ -218,18 +211,10 @@ defined('_JEXEC') or die('Restricted access');
 		echo '<small style="color:red">'.JText::_('ONLY_FROM_HIKASHOP_BUSINESS').'</small>';
 	}
 ?>
-				</fieldset>
-
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-		</tr>
-	</table>
-</div>
-<?php } else { ?>
+			</div>
+		</div>
 	</div>
 </div>
-<?php } ?>
-
 	<input type="hidden" name="cid[]" value="<?php echo @$this->element->badge_id; ?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="" />

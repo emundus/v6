@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,15 +17,16 @@ class ModulesController extends hikashopController{
 		$this->display[]='selectmodules';
 		$this->display[]='savemodules';
 		$this->display[]='showoptions';
+		$this->display[]='getValues';
 	}
 
 	function selectmodules(){
-		hikaInput::get()->set( 'layout', 'selectmodules'  );
+		hikaInput::get()->set('layout', 'selectmodules');
 		return parent::display();
 	}
 
 	function savemodules(){
-		hikaInput::get()->set( 'layout', 'savemodules'  );
+		hikaInput::get()->set('layout', 'savemodules');
 		return parent::display();
 	}
 
@@ -58,5 +59,25 @@ class ModulesController extends hikashopController{
 			$value['content_type'] = 'category';
 		$params->set('value',$value);
 		echo hikashop_getLayout('modules','options',$params,$js);
+	}
+
+	public function getValues() {
+		$displayFormat = hikaInput::get()->getVar('displayFormat', '');
+		$search = hikaInput::get()->getVar('search', null);
+		$start = hikaInput::get()->getInt('start', 0);
+
+		$nameboxType = hikashop_get('type.namebox');
+		$options = array(
+			'displayFormat' => $displayFormat
+		);
+		if($start > 0)
+			$options['page'] = $start;
+		$ret = $nameboxType->getValues($search, 'modules', $options);
+		if(!empty($ret)) {
+			echo json_encode($ret);
+			exit;
+		}
+		echo '[]';
+		exit;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,6 +67,8 @@ if(empty($customer_name))
 $vars = array(
 	'LIVE_SITE' => HIKASHOP_LIVE,
 	'URL' => $order_url,
+	'order' => $data->cart,
+	'user' => $customer,
 	'ORDER_LINK' => HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$data->order_id,
 	'TPL_HEADER' => (bool)@$customer->user_cms_id,
 	'TPL_HEADER_URL' => $order_url,
@@ -136,10 +138,14 @@ if(!empty($data->cart->products)){
 		if($group && $item->order_product_option_parent_id)
 			continue;
 
+		$product = @$productClass->all_products[$item->product_id];
+
 		$cartProduct = array(
 			'PRODUCT_CODE' => $item->order_product_code,
 			'PRODUCT_QUANTITY' => $item->order_product_quantity,
 			'PRODUCT_IMG' => '',
+			'item' => $item,
+			'product' => $product,
 		);
 
 		if(!empty($item->images[0]->file_path) && $config->get('thumbnail', 1) != 0) {
@@ -237,7 +243,7 @@ if(!empty($data->cart->products)){
 			$subtotal += $item->order_product_total_price;
 		}else{
 			$unit_price = $currencyHelper->format($item->order_product_price,$data->cart->order_currency_id);
-			$total_price = $currencyHelper->format($item->order_product_total_price_no_vat,$data->order->order_currency_id);
+			$total_price = $currencyHelper->format($item->order_product_total_price_no_vat,$data->cart->order_currency_id);
 			$subtotal += $item->order_product_total_price_no_vat;
 		}
 		$cartProduct['PRODUCT_PRICE'] = $unit_price;
@@ -312,7 +318,7 @@ if(!empty($data->cart->products)){
 		if($config->get('detailed_tax_display') && !empty($data->cart->order_tax_info)) {
 			foreach($data->cart->order_tax_info as $tax) {
 				$cartFooters[] = array(
-					'NAME' => $tax->tax_namekey,
+					'NAME' => hikashop_translate($tax->tax_namekey),
 					'VALUE' => $currencyHelper->format($tax->tax_amount,$data->cart->order_currency_id)
 				);
 			}
@@ -418,8 +424,8 @@ ob_start();
 	}
 
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
-	$dispatcher->trigger('onAfterOrderProductsListingDisplay', array(&$data->cart, 'email_notification_html'));
+	$app = JFactory::getApplication();
+	$app->triggerEvent('onAfterOrderProductsListingDisplay', array(&$data->cart, 'email_notification_html'));
 
 $content = ob_get_clean();
 $vars['ORDER_SUMMARY'] = $content;

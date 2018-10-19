@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,8 +36,17 @@ $style = empty($this->element['show_price']) ? 'display:none;' : '';
 			echo $this->pricetaxType->display($this->name.'[price_with_tax]', $this->element['price_with_tax'], true);
 		?></dd>
 	</dl>
+	<dl class="hika_options" id="show_discounted_price_line" style="<?php echo $style; ?>" data-part="price">
+		<dt class="hikashop_option_name"><?php
+			echo JText::_('SHOW_DISCOUNTED_PRICE');
+		?></dt>
+		<dd class="hikashop_option_value"><?php
+			if(!isset($this->element['show_discount']))
+				$this->element['show_discount'] = 3;
+			echo $this->discountDisplayType->display($this->name.'[show_discount]', $this->element['show_discount'], true);
+		?></dd>
+	</dl>
 	<input type="hidden" name="<?php echo $this->name.'[show_original_price]'; ?>" value="<?php echo $this->element['show_original_price']; ?>"/>
-	<input type="hidden" name="<?php echo $this->name.'[show_discount]'; ?>" value="<?php echo $this->element['show_discount']; ?>"/>
 </div>
 </div>
 <?php

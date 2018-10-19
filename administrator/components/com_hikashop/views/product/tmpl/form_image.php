@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 $ajax = false;
 if(!empty($this->upload_ajax))
 	$ajax = true;
+
 $product_type = (!empty($this->params->product_type) && $this->params->product_type == 'variant') ? 'variant' : 'product';
 $uploader_id = empty($this->editing_variant) ? 'hikashop_product_image' : 'hikashop_product_variant_image';
 $upload = hikashop_acl('product/edit/images/upload');
@@ -20,8 +21,8 @@ $options = array(
 		'contentClass' => 'hikashop_product_images',
 		'firstImg' => 'hikashop_product_main_image_thumb',
 		'otherImg' => 'hikashop_small_image_div',
-		'btn_add' => 'hika_add_btn',
-		'btn_upload' => 'hika_upload_btn'
+		'btn_add' => 'fa fa-plus',
+		'btn_upload' => 'fa fa-upload'
 	),
 	'upload' => $upload,
 	'gallery' => $upload,
@@ -36,7 +37,7 @@ $options = array(
 	'buttons' => array(
 		array(
 			'tooltip' => JText::_('HIKA_ENTER_IMAGE_PATH'),
-			'class' => 'hika_link_btn',
+			'class' => 'fa fa-link',
 			'text' => 'HIKA_ENTER_IMAGE_PATH',
 			'id' => $uploader_id.'_urlpopup',
 			'url' => hikashop_completeLink('product&task=selectimage&pathonly=1&pid='.@$this->product->product_id,true),

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ class hikashopBadgeClass extends hikashopClass {
 		foreach($formData['badge'] as $column => $value) {
 			hikashop_secureField($column);
 			if(in_array($column,$nameboxes)){
-				JArrayHelper::toInteger($value);
+				hikashop_toInteger($value);
 				$element->$column = ','.implode(',',$value).',';
 			}else{
 				$element->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');

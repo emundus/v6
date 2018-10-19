@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,6 +52,10 @@ if(!isset($this->quantityLayout)) {
 		$quantityLayout = $this->getProductQuantityLayout($this->row);
 } else
 	$quantityLayout = $this->quantityLayout;
+
+
+hikashop_loadJslib('notify');
+hikashop_loadJslib('translations');
 
 switch($quantityLayout) {
 	case 'show_none':
@@ -118,6 +122,10 @@ switch($quantityLayout) {
 						$price_min_qty = max((int)$price->price_min_quantity, $min_quantity);
 						$values[$price_min_qty] = $price_min_qty;
 					}
+					$min_quantity = min($values);
+					$max_quantity = max($values);
+					if($current_quantity < $min_quantity)
+						$current_quantity = $min_quantity;
 				}
 				if(empty($values)) {
 					$r = range($min_quantity, $max_quantity, $increment);

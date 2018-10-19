@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,7 +59,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 		}
 
 		if(!empty($order->order_status)){
-			if(in_array($order->order_status,$confirmed_statuses) && !in_array($order->old->order_status,$confirmed_statuses)){//if the actual status is confirmed and the old status wasn't confirmed
+			if(in_array($order->order_status,$confirmed_statuses) && (empty($order->old->order_status) || !in_array($order->old->order_status,$confirmed_statuses))) {//if the actual status is confirmed and the old status wasn't confirmed
 				if(!isset($full_order)){
 					$orderClass = hikashop_get('class.order');
 					$full_order = $orderClass->loadFullOrder($order->order_id,false ,false);
@@ -162,6 +162,11 @@ class plgHikaShopTaxcloud extends JPlugin {
 				$old_product_id= $old_product_values->order_product_id;
 				$old_product_qty=  $old_product_values->order_product_quantity;
 
+				if(!empty($old_product_values->order_product_params->taxcloud->taxcloud_id))
+					$id = $old_product_values->order_product_params->taxcloud->taxcloud_id;
+				else
+					$id = $old_product_values->order_product_id;
+
 				if(empty($new_products_qty[$old_product_id]) && $old_product_qty!= '0'){
 					$old_product_values->order_product_quantity = 0;
 
@@ -172,7 +177,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 					}
 
 					$return_items[] = array(
-						'Index' => $old_product_values->order_product_id,
+						'Index' => $id,
 						'ItemID' => $old_product_values->order_product_code,
 						'TIC' => $tic,
 						'Price' => $old_product_values->order_product_price,
@@ -191,7 +196,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 					else {$all_returned = false;}
 
 					$return_items[] = array(
-						'Index' => $old_product_values->order_product_id,
+						'Index' => $id,
 						'ItemID' => $old_product_values->order_product_code,
 						'TIC' => $tic,
 						'Price' => $old_product_values->order_product_price,
@@ -204,6 +209,10 @@ class plgHikaShopTaxcloud extends JPlugin {
 				if(!isset($ids[$product->order_product_id]) || !isset($tics[$product->product_id])){
 					continue;
 				}
+				if(!empty($product->order_product_params->taxcloud->taxcloud_id))
+					$id = $product->order_product_params->taxcloud->taxcloud_id;
+				else
+					$id = $product->order_product_id;
 				$product_id= $product->order_product_id;
 				$product_qty=  $product->order_product_quantity;
 
@@ -214,7 +223,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 				}else{$all_returned = false;}
 
 				$return_items[] = array(
-					'Index' => $product->order_product_id,
+					'Index' => $id,
 					'ItemID' => $product->order_product_code,
 					'TIC' => $tic,
 					'Price' => $product->order_product_price,
@@ -351,7 +360,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 			if(empty($confirmed_statuses))
 				$confirmed_statuses = array('confirmed','shipped');
 
-			if(in_array($order->order_status,$confirmed_statuses) && !in_array($order->old->order_status,$confirmed_statuses)){//if the actual status is confirmed and the old status wasn't confirmed
+			if(in_array($order->order_status,$confirmed_statuses) && (empty($order->old->order_status) || !in_array($order->old->order_status,$confirmed_statuses))) {//if the actual status is confirmed and the old status wasn't confirmed
 				$this->AuthorizedWithCaptured($order);
 				return;
 			}
@@ -396,6 +405,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 		if(!$this->loadOptions()){
 			return false;
 		}
+		$db = JFactory::getDBO();
 
 		$parameters = array(
 			'uspsUserID' => $this->plugin_options['usps_id'],
@@ -448,22 +458,31 @@ class plgHikaShopTaxcloud extends JPlugin {
 		$cart_items = array();
 
 
-		$i = 0;
-		foreach($cart->products as $product) {
-			$tic = $this->getCode($product, $cart->products);
+		$id = 0;
+		foreach($cart->products as &$product) {
+			$tic = $this->getCode($product, $cart);
 			if(!$tic)
 				$tic = (int)$this->plugin_options['default_tic'];
 
+			$id++;
+			if(!isset($product->order_product_params))
+				$product->order_product_params = new stdClass();
+			if(!isset($product->order_product_params->taxcloud))
+				$product->order_product_params->taxcloud = new stdClass();
+			$product->order_product_params->taxcloud->taxcloud_id = $id;
 			$cart_items[] = array(
-				'Index' => $product->cart_product_id,
+				'Index' => $id,
 				'ItemID' => $product->order_product_code,
 				'TIC' => $tic,
 				'Price' => $product->order_product_price,
 				'Qty' => $product->order_product_quantity
 			);
-			$id=$product->cart_product_id;
-			$i++;
+
+			$product_query = 'UPDATE '. hikashop_table('order_product') .' SET order_product_params = '.$db->Quote(json_encode($product->order_product_params)).'  WHERE order_product_id = '.(int)$product->order_product_id;
+			$db->setQuery($product_query);
+			$db->execute();
 		}
+		unset($product);
 
 		$j=0;
 		$db = JFactory::getDBO();
@@ -487,7 +506,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 			}
 			$product_query = 'UPDATE '. hikashop_table('order') .' SET order_shipping_params = '.$db->Quote(serialize($order->order_shipping_params)).'  WHERE order_id = '.(int)$order->order_id;
 			$db->setQuery($product_query);
-			$db->query();
+			$db->execute();
 		}
 
 
@@ -543,24 +562,15 @@ class plgHikaShopTaxcloud extends JPlugin {
 		if($product->product_type == 'variant')
 			return false;
 		$db = JFactory::getDBO();
-		if(!HIKASHOP_J25) {
-			$tmp = $db->getTableFields(hikashop_table('product'));
-			$current = reset($tmp);
-			unset($tmp);
-		} else {
-			$current = $db->getTableColumns(hikashop_table('product'));
-		}
+		$current = $db->getTableColumns(hikashop_table('product'));
+
 		if(!isset($current['product_taxability_code'])) {
 			$databaseHelper = hikashop_get('helper.database');
 			$databaseHelper->addColumns('product','`product_taxability_code` INT(10) NOT NULL DEFAULT 0');
 		}
 
 		$doc = JFactory::getDocument();
-		if(HIKASHOP_J25)
-			$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud/taxcloud.js');
-		else
-			$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud.js');
-
+		$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud/taxcloud.js');
 		if(!HIKASHOP_J30)
 			JHTML::_('behavior.mootools');
 		else
@@ -987,13 +997,24 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		return $address;
 	}
 
-	protected function getCode(&$product, &$products){
-		if(!empty($product->product_taxability_code) && $product->product_taxability_code!= '-1' && $product->product_taxability_code!=='')
+	protected function getCode(&$product, &$cart){
+		if(!empty($product->product_taxability_code) && $product->product_taxability_code!= '-1')
 			return (int)$product->product_taxability_code;
 
-		if(!empty($product->cart_product_parent_id) && isset($products[$product->cart_product_parent_id]) && !empty($products[$product->cart_product_parent_id]->product_taxability_code) && $products[$product->cart_product_parent_id]->product_taxability_code != '-1'){
-			return (int)$products[$product->cart_product_parent_id]->product_taxability_code;
+		if(!empty($cart->full_products)) {
+			$fp =& $cart->full_products;
+			if(isset($fp[$product->cart_product_id]) && !empty($fp[$product->cart_product_id]->product_taxability_code) && $fp[$product->cart_product_id]->product_taxability_code != '-1')
+				return (int)$fp[$product->cart_product_id]->product_taxability_code;
 		}
+
+		$p =& $cart->products;
+		if(!empty($product->cart_product_parent_id) && isset($p[$product->cart_product_parent_id])) {
+			if(!empty($p[$product->cart_product_parent_id]->product_taxability_code) && $p[$product->cart_product_parent_id]->product_taxability_code != '-1')
+				return (int)$p[$product->cart_product_parent_id]->product_taxability_code;
+			if(isset($fp) && isset($fp[$p[$product->cart_product_parent_id]->cart_product_id]) && !empty($fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code) && $fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code != '-1')
+				return (int)$fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code;
+		}
+
 		return false;
 	}
 
@@ -1039,7 +1060,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 			if(empty($product->cart_product_quantity))
 				continue;
 			$i++;
-			$tic = $this->getCode($product, $cart->products);
+			$tic = $this->getCode($product, $cart);
 			if(!$tic)
 				$tic = (int)$this->plugin_options['default_tic'];
 
@@ -1059,7 +1080,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 			if(empty($product->cart_product_quantity))
 				continue;
 			$i++;
-			$tic = $this->getCode($product, $cart->products);
+			$tic = $this->getCode($product, $cart);
 			if(!$tic)
 				$tic = (int)$this->plugin_options['default_tic'];
 			$cart->products[$k]->taxcloud_id = $i;
@@ -1070,6 +1091,9 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 				$price = $product->prices[0]->price_value;
 			else
 				$price = 0;
+
+			if($price<=0.0)
+				continue;
 
 			$cart_items[] = array(
 				'Index' => $i,
@@ -1164,7 +1188,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 					if(empty($product->cart_product_quantity))
 						continue;
 					if($item->CartItemIndex <= 0) {
-						$tic = $this->getCode($product, $cart->products);
+						$tic = $this->getCode($product, $cart);
 						if(!$tic)
 							$tic = (int)$this->plugin_options['default_tic'];
 					if(!isset($rates[$tic]) ) {
@@ -1181,7 +1205,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 					if((int)$product->taxcloud_id == $item->CartItemIndex) {
 						if(!isset($product->prices[0]))
 							continue;
-						$tic = $this->getCode($product, $cart->products);
+						$tic = $this->getCode($product, $cart);
 						if(!$tic)
 							$tic = (int)$this->plugin_options['default_tic'];
 
@@ -1263,10 +1287,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('hikashop', 'taxcloud');
 
-		if(!HIKASHOP_J25)
-			$url = JRoute::_('index.php?option=com_plugins&view=plugin&client=site&task=edit&cid[]='.$plugin->id);
-		else
-			$url = JRoute::_('index.php?option=com_plugins&view=plugin&layout=edit&extension_id='.$plugin->extension_id);
+		$url = JRoute::_('index.php?option=com_plugins&view=plugin&layout=edit&extension_id='.$plugin->extension_id);
 
 		$bar = JToolBar::getInstance('toolbar');
 		$bar->appendButton('Link', 'cancel', JText::_('HIKA_CANCEL'), $url);
@@ -1324,19 +1345,13 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('hikashop', 'taxcloud');
 
-		if(!HIKASHOP_J25)
-			$url = JRoute::_('index.php?option=com_plugins&view=plugin&client=site&task=edit&cid[]='.$plugin->id);
-		else
-			$url = JRoute::_('index.php?option=com_plugins&view=plugin&layout=edit&extension_id='.$plugin->extension_id);
+		$url = JRoute::_('index.php?option=com_plugins&view=plugin&layout=edit&extension_id='.$plugin->extension_id);
 
 		$bar = JToolBar::getInstance('toolbar');
 		$bar->appendButton('Link', 'cancel', JText::_('HIKA_CANCEL'), $url);
 
 		$doc = JFactory::getDocument();
-		if(HIKASHOP_J25)
-			$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud/taxcloud.js');
-		else
-			$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud.js');
+		$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud/taxcloud.js');
 		if(!HIKASHOP_J30)
 			JHTML::_('behavior.mootools');
 		else

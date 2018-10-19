@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ class TaxationViewTaxation extends hikashopView{
 	var $ctrl= 'taxation';
 	var $nameListing = 'TAXATIONS';
 	var $nameForm = 'TAXATION';
-	var $icon = 'tax';
+	var $icon = 'university';
 	var $triggerView = true;
 
 	function display($tpl = null){
@@ -70,8 +70,8 @@ class TaxationViewTaxation extends hikashopView{
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeTaxationListing', array($this->paramBase, &$this->extrafilters, &$pageInfo, &$filters));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeTaxationListing', array($this->paramBase, &$this->extrafilters, &$pageInfo, &$filters));
 
 		$order = '';
 		if(!empty($pageInfo->filter->order->value)){
@@ -130,7 +130,7 @@ class TaxationViewTaxation extends hikashopView{
 							continue;
 						}
 						if(hikashop_isAllowed($config->get('acl_zone_manage','all'))){
-							$zones[]= $zone->zone_name_english.'<a href="'.hikashop_completeLink('zone&task=edit&zone_id='.$zone->zone_id).'"><img class="hikashop_go" src="'.HIKASHOP_IMAGES.'go.png" alt="go" /></a>';
+							$zones[]= $zone->zone_name_english.'<a href="'.hikashop_completeLink('zone&task=edit&zone_id='.$zone->zone_id).'" title="'.JText::_('HIKA_EDIT').'"><i class="fa fa-chevron-right"></i></a>';
 						}else{
 							$zones[]=$zone->zone_name_english;
 						}
@@ -209,9 +209,7 @@ class TaxationViewTaxation extends hikashopView{
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&taxation_id='.$taxation_id);
 
 		$this->toolbar = array(
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION,'1.7','>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')

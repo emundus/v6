@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,9 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('badge'); ?>" method="post"  name="adminForm" id="adminForm">
 
 <div class="hk-row">
-	<div class="hkc-md-5"><?php
-		echo $this->searchType->display('search', $this->pageInfo->search);
-	?></div>
+	<div class="hkc-md-5"><?php echo $this->loadHkLayout('search', array()); ?></div>
 	<div class="hkc-md-7"></div>
 </div>
 

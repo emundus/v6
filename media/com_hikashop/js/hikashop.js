@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.5.1
+ * @version    4.0.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -366,6 +366,8 @@ if((typeof(window.Oby) == 'undefined') || window.Oby.version < Oby.version) {
 var oldHikaShop = window.hikashop || hikashop;
 
 var hikashop = {
+	translations: {},
+	translations_url: null,
 	submitFct: null,
 	submitBox: function(data) {
 		var t = this, d = document, w = window;
@@ -518,6 +520,7 @@ var hikashop = {
 			if (e != checkbox && e.type == checkbox.type && ((stub && e.id.indexOf(stub) == 0) || !stub)) {
 				e.checked = checkbox.checked;
 				o.fireEvent(e, 'change');
+				o.fireEvent(e, 'click');
 				c += (e.checked == true ? 1 : 0);
 			}
 		}
@@ -616,11 +619,13 @@ var hikashop = {
 	openBox_vex: function(elem, url) {
 		if(typeof(vex) == "undefined")
 			return false;
+		var href = elem.href || null;
 		if(url !== undefined && url !== null)
-			elem.href = url;
+			href = url;
+		if(!href) href = elem.getAttribute('href');
 		settings = window.Oby.evalJSON(elem.getAttribute('data-vex'));
-		if(settings.x && settings.y && elem.href) {
-			settings.content = '<iframe style="border:0;margin:0;padding:0;" name="hikashop_popup_iframe" width="'+settings.x+'px" height="'+settings.y+'px" src="'+elem.href+'"></iframe>';
+		if(settings.x && settings.y && href) {
+			settings.content = '<iframe style="border:0;margin:0;padding:0;" name="hikashop_popup_iframe" width="'+settings.x+'px" height="'+settings.y+'px" src="'+href+'"></iframe>';
 			settings.afterOpen = function(context) { context.width(settings.x + 'px'); };
 		}
 		vex.defaultOptions.className = 'vex-theme-default';
@@ -801,7 +806,7 @@ var hikashop = {
 		return false;
 	},
 	dlTitle: function(parent) {
-		var t = this, d = document;
+		var t = this, d = document, w = window;
 		if(parent && typeof(parent) == 'string')
 			parent = d.getElementById(parent);
 		if(!parent)
@@ -809,6 +814,16 @@ var hikashop = {
 		var dt = parent.getElementsByTagName('dt'), val = null,
 			hkTip = (typeof(hkjQuery) != "undefined" && hkjQuery().hktooltip);
 		for(var i = 0; i < dt.length; i++) {
+			if(dt[i].offsetWidth === 0) {
+				dt[i].dlTitleFct = function(evt){
+					t.dlTitle(this.parentNode);
+					if(hkTip)
+						hkjQuery(this).hktooltip('show');
+					this.removeEventListener('mouseover', this.dlTitleFct);
+					this.dlTitleFct = null;
+				};
+				dt[i].addEventListener('mouseover', dt[i].dlTitleFct);
+			}
 			if(dt[i].offsetWidth < dt[i].scrollWidth && !dt[i].getAttribute('title')) {
 				val = (dt[i].innerText !== undefined) ? dt[i].innerText : dt[i].textContent;
 
@@ -909,17 +924,10 @@ var hikashop = {
 		url += (url.indexOf('?') >= 0 ? '&' : '?') + 'tmpl=raw';
 
 		if(container) {
-			if(window.FormData) {
+			if(window.FormData)
 				data = new FormData(container);
-				data.append('cart_type', cart_type);
-				if(dest_id)
-					data.append('cart_id', dest_id);
-			} else {
+			else
 				data = o.getFormData(container);
-				data += '&cart_type=' + cart_type;
-				if(dest_id)
-					data += '&cart_id+' + dest_id;
-			}
 			if(extraContainer) {
 				extraContainer = d.forms[extraContainer] || d.getElementById(extraContainer);
 				if(window.FormData) {
@@ -942,6 +950,15 @@ var hikashop = {
 						data += '&' + extra;
 					data += '&product_id='+product_id;
 				}
+			}
+			if(window.FormData) {
+				data.append('cart_type', cart_type);
+				if(dest_id)
+					data.append('cart_id', dest_id);
+			} else {
+				data += '&cart_type=' + cart_type;
+				if(dest_id)
+					data += '&cart_id+' + dest_id;
 			}
 		} else {
 			data = 'cart_type=' + cart_type;
@@ -989,14 +1006,65 @@ var hikashop = {
 			el.value = value;
 		if(isNaN(min) || isNaN(max))
 			return false;
+		var triggers = window.Oby.fireAjax("quantity.checked", {el:el, value:value, max:max, min:min});
+		if(triggers !== false && triggers.length > 0)
+			return true;
 		if((value <= max || max == 0) && value >= min)
 			return true;
 		if(max > 0 && value > max) {
 			el.value = max;
+			if(hkjQuery.notify) {
+				this.translate(['QUANTITY_CHANGE_IMPOSSIBLE', 'MAXIMUM_FOR_PRODUCT_IS_X'], function(trans){
+					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', max), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true});
+				});
+			}
 		} else if(value < min) {
 			el.value = min;
+			if(hkjQuery.notify) {
+				this.translate(['QUANTITY_CHANGE_IMPOSSIBLE', 'MINIMUM_FOR_PRODUCT_IS_X'], function(trans){
+					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', max), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true});
+				});
+			}
 		}
 		return true;
+	},
+	translate: function(keys, callback) {
+		var t = this, trans = {}, missingKeys = [], o = window.Oby;
+
+		for(var c = 0; c < keys.length; c++) {
+			var key = keys[c];
+			if(!t.translations[key]) {
+				missingKeys.push(key);
+			} else {
+				trans[c] = t.translations[key];
+			}
+		}
+
+		if(!missingKeys.length) {
+			callback(trans);
+			return;
+		}
+
+		if(!t.translations_url) {
+			console.log('missing translations URL');
+			return;
+		}
+		o.xRequest(t.translations_url, {mode:'POST', data: 'translations=' + missingKeys.join(',')}, function(xhr) {
+			var resp = o.evalJSON(xhr.responseText);
+			foundKeys = Object.getOwnPropertyNames(resp);
+			for(var c = 0; c < foundKeys.length; c++) {
+				var key = foundKeys[c];
+				trans[keys.indexOf(key)] = resp[key];
+				t.translations[key] = resp[key];
+			}
+			callback(trans);
+		});
+	},
+	addTrans: function(data) {
+		for(var k in data) {
+			if(!data.hasOwnProperty(k)) continue;
+			this.translations[k] = data[k];
+		}
 	},
 	updateQuantity: function(el, dataInput, mod) {
 		var d = document, input = el;
@@ -1197,6 +1265,26 @@ var hikashop = {
 		if(triggers !== false && triggers.length > 0)
 			return false;
 		return false;
+	},
+	clearSearch: function(el, id, all) {
+		if(el.form.limitstart)
+			el.form.limitstart.value = 0;
+		var search = document.getElementById(id);
+		if(search)
+			search.value = '';
+		if(all) {
+			var v, els = el.form.querySelectorAll('[data-search-clear]');
+			for(var i = els.length - 1; i >= 0; i--) {
+				v = els[i].getAttribute('data-search-clear');
+				els[i].value = v;
+			}
+		} else
+			all = false;
+		var triggers = window.Oby.fireAjax('search.cleared', {el: el, id: id, all: all});
+		if(triggers !== false && triggers.length > 0)
+			return false;
+		el.form.submit();
+		return true;
 	},
 	compareProducts: function(el, elems) {
 		var t = this, params = '',

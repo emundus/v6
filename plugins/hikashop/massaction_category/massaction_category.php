@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -224,7 +224,7 @@ class plgHikashopMassaction_category extends JPlugin
 		$possibleTables = array($current);
 		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
 		$value = $this->massaction->updateValuesSecure($action,$possibleTables,$queryTables);
-		JArrayHelper::toInteger($ids);
+		hikashop_toInteger($ids);
 		$db = JFactory::getDBO();
 
 		$max = 500;
@@ -237,14 +237,14 @@ class plgHikashopMassaction_category extends JPlugin
 				$query .= 'SET hk_'.$alias[0].'.'.$action['type'].' = '.$value.' ';
 				$query .= 'WHERE hk_'.$current.'.'.$current.'_id IN ('.implode(',',$id).')';
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 			}
 		}else{
 			$query = 'UPDATE '.hikashop_table($current).' AS hk_'.$current.' ';
 			$query .= 'SET hk_'.$alias[0].'.'.$action['type'].' = '.$value.' ';
 			$query .= 'WHERE hk_'.$current.'.'.$current.'_id IN ('.implode(',',$ids).')';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 	}
 	function onProcessCategoryMassActiondeleteElements(&$elements,&$action,$k){

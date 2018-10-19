@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,40 +9,18 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('vote'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if(HIKASHOP_BACK_RESPONSIVE) { ?>
-	<div class="row-fluid">
-		<div class="span8">
-			<div class="input-prepend input-append">
-				<span class="add-on"><i class="icon-filter"></i></span>
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-				<button class="btn" onclick="this.form.limitstart.value=0;this.form.submit();"><i class="icon-search"></i></button>
-				<button class="btn" onclick="this.form.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-			</div>
-		</div>
-		<div class="span4">
-<?php } else { ?>
-	<table>
-		<tr>
-			<td width="100%">
-				<?php echo JText::_('FILTER'); ?>:
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-				<button class="btn" onclick="this.form.limitstart.value=0;this.form.submit();"><?php echo JText::_('GO'); ?></button>
-				<button class="btn" onclick="this.form.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><?php echo JText::_('RESET'); ?></button>
-			</td>
-			<td nowrap="nowrap">
-<?php }
-
-
-if(HIKASHOP_BACK_RESPONSIVE) { ?>
-		</div>
+<div class="hk-row-fluid">
+	<div class="hkc-md-5"><?php
+		echo $this->loadHkLayout('search', array());
+	?></div>
+	<div class="hkc-md-7 hikashop_listing_filters">
 	</div>
-<?php } else { ?>
-			</td>
-		</tr>
-	</table>
-<?php } ?>
+</div>
 
-	<?php $backend_listing_vote = hikaInput::get()->getVar('backend_listing_vote', 'both', 'default', 'string', 0); ?>
+<?php
+	$colspan = 11;
+	$backend_listing_vote = hikaInput::get()->getVar('backend_listing_vote', 'both', 'default', 'string', 0);
+?>
 	<table id="hikashop_vote_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 		<thead>
 			<tr>
@@ -51,6 +29,9 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 				</th>
 				<th class="title titlebox">
 					<input type="checkbox" name="toggle" value="" onclick="hikashop.checkAll(this);" />
+				</th>
+				<th class="title titlebox">
+					<?php echo JText::_('HIKA_EDIT'); ?>
 				</th>
 				<th class="title_title_product_id">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKASHOP_ITEM'), 'a.vote_ref_id', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
@@ -80,9 +61,15 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 				<th class="title_title_username">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKA_USERNAME'), 'a.vote_pseudo', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
+<?php
+if($this->config->get('vote_ip', 1)) {
+	$colspan++;
+?>
 				<th class="title_title_ip">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKA_IP'), 'a.vote_ip', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
+<?php
+} ?>
 				<th class="title_title_email">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKA_EMAIL'), 'a.vote_email', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
@@ -99,7 +86,7 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 		</thead>
 		<tfoot>
 			<tr>
-				<td colspan="11">
+				<td colspan="<?php echo $colspan; ?>">
 					<?php echo $this->pagination->getListFooter(); ?>
 					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
@@ -128,13 +115,14 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td class="hk_center">
 								<?php echo JHTML::_('grid.id', $i, $row->vote_id ); ?>
 							</td>
+							<td class="hk_center">
+								<a href="<?php echo hikashop_completeLink('vote&task=edit&cid='.$row->vote_id); ?>"><i class="fas fa-pen"></i></a>
+							</td>
 							<td>
 								<?php
-									if($this->pageInfo->manageProduct && $row->vote_type == 'product'){
-										echo "<a href=".hikashop_completeLink('option=com_hikashop&ctrl=product&task=edit&cid[]='.$row->vote_ref_id,false,true).">$item_name</a>";
-									}else{
-										echo $item_name;
-									}
+									echo $item_name;
+									if($this->pageInfo->manageProduct && $row->vote_type == 'product')
+										echo ' <a href="'.hikashop_completeLink('option=com_hikashop&ctrl=product&task=edit&cid[]='.$row->vote_ref_id,false,true).'"><i class="fa fa-chevron-right"></i></a>';
 								?>
 							</td>
 							<?php
@@ -173,33 +161,33 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(($row->vote_pseudo == '0' || $row->vote_pseudo == '')&& $username !='0' ){
-									if($this->pageInfo->manageUser){
-										echo "<a href=".hikashop_completeLink('option=com_hikashop&ctrl=user&task=edit&cid[]='.$row->vote_user_id,false,true).">$username</a>";
-									}
-									else{
-										echo $username;
-									}
+									echo $username;
+									if($this->pageInfo->manageUser)
+										echo ' <a href="'.hikashop_completeLink('option=com_hikashop&ctrl=user&task=edit&cid[]='.$row->vote_user_id,false,true).'"><i class="fa fa-chevron-right"></i></a>';
 								}
-								else if($username == '0' && ($row->vote_pseudo == '0' || $row->vote_pseudo == '')){echo 'empty';}
+								else if($username == '0' && ($row->vote_pseudo == '0' || $row->vote_pseudo == '')){echo '<i>'.JText::_('NO_USERNAME_PROVIDED').'</i>';}
 								else{
 									echo $row->vote_pseudo;
 								}
 								?>
 							</td>
+<?php
+if($this->config->get('vote_ip', 1)) {
+?>
 							<td>
 								<?php echo $row->vote_ip; ?>
 							</td>
+<?php
+}
+?>
 							<td>
 								<?php
 								if(($row->vote_email == '0' || $row->vote_email == '') && $email !='0' ){
-									if($this->pageInfo->manageUser){
-										echo "<a href=".hikashop_completeLink('option=com_hikashop&ctrl=user&task=edit&cid[]='.$row->vote_user_id,false,true).">$email</a>";
-									}
-									else{
-										echo $email;
-									}
+									echo $email;
+									if($this->pageInfo->manageUser)
+										echo ' <a href="'.hikashop_completeLink('option=com_hikashop&ctrl=user&task=edit&cid[]='.$row->vote_user_id,false,true).'"><i class="fa fa-chevron-right"></i></a>';
 								}
-								else if($email == 0 && ($row->vote_email == '0' || $row->vote_email == '')){echo 'empty';}
+								else if($email == 0 && ($row->vote_email == '0' || $row->vote_email == '')){echo '<i>'.JText::_('NO_EMAIL_PROVIDED').'</i>';}
 								else{
 									echo $row->vote_email;
 								} ?>

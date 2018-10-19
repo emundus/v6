@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,12 +16,7 @@ class plgSystemHikashopremarketing extends JPlugin
 			return;
 
 		$plugin = JPluginHelper::getPlugin('system', 'hikashopremarketing');
-		if(version_compare(JVERSION,'2.5', '<')) {
-			jimport('joomla.html.parameter');
-			$this->params = new JParameter($plugin->params);
-		} else {
-			$this->params = new JRegistry($plugin->params);
-		}
+		$this->params = new JRegistry($plugin->params);
 	}
 
 	public function onAfterRender() {
@@ -33,11 +28,17 @@ class plgSystemHikashopremarketing extends JPlugin
 		if ($app->isAdmin())
 			return true;
 
-		$layout = JRequest::getString('layout');
+		if(version_compare(JVERSION,'3.0','>=')) {
+			$layout = $app->input->getString('layout');
+		} else {
+			$layout = JRequest::getString('layout');
+		}
+
 		if ($layout == 'edit')
 			return true;
 
-		$body = JResponse::getBody();
+		if(class_exists('JResponse'))
+			$body = JResponse::getBody();
 		$alternate_body = false;
 		if(empty($body)) {
 			$body = $app->getBody();

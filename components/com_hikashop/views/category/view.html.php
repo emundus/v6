@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -118,11 +118,7 @@ class CategoryViewCategory extends HikaShopView {
 					if(!empty($product_id)) {
 						$query = 'SELECT category_id FROM '.hikashop_table('product_category').' WHERE product_id='.$product_id;
 						$database->setQuery($query);
-						if(!HIKASHOP_J25) {
-							$pageInfo->filter->cid = $database->loadResultArray();
-						} else {
-							$pageInfo->filter->cid = $database->loadColumn();
-						}
+						$pageInfo->filter->cid = $database->loadColumn();
 					}else{
 						$pageInfo->filter->cid = $this->params->get('selectparentlisting');
 					}
@@ -174,11 +170,7 @@ class CategoryViewCategory extends HikaShopView {
 				$acl_filters[] = 'category_id IN ('.implode(',',$pageInfo->filter->cid).')';
 				$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE '.implode(' AND ',$acl_filters);
 				$database->setQuery($query);
-				if(!HIKASHOP_J25) {
-					$pageInfo->filter->cid = $database->loadResultArray();
-				} else {
-					$pageInfo->filter->cid = $database->loadColumn();
-				}
+				$pageInfo->filter->cid = $database->loadColumn();
 			}
 		}
 
@@ -446,11 +438,7 @@ class CategoryViewCategory extends HikaShopView {
 		if(empty($this->module) && !empty($Itemid) && $config->get('forward_to_submenus',1)){
 			$app = JFactory::getApplication();
 			$menus	= $app->getMenu();
-			if(!HIKASHOP_J16){
-				$query = 'SELECT a.id as itemid FROM `#__menu` as a WHERE a.access = 0 AND a.parent='.(int)$Itemid;
-			}else{
-				$query = 'SELECT a.id as itemid FROM `#__menu` as a WHERE a.client_id=0 AND a.parent_id='.(int)$Itemid;
-			}
+			$query = 'SELECT a.id as itemid FROM `#__menu` as a WHERE a.client_id=0 AND a.parent_id='.(int)$Itemid;
 			$db = JFactory::getDBO();
 			$db->setQuery($query);
 			$submenus = $db->loadObjectList();
@@ -462,6 +450,11 @@ class CategoryViewCategory extends HikaShopView {
 						$params = $menu->params->get('hk_category',false);
 						if($params && isset($params->category))
 							$parent = $params->category;
+						if(!$parent) {
+							$params = $menu->params->get('hk_product',false);
+							if($params && isset($params->category))
+								$parent = $params->category;
+						}
 					}
 					if(!$parent){
 						$params = $config->get( 'menu_'.$submenu->itemid );

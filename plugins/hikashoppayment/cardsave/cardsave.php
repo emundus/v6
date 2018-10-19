@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -915,7 +915,7 @@ class plgHikashoppaymentCardSave extends hikashopPaymentPlugin
 		}
 		if(!empty($fill)){
 			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED','CardSave',$fill,'CardSave','http://www.cardsave.net/hikashop/'));
+			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED','CardSave',$fill,'CardSave','http://www.cardsave.net/shopping-carts?Cart=20'));
 		}
 	}
 

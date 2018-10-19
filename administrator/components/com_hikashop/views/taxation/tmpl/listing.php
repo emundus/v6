@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,54 +9,45 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=taxation" method="post"  name="adminForm" id="adminForm">
-	<table>
-		<tr>
-			<?php
-				 if ( !empty( $this->extrafilters)) {
-					 foreach($this->extrafilters as $name => $filterObj) {
-						 if(is_string($filterObj)){
-							 echo $filterObj;
-						 }elseif( isset( $filterObj->objSearch) && method_exists($filterObj->objSearch,'displayFilter')){
-							 echo $filterObj->objSearch->displayFilter($name, $this->pageInfo->filter);
-						 }else if ( isset( $filterObj->filter_html_search)){
-							 echo $filterObj->filter_html_search;
-						 }
-					 }
-				 }
-			?>
-			<td width="100%">
-			</td>
-			<td nowrap="nowrap">
-				<?php
-				if ( !empty( $this->extrafilters)) {
-					foreach($this->extrafilters as $name => $filterObj) {
-						if(is_string($filterObj)){
-							echo $filterObj;
-						}elseif(isset( $filterObj->objDropdown) && method_exists($filterObj->objDropdown,'displayFilter')){
-							echo $filterObj->objDropdown->displayFilter($name, $this->pageInfo->filter);
-						}else if ( isset( $filterObj->filter_html_dropdown)){
-							echo $filterObj->filter_html_dropdown;
-						}
-					}
-				}
-				?>
-				<?php echo $this->taxType->display("taxation_type",$this->pageInfo->filter->taxation_type,false);?>
-				<?php echo $this->ratesType->display("tax_namekey",$this->pageInfo->filter->tax_namekey,false);?>
+	<div style="text-align: right;">
 <?php
-						if(file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php')){
-							include_once( JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php');
-							if ( class_exists( 'MultisitesHelperUtils') && method_exists( 'MultisitesHelperUtils', 'getComboSiteIDs')) {
-								$comboSiteIDs = MultisitesHelperUtils::getComboSiteIDs( @$this->pageInfo->filter->taxation_site_id, 'taxation_site_id', JText::_( 'SELECT_A_SITE'), 'onchange="document.adminForm.submit();"');
-								if( !empty( $comboSiteIDs)){
-									echo $comboSiteIDs;
-								}
-							}
-						}
-?>
+if ( !empty( $this->extrafilters)) {
+	 foreach($this->extrafilters as $name => $filterObj) {
+		 if(is_string($filterObj)){
+			 echo $filterObj;
+		 }elseif( isset( $filterObj->objSearch) && method_exists($filterObj->objSearch,'displayFilter')){
+			 echo $filterObj->objSearch->displayFilter($name, $this->pageInfo->filter);
+		 }else if ( isset( $filterObj->filter_html_search)){
+			 echo $filterObj->filter_html_search;
+		 }
+	 }
+ }
+if ( !empty( $this->extrafilters)) {
+	foreach($this->extrafilters as $name => $filterObj) {
+		if(is_string($filterObj)){
+			echo $filterObj;
+		}elseif(isset( $filterObj->objDropdown) && method_exists($filterObj->objDropdown,'displayFilter')){
+			echo $filterObj->objDropdown->displayFilter($name, $this->pageInfo->filter);
+		}else if ( isset( $filterObj->filter_html_dropdown)){
+			echo $filterObj->filter_html_dropdown;
+		}
+	}
+}
 
-			</td>
-		</tr>
-	</table>
+echo $this->taxType->display("taxation_type",$this->pageInfo->filter->taxation_type,false);
+echo $this->ratesType->display("tax_namekey",$this->pageInfo->filter->tax_namekey,false);
+
+if(file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php')){
+	include_once( JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php');
+	if ( class_exists( 'MultisitesHelperUtils') && method_exists( 'MultisitesHelperUtils', 'getComboSiteIDs')) {
+		$comboSiteIDs = MultisitesHelperUtils::getComboSiteIDs( @$this->pageInfo->filter->taxation_site_id, 'taxation_site_id', JText::_( 'SELECT_A_SITE'), 'onchange="document.adminForm.submit();"');
+		if( !empty( $comboSiteIDs)){
+			echo $comboSiteIDs;
+		}
+	}
+}
+?>
+	</div>
 	<?php $columns = 8; ?>
 	<table id="hikashop_taxation_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 		<thead>
@@ -131,17 +122,17 @@ defined('_JEXEC') or die('Restricted access');
 					</td>
 					<?php if(hikashop_isAllowed($this->config->get('acl_taxation_manage','all'))){ ?>
 						<td class="hk_center">
-							<a href="<?php echo hikashop_completeLink('taxation&task=edit&taxation_id='.$row->taxation_id); ?>">
-								<img class="hikashop_go" src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt="<?php echo JText::_('HIKA_EDIT'); ?>" />
+							<a href="<?php echo hikashop_completeLink('taxation&task=edit&taxation_id='.$row->taxation_id); ?>" title="<?php echo JText::_('HIKA_EDIT'); ?>">
+								<i class="fas fa-pen"></i>
 							<a/>
 						</td>
 					<?php } ?>
 					<td>
 						<?php if(hikashop_isAllowed($this->config->get('acl_category_manage','all'))){ ?>
 							<?php echo @$row->category_name; ?>
-							<a href="<?php echo hikashop_completeLink('category&task=edit&category_id='.@$row->category_id); ?>">
+							<a href="<?php echo hikashop_completeLink('category&task=edit&category_id='.@$row->category_id); ?>" title="<?php echo JText::_('HIKA_EDIT'); ?>">
 						<?php } ?>
-								<img class="hikashop_go" src="<?php echo HIKASHOP_IMAGES; ?>go.png" alt="go" />
+								<i class="fa fa-chevron-right"></i>
 						<?php if(hikashop_isAllowed($this->config->get('acl_category_manage','all'))){ ?>
 							</a>
 						<?php } ?>
@@ -150,9 +141,9 @@ defined('_JEXEC') or die('Restricted access');
 						<?php if(!empty($row->tax_namekey)){?>
 							<?php echo $row->tax_namekey.' ('.(@$row->tax_rate*100).'%)'; ?>
 							<?php if($this->manage){ ?>
-								<a href="<?php echo hikashop_completeLink('tax&task=edit&return=taxation&tax_namekey='.@$row->tax_namekey); ?>">
+								<a href="<?php echo hikashop_completeLink('tax&task=edit&return=taxation&tax_namekey='.@$row->tax_namekey); ?>" title="<?php echo JText::_('HIKA_EDIT'); ?>">
 							<?php } ?>
-									<img class="hikashop_go" src="<?php echo HIKASHOP_IMAGES; ?>go.png" alt="go" />
+									<i class="fa fa-chevron-right"></i>
 							<?php if($this->manage){ ?>
 								</a>
 							<?php } ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -161,7 +161,7 @@ defined('_JEXEC') or die('Restricted access');
 		JHTML::_('select.option', 1, JText::_('HIKASHOP_YES')),
 		JHTML::_('select.option', 0,JText::_('HIKASHOP_NO'))
 	);
-	echo JHTML::_('hikaselect.radiolist', $values, 'install_eu_taxes', '', 'value', 'text', 0 );
+	echo JHTML::_('hikaselect.radiolist', $values, 'install_eu_taxes', 'class="custom-select"', 'value', 'text', 0 );
 ?>
 					</div>
 				</dd>
@@ -203,7 +203,7 @@ defined('_JEXEC') or die('Restricted access');
 			JHTML::_('select.option', $this->languageCodes, JText::_('HIKASHOP_YES')),
 			JHTML::_('select.option', 0,JText::_('HIKASHOP_NO'))
 		);
-		echo JHTML::_('hikaselect.radiolist',  $values, 'import_language', '', 'value', 'text', 0 );
+		echo JHTML::_('hikaselect.radiolist',  $values, 'import_language', 'class="custom-select"', 'value', 'text', 0 );
 ?>
 		</div>
 	</div>
@@ -253,7 +253,6 @@ defined('_JEXEC') or die('Restricted access');
 	<div style="clear:both;"></div>
 
 	<!-- SAMPLE DATA -->
-<?php if(HIKASHOP_J25){ ?>
 	<div class="hkc-md-12" style="text-align:center">
 		<img src="<?php echo HIKASHOP_IMAGES; ?>wizard/separator2.png" alt=""/>
 	</div>
@@ -270,12 +269,11 @@ defined('_JEXEC') or die('Restricted access');
 		JHTML::_('select.option', 1, JText::_('HIKASHOP_YES')),
 		JHTML::_('select.option', 0,JText::_('HIKASHOP_NO'))
 	);
-	echo JHTML::_('hikaselect.radiolist', $values, 'data_sample', '', 'value', 'text', 0 );
+	echo JHTML::_('hikaselect.radiolist', $values, 'data_sample', 'class="custom-select"', 'value', 'text', 0 );
 ?>
 			</div>
 		</div>
 	</div>
-<?php } ?>
 
 <?php if(!HIKASHOP_J30){ ?>
 		</div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,7 +59,7 @@ defined('_JEXEC') or die('Restricted access');
 			$values[] = JHTML::_('select.option', 'sha512',JText::_('SHA512').' '.JText::_('not present'), 'value', 'text', true);
 		}
 
-		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][hash_method]" , 'class="inputbox" size="1"', 'value', 'text', @$this->element->payment_params->hash_method ); ?>
+		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][hash_method]" , 'class="custom-select" size="1"', 'value', 'text', @$this->element->payment_params->hash_method ); ?>
 	</td>
 </tr>
 <tr>
@@ -74,7 +74,7 @@ defined('_JEXEC') or die('Restricted access');
 		$values[] = JHTML::_('select.option', 'production', JText::_('HIKA_PRODUCTION'));
 		$values[] = JHTML::_('select.option', 'test', JText::_('HIKA_TEST'));
 
-		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][environnement]" , 'class="inputbox" size="1"', 'value', 'text', @$this->element->payment_params->environnement ); ?>
+		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][environnement]" , 'class="custom-select" size="1"', 'value', 'text', @$this->element->payment_params->environnement ); ?>
 	</td>
 </tr>
 <tr>

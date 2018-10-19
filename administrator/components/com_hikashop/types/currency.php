@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,7 @@ class hikashopCurrencyType {
 		if($this->displayType == 'product') {
 			if(is_array($value)) {
 				$forced = array_merge($forced, $value);
-				JArrayHelper::toInteger($forced);
+				hikashop_toInteger($forced);
 			} else
 				$forced[] = (int)$value;
 			$filters[] = 'currency_displayed = 1';
@@ -36,7 +36,7 @@ class hikashopCurrencyType {
 			if($app->isAdmin()) {
 				if(is_array($value)) {
 					$forced = array_merge($forced, $value);
-					JArrayHelper::toInteger($forced);
+					hikashop_toInteger($forced);
 				} else
 					$forced[] = (int)$value;
 			} else
@@ -68,9 +68,9 @@ class hikashopCurrencyType {
 			$this->load($value);
 
 		if(strpos($options,'class="')!==false)
-			$options = str_replace('class="', 'class="inputbox ', $options);
+			$options = str_replace('class="', 'class="custom-select ', $options);
 		else
-			$options .= ' class="inputbox"';
+			$options .= ' class="custom-select"';
 
 		if(!empty($id))
 			return JHTML::_('select.genericlist', $this->values, $map, $options, 'value', 'text', $value , $id);

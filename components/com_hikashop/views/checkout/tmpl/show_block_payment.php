@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php if(empty($this->ajax)) { ?>
-<div id="hikashop_checkout_payment_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" class="hikashop_checkout_payment">
+<div id="hikashop_checkout_payment_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" data-checkout-step="<?php echo $this->step; ?>" data-checkout-pos="<?php echo $this->module_position; ?>" class="hikashop_checkout_payment">
 <?php } ?>
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
@@ -44,7 +44,7 @@ if(!empty($cart->usable_methods->payment)) {
 ?>
 <tr><td>
 <?php
-		if(empty($this->options['read_only'])){
+		if(empty($this->options['read_only'])) {
 ?>
 	<input class="hikashop_checkout_payment_radio" type="radio" name="checkout[payment][id]" id="<?php echo $input_id; ?>" data-hk-checkout="<?php echo $this->escape(json_encode($input_data)); ?>" onchange="window.checkout.paymentSelected(this);" value="<?php echo $payment->payment_id;?>"<?php echo ($selected ? ' checked="checked"' : ''); ?>/>
 <?php
@@ -215,11 +215,16 @@ if(!empty($cart->usable_methods->payment)) {
 ?>
 	<div id="<?php echo $container_id; ?>__custom" class="hikashop_checkout_payment_custom" style="<?php echo $selected ? '' : ' display:none;'; ?>">
 <?php
-		echo $this->checkoutHelper->getCustomHtml($payment->custom_html, 'checkout[payment][custom]['.$payment->payment_id.']');
+			echo $this->checkoutHelper->getCustomHtml($payment->custom_html, 'checkout[payment][custom]['.$payment->payment_id.']');
+
+			if(empty($payment->custom_html_no_btn)) {
 ?>
 		<div class="hikashop_checkout_payment_submit">
-			<button class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_payment_submit" onclick="return window.checkout.submitPayment(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);"><?php echo JText::_('HIKA_SUBMIT'); ?></button>
+			<button class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_payment_submit" id="hikabtn_checkout_payment_submit_p<?php echo $payment->payment_id; ?>" onclick="return window.checkout.submitCustomPayment('<?php echo $payment->payment_type; ?>',<?php echo (int)$payment->payment_id; ?>,<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);"><?php echo JText::_('HIKA_SUBMIT'); ?></button>
 		</div>
+<?php
+			}
+?>
 	</div>
 <?php
 		}
@@ -240,24 +245,33 @@ window.checkout.selectedPayment = <?php echo (int)@$cart->payment->payment_id; ?
 
 window.Oby.registerAjax(['checkout.payment.updated','cart.updated'], function(params){
 	if(params && (params.cart_empty || (params.resp && params.resp.empty))) return;
+	if(window.checkout.isSource(params, <?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>))
+		return;
 	window.checkout.refreshPayment(<?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>);
 });
 window.checkout.refreshPayment = function(step, id) { return window.checkout.refreshBlock('payment', step, id); };
 window.checkout.submitPayment = function(step, id) { return window.checkout.submitBlock('payment', step, id); };
+window.checkout.submitCustomPayment = function(name, id, step, pos) {
+	var ret = window.Oby.fireAjax('custompayment.submit', {method: name, payment_id: id, step: step, pos: pos});
+	if(ret === false || ret.length == 0) return window.checkout.submitBlock('payment', step, pos);
+	return false;
+};
 window.checkout.paymentSelected = function(el) {
 	var data = window.Oby.evalJSON(el.getAttribute('data-hk-checkout')),
 		prefix = 'hikashop_checkout_payment_' + data.step + '_' + data.pos + '__',
-		el = null, d = document;
+		d = document;
+	window.checkout.setLoading(null, true);
 
 	var url = "<?php echo hikashop_completeLink('checkout&task=submitblock&blocktask=payment'.$this->cartIdParam.'&Itemid='.$this->itemid, 'ajax', false, true); ?>",
 		formData = 'cid=' + encodeURIComponent(data.step) + '&blockpos=' + encodeURIComponent(data.pos) + '&selectionOnly=1&' + encodeURI('checkout[payment][id]') + '=' + encodeURIComponent(data.id) + '&' + encodeURI(window.checkout.token)+'=1';
 	window.Oby.xRequest(url, {mode:"POST", data: formData}, function(x,p) {
+		window.checkout.setLoading(null, false);
 		var r = window.Oby.evalJSON(x.responseText);
 		if(r && r.ret > 0) {
 			window.checkout.selectedPayment = data.id;
 		}
 		if(r && r.events)
-			window.checkout.processEvents(r.events);
+			window.checkout.processEvents(r.events, {step:<?php echo (int)$this->step; ?>, pos:<?php echo (int)$this->module_position; ?>});
 	});
 
 	if(window.checkout.selectedPayment > 0) {

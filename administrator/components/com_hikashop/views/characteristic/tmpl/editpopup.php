@@ -1,17 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><fieldset>
-	<div class="toolbar" id="toolbar" style="float: right;">
-		<button class="btn" type="button" onclick="submitbutton('addcharacteristic');"><img src="<?php echo HIKASHOP_IMAGES; ?>add.png"/><?php echo JText::_('OK'); ?></button>
+?>	<div class="toolbar" id="toolbar" style="float: right;">
+		<a href="#" class="btn btn-success"  onclick="submitbutton('addcharacteristic'); return false;">
+			<i class="fa fa-save"></i> <?php echo JText::_('OK'); ?>
+		</a>
 	</div>
-</fieldset>
 <div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=characteristic" method="post"  name="adminForm" id="adminForm">
 	<?php

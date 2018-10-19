@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,20 +11,12 @@ defined('_JEXEC') or die('Restricted access');
 class hikashopPluginsClass extends hikashopClass {
 
 	function  __construct( $config = array() ) {
-		if(!HIKASHOP_J16) {
-			$this->toggle = array('published'=>'id');
-			$this->pkeys = array('id');
-		} else {
-			$this->toggle = array('enabled'=>'extension_id');
-			$this->pkeys = array('extension_id');
-		}
+		$this->toggle = array('enabled'=>'extension_id');
+		$this->pkeys = array('extension_id');
 		return parent::__construct($config);
 	}
 
 	function getTable() {
-		if(!HIKASHOP_J16) {
-			return hikashop_table('plugins',false);
-		}
 		return hikashop_table('extensions',false);
 	}
 
@@ -74,11 +66,8 @@ class hikashopPluginsClass extends hikashopClass {
 				$types[$method->payment_type] = $this->database->Quote($method->payment_type);
 			}
 			$types = implode(',',$types);
-			if(!HIKASHOP_J16) {
-				$query = 'SELECT *, published as enabled FROM '.hikashop_table('plugins',false).' WHERE element IN ('.$types.') AND folder=\'hikashoppayment\' ORDER BY ordering ASC';
-			} else {
-				$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE element IN ('.$types.') AND folder=\'hikashoppayment\' AND type=\'plugin\' ORDER BY ordering ASC';
-			}
+
+			$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE element IN ('.$types.') AND folder=\'hikashoppayment\' AND type=\'plugin\' ORDER BY ordering ASC';
 			$this->database->setQuery($query);
 			$plugins = $this->database->loadObjectList();
 			foreach($methods as $k => $method){
@@ -113,11 +102,7 @@ class hikashopPluginsClass extends hikashopClass {
 	}
 
 	function getByName($type,$name){
-		if(version_compare(JVERSION,'1.6','<')){
-			$query = 'SELECT * FROM '.hikashop_table('plugins',false).' WHERE folder='.$this->database->Quote($type).' AND element='.$this->database->Quote($name);
-		}else{
-			$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE folder='.$this->database->Quote($type).' AND element='.$this->database->Quote($name).' AND type=\'plugin\'';
-		}
+		$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE folder='.$this->database->Quote($type).' AND element='.$this->database->Quote($name).' AND type=\'plugin\'';
 		$this->database->setQuery($query);
 		$result = $this->database->loadObject();
 		$this->loadParams($result);
@@ -128,64 +113,49 @@ class hikashopPluginsClass extends hikashopClass {
 		if(empty($result->params))
 			return;
 
-		if(!HIKASHOP_J16) {
-			$lines = explode("\n", $result->params);
-			$result->params = array();
-			foreach($lines as $line){
-				$param = explode('=',$line,2);
-				if(count($param)==2){
-					$result->params[$param[0]]=$param[1];
-				}
-			}
+		$registry = new JRegistry;
+		if(!HIKASHOP_J30) {
+			$registry->loadJSON($result->params);
 		} else {
-			$registry = new JRegistry;
-			if(!HIKASHOP_J30) {
-				$registry->loadJSON($result->params);
-			} else {
-				$registry->loadString($result->params, 'JSON');
-			}
-			$result->params = $registry->toArray();
+			$registry->loadString($result->params, 'JSON');
 		}
+		$result->params = $registry->toArray();
 	}
 
 	function save(&$element) {
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$id = reset($this->pkeys);
 		$do = true;
 		if(empty($element->$id))
-			$dispatcher->trigger('onBeforeHikaPluginCreate', array('joomla.plugin', &$element, &$do));
+			$app->triggerEvent('onBeforeHikaPluginCreate', array('joomla.plugin', &$element, &$do));
 		else
-			$dispatcher->trigger('onBeforeHikaPluginUpdate', array('joomla.plugin', &$element, &$do));
+			$app->triggerEvent('onBeforeHikaPluginUpdate', array('joomla.plugin', &$element, &$do));
 
 		if(!$do)
 			return false;
 
-		if(isset($element->plugin_params) && !is_string($element->plugin_params)){
-			$element->plugin_params = serialize($element->plugin_params);
+		$elementToSave = hikashop_copy($element);
+		if(isset($elementToSave->plugin_params) && !is_string($elementToSave->plugin_params)){
+			$elementToSave->plugin_params = serialize($elementToSave->plugin_params);
 		}
 
-		if(!empty($element->params)) {
-			if(!HIKASHOP_J16) {
-				$params = '';
-				foreach($element->params as $key => $val){
-					$params .= $key . '=' . $val . "\n";
-				}
-				$element->params = rtrim($params);
-			} else {
+		if(!empty($elementToSave->params)) {
+			if(HIKASHOP_J40)
+				$handler = \Joomla\Registry\Factory::getFormat('JSON');
+			else
 				$handler = JRegistryFormat::getInstance('JSON');
-				$element->params = $handler->objectToString($element->params);
-			}
+			$elementToSave->params = $handler->objectToString($elementToSave->params);
 		}
 
-		return parent::save($element);
+		return parent::save($elementToSave);
 	}
 
 	function cleanPluginCache() {
-		if(!HIKASHOP_J16 || !class_exists('JCache')) return;
+		if(!class_exists('JCache')) return;
 
 		$jconf = JFactory::getConfig();
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$options = array(
 			'defaultgroup' => 'com_plugins',
@@ -195,6 +165,6 @@ class hikashopPluginsClass extends hikashopClass {
 		$cache = JCache::getInstance('callback', $options);
 		$cache->clean();
 
-		$dispatcher->trigger('onContentCleanCache', $options);
+		$app->triggerEvent('onContentCleanCache', $options);
 	}
 }

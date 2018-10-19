@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -132,11 +132,7 @@ class ToggleController extends HikashopBridgeController {
 	function pluginsEnabled($elementPkey,&$value,$task='enabled'){
 		$plugins = hikashop_get('class.plugins');
 		$obj = new stdClass();
-		if(!HIKASHOP_J16) {
-			$obj->id = $elementPkey;
-		}else{
-			$obj->extension_id = $elementPkey;
-		}
+		$obj->extension_id = $elementPkey;
 		$obj->$task = $value;
 
 		$plugins->save($obj);
@@ -245,7 +241,7 @@ class ToggleController extends HikashopBridgeController {
 
 		$db	= JFactory::getDBO();
 		$db->setQuery('DELETE FROM '.hikashop_table($table).' WHERE '.$key1.' = '.$db->Quote($value1).' AND '.$key2.' = '.$db->Quote($value2));
-		$db->query();
+		$db->execute();
 		exit;
 	}
 

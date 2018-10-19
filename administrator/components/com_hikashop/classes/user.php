@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -128,12 +128,12 @@ class hikashopUserClass extends hikashopClass {
 			$element->user_params = serialize($element->user_params);
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 		if($new) {
-			$dispatcher->trigger( 'onBeforeUserCreate', array( & $element, & $do) );
+			$app->triggerEvent( 'onBeforeUserCreate', array( & $element, & $do) );
 		} else {
-			$dispatcher->trigger( 'onBeforeUserUpdate', array( & $element, & $do) );
+			$app->triggerEvent( 'onBeforeUserUpdate', array( & $element, & $do) );
 		}
 
 		if(!$do)
@@ -145,9 +145,9 @@ class hikashopUserClass extends hikashopClass {
 			return $element->user_id;
 
 		if($new) {
-			$dispatcher->trigger( 'onAfterUserCreate', array( & $element ) );
+			$app->triggerEvent( 'onAfterUserCreate', array( & $element ) );
 		} else {
-			$dispatcher->trigger( 'onAfterUserUpdate', array( & $element ) );
+			$app->triggerEvent( 'onAfterUserUpdate', array( & $element ) );
 		}
 
 		if($element->user_id == hikashop_loadUser()) {
@@ -219,7 +219,7 @@ class hikashopUserClass extends hikashopClass {
 
 		$query = 'UPDATE '.hikashop_table($type).' SET '.$type.'_partner_currency_id='.$element->user_currency_id.$amount.' WHERE '.$type.'_partner_id='.$element->user_id.' AND '.$type.'_partner_paid=0 AND ('.$type.'_partner_currency_id='.$srcCurrency->currency_id.$orCurrencyConfig.')';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 	}
 
 	public function saveForm() {
@@ -240,7 +240,7 @@ class hikashopUserClass extends hikashopClass {
 			return $status;
 		}
 
-		$newDefaultId = hikaInput::get()->getInt('address_default', 0);
+		$newDefaultId = hikaInput::get()->getInt('billing_address_default', 0);
 		if($newDefaultId) {
 			$addressClass = hikashop_get('class.address');
 			$oldData = $addressClass->get($newDefaultId);
@@ -248,7 +248,20 @@ class hikashopUserClass extends hikashopClass {
 				$user_id = hikashop_getCID('user_id');
 				if($user_id == $oldData->address_user_id) {
 					$oldData->address_default = 1;
-					$addressClass->save($oldData);
+					$addressClass->save($oldData, 0 , 'billing');
+				}
+			}
+		}
+
+		$newDefaultId = hikaInput::get()->getInt('shipping_address_default', 0);
+		if($newDefaultId) {
+			$addressClass = hikashop_get('class.address');
+			$oldData = $addressClass->get($newDefaultId);
+			if(!empty($oldData)) {
+				$user_id = hikashop_getCID('user_id');
+				if($user_id == $oldData->address_user_id) {
+					$oldData->address_default = 1;
+					$addressClass->save($oldData, 0 , 'shipping');
 				}
 			}
 		}
@@ -267,13 +280,13 @@ class hikashopUserClass extends hikashopClass {
 		if(!is_array($elements)){
 			$elements = array((int)$elements);
 		}else{
-			JArrayHelper::toInteger($elements);
+			hikashop_toInteger($elements);
 		}
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
-		$dispatcher->trigger('onBeforeUserDelete', array( & $elements, & $do));
+		$app->triggerEvent('onBeforeUserDelete', array( & $elements, & $do));
 
 		if(!$do) {
 			return false;
@@ -283,7 +296,7 @@ class hikashopUserClass extends hikashopClass {
 		$addressClass = hikashop_get('class.address');
 
 		foreach($elements as $el) {
-			$query = 'SELECT count(*) FROM '.hikashop_table('order').' WHERE order_user_id='.$el;
+			$query = 'SELECT count(*) FROM '.hikashop_table('order').' WHERE order_user_id=' . $el . ' AND order_type=\'sale\'';
 			$this->database->setQuery($query);
 			$hasOrders = $this->database->loadResult();
 
@@ -306,12 +319,12 @@ class hikashopUserClass extends hikashopClass {
 			if($fromCMS) {
 				$query = 'UPDATE '.hikashop_table('user').' SET user_cms_id=0 WHERE user_id IN ('.implode(',',$elements).')';
 				$this->database->setQuery($query);
-				$result = $this->database->query();
+				$result = $this->database->execute();
 			}
 		}
 
 		if($result) {
-			$dispatcher->trigger( 'onAfterUserDelete', array( & $elements ) );
+			$app->triggerEvent( 'onAfterUserDelete', array( & $elements ) );
 		}
 		return $result;
 	}
@@ -401,12 +414,6 @@ class hikashopUserClass extends hikashopClass {
 			$my = JFactory::getUser( (int)$user->user_cms_id );
 		}
 
-		if(!HIKASHOP_J16) {
-			if(empty($my->id))
-				return array(29);
-			return array($my->gid);
-		}
-
 		jimport('joomla.access.access');
 		$config =& hikashop_config();
 		$userGroups = JAccess::getGroupsByUser($my->id, (bool)$config->get('inherit_parent_group_access')); //$my->authorisedLevels();
@@ -417,7 +424,6 @@ class hikashopUserClass extends hikashopClass {
 		$config = hikashop_config();
 
 		$user = clone(JFactory::getUser());
-		$authorize = JFactory::getACL();
 
 		jimport('joomla.application.component.helper');
 		$params = JComponentHelper::getParams('com_users');
@@ -562,8 +568,8 @@ class hikashopUserClass extends hikashopClass {
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeHikaUserRegistration', array(&$ret, $input_data, $mode));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeHikaUserRegistration', array(&$ret, $input_data, $mode));
 
 		if($ret['status'] == false) {
 			if(empty($ret['messages'])) {
@@ -576,10 +582,10 @@ class hikashopUserClass extends hikashopClass {
 
 			$newUsertype = $params->get( 'new_usertype' );
 			if(!$newUsertype)
-				$newUsertype = (!HIKASHOP_J16) ? 'Registered' : 2;
+				$newUsertype = 2; // "Registered" value for Joomla 2.5 and up
 
 			$userGroupRegistration = $config->get('user_group_registration', '');
-			if(HIKASHOP_J16 && !empty($userGroupRegistration)){
+			if(!empty($userGroupRegistration)){
 				if(!is_numeric($userGroupRegistration)){
 					$fieldId = substr($userGroupRegistration,1);
 					$field = $fieldClass->get($fieldId);
@@ -613,26 +619,24 @@ class hikashopUserClass extends hikashopClass {
 				if((int)$userGroupRegistration > 0)
 					$newUsertype = (int)$userGroupRegistration;
 			}
-			if(HIKASHOP_J16 && empty($data['groups']))
+			if(empty($data['groups']))
 				$data['groups'] = array(
 					$newUsertype => $newUsertype
 				);
 
-			if(HIKASHOP_J25) {
-				$jconfig = JFactory::getConfig();
-				if(HIKASHOP_J30)
-					$locale = $jconfig->get('language');
-				else
-					$locale = $jconfig->getValue('config.language');
+			$jconfig = JFactory::getConfig();
+			if(HIKASHOP_J30)
+				$locale = $jconfig->get('language');
+			else
+				$locale = $jconfig->getValue('config.language');
 
-				$data['params'] = array(
-					'site_language' => $locale,
-					'language' => $locale
-				);
+			$data['params'] = array(
+				'site_language' => $locale,
+				'language' => $locale
+			);
 
-				$language = JFactory::getLanguage();
-				$language->load('lib_joomla', JPATH_SITE);
-			}
+			$language = JFactory::getLanguage();
+			$language->load('lib_joomla', JPATH_SITE);
 
 			if( !$user->bind($data, 'usertype') ) {
 				$ret['status'] = false;
@@ -641,10 +645,6 @@ class hikashopUserClass extends hikashopClass {
 			}
 
 			$user->set('id', 0);
-			if(!HIKASHOP_J16) {
-				$user->set('usertype', $newUsertype);
-				$user->set('gid', $authorize->get_group_id('', $newUsertype, 'ARO'));
-			}
 
 			$jdate = JFactory::getDate();
 			if(HIKASHOP_J30)
@@ -695,6 +695,8 @@ class hikashopUserClass extends hikashopClass {
 			if(@$userInDB->user_cms_id) {
 				$ret['status'] = false;
 				$ret['messages'][] = array(JText::_('EMAIL_ADDRESS_ALREADY_USED'), 'warning');
+				$reset_url = JRoute::_('index.php?option=com_users&view=reset');
+				$ret['messages'][] = array('<a href="'.$reset_url.'">'.JText::_('PLEASE_CLICK_HERE_TO_RESET_PASSWORD').'</a>', 'warning');
 				return $ret;
 			}
 
@@ -704,7 +706,8 @@ class hikashopUserClass extends hikashopClass {
 	    	$old_messages = $app->getMessageQueue();
 
 			if(!empty($ret['user_id'])) {
-				$userInDB->user_created_ip = hikashop_getIP();
+				if($config->get('user_ip'))
+					$userInDB->user_created_ip = hikashop_getIP();
 				$ret['user_id'] = $this->save($userInDB);
 			} else {
 				$ret['user_id'] = $this->save($userData);
@@ -726,11 +729,16 @@ class hikashopUserClass extends hikashopClass {
     			}
 				return $ret;
 			}
-			$query = 'UPDATE '.hikashop_table('address').' AS hk_addr '.
-					' SET hk_addr.address_published = 0 '.
-					' WHERE hk_addr.address_user_id='.(int)$ret['user_id'].' AND hk_addr.address_published = 1';
-			$this->database->setQuery($query);
-			$this->database->query();
+
+			if(empty($_SESSION['hikashop_previously_guest_as']) || $_SESSION['hikashop_previously_guest_as'] != $ret['user_id']) {
+				$query = 'UPDATE '.hikashop_table('address').' AS hk_addr '.
+						' SET hk_addr.address_published = 0 '.
+						' WHERE hk_addr.address_user_id='.(int)$ret['user_id'].' AND hk_addr.address_published = 1';
+
+				$this->database->setQuery($query);
+				$this->database->execute();
+				unset($_SESSION['hikashop_previously_guest_as']);
+			}
 
 			$cartClass = hikashop_get('class.cart');
 			$cart_id = $cartClass->getCurrentCartId();
@@ -759,7 +767,7 @@ class hikashopUserClass extends hikashopClass {
 		}
 
 		$send_email = ($mode != 2);
-		$dispatcher->trigger('onAfterHikaUserRegistration', array(&$ret, $input_data, $mode, &$send_email));
+		$app->triggerEvent('onAfterHikaUserRegistration', array(&$ret, $input_data, $mode, &$send_email));
 
 		if($mode == 2)
 			return $ret;
@@ -843,7 +851,6 @@ class hikashopUserClass extends hikashopClass {
 	}
 
 	public function registerGuest($user_id, $registerData) {
-		$authorize = JFactory::getACL();
 		$user = clone(JFactory::getUser());
 
 		jimport('joomla.application.component.helper');
@@ -932,34 +939,32 @@ class hikashopUserClass extends hikashopClass {
 
 		$newUsertype = $params->get( 'new_usertype' );
 		if(!$newUsertype)
-			$newUsertype = (!HIKASHOP_J16) ? 'Registered' : 2;
+			$newUsertype = 2; // "Registered" value for Joomla 2.5 and up
 
 		$userGroupRegistration = $config->get('user_group_registration', '');
-		if(HIKASHOP_J16 && !empty($userGroupRegistration)){
+		if(!empty($userGroupRegistration)){
 			if((int)$userGroupRegistration > 0)
 				$newUsertype = (int)$userGroupRegistration;
 		}
 
-		if(HIKASHOP_J16 && empty($data['groups']))
+		if(empty($data['groups']))
 			$data['groups'] = array(
 				$newUsertype => $newUsertype
 			);
 
-		if(HIKASHOP_J25) {
-			$jconfig = JFactory::getConfig();
-			if(HIKASHOP_J30)
-				$locale = $jconfig->get('language');
-			else
-				$locale = $jconfig->getValue('config.language');
+		$jconfig = JFactory::getConfig();
+		if(HIKASHOP_J30)
+			$locale = $jconfig->get('language');
+		else
+			$locale = $jconfig->getValue('config.language');
 
-			$data['params'] = array(
-				'site_language' => $locale,
-				'language' => $locale
-			);
+		$data['params'] = array(
+			'site_language' => $locale,
+			'language' => $locale
+		);
 
-			$language = JFactory::getLanguage();
-			$language->load('lib_joomla', JPATH_SITE);
-		}
+		$language = JFactory::getLanguage();
+		$language->load('lib_joomla', JPATH_SITE);
 
 		if( !$user->bind($data, 'usertype') ) {
 			$ret['status'] = false;
@@ -968,10 +973,6 @@ class hikashopUserClass extends hikashopClass {
 		}
 
 		$user->set('id', 0);
-		if(!HIKASHOP_J16) {
-			$user->set('usertype', $newUsertype);
-			$user->set('gid', $authorize->get_group_id('', $newUsertype, 'ARO'));
-		}
 
 		$jdate = JFactory::getDate();
 		if(HIKASHOP_J30)
@@ -1171,7 +1172,7 @@ class hikashopUserClass extends hikashopClass {
 
 		$query = 'INSERT INTO #__comprofiler (' . implode(',', array_keys($fields)) . ') VALUES (' . implode(',', $fields) . ')';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 		return true;
 	}
@@ -1192,9 +1193,9 @@ class hikashopUserClass extends hikashopClass {
 		if(!empty($search)) {
 			$searchMap = array('user.user_id', 'juser.name', 'user.user_email');
 			if(!HIKASHOP_J30)
-				$searchVal = '\'%' . $this->db->getEscaped(JString::strtolower($search), true) . '%\'';
+				$searchVal = '\'%' . $this->db->getEscaped(HikaStringHelper::strtolower($search), true) . '%\'';
 			else
-				$searchVal = '\'%' . $this->db->escape(JString::strtolower($search), true) . '%\'';
+				$searchVal = '\'%' . $this->db->escape(HikaStringHelper::strtolower($search), true) . '%\'';
 			$sqlFilters['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
 		}
 
@@ -1232,9 +1233,8 @@ class hikashopUserClass extends hikashopClass {
 				$this->db->setQuery($query);
 				$ret[1] = $this->db->loadObject();
 			}
-		} else if(!empty($value) && is_array($value)) {
-
-			JArrayHelper::toInteger($value);
+		} else if(!empty($value) && is_array($value) && (count($value) > 1 || !empty($value[0]))) {
+			hikashop_toInteger($value);
 			$query = 'SELECT user.user_id, (CASE WHEN juser.name IS NULL THEN user.user_email ELSE juser.name END) AS name, user.user_email '.
 				' FROM ' . hikashop_table('user') . ' AS user '.
 				' LEFT JOIN ' . hikashop_table('users', false) . ' AS juser ON user.user_cms_id = juser.id'.

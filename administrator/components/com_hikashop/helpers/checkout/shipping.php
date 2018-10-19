@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -84,6 +84,38 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 		$ret = $cartClass->updateShipping($cart->cart_id, $shipping_ids);
 
 		$cart = $checkoutHelper->getCart(true);
+
+		if($ret && !empty($data['shipping']['custom'])) {
+			$checkout_custom = array();
+			foreach($shipping_ids as $group => $id) {
+				if(!isset($data['shipping']['custom'][$group][$id]))
+					continue;
+
+				$warehouse_struct = $group;
+				if(preg_match_all('#([a-zA-Z])*([0-9]+)#iu', $group, $tmp))
+					$warehouse_struct = array_combine($tmp[1], $tmp[2]);
+
+				$shipping = null;
+				foreach($cart->shipping as $s) {
+					if($s->shipping_id != $id || $s->shipping_warehouse_id !== $warehouse_struct)
+						continue;
+					if(empty($s->custom_html))
+						continue;
+
+					$plugin = hikashop_import('hikashopshipping', $s->shipping_type);
+					$ret = $plugin->onShippingCustomSave($cart, $s, $group, $data['shipping']['custom'][$group][$id]);
+					if($ret === false)
+						break;
+
+					if(!isset($checkout_custom[ $group ]))
+						$checkout_custom[$group] = array();
+					if(!isset($checkout_custom[ $group ]))
+						$checkout_custom[$group][$id] = array();
+					$checkout_custom[$group][$id] = $ret;
+				}
+			}
+			$cartClass->updateShippingCustomData($cart->cart_id, $checkout_custom);
+		}
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 		if($selectionOnly && in_array($tmpl, array('ajax', 'raw'))) {

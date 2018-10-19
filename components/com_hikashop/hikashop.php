@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -73,8 +73,12 @@ $taskGroup = hikaInput::get()->getCmd('ctrl','category');
 $className = ucfirst($taskGroup).'Controller';
 
 if(!class_exists($className) && (!file_exists(HIKASHOP_CONTROLLER.$taskGroup.'.php') || !@include(HIKASHOP_CONTROLLER.$taskGroup.'.php'))) {
-	if(!hikashop_getPluginController($taskGroup))
-		return JError::raiseError(404, 'Page not found : '.$taskGroup);
+	if(!hikashop_getPluginController($taskGroup)){
+		header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
+		$app = JFactory::getApplication();
+		$app->enqueueMessage('Page not found : '.$taskGroup, 'warning');
+		return;
+	}
 }
 if($taskGroup != 'checkout') {
 	$app = JFactory::getApplication();

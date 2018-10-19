@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -60,18 +60,47 @@ class addressViewAddress extends HikaShopView {
 		if($this->ajax)
 			$this->edit = false;
 
-		hikashop_setPageTitle('ADDRESSES');
-
-		$this->toolbar = array();
-
-		$this->listing_legacy();
 
 		global $Itemid;
-		$this->toolbar['back'] = array(
-			'icon' => 'back',
-			'name' => JText::_('HIKA_BACK'),
-			'url' => hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid)
-		);
+		$this->Itemid = $Itemid;
+
+		$app = JFactory::getApplication();
+		$menus	= $app->getMenu();
+		$menu	= $menus->getActive();
+		$this->toolbar = array();
+		$show_page_heading = true;
+		$params = null;
+		if(!empty($menu)) {
+			$params = $menu->getParams();
+			$show_page_heading = $params->get('show_page_heading');
+		}
+		if(is_null($show_page_heading)) {
+			$com_menus = JComponentHelper::getParams('com_menus');
+			if(!empty($com_menus))
+				$show_page_heading = $com_menus->get('show_page_heading');
+		}
+		if(!empty($menu) && $menu->link == 'index.php?option=com_hikashop&view=address&layout=listing') {
+			if($show_page_heading)
+				$this->title = $params->get('page_heading');
+			hikashop_setPageTitle($menu->title);
+		} else {
+			if($show_page_heading)
+				$this->title = JText::_('ADDRESSES');
+			hikashop_setPageTitle('ADDRESSES');
+			$pathway = $app->getPathway();
+			$pathway->addItem(JText::_('ADDRESSES'), hikashop_completeLink('address&Itemid='.$Itemid));
+
+			$this->toolbar = array(
+				'back' => array(
+					'icon' => 'back',
+					'name' => JText::_('HIKA_BACK'),
+					'url' => hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid),
+					'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
+				)
+			);
+		}
+
+		$this->listing_legacy();
 	}
 
 	protected function listing_legacy() {
@@ -92,7 +121,8 @@ class addressViewAddress extends HikaShopView {
 			$this->toolbar['new'] = array(
 				'icon' => 'new',
 				'name' => JText::_('HIKA_NEW'),
-				'javascript' => 'return window.localPage.newAddr(this, \''.$this->type.'\');'
+				'javascript' => 'return window.localPage.newAddr(this, \''.$this->type.'\');',
+				'fa' => array('html' => '<i class="fas fa-plus-circle"></i>')
 			);
 		} elseif($this->use_popup) {
 			$this->toolbar['new'] = array(
@@ -103,7 +133,8 @@ class addressViewAddress extends HikaShopView {
 					'id' => 'hikashop_new_address_popup',
 					'width' => 760,
 					'height' => 480
-				)
+				),
+				'fa' => array('html' => '<i class="fas fa-plus-circle"></i>')
 			);
 		}
 	}
@@ -159,7 +190,7 @@ class addressViewAddress extends HikaShopView {
 				$this->addressClass->loadZone($addresses);
 			}
 		} else {
-			if(isset($_SESSION['hikashop_address_data']) && $_SESSION['hikashop_address_data']->address_type == $type)
+			if(isset($_SESSION['hikashop_address_data']) && isset($_SESSION['hikashop_address_data']->address_type) && $_SESSION['hikashop_address_data']->address_type == $type)
 				$address = @$_SESSION['hikashop_address_data'];
 
 			if(!empty($address) && (!empty($address->address_id) || (!empty($address->address_type) && $address->address_type != $type)))
@@ -320,12 +351,17 @@ class addressViewAddress extends HikaShopView {
 		$this->toolbar['save'] = array(
 			'icon' => 'save',
 			'name' => JText::_('HIKA_SAVE'),
-			'javascript' => 'return window.localPage.saveAddr(this);'
+			'javascript' => 'return window.localPage.saveAddr(this);',
+			'fa' => array(
+				'html' => '<i class="far fa-save"></i>',
+				'size' => 3
+			)
 		);
 		$this->toolbar['back'] = array(
 			'icon' => 'back',
 			'name' => JText::_('HIKA_BACK'),
-			'url' => hikashop_completeLink('address&task=listing')
+			'url' => hikashop_completeLink('address&task=listing'),
+			'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
 		);
 	}
 

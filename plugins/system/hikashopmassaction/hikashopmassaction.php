@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,12 +18,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 		parent::__construct($subject, $config);
 		if(!isset($this->params)){
 			$plugin = JPluginHelper::getPlugin('system', 'hikashopmassaction');
-			if(version_compare(JVERSION,'2.5','<')){
-				jimport('joomla.html.parameter');
-				$this->params = new JParameter(@$plugin->params);
-			} else {
-				$this->params = new JRegistry(@$plugin->params);
-			}
+			$this->params = new JRegistry(@$plugin->params);
 		}
 	}
 
@@ -48,7 +43,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 			$loadedData->massaction_filters = array();
 		}
 
-		if(version_compare(JVERSION,'3.0','<')){
+		if(!HIKASHOP_J30){
 			$fieldsTable = $db->getTableFields('#__hikashop_user');
 			$hkUsers = reset($fieldsTable);
 			$fieldsTable = $db->getTableFields('#__users');
@@ -97,7 +92,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					$filters[$column]=JText::_(''.strtoupper($relatedTable).'_COLUMN');
 					if($relatedTable == 'product_option') $relatedTable = 'product_related';
 					if($relatedTable == 'parent_category') $relatedTable = 'category';
-					if(version_compare(JVERSION,'3.0','<')){
+					if(!HIKASHOP_J30){
 						$fieldsTable = $db->getTableFields('#__hikashop_'.$relatedTable);
 						$fields = reset($fieldsTable);
 					} else {
@@ -110,7 +105,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 							$typeField[] = JHTML::_('select.option',$oneField,$oneField);
 						}
 					}
-					$user = '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][userColumn][type]" onchange="countresults(\''.$table->table.'\','.$key.')" >';
+					$user = '<select class="custom-select chzn-done not-processed" name="filter['.$table->table.']['.$key.'][userColumn][type]" onchange="countresults(\''.$table->table.'\','.$key.')" >';
 						$user .='<optgroup label="HIKA_USER">';
 							foreach($hkUsers as $key2 => $hkUser){
 								$tmpVal = str_replace('hk_user.','',$value->data['type']);
@@ -136,7 +131,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 								$db->setQuery('SELECT * FROM '.hikashop_table('characteristic').' WHERE characteristic_parent_id = 0');
 								$characteristics = $db->loadObjectList();
 								if(is_array($characteristics)){
-									$custom = '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][characteristicColumn][type]" onchange="countresults('.$table->table.','.$key.')" >';
+									$custom = '<select class="custom-select chzn-done not-processed" name="filter['.$table->table.']['.$key.'][characteristicColumn][type]" onchange="countresults('.$table->table.','.$key.')" >';
 									foreach($characteristics as $charact){
 										$selected = '';
 										if($charact->characteristic_value == $value->data['type']) $selected = 'selected="selected"';
@@ -146,7 +141,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 								}
 							}
 							elseif(in_array($relatedTable, array('product_related','product_option'))){
-								if(version_compare(JVERSION,'3.0','<')){
+								if(!HIKASHOP_J30){
 									$fieldsTable = $db->getTableFields('#__hikashop_product');
 									$fields = reset($fieldsTable);
 								} else {
@@ -159,7 +154,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 										$typeField[] = JHTML::_('select.option',$oneField,$oneField);
 									}
 								}
-								$custom = JHTML::_('select.genericlist', $typeField, "filter[".$table->table."][$key][".$column."][type]", 'class="inputbox chzn-done not-processed" onchange="countresults(\''.$table->table.'\','.$key.')" size="1"', 'value', 'text',$value->data['type']);
+								$custom = JHTML::_('select.genericlist', $typeField, "filter[".$table->table."][$key][".$column."][type]", 'class="custom-select chzn-done not-processed" onchange="countresults(\''.$table->table.'\','.$key.')" size="1"', 'value', 'text',$value->data['type']);
 							}else{
 								$custom = '';
 							}
@@ -170,7 +165,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 						case 'order':
 							if($relatedTable == 'address'){
 								$datas = array('both' => 'DISPLAY_BOTH','bill' => 'HIKASHOP_BILLING_ADDRESS','ship' => 'HIKASHOP_SHIPPING_ADDRESS');
-								$custom = '<select class="chzn-done not-processed" onchange="countresults(\''.$table->table.'\','.$key.')" name="filter['.$table->table.']['.$key.'][addressColumn][address]" >';
+								$custom = '<select class="custom-select chzn-done not-processed" onchange="countresults(\''.$table->table.'\','.$key.')" name="filter['.$table->table.']['.$key.'][addressColumn][address]" >';
 								foreach($datas as $k => $data){
 									$selected = '';
 									if($k == $value->data['address']) $selected = 'selected="selected"';
@@ -204,7 +199,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					$value->type = $relatedTable;
 					$output = $custom;
 					if(!in_array($relatedTable, array('characteristic','product_related','user'))){
-						$output .= JHTML::_('select.genericlist', $typeField, "filter[".$table->table."][".$key."][".$column."][type]", 'class="inputbox chzn-done not-processed" onchange="countresults(\''.$table->table.'\',\''.$key.'\')" size="1"', 'value', 'text', $value->data['type']);
+						$output .= JHTML::_('select.genericlist', $typeField, "filter[".$table->table."][".$key."][".$column."][type]", 'class="custom-select chzn-done not-processed" onchange="countresults(\''.$table->table.'\',\''.$key.'\')" size="1"', 'value', 'text', $value->data['type']);
 					}
 					$operators->extra = 'onchange="countresults(\''.$table->table.'\',\''.$key.'\')"';
 					$output .= $operators->display('filter['.$table->table.']['.$key.']['.$column.'][operator]',$value->data['operator'], "chzn-done not-processed");
@@ -249,7 +244,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					$value->type = $table->table;
 					if(!isset($value->data['value'])) $value->data['value'] = $table->table.'_id';
 
-					if(version_compare(JVERSION,'3.0','<')) {
+					if(!HIKASHOP_J30) {
 						$fieldsTable = $db->getTableFields('#__hikashop_'.$table->table);
 						$fields = reset($fieldsTable);
 					} else {
@@ -258,7 +253,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					ksort($fields);
 					if(!isset($value->data['value'])) $value->data['value'] = $table->table.'_id';
 					$output = '<div id="'.$table->table.'filter'.$key.'ordering">'.JText::_('VALUE').' : ';
-					$output .= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][ordering][value]">';
+					$output .= '<select class="custom-select chzn-done not-processed" name="filter['.$table->table.']['.$key.'][ordering][value]">';
 					foreach($fields as $field => $fieldType){
 					$selected = '';
 						if($value->data['value'] == $field)
@@ -283,7 +278,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 					$value->type = $table->table;
 					if(!isset($value->data['value'])) $value->data['value'] = 'ASC';
-					$output = '<div id="'.$table->table.'filter'.$key.'direction">'.JText::_('VALUE').' : <select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][direction][value]">';
+					$output = '<div id="'.$table->table.'filter'.$key.'direction">'.JText::_('VALUE').' : <select class="custom-select chzn-done not-processed" name="filter['.$table->table.']['.$key.'][direction][value]">';
 					$values = array('ASC','DESC');
 					foreach($values as $oneValue){
 						$selected = '';
@@ -308,20 +303,17 @@ class plgSystemHikashopmassaction extends JPlugin {
 				$loadedData->massaction_filters['__num__']->data['type'] = '';
 				$loadedData->massaction_filters['__num__']->data['group'] = '';
 				$loadedData->massaction_filters['__num__']->html = '';
-				if(!HIKASHOP_J16){
-					$acl = JFactory::getACL();
-					$groups = $acl->get_group_children_tree( null, 'USERS', false );
-				}else{
-					$db = JFactory::getDBO();
-					$db->setQuery('SELECT a.*, a.title as text, a.id as value  FROM #__usergroups AS a ORDER BY a.lft ASC');
-					$groups = $db->loadObjectList('id');
-					foreach($groups as $id => $group){
-						if(isset($groups[$group->parent_id])){
-							$groups[$id]->level = intval(@$groups[$group->parent_id]->level) + 1;
-							$groups[$id]->text = str_repeat('- - ',$groups[$id]->level).$groups[$id]->text;
-						}
+
+				$db = JFactory::getDBO();
+				$db->setQuery('SELECT a.*, a.title as text, a.id as value  FROM #__usergroups AS a ORDER BY a.lft ASC');
+				$groups = $db->loadObjectList('id');
+				foreach($groups as $id => $group){
+					if(isset($groups[$group->parent_id])){
+						$groups[$id]->level = intval(@$groups[$group->parent_id]->level) + 1;
+						$groups[$id]->text = str_repeat('- - ',$groups[$id]->level).$groups[$id]->text;
 					}
 				}
+
 				$inoperator = hikashop_get('type.operatorsin');
 				foreach($loadedData->massaction_filters as $key => &$value) {
 					if($value->name != 'accessLevel' || ($table->table != $loadedData->massaction_table && is_int($key)))
@@ -329,7 +321,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 					$value->type = $table->table;
 					$inoperator->js = 'onchange="countresults(\''.$table->table.'\','.$key.')"';
-					$output = $inoperator->display("filter[".$table->table."][$key][accessLevel][type]",$value->data['type'], 'chzn-done not-processed').' '.JHTML::_('select.genericlist',   $groups, "filter[".$table->table."][$key][accessLevel][group]", 'class="inputbox chzn-done not-processed" size="1" onchange="countresults(\''.$table->table.'\','.$key.')"', 'value', 'text',$value->data['group']);
+					$output = $inoperator->display("filter[".$table->table."][$key][accessLevel][type]",$value->data['type'], 'chzn-done not-processed').' '.JHTML::_('select.genericlist',   $groups, "filter[".$table->table."][$key][accessLevel][group]", 'class="custom-select chzn-done not-processed" size="1" onchange="countresults(\''.$table->table.'\','.$key.')"', 'value', 'text',$value->data['group']);
 
 					$filters_html[$value->name] = $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
 				}
@@ -443,7 +435,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				$output = '';
 				$customCheckboxes='';
 				foreach($dispTables as $relatedTable){
-					if(version_compare(JVERSION,'3.0','<')){
+					if(!HIKASHOP_J30){
 						if(preg_match('/joomla_/',$relatedTable)) $fieldsTable = $db->getTableFields('#__'.str_replace('joomla_','',$relatedTable));
 						else $fieldsTable = $db->getTableFields('#__hikashop_'.$relatedTable);
 						$fields = reset($fieldsTable);
@@ -560,7 +552,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				$margin = '';
 				$customCheckboxes='';
 				foreach($dispTables as $relatedTable){
-					if(version_compare(JVERSION,'3.0','<')){
+					if(!HIKASHOP_J30){
 						if(preg_match('/joomla_/',$relatedTable)) $fieldsTable = $db->getTableFields('#__'.str_replace('joomla_','',$relatedTable));
 						else $fieldsTable = $db->getTableFields('#__hikashop_'.$relatedTable);
 						$fields = reset($fieldsTable);
@@ -586,6 +578,15 @@ class plgSystemHikashopmassaction extends JPlugin {
 						}
 						ksort($fields);
 						foreach($fields as $key2 => $field){
+							$checked='';
+							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
+								$checked='checked="checked"';
+							}
+							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.']['.$key2.']" value="'.$key2.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label><br/>';
+						}
+
+						if($relatedTable == 'order'){
+							$key2 = 'order_full_tax';
 							$checked='';
 							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
 								$checked='checked="checked"';
@@ -699,7 +700,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				$output='';
 				$typeField = array();
 				foreach($updTables as $relatedTable){
-					if(version_compare(JVERSION,'3.0','<')){
+					if(!HIKASHOP_J30){
 						if(preg_match('/joomla_/',$relatedTable)){
 							$fieldsTable = $db->getTableFields('#__'.str_replace('joomla_','',$relatedTable));
 							$fields = reset($fieldsTable);
@@ -742,8 +743,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 						$selected='selected="selected"';
 					$options .='<option '.$selected.' value="'.$op.'">'.JText::_(strtoupper($op)).'</option>';
 				}
-				$output .= JHTML::_('select.genericlist', $typeField, "action[".$table->table."][".$key."][updateValues][type]", 'class="inputbox chzn-done not-processed"  size="1"', 'value', 'text', $value->data['type']);
-				$output .= ' = <select class=" chzn-done not-processed" onchange="if(this.value == \'operation\'){document.getElementById(\'updateValues_message\').style.display = \'inline\';}" name="action['.$table->table.']['.$key.'][updateValues][operation]">
+				$output .= JHTML::_('select.genericlist', $typeField, "action[".$table->table."][".$key."][updateValues][type]", 'class="custom-select chzn-done not-processed"  size="1"', 'value', 'text', $value->data['type']);
+				$output .= ' = <select class="custom-select chzn-done not-processed" onchange="if(this.value == \'operation\'){document.getElementById(\'updateValues_message\').style.display = \'inline\';}" name="action['.$table->table.']['.$key.'][updateValues][operation]">
 														'.$options.'
 													 </select>';
 				$output .= ' <input class="inputbox" type="text" name="action['.$table->table.']['.$key.'][updateValues][value]" size="50" value="'. htmlspecialchars($value->data['value'], ENT_COMPAT, 'UTF-8').'"  />';
@@ -803,7 +804,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					$orderStatuses = $db->loadObjectList();
 
 					$output='<div id="'.$table->table.'action'.$key.'changeStatus">';
-					$output.= JText::_('NEW_ORDER_STATUS').': <select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_changeStatus_value" name="action['.$table->table.']['.$key.'][changeStatus][value]">';
+					$output.= JText::_('NEW_ORDER_STATUS').': <select class="custom-select chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_changeStatus_value" name="action['.$table->table.']['.$key.'][changeStatus][value]">';
 					if(is_array($orderStatuses)){
 						foreach($orderStatuses as $orderStatus){
 							$orderStatus = $orderStatus->orderstatus_namekey;
@@ -835,14 +836,10 @@ class plgSystemHikashopmassaction extends JPlugin {
 					if(!isset($value->data['type'])) $value->data['type'] = 'add';
 					$products=array();
 					if(!empty($value->data) && !empty($value->data['value'])){
-						JArrayHelper::toInteger($value->data['value']);
+						hikashop_toInteger($value->data['value']);
 						$query = 'SELECT product_id,product_name FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$value->data['value']).')';
 						$database->setQuery($query);
-						if(!HIKASHOP_J25){
-							$products = $database->loadResultArray();
-						} else {
-							$products = $database->loadColumn();
-						}
+						$products = $database->loadColumn();
 					}
 					if(!isset($value->data['quantity'])) $value->data['quantity'] = '1';
 
@@ -857,7 +854,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 						)
 					);
 
-					$output ='<select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_addProduct_type" name="action['.$table->table.']['.$key.'][addProduct][type]">';
+					$output ='<select class="custom-select chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_addProduct_type" name="action['.$table->table.']['.$key.'][addProduct][type]">';
 					$datas = array('add'=>'ADD', 'remove'=>'REMOVE');
 					foreach($datas as $k => $data){
 						$selected = '';
@@ -895,11 +892,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					if(!empty($value->data) && !empty($value->data['value'])){
 						$query = 'SELECT category_id, category_name FROM '.hikashop_table('category').' WHERE category_id IN ('.implode($value->data['value'],',').')';
 						$database->setQuery($query);
-						if(!HIKASHOP_J25){
-							$categories = $database->loadResultArray();
-						} else {
-							$categories = $database->loadColumn();
-						}
+						$categories = $database->loadColumn();
 					}
 
 					$categorySelect = $nameboxType->display(
@@ -913,7 +906,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 						)
 					);
 
-					$output ='<select id="action_'.$table->table.'_'.$key.'_updateCategories_type" class="select-listing chzn-done not-processed" name="action['.$table->table.']['.$key.'][updateCategories][type]">';
+					$output ='<select id="action_'.$table->table.'_'.$key.'_updateCategories_type" class="custom-select select-listing chzn-done not-processed" name="action['.$table->table.']['.$key.'][updateCategories][type]">';
 					$datas = array('add'=>'ADD', 'replace'=>'REPLACE','remove'=>'REMOVE');
 					foreach($datas as $k => $data){
 						$selected = '';
@@ -942,14 +935,10 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 					$products=array();
 					if(!empty($value->data) && !empty($value->data['value'])){
-						JArrayHelper::toInteger($value->data['value']);
+						hikashop_toInteger($value->data['value']);
 						$query = 'SELECT product_id,product_name FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$value->data['value']).')';
 						$database->setQuery($query);
-						if(!HIKASHOP_J25){
-							$products = $database->loadResultArray();
-						} else {
-							$products = $database->loadColumn();
-						}
+						$products = $database->loadColumn();
 					}
 					$productSelect = $nameboxType->display(
 						'action['.$table->table.']['.$key.'][updateRelateds][value]',
@@ -962,7 +951,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 						)
 					);
 
-					$output ='<select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_updateRelateds_type" name="action['.$table->table.']['.$key.'][updateRelateds][type]">';
+					$output ='<select class="custom-select chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_updateRelateds_type" name="action['.$table->table.']['.$key.'][updateRelateds][type]">';
 					$datas = array('add'=>'ADD', 'replace'=>'REPLACE');
 					foreach($datas as $k => $data){
 						$selected = '';
@@ -990,14 +979,10 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 					$options=array();
 					if(!empty($value->data) && !empty($value->data['value'])){
-						JArrayHelper::toInteger($value->data['value']);
+						hikashop_toInteger($value->data['value']);
 						$query = 'SELECT product_id,product_name FROM '.hikashop_table('product').' WHERE product_id IN ('.implode($value->data['value'],',').')';
 						$database->setQuery($query);
-						if(!HIKASHOP_J25){
-							$options = $database->loadResultArray();
-						} else {
-							$options = $database->loadColumn();
-						}
+						$options = $database->loadColumn();
 					}
 					$productSelect = $nameboxType->display(
 						'action['.$table->table.']['.$key.'][updateOptions][value]',
@@ -1010,7 +995,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 						)
 					);
 
-					$output ='<select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_updateOptions_type" name="action['.$table->table.']['.$key.'][updateOptions][type]">';
+					$output ='<select class="custom-select chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_updateOptions_type" name="action['.$table->table.']['.$key.'][updateOptions][type]">';
 					$datas = array('add'=>'ADD', 'replace'=>'REPLACE');
 					foreach($datas as $k => $data){
 						$selected = '';
@@ -1042,7 +1027,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					$characteristics = $database->loadObjectList();
 
 					if(!empty($characteristics)){
-						$output ='<select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_updateCharacteristics_type" name="action['.$table->table.']['.$key.'][updateCharacteristics][type]">';
+						$output ='<select class="custom-select chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_updateCharacteristics_type" name="action['.$table->table.']['.$key.'][updateCharacteristics][type]">';
 						$datas = array('add'=>'ADD', 'delete'=>'HIKA_DELETE');
 						foreach($datas as $k => $data){
 							$selected = '';
@@ -1095,36 +1080,25 @@ class plgSystemHikashopmassaction extends JPlugin {
 						continue;
 					if(!isset($value->data['type'])) $value->data['type'] = 'add';
 					if(!isset($value->data['value'])) $value->data['value'] = '1';
-					if(HIKASHOP_J25){
-						$query = 'SELECT * FROM '.hikashop_table('usergroups',false);
-					}else{
-						$query = 'SELECT * FROM '.hikashop_table('core_acl_aro_groups',false);
-					}
+					$query = 'SELECT * FROM '.hikashop_table('usergroups',false);
+
 					$database->setQuery($query);
 					$groups = $database->loadObjectList();
-					if(HIKASHOP_J25){
-						$output ='<select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_changeGroup_type" name="action['.$table->table.']['.$key.'][changeGroup][type]">';
-						$datas = array('add'=>'ADD', 'replace'=>'REPLACE');
-						if(HIKASHOP_J25)
-							$datas['remove'] = 'REMOVE';
-						foreach($datas as $k => $data){
-							$selected = '';
-							if($k == $value->data['type']) $selected = 'selected="selected"';
-							$output .='<option value="'.$k.'" '.$selected.'>'.JText::_($data).'</option>';
-						}
-						$output .='</select>';
-					}else{
-						$output = JText::_('REPLACE_BY').' ';
+
+					$output ='<select class="custom-select chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_changeGroup_type" name="action['.$table->table.']['.$key.'][changeGroup][type]">';
+					$datas = array('add'=>'ADD', 'replace'=>'REPLACE','remove' =>'REMOVE');
+					foreach($datas as $k => $data){
+						$selected = '';
+						if($k == $value->data['type']) $selected = 'selected="selected"';
+						$output .='<option value="'.$k.'" '.$selected.'>'.JText::_($data).'</option>';
 					}
-					$output .= '<select class="chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_changeGroup_value" name="action['.$table->table.']['.$key.'][changeGroup][value]">'; // categories
+					$output .='</select>';
+
+					$output .= '<select class="custom-select chzn-done not-processed" id="action_'.$table->table.'_'.$key.'_changeGroup_value" name="action['.$table->table.']['.$key.'][changeGroup][value]">'; // categories
 					foreach($groups as $group){
 						$selected = '';
 						if($group->id == $value->data['value']) $selected = 'selected="selected"';
-						if(HIKASHOP_J25){
-							$output .='<option value="'.$group->id.'" '.$selected.'>'.JText::_($group->title).'</option>';
-						}else{
-							$output .='<option value="'.$group->id.'" '.$selected.'>'.JText::_($group->name).'</option>';
-						}
+						$output .='<option value="'.$group->id.'" '.$selected.'>'.JText::_($group->title).'</option>';
 					}
 					$output .= '</select>';
 
@@ -1151,11 +1125,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				}
 			}";
 
-		if(!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		} else {
-			$doc = JFactory::getDocument();
-		}
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( "<!--\n".$js."\n//-->\n" );
 	}
 
@@ -1510,7 +1480,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 	function onLoadDatatMassActionBeforeEdition($data,$data_id,$table,$column,$type,$ids,&$query,&$view){
 		$database = JFactory::getDBO();
-		JArrayHelper::toInteger($ids);
+		hikashop_toInteger($ids);
 		switch($type){
 			case 'price':
 				$query = 'SELECT '.$column.','.$table.'_id';

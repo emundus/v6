@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,7 +15,7 @@ if(empty($this->ajax)) {
 ?>
 <div id="hikashop_address_listing">
 <?php
-echo $this->toolbarHelper->process($this->toolbar, JText::_('ADDRESSES'));
+echo $this->toolbarHelper->process($this->toolbar, $this->title);
 ?>
 <div class="hikashop_address_listing_div">
 <form action="<?php echo hikashop_completeLink('address'); ?>" name="hikashop_user_address" method="post">
@@ -106,7 +106,7 @@ foreach($this->addresses as $address) {
 if(!empty($this->two_columns)) {
 ?>
 		<div class="" style="margin-top:6px;">
-			<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('billing');"><?php echo JText::_('HIKASHOP_NEW_BILLING_ADDRESS'); ?></a>
+			<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('billing');"><i class="fa fa-plus"></i> <?php echo JText::_('HIKASHOP_NEW_BILLING_ADDRESS'); ?></a>
 		</div>
 	</div>
 	<div class="hkc-md-6">
@@ -128,7 +128,7 @@ if(!empty($this->two_columns)) {
 	}
 ?>
 		<div class="" style="margin-top:6px;">
-			<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('shipping');"><?php echo JText::_('HIKASHOP_NEW_SHIPPING_ADDRESS'); ?></a>
+			<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('shipping');"><i class="fa fa-plus"></i> <?php echo JText::_('HIKASHOP_NEW_SHIPPING_ADDRESS'); ?></a>
 		</div>
 	</div>
 </div>
@@ -136,8 +136,8 @@ if(!empty($this->two_columns)) {
 } else {
 ?>
 	<div class="" style="margin-top:6px;">
-		<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('billing');"><?php echo JText::_('HIKASHOP_NEW_BILLING_ADDRESS'); ?></a>
-		<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('shipping');"><?php echo JText::_('HIKASHOP_NEW_SHIPPING_ADDRESS'); ?></a>
+		<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('billing');"><i class="fa fa-plus"></i> <?php echo JText::_('HIKASHOP_NEW_BILLING_ADDRESS'); ?></a>
+		<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('shipping');"><i class="fa fa-plus"></i> <?php echo JText::_('HIKASHOP_NEW_SHIPPING_ADDRESS'); ?></a>
 	</div>
 <?php
 }

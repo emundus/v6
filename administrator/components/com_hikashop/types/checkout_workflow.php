@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -90,10 +90,10 @@ class hikashopCheckout_workflowType {
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashopshipping');
 		JPluginHelper::importPlugin('hikashoppayment');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$list = array();
-		$dispatcher->trigger('onCheckoutStepList', array(&$list));
+		$app->triggerEvent('onCheckoutStepList', array(&$list));
 		if(!empty($list)) {
 			foreach($list as $k => $v) {
 				if(isset($this->checkoutlist[$k]))
@@ -235,7 +235,7 @@ class hikashopCheckout_workflowType {
 <div class="checkout_content_block checkout_content_new_block" data-checkout="add">
 	<div class="checkout_content_block_main">
 		<span class="checkout_content_block_title checkout_content_new_block_title">'.JText::_('NEW_BLOCK').'</span>
-		'.JHTML::_('select.genericlist', $values, '', ' data-checkout="addlist"', 'value', 'text', '').'<div class="checkout_content_add_block">
+		'.JHTML::_('select.genericlist', $values, '', 'class="custom-select" data-checkout="addlist"', 'value', 'text', '').'<div class="checkout_content_add_block">
 		<a href="#addblock" class="btn btn-primary" onclick="return window.checkoutWorkflowEditor.addBlock(this);">'.JText::_('HK_ADD_CHECKOUT_BLOCK').'</a></div>
 	</div>
 </div>'.$end;
@@ -246,7 +246,7 @@ class hikashopCheckout_workflowType {
 		<span class="checkout_step_title">'.JText::sprintf('STEP_X', '<span data-checkout="num">'.$id_inc.'</span>').'</span>
 		<input type="text" value="'.$this->escape(@$name).'" data-checkout-step-name="'.$id.'" data-placeholder="'.JText::_('HIKASHOP_CHECKOUT_END').'" onblur="window.checkoutWorkflowEditor.onChange(this);"/>
 		<a href="#delete" class="checkout_content_step_delete" title="'.JText::_('DELETE_THIS_STEP').'" onclick="return window.checkoutWorkflowEditor.stepDelete(this);"></a>
-		<div class="checkout_step_content clearfix" data-consistencyheight=".checkout_content_block">',$end
+		<div class="checkout_step_content" data-consistencyheight=".checkout_content_block">',$end
 		);
 	}
 
@@ -381,7 +381,7 @@ window.checkoutWorflowUrls = '.json_encode($urls).';
 					$s['namebox_params']
 				).'<script>window.hikashop.ready(function(){'.
 					'var fct=function(p){window.checkoutWorkflowEditor.onChange("'.$id.'");}, n=window.oNameboxes["'.$id.'"];'.
-					'n.register("set",fct);n.register("unset",fct);'.
+					'if(n){n.register("set",fct);n.register("unset",fct);}'.
 					'});</script>';
 				break;
 			case 'group':

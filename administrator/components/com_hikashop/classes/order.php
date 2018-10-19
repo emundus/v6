@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -60,7 +60,7 @@ class hikashopOrderClass extends hikashopClass {
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$order_type = '';
 		if(!empty($order->old->order_type)) $order_type = $order->old->order_type;
@@ -69,7 +69,7 @@ class hikashopOrderClass extends hikashopClass {
 		$recalculate = false;
 		if(!empty($order->product)) {
 			$do = true;
-			$dispatcher->trigger('onBeforeOrderProductsUpdate', array(&$order, &$do) );
+			$app->triggerEvent('onBeforeOrderProductsUpdate', array(&$order, &$do) );
 			if(!$do)
 				return false;
 
@@ -165,9 +165,9 @@ class hikashopOrderClass extends hikashopClass {
 
 		$do = true;
 		if($new) {
-			$dispatcher->trigger('onBeforeOrderCreate', array(&$order, &$do) );
+			$app->triggerEvent('onBeforeOrderCreate', array(&$order, &$do) );
 		} else {
-			$dispatcher->trigger('onBeforeOrderUpdate', array(&$order, &$do) );
+			$app->triggerEvent('onBeforeOrderUpdate', array(&$order, &$do) );
 		}
 
 		if(!$do)
@@ -346,7 +346,7 @@ class hikashopOrderClass extends hikashopClass {
 							' SET order_payment_params = '.$this->database->Quote(serialize($order->order_payment_params)).
 							' WHERE order_id = '.(int)$order->order_id;
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 					}
 				}
 			}
@@ -362,7 +362,7 @@ class hikashopOrderClass extends hikashopClass {
 					' SET discount_used_times = discount_used_times + 1 '.
 					' WHERE discount_code='.$this->database->Quote($order->order_discount_code).' AND discount_type=\'coupon\' LIMIT 1';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 		} elseif(isset($order->order_status) && !empty($order->old->order_status) && $order_type == 'sale') {
 
@@ -384,7 +384,7 @@ class hikashopOrderClass extends hikashopClass {
 				}
 				$query = 'UPDATE '.hikashop_table('discount').' SET discount_used_times = discount_used_times - 1 WHERE discount_code='.$this->database->Quote($code).' AND discount_type=\'coupon\' LIMIT 1';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 			if($update_stock_after_confirm)
@@ -413,7 +413,7 @@ class hikashopOrderClass extends hikashopClass {
 
 		if($new) {
 			$send_email = $this->sendEmailAfterOrderCreation;
-			$dispatcher->trigger('onAfterOrderCreate', array(&$order, &$send_email));
+			$app->triggerEvent('onAfterOrderCreate', array(&$order, &$send_email));
 
 			$historyClass->addRecord($order);
 
@@ -460,7 +460,7 @@ class hikashopOrderClass extends hikashopClass {
 			}
 		} else {
 			$send_email = @$order->history->history_notified;
-			$dispatcher->trigger('onAfterOrderUpdate', array( &$order, &$send_email) );
+			$app->triggerEvent('onAfterOrderUpdate', array( &$order, &$send_email) );
 
 			$historyClass->addRecord($order);
 
@@ -533,8 +533,8 @@ class hikashopOrderClass extends hikashopClass {
 		$max_capture = $order_capture_price;
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeOrderPaymentCapture', array(&$order, $order_full_price, &$order_capture_price, &$do) );
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeOrderPaymentCapture', array(&$order, $order_full_price, &$order_capture_price, &$do) );
 		if(!$do || $order_capture_price <= 0 || $order_capture_price > $max_capture)
 			return false;
 
@@ -676,17 +676,29 @@ class hikashopOrderClass extends hikashopClass {
 			if(isset($product->files))
 				$orderProduct->files =& $product->files;
 
-			if(!empty($cart->shipping)) {
+			if(!empty($cart->shipping) && !empty($order->order_shipping_id)) {
+				$shippings = explode(';', $order->order_shipping_id);
 				$shipping_done = false;
 				foreach($cart->shipping_groups as $group_key => $group_products) {
-					if(!isset($shippings[$group_key]))
-						continue;
 					foreach($group_products->products as $group_product) {
 						if((int)$group_product->cart_product_id == (int)$product->cart_product_id) {
-							$orderProduct->order_product_shipping_id = $shippings[$group_key]['id'] . '@' . $group_key;
-							$orderProduct->order_product_shipping_method = $shippings[$group_key]['name'];
-							$shipping_done = true;
-							break;
+							foreach( $shippings as $shipping) {
+								list($shipping_id, $shipping_group_key) = explode('@', $shipping, 2);
+								if($shipping_group_key == $group_key) {
+									foreach($cart->shipping as $cart_shipping) {
+										if($cart_shipping->shipping_id == $shipping_id) {
+											$orderProduct->order_product_shipping_id = $shipping;
+											$orderProduct->order_product_shipping_method = $cart_shipping->shipping_type;
+											$shipping_done = true;
+											break;
+										}
+									}
+									if($shipping_done)
+										break;
+								}
+							}
+							if($shipping_done)
+								break;
 						}
 					}
 					if($shipping_done)
@@ -1199,17 +1211,17 @@ class hikashopOrderClass extends hikashopClass {
 		$total = 0.0;
 		$taxes = array();
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		foreach($products as $i => $product) {
 			if($product->order_product_code != 'order additional') {
-				$dispatcher->trigger( 'onBeforeCalculateProductPriceForQuantityInOrder', array( &$products[$i]) );
+				$app->triggerEvent( 'onBeforeCalculateProductPriceForQuantityInOrder', array( &$products[$i]) );
 				if(function_exists('hikashop_product_price_for_quantity_in_order')) {
 					hikashop_product_price_for_quantity_in_order($product);
 				} else {
 					$product->order_product_total_price = ($product->order_product_price + $product->order_product_tax) * $product->order_product_quantity;
 				}
-				$dispatcher->trigger('onAfterCalculateProductPriceForQuantityInOrder', array( &$products[$i]) );
+				$app->triggerEvent('onAfterCalculateProductPriceForQuantityInOrder', array( &$products[$i]) );
 			} else {
 				$product->order_product_total_price = ($product->order_product_price + $product->order_product_tax);
 			}
@@ -1324,24 +1336,24 @@ class hikashopOrderClass extends hikashopClass {
 				$order->geolocation = $this->database->loadObject();
 			}
 
-			$query='SELECT * FROM '.hikashop_table('history').' WHERE history_order_id='.$order_id.' ORDER BY history_created DESC';
+			$query='SELECT * FROM '.hikashop_table('history').' WHERE history_order_id='.$order_id.' ORDER BY history_id DESC, history_created DESC';
 			$this->database->setQuery($query);
 			$order->history = $this->database->loadObjectList();
 
 			if(!empty($order->order_partner_id)) {
 				$order->partner = $userClass->get($order->order_partner_id);
 			}
-			$type='backend';
+			$type = 'backend';
 		} elseif($checkUser) {
-			if(empty($order->customer->user_cms_id) || (int)$order->customer->user_cms_id == 0){
+			if(empty($order->customer->user_cms_id) || (int)$order->customer->user_cms_id == 0) {
 				$token = hikaInput::get()->getVar('order_token');
 				if(empty($token))
 					$token = $app->getUserState('com_hikashop.order_token');
 
-				if(empty($order->order_token) || $token != $order->order_token){
+				if(empty($order->order_token) || $token != $order->order_token) {
 					return null;
 				}
-			}elseif( hikashop_loadUser(false) != $order->order_user_id ){
+			} elseif(hikashop_loadUser(false) != $order->order_user_id) {
 				return null;
 			}
 		}
@@ -1362,7 +1374,7 @@ class hikashopOrderClass extends hikashopClass {
 			} else {
 				$shipping_ids = array($order->order_shipping_id);
 			}
-			JArrayHelper::toInteger($shipping_ids);
+			hikashop_toInteger($shipping_ids);
 
 			$query = 'SELECT * FROM ' . hikashop_table('shipping') . ' WHERE shipping_id IN (' . implode(',', $shipping_ids).')';
 			$this->database->setQuery($query);
@@ -1372,7 +1384,7 @@ class hikashopOrderClass extends hikashopClass {
 		if(!empty($order->order_shipping_method)) {
 			$currentShipping = hikashop_import('hikashopshipping', $order->order_shipping_method);
 			if(method_exists($currentShipping, 'getShippingAddress')) {
-				$override = $currentShipping->getShippingAddress($order->order_shipping_id);
+				$override = $currentShipping->getShippingAddress($order->order_shipping_id, $order);
 				if($override !== false) {
 					$order->override_shipping_address = $override;
 				}
@@ -1388,18 +1400,18 @@ class hikashopOrderClass extends hikashopClass {
 		$this->loadProducts($order);
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$order->order_subtotal_no_vat = $order->order_subtotal = 0;
 		foreach($order->products as $k => $product) {
-			$dispatcher->trigger( 'onBeforeCalculateProductPriceForQuantityInOrder', array( &$order->products[$k]) );
+			$app->triggerEvent( 'onBeforeCalculateProductPriceForQuantityInOrder', array( &$order->products[$k]) );
 			if(function_exists('hikashop_product_price_for_quantity_in_order')) {
 				hikashop_product_price_for_quantity_in_order($order->products[$k]);
 			} else {
 				$order->products[$k]->order_product_total_price_no_vat = $product->order_product_price*$product->order_product_quantity;
 				$order->products[$k]->order_product_total_price = ($product->order_product_price+$product->order_product_tax)*$product->order_product_quantity;
 			}
-			$dispatcher->trigger( 'onAfterCalculateProductPriceForQuantityInOrder', array( &$order->products[$k]) );
+			$app->triggerEvent( 'onAfterCalculateProductPriceForQuantityInOrder', array( &$order->products[$k]) );
 
 			$order->order_subtotal_no_vat += $order->products[$k]->order_product_total_price_no_vat;
 			$order->order_subtotal += $order->products[$k]->order_product_total_price;
@@ -1548,6 +1560,8 @@ class hikashopOrderClass extends hikashopClass {
 			if(!empty($product->order_product_tax_info)) {
 				$order->products[$k]->order_product_tax_info = hikashop_unserialize($order->products[$k]->order_product_tax_info);
 			}
+			if(!empty($product->order_product_params))
+				$order->products[$k]->order_product_params = json_decode($product->order_product_params);
 			if($product->order_product_code == 'order additional') {
 				unset($order->products[$k]);
 				$order->additional[] = $product;
@@ -1696,13 +1710,11 @@ class hikashopOrderClass extends hikashopClass {
 			$element->mail->dst_name = '';
 		}
 		$lang = JFactory::getLanguage();
-		if(HIKASHOP_J25 && !method_exists($lang, 'publicLoadLanguage'))
+		if(!method_exists($lang, 'publicLoadLanguage'))
 			$lang = new hikaLanguage($lang);
 		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
 		$lang->load(HIKASHOP_COMPONENT, JPATH_SITE, null, true );
-		if(!HIKASHOP_J16 && file_exists($override_path))
-			$lang->_load($override_path, 'override');
-		elseif(HIKASHOP_J25)
+		if(file_exists($override_path))
 			$lang->publicLoadLanguage($override_path, 'override');
 	}
 
@@ -1786,16 +1798,13 @@ class hikashopOrderClass extends hikashopClass {
 		if(!empty($this->oldLocale)) {
 			$config->set('language', $this->oldLocale);
 			$debug = $config->get('debug');
-			if(HIKASHOP_J25)
-				JFactory::$language = new hikaLanguage($this->oldLocale, $debug);
+			JFactory::$language = new hikaLanguage($this->oldLocale, $debug);
 		}
 		$lang = JFactory::getLanguage();
 		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
 
 		$lang->load(HIKASHOP_COMPONENT, JPATH_SITE, null, true);
-		if(!HIKASHOP_J16 && file_exists($override_path))
-			$lang->_load($override_path, 'override');
-		elseif(HIKASHOP_J25)
+		if(file_exists($override_path))
 			$lang->publicLoadLanguage($override_path, 'override');
 	}
 
@@ -1819,23 +1828,18 @@ class hikashopOrderClass extends hikashopClass {
 			$params   = JComponentHelper::getParams('com_languages');
 			$locale = $params->get('site', 'en-GB');
 		}
-		if(HIKASHOP_J16){
-			$config = JFactory::getConfig();
-			$this->oldLocale=$config->get('language');
-			$config->set('language',$locale);
-			$debug = $config->get('debug');
-			if(HIKASHOP_J25) JFactory::$language = new hikaLanguage($locale, $debug);
-		}
+
+		$config = JFactory::getConfig();
+		$this->oldLocale=$config->get('language');
+		$config->set('language',$locale);
+		$debug = $config->get('debug');
+		JFactory::$language = new hikaLanguage($locale, $debug);
+
 		$lang = JFactory::getLanguage();
 		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$locale.'.override.ini';
 		$lang->load(HIKASHOP_COMPONENT, JPATH_SITE, $locale, true );
-		if(file_exists($override_path)){
-			if(!HIKASHOP_J16) {
-				$lang->_load($override_path,'override');
-			}elseif(HIKASHOP_J25){
-				$lang->publicLoadLanguage($override_path,'override');
-			}
-		}
+		if(file_exists($override_path))
+			$lang->publicLoadLanguage($override_path,'override');
 		return $locale;
 	}
 
@@ -1847,15 +1851,15 @@ class hikashopOrderClass extends hikashopClass {
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$do = true;
-		$dispatcher->trigger('onBeforeOrderDelete', array(&$elements, &$do));
+		$app->triggerEvent('onBeforeOrderDelete', array(&$elements, &$do));
 		if (!$do) {
 			return false;
 		}
 
-		JArrayHelper::toInteger($elements);
+		hikashop_toInteger($elements);
 		$query = 'SELECT order_billing_address_id, order_shipping_address_id '.
 				' FROM ' . hikashop_table('order') .
 				' WHERE order_id IN (' . implode(',', $elements) . ')';
@@ -1883,7 +1887,7 @@ class hikashopOrderClass extends hikashopClass {
 		$historyClass = hikashop_get('class.history');
 		$historyClass->deleteRecords($elements);
 
-		$dispatcher->trigger('onAfterOrderDelete', array(&$elements));
+		$app->triggerEvent('onAfterOrderDelete', array(&$elements));
 
 		return $result;
 	}
@@ -1946,9 +1950,9 @@ class hikashopOrderClass extends hikashopClass {
 		if(!empty($search)) {
 			$searchMap = array('o.order_id', 'o.order_number', 'u.user_email');
 			if(!HIKASHOP_J30)
-				$searchVal = '\'%' . $this->db->getEscaped(JString::strtolower($search), true) . '%\'';
+				$searchVal = '\'%' . $this->db->getEscaped(HikaStringHelper::strtolower($search), true) . '%\'';
 			else
-				$searchVal = '\'%' . $this->db->escape(JString::strtolower($search), true) . '%\'';
+				$searchVal = '\'%' . $this->db->escape(HikaStringHelper::strtolower($search), true) . '%\'';
 			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
 		}
 
@@ -2020,9 +2024,9 @@ class hikashopOrderClass extends hikashopClass {
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
-		$dispatcher->trigger('onBeforeCreateRecurringSuborder', array($order_id, &$order));
+		$app->triggerEvent('onBeforeCreateRecurringSuborder', array($order_id, &$order));
 
 		$this->sendEmailAfterOrderCreation = false;
 		foreach($order->products as $k => $product) {
@@ -2033,7 +2037,7 @@ class hikashopOrderClass extends hikashopClass {
 
 		$ret = $this->save($order);
 
-		$dispatcher->trigger('onAfterCreateRecurringSuborder', array($order_id, &$order));
+		$app->triggerEvent('onAfterCreateRecurringSuborder', array($order_id, &$order));
 
 		return $ret;
 	}

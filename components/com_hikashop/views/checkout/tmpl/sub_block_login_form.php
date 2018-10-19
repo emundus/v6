@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,13 +21,8 @@ if(JPluginHelper::isEnabled('authentication', 'openid')) {
 	JHTML::_('script', 'openid.js');
 }
 
-if(!HIKASHOP_J16) {
-	$reset_url = 'index.php?option=com_user&view=reset';
-	$remind_url = 'index.php?option=com_user&view=remind';
-} else {
-	$reset_url = 'index.php?option=com_users&view=reset';
-	$remind_url = 'index.php?option=com_users&view=remind';
-}
+$reset_url = 'index.php?option=com_users&view=reset';
+$remind_url = 'index.php?option=com_users&view=remind';
 
 if(!HIKASHOP_RESPONSIVE) {
 	$labelcolumnclass = 'hkc-sm-4';

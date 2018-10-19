@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,15 +41,15 @@ class addressController extends hikashopController
 			hikaInput::get()->set('layout', 'show');
 			hikaInput::get()->set('edition', true);
 			ob_end_clean();
-			if(HIKASHOP_J25){
-				$app = JFactory::getApplication();
-				$messages = $app->getMessageQueue();
-				if(!empty($messages)){
-					foreach($messages as $message){
-						hikashop_display($message['message'],'error');
-					}
+
+			$app = JFactory::getApplication();
+			$messages = $app->getMessageQueue();
+			if(!empty($messages)){
+				foreach($messages as $message){
+					hikashop_display($message['message'],'error');
 				}
 			}
+
 			parent::display();
 			exit;
 		}
@@ -74,11 +74,7 @@ class addressController extends hikashopController
 		global $Itemid;
 		$url = (!empty($Itemid)) ? '&Itemid='.$Itemid : '';
 
-		if(!HIKASHOP_J16) {
-			$url = 'index.php?option=com_user&view=login'.$url;
-		} else {
-			$url = 'index.php?option=com_users&view=login'.$url;
-		}
+		$url = 'index.php?option=com_users&view=login'.$url;
 		$app->redirect(JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('',false))),false));
 		return false;
 	}
@@ -86,11 +82,7 @@ class addressController extends hikashopController
 	public function delete() {
 		$addressdelete = hikaInput::get()->getInt('address_id', 0);
 		if($addressdelete) {
-			if(!HIKASHOP_J25) {
-				JRequest::checkToken('request') || die('Invalid Token');
-			} else {
-				JSession::checkToken('request') || die('Invalid Token');
-			}
+			JSession::checkToken('request') || die('Invalid Token');
 			$addressClass = hikashop_get('class.address');
 			$oldData = $addressClass->get($addressdelete);
 			$user_id = hikashop_loadUser(false);
@@ -106,11 +98,7 @@ class addressController extends hikashopController
 		if(empty($cid))
 			return $this->show();
 
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken('request') || die('Invalid Token');
-		} else {
-			JSession::checkToken('request') || die('Invalid Token');
-		}
+		JSession::checkToken('request') || die('Invalid Token');
 
 		$addressClass = hikashop_get('class.address');
 		$old = $addressClass->get($cid);
@@ -137,11 +125,7 @@ class addressController extends hikashopController
 		$newDefaultId = hikaInput::get()->getInt('address_default', 0);
 
 		if(!empty($newDefaultId)) {
-			if(!HIKASHOP_J25) {
-				JRequest::checkToken('request') || die('Invalid Token');
-			} else {
-				JSession::checkToken('request') || die('Invalid Token');
-			}
+			JSession::checkToken('request') || die('Invalid Token');
 		}
 
 		$status = 0;
@@ -167,11 +151,7 @@ class addressController extends hikashopController
 	}
 
 	public function save() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken('request') || die('Invalid Token');
-		} else {
-			JSession::checkToken('request') || die('Invalid Token');
-		}
+		JSession::checkToken('request') || die('Invalid Token');
 
 		$app = JFactory::getApplication();
 		$addressClass = hikashop_get('class.address');
@@ -238,11 +218,6 @@ class addressController extends hikashopController
 			$message = '';
 			if(isset($addressClass->message))
 				$message = 'alert(\''.addslashes($addressClass->message).'\');';
-
-			if(!HIKASHOP_J16) {
-				$session = JFactory::getSession();
-				$session->set('application.queue', $app->_messageQueue);
-			}
 
 			$this->edit();
 			return;

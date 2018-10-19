@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -213,16 +213,16 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		{
 			$sql =  "UPDATE `#__hikashop_config` SET config_value=(config_value+1) WHERE config_namekey = 'openc_import_state'; ";
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 			$sql = "UPDATE `#__hikashop_config` SET config_value=0 WHERE config_namekey = 'openc_import_current';";
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 		}
 		else if( $current != $this->options->current )
 		{
 			$sql =  "UPDATE `#__hikashop_config` SET config_value=".$this->options->current." WHERE config_namekey = 'openc_import_current';";
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		return $ret;
@@ -366,7 +366,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				",('openc_import_last_openc_manufacturer',".$this->options->last_openc_manufacturer.",".$this->options->last_openc_manufacturer.")".
 				';';
 			$this->db->setQuery($sql);
-			$this->db->query();
+			$this->db->execute();
 		}
 	}
 
@@ -385,13 +385,13 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		if ($create)
 		{
 			$this->db->setQuery("CREATE TABLE IF NOT EXISTS `#__hikashop_openc_prod` (`openc_id` int(11) unsigned NOT NULL DEFAULT '0', `hk_id` int(11) unsigned NOT NULL DEFAULT '0', PRIMARY KEY (`openc_id`)) ENGINE=MyISAM");
-			$this->db->query();
+			$this->db->execute();
 			$this->db->setQuery("CREATE TABLE IF NOT EXISTS `#__hikashop_openc_cat` (`openc_cat_id` INT(11) unsigned NOT NULL AUTO_INCREMENT, `openc_id` int(11) unsigned NOT NULL DEFAULT '0', `hk_id` int(11) unsigned NOT NULL DEFAULT '0', `category_type` varchar(255) NULL, PRIMARY KEY (`openc_cat_id`)) ENGINE=MyISAM");
-			$this->db->query();
+			$this->db->execute();
 			$this->db->setQuery("CREATE TABLE IF NOT EXISTS `#__hikashop_openc_user` (`openc_user_id` int(11) unsigned NOT NULL DEFAULT '0', `hk_user_cms_id` int(11) unsigned NOT NULL DEFAULT '0', PRIMARY KEY (`openc_user_id`)) ENGINE=MyISAM");
-			$this->db->query();
+			$this->db->execute();
 			$this->db->setQuery("CREATE TABLE IF NOT EXISTS `#__hikashop_openc_customer` (`openc_customer_id` int(11) unsigned NOT NULL DEFAULT '0', `hk_customer_cms_id` int(11) unsigned NOT NULL DEFAULT '0', PRIMARY KEY (`openc_customer_id`)) ENGINE=MyISAM");
-			$this->db->query();
+			$this->db->execute();
 
 			$databaseHelper = hikashop_get('helper.database');
 			$databaseHelper->addColumns('address','`address_openc_order_info_id` INT(11) NULL');
@@ -426,7 +426,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'WHERE octr.tax_rate_id > ' . (int)$this->options->last_openc_taxrate;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported taxes: ' . $total . '</p>';
 
@@ -448,14 +448,14 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'WHERE octc.tax_class_id > ' . (int)$this->options->last_openc_taxclass;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Taxes Categories: ' . $total . '</p>';
 
 		if( $total > 0 ) {
 			$this->options->max_hk_cat += $total;
 			$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'openc_import_max_hk_cat'; ");
-			$this->db->query();
+			$this->db->execute();
 			$this->importRebuildTree();
 		}
 
@@ -479,7 +479,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'WHERE octra.tax_rate_id > ' . (int)$this->options->last_openc_taxrate;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Taxations: ' . $total . '</p>';
 
@@ -502,7 +502,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'ORDER BY ocm.manufacturer_id ASC;';
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$datas = $this->db->loadObjectList();
 
 		$sql2 = 'INSERT INTO `'.$this->hikaDatabaseName.'`.`#__hikashop_category` (`category_id`,`category_parent_id`,`category_type`,`category_name`,`category_published`,'.
@@ -605,7 +605,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			$sql2 .= ';';
 			$sql4 .= ';';
 			$this->db->setQuery($sql2);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Manufacturers : ' . $total . '</p>';
 		}
@@ -619,13 +619,13 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			$rebuild = true;
 			$this->options->max_hk_cat += $total;
 			$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'openc_import_max_hk_cat'; ");
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		if ($doSql3)
 		{
 			$this->db->setQuery($sql3);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Fallback links : ' . $total . '</p>';
 		}
@@ -633,7 +633,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		if($doSql4)
 		{
 			$this->db->setQuery($sql4);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Manufacturers files : ' . $total . '</p>';
 		}
@@ -678,7 +678,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		if( $data->category_keywords != 'C' ) {
 			foreach($statuses as $k => $v) {
 				$this->db->setQuery("UPDATE `#__hikashop_category` SET category_keywords = '".$k."' WHERE category_type = 'status' AND category_name = '".$v."'; ");
-				$this->db->query();
+				$this->db->execute();
 			}
 		}
 
@@ -710,7 +710,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			}
 
 			$this->db->setQuery($sql0);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 
 			if( $total > 0 ) {
@@ -718,7 +718,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				$rebuild = true;
 				$this->options->max_hk_cat += $total;
 				$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'openc_import_max_hk_cat'; ");
-				$this->db->query();
+				$this->db->execute();
 				$sql0 = '';
 			}
 			else
@@ -735,7 +735,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'ORDER BY occ.parent_id ASC, occ.category_id ASC;';
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$datas = $this->db->loadObjectList();
 
 		$sql2 = 'INSERT INTO `'.$this->hikaDatabaseName.'`.`#__hikashop_category` (`category_id`,`category_parent_id`,`category_type`,`category_name`,`category_description`,`category_published`,'.
@@ -848,7 +848,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			$sql2 .= ';';
 			$sql4 .= ';';
 			$this->db->setQuery($sql2);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported Categories : ' . $total . '</p>';
 		}
@@ -862,13 +862,13 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			$rebuild = true;
 			$this->options->max_hk_cat += $total;
 			$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'openc_import_max_hk_cat'; ");
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		if ($doSql3)
 		{
 			$this->db->setQuery($sql3);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Fallback links : ' . $total . '</p>';
 		}
@@ -876,7 +876,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		if($doSql4)
 		{
 			$this->db->setQuery($sql4);
-			$this->db->query();
+			$this->db->execute();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Categories files : ' . $total . '</p>';
 		}
@@ -980,13 +980,13 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		if (empty($data))
 		{
 			$this->db->setQuery('ALTER TABLE `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'product` ADD COLUMN `hika_sku` VARCHAR(255) NOT NULL;');
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		$this->db->setQuery('UPDATE `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'product` AS ocp SET ocp.hika_sku = ocp.sku;');
-		$this->db->query();
+		$this->db->execute();
 		$this->db->setQuery("UPDATE `".$this->opencDatabase."`.`".$this->opencPrefix."product` AS ocp SET ocp.hika_sku = CONCAT(ocp.model,'_',ocp.product_id) WHERE ocp.hika_sku='';");
-		$this->db->query();
+		$this->db->execute();
 
 		$this->db->setQuery('SELECT hika_sku FROM `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'product` GROUP BY hika_sku HAVING COUNT(hika_sku)>1');
 		$data = $this->db->loadObjectList();
@@ -996,7 +996,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			foreach ($data as $d)
 			{
 				$this->db->setQuery("UPDATE `oc_product` AS ocp SET ocp.hika_sku = CONCAT(ocp.hika_sku,'_',ocp.product_id) WHERE ocp.hika_sku = '".$d->hika_sku."';");
-				$this->db->query();
+				$this->db->execute();
 			}
 		}
 
@@ -1037,22 +1037,22 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'WHERE ocp.manufacturer_id > '.(int)$this->options->last_openc_manufacturer.' OR ocp.product_id > '.$this->options->last_openc_prod.';';
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Inserted products: ' . $total . '</p>';
 
 		$this->db->setQuery($sql2);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Fallback links: ' . $total . '</p>';
 
 		$this->db->setQuery($sql4);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Inserted products files: ' . $total . '</p>';
 
 		$this->db->setQuery($sql5);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating products manufacturers: ' . $total . '</p>';
 
@@ -1093,7 +1093,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Prices imported : 0</p>';
 		}
 
-		$ret = $this->db->query();
+		$ret = $this->db->execute();
 		$cpt = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Prices imported : ' . $cpt .'</p>';
@@ -1123,7 +1123,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'WHERE hocp.openc_id > ' . (int)$this->options->last_openc_prod . ' OR hocc.openc_id > ' . $this->options->last_openc_cat;
 
 		$this->db->setQuery($sql);
-		$ret = $this->db->query();
+		$ret = $this->db->execute();
 
 		$total = $this->db->getAffectedRows();
 		$this->importRebuildTree();
@@ -1145,7 +1145,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'ORDER BY ocu.user_id ASC;';
 
 		$this->db->setQuery($sqla);
-		$this->db->query();
+		$this->db->execute();
 		$datas = $this->db->loadObjectList();
 		$i = $this->options->max_joomla_user + 1;
 
@@ -1167,7 +1167,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'ORDER BY occu.customer_id ASC;';
 
 		$this->db->setQuery($sqla);
-		$this->db->query();
+		$this->db->execute();
 		$datas = $this->db->loadObjectList();
 
 		if( empty($datas) )
@@ -1218,12 +1218,12 @@ class hikashopImportopencHelper extends hikashopImportHelper
 
 
 		$this->db->setQuery($sql0);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported users to Hikashop : ' . $total . '</p>';
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported addresses : ' . $total . '</p>';
 
@@ -1242,7 +1242,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			if ($customer)
 				$data->username = $data->email;
 			$this->db->setQuery("SELECT * FROM `#__users` WHERE username = ".$this->db->quote($data->username).";");
-			$this->db->query();
+			$this->db->execute();
 			$result = $this->db->loadObjectList();
 			if (!empty($result))
 			{
@@ -1279,7 +1279,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				if (isset($data->password)) //Don't insert guest
 				{
 					$this->db->setQuery($sqlb);
-					$this->db->query();
+					$this->db->execute();
 				}
 
 				if (!$customer)
@@ -1292,7 +1292,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				if (isset($data->password)) //Don't insert guest
 				{
 					$this->db->setQuery($sqlc);
-					$this->db->query();
+					$this->db->execute();
 				}
 
 				if ($customer)
@@ -1301,7 +1301,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 					$sqld .= '('.$data->user_id.','.$i.')';
 
 				$this->db->setQuery($sqld);
-				$this->db->query();
+				$this->db->execute();
 
 				$i++;
 				$cpt++;
@@ -1418,45 +1418,45 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'WHERE hko.order_openc_id > ' . (int)$this->options->last_openc_order;
 
 		$this->db->setQuery($sql1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported orders: ' . $total . '</p>';
 
 		$this->db->setQuery($sql1_1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating discount orders: ' . $total . '</p>';
 
 		$this->db->setQuery($sql2_1);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported orders addresses: ' . $total . '</p>';
 
 		$this->db->setQuery($sql3);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating billing addresses: ' . $total . '</p>';
 
 		$this->db->setQuery($sql4);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating shipping addresses: ' . $total . '</p>';
 
 		$this->db->setQuery($sql5);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating order payments: ' . $total . '</p>';
 
 		$this->db->setQuery($sql2_2);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Updating orders: ' . $total;
 		$this->db->setQuery($sql2_3);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '/' . $total;
 		$this->db->setQuery($sql2_4);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '/' . $total . '</p>';
 
@@ -1491,7 +1491,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'WHERE ocop.order_id > ' . (int)$this->options->last_openc_order . ';';
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Orders Items : '. $total .'</p>';
@@ -1568,7 +1568,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'WHERE ocd.download_id > '.(int)$this->options->last_openc_pfile;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Downloable files imported : ' . $total . '</p>';
@@ -1589,7 +1589,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'WHERE ocd.download_id > '.(int)$this->options->last_openc_pfile;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Downloable order files imported : ' . $total . '</p>';
@@ -1627,7 +1627,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				'SELECT '.implode(',',$data).' FROM `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'coupon` WHERE coupon_id > ' . $this->options->last_openc_coupon;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Discount codes/coupons imported : ' . $total . '</p>';
 
@@ -1645,7 +1645,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				'SELECT '.implode(',',$data).' FROM `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'voucher` WHERE voucher_id > ' . $this->options->last_openc_voucher;
 
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$total = $this->db->getAffectedRows();
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Vouchers imported : ' . $total . '</p>';
 
@@ -1664,7 +1664,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 						'SET hkcur.currency_rate = occ.value'
 		);
 
-		$ret = $this->db->query();
+		$ret = $this->db->execute();
 		$cpt = $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Currencies values imported : ' . $cpt .'</p>';
@@ -1744,7 +1744,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				",('openc_import_last_openc_manufacturer',".$this->options->last_openc_manufacturer.",".$this->options->last_openc_manufacturer.")".
 				';';
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 
 		echo '<p'.$this->titlefont.'>Import finished !</p>';
 

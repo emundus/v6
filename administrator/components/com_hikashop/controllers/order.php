@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -187,7 +187,7 @@ class OrderController extends hikashopController {
 		$quantities = hikaInput::get()->get('quantity', array(), 'array');
 		$rows = array();
 		if(!empty($product_ids)){
-			JArrayHelper::toInteger($product_ids);
+			hikashop_toInteger($product_ids);
 			$database	= JFactory::getDBO();
 			$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$product_ids).')';
 			$database->setQuery($query);
@@ -312,7 +312,7 @@ class OrderController extends hikashopController {
 
 					$query = 'UPDATE '.hikashop_table('cart').' SET user_id = '.$user_id.' WHERE cart_id = '.hikaInput::get()->getString('cart_id','0');
 					$db->setQuery($query);
-					$db->query();
+					$db->execute();
 					hikaInput::get()->set('user_id', $user_id);
 					$element = new stdClass();
 					$element->user_id = $user_id;

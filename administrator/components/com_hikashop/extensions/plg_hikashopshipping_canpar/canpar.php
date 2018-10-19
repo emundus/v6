@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -134,7 +134,7 @@ class plgHikashopshippingCANPAR extends hikashopShippingPlugin {
 			$i = 0;
 			$local_usable_rates = array();
 			foreach ($receivedMethods as $method) {
-				$local_usable_rates[$i] = (!HIKASHOP_PHP5) ? $rate : clone($rate);
+				$local_usable_rates[$i] = clone($rate);
 				$local_usable_rates[$i] -> shipping_price += $method['value'];
 				$selected_method = '';
 				$name = '';
@@ -235,11 +235,7 @@ function checkAllBox(id, type){
 }
 ";
 
-		if(!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		} else {
-			$doc = JFactory::getDocument();
-		}
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( "<!--\n".$js."\n//-->\n" );
 	}
 

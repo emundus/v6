@@ -1,27 +1,32 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><?php if(!empty($this->title)) { ?>
+?><?php
+if(!empty($this->title)) {
+?>
 <div class="header hikashop_header_title">
-	<h1>
-	<?php echo $this->title; ?>
-	</h1>
+	<h1><?php
+		echo $this->title;
+	?></h1>
 </div>
 <?php
 }
+
+if(empty($this->data))
+	return;
 
 $toolbar_classname = $this->config->get('front_toolbar_btn_classname', 'hikabtn');
 if(empty($toolbar_classname))
 	$toolbar_classname = 'hikabtn';
 
 ?>
-<div class="hika_toolbar toolbar">
+<div class="hika_toolbar">
 	<div class="hika_toolbar_btn hika_btn_32">
 <?php
 foreach($this->data as $key => $tool) {
@@ -32,7 +37,16 @@ foreach($this->data as $key => $tool) {
 
 	$content = '';
 	if(!empty($tool['icon'])) { $content .= '<span class="btnIcon icon-32-'.$tool['icon'].'"></span>'; }
-	if(!empty($tool['name'])) { $content .= '<span class="btnName">' . $tool['name'] . '</span>'; }
+	if(!empty($tool['fa'])) {
+		$fa_size = !empty($tool['fa']['size']) ? (int)$tool['fa']['size'] : 2;
+		$fa_stack = is_array($tool['fa']['html']) ? 'fa-stack ': '';
+		$fa_content = is_array($tool['fa']['html']) ? implode('', $tool['fa']['html']) : $tool['fa']['html'];
+
+		$content = '<span class="btnIcon hk-icon '.$fa_stack.'fa-'.$fa_size.'x">'.$fa_content.'</span>';
+
+		$tool['dropdown']['options']['fa'] = $tool['fa'];
+	}
+	if(!empty($tool['name'])) { $content .=  '<span class="btnName">' . $tool['name'] . '</span>'; }
 
 	if(!empty($tool['url']) || !empty($tool['javascript'])) {
 		if(empty($tool['popup'])) {

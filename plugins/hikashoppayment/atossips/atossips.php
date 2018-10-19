@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -344,15 +344,16 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		$history->amount = $amount.$this->currency->currency_code;
 		$history->data = $details;
 
+		if($this->payment_params->debug) {
+
+			$this->writeToLog("Transaction Result :\n ".$details."\n\n");
+		}
+
 		if (empty($user_return) ) {
 
 			$this->modifyOrder($order_id, $order_status, $history, $email);
 		}
 
-		if($this->payment_params->debug) {
-
-			$this->writeToLog("Transaction Result :\n ".$details."\n\n");
-		}
 
 		if($user_return) {
 			$this->writeToLog();

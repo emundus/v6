@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ class BadgeViewBadge extends hikashopView {
 	var $ctrl= 'badge';
 	var $nameListing = 'HIKA_BADGES';
 	var $nameForm = 'HIKA_BADGES';
-	var $icon = 'badge';
+	var $icon = 'image';
 
 	function display($tpl = null){
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -43,7 +43,7 @@ class BadgeViewBadge extends hikashopView {
 		$filters = array();
 		$searchMap = array('a.badge_id','a.badge_name','a.badge_position');
 		if(!empty($pageInfo->search)){
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
+			$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($pageInfo->search)),true).'%\'';
 			$filters[] =  implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal";
 		}
 		$order = '';
@@ -202,9 +202,7 @@ class BadgeViewBadge extends hikashopView {
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&badge_id='.$badge_id);
 
 		$this->toolbar = array(
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION,'1.7','>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing')

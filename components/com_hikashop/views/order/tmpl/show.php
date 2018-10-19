@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -491,7 +491,7 @@ if($this->invoice_type == 'order') {
 							<tr>
 								<td class="hikashop_order_tax_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
-										echo $tax->tax_namekey;
+										echo hikashop_translate($tax->tax_namekey);
 									?></label>
 								</td>
 								<td class="hikashop_order_tax_value"><?php
@@ -559,8 +559,8 @@ if($this->invoice_type == 'order') {
 	JPluginHelper::importPlugin('hikashop');
 	JPluginHelper::importPlugin('hikashopshipping');
 	JPluginHelper::importPlugin('hikashoppayment');
-	$dispatcher = JDispatcher::getInstance();
-	$dispatcher->trigger('onAfterOrderProductsListingDisplay', array(&$this->order, 'order_front_show'));
+	$app = JFactory::getApplication();
+	$app->triggerEvent('onAfterOrderProductsListingDisplay', array(&$this->order, 'order_front_show'));
 ?>
 			</td>
 		</tr>

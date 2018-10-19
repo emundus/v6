@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,11 +33,7 @@ class CurrencyController extends hikashopController{
 		if($ratePlugin){
 			$ratePlugin->updateRates();
 		} else {
-			if(!HIKASHOP_PHP5) {
-				$app=& JFactory::getApplication();
-			} else {
-				$app= JFactory::getApplication();
-			}
+			$app= JFactory::getApplication();
 			$app->enqueueMessage('Currencies rates auto update plugin not found !','error');
 		}
 		$this->listing();

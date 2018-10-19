@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,6 @@ class hikashopDropdownHelper {
 
 	public function display($label, $data, $options = array()) {
 		$this->init();
-
 		$class = '';
 		if(!empty($options['main_class']))
 			$class .= ' '.$options['main_class'];
@@ -37,6 +36,15 @@ class hikashopDropdownHelper {
 		if(!empty($options['hkicon']))
 			$drop_label = '<span class="hkdropdown-icon '.htmlentities($options['hkicon']).'" title="'.htmlentities($label).'"></span> <span class="hkdropdown-label">'.htmlentities($label) . $caret . '</span>';
 
+		if (!empty($options['fa'])) {
+			$fa_stack = is_array($options['fa']['html']) ? 'fa-stack ': '';
+			$fa_size = !empty($options['fa']['size']) ? (int)$options['fa']['size'] : 2;
+			$fa_content = is_array($options['fa']['html']) ? implode('', $options['fa']['html']) : $options['fa']['html'];
+
+			$drop_label = '<span class="btnIcon hk-icon '.$fa_stack.'fa-'.$fa_size.'x" title="'.htmlentities($label).'">'.$fa_content.'</span>'.
+				' <span class="hkdropdown-label">'.htmlentities($label) . $caret . '</span>';
+		}
+
 		$extra = '';
 		if(!empty($options['id']))
 			$extra .= ' id="'.$options['id'].'"';
@@ -44,8 +52,11 @@ class hikashopDropdownHelper {
 		$class = 'hikabtn';
 		if(!empty($options['mini']))
 			$class .= ' '.$class.'-mini';
+		if(!empty($options['class']))
+			$class .= ' ' . $options['class'];
 
 		$type = @$options['type'];
+
 		switch($type) {
 			case 'caret':
 				$ret .= '<a href="#" data-toggle="hkdropdown" class="caret" aria-haspopup="true" aria-expanded="false"></a>';
@@ -91,6 +102,11 @@ class hikashopDropdownHelper {
 				$extra .= ' '.trim($d['extra']);
 			if(!empty($d['click']))
 				$extra .= ' onclick="'.trim($d['click']).'"';
+
+			if(!empty($d['header'])) {
+				$ret .= '<li><h6 class="hkdropdown-header"'.$extra.'>'.$name.'</h6></li>';
+				continue;
+			}
 
 			if(empty($d['disable']))
 				$ret .= '<li><a href="'.$link.'"'.$extra.'>'.$name.'</a></li>';
