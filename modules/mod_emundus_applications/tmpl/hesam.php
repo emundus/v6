@@ -56,11 +56,11 @@ $uri = JUri::getInstance();
 
                     <div class="col-md-12 em-bottom-space">
                         <?php if ($application->status == 1) : ?>
-                            <a id="complete" class="btn btn-success btn-xs" onClick="completefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('COMPLETE_APPLICATION'); ?>">
+                            <a class="btn btn-success btn-xs em-cloturer" onClick="completefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('COMPLETE_APPLICATION'); ?>">
                                 <i class="check icon"></i> <?php echo JText::_('COMPLETE_APPLICATION'); ?>
                             </a>
                         <?php elseif ($application->status == 2) : ?>
-                            <a id="complete" class="btn btn-success btn-xs" onClick="publishfile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('PUBLISH_APPLICATION'); ?>">
+                            <a class="btn btn-success btn-xs em-publier" onClick="publishfile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('PUBLISH_APPLICATION'); ?>">
                                 <i class="check icon"></i> <?php echo JText::_('PUBLISH_APPLICATION'); ?>
                             </a>
                         <?php endif; ?>

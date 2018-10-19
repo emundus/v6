@@ -739,7 +739,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         maintainAspectRatio: false,
                         title:{
                             display: true,
-                            text: "Dossiers",
+                            text: "Offres",
                             fontSize: 20
                         }
                     }
