@@ -806,19 +806,16 @@ class EmundusModelFiles extends JModelLegacy
 
         if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
             $sql_code = '1=1';
-            $and = ' AND ';
         } elseif (isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+            $sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
+        } else {
             // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
             // if(count($this->code)>0)
             $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
-            $and = ' OR ';
-        } else {
-            $sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
-            $and = ' AND ';
         }
         $sql_fnum = '';
         if (count($this->fnum_assoc)>0)
-            $sql_fnum = $and.' jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+            $sql_fnum = ' OR jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 
         $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
         return $query;
@@ -833,11 +830,11 @@ class EmundusModelFiles extends JModelLegacy
     {
         $q = array('q' => array(), 'join' => array());
         $all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
-        
+
         foreach ($str_array as $str) {
-           
+
             $val = explode(': ', $str);
-            
+
                /* if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -865,17 +862,17 @@ class EmundusModelFiles extends JModelLegacy
                             $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
                             $q['users'] = true;
                         }
-                            
+
                         if (!in_array('jos_emundus_users', $tableAlias)){
                             $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
                             $q['em_user'] = true;
                         }
-                            
+
                     }
                 }
             }
             if($val[0] == "FNUM"){
-                
+
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -887,7 +884,7 @@ class EmundusModelFiles extends JModelLegacy
                 }
             }
             if($val[0] == "ID"){
-                
+
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -899,37 +896,37 @@ class EmundusModelFiles extends JModelLegacy
                 }
             }
             if($val[0] == "EMAIL"){
-               
-                
+
+
                     //the request is an email
                     $q['q'][] = 'u.email like "%'.$val[1].'%"';
                     if (!in_array('jos_users', $tableAlias))
                         $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
                     $q['users'] = true;
-                
+
             }
             if($val[0] == "USERNAME"){
                  //the request is an username
-               
+
 				$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
 				if (!in_array('jos_users', $tableAlias))
 					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
 				$q['users'] = true;
-			
+
             }
             if($val[0] == "LAST_NAME"){
                 //the request is an lastname
-             
-                    $q['q'][] = ' (eu.lastname LIKE "%' . ($val[1]) . '%" ) '; 
+
+                    $q['q'][] = ' (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
                     if (!in_array('jos_emundus_users', $tableAlias)){
                         $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
                         $q['em_user'] = true;
                     }
-                
+
             }
             if($val[0] == "FIRST_NAME"){
                 //the request is a firstname
-                
+
                     $q['q'][] = ' (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
                     if (!in_array('jos_emundus_users', $tableAlias)){
                         $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
@@ -938,7 +935,7 @@ class EmundusModelFiles extends JModelLegacy
             }*/
 
             if($val[0] == "ALL"){
-                
+
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -951,7 +948,7 @@ class EmundusModelFiles extends JModelLegacy
                     if (!in_array('jos_users', $tableAlias))
                         $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
                     $q['users'] = true;
-                    
+
                 }
                 else
                 {
@@ -979,18 +976,18 @@ class EmundusModelFiles extends JModelLegacy
                             $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
                             $q['users'] = true;
                         }
-                            
+
                         if (!in_array('jos_emundus_users', $tableAlias)){
                             $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
                             $q['em_user'] = true;
                         }
                     }
                 }
-                
+
                 $all = $all + 1;
             }
             if($val[0] == "FNUM"){
-                
+
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -1003,12 +1000,12 @@ class EmundusModelFiles extends JModelLegacy
                     if (!in_array('jos_users', $tableAlias))
                         $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
                     $q['users'] = true;
-                    
+
                     $fnum = $fnum + 1;
                 }
             }
             if($val[0] == "ID"){
-                
+
                 if (is_numeric($val[1]))
                 {
                     //possibly fnum ou uid
@@ -1017,16 +1014,16 @@ class EmundusModelFiles extends JModelLegacy
                     }else{
                         $q['q'][]= ' and (u.id = ' . $val[1] . ') ';
                     }
-                   
+
                     if (!in_array('jos_users', $tableAlias))
                         $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
                     $q['users'] = true;
-                   
+
                     $id = $id + 1;
                 }
             }
             if($val[0] == "EMAIL"){
-               
+
                     //the request is an email
                     if($email > 0){
                         $q['q'][]= ' or ( u.email like "%'.$val[1].'%") ';
@@ -1037,7 +1034,7 @@ class EmundusModelFiles extends JModelLegacy
                     if (!in_array('jos_users', $tableAlias))
                         $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
                     $q['users'] = true;
-                    
+
                     $email = $email + 1;
             }
             if($val[0] == "USERNAME"){
@@ -1051,7 +1048,7 @@ class EmundusModelFiles extends JModelLegacy
 				if (!in_array('jos_users', $tableAlias))
 					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
 				$q['users'] = true;
-               
+
                 $username = $username + 1;
             }
             if($val[0] == "LAST_NAME"){
@@ -1061,12 +1058,12 @@ class EmundusModelFiles extends JModelLegacy
                 }else{
                     $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
                 }
-                
+
                 if (!in_array('jos_emundus_users', $tableAlias)){
                     $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
                     $q['em_user'] = true;
                 }
-                
+
                 $lastname = $lastname + 1;
             }
             if($val[0] == "FIRST_NAME"){
@@ -1081,7 +1078,7 @@ class EmundusModelFiles extends JModelLegacy
                         $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
                         $q['em_user'] = true;
                     }
-                    
+
                     $firstname = $firstname + 1;
             }
         }
@@ -1097,7 +1094,7 @@ class EmundusModelFiles extends JModelLegacy
         $session = JFactory::getSession();
         $limitStart = $session->get('limitstart');
         $limit = $session->get('limit');
-        
+
         return $this->getAllUsers($limitStart, $limit);
     }
 
@@ -1137,7 +1134,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (count($this->_elements)>0) {
             $leftJoin = '';
-            
+
             foreach ($this->_elements as $elt)
             {
                 if(!isset($lastTab))
@@ -1150,7 +1147,7 @@ class EmundusModelFiles extends JModelLegacy
                 }
                 $lastTab[] = $elt->tab_name;
             }
-            
+
         }
         if (count($this->_elements_default)>0) {
             $query .= ', '.implode(',', $this->_elements_default);
@@ -1167,18 +1164,18 @@ class EmundusModelFiles extends JModelLegacy
 
         if (in_array('overall', $em_other_columns))
             $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
-        
+
         $q = $this->_buildWhere($lastTab);
-        
+
         if (!empty($leftJoin))
             $query .= $leftJoin;
         $query .= $q['join'];
         $query .= " where u.block=0 ".$q['q'];
-        
+
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-        
+
         $dbo->setQuery($query);
         try
         {
@@ -1762,7 +1759,7 @@ if (JFactory::getUser()->id == 63)
         try {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
-          
+
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
             if (!empty($fnums) && !empty($tags)) {
                 foreach ($fnums as $fnum) {
@@ -1775,11 +1772,11 @@ if (JFactory::getUser()->id == 63)
                     }
                 }
             }
-           
+
             $query = substr_replace($query, ";", -1);
             $db->setQuery($query);
             $db->execute();
-            
+
             return true;
         }
         catch (Exception $e)
@@ -1801,7 +1798,7 @@ if (JFactory::getUser()->id == 63)
         $db = $this->getDbo();
         $query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where ';
         $user = JFactory::getUser()->id;
-        
+
         if (is_null($tag))
         {
             $query .= ' t.user_id = ' . $user;
@@ -3073,6 +3070,55 @@ die();*/
         }
     }
 
+    /**
+     * @param $fnum
+     * @return bool|mixed
+     */
+    // HESAM COMPLETE FILE
+    public function completeFile($fnum)
+    {
+        try
+        {
+            $db = JFactory::getDbo();
+
+            $query = 'UPDATE #__emundus_campaign_candidature SET status= 2
+                        WHERE fnum like '.$db->Quote($fnum);
+
+            $db->setQuery($query);
+            return $db->query() ;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    /**
+     * @param $fnum
+     * @return bool|mixed
+     */
+    // HESAM PUBLISH FILE
+    public function publishFile($fnum)
+    {
+        try
+        {
+            $db = JFactory::getDbo();
+
+            $query = 'UPDATE #__emundus_campaign_candidature SET status= 1
+                        WHERE fnum like '.$db->Quote($fnum);
+
+            $db->setQuery($query);
+            return $db->query() ;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
     /*
      * CCIRS functions
