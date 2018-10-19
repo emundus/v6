@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -268,7 +268,7 @@ function hikashopUpdateVariantData(selection) {
 
 		$options = ' '.$type.'="return hikashopUpdateVariant(this);"';
 
-		$html = JHTML::_('select.'.$characteristic_display.'list', $this->values, $map, 'class="inputbox" size="1"' . $options, 'value', 'text', (int)$value,$id );
+		$html = JHTML::_('select.'.$characteristic_display.'list', $this->values, $map, 'class="custom-select" size="1"' . $options, 'value', 'text', (int)$value,$id );
 		return $html;
 	}
 }

@@ -23,7 +23,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '3.5.1';
+	var $version = '4.0.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -45,7 +45,7 @@ class hikashopInstall {
 				$query = trim($query);
 				if(!empty($query)) {
 					$this->db->setQuery($query);
-					$this->db->query();
+					$this->db->execute();
 				}
 			}
 		}
@@ -73,12 +73,12 @@ class hikashopInstall {
 		if(version_compare($this->fromVersion,'1.5.6','<')){
 			$config =& hikashop_config();
 			$this->db->setQuery("INSERT IGNORE #__hikashop_config (`config_value`,`config_default`,`config_namekey`) VALUES ('0','1','detailed_tax_display'),('0','1','simplified_breadcrumbs'),(".(int)$config->get('thumbnail_x',100).",'100','product_image_x'),(".(int)$config->get('thumbnail_y',100).",'100','product_image_y');");
-			$this->db->query();
+			$this->db->execute();
 		}
 
 		$query = "REPLACE INTO `#__hikashop_config` (`config_namekey`,`config_value`) VALUES ('level',".$this->db->Quote($this->level)."),('version',".$this->db->Quote($this->version)."),('installcomplete','0')";
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 	}
 
 	public function updateSQL() {
@@ -88,7 +88,7 @@ class hikashopInstall {
 		if(version_compare($this->fromVersion,'1.0.2','<')){
 			$query = 'UPDATE `#__hikashop_user` AS a LEFT JOIN `#__hikashop_user` AS b ON a.user_email=b.user_email SET a.user_email=CONCAT(\'old_\',a.user_email) WHERE a.user_id>b.user_id';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("user","UNIQUE (`user_email`)");
 		}
 		if(version_compare($this->fromVersion,'1.1.2','<')){
@@ -99,16 +99,16 @@ class hikashopInstall {
 		}
 		if(version_compare($this->fromVersion,'1.3.3','>') && version_compare($this->fromVersion,'1.3.6','<')){
 			$this->db->setQuery("DELETE FROM `#__modules` WHERE module='HikaShop Content Module' OR module='HikaShop Cart Module' OR module='HikaShop Currency Switcher Module'");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion,'1.4.1','<')){
 			$rand=rand(0,999999999);
 			$this->db->setQuery("UPDATE #__hikashop_config SET `config_value` = 'media/com_hikashop/upload',`config_default` = 'media/com_hikashop/upload' WHERE `config_namekey` = 'uploadfolder' AND `config_value` LIKE 'components/com_hikashop/upload%' ");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("UPDATE #__hikashop_config SET `config_value` = 'media/com_hikashop/upload/safe',`config_default` = 'media/com_hikashop/upload/safe' WHERE `config_namekey` = 'uploadsecurefolder' AND `config_value` LIKE 'components/com_hikashop/upload/safe%' ");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("UPDATE #__hikashop_config SET `config_value` = 'media/com_hikashop/upload/safe/logs/report_".$rand.".log',`config_default` = 'media/com_hikashop/upload/safe/logs/report_".$rand.".log' WHERE `config_namekey` IN ('cron_savepath','payment_log_file') ");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$updateHelper = hikashop_get('helper.update');
 			$removeFiles = array(
@@ -162,20 +162,17 @@ class hikashopInstall {
 			$this->databaseHelper->addColumns("product","`product_access` VARCHAR( 255 ) NOT NULL DEFAULT 'all'");
 			$this->databaseHelper->addColumns("price","`price_access` VARCHAR( 255 ) NOT NULL DEFAULT 'all'");
 			$this->databaseHelper->addColumns("zone","`zone_currency_id` INT UNSIGNED DEFAULT 0");
-			if(version_compare(JVERSION,'1.6.0','<')){
-				$query = 'UPDATE `#__plugins` SET `published`=0 WHERE `element`=\'geolocation\' AND `folder`=\'hikashop\'';
-			}else{
-				$query = 'UPDATE `#__extensions` SET `enabled`=0 WHERE `element`=\'geolocation\' AND `folder`=\'hikashop\'';
-			}
+
+			$query = 'UPDATE `#__extensions` SET `enabled`=0 WHERE `element`=\'geolocation\' AND `folder`=\'hikashop\'';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion,'1.4.5','<')){
 			$this->databaseHelper->addColumns("product",array("`product_group_after_purchase` VARCHAR( 255 ) NOT NULL DEFAULT ''","`product_contact` SMALLINT UNSIGNED DEFAULT 0"));
 		}
 		if(version_compare($this->fromVersion,'1.4.6','<')){
 			$this->db->setQuery('ALTER TABLE `#__hikashop_product_related` DROP PRIMARY KEY, ADD PRIMARY KEY (`product_id`,`product_related_id`,`product_related_type`)');
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("product","`product_min_per_order` INT UNSIGNED DEFAULT 0");
 		}
 		if(version_compare($this->fromVersion,'1.4.7','<')){
@@ -197,7 +194,7 @@ class hikashopInstall {
 				}
 				$i = 0;
 				$this->db->setQuery("CREATE TABLE IF NOT EXISTS `#__hikashop_order_number` (`order_id` int(10) unsigned NOT NULL DEFAULT '0',`order_number` VARCHAR( 255 ) NOT NULL DEFAULT '') ENGINE=MyISAM ;");
-				try{$this->db->query();}catch(Exception $e){}
+				try{$this->db->execute();}catch(Exception $e){}
 				$inserts = array();
 				foreach($orders as $k => $order){
 					$i++;
@@ -205,28 +202,25 @@ class hikashopInstall {
 					if($i >= 500){
 						$i=0;
 						$this->db->setQuery('INSERT IGNORE INTO `#__hikashop_order_number` (order_id,order_number) VALUES '.implode(',',$inserts));
-						try{$this->db->query();}catch(Exception $e){}
+						try{$this->db->execute();}catch(Exception $e){}
 						$inserts = array();
 					}
 				}
 				$this->db->setQuery('INSERT IGNORE INTO `#__hikashop_order_number` (order_id,order_number) VALUES '.implode(',',$inserts));
-				try{$this->db->query();}catch(Exception $e){}
+				try{$this->db->execute();}catch(Exception $e){}
 				$this->db->setQuery('UPDATE `#__hikashop_order` AS a , `#__hikashop_order_number` AS b SET a.order_number=b.order_number WHERE a.order_id=b.order_id AND a.order_number=\'\'');
-				try{$this->db->query();}catch(Exception $e){}
+				try{$this->db->execute();}catch(Exception $e){}
 				$this->db->setQuery('DROP TABLE IF EXISTS `#__hikashop_order_number`');
-				try{$this->db->query();}catch(Exception $e){}
+				try{$this->db->execute();}catch(Exception $e){}
 			}
 		}
 		if(version_compare($this->fromVersion,'1.5.0','<')){
 			$this->databaseHelper->addColumns("field","`field_access` VARCHAR( 255 ) NOT NULL DEFAULT 'all'");
 			$this->databaseHelper->addColumns("product","`product_min_per_order` INT UNSIGNED DEFAULT 0");
-			if(version_compare(JVERSION,'1.6.0','<')){
-				$query = 'UPDATE `#__plugins` SET `published` = 0 WHERE `element` = \'hikashop\' AND `folder` = \'user\'';
-			}else{
-				$query = 'UPDATE `#__extensions` SET `enabled` = 0 WHERE `element` = \'hikashop\' AND `folder` = \'user\'';
-			}
+
+			$query = 'UPDATE `#__extensions` SET `enabled` = 0 WHERE `element` = \'hikashop\' AND `folder` = \'user\'';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("discount",array("`discount_quota_per_user` INT UNSIGNED DEFAULT 0","`discount_minimum_products` INT UNSIGNED DEFAULT 0"));
 		}
 		if(version_compare($this->fromVersion,'1.5.2','<')){
@@ -263,7 +257,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_limit` (
 	`limit_end` int(10) DEFAULT NULL,
 	PRIMARY KEY (`limit_id`)
 ) ENGINE=MyISAM ;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("zone","INDEX ( `zone_code_3` )");
 			$this->databaseHelper->addColumns("product","`product_sales` INT UNSIGNED DEFAULT 0");
 			$this->databaseHelper->addColumns("field",array("`field_with_sub_categories` TINYINT( 1 ) NOT NULL DEFAULT 0","`field_categories` VARCHAR( 255 ) NOT NULL DEFAULT 'all'"));
@@ -303,7 +297,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_filter` (
 	`filter_dynamic` tinyint(3) unsigned NOT NULL,
 	PRIMARY KEY (`filter_id`)
 ) ENGINE=MyISAM ;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->databaseHelper->addColumns("payment","`payment_currency` VARCHAR( 255 ) NOT NULL");
 		}
@@ -318,7 +312,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_waitlist` (
 	`product_item_id` int(11) NOT NULL,
 	PRIMARY KEY (`waitlist_id`)
 ) ENGINE=MyISAM ;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->databaseHelper->addColumns("product","`product_waitlist` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0'");
 			$this->databaseHelper->addColumns("discount","`discount_coupon_nodoubling` TINYINT NULL;");
@@ -342,7 +336,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_vote_user` (
 	`vote_user_user_id` varchar(26) NOT NULL,
 	`vote_user_useful` tinyint(4) NOT NULL
 ) ENGINE=MyISAM ;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("
 CREATE TABLE IF NOT EXISTS `#__hikashop_vote` (
 	`vote_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -359,11 +353,11 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_vote` (
 	`vote_published` tinyint(4) NOT NULL DEFAULT '1',
 	PRIMARY KEY (`vote_id`)
 ) ENGINE=MyISAM");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion,'1.5.8','<')){
 			$this->db->setQuery("ALTER TABLE `#__hikashop_vote` CHANGE `vote_comment` `vote_comment` TEXT NOT NULL;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("order","`order_payment_price` decimal(17,5) NOT NULL DEFAULT '0.00000'");
 			$this->databaseHelper->addColumns("payment","`payment_price` decimal(17,5) NOT NULL DEFAULT '0.00000'");
 		}
@@ -379,9 +373,9 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_shipping_price` (
 	`shipping_fee_value` decimal(15,7) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`shipping_price_id`)
 ) ENGINE=MyISAM;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("UPDATE #__hikashop_config SET `config_value` = '0',`config_default` = '1' WHERE `config_namekey`='variant_increase_perf';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("product","`product_page_title` varchar(255) NOT NULL DEFAULT ''");
 			$this->databaseHelper->addColumns("category","`category_page_title` varchar(255) NOT NULL DEFAULT ''");
 			$this->databaseHelper->addColumns("characteristic","`characteristic_ordering` INT( 12 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `characteristic_alias`");
@@ -405,7 +399,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_badge` (
 	`badge_published` tinyint(4) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`badge_id`)
 ) ENGINE=MyISAM;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->databaseHelper->addColumns("cart",array("`cart_type` varchar(25) NOT NULL DEFAULT 'cart'",
 					"`cart_name` varchar(50) NOT NULL",
@@ -420,7 +414,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_badge` (
 				"`widget_access` varchar(250) NOT NULL DEFAULT 'all'"));
 
 			$this->db->setQuery("ALTER TABLE `#__hikashop_field` CHANGE `field_value` `field_value` LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion,'1.6.0','<')){
 			$this->databaseHelper->addColumns("address","`address_street2` TEXT NOT NULL");
@@ -429,12 +423,12 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_badge` (
 		if(version_compare($this->fromVersion,'2.0.0','<')){
 			$this->databaseHelper->addColumns("order",array("`order_invoice_number` VARCHAR( 255 ) NOT NULL DEFAULT ''","`order_invoice_id` INT NOT NULL DEFAULT '0'"));
 			$this->db->setQuery("UPDATE `#__hikashop_order` SET `order_invoice_number`=`order_number`;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("UPDATE `#__hikashop_order` SET `order_invoice_id`=`order_id`;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("download","`file_pos` int(10) NOT NULL DEFAULT '1'");
 			$this->db->setQuery("ALTER TABLE `#__hikashop_download` DROP PRIMARY KEY , ADD PRIMARY KEY (`file_id`, `order_id`, `file_pos`);");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("product_category`","`product_parent_id` INT NOT NULL DEFAULT '0'");
 
 			$file = HIKASHOP_BACK.'admin.hikashop.php';
@@ -449,11 +443,11 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_badge` (
 
 			if($this->level=='starter'){
 				$this->db->setQuery("DELETE FROM `#__hikashop_widget` ;");
-				try{$this->db->query();}catch(Exception $e){}
+				try{$this->db->execute();}catch(Exception $e){}
 			}
 			$this->databaseHelper->addColumns("order","`order_invoice_created` INT(10) UNSIGNED NOT NULL DEFAULT '0'");
 			$this->db->setQuery("UPDATE #__hikashop_order SET `order_invoice_created` = `order_created` WHERE `order_invoice_created`=0 AND `order_invoice_id`>0;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion,'2.1.1','<')){
 			$this->databaseHelper->addColumns("product","`product_price_percentage` decimal(15,7) NOT NULL DEFAULT '0'");
@@ -470,7 +464,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_badge` (
 				"`payment_published` tinyint(4) NOT NULL DEFAULT '1'"));
 
 			$this->db->setQuery("ALTER TABLE `#__hikashop_payment` DROP INDEX payment_type");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->databaseHelper->addColumns("order",array("`order_shipping_params` text NOT NULL DEFAULT ''",
 				"`order_payment_params` text NOT NULL DEFAULT ''"));
@@ -497,7 +491,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_massaction` (
 	PRIMARY KEY (`massaction_id`),
 	KEY `massaction_table` (`massaction_table`)
 ) ENGINE=MyISAM;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion, '2.2.1', '<')) {
 			$this->db->setQuery("
@@ -512,7 +506,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 	`plugin_access` VARCHAR(255) NOT NULL DEFAULT 'all',
 	PRIMARY KEY (`plugin_id`)
 ) ENGINE=MyISAM");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->databaseHelper->addColumns("field","`field_display` text NOT NULL DEFAULT ''");
 			$this->databaseHelper->addColumns("badge","`badge_url` VARCHAR( 255 ) NULL DEFAULT ''");
@@ -555,13 +549,13 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 				`warehouse_modified` int(10) DEFAULT NULL,
 				PRIMARY KEY (`warehouse_id`)
 			) ENGINE=MyISAM");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->databaseHelper->addColumns("product","`product_warehouse_id` int(10) unsigned NOT NULL DEFAULT '0'");
 
 			if(file_exists(HIKASHOP_MEDIA.'css'.DS.'frontend_old.css')){
 				$this->db->setQuery("UPDATE #__hikashop_config SET `config_value` = 'old',`config_default` = 'old' WHERE `config_namekey` = 'css_frontend' AND `config_value` = 'default' ");
-				try{$this->db->query();}catch(Exception $e){}
+				try{$this->db->execute();}catch(Exception $e){}
 			}
 		}
 		if(version_compare($this->fromVersion, '2.3.1', '<')) {
@@ -587,15 +581,15 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		}
 		if(version_compare($this->fromVersion, '2.4.0', '<')) {
 			$this->db->setQuery("ALTER TABLE `#__hikashop_discount` CHANGE `discount_product_id` `discount_product_id` VARCHAR(255) NOT NULL DEFAULT '';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("ALTER TABLE `#__hikashop_discount` CHANGE `discount_category_id` `discount_category_id` VARCHAR(255) NOT NULL DEFAULT '';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("ALTER TABLE `#__hikashop_discount` CHANGE `discount_zone_id` `discount_zone_id` VARCHAR(255) NOT NULL DEFAULT '';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("ALTER TABLE `#__hikashop_badge` CHANGE `badge_discount_id` `badge_discount_id` VARCHAR(255) NOT NULL DEFAULT '';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("ALTER TABLE `#__hikashop_badge` CHANGE `badge_category_id` `badge_category_id` VARCHAR(255) NOT NULL DEFAULT '';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->databaseHelper->addColumns("field","`field_products` varchar(255) NOT NULL DEFAULT ''");
 		}
 		if(version_compare($this->fromVersion, '2.5.0', '<')) {
@@ -605,7 +599,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		}
 		if(version_compare($this->fromVersion, '2.6.0', '<')) {
 			$this->db->setQuery("ALTER TABLE `#__hikashop_filter` CHANGE `filter_category_id` `filter_category_id` VARCHAR(255) NOT NULL DEFAULT '';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->databaseHelper->addColumns("discount", "`discount_site_id` VARCHAR(255) NULL DEFAULT '';");
 
@@ -616,11 +610,11 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		}
 		if(version_compare($this->fromVersion, '2.6.2', '<')) {
 			$this->db->setQuery("UPDATE `#__hikashop_field` SET `field_display` = CONCAT(CASE WHEN `field_display` = '' THEN CONCAT(';',`field_display`) ELSE `field_display` END ,'field_product_show=',`field_frontcomp`,';field_product_compare=',`field_frontcomp`,';field_product_frontend_cart_details=0;field_product_form=',`field_backend`,';field_product_invoice=0;field_product_shipping_invoice=0;field_product_order_form=0;field_product_backend_cart_details=0;field_product_order_notification=0;field_product_order_status_notification=0;field_product_order_creation_notification=0;field_product_order_admin_notification=0;field_product_payment_notification=0;field_product_frontend_listing=0;field_product_listing=',`field_backend_listing`,';') WHERE `field_table` LIKE 'product';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("UPDATE `#__hikashop_field` SET `field_display`= CONCAT(CASE WHEN `field_display` = '' THEN CONCAT(';',`field_display`) ELSE `field_display` END ,'field_order_show=',`field_frontcomp`,';field_order_checkout=',`field_frontcomp`,';field_order_invoice=',`field_backend`,';field_order_shipping_invoice=',`field_backend`,';field_order_form=',`field_backend`,';field_order_edit_fields=',`field_backend`,';field_order_notification=',`field_backend`,';field_order_status_notification=',`field_backend`,';field_order_creation_notification=',`field_backend`,';field_order_admin_notification=',`field_backend`,';field_order_payment_notification=',`field_backend`,';field_order_listing=0;') WHERE `field_table` LIKE 'order';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("UPDATE `#__hikashop_field` SET `field_display`= CONCAT(CASE WHEN `field_display` = '' THEN CONCAT(';',`field_display`) ELSE `field_display` END ,'field_item_show_cart=',`field_frontcomp`,';field_item_checkout=',`field_frontcomp`,';field_item_order=',`field_frontcomp`,';field_item_product_listing=',`field_frontcomp`,';field_item_product_show=',`field_frontcomp`,';field_item_product_cart=',`field_frontcomp`,';field_item_order_form=',`field_backend`,';field_item_invoice=',`field_backend`,';field_item_shipping_invoice=',`field_backend`,';field_item_edit_product_order=',`field_backend`,';field_item_backend_cart_details=0;field_item_order_notification=',`field_backend`,';field_item_order_status_notification=',`field_backend`,';field_item_order_creation_notification=',`field_backend`,';field_item_order_admin_notification=',`field_backend`,';field_item_payment_notification=',`field_backend`,';') WHERE `field_table` LIKE 'item';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion, '3.0.0', '<')) {
 			$this->databaseHelper->addColumns('product', "`product_sort_price` decimal(17,5) NOT NULL DEFAULT '0.00000'");
@@ -646,13 +640,13 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			));
 
 			$this->db->setQuery("ALTER TABLE `#__hikashop_order_product` CHANGE `order_product_shipping_params` `order_product_shipping_params` text NOT NULL DEFAULT '';");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$query = 'UPDATE `#__hikashop_cart` AS cart '.
 					' JOIN `#__hikashop_user` AS hk_user ON cart.user_id = hk_user.user_cms_id '.
 					' SET cart.user_id = hk_user.user_id';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$this->db->setQuery("
 				CREATE TABLE IF NOT EXISTS `#__hikashop_orderstatus` (
@@ -667,37 +661,37 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 					PRIMARY KEY (`orderstatus_id`),
 					UNIQUE KEY `orderstatus_namekey` (`orderstatus_namekey`)
 				) ENGINE=MyISAM");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$query = 'INSERT IGNORE INTO `#__hikashop_orderstatus` (orderstatus_name, orderstatus_description, orderstatus_published, orderstatus_ordering, orderstatus_namekey) '.
 					' SELECT category_name, category_description, category_published, category_ordering, category_namekey FROM `#__hikashop_category` AS c '.
 					' WHERE c.category_type = \'status\' AND c.category_depth > 1';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$query = 'UPDATE `#__hikashop_order` AS o JOIN `#__hikashop_orderstatus` AS os ON o.order_status = os.orderstatus_namekey SET o.order_status = os.orderstatus_name '.
 					' WHERE os.orderstatus_namekey LIKE \'status_%\'';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$query = 'UPDATE `#__hikashop_order` AS o JOIN `#__hikashop_user` AS u ON o.order_user_id = u.user_id SET o.order_token = u.user_email';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$query = 'UPDATE `#__hikashop_orderstatus` SET orderstatus_namekey = orderstatus_name '.
 					' WHERE orderstatus_namekey LIKE \'status_%\'';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$query = 'UPDATE `#__hikashop_config` SET config_value = 1 '.
 					' WHERE config_namekey = \'show_quantity_field\' AND config_value < 2';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$query = 'UPDATE `#__hikashop_config` SET config_value = 1 '.
 					' WHERE config_namekey IN (\'checkout_legacy\', \'add_to_cart_legacy\',\'legacy_widgets\')';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 
 			$hikashopEmails = array(
 				'order_admin_notification',
@@ -720,7 +714,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 				$path = HIKASHOP_MEDIA . 'mail' . DS . $hikashopEmail . '.html.modified.php';
 				if(JPath::check($path) && file_exists($path)){
 					$this->db->setQuery("UPDATE `#__hikashop_config` SET `config_value` = '' WHERE `config_namekey` = ".$this->db->Quote($hikashopEmail.'.template'));
-					try{$this->db->query();}catch(Exception $e){}
+					try{$this->db->execute();}catch(Exception $e){}
 				}
 			}
 		}
@@ -732,7 +726,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$query = 'UPDATE `#__hikashop_config` SET config_value = 1 '.
 					' WHERE config_namekey = \'carousel_legacy\'';
 			$this->db->setQuery($query);
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 		if(version_compare($this->fromVersion, '3.2.0', '<')) {
 			$this->databaseHelper->addColumns('waitlist', "`language` varchar(255) NOT NULL DEFAULT ''");
@@ -756,9 +750,9 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			));
 
 			$this->db->setQuery("ALTER TABLE `#__hikashop_product` CHANGE `product_meta_description` `product_meta_description` text NOT NULL;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 			$this->db->setQuery("ALTER TABLE `#__hikashop_category` CHANGE `category_meta_description` `category_meta_description` text NOT NULL;");
-			try{$this->db->query();}catch(Exception $e){}
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 
 		if(version_compare($this->fromVersion, '3.4.0', '<')) {
@@ -773,7 +767,19 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$query = 'INSERT IGNORE INTO `#__hikashop_config` (`config_namekey`,`config_value`,`config_default`) VALUES
 				('.$this->db->Quote('coupon_before_tax').','.$this->db->Quote($discount_before_tax).','.$this->db->Quote($discount_before_tax).')';
 			$this->db->setQuery($query);
-			$this->db->query();
+			$this->db->execute();
+		}
+
+		if(version_compare($this->fromVersion, '3.6.0', '<')) {
+			$this->databaseHelper->addColumns('order_product', array(
+				"`order_product_params` TEXT NULL",
+			));
+			$this->databaseHelper->addColumns('order', array(
+				"`order_parent_id` int(10) unsigned NOT NULL DEFAULT '0'",
+			));
+			$this->databaseHelper->addColumns('cart_product', array(
+				"`cart_product_ref_price` decimal(17,5) DEFAULT NULL",
+			));
 		}
 	}
 
@@ -1008,7 +1014,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		}
 		$query = rtrim($query,',');
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 	}
 
 	public function addModules() {
@@ -1029,14 +1035,9 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		$modulesClass = hikashop_get('class.modules');
 		$params = array();
 		foreach($elements as $k => $element){
-			if(version_compare(JVERSION,'1.6','<')){
-				$elements[$k]->position = 'left';
-				$elements[$k]->access = 0;
-			}else{
-				$elements[$k]->position = 'position-7';
-				$elements[$k]->language = '*';
-				$elements[$k]->access = 1;
-			}
+			$elements[$k]->position = 'position-7';
+			$elements[$k]->language = '*';
+			$elements[$k]->access = 1;
 			$elements[$k]->published = 0;
 			$elements[$k]->module = 'mod_hikashop';
 			$elements[$k]->params = '';
@@ -1049,7 +1050,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		}
 		$query = rtrim($query,',');
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 
 		$categoriesLength = strlen($this->menuid->categories);
 		$brandsLength = strlen($this->menuid->brands);
@@ -1078,7 +1079,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			foreach($params as $param){
 				$param->params = '{"hikashopmodule":'.json_encode(hikashop_unserialize($param->params)).'}';
 				$this->db->setQuery('UPDATE `#__modules` SET params = '.$this->db->quote($param->params).' WHERE id = '.(int)$param->id);
-				$this->db->query();
+				$this->db->execute();
 			}
 		} else {
 			foreach($params as $param){
@@ -1089,7 +1090,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		}
 		$query .='(\'product_show_modules\',\''.$id_related_module.'\')';
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 	}
 
 	public function addMenus($display = true) {
@@ -1122,28 +1123,19 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		foreach($elements as $k => $element){
 			$elements[$k]->type = 'component';
 			$elements[$k]->published = 1;
-
-			if(version_compare(JVERSION,'1.6.0','<')){
-				$elements[$k]->name = $elements[$k]->title;
-				$elements[$k]->parent = 0;
-				$elements[$k]->sublevel = 1;
-				$elements[$k]->access = 0;
-				unset($elements[$k]->title);
-			}else{
-				$elements[$k]->path = $elements[$k]->alias;
-				$elements[$k]->client_id = 0;
-				$elements[$k]->language = '*';
-				$elements[$k]->level = 1;
-				$elements[$k]->parent_id = 1;
-				$elements[$k]->access = 1;
-			}
+			$elements[$k]->path = $elements[$k]->alias;
+			$elements[$k]->client_id = 0;
+			$elements[$k]->language = '*';
+			$elements[$k]->level = 1;
+			$elements[$k]->parent_id = 1;
+			$elements[$k]->access = 1;
 		}
 
 		$this->db->setQuery('SELECT menutype FROM '.hikashop_table('menu_types',false).' WHERE menutype=\'hikashop_default\'');
 		$mainMenu = $this->db->loadResult();
 		if(empty($mainMenu)){
 			$this->db->setQuery('INSERT INTO '.hikashop_table('menu_types',false).' ( `menutype`,`title`,`description` ) VALUES ( \'hikashop_default\',\'HikaShop default menus\',\'This menu is used by HikaShop to store menus configurations\' )');
-			$this->db->query();
+			$this->db->execute();
 		}
 		$this->menuid = new stdClass();
 		if(version_compare(JVERSION,'3.0','>=')) {
@@ -1154,14 +1146,12 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		$menusClass = hikashop_get('class.menus');
 
 		foreach($elements as $element) {
-			if(version_compare(JVERSION,'1.5','>')) {
-				$this->db->setQuery('SELECT rgt FROM '.hikashop_table('menu',false).' WHERE id=1');
-				$root = $this->db->loadResult();
-				$element->lft = $root;
-				$element->rgt = $root+1;
-				$this->db->setQuery('UPDATE '.hikashop_table('menu',false).' SET rgt='.($root+2).' WHERE id=1');
-				$this->db->query();
-			}
+			$this->db->setQuery('SELECT rgt FROM '.hikashop_table('menu',false).' WHERE id=1');
+			$root = $this->db->loadResult();
+			$element->lft = $root;
+			$element->rgt = $root+1;
+			$this->db->setQuery('UPDATE '.hikashop_table('menu',false).' SET rgt='.($root+2).' WHERE id=1');
+			$this->db->execute();
 
 			$menuId = $menusClass->save($element);
 			if(empty($menuId))
@@ -1179,7 +1169,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 					$moduleOtpions = base64_encode($categoryOptions);
 					$query = "UPDATE `#__hikashop_config` SET `config_value`=".$this->db->quote($moduleOtpions)." WHERE `config_namekey`= 'menu_".$menuId."' ";
 					$this->db->setQuery($query);
-					$this->db->query();
+					$this->db->execute();
 					$config->set('menu_'.$menuId,$moduleOtpions);
 					$menusClass->attachAssocModule($menuId, $display);
 				}
@@ -1193,7 +1183,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 					$moduleOtpions = base64_encode($categoryOptions);
 					$query = "UPDATE `#__hikashop_config` SET `config_value`=".$this->db->quote($moduleOtpions)." WHERE `config_namekey`= 'menu_".$menuId."' ";
 					$this->db->setQuery($query);
-					$this->db->query();
+					$this->db->execute();
 					$config->set('menu_'.$menuId,$moduleOtpions);
 					$menusClass->attachAssocModule($menuId, $display);
 				}
@@ -1205,14 +1195,14 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 					$moduleOtpions = base64_encode($productOptions);
 					$query = "UPDATE `#__hikashop_config` SET `config_value`=".$this->db->quote($moduleOtpions)." WHERE `config_namekey`= 'menu_".$menuId."' ";
 					$this->db->setQuery($query);
-					$this->db->query();
+					$this->db->execute();
 					$config->set('menu_'.$menuId,$moduleOtpions);
 				}
 			}
 
 			if(!empty($menuParams)) {
 				$this->db->setQuery('UPDATE '.hikashop_table('menu',false).' SET params='.$this->db->quote($menuParams).' WHERE id='.(int)$menuId);
-				$this->db->query();
+				$this->db->execute();
 			}
 		}
 	}
@@ -1230,16 +1220,16 @@ class com_hikashopInstallerScript {
 	public function uninstall($parent)	{
 		$db = JFactory::getDBO();
 		$db->setQuery("DELETE FROM `#__hikashop_config` WHERE `config_namekey` = 'li' LIMIT 1");
-		$db->query();
+		$db->execute();
 
 		$db->setQuery("DELETE FROM `#__menu` WHERE link LIKE '%com_hikashop%'");
-		$db->query();
+		$db->execute();
 
 		$db->setQuery("UPDATE `#__modules` SET `published` = 0 WHERE `module` LIKE '%hikashop%'");
-		$db->query();
+		$db->execute();
 
 		$db->setQuery("UPDATE `#__extensions` SET `enabled` = 0 WHERE `type` = 'plugin' AND `element` LIKE '%hikashop%' AND `folder` NOT LIKE '%hikashop%'");
-		$db->query();
+		$db->execute();
 	}
 
 	public function preflight($type, $parent) {

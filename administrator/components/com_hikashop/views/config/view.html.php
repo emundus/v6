@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,7 @@ class configViewConfig extends hikashopView
 	}
 
 	public function checkdb() {
-		hikashop_setTitle(JText::_('CHECK_DATABASE'),'config','config');
+		hikashop_setTitle(JText::_('CHECK_DATABASE'),'server','config');
 		$this->toolbar = array('dashboard');
 
 		$databaseHelper = hikashop_get('helper.database');
@@ -37,7 +37,7 @@ class configViewConfig extends hikashopView
 
 		hikaInput::get()->set('inherit', false);
 
-		hikashop_setTitle(JText::_('HIKA_CONFIGURATION'), 'config', 'config');
+		hikashop_setTitle(JText::_('HIKA_CONFIGURATION'), 'wrench', 'config');
 
 		$manage = hikashop_isAllowed($config->get('acl_config_manage','all'));
 		$this->assignRef('manage',$manage);
@@ -47,8 +47,10 @@ class configViewConfig extends hikashopView
 		$this->toolbar = array(
 			array('name' => 'custom', 'icon' => (HIKASHOP_J30) ? 'shield' : 'upload', 'alt' => JText::_('CHECK_DATABASE'), 'task' => 'checkdb', 'check' => false, 'display' => $manage),
 			'|',
-			array('name' => 'save', 'display' => $manage),
-			array('name' => 'apply', 'display' => $manage),
+			array('name' => 'group', 'buttons' => array(
+				array('name' => 'apply', 'display' => $manage),
+				array('name' => 'save', 'display' => $manage),
+			)),
 			'close',
 			'|',
 			array('name' => 'pophelp', 'target' => 'config'),
@@ -106,13 +108,8 @@ class configViewConfig extends hikashopView
 		$this->assignRef('popup_plugins', $popup_plugins);
 
 		$db = JFactory::getDBO();
-		if(!HIKASHOP_J16) {
-			$db->setQuery("SELECT name,published,id FROM `#__plugins` WHERE `folder` = 'hikashop' || ".
-				"(`folder` != 'hikashoppayment' AND `folder` != 'hikashopshipping' AND `element` LIKE '%hikashop%') ORDER BY published DESC, ordering ASC");
-		} else {
-			$db->setQuery("SELECT name,enabled as published,extension_id as id FROM `#__extensions` WHERE (`folder` = 'hikashop' || ".
-				"(`folder` != 'hikashoppayment' AND `folder` != 'hikashopshipping' AND `element` LIKE '%hikashop%')) AND type='plugin' ORDER BY enabled DESC, ordering ASC");
-		}
+		$db->setQuery("SELECT name,enabled as published,extension_id as id FROM `#__extensions` WHERE (`folder` = 'hikashop' || ".
+			"(`folder` != 'hikashoppayment' AND `folder` != 'hikashopshipping' AND `element` LIKE '%hikashop%')) AND type='plugin' ORDER BY enabled DESC, ordering ASC");
 		$plugins = $db->loadObjectList();
 		$this->assignRef('plugins', $plugins);
 
@@ -134,13 +131,12 @@ class configViewConfig extends hikashopView
 		} else {
 			$affiliate_active = true;
 			$plugin = $pluginClass->getByName($plugin->type,$plugin->name);
-			if(HIKASHOP_J16){
-				$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'plugin\' AND enabled = 1 AND access <> 1 AND folder=\'system\' AND element=\'hikashopaffiliate\'';
-				$db->setQuery($query);
-				$pluginData = $db->loadObject();
-				if(!empty($pluginData)) {
-					$app->enqueueMessage(JText::sprintf('PLUGIN_ACCESS_WARNING','('.$pluginData->name.')'),'warning');
-				}
+
+			$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'plugin\' AND enabled = 1 AND access <> 1 AND folder=\'system\' AND element=\'hikashopaffiliate\'';
+			$db->setQuery($query);
+			$pluginData = $db->loadObject();
+			if(!empty($pluginData)) {
+				$app->enqueueMessage(JText::sprintf('PLUGIN_ACCESS_WARNING','('.$pluginData->name.')'),'warning');
 			}
 		}
 		if(is_array($plugin->params) && empty($plugin->params['partner_key_name'])) {
@@ -251,9 +247,9 @@ class configViewConfig extends hikashopView
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashopshipping');
 		JPluginHelper::importPlugin('hikashoppayment');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$list = array();
-		$dispatcher->trigger('onCheckoutStepList', array(&$list));
+		$app->triggerEvent('onCheckoutStepList', array(&$list));
 		if(!empty($list)) {
 			foreach($list as $k => $v) {
 				if(!isset($checkoutlist[$k]))
@@ -325,11 +321,7 @@ class configViewConfig extends hikashopView
 		$db = JFactory::getDBO();
 
 		if(!isset($_SESSION['check_anticopy_framing'])) {
-			if(!HIKASHOP_J16) {
-				$db->setQuery("SELECT id FROM `#__plugins` WHERE `folder` = 'system' AND `element` = 'anticopy' AND `published` = '1' AND params LIKE '%disallow_framing=1%'");
-			} else {
-				$db->setQuery("SELECT extension_id FROM `#__extensions` WHERE `folder` = 'system' AND `element` = 'anticopy' AND `enabled` = '1' AND params LIKE '%\"disallow_framing\":\"1\"%'");
-			}
+			$db->setQuery("SELECT extension_id FROM `#__extensions` WHERE `folder` = 'system' AND `element` = 'anticopy' AND `enabled` = '1' AND params LIKE '%\"disallow_framing\":\"1\"%'");
 			$_SESSION['check_anticopy_framing'] = $db->loadResult();
 			if(!empty($_SESSION['check_anticopy_framing'])) {
 				hikashop_display('The extension AntiCopy is enabled with the "Framing" option set to "Disallow". This will prevent popups to display properly on your frontend. Please disable that option of that plugin via the Joomla plugins manager.','error');
@@ -337,11 +329,7 @@ class configViewConfig extends hikashopView
 		}
 
 		if(!isset($_SESSION['check_contentprotect_framing'])) {
-			if(!HIKASHOP_J16) {
-				$db->setQuery("SELECT id FROM `#__plugins` WHERE `folder` = 'system' AND `element` = 'jts_contentprotect' AND `published` = '1' AND params LIKE '%no_iframe=1%'");
-			} else {
-				$db->setQuery("SELECT extension_id FROM `#__extensions` WHERE `folder` = 'system' AND `element` = 'jts_contentprotect' AND `enabled` = '1' AND params LIKE '%\"no_iframe\":\"1\"%'");
-			}
+			$db->setQuery("SELECT extension_id FROM `#__extensions` WHERE `folder` = 'system' AND `element` = 'jts_contentprotect' AND `enabled` = '1' AND params LIKE '%\"no_iframe\":\"1\"%'");
 			$_SESSION['check_contentprotect_framing'] = $db->loadResult();
 			if(!empty($_SESSION['check_contentprotect_framing'])) {
 				hikashop_display('The extension JTS Content Protect is enabled with the "Framing" option set to "Disallow". This will prevent popups to display properly on your frontend. Please disable that option of that plugin via the Joomla plugins manager.','error');
@@ -349,22 +337,14 @@ class configViewConfig extends hikashopView
 		}
 
 		if(!isset($_SESSION['check_system_user'])) {
-			if(!HIKASHOP_J16) {
-				$db->setQuery("SELECT id FROM `#__plugins` WHERE `folder` = 'system' AND `element` = 'hikashopuser' AND `published` = '1'");
-			} else {
-				$db->setQuery("SELECT extension_id FROM `#__extensions` WHERE `folder` = 'system' AND `element` = 'hikashopuser' AND `enabled` = '1'");
-			}
+			$db->setQuery("SELECT extension_id FROM `#__extensions` WHERE `folder` = 'system' AND `element` = 'hikashopuser' AND `enabled` = '1'");
 			$_SESSION['check_system_user'] = $db->loadResult();
 			if(empty($_SESSION['check_system_user'])) {
 				hikashop_display('The HikaShop user synchronization plugin has been either removed or disabled from the website. It is a critical part of HikaShop and should not be disabled if you\'re using HikaShop on your website.Please enable that plugin via the Joomla plugins manager and then logout/login from the backend.','error');
 			}
 		}
 
-		if(!HIKASHOP_J16) {
-			$path = rtrim(JPATH_SITE,DS).DS.'plugins'.DS.'hikashop'.DS.'history.php';
-		} else {
-			$path = rtrim(JPATH_SITE,DS).DS.'plugins'.DS.'hikashop'.DS.'history'.DS.'history.php';
-		}
+		$path = rtrim(JPATH_SITE,DS).DS.'plugins'.DS.'hikashop'.DS.'history'.DS.'history.php';
 		if(!file_exists($path)) {
 	 		$folders = array('* Joomla / Plugins','* Joomla / Plugins / User','* Joomla / Plugins / System','* Joomla / Plugins / Search');
 			hikashop_display(JText::_('ERROR_PLUGINS_1').'<br/>'.JText::_('ERROR_PLUGINS_2').'<br/>'.implode('<br/>',$folders).'<br/><a href="index.php?option=com_hikashop&amp;ctrl=update&amp;task=install">'.JText::_('ERROR_PLUGINS_3').'</a>','warning');
@@ -372,48 +352,15 @@ class configViewConfig extends hikashopView
 	}
 
 	protected function handleImages() {
-		if(version_compare(JVERSION,'1.6', '<')) {
-			$from = HIKASHOP_ROOT.DS.'images'.DS.'M_images'.DS.'edit.png';
-			$to = HIKASHOP_MEDIA.'images'.DS.'icons'.DS.'icon-16-edit.png';
-			if(!file_exists($to) && file_exists($from)){
-				if(!JFile::copy($from,$to)){
-					hikashop_display('Could not copy the file '.$from.' to '.$to.'. Please check the persmissions of the folder '.dirname($to));
-				}
-			}
-			$from = HIKASHOP_ROOT.DS.'images'.DS.'M_images'.DS.'new.png';
-			$to = HIKASHOP_MEDIA.'images'.DS.'icons'.DS.'icon-16-new.png';
-			if(!file_exists($to) && file_exists($from)){
-				if(!JFile::copy($from,$to)){
-					hikashop_display('Could not copy the file '.$from.' to '.$to.'. Please check the persmissions of the folder '.dirname($to));
-				}
-			}
-			$from = HIKASHOP_ROOT.DS.'images'.DS.'M_images'.DS.'con_info.png';
-			$to = HIKASHOP_MEDIA.'images'.DS.'icons'.DS.'icon-16-info.png';
-			if(!file_exists($to) && file_exists($from)){
-				if(!JFile::copy($from,$to)){
-					hikashop_display('Could not copy the file '.$from.' to '.$to.'. Please check the persmissions of the folder '.dirname($to));
-				}
-			}
-			$from = rtrim(JPATH_ADMINISTRATOR,DS).DS.'templates'.DS.'khepri'.DS.'images'.DS.'menu'.DS.'icon-16-user.png';
-			$to = HIKASHOP_MEDIA.'images'.DS.'icons'.DS.'icon-16-levels.png';
-			if(!file_exists($to) && file_exists($from)){
-				if(!JFile::copy($from,$to)){
-					hikashop_display('Could not copy the file '.$from.' to '.$to.'. Please check the persmissions of the folder '.dirname($to));
-				}
-			}
-		} else {
-			$images['icon-16-edit.png'] = 'menu';
-			$images['icon-16-new.png'] = 'menu';
-			$images['icon-16-levels.png'] = 'menu';
-			$images['icon-16-info.png'] = 'menu';
-		}
+		$images = array(
+			'icon-16-edit.png' => 'menu',
+			'icon-16-new.png' => 'menu',
+			'icon-16-levels.png' => 'menu',
+			'icon-16-info.png' => 'menu',
+		);
 		foreach($images as $oneImage => $folder) {
 			$to = HIKASHOP_MEDIA.'images'.DS.'icons'.DS.$oneImage;
-			if(!HIKASHOP_J16) {
-				$from = rtrim(JPATH_ADMINISTRATOR,DS).DS.'templates'.DS.'khepri'.DS.'images'.DS.$folder.DS.$oneImage;
-			} else {
-				$from = rtrim(JPATH_ADMINISTRATOR,DS).DS.'templates'.DS.'bluestork'.DS.'images'.DS.$folder.DS.$oneImage;
-			}
+			$from = rtrim(JPATH_ADMINISTRATOR,DS).DS.'templates'.DS.'bluestork'.DS.'images'.DS.$folder.DS.$oneImage;
 			if(!file_exists($to) && file_exists($from)) {
 				if(!JFile::copy($from, $to)) {
 					hikashop_display('Could not copy the file '.$from.' to '.$to.'. Please check the persmissions of the folder '.dirname($to));

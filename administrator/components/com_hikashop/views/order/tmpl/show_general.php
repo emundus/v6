@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,12 +13,12 @@ $show_url = 'order&task=show&subtask=general&cid='.$this->order->order_id;
 $save_url = 'order&task=save&subtask=general&cid='.$this->order->order_id;
 $update_url = 'order&task=edit&subtask=general&cid='.$this->order->order_id;
 if(!isset($this->edit) || $this->edit !== true ) {
-?>		<div class="hika_edit"><a href="<?php echo hikashop_completeLink($update_url, true);?>" onclick="return window.hikashop.get(this,'hikashop_order_field_general');"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt=""/><span><?php echo JText::_('HIKA_EDIT'); ?></span></a></div>
+?>		<div class="hika_edit"><a href="<?php echo hikashop_completeLink($update_url, true);?>" class="btn btn-primary" onclick="return window.hikashop.get(this,'hikashop_order_field_general');"><i class="fas fa-pen"></i> <?php echo JText::_('HIKA_EDIT'); ?></a></div>
 <?php
 } else {
 ?>		<div class="hika_edit">
-			<a href="<?php echo hikashop_completeLink($save_url, true);?>" onclick="return window.hikashop.form(this,'hikashop_order_field_general');"><img src="<?php echo HIKASHOP_IMAGES; ?>ok.png" alt=""/><span><?php echo JText::_('HIKA_SAVE'); ?></span></a>
-			<a href="<?php echo hikashop_completeLink($show_url, true);?>" onclick="return window.hikashop.get(this,'hikashop_order_field_general');"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt=""/><span><?php echo JText::_('HIKA_CANCEL'); ?></span></a>
+			<a href="<?php echo hikashop_completeLink($save_url, true);?>" class="btn btn-success" onclick="return window.hikashop.form(this,'hikashop_order_field_general');"><i class="fa fa-save"></i> <?php echo JText::_('HIKA_SAVE'); ?></a>
+		<a href="<?php echo hikashop_completeLink($show_url, true);?>" class="btn btn-danger" onclick="return window.hikashop.get(this,'hikashop_order_field_general');"><i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ?></a>
 		</div>
 <?php
 }

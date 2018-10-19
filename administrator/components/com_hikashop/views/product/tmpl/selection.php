@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,26 +34,23 @@ function hikashop_setId(id) {
 </script>
 <?php } ?>
 <form action="<?php echo hikashop_completeLink('product'); ?>" method="post" name="hikashop_form" id="hikashop_form">
-	<table class="hika_filter" style="width:100%">
-		<tr>
-			<td width="100%">
-				<?php echo JText::_('FILTER');?>:
-				<input type="text" id="hikashop_product_search" name="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" onchange="this.form.submit();" />
-				<button class="btn" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
-				<button class="btn" onclick="document.getElementById('hikashop_product_search').value='';this.form.submit();"><?php echo JText::_('RESET');?></button>
-			</td>
-			<td nowrap="nowrap">
-				<?php echo $this->productType->display('filter_product_type',$this->pageInfo->filter->filter_product_type); ?>
-			</td>
-			<td nowrap="nowrap">
+<div class="hk-row-fluid">
+	<div class="hkc-xs-6">
 <?php
+	echo $this->loadHkLayout('search', array());
+?>
+	</div>
+	<div class="hkc-xs-6 hikashop_listing_filters">
+<?php
+	echo $this->productType->display('filter_product_type',$this->pageInfo->filter->filter_product_type);
+
 	if($this->config->get('show_category_explorer', 1)) {
 		echo $this->childDisplayType->display('filter_type', $this->pageInfo->selectedType, false, false);
 	}
 ?>
-			</td>
-		</tr>
-	</table>
+	</div>
+</div>
+
 <?php
 if(!empty($this->breadcrumb)) {
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,11 +10,11 @@ defined('_JEXEC') or die('Restricted access');
 ?><div style="float:right">
 	<?php
 		echo $this->popup->display(
-			'<img src="'.HIKASHOP_IMAGES.'add.png"/>'.JText::_('ADD'),
+			'<i class="fa fa-plus"></i> '.JText::_('ADD'),
 			'ADD',
 			hikashop_completeLink("zone&task=selectchildlisting&main_id=".$this->main_id."&main_namekey=".$this->main_namekey,true ),
 			'subzones_add_button',
-			760, 480, '', '', 'button'
+			760, 480, 'class="btn btn-primary"', '', 'link'
 		);
 	?>
 </div>

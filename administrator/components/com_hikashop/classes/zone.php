@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class hikashopZoneClass extends hikashopClass{
 	var $deleteToggle = array('zone_link'=>array('zone_parent_namekey','zone_child_namekey'));
 	var $toggle = array('zone_published'=>'zone_id');
 
-	function saveForm(){
+	function saveForm() {
 		$zone = new stdClass();
 		$zone->zone_id = hikashop_getCID('zone_id');
 		$formData = hikaInput::get()->get('data', array(), 'array');
@@ -40,31 +40,38 @@ class hikashopZoneClass extends hikashopClass{
 		return $status;
 	}
 
-	function getZones($ids,$columns='*',$key='zone_id',$returnArrayWithOneColumn=false){
-		if(is_numeric($ids)) $ids = array($ids);
-		elseif(!is_array($ids)) return array();
-		if($key=='zone_id'){
-			JArrayHelper::toInteger($ids);
-		}else{
-			foreach($ids as $k => $id){
+	function getZones($ids, $columns = '*', $key = 'zone_id', $returnArrayWithOneColumn = false) {
+		if(is_numeric($ids))
+			$ids = array($ids);
+		if(!is_array($ids))
+			return array();
+		if($key == 'zone_id') {
+			hikashop_toInteger($ids);
+		} else {
+			$key = preg_replace('#[^a-z_]#','',$key);
+			foreach($ids as $k => $id) {
 				$ids[$k] = $this->database->Quote($id);
 			}
 		}
-		$query = 'SELECT '.preg_replace('#[^a-z_, ]#','',$columns).' FROM #__hikashop_zone WHERE '.preg_replace('#[^a-z_]#','',$key).' IN ('.implode(',',$ids).')';
+
+		$columns = explode(',', $columns);
+		foreach($columns as &$column) {
+			$column = trim($column);
+			if($column == '*')
+				continue;
+			$column = $this->database->quoteName($column);
+		}
+		unset($column);
+
+		$query = 'SELECT '.implode(',', $columns).' FROM #__hikashop_zone WHERE '.hikashop_secureField($key).' IN ('.implode(',',$ids).')';
 		$this->database->setQuery($query);
 
-		if($returnArrayWithOneColumn){
-			if(!HIKASHOP_J25){
-				return $this->database->loadResultArray();
-			} else {
-				return $this->database->loadColumn();
-			}
-		}else{
-			return $this->database->loadObjectList();
-		}
+		if($returnArrayWithOneColumn)
+			return $this->database->loadColumn();
+		return $this->database->loadObjectList();
 	}
 
-	function getZoneParents($zone_id,$already=array()){
+	function getZoneParents($zone_id, $already = array()) {
 		static $level = 0;
 		if(!count($already)) $level = 0;
 		if($level>10) return array();
@@ -85,11 +92,7 @@ class hikashopZoneClass extends hikashopClass{
 		}
 		$query = 'SELECT a.zone_parent_namekey FROM '.hikashop_table('zone_link').' AS a WHERE a.zone_child_namekey IN ('.implode(',',$quoted).');';
 		$this->database->setQuery($query);
-		if(!HIKASHOP_J25){
-			$parents = $this->database->loadResultArray();
-		} else {
-			$parents = $this->database->loadColumn();
-		}
+		$parents = $this->database->loadColumn();
 		$results = array();
 
 		foreach($zone_id as $z){
@@ -226,11 +229,7 @@ class hikashopZoneClass extends hikashopClass{
 
 		$query = 'SELECT zone_child_namekey FROM '.hikashop_table('zone_link').' WHERE zone_parent_namekey  = '.$this->database->Quote($mainNamekey).' AND zone_child_namekey IN ('.rtrim($NamekeysString,',').') LIMIT 1';
 		$this->database->setQuery($query);
-		if(!HIKASHOP_J25){
-			$alreadyChild =  $this->database->loadResultArray();
-		} else {
-			$alreadyChild =  $this->database->loadColumn();
-		}
+		$alreadyChild =  $this->database->loadColumn();
 		$toInsertNamekeys = array();
 		foreach($childNamekeys as $childNamekey){
 			if(!in_array($childNamekey,$alreadyChild))$toInsertNamekeys[]=$childNamekey;
@@ -241,7 +240,7 @@ class hikashopZoneClass extends hikashopClass{
 			$query.='('.$this->database->Quote($mainNamekey).','.$this->database->Quote($childNamekey).'),';
 		}
 		$this->database->setQuery(rtrim($query,',').';');
-		$this->database->query();
+		$this->database->execute();
 		return $toInsertNamekeys;
 	}
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -114,10 +114,10 @@ defined('_JEXEC') or die('Restricted access');
 
 <?php
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
+	$app = JFactory::getApplication();
 	$html = array();
 	$table = array();
-	$dispatcher->trigger('onDiscountBlocksDisplay', array(&$this->element, &$html));
+	$app->triggerEvent('onDiscountBlocksDisplay', array(&$this->element, &$html));
 	if(!empty($html)) {
 		foreach($html as $h) {
 			$h = trim($h);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,11 +17,11 @@ defined('_JEXEC') or die('Restricted access');
 			<td>
 				<?php
 					echo $this->popup->display(
-						'<img src="'.HIKASHOP_IMAGES.'edit.png"/>',
+						'<i class="fas fa-pen"></i>',
 						'HIKA_EDIT',
 						hikashop_completeLink("characteristic&task=editpopup&cid=".$row->characteristic_id.'&characteristic_parent_id='.$row->characteristic_parent_id.'&id='.$id,true ),
 						'charac_edit_button'.$row->characteristic_id,
-						860, 480, '', '', 'link'
+						860, 480, 'title="'.JText::_('HIKA_EDIT').'"', '', 'link'
 					);
 				?>
 			</td>
@@ -32,7 +32,9 @@ defined('_JEXEC') or die('Restricted access');
 				0
 			</td>
 			<td class="hk_center">
-				<a href="#" onclick="return deleteRow('characteristic_div_<?php echo $row->characteristic_id.'_'.$id;?>','characteristic[<?php echo $row->characteristic_id;?>][<?php echo $id;?>]','characteristic_<?php echo $row->characteristic_id.'_'.$id;?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
+				<a href="#" title="<?php echo JText::_('HIKA_DELETE'); ?>" onclick="return deleteRow('characteristic_div_<?php echo $row->characteristic_id.'_'.$id;?>','characteristic[<?php echo $row->characteristic_id;?>][<?php echo $id;?>]','characteristic_<?php echo $row->characteristic_id.'_'.$id;?>');">
+					<i class="fa fa-trash"></i>
+				</a>
 			</td>
 			<td width="1%" class="hk_center">
 				<?php echo $row->characteristic_id; ?>

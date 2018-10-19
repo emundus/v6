@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,11 +17,21 @@ class plgSystemMijo_redirect extends JPlugin {
 
 	function onAfterRoute() {
 		$app = JFactory::getApplication();
-		if( JRequest::getString('option') != 'com_mijoshop' || $app->isAdmin() )
+
+		if(version_compare(JVERSION,'3.0','>=')) {
+			$option = $app->input->getVar('option');
+			$mijoProdId = $app->input->getInt('product_id');
+			$mijoCatId = $app->input->getInt('category_id');
+			$mijoOrderId = $app->input->getInt('order_id');
+		} else {
+			$option = JRequest::getVar('option');
+			$mijoProdId = JRequest::getInt('product_id');
+			$mijoCatId = JRequest::getInt('category_id');
+			$mijoOrderId = JRequest::getInt('order_id');
+		}
+
+		if( $option != 'com_mijoshop' || $app->isAdmin() )
 			return true;
-		$mijoProdId = JRequest::getInt('product_id');
-		$mijoCatId = JRequest::getInt('category_id');
-		$mijoOrderId= JRequest::getInt('order_id');
 
 		$url = null; //HIKASHOP_LIVE;
 		$db = JFactory::getDBO();

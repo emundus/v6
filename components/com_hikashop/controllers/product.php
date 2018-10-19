@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,11 +41,7 @@ class productController extends hikashopController {
 	}
 
 	public function send_email() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken('request') || die('Invalid Token');
-		} else {
-			JSession::checkToken('request') || die('Invalid Token');
-		}
+		JSession::checkToken('request') || die('Invalid Token');
 
 		$element = new stdClass();
 		$formData = hikaInput::get()->get('data', array(), 'array');
@@ -68,10 +64,10 @@ class productController extends hikashopController {
 
 		$config =& hikashop_config();
 
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		JPluginHelper::importPlugin('hikashop');
 		$send = empty($element->product_id) || (int)$config->get('product_contact', 0);
-		$dispatcher->trigger('onBeforeSendContactRequest', array(&$element, &$send));
+		$app->triggerEvent('onBeforeSendContactRequest', array(&$element, &$send));
 
 		jimport('joomla.mail.helper');
 		if($element->email && method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($element->email)){
@@ -87,6 +83,8 @@ class productController extends hikashopController {
 		if(empty($element->altbody)) {
 			$app->enqueueMessage(JText::_('PLEASE_FILL_ADDITIONAL_INFO'), 'error');
 			$send = false;
+		} else {
+			$element->altbody = strip_tags($element->altbody);
 		}
 
 		if(!$send) {
@@ -158,11 +156,7 @@ class productController extends hikashopController {
 	}
 
 	function add_waitlist() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken('request') || die('Invalid Token');
-		} else {
-			JSession::checkToken('request') || die('Invalid Token');
-		}
+		JSession::checkToken('request') || die('Invalid Token');
 
 		$element = new stdClass();
 		$formData = hikaInput::get()->get('data', array(), 'array');
@@ -234,7 +228,7 @@ class productController extends hikashopController {
 
 				$sql = 'INSERT IGNORE INTO '.hikashop_table('waitlist').' (`product_id`,`date`,`email`,`name`,`product_item_id`,`language`) VALUES ('.(int)$product_id.', '.time().', '.$db->quote($email).', '.$db->quote($name).', '.(int)$itemId.', '.$db->quote($tag).');';
 				$db->setQuery($sql);
-				$db->query();
+				$db->execute();
 
 				$app->enqueueMessage(JText::_('WAITLIST_SUBSCRIBE'));
 

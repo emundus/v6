@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,9 +43,9 @@ class email_historyController extends hikashopController {
 			$emailHistoryClass = new hikashopPlg_email_historyClass();
 			$app = JFactory::getApplication();
 			if($emailHistoryClass->resend($cid))
-				$app->enqueueMessage('THE_EMAIL_HAS_BEEN_RESENT', 'notice');
+				$app->enqueueMessage(JText::_('THE_EMAIL_HAS_BEEN_RESENT'), 'notice');
 			else
-				$app->enqueueMessage('AN_ERROR_HAPPENED_DURING_THE_RESENDING_OF_THE_EMAIL', 'error');
+				$app->enqueueMessage(JText::_('AN_ERROR_HAPPENED_DURING_THE_RESENDING_OF_THE_EMAIL'), 'error');
 			hikaInput::get()->set('layout', 'form');
 		}
 		return $this->display();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -268,6 +268,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				$order->history->history_data = $vars['TOKEN'];
 				$order->order_id = $orderClass->save($order);
 
+				$this->app->setUserState(HIKASHOP_COMPONENT.'.order_id',$order->order_id);
 				$this->app->redirect($url);
 				return false;
 			}
@@ -753,7 +754,10 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				$orderProduct->cart_product_option_parent_id = $product->cart_product_option_parent_id;
 				$orderProduct->order_product_code = $product->product_code;
 				$orderProduct->order_product_price = @$product->prices[0]->unit_price->price_value;
-				$orderProduct->order_product_wishlist_id = $product->cart_product_wishlist_id;
+				if(!empty($product->cart_product_wishlist_id))
+					$orderProduct->order_product_wishlist_id = $product->cart_product_wishlist_id;
+				if(!empty($product->cart_product_wishlist_product_id))
+					$orderProduct->order_product_wishlist_product_id = $product->cart_product_wishlist_product_id;
 				$orderProduct->product_subscription_id = @$product->product_subscription_id;
 
 				$tax = 0;

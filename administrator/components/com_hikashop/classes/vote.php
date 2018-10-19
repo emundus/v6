@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,7 +47,7 @@ class hikashopVoteClass extends hikashopClass {
 			$user_id = hikashop_getIP();
 		$db = JFactory::getDBO();
 		$db->setQuery('INSERT INTO '.hikashop_table('vote_user').' VALUES ('.(int)$element->vote_id.','.$db->quote($user_id).',1) ');
-		$success = $db->query();
+		$success = $db->execute();
 		if(!$success){
 			$this->error = array('code' => '505016', 'message' => JText::_('HIKA_VOTE_ERROR_SAVING_DATA'));
 			return false;
@@ -168,7 +168,7 @@ class hikashopVoteClass extends hikashopClass {
 		$db = JFactory::getDBO();
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		if(isset($element->vote_ref_id) || !$this->app->isAdmin())
 			$this->checkVote($element);
@@ -178,7 +178,8 @@ class hikashopVoteClass extends hikashopClass {
 
 		$element->vote_date = time();
 		if(!$this->app->isAdmin()){
-			$element->vote_ip = hikashop_getIP();
+			if($this->config->get('vote_ip', 1))
+				$element->vote_ip = hikashop_getIP();
 			if(!empty($element->vote_comment) && !$this->config->get('published_comment','1'))
 				$element->vote_published = 0;
 			else
@@ -222,9 +223,9 @@ class hikashopVoteClass extends hikashopClass {
 		$new = empty($element->vote_id);
 
 		if($new)
-			$dispatcher->trigger('onBeforeVoteCreate', array( &$element, &$do, &$errors ) );
+			$app->triggerEvent('onBeforeVoteCreate', array( &$element, &$do, &$errors ) );
 		else
-			$dispatcher->trigger('onBeforeVoteUpdate', array( &$element, &$do, &$oldElement, &$errors ) );
+			$app->triggerEvent('onBeforeVoteUpdate', array( &$element, &$do, &$oldElement, &$errors ) );
 
 		if(!$do) {
 			if(empty($errors)){
@@ -268,10 +269,10 @@ class hikashopVoteClass extends hikashopClass {
 		}
 
 		if($new) {
-			$dispatcher->trigger('onAfterVoteCreate', array( &$element, &$return_data ) );
+			$app->triggerEvent('onAfterVoteCreate', array( &$element, &$return_data ) );
 			$this->error = array('code' => '1', 'message' => JText::_('VOTE_UPDATED'));
 		} else {
-			$dispatcher->trigger('onAfterVoteUpdate', array( &$element, &$return_data ) );
+			$app->triggerEvent('onAfterVoteUpdate', array( &$element, &$return_data ) );
 			$this->error = array('code' => '2', 'message' => JText::_('THANK_FOR_VOTE'));
 		}
 
@@ -350,12 +351,12 @@ class hikashopVoteClass extends hikashopClass {
 
 	function delete(&$elements){
 		$db = JFactory::getDBO();
-		JArrayHelper::toInteger($elements);
+		hikashop_toInteger($elements);
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 		$currentElements = array();
-		$dispatcher->trigger('onBeforeVoteDelete', array(&$elements, &$do, &$currentElements) );
+		$app->triggerEvent('onBeforeVoteDelete', array(&$elements, &$do, &$currentElements) );
 		if(!$do)
 			return false;
 
@@ -372,7 +373,7 @@ class hikashopVoteClass extends hikashopClass {
 			if($status && isset($data) && $data !== null) {
 				$query = 'DELETE FROM '.hikashop_table('vote_user').' WHERE vote_user_id = '.(int)$result->vote_id.' ';
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 
 				if($result->vote_type == 'product'){
 					$oldResult = clone($result);
@@ -384,7 +385,7 @@ class hikashopVoteClass extends hikashopClass {
 				}
 			}
 		}
-		$dispatcher->trigger('onAfterVoteDelete', array(&$elements) );
+		$app->triggerEvent('onAfterVoteDelete', array(&$elements) );
 		return true;
 	}
 
@@ -598,19 +599,11 @@ function hikashop_send_vote(rating, from){ return hikaVote.vote(rating, from); }
 		$db = JFactory::getDBO();
 		$query = 'SELECT order_id FROM '.hikashop_table('order').' WHERE order_user_id = '.$db->quote($user_id).'';
 		$db->setQuery($query);
-		if(!HIKASHOP_J25){
-			$order_ids = $db->loadResultArray();
-		} else {
-			$order_ids = $db->loadColumn();
-		}
+		$order_ids = $db->loadColumn();
 		if(!empty($order_ids)) {
 			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_parent_id = '.(int)$vote_ref_id.'';
 			$db->setQuery($query);
-			if(!HIKASHOP_J25){
-				$product_ids = $db->loadResultArray();
-			} else {
-				$product_ids = $db->loadColumn();
-			}
+			$product_ids = $db->loadColumn();
 			if(empty($product_ids)) {
 				$product_ids =  array(0 => 0);
 			}
@@ -647,7 +640,7 @@ function hikashop_send_vote(rating, from){ return hikaVote.vote(rating, from); }
 		);
 
 		if(is_array($ref_id)) {
-			JArrayHelper::toInteger($ref_id);
+			hikashop_toInteger($ref_id);
 			$filters[] = 'vote_ref_id IN ('.implode(',', $ref_id).')';
 		} else {
 			$filters[] = 'vote_ref_id = '.(int)$ref_id;

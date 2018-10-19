@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,16 +15,7 @@ class hikashopTranslationHelper {
 	function __construct(){
 		$this->database = JFactory::getDBO();
 		$app = JFactory::getApplication();
-		if(version_compare(JVERSION,'1.6','<')){
-			jimport('joomla.filesystem.folder');
-			if(JFolder::exists(HIKASHOP_ROOT.'components/com_joomfish/images/flags/')){
-				$this->flagPath = 'components/com_joomfish/images/flags/';
-			}else{
-				$this->flagPath = 'media/com_joomfish/default/flags/';
-			}
-		}else{
-			$this->flagPath = 'media/mod_languages/images/';
-		}
+		$this->flagPath = 'media/mod_languages/images/';
 		if($app->isAdmin()){
 			$this->flagPath = '../'.$this->flagPath;
 		} else {
@@ -70,28 +61,9 @@ class hikashopTranslationHelper {
 
 	function loadLanguages($active = true){
 		if(empty($this->languages)){
-			if(version_compare(JVERSION,'1.6','<')){
-				$query = 'SELECT * FROM '.hikashop_table('languages',false);
-				$this->database->setQuery($query);
-				$languages = $this->database->loadObjectList();
-				if(!empty($languages)){
-					foreach($languages as $key => $language){
-						if(!$active ||(isset($language->active)&&$language->active)||(isset($language->published)&&$language->published)){
-							if(!isset($language->id)){
-								$language->id=$language->lang_id;
-								$language->code=$language->lang_code;
-								$language->shortcode=$language->image;
-								$language->active=$language->published;
-							}
-							$this->languages[$language->id]=$language;
-						}
-					}
-				}
-			}else{
-				$query = 'SELECT lang_id as id, lang_code as code, image as shortcode, published as active FROM '.hikashop_table('languages',false).($active?' WHERE published=1':'');
-				$this->database->setQuery($query);
-				$this->languages = $this->database->loadObjectList('id');
-			}
+			$query = 'SELECT lang_id as id, lang_code as code, image as shortcode, published as active FROM '.hikashop_table('languages',false).($active?' WHERE published=1':'');
+			$this->database->setQuery($query);
+			$this->languages = $this->database->loadObjectList('id');
 		}
 		foreach($this->languages as $key => $language){
 			if(empty($language->shortcode)){
@@ -100,14 +72,8 @@ class hikashopTranslationHelper {
 		}
 		return $this->languages;
 	}
-	function loadLanguage($id){
-		if(version_compare(JVERSION,'1.6','<')){
-			$this->languages = $this->loadLanguages(false);
-			if(isset($this->languages[$id])){
-				return $this->languages[$id];
-			}
-		}
 
+	function loadLanguage($id){
 		$query = 'SELECT lang_id as id, lang_code as code, image as shortcode, published as active FROM '.hikashop_table('languages',false).' WHERE lang_id='.(int)$id;
 		$this->database->setQuery($query);
 		return $this->database->loadObject();
@@ -276,7 +242,7 @@ class hikashopTranslationHelper {
 							' SET value='.$this->database->Quote($item['value']).', modified_by=' . (int)$userId.', modified=NOW()'.
 							' WHERE id = ' . (int)$entry_id . ';';
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 						$already = true;
 						break;
 					}
@@ -299,7 +265,7 @@ class hikashopTranslationHelper {
 		}
 		$query = 'INSERT IGNORE INTO '.hikashop_table($trans_table, false).' (reference_id,language_id,reference_table,value,reference_field,original_value,published,modified_by,original_text,modified) VALUES ('.implode('),(',$rows).');';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 	}
 
 	function deleteTranslations($table,$ids){
@@ -311,7 +277,7 @@ class hikashopTranslationHelper {
 			}
 			$query = 'DELETE FROM '.hikashop_table($trans_table,false).' WHERE reference_table = '.$this->database->Quote('hikashop_'.$table).' AND reference_id IN ('.implode(',',$ids).')';
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 		}
 	}
 
@@ -392,12 +358,16 @@ class hikashopTranslationHelper {
 		$tooltip_edit = JText::_('EDIT_HIKA_LANG');
 		$popupHelper = hikashop_get('helper.popup');
 
+		$edit_add = 'fa fa-plus';
+		$edit_image = 'fa fa-pen fa-pencil';
+		$status_unavailable = 'fa fa-times';
+
 		foreach ($dirs as $dir){
 			$xmlFiles = JFolder::files( $path.DS.$dir, '^([-_A-Za-z]*)\.xml$' );
 			$xmlFile = array_pop($xmlFiles);
 			if($xmlFile=='install.xml') $xmlFile = array_pop($xmlFiles);
 			if(empty($xmlFile)) continue;
-			$data = JApplicationHelper::parseXMLLangMetaFile($path.DS.$dir.DS.$xmlFile);
+			$data = JInstaller::parseXMLInstallFile($path.DS.$dir.DS.$xmlFile);
 			$oneLanguage = new stdClass();
 			$oneLanguage->language 	= $dir;
 			$oneLanguage->name = $data['name'];
@@ -406,7 +376,7 @@ class hikashopTranslationHelper {
 
 			if(!empty($languageFile)){
 				$oneLanguage->edit = $popupHelper->display(
-					'<img id="image'.$oneLanguage->language.'" src="'. $edit_image.'" alt="'.JText::_('EDIT_LANGUAGE_FILE').'"/>',
+					'<span id="image'.$oneLanguage->language.'" alt="'.JText::_('EDIT_LANGUAGE_FILE').'" style="color:#555; font-size:1.2em;"><i class="'. $edit_image.'"></i></span>',
 					'EDIT_LANGUAGE_FILE',
 					'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language,
 					'edit_language_'.$oneLanguage->language,
@@ -418,13 +388,13 @@ class hikashopTranslationHelper {
 				$oneLanguage->status_tooltip = $tooltip_hika;
 			}else{
 				$oneLanguage->edit = $popupHelper->display(
-					'<img id="image'.$oneLanguage->language.'" src="'. $edit_add.'" alt="'.$tooltip_add.'"/>',
+					'<span id="image'.$oneLanguage->language.'"alt="'.$tooltip_add.'" style="color:#555; font-size:1.2em;"><i class="'. $edit_add.'"></i></span>',
 					'ADD_LANGUAGE_FILE',
 					'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language,
 					'edit_language_'.$oneLanguage->language,
 					760, 480, '', '', 'link'
 				);
-				$oneLanguage->status = '<img id="image'.$oneLanguage->language.'" src="'. $status_unavailable.'" alt="'.JText::_('ADD_HIKA_LANG').'"/>';
+				$oneLanguage->status = '<span id="image'.$oneLanguage->language.'" alt="'.JText::_('ADD_HIKA_LANG').'" style="color:#942a25; font-size:1.2em;"><i class="'. $status_unavailable.'"></i></span>';
 
 				$oneLanguage->edit_tooltip = $tooltip_add;
 				$oneLanguage->status_tooltip = $tooltip_unavailable;

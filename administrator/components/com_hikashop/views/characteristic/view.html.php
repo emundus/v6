@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 	var $ctrl = 'characteristic';
 	var $nameListing = 'CHARACTERISTICS';
 	var $nameForm = 'CHARACTERISTICS';
-	var $icon = 'characteristic';
+	var $icon = 'adjust';
 	var $triggerView = true;
 
 	function display($tpl = null) {
@@ -31,7 +31,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'a.characteristic_id','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'asc',	'word' );
 		$pageInfo->search = $app->getUserStateFromRequest( $this->paramBase.".search", 'search', '', 'string' );
-		$pageInfo->search = JString::strtolower(trim($pageInfo->search));
+		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart', 0, 'int' );
 		$database	= JFactory::getDBO();
@@ -44,8 +44,8 @@ class CharacteristicViewCharacteristic extends hikashopView {
 
 		$extrafilters = array();
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeCharacteristicListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeCharacteristicListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters));
 		$this->assignRef('extrafilters', $extrafilters);
 
 		$query = ' FROM '.hikashop_table('characteristic').' AS a';
@@ -95,9 +95,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&characteristic_id='.$characteristic_id);
 
 		$this->toolbar = array(
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION,'1.7','>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')
@@ -209,7 +207,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 		$rows = array();
 		$js="window.top.hikashop.closeBox();";
 		if(!empty($characteristics) && count($characteristics)){
-			JArrayHelper::toInteger($characteristics);
+			hikashop_toInteger($characteristics);
 			$database	= JFactory::getDBO();
 			$query = 'SELECT * FROM '.hikashop_table('characteristic').' WHERE characteristic_id IN ('.implode(',',$characteristics).') OR characteristic_parent_id IN ('.implode(',',$characteristics).') ORDER BY characteristic_ordering ASC, characteristic_value ASC';
 			$database->setQuery($query);

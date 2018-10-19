@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,13 +45,7 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 
 	public function initDB() {
 		try {
-			if(!HIKASHOP_J25) {
-				$tmp = $this->db->getTableFields(hikashop_table('email_log'));
-				$current = reset($tmp);
-				unset($tmp);
-			} else {
-				$current = $this->db->getTableColumns(hikashop_table('email_log'));
-			}
+			$current = $this->db->getTableColumns(hikashop_table('email_log'));
 		} catch(Exception $e) {
 			$current = null;
 		}
@@ -61,7 +55,7 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 
 		$query = $this->getDBCreateQuery('hikashop_email_log');
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 		return true;
 	}
 
@@ -152,8 +146,8 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeEmail_logResend', array( &$email, &$email_log ));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeEmail_logResend', array( &$email, &$email_log ));
 
 		$result = $mailClass->sendMail($email);
 
@@ -173,11 +167,11 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 			$email_log->email_log_params = json_encode($email_log->email_log_params);
 
 		$do = true;
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		if(!empty($new)) {
-			$dispatcher->trigger('onBeforeEmail_logCreate', array( &$email_log, &$do ));
+			$app->triggerEvent('onBeforeEmail_logCreate', array( &$email_log, &$do ));
 		} else {
-			$dispatcher->trigger('onBeforeEmail_logUpdate', array( &$email_log, &$do ));
+			$app->triggerEvent('onBeforeEmail_logUpdate', array( &$email_log, &$do ));
 		}
 
 		if(!$do)
@@ -188,9 +182,9 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 			return $status;
 
 		if(!empty($new)) {
-			$dispatcher->trigger('onAfterEmail_logCreate', array( &$email_log ));
+			$app->triggerEvent('onAfterEmail_logCreate', array( &$email_log ));
 		} else {
-			$dispatcher->trigger('onAfterEmail_logUpdate', array( &$email_log ));
+			$app->triggerEvent('onAfterEmail_logUpdate', array( &$email_log ));
 		}
 		return $status;
 	}
@@ -279,7 +273,7 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 				$data->email_log_ref_id = $mail->data->order_id;
 				break;
 			case 'contact_request':
-				$data->email_log_ref_id = $mail->data->product->product_id;
+				$data->email_log_ref_id = @$mail->data->product->product_id;
 				break;
 			case 'new_comment':
 				$data->email_log_ref_id = $mail->data->type->product_id;
@@ -302,6 +296,6 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 		$query = 'DELETE FROM '.hikashop_table('email_log').' '.
 			   ' WHERE email_log_date < '.(time() - ((3600 * 24) * (int)$days));
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 	}
 }

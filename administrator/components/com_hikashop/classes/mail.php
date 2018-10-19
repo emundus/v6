@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -63,8 +63,8 @@ class hikashopMailClass {
 
 		$plugin_files = array();
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onMailListing', array(&$plugin_files));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onMailListing', array(&$plugin_files));
 		if(!empty($plugin_files)) {
 			$files = array_merge($files, $plugin_files);
 		}
@@ -217,8 +217,8 @@ class hikashopMailClass {
 		$content = ob_get_clean();
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHkProcessMailTemplate', array(&$mail, &$data, &$content, &$vars, &$texts, &$templates));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onHkProcessMailTemplate', array(&$mail, &$data, &$content, &$vars, &$texts, &$templates));
 
 		if(!empty($templates)) {
 			foreach($templates as $key => $templateVariables) {
@@ -359,8 +359,8 @@ class hikashopMailClass {
 
 			$plugin_files = array();
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onMailListing', array(&$plugin_files));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onMailListing', array(&$plugin_files));
 			if(!empty($plugin_files)) {
 				$mail_folder = '';
 				$mail_file = '';
@@ -376,15 +376,17 @@ class hikashopMailClass {
 						$mail_folder = $this->mail_folder;
 
 					$path = $mail_folder . $mail_file . '.' . $type . '.modified.php';
-					if(!file_exists($path)) {
-						$path = $mail_folder . $mail_file . '.' . $type . '.php';
-						if(!file_exists($path)) {
-							return '';
-						}
+					if(file_exists($path))
+						return $path;
+					$path = $mail_folder . $mail_file . '.' . $type . '.php';
+					if(file_exists($path)) {
 						if($getModifiedFile)
 							return $path = $mail_folder . $mail_file . '.' . $type . '.modified.php';
+						return $path;
 					}
-					return $path;
+					if($type == 'text' && $getModifiedFile && file_exists($mail_folder . $mail_file . '.html.php'))
+						return $path = $mail_folder . $mail_file . '.' . $type . '.modified.php';
+					return '';
 				}
 			}
 		}
@@ -432,8 +434,8 @@ class hikashopMailClass {
 
 		$external_template_files = array();
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onMailTemplateListing', array(&$external_template_files, $mail_name));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onMailTemplateListing', array(&$external_template_files, $mail_name));
 		if(empty($external_template_files))
 			return false;
 
@@ -589,8 +591,8 @@ class hikashopMailClass {
 			}
 		}
 
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeMailSend', array(&$mail, &$this->mailer) );
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeMailSend', array(&$mail, &$this->mailer) );
 	}
 
 	public function sendMail(&$mail) {
@@ -601,9 +603,9 @@ class hikashopMailClass {
 
 		$do = true;
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$mail->mail_success = false;
-		$dispatcher->trigger('onBeforeMailPrepare', array(&$mail, &$this->mailer, &$do) );
+		$app->triggerEvent('onBeforeMailPrepare', array(&$mail, &$this->mailer, &$do) );
 		if(!$do) {
 			if($mail->mail_success == true)
 				$this->mail_success = true;
@@ -628,7 +630,15 @@ class hikashopMailClass {
 		}
 		$this->mailer->Body = str_replace(" ",' ',$this->mailer->Body);
 
-		$result = $this->mailer->Send();
+		$result = true;
+		try {
+			$result = $this->mailer->Send();
+		} catch( Exception $e) {
+			$result = false;
+			if($app->isAdmin()) {
+				$app->enqueueMessage($e->getMessage(), 'error');
+			}
+		}
 		if(!$result || !empty($result->message)) {
 			$this->mail_success = false;
 		}

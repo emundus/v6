@@ -1,125 +1,103 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_order_listing">
-<?php global $Itemid; ?>
-<?php echo $this->toolbarHelper->process($this->toolbar, $this->title); ?>	
-
+<?php
+	echo $this->toolbarHelper->process($this->toolbar, $this->title);
+?>
 <form action="<?php echo hikashop_completeLink('order'); ?>" method="post" name="adminForm" id="adminForm">
-	<div class="hikashop_search_block">
-		<input type="text" name="search" id="hikashop_search" value="<?php echo $this->escape($this->pageInfo->search);?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" class="inputbox" onchange="document.adminForm.submit();" />
-		<button class="btn" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
-		<button class="btn" onclick="document.getElementById('hikashop_search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
+
+<div class="hk-row-fluid">
+	<div class="hkc-md-12 hikashop_search_zone">
+		<div class="hikashop_search_block">
+			<input type="text" name="search" id="hikashop_search" value="<?php echo $this->escape($this->pageInfo->search);?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" class="inputbox" onchange="this.form.submit();" />
+			<button class="hikabtn hikabtn-primary" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
+			<button class="hikabtn hikabtn-primary" onclick="document.getElementById('hikashop_search').value='';this.form.submit();"><?php echo JText::_('RESET'); ?></button>
+		</div>
+		<div class="hikashop_order_sort"><?php
+			echo JHTML::_('select.genericlist', $this->ordering_values, 'filter_fullorder', 'onchange="this.form.submit();"', 'value', 'text', $this->full_ordering);
+		?></div>
 	</div>
-	<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
-	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
-	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
-	<input type="hidden" name="boxchecked" value="0" />
-	<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
-	<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
-	<?php echo JHTML::_('form.token'); ?>
-</form>
+</div>
 
-<table id="hikashop_order_listing" class="hikashop_orders adminlist table table-striped table-hover" style="width:100%">
-	<thead>
-		<tr>
-			<th class="hikashop_order_num_title title titlenum"><?php
-				echo JText::_('HIKA_NUM');
-			?></th>
-			<th class="hikashop_order_number_title title"><?php
-				echo JText::_('ORDER_NUMBER');
-			?></th>
-			<th class="hikashop_order_date_title title"><?php
-				echo JHTML::_('grid.sort', JText::_('DATE'), 'hk_order.order_created', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value);
-			?></th>
-			<th class="hikashop_order_status_title title"><?php
-				echo JHTML::_('grid.sort', JText::_('ORDER_STATUS'), 'hk_order.order_status', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value);
-			?></th>
-			<th class="hikashop_order_total_title title"><?php
-				echo JHTML::_('grid.sort', JText::_('HIKASHOP_TOTAL'), 'hk_order.order_full_price', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value);
-			?></th>
+<div class="hikashop_order_listing">
+	<div class="hikashop_orders_content">
 <?php
-	$extra_cols = 0;
-	if(!empty($this->action_column)) {
-		$extra_cols++;
-?>
-			<th class="hikashop_order_action_title title"><?php
-				echo JText::_('HIKASHOP_ACTION');
-			?></th>
-<?php
-	}
-?>
-		</tr>
-	</thead>
-	<tfoot>
-		<tr>
-			<td colspan="<?php echo 5 + $extra_cols; ?>">
-				<div class="pagination">
-					<form action="<?php echo hikashop_completeLink('order'); ?>" method="post" name="adminForm_bottom">
-						<?php $this->pagination->form = '_bottom'; echo $this->pagination->getListFooter(); ?>
-						<?php echo $this->pagination->getResultsCounter(); ?>
-						<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
-						<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
-						<input type="hidden" name="task" value="" />
-						<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
-						<input type="hidden" name="boxchecked" value="0" />
-						<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
-						<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
-						<?php echo JHTML::_('form.token'); ?>
-					</form>
-				</div>
-			</td>
-		</tr>
-	</tfoot>
-	<tbody>
-<?php
-	$url_itemid = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
-	$orderUrl = hikashop_completeLink('order'.$url_itemid);
-
-	$config =& hikashop_config();
-	if($config->get('force_ssl',0) && strpos('https://',$orderUrl) === false) {
-		$orderUrl = str_replace('http://','https://',HIKASHOP_LIVE) . 'index.php?option=com_hikashop&ctrl=order';
-	}
+	$url_itemid = (!empty($this->Itemid) ? '&Itemid=' . $this->Itemid : '');
+	$cancel_orders = false;
 
 	$i = 0;
 	$k = 0;
 	foreach($this->rows as &$row) {
+		$order_link = hikashop_completeLink('order&task=show&cid='.$row->order_id.$url_itemid);
 ?>
-		<tr class="row<?php echo $k; ?>">
-			<td data-title="<?php echo JText::_('HIKA_NUM'); ?>" class="hikashop_order_num_value"><?php
-				echo $this->pagination->getRowOffset($i);
-			?></td>
-			<td data-title="<?php echo JText::_('ORDER_NUMBER'); ?>" class="hikashop_order_number_value">
-				<a href="<?php echo hikashop_completeLink('order&task=show&cid='.$row->order_id.$url_itemid); ?>"><?php
-					echo $row->order_number;
-				?></a>
-			</td>
-			<td data-title="<?php echo JText::_('DATE'); ?>" class="hikashop_order_date_value"><?php
-				echo hikashop_getDate($row->order_created,'%Y-%m-%d %H:%M');
-			?></td>
-			<td data-title="<?php echo JText::_('ORDER_STATUS'); ?>" class="hikashop_order_status_value">
-				<span class="hikashop_order_listing_status order-label order-label-<?php echo preg_replace('#[^a-z_0-9]#i', '_', str_replace(' ','_', $row->order_status)); ?>"><?php
-					echo hikashop_orderStatus($row->order_status);
-				?></span>
-			</td>
-			<td data-title="<?php echo JText::_('HIKASHOP_TOTAL'); ?>" class="hikashop_order_total_value"><?php
-				echo $this->currencyClass->format($row->order_full_price, $row->order_currency_id);
-			?></td>
-<?php if(!empty($this->action_column)) { ?>
-			<td data-title="<?php echo JText::_('ACTIONS'); ?>" class="hikashop_order_action_value"><?php
-
+		<div class="hk-card hk-card-default hk-card-order" data-order-container="<?php echo (int)$row->order_id; ?>">
+			<div class="hk-card-header">
+				<a class="hk-row-fluid" href="<?php echo $order_link; ?>">
+					<div class="hkc-sm-6 hika_cpanel_date">
+						<i class="fa fa-clock"></i>
+						<?php echo hikashop_getDate((int)$row->order_created, '%Y-%m-%d %H:%M'); ?>
+					</div>
+					<div class="hkc-sm-6 hika_cpanel_price">
+						<i class="fa fa-credit-card"></i>
+						<?php echo $this->currencyClass->format($row->order_full_price, $row->order_currency_id); ?>
+					</div>
+				</a>
+			</div>
+			<div class="hk-card-body">
+				<div class="hk-row-fluid">
+					<a class="hkc-sm-4 hika_order_number" href="<?php echo $order_link; ?>">
+						<span class="hika_order_number_title"><?php echo  JText::_('ORDER_NUMBER'); ?> : </span>
+						<span class="hika_order_number_value"><?php echo $row->order_number; ?></span>
+<?php if(!empty($row->order_invoice_number)) { ?>
+						<br class="hika_order_number_invoice_separator"/>
+						<span class="hika_invoice_number_title"><?php echo JText::_('INVOICE_NUMBER'); ?> : </span>
+						<span class="hika_invoice_number_value"><?php echo $row->order_invoice_number; ?></span>
+<?php } ?>
+					</a>
+<?php if(!empty($row->order_shipping_address_id) && !empty($this->address_data[(int)$row->order_shipping_address_id])) { ?>
+					<div class="hkc-sm-3 hika_order_shipping_address" data-toggle="hk-tooltip" data-title="<?php echo $this->escape($this->address_html[(int)$row->order_shipping_address_id]); ?>">
+						<div class="hika_order_shipping_address_title"><?php echo JText::_('HIKA_LISTING_ORDER_SHIP'); ?></div>
+						<span class="hika_order_shipping_address_value">
+							<i class="fas fa-map-marker-alt"></i>
+							<?php echo $this->address_data[(int)$row->order_shipping_address_id]->address_firstname . ' ' . $this->address_data[(int)$row->order_shipping_address_id]->address_lastname; ?>
+						</span>
+					</div>
+<?php } else { ?>
+					<div class="hkc-sm-3 hika_order_shipping_address">
+					</div>
+<?php } ?>
+					<div class="hkc-sm-2 hika_order_status">
+						<span class="order-label order-label-<?php echo preg_replace('#[^a-z_0-9]#i', '_', str_replace(' ','_', $row->order_status)); ?>"><?php
+							echo hikashop_orderStatus($row->order_status);
+						?></span>
+					</div>
+					<div class="hkc-sm-2 hika_order_action">
+<?php
 		$dropData = array();
+		$dropData[] = array(
+			'name' => '<i class="fas fa-search-plus"></i>'.JText::_('HIKA_DETAILS'),
+			'link' => $order_link
+		);
 
-		if(!empty($row->show_cancel_button)) {
+
+		if($this->config->get('print_invoice_frontend') && !empty($row->order_invoice_id)) {
 			$dropData[] = array(
-				'name' => JText::_('CANCEL_ORDER'),
+				'name' => '<i class="fas fa-print"></i> '. JText::_('PRINT_INVOICE'),
+				'link' => '#print_invoice',
+				'click' => 'return window.localPage.printInvoice('.(int)$row->order_id.');',
+			);
+		}
+		if(!empty($row->show_cancel_button)) {
+			$cancel_orders = true;
+			$dropData[] = array(
+				'name' => '<i class="fas fa-ban"></i> '. JText::_('CANCEL_ORDER'),
 				'link' => '#cancel_order',
 				'click' => 'return window.localPage.cancelOrder('.(int)$row->order_id.',\''.$row->order_number.'\');',
 			);
@@ -127,19 +105,19 @@ defined('_JEXEC') or die('Restricted access');
 		if(!empty($row->show_payment_button) && bccomp($row->order_full_price, 0, 5) > 0) {
 			$url_param = ($this->payment_change) ? '&select_payment=1' : '';
 			$url = hikashop_completeLink('order&task=pay&order_id='.$row->order_id.$url_param.$url_itemid);
-			if($config->get('force_ssl',0) && strpos('https://',$url) === false)
+			if($this->config->get('force_ssl',0) && strpos('https://',$url) === false)
 				$url = str_replace('http://','https://', $url);
 			$dropData[] = array(
-				'name' => JText::_('PAY_NOW'),
+				'name' => '<i class="fas fa-money-bill-alt"></i> '. JText::_('PAY_NOW'),
 				'link' => $url
 			);
 		}
 		if($this->config->get('allow_reorder', 0)) {
 			$url = hikashop_completeLink('order&task=reorder&order_id='.$row->order_id.$url_itemid);
-			if($config->get('force_ssl',0) && strpos('https://',$url) === false)
+			if($this->config->get('force_ssl',0) && strpos('https://',$url) === false)
 				$url = str_replace('http://','https://', $url);
 			$dropData[] = array(
-				'name' => JText::_('REORDER'),
+				'name' => '<i class="fas fa-redo-alt"></i> '. JText::_('REORDER'),
 				'link' => $url
 			);
 		}
@@ -149,44 +127,107 @@ defined('_JEXEC') or die('Restricted access');
 		}
 
 		if(!empty($dropData)) {
-			if(count($dropData) == 1) {
-				$d = reset($dropData);
-				$link = '#';
-				$extra = '';
-				if(!empty($d['link']))
-					$link = $d['link'];
-				if(!empty($d['extra']))
-					$extra .= ' '.trim($d['extra']);
-				if(!empty($d['click']))
-					$extra .= ' onclick="'.trim($d['click']).'"';
-
-?>
-<a href="<?php echo $link; ?>" class="<?php echo $config->get('css_button','hikabtn'); ?> hikabtn_order_action" <?php echo $extra; ?>><?php echo $d['name']; ?></a>
-<?php
-			} else {
-				echo $this->dropdownHelper->display(
-					JText::_('HIKA_MORE'),
-					$dropData,
-					array('type' => 'btn', 'right' => true, 'up' => false)
-				);
-			}
+			echo $this->dropdownHelper->display(
+				JText::_('HIKASHOP_ACTIONS'),
+				$dropData,
+				array('type' => 'btn',  'right' => true, 'up' => false)
+			);
 		}
-			?></td>
+?>
+					</div>
+					<div class="hkc-sm-1 hika_order_more">
+<?php if($row->order_id == $this->row->order_id) { ?>
+						<a class="hikabtn hikabtn-default " data-toggle="hk-tooltip" data-title="<?php echo $this->escape(JText::_('HIDE_PRODUCTS')); ?>" href="#" onclick="return window.localPage.handleDetails(this, <?php echo (int)$row->order_id; ?>);"><i class="fas fa-angle-up"></i></a>
+<?php } else { ?>
+						<a class="hikabtn hikabtn-default" data-toggle="hk-tooltip" data-title="<?php echo $this->escape(JText::_('DISPLAY_PRODUCTS')); ?>" href="#" onclick="return window.localPage.handleDetails(this, <?php echo (int)$row->order_id; ?>);"><i class="fas fa-angle-down"></i></a>
 <?php } ?>
-		</tr>
+					</div>
+				</div>
+			</div>
+<?php
+		if($row->order_id == $this->row->order_id) {
+			$this->setLayout('order_products');
+			echo $this->loadTemplate();
+		}
+?>
+		</div>
 <?php
 		$i++;
 		$k = 1 - $k;
 	}
 	unset($row);
 ?>
-	</tbody>
-</table>
+		<div class="hikashop_orders_footer">
+			<div class="pagination">
+				<?php $this->pagination->form = '_bottom'; echo $this->pagination->getListFooter(); ?>
+				<?php echo $this->pagination->getResultsCounter(); ?>
+			</div>
+		</div>
+	</div>
 
-<?php
-	if(!empty($this->action_column)) {
-?>
+	<input type="hidden" name="Itemid" value="<?php echo $this->Itemid; ?>"/>
+	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
+	<input type="hidden" name="task" value="listing" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
+	<input type="hidden" name="boxchecked" value="0" />
+	<?php echo JHTML::_('form.token'); ?>
+</div>
+</form>
 <script type="text/javascript">
+if(!window.localPage) window.localPage = {};
+window.localPage.handleDetails = function(btn, id) {
+	var d = document, details = d.getElementById('hika_order_'+id+'_details');
+
+	if(details) {
+		details.style.display = (details.style.display == 'none' ? '' : 'none');
+		if(details.style.display) {
+			btn.innerHTML = '<i class="fas fa-angle-down"></i>';
+			btn.setAttribute('data-original-title','<?php echo $this->escape(JText::_('DISPLAY_PRODUCTS')); ?>');
+		} else{
+			btn.innerHTML = '<i class="fas fa-angle-up"></i>';
+			btn.setAttribute('data-original-title','<?php echo $this->escape(JText::_('HIDE_PRODUCTS')); ?>');
+		}
+		return false;
+	}
+
+	return window.localPage.loadOrderDetails(btn, id);
+};
+window.localPage.loadOrderDetails = function(btn, id) {
+	var d = document, o = window.Oby, el = d.querySelector('[data-order-container="'+id+'"]');
+	if(!el) return false;
+	btn.classList.add('hikadisabled');
+	btn.disabled = true;
+	btn.blur();
+	btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
+	var c = d.createElement('div');
+	o.xRequest("<?php echo hikashop_completeLink('order&task=order_products', 'ajax', false, true); ?>", {mode:'POST',data:'cid='+id},function(xhr){
+		if(!xhr.responseText || xhr.status != 200) {
+			btn.innerHTML = '<i class="fas fa-angle-down"></i>';
+			return;
+		}
+		btn.classList.remove('hikadisabled');
+		btn.disabled = false;
+		var resp = o.trim(xhr.responseText);
+		c.innerHTML = resp;
+		el.appendChild(c.childNodes[0]);
+		btn.innerHTML = '<i class="fas fa-angle-up"></i>';
+		btn.setAttribute('data-original-title','<?php echo $this->escape(JText::_('HIDE_PRODUCTS')); ?>');
+	});
+	return false;
+};
+</script>
+<?php
+
+if(!empty($this->rows) && ($this->config->get('print_invoice_frontend') || $cancel_orders)) {
+	echo $this->popupHelper->display(
+		'',
+		'INVOICE',
+		hikashop_completeLink('order&task=invoice'.$url_itemid.'',true),
+		'hikashop_print_popup',
+		760, 480, '', '', 'link'
+	);
+?>
+<script>
 if(!window.localPage) window.localPage = {};
 window.localPage.cancelOrder = function(id, number) {
 	var d = document, form = d.getElementById('hikashop_cancel_order_form');
@@ -200,18 +241,26 @@ window.localPage.cancelOrder = function(id, number) {
 	form.submit();
 	return false;
 };
+window.localPage.printInvoice = function(id) {
+	hikashop.openBox('hikashop_print_popup','<?php
+		$u = hikashop_completeLink('order&task=invoice'.$url_itemid,true);
+		echo $u;
+		echo (strpos($u, '?') === false) ? '?' : '&';
+	?>order_id='+id);
+	return false;
+};
 </script>
 <form action="<?php echo hikashop_completeLink('order&task=cancel_order&email=1'); ?>" name="hikashop_cancel_order_form" id="hikashop_cancel_order_form" method="POST">
-	<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
+	<input type="hidden" name="Itemid" value="<?php echo $this->Itemid; ?>"/>
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="cancel_order" />
 	<input type="hidden" name="email" value="1" />
 	<input type="hidden" name="order_id" value="" />
-	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
+	<input type="hidden" name="ctrl" value="order" />
 	<input type="hidden" name="redirect_url" value="<?php echo hikashop_currentURL(); ?>" />
 	<?php echo JHTML::_('form.token'); ?>
 </form>
 <?php
-	}
+}
 ?>
 </div>

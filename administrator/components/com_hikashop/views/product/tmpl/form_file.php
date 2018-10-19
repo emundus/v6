@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,17 +17,17 @@ $options = array(
 	'classes' => array(
 		'mainDiv' => 'hikashop_main_file_div',
 		'contentClass' => 'hikashop_product_files',
-		'btn_add' => 'hika_add_btn',
-		'btn_upload' => 'hika_upload_btn'
+		'btn_add' => 'fa fa-plus',
+		'btn_upload' => 'fa fa-upload'
 	),
 	'upload' => $upload,
 	'toolbar' => array(
 		$this->popup->display(
-			'<span class="hika_add_btn"></span>',
+			'<span class="fa fa-plus"></span>',
 			JText::_('ADD_FILE'),
 			hikashop_completeLink('product&task=selectfile&pid='.@$this->product->product_id,true),
 			'hikashop_file_add',
-			750, 460, 'onclick="return window.productMgr.addFile(this,'.(int)@$this->product->product_id.',\''.$product_type.'\');"'.' data-toggle="hk-tooltip" data-title="'.JText::_('ADD_FILE').'"', '', 'link'
+			750, 460, 'class="hikabtn hikabtn-primary" onclick="return window.productMgr.addFile(this,'.(int)@$this->product->product_id.',\''.$product_type.'\');"'.' data-toggle="hk-tooltip" data-title="'.JText::_('ADD_FILE').'"', '', 'link'
 		)
 	),
 	'tooltip' => true,

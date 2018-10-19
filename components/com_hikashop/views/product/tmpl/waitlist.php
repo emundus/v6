@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,34 +14,34 @@ defined('_JEXEC') or die('Restricted access');
 	?></div>
 	<fieldset>
 		<div class="toolbar" id="toolbar" style="float: right;">
-			<button class="btn" type="button" onclick="submitform('add_waitlist');"><img src="<?php echo HIKASHOP_IMAGES; ?>ok.png"/><?php echo JText::_('OK'); ?></button>
-			<button class="btn" type="button" onclick="history.back();"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png"/><?php echo JText::_('HIKA_CANCEL'); ?></button>
+			<button class="hikabtn hikabtn-success" type="button" onclick="submitform('add_waitlist');"><i class="fa fa-check"></i> <?php echo JText::_('OK'); ?></button>
+			<button class="hikabtn hikabtn-danger" type="button" onclick="history.back();"><i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ?></button>
 		</div>
 	</fieldset>
 	<div class="iframedoc" id="iframedoc"></div>
 	<form action="<?php echo hikashop_completeLink('product'); ?>" method="post"  name="adminForm" id="adminForm">
-						<table>
-							<tr>
-								<td class="key">
-									<label for="data[register][name]">
-										<?php echo JText::_( 'HIKA_USER_NAME' ); ?>
-									</label>
-								</td>
-								<td>
-									<input type="text" name="data[register][name]" size="40" value="<?php echo $this->escape(@$this->element->name);?>" />
-								</td>
-							</tr>
-							<tr>
-								<td class="key">
-									<label for="data[register][email]">
-										<?php echo JText::_( 'HIKA_EMAIL' ); ?>
-									</label>
-								</td>
-								<td>
-									<input type="text" name="data[register][email]" size="40" value="<?php echo $this->escape(@$this->element->email);?>" />
-								</td>
-							</tr>
-						</table>
+		<table>
+			<tr>
+				<td class="key">
+					<label for="data[register][name]">
+						<?php echo JText::_( 'HIKA_USER_NAME' ); ?>
+					</label>
+				</td>
+				<td>
+					<input type="text" name="data[register][name]" size="40" value="<?php echo $this->escape(@$this->element->name);?>" />
+				</td>
+			</tr>
+			<tr>
+				<td class="key">
+					<label for="data[register][email]">
+						<?php echo JText::_( 'HIKA_EMAIL' ); ?>
+					</label>
+				</td>
+				<td>
+					<input type="text" name="data[register][email]" size="40" value="<?php echo $this->escape(@$this->element->email);?>" />
+				</td>
+			</tr>
+		</table>
 		<input type="hidden" name="data[register][product_id]" value="<?php echo hikaInput::get()->getInt('cid');?>" />
 		<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 		<input type="hidden" name="task" value="" />

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,17 +9,11 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=currency" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-<div id="page-currency">
-	<table style="width:100%">
-		<tr>
-			<td valign="top" width="50%">
-<?php } else { ?>
-<div id="page-currency" class="row-fluid">
-	<div class="span6">
-<?php } ?>
-				<fieldset class="adminform" id="htmlfieldset">
-					<legend><?php echo JText::_( 'CURRENCY_INFORMATION' ); ?></legend>
+<div id="page-currency" class="hk-row-fluid hikashop_backend_tile_edition">
+	<div class="hkc-md-6 hikashop_tile_block"><div>
+		<div class="hikashop_tile_title"><?php
+			echo JText::_('CURRENCY_INFORMATION');
+		?></div>
 					<table class="admintable table" width="280px" style="margin:auto">
 						<tr>
 							<td class="key">
@@ -93,15 +87,11 @@ defined('_JEXEC') or die('Restricted access');
 						</tr>
 					</table>
 				</fieldset>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-			<td valign="top" width="50%">
-<?php } else { ?>
-	</div>
-	<div class="span6">
-<?php } ?>
-				<fieldset class="adminform" id="htmlfieldset">
-					<legend><?php echo JText::_( 'LOCALE_INFORMATION' ); ?></legend>
+	</div></div>
+	<div class="hkc-md-6 hikashop_tile_block"><div>
+		<div class="hikashop_tile_title"><?php
+			echo JText::_('LOCALE_INFORMATION');
+		?></div>
 					<table class="admintable table" width="280px" style="margin:auto">
 						<tr>
 							<td class="key">
@@ -109,6 +99,7 @@ defined('_JEXEC') or die('Restricted access');
 							</td>
 							<td>
 								<input type="text" name="data[currency][currency_format]" value="<?php echo $this->escape(@$this->element->currency_format); ?>" />
+								<a class="btn btn-primary" href="http://php.net/manual/function.money-format.php" target="_blank"><i class="fa fa-chevron-right"></i></a>
 							</td>
 						</tr>
 						<tr>
@@ -226,15 +217,8 @@ defined('_JEXEC') or die('Restricted access');
 						</tr>
 					</table>
 				</fieldset>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-		</tr>
-	</table>
+	</div></div>
 </div>
-<?php } else { ?>
-	</div>
-</div>
-<?php } ?>
 	<div class="clr"></div>
 	<input type="hidden" name="cid[]" value="<?php echo @$this->element->currency_id; ?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />

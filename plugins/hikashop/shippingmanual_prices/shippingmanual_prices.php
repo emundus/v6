@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -146,14 +146,13 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		if($vendor !== null && $vendor > 1)
 			$extra_filters = ' AND a.shipping_vendor_id IN (-1, 0, ' . (int)$vendor . ') ';
 
-		$sql_check_setting = ($app->isAdmin()) ? '%s:20:"shipping_per_product";s:1:"1"%' : '%s:20:"shipping_per_product";i:1%';
-
 		$db = JFactory::getDBO();
+		$shipping_params_filter = '(a.shipping_params LIKE '. $db->Quote('%s:20:"shipping_per_product";s:1:"1"%') .' OR a.shipping_params LIKE '. $db->Quote('%s:20:"shipping_per_product";s:1:"1"%') .')';
+
 		$query = 'SELECT b.*, a.*, c.currency_symbol FROM ' . hikashop_table('shipping') . ' AS a INNER JOIN '.
 			hikashop_table('shipping_price').' AS b ON a.shipping_id = b.shipping_id INNER JOIN '.
 			hikashop_table('currency').' AS c ON c.currency_id = a.shipping_currency_id '.
-			'WHERE a.shipping_params LIKE '.
-			$db->Quote($sql_check_setting) . ' AND b.shipping_price_ref_id = ' . $product->product_id . ' AND b.shipping_price_ref_type = \'product\' '.
+			'WHERE '.$shipping_params_filter.' AND b.shipping_price_ref_id = ' . $product->product_id . ' AND b.shipping_price_ref_type = \'product\' '.
 			$extra_filters.
 			'ORDER BY a.shipping_id, b.shipping_price_min_quantity';
 
@@ -165,7 +164,6 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			$toRemove = array_combine($toRemove, $toRemove);
 		}
 		$toInsert = array();
-
 
 		$checks = array();
 		foreach($formData as &$data) {
@@ -204,7 +202,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 						' SET shipping_price_min_quantity = ' . (int)$data['qty'] . ', shipping_price_value = ' . (float)$data['value'] . ', shipping_fee_value = ' . (float)$data['fee'] .
 						' WHERE shipping_price_id = ' . $data['id'] . ' AND shipping_price_ref_id = ' . $product->product_id . ' AND shipping_price_ref_type = \'product\'';
 					$db->setQuery($query);
-					$db->query();
+					$db->execute();
 				}
 			} else {
 				if((!empty($data['value']) || !empty($data['fee'])) && !empty($data['shipping_id']) ) {
@@ -217,11 +215,11 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 
 		if(!empty($toRemove)) {
 			$db->setQuery('DELETE FROM ' . hikashop_table('shipping_price') . ' WHERE shipping_price_ref_id = ' . $product->product_id . ' AND shipping_price_ref_type = \'product\' AND shipping_price_id IN ('.implode(',',$toRemove).')');
-			$db->query();
+			$db->execute();
 		}
 		if(!empty($toInsert)) {
 			$db->setQuery('INSERT IGNORE INTO ' . hikashop_table('shipping_price') . ' (`shipping_id`,`shipping_price_ref_id`,`shipping_price_ref_type`,`shipping_price_min_quantity`,`shipping_price_value`,`shipping_fee_value`) VALUES ('.implode('),(',$toInsert).')');
-			$db->query();
+			$db->execute();
 		}
 	}
 

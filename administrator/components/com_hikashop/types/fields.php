@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -46,6 +46,10 @@ class hikashopFieldsType {
 				'name' => JText::_('FIELD_CHECKBOX'),
 				'options' => array('multivalues','required','default','columnname','attribute','inline')
 			),
+			'boolean' => array(
+				'name' => JText::_('FIELD_BOOLEAN'),
+				'options' => array('required','default','columnname','attribute')
+			),
 			'singledropdown' => array(
 				'name' => JText::_('FIELD_SINGLEDROPDOWN'),
 				'options' => array('multivalues','required','default','columnname','attribute')
@@ -56,7 +60,7 @@ class hikashopFieldsType {
 			),
 			'date' => array(
 				'name' => JText::_('FIELD_DATE'),
-				'options' => array('required','format','size','default','columnname','allow')
+				'options' => array('required','size','default','columnname','allow')
 			),
 			'zone' => array(
 				'name' => JText::_('FIELD_ZONE'),
@@ -96,8 +100,8 @@ class hikashopFieldsType {
 			$this->externalValues = array();
 			$this->externalOptions = array();
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onFieldsLoad', array( &$this->externalValues, &$this->externalOptions ) );
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onFieldsLoad', array( &$this->externalValues, &$this->externalOptions ) );
 		}
 
 		if(!empty($this->externalValues)) {
@@ -225,6 +229,6 @@ window.hikashop.ready(function(){updateFieldType();});
 			$this->values[] = JHTML::_('select.option', $oneType, $oneVal['name']);
 		}
 
-		return JHTML::_('select.genericlist', $this->values, $map , 'size="1" onchange="updateFieldType();"', 'value', 'text', (string)$value, 'fieldtype');
+		return JHTML::_('select.genericlist', $this->values, $map , 'class="custom-select" size="1" onchange="updateFieldType();"', 'value', 'text', (string)$value, 'fieldtype');
 	}
 }

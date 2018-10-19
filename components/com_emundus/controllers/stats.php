@@ -145,7 +145,7 @@ class EmundusControllerStats extends JControllerLegacy {
             $countArray[] = $co['nombre_connexions'];
             $count += $co['nombre_connexions'];
         }
-     
+
         echo json_encode((object)[
         	'status' => true,
 	        'datearray' => $dateArray,

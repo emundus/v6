@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,8 +40,8 @@ class hikashopEmailtemplateType {
 
 		$external_template_files = array();
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onMailTemplateListing', array(&$external_template_files, $mail_name));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onMailTemplateListing', array(&$external_template_files, $mail_name));
 		if(empty($external_template_files))
 			return $this->values;
 		foreach($external_template_files as $k => $f) {
@@ -62,23 +62,23 @@ class hikashopEmailtemplateType {
 
 		$this->load($mail_name);
 
-		$html = JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox" size="1"', 'value', 'text', $value, 'template');
+		$html = JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select" size="1"', 'value', 'text', $value, 'template');
 
 		$popupHelper = hikashop_get('helper.popup');
 		$html .= $popupHelper->display(
-			'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
+			'<i class="fas fa-pen" aria-hidden="true"></i>',
 			'TEMPLATE',
 			'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=emailtemplate&amp;file=\'+document.getElementById(\'template\').value+\'&amp;email_name='.$mail_name.'\'',
 			'hikashop_edit_template',
-			760,480, '', '', 'link',true
+			760,480, 'class="btn btn-primary" title="'.JText::_('HIKA_EDIT').'"', '', 'link',true
 		);
 
 		$html .= $popupHelper->display(
-			'<img src="'. HIKASHOP_IMAGES.'plus.png" style="vertical-align:middle;" alt="'.JText::_('HIKA_NEW').'"/>',
+			'<i class="fa fa-plus" aria-hidden="true"></i>',
 			'TEMPLATE',
 			hikashop_completeLink('email&task=emailtemplate&email_name='.$mail_name, true),
 			'hikashop_new_template',
-			760,480, '', '', 'link'
+			760,480, 'class="btn btn-primary" title="'.JText::_('HIKA_NEW').'"', '', 'link'
 		);
 
 		return $html;

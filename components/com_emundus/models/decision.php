@@ -960,17 +960,20 @@ class EmundusModelDecision extends JModelList
         }
 
         if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
-            $sql_code = '1=1';
-        } elseif(isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
-            $sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
-        } else {
-            // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
-            // if(count($this->code)>0)
-            $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
-        }
-        $sql_fnum = '';
-        if(count($this->fnum_assoc)>0)
-            $sql_fnum = ' OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+			$sql_code = '1=1';
+			$and = ' AND ';
+		} elseif(isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+			// if(count($this->code)>0)
+			$sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
+			$and = ' OR ';
+		} else {
+			$sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
+			$and = ' AND ';
+		}
+		$sql_fnum = '';
+		if(count($this->fnum_assoc)>0)
+			$sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 
         $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
 

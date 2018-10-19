@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,7 +54,7 @@ class hikashopProductClass extends hikashopClass{
 		$product_id = hikashop_getCID('product_id');
 		$categories = hikaInput::get()->get('category', array(), 'array');
 		$app = JFactory::getApplication();
-		JArrayHelper::toInteger($categories);
+		hikashop_toInteger($categories);
 		$newCategories = array();
 		if(count($categories)){
 			foreach($categories as $category){
@@ -100,10 +100,10 @@ class hikashopProductClass extends hikashopClass{
 		}
 		$element->related = array();
 		$related = hikaInput::get()->get('related', array(), 'array');
-		JArrayHelper::toInteger($related);
+		hikashop_toInteger($related);
 		if(!empty($related)){
 			$related_ordering = hikaInput::get()->get('related_ordering', array(), 'array');
-			JArrayHelper::toInteger($related_ordering);
+			hikashop_toInteger($related_ordering);
 			foreach($related as $id){
 				$obj = new stdClass();
 				$obj->product_related_id = $id;
@@ -113,10 +113,10 @@ class hikashopProductClass extends hikashopClass{
 		}
 		$options = hikaInput::get()->get('options', array(), 'array');
 		$element->options = array();
-		JArrayHelper::toInteger($element->options);
+		hikashop_toInteger($element->options);
 		if(!empty($options)){
 			$related_ordering = hikaInput::get()->get('options_ordering', array(), 'array');
-			JArrayHelper::toInteger($related_ordering);
+			hikashop_toInteger($related_ordering);
 			foreach($options as $id){
 				$obj = new stdClass();
 				$obj->product_related_id = $id;
@@ -127,10 +127,10 @@ class hikashopProductClass extends hikashopClass{
 
 		$bundle = hikaInput::get()->get('bundle', array(), 'array');
 		$element->$bundle = array();
-		JArrayHelper::toInteger($element->$bundle);
+		hikashop_toInteger($element->$bundle);
 		if(!empty($bundle)){
 			$related_ordering = hikaInput::get()->get('bundle_ordering', array(), 'array');
-			JArrayHelper::toInteger($related_ordering);
+			hikashop_toInteger($related_ordering);
 			foreach($options as $id){
 				$obj = new stdClass();
 				$obj->product_related_id = $id;
@@ -140,12 +140,12 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		$element->images = hikaInput::get()->get('image', array(), 'array');
-		JArrayHelper::toInteger($element->images);
+		hikashop_toInteger($element->images);
 		$element->files = hikaInput::get()->get('file', array(), 'array');
-		JArrayHelper::toInteger($element->files);
+		hikashop_toInteger($element->files);
 
 		$element->imagesorder = hikaInput::get()->get('imageorder', array(), 'array');
-		JArrayHelper::toInteger($element->imagesorder);
+		hikashop_toInteger($element->imagesorder);
 
 		$element->tags = hikaInput::get()->get('tags', array(), 'array');
 
@@ -168,7 +168,7 @@ class hikashopProductClass extends hikashopClass{
 			}elseif($column == 'price_value') {
 				$this->toFloatArray($value);
 			}else{
-				JArrayHelper::toInteger($value);
+				hikashop_toInteger($value);
 			}
 			foreach($value as $k => $val){
 				if($column=='price_min_quantity' && $val==1){
@@ -184,7 +184,7 @@ class hikashopProductClass extends hikashopClass{
 		$element->oldCharacteristics = array();
 		if(isset($element->product_type) && $element->product_type=='variant'){
 			$characteristics = hikaInput::get()->get('characteristic', array(), 'array');
-			JArrayHelper::toInteger($characteristics);
+			hikashop_toInteger($characteristics);
 			if(empty($characteristics)){
 				$element->characteristics = array();
 			}else{
@@ -193,23 +193,19 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}else{
 			$characteristics = hikaInput::get()->get('characteristic', array(), 'array');
-			JArrayHelper::toInteger($characteristics);
+			hikashop_toInteger($characteristics);
 			if(!empty($element->product_id)){
 				$this->database->setQuery('SELECT b.characteristic_id FROM '.hikashop_table('variant').' AS a LEFT JOIN '.hikashop_table('characteristic').' AS b ON a.variant_characteristic_id=b.characteristic_id WHERE a.variant_product_id ='.$element->product_id.' AND b.characteristic_parent_id=0');
-				if(!HIKASHOP_J25){
-					$element->oldCharacteristics = $this->database->loadResultArray();
-				} else {
-					$element->oldCharacteristics = $this->database->loadColumn();
-				}
+				$element->oldCharacteristics = $this->database->loadColumn();
 			}
 			if(empty($element->oldCharacteristics)){
 				$element->oldCharacteristics = array();
 			}
 			if(!empty($characteristics)){
 				$characteristics_ordering = hikaInput::get()->get('characteristic_ordering', array(), 'array');
-				JArrayHelper::toInteger($characteristics_ordering);
+				hikashop_toInteger($characteristics_ordering);
 				$characteristics_default = hikaInput::get()->get('characteristic_default', array(), 'array');
-				JArrayHelper::toInteger($characteristics_default);
+				hikashop_toInteger($characteristics_default);
 				$this->database->setQuery('SELECT * FROM '.hikashop_table('characteristic').' WHERE characteristic_parent_id IN ('.implode(',',$characteristics).')');
 				$values = $this->database->loadObjectList();
 				$element->characteristics = array();
@@ -338,7 +334,7 @@ class hikashopProductClass extends hikashopClass{
 			$oldProduct->categories = array(0);
 			if(!empty($formProduct['categories']))
 				$oldProduct->categories = $formProduct['categories'];
-			JArrayHelper::toInteger($oldProduct->categories);
+			hikashop_toInteger($oldProduct->categories);
 			if(!hikashop_acl('product/add'))
 				return false;
 		}
@@ -369,7 +365,10 @@ class hikashopProductClass extends hikashopClass{
 		if(!hikashop_acl('product/edit/code')) { unset($product->product_code); }
 		if(!hikashop_acl('product/edit/volume')) { unset($product->product_volume); }
 		if(!hikashop_acl('product/edit/published')) { unset($product->product_published); }
-		if(!hikashop_acl('product/edit/manufacturer')) { unset($product->product_manufacturer_id); }
+		if(!hikashop_acl('product/edit/manufacturer'))
+			unset($product->product_manufacturer_id);
+		else
+			$product->product_manufacturer_id = (int) $product->product_manufacturer_id;
 		if(!hikashop_acl('product/edit/pagetitle')) { unset($product->product_page_title); }
 		if(!hikashop_acl('product/edit/url')) { unset($product->product_url); }
 		if(!hikashop_acl('product/edit/metadescription')) { unset($product->product_meta_description); }
@@ -378,7 +377,10 @@ class hikashopProductClass extends hikashopClass{
 		if(!hikashop_acl('product/edit/acl')) { unset($product->product_access); }
 		if(!hikashop_acl('product/edit/msrp')) { unset($product->product_msrp); }
 		if(!hikashop_acl('product/edit/canonical')) { unset($product->product_canonical); }
-		if(!hikashop_acl('product/edit/warehouse')) { unset($product->product_warehouse_id); }
+		if(!hikashop_acl('product/edit/warehouse'))
+			unset($product->product_warehouse_id);
+		else
+			$product->product_warehouse_id = (int) $product->product_warehouse_id;
 		if(!hikashop_acl('product/edit/tax')) { unset($product->product_tax_id); }
 
 		if(!hikashop_acl('product/edit/weight')) {
@@ -434,8 +436,8 @@ class hikashopProductClass extends hikashopClass{
 					$product->product_description = $product->product_description_raw;
 
 					JPluginHelper::importPlugin('hikashop');
-					$dispatcher = JDispatcher::getInstance();
-					$dispatcher->trigger('onHkContentParse', array( &$product->product_description, $product->product_description_type ));
+					$app = JFactory::getApplication();
+					$app->triggerEvent('onHkContentParse', array( &$product->product_description, $product->product_description_type ));
 				} else {
 					$product->product_description_type = null;
 					unset($product->product_description);
@@ -455,7 +457,7 @@ class hikashopProductClass extends hikashopClass{
 		$product->categories = array();
 		if(!empty($formProduct['categories']))
 			$product->categories = $formProduct['categories'];
-		JArrayHelper::toInteger($product->categories);
+		hikashop_toInteger($product->categories);
 		if(empty($product->product_id) && !count($product->categories) && !empty($rootCategory)) {
 			$product->categories = array($rootCategory);
 		}
@@ -580,7 +582,7 @@ class hikashopProductClass extends hikashopClass{
 		unset($product->images);
 		if(hikashop_acl('product/edit/images')) {
 			$product->images = @$formProduct['product_images'];
-			JArrayHelper::toInteger($product->images);
+			hikashop_toInteger($product->images);
 
 			$product->imagesorder = array();
 			foreach($product->images as $k => $v) {
@@ -592,7 +594,7 @@ class hikashopProductClass extends hikashopClass{
 		unset($product->files);
 		if(hikashop_acl('product/edit/files')) {
 			$product->files = @$formProduct['product_files'];
-			JArrayHelper::toInteger($product->files);
+			hikashop_toInteger($product->files);
 
 			$product->filesorder = array();
 			foreach($product->files as $k => $v) {
@@ -604,9 +606,13 @@ class hikashopProductClass extends hikashopClass{
 		if(hikashop_acl('product/edit/saledates')) {
 			if(!empty($product->product_sale_start))
 				$product->product_sale_start = hikashop_getTime($product->product_sale_start);
+			else
+				$product->product_sale_start = 0;
 
 			if(!empty($product->product_sale_end))
 				$product->product_sale_end = hikashop_getTime($product->product_sale_end);
+			else
+				$product->product_sale_end = 0;
 		} else {
 			unset($product->product_sale_start);
 			unset($product->product_sale_end);
@@ -629,7 +635,7 @@ class hikashopProductClass extends hikashopClass{
 		unset($product->characteristic);
 		if(hikashop_acl('product/edit/characteristics') && !empty($formData['characteristics']) && is_array($formData['characteristics'])) {
 			$characteristics = $formData['characteristics'];
-			JArrayHelper::toInteger($characteristics);
+			hikashop_toInteger($characteristics);
 
 			if($new) {
 				$characteristics = $this->checkProductCharacteristics($characteristics, 0, true);
@@ -697,7 +703,7 @@ class hikashopProductClass extends hikashopClass{
 					}
 					$query .= ' ELSE ordering END WHERE variant_characteristic_id IN ('.implode(',', $product->characteristics).') AND variant_product_id = '.(int)$status;
 					$this->db->setQuery($query);
-					$this->db->query();
+					$this->db->execute();
 
 					if(!empty($product->product_code) && !empty($oldProduct->product_code) && $product->product_code != $oldProduct->product_code) {
 						if(HIKASHOP_J30)
@@ -709,7 +715,7 @@ class hikashopProductClass extends hikashopClass{
 								' SET `product_code` = REPLACE(`product_code`,' . $this->db->Quote($oldProduct->product_code) . ',' . $this->db->Quote($product->product_code) . ')'.
 								' WHERE `product_code` LIKE '.$product_code.' AND product_parent_id = '.(int)$product->product_id.' AND product_type = '.$this->db->Quote('variant');
 						$this->db->setQuery($query);
-						$this->db->query();
+						$this->db->execute();
 					}
 				}
 			}
@@ -894,8 +900,8 @@ class hikashopProductClass extends hikashopClass{
 					$product->product_description = $product->product_description_raw;
 
 					JPluginHelper::importPlugin('hikashop');
-					$dispatcher = JDispatcher::getInstance();
-					$dispatcher->trigger('onHkContentParse', array( &$product->product_description, $product->product_description_type ));
+					$app = JFactory::getApplication();
+					$app->triggerEvent('onHkContentParse', array( &$product->product_description, $product->product_description_type ));
 				} else {
 					$product->product_description_type = null;
 					unset($product->product_description);
@@ -976,7 +982,7 @@ class hikashopProductClass extends hikashopClass{
 
 		if(hikashop_acl('product/variant/images')) {
 			$product->images = @$formVariant['product_images'];
-			JArrayHelper::toInteger($product->images);
+			hikashop_toInteger($product->images);
 
 			$product->imagesorder = array();
 			foreach($product->images as $k => $v) {
@@ -989,7 +995,7 @@ class hikashopProductClass extends hikashopClass{
 
 		if(hikashop_acl('product/variant/files')) {
 			$product->files = @$formVariant['product_files'];
-			JArrayHelper::toInteger($product->files);
+			hikashop_toInteger($product->files);
 
 			$product->filesorder = array();
 			foreach($product->files as $k => $v) {
@@ -1001,12 +1007,15 @@ class hikashopProductClass extends hikashopClass{
 		unset($product->product_files);
 
 		if(hikashop_acl('product/variant/saledates')) {
-			if(!empty($product->product_sale_start)){
+			if(!empty($product->product_sale_start))
 				$product->product_sale_start = hikashop_getTime($product->product_sale_start);
-			}
-			if(!empty($product->product_sale_end)){
+			else
+				$product->product_sale_start = 0;
+
+			if(!empty($product->product_sale_end))
 				$product->product_sale_end = hikashop_getTime($product->product_sale_end);
-			}
+			else
+				$product->product_sale_end = 0;
 		} else {
 			unset($product->product_sale_start);
 			unset($product->product_sale_end);
@@ -1122,11 +1131,7 @@ class hikashopProductClass extends hikashopClass{
 		if(!isset($categoriesArray[$products])){
 			$query='SELECT category_id FROM '.hikashop_table('product_category').' WHERE product_id IN ('.$products.') ORDER BY ordering ASC';
 			$this->database->setQuery($query);
-			if(!HIKASHOP_J25){
-				$categoriesArray[$products]=$this->database->loadResultArray();
-			} else {
-				$categoriesArray[$products]=$this->database->loadColumn();
-			}
+			$categoriesArray[$products]=$this->database->loadColumn();
 		}
 		return $categoriesArray[$products];
 	}
@@ -1138,13 +1143,9 @@ class hikashopProductClass extends hikashopClass{
 		$where = '';
 		if(empty($ids)) {
 			$this->database->setQuery('SELECT product_id FROM '.hikashop_table('product').' ORDER BY product_id ASC');
-			if(!HIKASHOP_J25){
-				$ids = $this->database->loadResultArray();
-			} else {
-				$ids = $this->database->loadColumn();
-			}
+			$ids = $this->database->loadColumn();
 		} else {
-			JArrayHelper::toInteger($ids,0);
+			hikashop_toInteger($ids,0);
 		}
 
 		if(count($ids) < 1)
@@ -1455,7 +1456,7 @@ class hikashopProductClass extends hikashopClass{
 		$e->characteristic_id = (int)$characteristic_id;
 		$e->default_id = null;
 		$e->ordering = null;
-		JArrayHelper::toInteger($data['variant_duplicate']['variants']);
+		hikashop_toInteger($data['variant_duplicate']['variants']);
 		$e->values = array_combine($data['variant_duplicate']['variants'], $data['variant_duplicate']['variants']);
 
 		$elem->characteristics[ $characteristic_id ] = $e;
@@ -1534,20 +1535,17 @@ class hikashopProductClass extends hikashopClass{
 		if(empty($this->db))
 			$this->db = JFactory::getDBO();
 
-		JArrayHelper::toInteger($variant_ids);
+		hikashop_toInteger($variant_ids);
 		$query = 'SELECT p.product_id FROM ' . hikashop_table('product') . ' AS p '.
 				' WHERE p.product_type = ' . $this->db->Quote('variant') . ' AND p.product_parent_id = ' . (int)$product_id.
 				' AND p.product_id IN (' . implode(',', $variant_ids) . ')';
 		$this->db->setQuery($query);
-		if(!HIKASHOP_J25)
-			$ids = $this->db->loadResultArray();
-		else
-			$ids = $this->db->loadColumn();
+		$ids = $this->db->loadColumn();
 
 		if(empty($ids))
 			return false;
 
-		JArrayHelper::toInteger($ids);
+		hikashop_toInteger($ids);
 		return $this->delete($ids);
 	}
 
@@ -1563,15 +1561,12 @@ class hikashopProductClass extends hikashopClass{
 			' WHERE c.characteristic_parent_id = 0 AND v.variant_product_id = ' . (int)$product_id.' '.
 			' ORDER BY v.ordering ASC';
 		$this->db->setQuery($query);
-		if(!HIKASHOP_J25)
-			$ret = $this->db->loadResultArray();
-		else
-			$ret = $this->db->loadColumn();
+		$ret = $this->db->loadColumn();
 
 		if(empty($ret))
 			$ret = array();
 		else
-			JArrayHelper::toInteger($ret);
+			hikashop_toInteger($ret);
 		return $ret;
 	}
 
@@ -1612,7 +1607,7 @@ class hikashopProductClass extends hikashopClass{
 
 		$query = 'DELETE FROM '.hikashop_table('variant').' WHERE variant_product_id = '.(int)$product_id;
 		$this->db->setQuery($query);
-		$this->db->query();
+		$this->db->execute();
 
 		$query = 'INSERT INTO '.hikashop_table('variant').' (`variant_characteristic_id`,`variant_product_id`,`ordering`) VALUES ';
 		foreach($values as $k => $value) {
@@ -1624,7 +1619,7 @@ class hikashopProductClass extends hikashopClass{
 		unset($original_data);
 
 		$this->db->setQuery($query . implode(',', $values) );
-		$this->db->query();
+		$this->db->execute();
 
 		unset($values);
 		unset($query);
@@ -1649,7 +1644,7 @@ class hikashopProductClass extends hikashopClass{
 			$query = 'UPDATE '.hikashop_table('product').' SET product_published = 1 WHERE product_id = '.(int)$variant_id;
 		}
 		$this->db->setQuery($query);
-		$success = $this->db->query();
+		$success = $this->db->execute();
 		return $success;
 	}
 
@@ -1677,7 +1672,7 @@ class hikashopProductClass extends hikashopClass{
 		$config = JFactory::getConfig();
 		if(!$config->get('unicodeslugs')){
 			$lang = JFactory::getLanguage();
-			$element->alias = str_replace(',','-',$lang->transliterate($element->alias));
+			$element->alias = str_replace(array(',', "'", '"'), array('-', '-', '-'), $lang->transliterate($element->alias));
 		}
 		$app = JFactory::getApplication();
 		if(method_exists($app,'stringURLSafe')){
@@ -1956,13 +1951,13 @@ class hikashopProductClass extends hikashopClass{
 		$this->recalculateSortPrice($element);
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 
 		if($new)
-			$dispatcher->trigger('onBeforeProductCreate', array( & $element, & $do) );
+			$app->triggerEvent('onBeforeProductCreate', array( & $element, & $do) );
 		else
-			$dispatcher->trigger('onBeforeProductUpdate', array( & $element, & $do) );
+			$app->triggerEvent('onBeforeProductUpdate', array( & $element, & $do) );
 
 		if(!$do)
 			return false;
@@ -1982,9 +1977,9 @@ class hikashopProductClass extends hikashopClass{
 		$element->product_id = $status;
 
 		if($new)
-			$dispatcher->trigger( 'onAfterProductCreate', array( & $element ) );
+			$app->triggerEvent( 'onAfterProductCreate', array( & $element ) );
 		else
-			$dispatcher->trigger( 'onAfterProductUpdate', array( & $element ) );
+			$app->triggerEvent( 'onAfterProductUpdate', array( & $element ) );
 
 		if($tags !== null && @$element->product_type!='variant') {
 			$tagsHelper = hikashop_get('helper.tags');
@@ -2055,10 +2050,7 @@ class hikashopProductClass extends hikashopClass{
 			' LEFT JOIN #__hikashop_characteristic AS c ON v.variant_characteristic_id = c.characteristic_id '.
 			' WHERE c.characteristic_parent_id!=0 AND v.variant_product_id = '.(int)$id;
 		$this->database->setQuery($query);
-		if(!HIKASHOP_J25)
-			$values_ids = $this->database->loadResultArray();
-		else
-			$values_ids = $this->database->loadColumn();
+		$values_ids = $this->database->loadColumn();
 
 		if(empty($values_ids))
 			return;
@@ -2127,7 +2119,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 		$query = 'DELETE FROM '.hikashop_table('price').' WHERE '.implode(' AND ',$filters);
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 		if(count($element->prices)){
 			$insert = array();
@@ -2159,7 +2151,7 @@ class hikashopProductClass extends hikashopClass{
 				}
 				$query = 'REPLACE '.hikashop_table('price').' ('.$select.') VALUES '.implode(',',$insert).';';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 		}
 	}
@@ -2184,7 +2176,7 @@ class hikashopProductClass extends hikashopClass{
 			unset($c);
 
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 
 			if(!empty($element->characteristics)) {
 				$insert = array();
@@ -2199,7 +2191,7 @@ class hikashopProductClass extends hikashopClass{
 						' (variant_characteristic_id, variant_product_id, ordering)'.
 						' VALUES (' . implode('),(', $insert) . ');';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 
 				unset($insert);
 			}
@@ -2218,7 +2210,7 @@ class hikashopProductClass extends hikashopClass{
 						' SET `product_code` = REPLACE(`product_code`,' . $this->database->Quote($element->old->product_code) . ',' . $this->database->Quote($element->product_code) . ')'.
 						' WHERE `product_code` LIKE '.$product_code.' AND product_parent_id = '.(int)$element->product_id.' AND product_type = '.$this->database->Quote('variant');
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 			$config = hikashop_config();
@@ -2244,17 +2236,14 @@ class hikashopProductClass extends hikashopClass{
 			}
 
 			if(!empty($element->oldCharacteristics)) {
-				JArrayHelper::toInteger($element->oldCharacteristics);
+				hikashop_toInteger($element->oldCharacteristics);
 			} else {
 				if(!isset($element->oldCharacteristics)) {
 					$query = 'SELECT c.characteristic_id FROM '.hikashop_table('variant').' AS v '.
 						' LEFT JOIN '.hikashop_table('characteristic').' AS c ON v.variant_characteristic_id = c.characteristic_id '.
 						' WHERE v.variant_product_id = '.(int)$product_id.' AND c.characteristic_parent_id = 0';
 					$this->database->setQuery($query);
-					if(!HIKASHOP_J25)
-						$element->oldCharacteristics = $this->database->loadResultArray();
-					else
-						$element->oldCharacteristics = $this->database->loadColumn();
+					$element->oldCharacteristics = $this->database->loadColumn();
 				}
 				if(empty($element->oldCharacteristics))
 					$element->oldCharacteristics = array();
@@ -2297,7 +2286,7 @@ class hikashopProductClass extends hikashopClass{
 				$query = 'INSERT IGNORE INTO ' . hikashop_table('variant') .
 					' (variant_characteristic_id, variant_product_id, ordering) VALUES ('.implode(','.(int)$product_id.',0),(', $defaults).','.(int)$product_id.',0)';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 			if(!empty($addition)) {
@@ -2308,7 +2297,7 @@ class hikashopProductClass extends hikashopClass{
 				$query = 'INSERT IGNORE INTO ' . hikashop_table('variant') .
 					' (variant_characteristic_id, variant_product_id, ordering) VALUES ('.implode('),(', $d).')';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 			if(!empty($removed) || !empty($ordering)) {
@@ -2317,7 +2306,7 @@ class hikashopProductClass extends hikashopClass{
 					' variant_product_id = ' . (int)$product_id.
 					' AND variant_characteristic_id IN ('.implode(',', $ids).')';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 			if(!empty($ordering)) {
@@ -2329,7 +2318,7 @@ class hikashopProductClass extends hikashopClass{
 					' (variant_characteristic_id, variant_product_id, ordering) VALUES ('.implode('),(', $d).')';
 				unset($d);
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 			if(empty($addition) && empty($deletion) && $auto_variants != 2)
@@ -2342,7 +2331,7 @@ class hikashopProductClass extends hikashopClass{
 							' SELECT ' . (int)$characteristics[(int)$a]->default_id . ' AS variant_characteristic_id, p.product_id, 0 AS ordering FROM ' . hikashop_table('product') . ' AS p '.
 							' WHERE p.product_parent_id = ' . (int)$product_id . ' AND p.product_type = ' . $this->database->Quote('variant');
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 
 						if(HIKASHOP_J30)
 							$product_code = "'" . $this->database->escape($element->product_code, true) . "%'";
@@ -2352,7 +2341,7 @@ class hikashopProductClass extends hikashopClass{
 							' SET p.product_code = CONCAT(p.product_code, \'_'.(int)$characteristics[(int)$a]->default_id.'\') '.
 							' WHERE p.product_parent_id = ' . (int)$product_id . ' AND p.product_type = ' . $this->database->Quote('variant') . ' AND p.product_code LIKE '.$product_code;
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 					}
 				}
 
@@ -2364,23 +2353,20 @@ class hikashopProductClass extends hikashopClass{
 							' AND p.product_type = ' . $this->database->Quote('variant').
 							' AND c.characteristic_parent_id IN (' . implode(',', $deletion). ')';
 					$this->database->setQuery($query);
-					$this->database->query();
+					$this->database->execute();
 				}
 			}
 			else {
 				JPluginHelper::importPlugin('hikashop');
-				$dispatcher = JDispatcher::getInstance();
+				$app = JFactory::getApplication();
 
 				$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_parent_id = ' . (int)$product_id . ' AND product_type = ' . $this->database->Quote('variant');
 				$this->database->setQuery($query);
-				if(!HIKASHOP_J25)
-					$variant_ids = $this->database->loadResultArray();
-				else
-					$variant_ids = $this->database->loadColumn();
+				$variant_ids = $this->database->loadColumn();
 
 				$variants = array();
 				if(!empty($variant_ids)) {
-					JArrayHelper::toInteger($variant_ids);
+					hikashop_toInteger($variant_ids);
 					if(version_compare(PHP_VERSION, '5.2.0', '>='))
 						$variants = array_fill_keys($variant_ids, array());
 					else
@@ -2441,7 +2427,7 @@ class hikashopProductClass extends hikashopClass{
 							$delete = array_keys($variants);
 
 						if(!empty($delete)) {
-							$dispatcher->trigger('onBeforeVariantsDelete', array($product_id, $delete, $element));
+							$app->triggerEvent('onBeforeVariantsDelete', array($product_id, $delete, $element));
 
 							$query = 'DELETE p, v, pr, f '.
 								' FROM '.hikashop_table('product').' AS p '.
@@ -2450,12 +2436,12 @@ class hikashopProductClass extends hikashopClass{
 									' LEFT JOIN '.hikashop_table('file').' AS f ON (p.product_id = f.file_ref_id AND (f.file_type = '.$this->database->Quote('file').' OR f.file_type = '.$this->database->Quote('product').'))'.
 								' WHERE p.product_id IN ('.implode(',', $delete).') AND p.product_type = ' . $this->database->Quote('variant');
 							$this->database->setQuery($query);
-							$this->database->query();
+							$this->database->execute();
 
 							$translationHelper = hikashop_get('helper.translation');
 							$translationHelper->deleteTranslations('product', $delete);
 
-							$dispatcher->trigger('onAfterVariantsDelete', array($product_id, $delete, $element));
+							$app->triggerEvent('onAfterVariantsDelete', array($product_id, $delete, $element));
 
 							if(!empty($addition)) {
 								foreach($delete as $d) {
@@ -2478,7 +2464,7 @@ class hikashopProductClass extends hikashopClass{
 							' AND p.product_type = ' . $this->database->Quote('variant').
 							' AND c.characteristic_parent_id IN (' . implode(',', $deletion) . ')';
 					$this->database->setQuery($query);
-					$this->database->query();
+					$this->database->execute();
 
 					if(!empty($k_list)) {
 						$old_default = array_diff($removed, $deletion);
@@ -2490,7 +2476,7 @@ class hikashopProductClass extends hikashopClass{
 							' SET `product_code` = TRIM(TRAILING \'_\' FROM '.$data.')'.
 							' WHERE `product_id` IN ('.implode(',', $k_list).')';
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 					}
 				}
 
@@ -2512,7 +2498,7 @@ class hikashopProductClass extends hikashopClass{
 							' SELECT ' . (int)$characteristics[(int)$a]->default_id . ' AS variant_characteristic_id, p.product_id, 0 AS ordering FROM ' . hikashop_table('product') . ' AS p '.
 							' WHERE p.product_parent_id = ' . (int)$product_id . ' AND p.product_type = ' . $this->database->Quote('variant');
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 					}
 					ksort($values);
 
@@ -2527,7 +2513,7 @@ class hikashopProductClass extends hikashopClass{
 							}
 
 							$ids = $element->duplicateVariants;
-							JArrayHelper::toInteger($ids);
+							hikashop_toInteger($ids);
 							$ids = array_combine($ids, $ids);
 
 							$c_id = array_keys($element->characteristics);
@@ -2610,14 +2596,8 @@ class hikashopProductClass extends hikashopClass{
 					if(!empty($variants)) {
 						$duplicate_ids = array_keys($variants);
 
-						$fields = array();
-						if(!HIKASHOP_J25) {
-							$tmp = $this->database->getTableFields(hikashop_table('product'));
-							$fields = reset($tmp);
-							unset($tmp);
-						} else {
-							$fields = $this->database->getTableColumns(hikashop_table('product'));
-						}
+						$fields = $this->database->getTableColumns(hikashop_table('product'));
+
 						unset($fields['product_id']);
 						unset($fields['product_code']);
 						unset($fields['product_parent_id']);
@@ -2650,12 +2630,12 @@ class hikashopProductClass extends hikashopClass{
 						if(!empty($having))
 							$query .= $having;
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 
 						if(!empty($values_defaults)) {
 							$query = 'UPDATE ' . hikashop_table('product') . ' SET product_code = CONCAT(product_code, \'_'.implode('_', $values_defaults).'\') WHERE product_id IN ('.implode(',', $duplicate_ids).')';
 							$this->database->setQuery($query);
-							$this->database->query();
+							$this->database->execute();
 						}
 
 						$query = 'INSERT IGNORE INTO ' . hikashop_table('price') . ' (price_product_id, price_currency_id, price_value, price_min_quantity, price_access, price_users, price_site_id) '.
@@ -2664,7 +2644,7 @@ class hikashopProductClass extends hikashopClass{
 							' INNER JOIN ' . hikashop_table('price') . ' AS pr ON p.product_parent_id = pr.price_product_id '.
 							' WHERE p.product_parent_id IN ('.implode(',', $duplicate_ids).')';
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 
 						$query = 'INSERT IGNORE INTO ' . hikashop_table('file') . ' (file_ref_id, file_name, file_description, file_path, file_type, file_free_download, file_ordering, file_limit) '.
 							' SELECT p.product_id, f.file_name, f.file_description, f.file_path, f.file_type, f.file_free_download, f.file_ordering, f.file_limit '.
@@ -2672,7 +2652,7 @@ class hikashopProductClass extends hikashopClass{
 							' INNER JOIN ' . hikashop_table('file') . ' AS f ON (p.product_parent_id = f.file_ref_id AND f.file_type IN (\'file\',\'product\')) '.
 							' WHERE p.product_parent_id IN ('.implode(',', $duplicate_ids).')';
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 
 						$query = 'INSERT IGNORE INTO ' . hikashop_table('shipping_price') . ' (shipping_price_ref_id, shipping_id, shipping_price_ref_type, shipping_price_min_quantity, shipping_price_value, shipping_fee_value) '.
 							' SELECT p.product_id, s.shipping_id, s.shipping_price_ref_type, s.shipping_price_min_quantity, s.shipping_price_value, s.shipping_fee_value '.
@@ -2680,9 +2660,9 @@ class hikashopProductClass extends hikashopClass{
 							' INNER JOIN ' . hikashop_table('shipping_price') . ' AS s ON (p.product_parent_id = s.shipping_price_ref_id AND shipping_price_ref_type = \'product\')'.
 							' WHERE p.product_parent_id IN ('.implode(',', $duplicate_ids).')';
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 
-						$dispatcher->trigger('onAfterVariantsDuplicate', array($product_id, $duplicate_ids, $element));
+						$app->triggerEvent('onAfterVariantsDuplicate', array($product_id, $duplicate_ids, $element));
 
 						$query = 'SELECT p.product_id, p.product_parent_id, p.product_code FROM ' . hikashop_table('product') . ' AS p WHERE p.product_parent_id IN ('.implode(',', $duplicate_ids).') AND p.product_created = ' . $t;
 						$this->database->setQuery($query);
@@ -2705,7 +2685,7 @@ class hikashopProductClass extends hikashopClass{
 						if(!empty($having))
 							$query .= $having;
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 
 						$query = 'SELECT p.product_id, p.product_parent_id, p.product_code FROM ' . hikashop_table('product') . ' AS p WHERE p.product_parent_id = ' . (int)$product_id . ' AND p.product_created = ' . $t;
 						$this->database->setQuery($query);
@@ -2756,7 +2736,7 @@ class hikashopProductClass extends hikashopClass{
 						$query = 'INSERT IGNORE INTO ' . hikashop_table('variant') . ' (variant_characteristic_id, variant_product_id, ordering) '.
 							' VALUES ('.implode(',0), (', $sql_data).',0)';
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 						unset($sql_data);
 					}
 
@@ -2765,10 +2745,10 @@ class hikashopProductClass extends hikashopClass{
 							$duplicate_ids = array_keys($variants);
 						$query = 'UPDATE ' . hikashop_table('product') . ' SET product_parent_id = ' . (int)$product_id . ' WHERE product_parent_id IN ('.implode(',', $duplicate_ids).')';
 						$this->database->setQuery($query);
-						$this->database->query();
+						$this->database->execute();
 					}
 
-					$dispatcher->trigger('onAfterVariantsCreation', array($product_id, $new_variants_ids, $element));
+					$app->triggerEvent('onAfterVariantsCreation', array($product_id, $new_variants_ids, $element));
 				}
 			}
 		}
@@ -2791,14 +2771,14 @@ class hikashopProductClass extends hikashopClass{
 			$query = 'SELECT product_related_id FROM '.hikashop_table('product_related').
 				' WHERE product_related_type = '.$quotedType.' AND product_id = '.(int)$status . $filter;
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 			$products = $products = $this->database->loadObjectList();
 		}
 
 		$query = 'DELETE FROM '.hikashop_table('product_related').
 			' WHERE product_related_type = '.$quotedType.' AND product_id = ' . (int)$status . $filter;
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 		if(count($element->$type)) {
 			$insert = array();
@@ -2821,7 +2801,7 @@ class hikashopProductClass extends hikashopClass{
 				' (product_related_id, product_id, product_related_type, product_related_ordering, product_related_quantity) ' .
 				' VALUES ' . implode(',', $insert) . ';';
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 		}
 
 		if($both_ways && $type == 'related') {
@@ -2836,7 +2816,7 @@ class hikashopProductClass extends hikashopClass{
 				$query = 'DELETE FROM '.hikashop_table('product_related').
 					' WHERE product_related_type = '.$quotedType.' AND product_id IN ('.implode(',', $ids).') AND product_related_id = '.(int)$status;
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 		}
 	}
@@ -2866,7 +2846,7 @@ class hikashopProductClass extends hikashopClass{
 		$news = array_diff($element->categories, $keep);
 
 		$this->database->setQuery('DELETE FROM '.hikashop_table('product_category').' WHERE product_id='.$status);
-		$this->database->query();
+		$this->database->execute();
 
 		$insert = array();
 		foreach($element->categories as $entry){
@@ -2874,7 +2854,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 		$query = 'INSERT IGNORE INTO '.hikashop_table('product_category').' (category_id,product_id,ordering) VALUES '.implode(',',$insert).';';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 		$reorders = array_merge($news, $delete);
 		if(!empty($reorders)) {
@@ -2903,11 +2883,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 		$main = ' FROM '.hikashop_table('file').' WHERE file_ref_id = '.$status.' AND file_type=\''.$file_type.'\' AND SUBSTRING(file_path,1,1) != \'@\' '.$filter;
 		$this->database->setQuery('SELECT file_path '.$main);
-		if(!HIKASHOP_J25){
-			$toBeRemovedFiles = $this->database->loadResultArray();
-		} else {
-			$toBeRemovedFiles = $this->database->loadColumn();
-		}
+		$toBeRemovedFiles = $this->database->loadColumn();
 		if(!empty($toBeRemovedFiles)){
 			$config = hikashop_config();
 			if(!$config->get('keep_category_product_images', 0)) {
@@ -2923,11 +2899,7 @@ class hikashopProductClass extends hikashopClass{
 					$filter = ' OR file_id IN ('.implode(',',$element->$type).')';
 				$query = 'SELECT file_path FROM '.hikashop_table('file').' WHERE file_path IN ('.implode(',',$oldFiles).') AND (file_ref_id != '.$status.$filter.')';
 				$this->database->setQuery($query);
-				if(!HIKASHOP_J25){
-					$keepFiles = $this->database->loadResultArray();
-				} else {
-					$keepFiles = $this->database->loadColumn();
-				}
+				$keepFiles = $this->database->loadColumn();
 				foreach($toBeRemovedFiles as $old){
 					if((empty($keepFiles) || !in_array($old,$keepFiles)) && JFile::exists( $uploadPath . $old)){
 						JFile::delete( $uploadPath . $old );
@@ -2950,7 +2922,7 @@ class hikashopProductClass extends hikashopClass{
 				}
 			}
 			$this->database->setQuery('DELETE'.$main);
-			$this->database->query();
+			$this->database->execute();
 		}
 		if(!empty($orders) && is_array($element->$type) && count($element->$type)) {
 			$this->database->setQuery('SELECT file_id, file_ordering FROM '.hikashop_table('file').' WHERE file_id IN ('.implode(',',$element->$type).')');
@@ -2959,7 +2931,7 @@ class hikashopProductClass extends hikashopClass{
 				foreach($oldOrders as $oldOrder) {
 					if(isset($orders[$oldOrder->file_id]) && $orders[$oldOrder->file_id] != $oldOrder->file_ordering) {
 						$this->database->setQuery('UPDATE '.hikashop_table('file').' SET file_ordering = '.(int)$orders[$oldOrder->file_id].' WHERE file_id = '.$oldOrder->file_id);
-						$this->database->query();
+						$this->database->execute();
 					}
 				}
 			}
@@ -2967,34 +2939,31 @@ class hikashopProductClass extends hikashopClass{
 		if(count($element->$type)){
 			$query = 'UPDATE '.hikashop_table('file').' SET file_ref_id='.$status.' WHERE file_id IN ('.implode(',',$element->$type).') AND file_ref_id=0';
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 		}
 	}
 
 	function delete(&$elements, $ignoreFile = false) {
 		if(!is_array($elements))
 			$elements = array($elements);
-		JArrayHelper::toInteger($elements);
+		hikashop_toInteger($elements);
 
 		if(!empty($elements)) {
 			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_type=\'variant\' AND product_parent_id IN ('.implode(',',$elements).')';
 			$this->database->setQuery($query);
-			if(!HIKASHOP_J25)
-				$elements = array_merge($elements, $this->database->loadResultArray());
-			else
-				$elements = array_merge($elements, $this->database->loadColumn());
+			$elements = array_merge($elements, $this->database->loadColumn());
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
-		$dispatcher->trigger('onBeforeProductDelete', array(&$elements, &$do));
+		$app->triggerEvent('onBeforeProductDelete', array(&$elements, &$do));
 		if(!$do)
 			return false;
 
 		$status = parent::delete($elements);
 		if($status) {
-			$dispatcher->trigger('onAfterProductDelete', array(&$elements));
+			$app->triggerEvent('onAfterProductDelete', array(&$elements));
 
 			$tagsHelper = hikashop_get('helper.tags');
 			$tagsHelper->deleteUCM('product', $elements);
@@ -3012,7 +2981,7 @@ class hikashopProductClass extends hikashopClass{
 	public function trash(&$elements) {
 		if(!is_array($elements))
 			$elements = array($elements);
-		JArrayHelper::toInteger($elements);
+		hikashop_toInteger($elements);
 		if(empty($elements))
 			return false;
 
@@ -3020,26 +2989,23 @@ class hikashopProductClass extends hikashopClass{
 			' WHERE product_type IN ('.$this->database->Quote('main').','.$this->database->Quote('variant').') '.
 				' AND product_id IN ('.implode(',', $elements).')';
 		$this->database->setQuery($query);
-		if(!HIKASHOP_J25)
-			$product_ids = $this->database->loadResultArray();
-		else
-			$product_ids = $this->database->loadColumn();
+		$product_ids = $this->database->loadColumn();
 
-		JArrayHelper::toInteger($product_ids);
+		hikashop_toInteger($product_ids);
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
-		$dispatcher->trigger('onBeforeProductTrash', array(&$product_ids, &$do));
+		$app->triggerEvent('onBeforeProductTrash', array(&$product_ids, &$do));
 		if(!$do)
 			return false;
 
 		$query = 'UPDATE '.hikashop_table('product').' SET product_type = ' . $this->database->Quote('trash').
 			' WHERE product_id IN ('.implode(',', $product_ids).')';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
-		$dispatcher->trigger('onAfterProductTrash', array(&$product_ids));
+		$app->triggerEvent('onAfterProductTrash', array(&$product_ids));
 
 		return count($product_ids);
 	}
@@ -3047,7 +3013,7 @@ class hikashopProductClass extends hikashopClass{
 	public function untrash(&$elements) {
 		if(!is_array($elements))
 			$elements = array($elements);
-		JArrayHelper::toInteger($elements);
+		hikashop_toInteger($elements);
 		if(empty($elements))
 			return false;
 
@@ -3055,31 +3021,28 @@ class hikashopProductClass extends hikashopClass{
 			' WHERE product_type = '.$this->database->Quote('trash').' '.
 				' AND product_id IN ('.implode(',', $elements).')';
 		$this->database->setQuery($query);
-		if(!HIKASHOP_J25)
-			$product_ids = $this->database->loadResultArray();
-		else
-			$product_ids = $this->database->loadColumn();
+		$product_ids = $this->database->loadColumn();
 
-		JArrayHelper::toInteger($product_ids);
+		hikashop_toInteger($product_ids);
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
-		$dispatcher->trigger('onBeforeProductUntrash', array(&$product_ids, &$do));
+		$app->triggerEvent('onBeforeProductUntrash', array(&$product_ids, &$do));
 		if(!$do)
 			return false;
 
 		$query = 'UPDATE '.hikashop_table('product').' SET product_type = ' . $this->database->Quote('main').
 			' WHERE product_id IN ('.implode(',', $product_ids).') AND product_parent_id = 0';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 		$query = 'UPDATE '.hikashop_table('product').' SET product_type = ' . $this->database->Quote('variant').
 			' WHERE product_id IN ('.implode(',', $product_ids).') AND product_parent_id > 0';
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
-		$dispatcher->trigger('onAfterProductUntrash', array(&$product_ids));
+		$app->triggerEvent('onAfterProductUntrash', array(&$product_ids));
 
 		return count($product_ids);
 	}
@@ -3264,19 +3227,19 @@ class hikashopProductClass extends hikashopClass{
 			return false;
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 
-		$dispatcher->trigger('onBeforeProductHit', array($product_id, &$do) );
+		$app->triggerEvent('onBeforeProductHit', array($product_id, &$do) );
 		if(!$do)
 			return false;
 
 		$db = JFactory::getDBO();
 		$query = 'UPDATE '.hikashop_table('product').' SET product_hit = product_hit + 1, product_last_seen_date = '.(int)time().' WHERE product_id = '.$product_id;
 		$db->setQuery($query);
-		$ret = $db->query();
+		$ret = $db->execute();
 
-		$dispatcher->trigger('onAfterProductHit', array($product_id) );
+		$app->triggerEvent('onAfterProductHit', array($product_id) );
 
 		return $ret;
 	}
@@ -3421,9 +3384,7 @@ class hikashopProductClass extends hikashopClass{
 
 			$base = '';
 			if($start > 0)
-				$base = '(c.category_left <= ' . (int)$category_elements[$start]->category_left . ' AND c.category_right >= ' . (int)$category_elements[$start]->category_right . ') AND ';
-			if(isset($rootCategory))
-				$base .= '(c.category_left <= ' . (int)$rootCategory->category_left . ' AND c.category_right >= ' . (int)$rootCategory->category_right . ') AND ';
+				$base = '(c.category_left >= ' . (int)$category_elements[$start]->category_left . ' AND c.category_right <= ' . (int)$category_elements[$start]->category_right . ') AND ';
 
 			$query = 'SELECT c.* ' .
 				' FROM ' . hikashop_table('category') . ' AS c ' .

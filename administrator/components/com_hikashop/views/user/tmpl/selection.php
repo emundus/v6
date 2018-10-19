@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,16 +34,7 @@ function hikashop_setId(id) {
 </script>
 <?php } ?>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=<?php echo hikaInput::get()->getCmd('ctrl'); ?>" method="post" name="adminForm" id="adminForm">
-	<table class="hika_filter">
-		<tr>
-			<td width="100%">
-				<?php echo JText::_('FILTER'); ?>:
-				<input type="text" name="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" onchange="this.form.submit();" />
-				<button class="btn" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
-				<button class="btn" onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_('RESET'); ?></button>
-			</td>
-		</tr>
-	</table>
+	<?php echo $this->loadHkLayout('search', array()); ?>
 	<table class="adminlist hika_listing <?php echo (HIKASHOP_BACK_RESPONSIVE)?'table table-striped table-hover':'hikam_table'; ?>" style="cell-spacing:1px">
 		<thead>
 			<tr>

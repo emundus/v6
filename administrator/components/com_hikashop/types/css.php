@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -31,7 +31,7 @@ class hikashopCssType {
 		$this->load($type);
 
 		$aStyle = empty($value) ? ' style="display:none"' : '';
-		$html = JHTML::_('select.genericlist',   $this->values, $map, 'class="inputbox" size="1"', 'value', 'text', $value, $type.'_choice' );
+		$html = JHTML::_('select.genericlist',   $this->values, $map, 'class="custom-select" size="1"', 'value', 'text', $value, $type.'_choice' );
 
 		$config =& hikashop_config();
 		$manage = hikashop_isAllowed($config->get('acl_config_manage','all'));
@@ -42,20 +42,21 @@ class hikashopCssType {
 		}
 
 		$popupHelper = hikashop_get('helper.popup');
+		$aStyle.=' class="hikabtn hikabtn-primary" title="'.JText::_('HIKA_EDIT').'"';
 		$html .= $popupHelper->display(
-			'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
+			'<i class="fas fa-pen" aria-hidden="true"></i>',
 			'CSS',
 			'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=css&amp;file='.$type.'_\'+document.getElementById(\''.$type.'_choice'.'\').value+\'&amp;var='.$type.'\'',
 			$type.'_link',
 			760,480, $aStyle, '', 'link',true
-		);
+		) . ' ';
 
 		$html .= $popupHelper->display(
-			'<img src="'. HIKASHOP_IMAGES.'plus.png" style="vertical-align:middle;" alt="'.JText::_('HIKA_NEW').'"/>',
+			'<i class="fa fa-plus" aria-hidden="true"></i>',
 			'CSS',
 			hikashop_completeLink('config&task=css&var='.$type, true),
 			'hikamarket_css_'.$type.'_new',
-			760,480, '', '', 'link'
+			760,480, 'class="hikabtn hikabtn-primary" title="'.JText::_('HIKA_NEW').'"', '', 'link'
 		);
 
 		if(count($this->values) == 1 && $type == 'style') {

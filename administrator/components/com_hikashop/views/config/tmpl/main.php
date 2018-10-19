@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1809031413]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1810181425]
 		</td>
 	</tr>
 	<tr>
@@ -51,8 +51,8 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('main_currency');?>><?php echo JText::_('MAIN_CURRENCY'); ?></td>
 		<td>
 			<?php echo $this->currency->display('config[main_currency]',$this->config->get('main_currency')); ?>
-			<a href="<?php echo hikashop_completeLink('currency');?>">
-				<img src="<?php echo HIKASHOP_IMAGES.'go.png';?>" title="Go to the currencies management" alt="Go to the currencies management"/>
+			<a href="<?php echo hikashop_completeLink('currency');?>" class="btn btn-primary" <?php echo $this->docTip('access_currency_manager');?>>
+				<i class="fa fa-chevron-right" aria-hidden="true"></i>
 			</a>
 		</td>
 	</tr>
@@ -219,7 +219,7 @@ echo $this->leftmenu(
 				JHTML::_('select.option', 'order_created', JText::_('CREATED')),
 				JHTML::_('select.option', 'order_confirmed', JText::_('CONFIRMED'))
 			);
-			echo JHTML::_('select.genericlist', $values, 'config[clean_cart]', 'class="inputbox" size="1"', 'value', 'text', $this->config->get('clean_cart','order_created'));
+			echo JHTML::_('select.genericlist', $values, 'config[clean_cart]', 'class="custom-select" size="1"', 'value', 'text', $this->config->get('clean_cart','order_created'));
 		?></td>
 	</tr>
 	<tr>
@@ -299,7 +299,7 @@ echo $this->leftmenu(
 				if(strpos($value, '/') !== false) {
 					$values[] = JHTML::_('select.option', $value, $value);
 				}
-				echo JHTML::_('select.genericlist', $values, 'config[invoice_reset_frequency]', 'class="inputbox" size="1"', 'value', 'text', $value);
+				echo JHTML::_('select.genericlist', $values, 'config[invoice_reset_frequency]', 'class="custom-select" size="1"', 'value', 'text', $value);
 			} else {
 				echo hikashop_getUpgradeLink('essential');
 			}
@@ -457,6 +457,7 @@ echo $this->leftmenu(
 <?php
 	$options = array(
 		'upload' => true,
+		'tooltip' => true,
 		'gallery' => true,
 		'text' => JText::_('HIKA_DEFAULT_IMAGE_EMPTY_UPLOAD'),
 		'uploader' => array('config', 'default_image'),
@@ -510,7 +511,7 @@ echo $this->leftmenu(
 				JHTML::_('select.option', 'inside', JText::_('IMAGE_KEEP_RATIO')),
 				JHTML::_('select.option', 'outside', JText::_('IMAGE_CROP')),
 			);
-			echo JHTML::_('hikaselect.genericlist', $arr, 'config[image_scale_mode]', '', 'value', 'text',$this->config->get('image_scale_mode', 'inside'));
+			echo JHTML::_('hikaselect.genericlist', $arr, 'config[image_scale_mode]', 'class="custom-select"', 'value', 'text',$this->config->get('image_scale_mode', 'inside'));
 		?></td>
 	</tr>
 	<tr>
@@ -533,6 +534,7 @@ echo $this->leftmenu(
 	if(hikashop_level(2)) {
 		$options = array(
 			'upload' => true,
+			'tooltip' => true,
 			'gallery' => true,
 			'text' => JText::_('HIKA_DEFAULT_IMAGE_EMPTY_UPLOAD'),
 			'uploader' => array('config', 'watermark'),

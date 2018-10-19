@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ class WarehouseViewWarehouse extends hikashopView {
 	var $ctrl = 'warehouse';
 	var $nameListing = 'WAREHOUSE';
 	var $nameForm = 'WAREHOUSE';
-	var $icon = 'warehouse';
+	var $icon = 'industry';
 
 	function display($tpl = null){
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -83,9 +83,7 @@ class WarehouseViewWarehouse extends hikashopView {
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&warehouse='.$warehouse_id);
 
 		$this->toolbar = array(
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION,'1.7','>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing')

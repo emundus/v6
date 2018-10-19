@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -95,7 +95,7 @@ class hikashopWarehouseClass extends hikashopClass {
 						$ret[1][(int)$v] = $ret[0][(int)$v];
 				}
 			} else {
-				JArrayHelper::toInteger($value);
+				hikashop_toInteger($value);
 
 				$query = 'SELECT warehouse_id, warehouse_name '.
 					' FROM ' . hikashop_table('warehouse') .

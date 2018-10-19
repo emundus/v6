@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -88,7 +88,7 @@ defined('_JEXEC') or die('Restricted access');
 					JHTML::_('select.option', 'res', JText::_('Residential Address') ),
 					JHTML::_('select.option', 'com', JText::_('Commercial Address') ),
 				);
-				echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][destination_type]", 'class="inputbox" size="1"', 'value', 'text', @$this->element->shipping_params->destination_type);
+				echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][destination_type]", 'class="custom-select" size="1"', 'value', 'text', @$this->element->shipping_params->destination_type);
 			?>
 	</tr>
 	<tr>
@@ -239,7 +239,7 @@ defined('_JEXEC') or die('Restricted access');
 					JHTML::_('select.option', '12', '12 Hour' ),
 					JHTML::_('select.option', '24', '24 Hour' ),
 				);
-				echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][show_eta_format]", 'class="inputbox" size="1"', 'value', 'text', @$this->element->shipping_params->show_eta_format);
+				echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][show_eta_format]", 'class="custom-select" size="1"', 'value', 'text', @$this->element->shipping_params->show_eta_format);
 			?>
 	</tr>
 	<tr>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -102,11 +102,7 @@ class hikashopMenusClass extends hikashopClass {
 		if(empty($module->id)){
 			$new = true;
 			if(empty($module->alias)){
-				if(version_compare(JVERSION,'1.6','<')){
-					$module->alias = $module->name;
-				}else{
-					$module->alias = $module->title;
-				}
+				$module->alias = $module->title;
 				$module->alias = preg_replace('#[^a-z_0-9-]#i','',$module->alias);
 			}
 		}
@@ -234,11 +230,11 @@ class hikashopMenusClass extends hikashopClass {
 			'a.access IN (0, 1)',
 			'a.link LIKE \'index.php?option=com_hikashop&view=%\'',
 		);
-		if(HIKASHOP_J25){
-			$lang = JFactory::getLanguage();
-			$tag = $lang->getTag();
-			$filters[] = "a.language IN ('*',".$this->database->Quote($tag).")";
-		}
+
+		$lang = JFactory::getLanguage();
+		$tag = $lang->getTag();
+		$filters[] = "a.language IN ('*',".$this->database->Quote($tag).")";
+
 		if($id){
 			$filters[] = 'a.id = '.(int)$id;
 		}
@@ -256,36 +252,28 @@ class hikashopMenusClass extends hikashopClass {
 				'b.title IS NOT NULL'
 			);
 
-			if(HIKASHOP_J25){
-				$user = JFactory::getUser();
-				$accesses = JAccess::getAuthorisedViewLevels(@$user->id);
-				if(!empty($accesses)){
-					$filters[]='a.access IN ('.implode(',',$accesses).')';
-				}
+			$user = JFactory::getUser();
+			$accesses = JAccess::getAuthorisedViewLevels(@$user->id);
+			if(!empty($accesses)){
+				$filters[]='a.access IN ('.implode(',',$accesses).')';
 			}
 
-			if(HIKASHOP_J25){
-				$filters[] = 'a.client_id=0';
-			}
+			$filters[] = 'a.client_id=0';
+
 			if(empty($view)){
 				$filters[] = 'a.link LIKE \'index.php?option=com_hikashop&view=%\'';
 			}else{
 				$filters[] = 'a.link='.$this->database->Quote('index.php?option=com_hikashop&view='.($view=='manufacturer'?'category':$view).'&layout='.$layout);
 			}
 
-			if(HIKASHOP_J25){
-				$lang = JFactory::getLanguage();
-				$tag = $lang->getTag();
-				$filters[] = "a.language IN ('*',".$this->database->Quote($tag).")";
-			}
+			$lang = JFactory::getLanguage();
+			$tag = $lang->getTag();
+			$filters[] = "a.language IN ('*',".$this->database->Quote($tag).")";
+
 
 			$query="SELECT a.id FROM ".hikashop_table('menu',false).' AS a INNER JOIN `#__menu_types` as b on a.menutype = b.menutype WHERE '.implode(' AND ',$filters);
 			$this->database->setQuery($query);
-			if(!HIKASHOP_J25){
-				$cache[$view.'.'.$layout] = $this->database->loadResultArray();
-			} else {
-				$cache[$view.'.'.$layout] = $this->database->loadColumn();
-			}
+			$cache[$view.'.'.$layout] = $this->database->loadColumn();
 		}
 		if($id){
 			if(is_array($cache[$view.'.'.$layout]) && count($cache[$view.'.'.$layout])){
@@ -336,15 +324,10 @@ class hikashopMenusClass extends hikashopClass {
 	}
 
 	function save(&$element){
-		if(version_compare(JVERSION,'1.6','<')){
-			$query="SELECT a.id FROM ".hikashop_table('components',false).' AS a WHERE a.option=\''.HIKASHOP_COMPONENT.'\'';
-			$this->database->setQuery($query);
-			$element->componentid = $this->database->loadResult();
-		}else{
-			$query="SELECT a.extension_id FROM ".hikashop_table('extensions',false).' AS a WHERE a.type=\'component\' AND a.element=\''.HIKASHOP_COMPONENT.'\'';
-			$this->database->setQuery($query);
-			$element->component_id = $this->database->loadResult();
-		}
+		$query="SELECT a.extension_id FROM ".hikashop_table('extensions',false).' AS a WHERE a.type=\'component\' AND a.element=\''.HIKASHOP_COMPONENT.'\'';
+		$this->database->setQuery($query);
+		$element->component_id = $this->database->loadResult();
+
 		if(empty($element->id)){
 			$element->params['show_page_title']=1;
 		}
@@ -387,7 +370,7 @@ class hikashopMenusClass extends hikashopClass {
 				}
 				$query = 'DELETE FROM '.hikashop_table('config').' WHERE config_namekey IN ('.implode(',',$ids).');';
 				$this->database->setQuery($query);
-				return $this->database->query();
+				return $this->database->execute();
 			}
 		}
 		return $result;
@@ -430,43 +413,31 @@ class hikashopMenusClass extends hikashopClass {
 			$mainMenu = $this->database->loadResult();
 			if(empty($mainMenu)){
 				$this->database->setQuery('INSERT INTO '.hikashop_table('menu_types',false).' ( `menutype`,`title`,`description` ) VALUES ( \'hikashop_hidden\',\'HikaShop hidden menus\',\'This menu is used by HikaShop to store menus configurations\' )');
-				$this->database->query();
+				$this->database->execute();
 			}
-			if(version_compare(JVERSION,'1.6','<')){
-				$element = new stdClass();
-				$element->menutype = 'hikashop_hidden';
-				$element->alias = $alias;
-				$element->link = 'index.php?option=com_hikashop&view=category&layout=listing';
-				$element->type = 'component';
-				$element->published = 1;
-				$element->name = 'Menu item for category listing module '.$id;
-				$this->save($element);
-				$this->database->setQuery('SELECT id FROM '.hikashop_table('menu',false).' WHERE alias=\''.$element->alias.'\'');
-				$moduleOtpions['itemid'] = $this->database->loadResult();
-			}else{
-				$this->database->setQuery('SELECT rgt FROM '.hikashop_table('menu',false).' WHERE id=1');
-				$root = $this->database->loadResult();
-				$element = new stdClass();
-				$element->menutype = 'hikashop_hidden';
-				$element->alias = $alias;
-				$element->path = $alias;
-				$element->link = 'index.php?option=com_hikashop&view=category&layout=listing';
-				$element->type = 'component';
-				$element->published = 1;
-				$element->client_id = 0;
-				$element->language = '*';
-				$element->access = 1;
-				$element->lft = $root;
-				$element->rgt = $root+1;
-				$element->level = 1;
-				$element->parent_id = 1;
-				$element->title = 'Menu item for category listing module '.$id;
-				$this->save($element);
-				$this->database->setQuery('UPDATE '.hikashop_table('menu',false).' SET rgt='.($root+2).' WHERE id=1');
-				$this->database->query();
-				$this->database->setQuery('SELECT id FROM '.hikashop_table('menu',false).' WHERE alias=\''.$element->alias.'\'');
-				$moduleOtpions['itemid'] = $this->database->loadResult();
-			}
+
+			$this->database->setQuery('SELECT rgt FROM '.hikashop_table('menu',false).' WHERE id=1');
+			$root = $this->database->loadResult();
+			$element = new stdClass();
+			$element->menutype = 'hikashop_hidden';
+			$element->alias = $alias;
+			$element->path = $alias;
+			$element->link = 'index.php?option=com_hikashop&view=category&layout=listing';
+			$element->type = 'component';
+			$element->published = 1;
+			$element->client_id = 0;
+			$element->language = '*';
+			$element->access = 1;
+			$element->lft = $root;
+			$element->rgt = $root+1;
+			$element->level = 1;
+			$element->parent_id = 1;
+			$element->title = 'Menu item for category listing module '.$id;
+			$this->save($element);
+			$this->database->setQuery('UPDATE '.hikashop_table('menu',false).' SET rgt='.($root+2).' WHERE id=1');
+			$this->database->execute();
+			$this->database->setQuery('SELECT id FROM '.hikashop_table('menu',false).' WHERE alias=\''.$element->alias.'\'');
+			$moduleOtpions['itemid'] = $this->database->loadResult();
 		}
 		if(!empty($moduleOtpions['itemid'])){
 			$menuData = new stdClass();

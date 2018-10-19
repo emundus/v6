@@ -7,6 +7,7 @@
 				<option value="false">JNO</option>
 				<option value="true">JYES</option>
 			</field>
+			<field name="email_tmpl" type="field" default="referent_letter" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_LABEL" />
 		</fieldset>
 	</fields>
 </form>

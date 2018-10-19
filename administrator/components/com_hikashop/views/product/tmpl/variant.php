@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -248,9 +248,9 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 <?php
 
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
+	$app = JFactory::getApplication();
 	$html = array();
-	$dispatcher->trigger('onProductFormDisplay', array( &$this->product, &$html ));
+	$app->triggerEvent('onProductFormDisplay', array( &$this->product, &$html ));
 
 	if(!empty($this->fields) && hikashop_acl('product/edit/customfields') || !empty($html)) {
 ?>
@@ -320,8 +320,8 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 <?php
 	$html = array();
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
-	$dispatcher->trigger('onProductBlocksDisplay', array(&$this->product, &$html));
+	$app = JFactory::getApplication();
+	$app->triggerEvent('onProductBlocksDisplay', array(&$this->product, &$html));
 	if(!empty($html)) {
 		echo '<div style="clear:both"></div>';
 		foreach($html as $h) {

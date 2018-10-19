@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,74 +36,68 @@ if(!HIKASHOP_J30) {
 			return $html;
 		}
 	}
-} else {
-	class JToolbarButtonHikapopup extends JToolbarButton {
-		protected $_name = 'Popup';
+} elseif(!HIKASHOP_J40) {
+	class JToolbarButtonHikaPopup extends JToolbarButton {
+		protected $_name = 'HikaPopup';
 
 		public function fetchButton($type = 'Modal', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '') {
+			hikashop_loadJSLib('vex');
+
 			list($name, $icon) = explode('#', $name, 2);
 			$name .= '-btnpopup';
-			if(empty($title))
-				$title = $text;
 
-			$options = array(
-				'name' => JText::_($name),
-				'text' => JText::_($text),
-				'title' => JText::_($title),
-				'class' => $this->fetchIconClass($name),
-				'doTask' => $url // $this->_getCommand($url)
-			);
+			$url = $this->_getCommand($url);
 
-			$id = 'modal-' . $name;
+			if(HIKASHOP_J40)
+				$btnClass = 'btn btn-sm btn-outline-primary';
+			else
+				$btnClass = 'btn btn-small';
 
-			if(!empty($footer)) {
-				$footer = '<div class="modal-footer">'.
-						'<button class="btn" type="button" data-dismiss="modal">'.JText::_('HIKA_CANCEL').'</button>'.
-						'<button class="btn btn-primary" type="submit" onclick="window.hikashop.submitPopup(\\\''.$id.'\\\');">'.JText::_('HIKA_VALIDATE').'</button>'.
-					'</div>';
-			} else {
-				$footer = '';
-			}
-
-			$params = array(
-				'title' => $options['title'],
-				'url' => $options['doTask'],
-				'height' => $height,
-				'width' => $width
-			);
-
-			$html = array(
-				'<button onclick="'.$url.'" class="btn btn-small modal" data-toggle="modal" data-target="#modal-'.$name.'"><i class="icon-'.$icon.'"></i>'.JText::_($text).'</button>',
-				'</div><div class="btn-group" style="width: 0; margin: 0">',
-				str_replace(
-					array(
-						'id="'.$id.'"',
-						'<iframe'
-					),
-					array(
-						'id="'.$id.'" style="width:'.($params['width']+20).'px;height:'.($params['height']+90).'px;margin-left:-'.(($params['width']+20)/2).'px"',
-						'<iframe id="'.$id.'-iframe"'
-					),
-					JHtml::_('bootstrap.renderModal', 'modal-' . $name, $params, $footer)
-				)
-			);
-
-			if(strlen($onClose) >= 1) {
-				$html[] = '<script>' . "\n"
-					. 'jQuery(document).ready(function(){jQuery("#modal-'.$name.'").appendTo(jQuery(document.body));});' . "\n"
-					. 'jQuery(\'#modal-' . $name . '\').on(\'hide\', function () {' . $onClose . ';});' . "\n"
-					. '</script>';
-			} else {
-				$html[] = '<script>' . "\n"
-					. 'jQuery(document).ready(function(){jQuery("#modal-'.$name.'").appendTo(jQuery(document.body));});' . "\n"
-					. '</script>';
-			}
-
-			return implode("\n", $html);
+			return '<button onclick="return window.hikashop.openBox(this);" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
+				'<span class="icon-'.trim($icon).'"></span> ' . JText::_($text) .
+			'</button>';
 		}
 
 		public function fetchId($type, $name) {
 			return $this->_parent->getName() . '-popup-' . $name;
+		}
+
+		private function _getCommand($url) {
+			if (strpos($url, 'http') !== 0)
+				$url = JUri::base() . $url;
+			return $url;
+		}
+	}
+}else {
+	class JToolbarButtonHikaPopup extends JToolbarButton {
+		protected $_name = 'HikaPopup';
+
+		public function fetchButton($type = 'Modal', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '') {
+			hikashop_loadJSLib('vex');
+
+			list($name, $icon) = explode('#', $name, 2);
+			$name .= '-btnpopup';
+
+			$url = $this->_getCommand($url);
+
+			if(HIKASHOP_J40)
+				$btnClass = 'btn btn-info';
+			else
+				$btnClass = 'btn btn-small';
+
+			return '<button onclick="return window.hikashop.openBox(this);" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
+				'<span class="icon-'.trim($icon).'"></span> ' . JText::_($text) .
+			'</button>';
+		}
+
+		public function fetchId() {
+			return $this->_parent->getName() . '-popup-' . $this->getName();
+		}
+
+		private function _getCommand($url) {
+			if (strpos($url, 'http') !== 0)
+				$url = JUri::base() . $url;
+			return $url;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,12 +45,12 @@ class hikashopPluginsType{
 		if(!$backend) {
 			JPluginHelper::importPlugin('hikashop');
 			JPluginHelper::importPlugin('hikashoppayment');
-			$dispatcher = JDispatcher::getInstance();
+			$app = JFactory::getApplication();
 			$usable_methods = array();
 			$orderClass = hikashop_get('class.order');
 			$this->order = $orderClass->loadFullOrder($this->order->order_id, true);
 
-			$dispatcher->trigger('onPaymentDisplay', array( &$this->order, &$this->methods[$this->type][(string)@$this->order->order_id], &$usable_methods ) );
+			$app->triggerEvent('onPaymentDisplay', array( &$this->order, &$this->methods[$this->type][(string)@$this->order->order_id], &$usable_methods ) );
 			if(!empty($usable_methods)) {
 				ksort($usable_methods);
 			}
@@ -182,6 +182,6 @@ class hikashopPluginsType{
 			$attribute .= ' onchange="if(this.value==default_'.$this->type.'){return;} hikashop.openBox(\'plugin_change_link\', \''.hikashop_completeLink('order&task=changeplugin&order_id='.$this->order->order_id,true).'&plugin=\' +this.value+\'&type='.$this->type.'\'); this.value=default_'.$this->type.'; if(typeof(jQuery)!=\'undefined\'){jQuery(this).trigger(\'liszt:updated\');}"';
 		}
 
-		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox" '.$attribute, 'value', 'text', $selected, $map.(string)@$this->order->order_id);
+		return JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select" '.$attribute, 'value', 'text', $selected, $map.(string)@$this->order->order_id);
 	}
 }

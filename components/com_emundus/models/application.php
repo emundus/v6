@@ -545,7 +545,7 @@ class EmundusModelApplication extends JModelList
                             ORDER BY ff.ordering';
         try {
 
-            $this->_db->setQuery( $query );
+            $this->_db->setQuery($query);
             $groupes = $this->_db->loadObjectList();
 
         } catch (Exception $e) {
@@ -561,10 +561,8 @@ class EmundusModelApplication extends JModelList
                         ORDER BY fe.ordering';
 
             try {
-
-                $this->_db->setQuery( $query );
+                $this->_db->setQuery($query);
                 $elements = $this->_db->loadObjectList();
-
             } catch (Exception $e) {
                 return $e->getMessage();
             }
@@ -579,20 +577,20 @@ class EmundusModelApplication extends JModelList
                     foreach ($elements as &$element) {
                         if (!empty($element->label) && $element->label!=' ') {
 
-                            if ($element->plugin=='date' && $element->content>0) {
+                            if ($element->plugin == 'date' && $element->content > 0) {
 
                                 $date_params = json_decode($element->params);
                                 $elt = date($date_params->date_form_format, strtotime($element->content));
 
-                            } elseif ($element->plugin=='birthday' && $element->content>0) {
+                            } elseif ($element->plugin == 'birthday' && $element->content > 0) {
                                 $format = 'Y-n-j';
                                 $d = DateTime::createFromFormat($format, $element->content);
-                                if($d && $d->format($format) == $element->content)
+                                if ($d && $d->format($format) == $element->content)
                                     $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
                                 else
                                     $elt = $element->content;
 
-                            } elseif ($element->plugin=='databasejoin') {
+                            } elseif ($element->plugin == 'databasejoin') {
 
                                 $params = json_decode($element->params);
                                 $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
@@ -604,7 +602,7 @@ class EmundusModelApplication extends JModelList
 
                                 try {
 
-                                    $this->_db->setQuery( $query );
+                                    $this->_db->setQuery($query);
                                     $elt = $this->_db->loadResult();
 
                                 } catch (Exception $e) {
@@ -666,7 +664,7 @@ class EmundusModelApplication extends JModelList
                     $form .= '</tr></thead>';
 
                     // Ligne du tableau
-                    if (count($repeated_elements)>0) {
+                    if (count($repeated_elements) > 0) {
                         $form .= '<tbody>';
 
                         foreach ($repeated_elements as $r_element) {
@@ -677,12 +675,12 @@ class EmundusModelApplication extends JModelList
                             foreach ($r_element as $key => $r_elt) {
                                 if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-                                    if ($elements[$j]->plugin=='date') {
+                                    if ($elements[$j]->plugin == 'date') {
 
                                         $date_params = json_decode($elements[$j]->params);
                                         $elt = date($date_params->date_form_format, strtotime($r_elt));
 
-                                    } elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
+                                    } elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                         $format = 'Y-n-j';
                                         $d = DateTime::createFromFormat($format, $r_elt);
                                         if($d && $d->format($format) == $r_elt)
@@ -701,10 +699,8 @@ class EmundusModelApplication extends JModelList
                                         $query  = preg_replace('#{my->id}#', $aid, $query);
 
                                         try {
-
-                                            $this->_db->setQuery( $query );
+                                            $this->_db->setQuery($query);
                                             $elt = $this->_db->loadResult();
-
                                         } catch (Exception $e) {
                                             return $e->getMessage();
                                         }
@@ -713,7 +709,7 @@ class EmundusModelApplication extends JModelList
 
                                         $elt = implode(", ", json_decode (@$r_elt));
 
-                                    } elseif ($elements[$j]->plugin=='dropdown' || $elements[$j]->plugin=='radiobutton') {
+                                    } elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
 
                                         $params = json_decode($elements[$j]->params);
                                         $index = array_search($r_elt, $params->sub_options->sub_values);
@@ -736,13 +732,12 @@ class EmundusModelApplication extends JModelList
 
                     foreach ($elements as &$element) {
 
-                        if (!empty($element->label) && $element->label!=' ') {
+                        if (!empty($element->label) && $element->label != ' ') {
                             $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$table[0]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+
                             try {
-
-                                $this->_db->setQuery( $query );
+                                $this->_db->setQuery($query);
                                 $res = $this->_db->loadRow();
-
                             } catch (Exception $e) {
                                 return $e->getMessage();
                             }
@@ -750,25 +745,25 @@ class EmundusModelApplication extends JModelList
                             $element->content = @$res[1];
                             $element->content_id = @$res[0];
 
-                            if ($element->plugin=='date' && $element->content>0) {
+                            if ($element->plugin == 'date' && $element->content > 0) {
 
                                 $date_params = json_decode($element->params);
                                 $elt = date($date_params->date_form_format, strtotime($element->content));
 
-                            } elseif ($element->plugin=='birthday' && $element->content>0) {
+                            } elseif ($element->plugin == 'birthday' && $element->content > 0) {
                                 $format = 'Y-n-j';
                                 $d = DateTime::createFromFormat($format, $element->content);
-                                if($d && $d->format($format) == $element->content)
+                                if ($d && $d->format($format) == $element->content)
                                     $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
                                 else
                                     $elt = $element->content;
 
-                            } elseif ($element->plugin=='databasejoin') {
+                            } elseif ($element->plugin == 'databasejoin') {
 
                                 $params = json_decode($element->params);
                                 $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
-                                if ($params->database_join_display_type == 'checkbox'){
+                                if ($params->database_join_display_type == 'checkbox') {
 
                                     $elt = implode(", ", json_decode (@$element->content));
 
@@ -781,16 +776,14 @@ class EmundusModelApplication extends JModelList
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
 
                                     try {
-
-                                        $this->_db->setQuery( $query );
+                                        $this->_db->setQuery($query);
                                         $elt = $this->_db->loadResult();
-
                                     } catch (Exception $e) {
                                         return $e->getMessage();
                                     }
                                 }
 
-                            } elseif($element->plugin=='cascadingdropdown') {
+                            } elseif ($element->plugin == 'cascadingdropdown') {
 
                                 $params = json_decode($element->params);
                                 $cascadingdropdown_id = $params->cascadingdropdown_id;
@@ -808,10 +801,8 @@ class EmundusModelApplication extends JModelList
                                 $query  = preg_replace('#{my->id}#', $aid, $query);
 
                                 try {
-
-                                    $this->_db->setQuery( $query );
+                                    $this->_db->setQuery($query);
                                     $elt = $this->_db->loadResult();
-
                                 } catch (Exception $e) {
                                     return $e->getMessage();
                                 }
@@ -820,7 +811,7 @@ class EmundusModelApplication extends JModelList
 
                                 $elt = implode(", ", json_decode (@$element->content));
 
-                            } elseif ($element->plugin=='dropdown' || $element->plugin=='radiobutton') {
+                            } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
 
                                 $params = json_decode($element->params);
                                 $index  = array_search($element->content, $params->sub_options->sub_values);
@@ -894,7 +885,7 @@ class EmundusModelApplication extends JModelList
                             WHERE ff.group_id = fg.id AND
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
-                $this->_db->setQuery( $query );
+                $this->_db->setQuery($query);
                 $groupes = $this->_db->loadObjectList();
 
                 /*-- Liste des groupes -- */
@@ -917,12 +908,12 @@ class EmundusModelApplication extends JModelList
                         if ($itemg->group_id == 14) {
                             $forms .='<table>';
                             foreach($elements as &$element) {
-                                if(!empty($element->label) && $element->label!=' ') {
+                                if (!empty($element->label) && $element->label != ' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     }
-                                    elseif ($element->plugin=='birthday' && $element->content>0) {
+                                    elseif ($element->plugin == 'birthday' && $element->content > 0) {
                                         $format = 'Y-n-j';
                                         $d = DateTime::createFromFormat($format, $element->content);
                                         if($d && $d->format($format) == $element->content)
@@ -930,7 +921,7 @@ class EmundusModelApplication extends JModelList
                                         else
                                             $elt = $element->content;
                                     }
-                                    elseif($element->plugin=='databasejoin') {
+                                    elseif ($element->plugin == 'databasejoin') {
                                         $params = json_decode($element->params);
                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
                                         $from = $params->join_db_name;
@@ -975,8 +966,7 @@ class EmundusModelApplication extends JModelList
                                         WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                             else
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
-                            //$forms .= $query;
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
 
                             $this->_db->setQuery($query);
 
@@ -1034,11 +1024,31 @@ class EmundusModelApplication extends JModelList
                                                 $r2 = explode('___', $cascadingdropdown_label);
                                                 $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
                                                 $from = $r2[0];
-                                                $where = $r1[1].'='.$this->_db->Quote($r_elt);
+
+                                                // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
+	                                            if ($params->cdd_display_type == 'checkbox') {
+		                                            $select = !empty($params->cascadingdropdown_label_concat)?" CONCAT(".$params->cascadingdropdown_label_concat.")":'GROUP_CONCAT('.$r2[1].')';
+
+	                                            	// Load the Fabrik join for the element to it's respective repeat_repeat table.
+	                                            	$query = $this->_db->getQuery(true);
+	                                            	$query
+			                                            ->select([$this->_db->quoteName('join_from_table'), $this->_db->quoteName('table_key'), $this->_db->quoteName('table_join'), $this->_db->quoteName('table_join_key')])
+			                                            ->from($this->_db->quoteName('#__fabrik_joins'))
+			                                            ->where($this->_db->quoteName('element_id').' = '.$elements[$j]->id);
+	                                            	$this->_db->setQuery($query);
+	                                            	$f_join = $this->_db->loadObject();
+
+		                                            $where = $r1[1].' IN (
+		                                            SELECT '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
+		                                            FROM '.$this->_db->quoteName($f_join->table_join).' 
+		                                            WHERE '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$r_element->id.')';
+	                                            } else {
+		                                            $where = $r1[1].'='.$this->_db->Quote($r_elt);
+	                                            }
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
-                                                $this->_db->setQuery( $query );
+                                                $this->_db->setQuery($query);
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
 
@@ -1235,10 +1245,6 @@ class EmundusModelApplication extends JModelList
                         $forms .= JText::_($title[1]);
                 }
 
-                /*if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && $itemt->db_table_name != "#__emundus_training"){
-                    $forms .= ' <a href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=user&rowid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><i class="icon edit">'.JText::_('EDIT').'</i></a>';
-                }*/
-
                 $forms .= '</h3>';
 
                 /*-- Liste des groupes -- */
@@ -1252,7 +1258,7 @@ class EmundusModelApplication extends JModelList
                                 ORDER BY fe.ordering';
                     try {
 
-                        $this->_db->setQuery( $query );
+                        $this->_db->setQuery($query);
                         $elements = $this->_db->loadObjectList();
 
                     } catch (Exception $e) {
@@ -1347,9 +1353,9 @@ class EmundusModelApplication extends JModelList
                             $forms .= '<table>';
                             foreach ($elements as $element) {
 
-                                if (!empty($element->label) && $element->label!=' ' && !empty($element->content)) {
+                                if (!empty($element->label) && $element->label != ' ' && !empty($element->content)) {
 
-                                    if ($element->plugin=='date' && $element->content>0) {
+                                    if ($element->plugin == 'date' && $element->content > 0) {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = JText::_($element->content);
@@ -1360,7 +1366,7 @@ class EmundusModelApplication extends JModelList
                             $forms .= '</table>';
 
                         // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
-                        } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 7 && !$asTextArea){
+                        } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 7 && !$asTextArea) {
 
                             $forms .= '<p><table class="adminlist">
                             <thead>
@@ -1446,8 +1452,30 @@ class EmundusModelApplication extends JModelList
                                                 $cascadingdropdown_label = $params->cascadingdropdown_label;
                                                 $r2 = explode('___', $cascadingdropdown_label);
                                                 $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
+
+
+	                                            // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
+	                                            if ($params->cdd_display_type == 'checkbox') {
+		                                            $select = !empty($params->cascadingdropdown_label_concat)?" CONCAT(".$params->cascadingdropdown_label_concat.")":'GROUP_CONCAT('.$r2[1].')';
+
+		                                            // Load the Fabrik join for the element to it's respective repeat_repeat table.
+		                                            $query = $this->_db->getQuery(true);
+		                                            $query
+			                                            ->select([$this->_db->quoteName('join_from_table'), $this->_db->quoteName('table_key'), $this->_db->quoteName('table_join'), $this->_db->quoteName('table_join_key')])
+			                                            ->from($this->_db->quoteName('#__fabrik_joins'))
+			                                            ->where($this->_db->quoteName('element_id').' = '.$elements[$j]->id);
+		                                            $this->_db->setQuery($query);
+		                                            $f_join = $this->_db->loadObject();
+
+		                                            $where = $r1[1].' IN (
+		                                            SELECT '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
+		                                            FROM '.$this->_db->quoteName($f_join->table_join).' 
+		                                            WHERE '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$r_element->id.')';
+	                                            } else {
+		                                            $where = $r1[1].'='.$this->_db->Quote($r_elt);
+	                                            }
+
                                                 $from = $r2[0];
-                                                $where = $r1[1].'='.$this->_db->Quote($r_elt);
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -203,7 +203,7 @@ class checkoutController extends checkoutLegacyController {
 	}
 
 	public function submitblock() {
-		if((!HIKASHOP_J25 && !JRequest::checkToken('request')) || (HIKASHOP_J25 && !JSession::checkToken('request'))) {
+		if(!JSession::checkToken('request')) {
 			$tmpl = hikaInput::get()->getCmd('tmpl', '');
 			if(in_array($tmpl, array('ajax', 'raw'))) {
 				echo '401';
@@ -254,7 +254,8 @@ class checkoutController extends checkoutLegacyController {
 			$this->initDispatcher();
 			$go_back = false;
 			$original_go_back = false;
-			$ret = $this->dispatcher->trigger('onAfterCheckoutStep', array($block_task, &$go_back, $original_go_back, &$this));
+			$obj =& $this;
+			$ret = $this->app->triggerEvent('onAfterCheckoutStep', array($block_task, &$go_back, $original_go_back, &$obj));
 		}
 
 		if(!empty($ret)) {
@@ -284,11 +285,7 @@ class checkoutController extends checkoutLegacyController {
 	}
 
 	public function submitstep() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken('request') || die('Invalid Token');
-		} else {
-			JSession::checkToken('request') || die('Invalid Token');
-		}
+		JSession::checkToken('request') || die('Invalid Token');
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$step = hikashop_getCID('step');
@@ -325,7 +322,8 @@ class checkoutController extends checkoutLegacyController {
 				$this->initDispatcher();
 				$go_back = false;
 				$original_go_back = false;
-				$ret = $this->dispatcher->trigger('onAfterCheckoutStep', array($step_content['task'], &$go_back, $original_go_back, &$this));
+				$obj =& $this;
+				$ret = $this->app->triggerEvent('onAfterCheckoutStep', array($step_content['task'], &$go_back, $original_go_back, &$obj));
 
 				if(is_array($ret) && empty($ret))
 					$ret = true;
@@ -395,14 +393,9 @@ class checkoutController extends checkoutLegacyController {
 	}
 
 	private function initDispatcher() {
-		if($this->dispatcher !== null)
-			return $this->dispatcher;
-
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
-		$this->dispatcher = JDispatcher::getInstance();
-		return $this->dispatcher;
 	}
 
 	private function checkWorkflowSteps($step) {
@@ -432,7 +425,8 @@ class checkoutController extends checkoutLegacyController {
 
 					$go_back = ($validated == false);
 					$original_go_back = ($validated == false);
-					$this->dispatcher->trigger('onAfterCheckoutStep', array($task, &$go_back, $original_go_back, &$this));
+					$obj =& $this;
+					$this->app->triggerEvent('onAfterCheckoutStep', array($task, &$go_back, $original_go_back, &$obj));
 					if($go_back)
 						$validated = false;
 				}
@@ -534,14 +528,19 @@ class checkoutController extends checkoutLegacyController {
 	}
 
 	public function after_end() {
-		$cartClass = hikashop_get('class.cart');
-		$cartClass->cleanCartFromSession();
+		if($this->config->get('checkout_legacy', 0)) {
+			return parent::after_end();
+		}
 
 		$order_id = hikaInput::get()->getInt('order_id');
 		if(empty($order_id)) {
 			$app = JFactory::getApplication();
 			$order_id = $app->getUserState('com_hikashop.order_id');
 		}
+
+		$cartClass = hikashop_get('class.cart');
+		$cartClass->cleanCartFromSession();
+
 		$orderClass = hikashop_get('class.order');
 		$order = $orderClass->get($order_id);
 		if(empty($order) || hikashop_loadUser(false) != $order->order_user_id)

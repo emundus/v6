@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,12 @@ class plgButtonHikashopproduct extends JPlugin
 	}
 
 	function onDisplay($name, $asset='', $author='') {
-		$extension = JRequest::getCmd('option');
+		if(version_compare(JVERSION, '3.0.0', '<')) {
+			$extension = JRequest::getCmd('option');
+		} else {
+			$jinput = JFactory::getApplication()->input;
+			$extension = $jinput->getCmd('option');
+		}
 		if(!in_array($extension, array('com_content', 'com_tz_portfolio', 'com_k2', 'com_jevents')))
 			return;
 		if(!defined('DS'))
@@ -26,47 +31,31 @@ class plgButtonHikashopproduct extends JPlugin
 		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
 			return true;
 
-		if(version_compare(JVERSION,'1.6.0','<')){
-			global $mainframe;
-			$params = JComponentHelper::getParams('com_media');
-			$acl = JFactory::getACL();
-			switch ($params->get('allowed_media_usergroup'))
-			{
-				case '1':
-					$acl->addACL( 'com_media', 'upload', 'users', 'publisher' );
-					break;
-				case '2':
-					$acl->addACL( 'com_media', 'upload', 'users', 'publisher' );
-					$acl->addACL( 'com_media', 'upload', 'users', 'editor' );
-					break;
-				case '3':
-					$acl->addACL( 'com_media', 'upload', 'users', 'publisher' );
-					$acl->addACL( 'com_media', 'upload', 'users', 'editor' );
-					$acl->addACL( 'com_media', 'upload', 'users', 'author' );
-					break;
-				case '4':
-					$acl->addACL( 'com_media', 'upload', 'users', 'publisher' );
-					$acl->addACL( 'com_media', 'upload', 'users', 'editor' );
-					$acl->addACL( 'com_media', 'upload', 'users', 'author' );
-					$acl->addACL( 'com_media', 'upload', 'users', 'registered' );
-					break;
-			}
+		$app = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_media');
+		$user = JFactory::getUser();
 
-			$user = JFactory::getUser();
-			if (!$user->authorize( 'com_media', 'popup' )) {
-				return;
-			}
-			$doc 		= JFactory::getDocument();
-			$template 	= $mainframe->getTemplate();
 
+		if ($asset == ''){
+			$asset = $extension;
+		}
+		if (	$user->authorise('core.edit', $asset)
+			||	$user->authorise('core.create', $asset)
+			||	(count($user->getAuthorisedCategories($asset, 'core.create')) > 0)
+			||	($user->authorise('core.edit.own', $asset) && $author == $user->id)
+			||	(count($user->getAuthorisedCategories($extension, 'core.edit')) > 0)
+			||	(count($user->getAuthorisedCategories($extension, 'core.edit.own')) > 0 && $author == $user->id)
+		){
 			$pluginsClass = hikashop_get('class.plugins');
 			$plugin = $pluginsClass->getByName('editors-xtd','hikashopproduct');
-			$link = 'index.php?option=com_hikashop&amp;ctrl=plugins&amp;task=trigger&amp;function=productDisplay&amp;tmpl=component&amp;cid='.$plugin->id.'&amp;'.hikashop_getFormToken().'=1';
+
+			$link = 'index.php?option=com_hikashop&amp;ctrl=plugins&amp;task=trigger&amp;function=productDisplay&amp;editor_name='.urlencode($name).'&amp;tmpl=component&amp;cid='.$plugin->extension_id.'&amp;'.hikashop_getFormToken().'=1';
 			JHtml::_('behavior.modal');
 			$button = new JObject;
 			$button->set('modal', true);
 			$button->set('link', $link);
 			$button->set('text', JText::_('PRODUCT'));
+			$button->set('class', 'btn');
 			$button->set('name', 'hikashopproduct');
 			$button->set('options', "{handler: 'iframe', size: {x: 800, y: 450}}");
 			$doc = JFactory::getDocument();
@@ -76,58 +65,16 @@ class plgButtonHikashopproduct extends JPlugin
 			else
 				JHTML::_('behavior.framework');
 			$img_name = 'hikashopproduct.png';
-			$path = '../plugins/editors-xtd/'.$img_name;
+			$path = '../plugins/editors-xtd/hikashopproduct/'.$img_name;
 			$doc->addStyleDeclaration('.button2-left .hikashopproduct {background: url('.$path.') 100% 0 no-repeat; }');
 
 			return $button;
 		}
 		else{
-			$app = JFactory::getApplication();
-			$params = JComponentHelper::getParams('com_media');
-			$user = JFactory::getUser();
-
-
-
-
-			if ($asset == ''){
-				$asset = $extension;
-			}
-			if (	$user->authorise('core.edit', $asset)
-				||	$user->authorise('core.create', $asset)
-				||	(count($user->getAuthorisedCategories($asset, 'core.create')) > 0)
-				||	($user->authorise('core.edit.own', $asset) && $author == $user->id)
-				||	(count($user->getAuthorisedCategories($extension, 'core.edit')) > 0)
-				||	(count($user->getAuthorisedCategories($extension, 'core.edit.own')) > 0 && $author == $user->id)
-			){
-				$pluginsClass = hikashop_get('class.plugins');
-				$plugin = $pluginsClass->getByName('editors-xtd','hikashopproduct');
-
-				$link = 'index.php?option=com_hikashop&amp;ctrl=plugins&amp;task=trigger&amp;function=productDisplay&amp;editor_name='.urlencode($name).'&amp;tmpl=component&amp;cid='.$plugin->extension_id.'&amp;'.hikashop_getFormToken().'=1';
-				JHtml::_('behavior.modal');
-				$button = new JObject;
-				$button->set('modal', true);
-				$button->set('link', $link);
-				$button->set('text', JText::_('PRODUCT'));
-				$button->set('class', 'btn');
-				$button->set('name', 'hikashopproduct');
-				$button->set('options', "{handler: 'iframe', size: {x: 800, y: 450}}");
-				$doc = JFactory::getDocument();
-
-				if(!HIKASHOP_J30)
-					JHTML::_('behavior.mootools');
-				else
-					JHTML::_('behavior.framework');
-				$img_name = 'hikashopproduct.png';
-				$path = '../plugins/editors-xtd/hikashopproduct/'.$img_name;
-				$doc->addStyleDeclaration('.button2-left .hikashopproduct {background: url('.$path.') 100% 0 no-repeat; }');
-
-				return $button;
-			}
-			else{
-				return false;
-			}
+			return false;
 		}
 	}
+
 	function productDisplay(){
 		$app = JFactory::getApplication();
 		$db = JFactory::getDBO();
@@ -137,7 +84,7 @@ class plgButtonHikashopproduct extends JPlugin
 		$pageInfo = new stdClass();
 		$pageInfo->limit = new stdClass();
 		$pageInfo->search = $app->getUserStateFromRequest( "com_content.productbutton.search", 'search', '', 'string' );
-		$pageInfo->search = JString::strtolower(trim($pageInfo->search));
+		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
 		$pageInfo->limit->value = $app->getUserStateFromRequest( 'com_content.productbutton.limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		$pageInfo->limit->start = $app->getUserStateFromRequest( 'com_content.productbutton.limitstart', 'limitstart', 0, 'int' );
 		if((hikaInput::get()->getVar('search')!=$app->getUserState('com_content.productbutton.search')) || (hikaInput::get()->getVar('limit')!=$app->getUserState('com_content.productbutton.limit'))){
@@ -150,7 +97,7 @@ class plgButtonHikashopproduct extends JPlugin
 		$searchMap = array('product_name','product_code','product_id');
 		$filters = array();
 		if(!empty($pageInfo->search)){
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
+			$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($pageInfo->search)),true).'%\'';
 			$filter = '('.implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal".')';
 			$filters[] =  $filter;
 		}
@@ -174,18 +121,10 @@ class plgButtonHikashopproduct extends JPlugin
 			$pagination = new JPagination($nbrow, $pageInfo->limit->start, $pageInfo->limit->value);
 		}
 
-		$scriptV1 = "function insertTag(tag){ window.parent.jInsertEditorText(tag,'text'); return true;}";
 		$scriptV2 = "function insertTag(tag){ window.parent.jInsertEditorText(tag,'".str_replace(array('\\','\''), array('\\\\', '\\\''), $editor_name)."'); return true;}";
 
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
-		if(version_compare(JVERSION,'1.6.0','<'))
-			$doc->addScriptDeclaration( $scriptV1 );
-		else
-			$doc->addScriptDeclaration( $scriptV2 );
+		$doc = JFactory::getDocument();
+		$doc->addScriptDeclaration( $scriptV2 );
 
 		$config =& hikashop_config();
 		$pricetaxType = hikashop_get('type.pricetax');

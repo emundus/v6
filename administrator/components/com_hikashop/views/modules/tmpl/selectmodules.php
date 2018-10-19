@@ -1,17 +1,18 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><fieldset>
+?><div>
+	<h1 style="float: left;"><?php echo JText::_('PRODUCT_SHOW_MODULES'); ?></h1>
 	<div class="toolbar" id="toolbar" style="float: right;">
-		<button class="btn" type="button" onclick="submitbutton('savemodules');"><img src="<?php echo HIKASHOP_IMAGES; ?>save.png"/><?php echo JText::_('OK'); ?></button>
+		<button class="btn btn-success" type="button" onclick="submitbutton('savemodules');"><i class="fa fa-save"></i> <?php echo JText::_('OK'); ?></button>
 	</div>
-</fieldset>
+</div>
 <div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=modules" method="post"  name="adminForm" id="adminForm">
 	<table id="hikashop_modules_selection_listing" class="adminlist table table-striped table-hover" cellpadding="1">
@@ -38,42 +39,39 @@ defined('_JEXEC') or die('Restricted access');
 			</tr>
 		</thead>
 		<tbody>
-			<?php
-				$k = 0;
-				for($i = 0,$a = count($this->rows);$i<$a;$i++){
-					$row =& $this->rows[$i];
-					if(version_compare(JVERSION,'1.6','<')){
-						$link=JRoute::_('index.php?option=com_modules&client=0&task=edit&cid='.$row->id);
-					}else{
-						$link=JRoute::_('index.php?option=com_modules&task=module.edit&id='.$row->id);
-					}
-			?>
-				<tr class="<?php echo "row$k"; ?>">
-					<td>
-						<?php echo $i+1; ?>
-					</td>
-					<td>
-						<a target="_blank" href="<?php echo $link; ?>">
-						<?php echo $row->title; ?>
-						</a>
-					</td>
-					<td>
-						<?php echo $row->module; ?>
-					</td>
-					<td class="order hk_center">
-						<input type="text" name="data[module][ordering][<?php echo $row->id; ?>]" value="<?php echo (int)@$row->module_ordering; ?>" size="3" />
-					</td>
-					<td class="hk_center" nowrap>
-						<?php echo JHTML::_('hikaselect.booleanlist', 'data[module][used]['.$row->id.']' , '',@$row->module_used); ?>
-					</td>
-					<td width="1%" class="hk_center">
-						<?php echo $row->id; ?>
-					</td>
-				</tr>
-			<?php
-					$k = 1-$k;
-				}
-			?>
+<?php
+	$k = 0;
+	for($i = 0,$a = count($this->rows);$i<$a;$i++){
+		$row =& $this->rows[$i];
+		$link=JRoute::_('index.php?option=com_modules&task=module.edit&id='.$row->id);
+
+?>
+			<tr class="<?php echo "row$k"; ?>">
+				<td>
+					<?php echo $i+1; ?>
+				</td>
+				<td>
+					<a target="_blank" href="<?php echo $link; ?>">
+					<?php echo $row->title; ?>
+					</a>
+				</td>
+				<td>
+					<?php echo $row->module; ?>
+				</td>
+				<td class="order hk_center">
+					<input type="text" name="data[module][ordering][<?php echo $row->id; ?>]" value="<?php echo (int)@$row->module_ordering; ?>" size="3" />
+				</td>
+				<td class="hk_center" nowrap>
+					<?php echo JHTML::_('hikaselect.booleanlist', 'data[module][used]['.$row->id.']' , '',@$row->module_used); ?>
+				</td>
+				<td width="1%" class="hk_center">
+					<?php echo $row->id; ?>
+				</td>
+			</tr>
+<?php
+		$k = 1-$k;
+	}
+?>
 		</tbody>
 	</table>
 	<input type="hidden" name="tmpl" value="component" />

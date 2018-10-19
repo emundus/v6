@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -101,11 +101,7 @@ class ModulesViewModules extends hikashopView{
 		if(!$this->noForm) hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&cid[]='.$cid);
 
 		if(!empty($cid)){
-			if(!HIKASHOP_J16){
-				$url = JRoute::_('index.php?option=com_modules&client=0&task=edit&cid[]='.$element->id);
-			}else{
-				$url = JRoute::_('index.php?option=com_modules&task=module.edit&id='.$element->id);
-			}
+			$url = JRoute::_('index.php?option=com_modules&task=module.edit&id='.$element->id);
 			if (!$this->noForm)
 				$this->toolbarJoomlaModule = array('name'=>'link','icon'=>'upload','alt'=> JText::_('JOOMLA_MODULE_OPTIONS'),'url'=>$url);
 		}
@@ -118,8 +114,8 @@ class ModulesViewModules extends hikashopView{
 			'layouts' => array()
 		);
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHkContentParamsDisplay', array('module', $control, &$element, &$extra_blocks));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onHkContentParamsDisplay', array('module', $control, &$element, &$extra_blocks));
 		$this->assignRef('extra_blocks', $extra_blocks);
 
 		$this->type = 'cart';
@@ -352,9 +348,7 @@ class ModulesViewModules extends hikashopView{
 		$this->assignRef('productSyncType',$productSyncType);
 		$discountDisplayType = hikashop_get('type.discount_display');
 		$this->assignRef('discountDisplayType',$discountDisplayType);
-		if(!HIKASHOP_J16){
-			$query = 'SELECT a.name, a.id as itemid, b.title  FROM `#__menu` as a LEFT JOIN `#__menu_types` as b on a.menutype = b.menutype ORDER BY b.title ASC,a.ordering ASC';
-		}elseif(!HIKASHOP_J30){
+		if(!HIKASHOP_J30){
 			$query = 'SELECT a.title as name, a.id as itemid, b.title  FROM `#__menu` as a LEFT JOIN `#__menu_types` as b on a.menutype = b.menutype WHERE a.client_id=0 AND (a.link LIKE \'%view=product%\' OR a.link LIKE \'%view=category%\') ORDER BY b.title ASC,a.ordering ASC';
 		}else{
 			$query = 'SELECT a.title as name, a.id as itemid, b.title  FROM `#__menu` as a LEFT JOIN `#__menu_types` as b on a.menutype = b.menutype WHERE a.client_id=0 AND (a.link LIKE \'%view=product%\' OR a.link LIKE \'%view=category%\') ORDER BY b.title ASC';
@@ -405,7 +399,7 @@ class ModulesViewModules extends hikashopView{
 		$searchMap = array('module','title');
 
 		if(!empty($pageInfo->search)){
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
+			$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($pageInfo->search)),true).'%\'';
 			$filters[] =  implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal";
 		}
 		$order = '';
@@ -466,7 +460,7 @@ class ModulesViewModules extends hikashopView{
 
 		if(!empty($this->modules)){
 			$this->modules=explode(',',$this->modules);
-			JArrayHelper::toInteger($this->modules);
+			hikashop_toInteger($this->modules);
 
 			foreach($this->modules as $i=>$id){
 				foreach($rows as $k => $row){
@@ -593,8 +587,8 @@ class ModulesViewModules extends hikashopView{
 		$element->content_type = $this->type;
 		$element->hikashop_params =& $this->element;
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHkContentParamsDisplay', array('module', $this->name, &$element, &$extra_blocks));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onHkContentParamsDisplay', array('module', $this->name, &$element, &$extra_blocks));
 		$this->assignRef('extra_blocks', $extra_blocks);
 	}
 
@@ -605,11 +599,7 @@ class ModulesViewModules extends hikashopView{
 			if(!empty($element->content_type) && $element->content_type != 'product') {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_('HIKA_MODULE_TYPE_NOT_SUPPORTED'), 'error');
-				if(!HIKASHOP_J16) {
-					$url = JRoute::_('index.php?option=com_modules&task=edit&cid[]='.$id, false);
-				} else {
-					$url = JRoute::_('index.php?option=com_modules&task=item.edit&id='.$id, false);
-				}
+				$url = JRoute::_('index.php?option=com_modules&task=item.edit&id='.$id, false);
 				$app->redirect($url);
 			}
 		}

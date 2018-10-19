@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,13 +33,7 @@ elseif(!empty($ctrl) && !$view) {
 $taskGroup = hikaInput::get()->getCmd('ctrl','dashboard');
 $config =& hikashop_config();
 JHTML::_('behavior.tooltip');
-if(!HIKASHOP_PHP5) {
-	$bar = & JToolBar::getInstance('toolbar');
-	$app =& JFactory::getApplication();
-	$app->enqueueMessage('WARNING: PHP4 is not safe to use since 2008. Because of that we are discontinuing support for PHP 4 in newer versions of HikaShop. Please ask your hosting company to migrate your server to PHP 5.2 minimum.');
-} else {
-	$bar = JToolBar::getInstance('toolbar');
-}
+$bar = JToolBar::getInstance('toolbar');
 $bar->addButtonPath(HIKASHOP_BUTTON);
 
 if($taskGroup != 'update' && !$config->get('installcomplete')){
@@ -53,16 +47,23 @@ if($taskGroup != 'update' && !$config->get('installcomplete')){
 $className = ucfirst($taskGroup).'Controller';
 
 $currentuser = JFactory::getUser();
-if($taskGroup != 'update' && HIKASHOP_J16 && !$currentuser->authorise('core.manage', 'com_hikashop')) {
-	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+if($taskGroup != 'update' && !$currentuser->authorise('core.manage', 'com_hikashop')) {
+	$app = JFactory::getApplication();
+	$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+	return;
 }
-if($taskGroup == 'config' && HIKASHOP_J16 && !$currentuser->authorise('core.admin', 'com_hikashop')) {
-	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+if($taskGroup == 'config' && !$currentuser->authorise('core.admin', 'com_hikashop')) {
+	$app = JFactory::getApplication();
+	$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+	return;
 }
 
 if(!class_exists($className) && (!file_exists(HIKASHOP_CONTROLLER.$taskGroup.'.php') || !include_once(HIKASHOP_CONTROLLER.$taskGroup.'.php'))) {
-	if(!hikashop_getPluginController($taskGroup))
-		return JError::raiseError(404, 'Page not found : '.$taskGroup);
+	if(!hikashop_getPluginController($taskGroup)) {
+		$app = JFactory::getApplication();
+		$app->enqueueMessage('Page not found : '.$taskGroup, 'warning');
+		return;
+	}
 }
 ob_start();
 
@@ -73,6 +74,6 @@ $classGroup->redirect();
 if(hikaInput::get()->getString('tmpl') !== 'component'){
 	echo hikashop_footer();
 }
-echo '<div id="hikashop_main_content" class="hikashop_main_content">'.ob_get_clean().'</div>';
+echo '<div id="hikashop_main_content" class="hikashop_main_content hika_j'.(int)HIKASHOP_JVERSION.'">'.ob_get_clean().'</div>';
 
 hikashop_cleanCart();

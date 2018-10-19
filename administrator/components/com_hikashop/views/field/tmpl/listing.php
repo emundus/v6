@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,15 +10,15 @@ defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('field'); ?>" method="post" name="adminForm" id="adminForm">
 <?php if(hikashop_level(1)) { ?>
-	<table>
-		<tr>
-			<td width="100%">
-			</td>
-			<td nowrap="nowrap">
-				<?php echo $this->tabletype->display('filter_table', $this->selectedType); ?>
-			</td>
-		</tr>
-	</table>
+<div class="hk-row-fluid">
+	<div class="hkc-md-4">
+<?php
+?>
+	</div>
+	<div class="hkc-md-8 hikashop_listing_filters">
+		<?php echo $this->tabletype->display('filter_table', $this->selectedType); ?>
+	</div>
+</div>
 <?php } ?>
 	<table id="hikashop_field_listing" class="adminlist table table-striped" cellpadding="1">
 		<thead>

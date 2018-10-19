@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ class VoteViewVote extends hikashopView{
 	var $ctrl= 'vote';
 	var $nameListing = 'VOTE';
 	var $nameForm = 'VOTE';
-	var $icon = 'vote';
+	var $icon = 'star';
 
 	function display($tpl = null) {
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -37,7 +37,7 @@ class VoteViewVote extends hikashopView{
 	}
 
 	function listing() {
-		$config = hikashop_config();
+		$config = $this->config = hikashop_config();
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
@@ -52,7 +52,7 @@ class VoteViewVote extends hikashopView{
 		$filters = array();
 		$searchMap = array('a.vote_id','a.vote_rating','a.vote_ref_id','a.vote_pseudo','a.vote_comment','a.vote_email','a.vote_user_id','a.vote_ip','a.vote_date');
 		if(!empty($pageInfo->search)){
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
+			$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($pageInfo->search)),true).'%\'';
 			$filters[] =  implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal";
 		}
 		$order = '';
@@ -122,7 +122,6 @@ class VoteViewVote extends hikashopView{
 		}
 		$this->assignRef('order',$order);
 		hikashop_setTitle(JText::_($this->nameListing),$this->icon,$this->ctrl);
-		$config =& hikashop_config();
 		$manage = hikashop_isAllowed($config->get('acl_vote_manage','all'));
 		$this->assignRef('manage',$manage);
 		$this->toolbar = array(
@@ -189,8 +188,7 @@ class VoteViewVote extends hikashopView{
 		}
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&vote_id='.$vote_id);
 		$this->toolbar = array(
-			'save',
-			'apply',
+			array('name' => 'group', 'buttons' => array( 'apply', 'save')),
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing')

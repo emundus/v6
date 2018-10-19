@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,17 +9,10 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('category'); ?>" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-<div id="page-category">
-	<table style="width:100%">
-		<tr>
-			<td valign="top" width="70%">
-<?php } else { ?>
-<div id="page-category" class="row-fluid">
-	<div class="span6">
-<?php } ?>
-				<fieldset class="adminform" id="htmlfieldset_info">
-					<legend><?php echo JText::_( 'MAIN_INFORMATION' ); ?></legend>
+<div id="page-category" class="hk-row-fluid hikashop_backend_tile_edition">
+	<div class="hkc-md-6">
+		<div class="hikashop_tile_block"><div>
+			<div class="hikashop_tile_title"><?php echo JText::_('MAIN_INFORMATION'); ?></div>
 					<?php
 						$this->category_name_input = "data[category][category_name]";
 						$this->category_meta_description_input = "data[category][category_meta_description]";
@@ -34,16 +27,22 @@ defined('_JEXEC') or die('Restricted access');
 						}
 						echo $this->loadTemplate();
 					?>
-				</fieldset>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-			<td valign="top">
-<?php } else { ?>
+			</div>
+		</div>
 	</div>
-	<div class="span6">
+	<div class="hkc-md-6">
+<?php if($this->category_image){ ?>
+		<div class="hikashop_tile_block"><div style="min-height:auto;">
+			<div class="hikashop_tile_title"><?php echo JText::_('HIKA_IMAGE'); ?></div>
+<?php
+			$this->setLayout('form');
+			echo $this->loadTemplate('image');
+?>
+			</div>
+		</div>
 <?php } ?>
-				<fieldset class="adminform" id="htmlfieldset_additional">
-					<legend><?php echo JText::_( 'CATEGORY_ADDITIONAL_INFORMATION' ); ?></legend>
+		<div class="hikashop_tile_block"><div>
+			<div class="hikashop_tile_title"><?php echo JText::_('CATEGORY_ADDITIONAL_INFORMATION'); ?></div>
 					<table class="admintable table" style="">
 						<tr>
 							<td class="key">
@@ -177,18 +176,10 @@ defined('_JEXEC') or die('Restricted access');
 	}
 ?>
 					</table>
-				</fieldset>
-<?php if($this->category_image){ ?>
-				<fieldset class="adminform" id="htmlfieldset">
-					<legend><?php echo JText::_( 'HIKA_IMAGE' ); ?></legend>
-<?php
-			$this->setLayout('form');
-			echo $this->loadTemplate('image');
-?>
-				</fieldset>
-<?php } ?>
-				<fieldset class="adminform">
-				<legend><?php echo JText::_('ACCESS_LEVEL'); ?></legend>
+			</div>
+		</div>
+		<div class="hikashop_tile_block"><div style="min-height:auto;">
+			<div class="hikashop_tile_title"><?php echo JText::_('ACCESS_LEVEL'); ?></div>
 <?php
 	if(hikashop_level(2)) {
 		$acltype = hikashop_get('type.acl');
@@ -197,17 +188,10 @@ defined('_JEXEC') or die('Restricted access');
 		echo '<small style="color:red">'.JText::_('ONLY_FROM_HIKASHOP_BUSINESS').'</small>';
 	}
 ?>
-				</fieldset>
-
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-		</tr>
-	</table>
-</div>
-<?php } else { ?>
+			</div>
+		</div>
 	</div>
 </div>
-<?php } ?>
 	<div style="clear:both" class="clr"></div>
 	<input type="hidden" name="cid[]" value="<?php echo @$this->element->category_id; ?>" />
 	<input type="hidden" name="data[category][category_id]" value="<?php echo @$this->element->category_id; ?>" />

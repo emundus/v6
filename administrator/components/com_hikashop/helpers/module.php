@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -106,7 +106,7 @@ class hikashopModuleHelper {
 		if(!is_array($modules)) {
 			$modules = explode(',', $modules);
 		}
-		JArrayHelper::toInteger($modules);
+		hikashop_toInteger($modules);
 
 		$database = JFactory::getDBO();
 		$query = 'SELECT * FROM '.hikashop_table('modules', false).' WHERE id IN ('.implode(',', $modules).');';
@@ -193,11 +193,7 @@ class hikashopModuleHelper {
 
 			$obj->params = new HikaParameter( $menu->params );
 			$obj->params->set('id',$menu->id);
-			if(!HIKASHOP_J16) {
-				$obj->params->set('title',$menu->name);
-			} else {
-				$obj->params->set('title',$menu->title);
-			}
+			$obj->params->set('title',$menu->title);
 
 			if(HIKASHOP_J30) {
 				$productParams = $menu->params->get('hk_product',false);

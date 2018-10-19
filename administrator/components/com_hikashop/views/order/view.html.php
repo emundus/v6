@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ class OrderViewOrder extends hikashopView{
 	var $ctrl= 'order';
 	var $nameListing = 'ORDERS';
 	var $nameForm = 'HIKASHOP_ORDER';
-	var $icon = 'order';
+	var $icon = 'credit-card';
 	var $displayCompleted = false;
 	var $triggerView = true;
 
@@ -23,6 +23,7 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('params',$params);
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
 		$function = $this->getLayout();
+
 		if(method_exists($this,$function))
 			$this->$function();
 		if(empty($this->displayCompleted))
@@ -154,12 +155,12 @@ class OrderViewOrder extends hikashopView{
 		JPluginHelper::importPlugin('hikashop');
 		if(hikashop_level(2))
 			JPluginHelper::getPlugin('system', 'hikashopaffiliate');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeOrderListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters, &$tables, &$searchMap));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeOrderListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters, &$tables, &$searchMap));
 		$this->assignRef('extrafilters', $extrafilters);
 
 		if(!empty($pageInfo->search)) {
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
+			$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($pageInfo->search)),true).'%\'';
 			$filter = implode(' LIKE '.$searchVal.' OR ', $searchMap) . ' LIKE ' . $searchVal;
 			$filters[] =  $filter;
 		}
@@ -248,7 +249,7 @@ class OrderViewOrder extends hikashopView{
 		$popupHelper = hikashop_get('helper.popup');
 		$this->assignRef('popupHelper', $popupHelper);
 		$extrafields = array();
-		$dispatcher->trigger('onAfterOrderListing', array(&$this->rows, &$extrafields, $pageInfo));
+		$app->triggerEvent('onAfterOrderListing', array(&$this->rows, &$extrafields, $pageInfo));
 		$this->assignRef('extrafields',$extrafields);
 
 		$this->getPagination();
@@ -340,8 +341,8 @@ class OrderViewOrder extends hikashopView{
 		JPluginHelper::importPlugin( 'hikashop' );
 		JPluginHelper::importPlugin( 'hikashoppayment' );
 		JPluginHelper::importPlugin( 'hikashopshipping' );
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger( 'onHistoryDisplay', array( & $order->history) );
+		$app = JFactory::getApplication();
+		$app->triggerEvent( 'onHistoryDisplay', array( & $order->history) );
 
 		$this->assignRef('order',$order);
 		$this->assignRef('fields',$fields);
@@ -376,15 +377,9 @@ class OrderViewOrder extends hikashopView{
 			}
 		}
 
-		if(version_compare(JVERSION,'1.6','<')){
-			$url_email = hikashop_completeLink('order&task=mail&order_id='.$order_id,true);
-			$url_invoice = hikashop_completeLink('order&task=invoice&type=full&order_id='.$order_id,true);
-			$url_shipping = hikashop_completeLink('order&task=invoice&type=shipping&order_id='.$order_id,true);
-		} else {
-			$url_email = 'index.php?option=com_hikashop&ctrl=order&task=mail&tmpl=component&order_id='.$order_id;
-			$url_invoice = 'index.php?option=com_hikashop&ctrl=order&task=invoice&tmpl=component&type=full&order_id='.$order_id;
-			$url_shipping = 'index.php?option=com_hikashop&ctrl=order&task=invoice&tmpl=component&type=shipping&order_id='.$order_id;
-		}
+		$url_email = 'index.php?option=com_hikashop&ctrl=order&task=mail&tmpl=component&order_id='.$order_id;
+		$url_invoice = 'index.php?option=com_hikashop&ctrl=order&task=invoice&tmpl=component&type=full&order_id='.$order_id;
+		$url_shipping = 'index.php?option=com_hikashop&ctrl=order&task=invoice&tmpl=component&type=shipping&order_id='.$order_id;
 
 		$this->toolbar = array(
 			array('name' => 'Popup', 'icon' => 'send', 'id' => 'send', 'alt' => JText::_('HIKA_EMAIL'), 'url' => $url_email, 'width' => 720),
@@ -570,7 +565,7 @@ class OrderViewOrder extends hikashopView{
 		$filters = array();
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		if(empty($ids)) {
 			$filters['order_type'] = 'hk_order.order_type = \'sale\'';
@@ -656,7 +651,7 @@ class OrderViewOrder extends hikashopView{
 				$searchMap[] = 'hk_order.'.$field->field_namekey;
 			}
 			if(!empty($search)) {
-				$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($search)),true).'%\'';
+				$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($search)),true).'%\'';
 				$id = hikashop_decode($pageInfo->search);
 				$filter = implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal;
 				if(!empty($id)) {
@@ -665,9 +660,9 @@ class OrderViewOrder extends hikashopView{
 				$filters['search'] = $filter;
 			}
 
-			$dispatcher->trigger('onBeforeOrderExportQuery', array(&$filters, $this->paramBase));
+			$app->triggerEvent('onBeforeOrderExportQuery', array(&$filters, $this->paramBase));
 		} else {
-			JArrayHelper::toInteger($ids,0);
+			hikashop_toInteger($ids,0);
 			$filters['order_id'] = 'hk_order.order_id IN ('.implode(',', $ids).')';
 		}
 
@@ -753,7 +748,8 @@ class OrderViewOrder extends hikashopView{
 				$rows[$k]->order_full_tax += $row->order_shipping_tax + $row->order_payment_tax - $row->order_discount_tax;
 			}
 		}
-		$dispatcher->trigger('onBeforeOrderExport', array(&$rows, &$this));
+		$obj =& $this;
+		$app->triggerEvent('onBeforeOrderExport', array(&$rows, &$obj));
 		$this->assignRef('orders', $rows);
 	}
 
@@ -965,7 +961,7 @@ class OrderViewOrder extends hikashopView{
 			$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart', 0, 'int' );
 		}
 		$pageInfo->search = $app->getUserStateFromRequest( $this->paramBase.".search", 'search', '', 'string' );
-		$pageInfo->search = JString::strtolower(trim($pageInfo->search));
+		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		if(empty($pageInfo->limit->value)) $pageInfo->limit->value = 500;
 		$selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type',0,'int');
@@ -1009,8 +1005,9 @@ class OrderViewOrder extends hikashopView{
 			}
 		}
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger( 'onBeforeProductListingLoad', array( & $filters, & $order, &$this, & $select, & $select2, & $a, & $b, & $on) );
+		$app = JFactory::getApplication();
+		$obj =& $this;
+		$app->triggerEvent( 'onBeforeProductListingLoad', array( & $filters, & $order, &$obj, & $select, & $select2, & $a, & $b, & $on) );
 		if($pageInfo->filter->filter_product_type=='all'){
 			$query = '( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_id WHERE '.implode(' AND ',$filters).' AND b.product_id IS NOT NULL )
 			UNION
@@ -1359,7 +1356,7 @@ class OrderViewOrder extends hikashopView{
 		$set_address = hikaInput::get()->getInt('set_user_address', 0);
 
 		if(!empty($users)) {
-			JArrayHelper::toInteger($users);
+			hikashop_toInteger($users);
 			$db = JFactory::getDBO();
 			$query = 'SELECT a.*, b.* FROM '.hikashop_table('user').' AS a LEFT JOIN '.hikashop_table('users', false).' AS b ON a.user_cms_id = b.id WHERE a.user_id IN ('.implode(',',$users).')';
 			$db->setQuery($query);

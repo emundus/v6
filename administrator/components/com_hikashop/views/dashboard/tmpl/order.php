@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ defined('_JEXEC') or die('Restricted access');
 								echo $customer->name.' ( '.$customer->username.' )</a><br/>';
 						}
 						 $url = hikashop_completeLink('user&task=edit&cid[]='.$row->user_id);
-						 echo $row->user_email.'<a href="'.$url.'"><img src="'.HIKASHOP_IMAGES.'edit.png" alt="edit"/></a>';
+						 echo $row->user_email.' <a href="'.$url.'"><i class="fas fa-pen"></i></a>';
 						 ?>
 					</td>
 					<td class="hk_center">

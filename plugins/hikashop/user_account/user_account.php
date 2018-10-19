@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,12 +16,7 @@ class plgHikashopUser_account extends JPlugin {
 			return;
 
 		$plugin = JPluginHelper::getPlugin('hikashop', 'user_account');
-		if(version_compare(JVERSION,'2.5','<')){
-			jimport('joomla.html.parameter');
-			$this->params = new JParameter($plugin->params);
-		} else {
-			$this->params = new JRegistry($plugin->params);
-		}
+		$this->params = new JRegistry($plugin->params);
 	}
 
 	function onUserAccountDisplay(&$buttons){
@@ -36,11 +31,7 @@ class plgHikashopUser_account extends JPlugin {
 				$url_itemid = '&Itemid='.$Itemid;
 			}
 		}
-		if(version_compare(JVERSION, '1.6', '<')) {
-			$url = JRoute::_('index.php?option=com_user&view=user&task=edit'.$url_itemid);
-		} else {
-			$url = JRoute::_('index.php?option=com_users&view=profile&layout=edit'.$url_itemid);
-		}
+		$url = JRoute::_('index.php?option=com_users&view=profile&layout=edit'.$url_itemid);
 
 		$my = array(
 			'joomla_user' => array(
@@ -48,7 +39,11 @@ class plgHikashopUser_account extends JPlugin {
 				'level' => 0,
 				'image' => 'user2',
 				'text' => JText::_('CUSTOMER_ACCOUNT'),
-				'description' => JText::_('EDIT_INFOS')
+				'description' => JText::_('EDIT_INFOS'),
+				'fontawesome' => ''.
+					'<i class="far fa-file-alt fa-stack-2x"></i>'.
+					'<i class="fas fa-circle fa-stack-1x fa-inverse" style="left:30%;top:30%"></i>'.
+					'<i class="fas fa-user-circle fa-stack-1x" style="left:30%;top:30%"></i>'
 			)
 		);
 		$buttons = array_merge($my, $buttons);

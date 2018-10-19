@@ -1,17 +1,20 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><fieldset>
-	<div class="toolbar" id="toolbar" style="float: right;">
-		<button class="btn" type="button" onclick="submitbutton('savechangestatus');"><img src="<?php echo HIKASHOP_IMAGES; ?>save.png"/><?php echo JText::_('OK'); ?></button>
+?><div>
+	<div classs="title" style="float:left;">
+		<h1><?php echo JText::_( 'ORDER_NEW_STATUS' ); ?></h1>
 	</div>
-</fieldset>
+	<div class="toolbar" id="toolbar" style="float: right;">
+		<button class="btn btn-success" type="button" onclick="submitbutton('savechangestatus');"><i class="fa fa-save"></i> <?php echo JText::_('OK'); ?></button>
+	</div>
+</div>
 <div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('order',true); ?>" method="post"  name="adminForm" id="adminForm">
 	<table width="100%" class="admintable table">

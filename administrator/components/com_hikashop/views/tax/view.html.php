@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ class TaxViewTax extends hikashopView{
 	var $ctrl= 'tax';
 	var $nameListing = 'RATES';
 	var $nameForm = 'RATE';
-	var $icon = 'tax';
+	var $icon = 'university';
 	var $triggerView = true;
 
 	function display($tpl = null){
@@ -30,7 +30,7 @@ class TaxViewTax extends hikashopView{
 		$pageInfo->filter->order = new stdClass();
 		$pageInfo->limit = new stdClass();
 		$pageInfo->search = $app->getUserStateFromRequest( $this->paramBase.".search", 'search', '', 'string' );
-		$pageInfo->search = JString::strtolower(trim($pageInfo->search));
+		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'desc',	'word' );
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
@@ -51,8 +51,8 @@ class TaxViewTax extends hikashopView{
 			$order = ' ORDER BY '.$pageInfo->filter->order->value.' '.$pageInfo->filter->order->dir;
 		}
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeTaxListing', array($this->paramBase, &$this->extrafilters, &$pageInfo, &$filters));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeTaxListing', array($this->paramBase, &$this->extrafilters, &$pageInfo, &$filters));
 
 		if(!empty($filters)){
 			$filters = ' WHERE ('. implode(') AND (',$filters).')';
@@ -265,9 +265,7 @@ class TaxViewTax extends hikashopView{
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&tax_namekey='.$tax_namekey);
 
 		$this->toolbar = array(
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION,'1.7','>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')

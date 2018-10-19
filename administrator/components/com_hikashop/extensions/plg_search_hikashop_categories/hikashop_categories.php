@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,12 +16,7 @@ class plgSearchHikashop_categories extends JPlugin{
 		parent::__construct($subject, $config);
 		if(!isset($this->params)){
 			$plugin = JPluginHelper::getPlugin('search', 'hikashop_categories');
-			if(version_compare(JVERSION,'2.5','<')){
-				jimport('joomla.html.parameter');
-				$this->params = new JParameter($plugin->params);
-			} else {
-				$this->params = new JRegistry($plugin->params);
-			}
+			$this->params = new JRegistry($plugin->params);
 		}
 	}
 
@@ -110,11 +105,8 @@ class plgSearchHikashop_categories extends JPlugin{
 		$filters2 = array();
 		if($multi){
 			$registry = JFactory::getConfig();
-			if(!HIKASHOP_J25){
-				$code = $registry->getValue('config.jflang');
-			}else{
-				$code = $registry->get('language');
-			}
+			$code = $registry->get('language');
+
 			$myLang = $trans->getId($code);
 			$filters2[] = "b.reference_table='hikashop_category'";
 			$filters2[] = "b.published=1";
@@ -167,7 +159,7 @@ class plgSearchHikashop_categories extends JPlugin{
 				$limit = $limit-$count;
 
 				$ids = array_keys($rows);
-				JArrayHelper::toInteger($ids);
+				hikashop_toInteger($ids);
 				$filters[]='a.category_id NOT IN ('.implode(',',$ids).')';
 			}
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -82,25 +82,16 @@ echo $this->leftmenu(
 		<td>
 			<input class="inputbox" id="checkout_terms" name="config[checkout_terms]" type="text" size="20" value="<?php echo $this->config->get('checkout_terms'); ?>" onchange="showTermsPopupSize(this.value);" >
 <?php
-		if(!HIKASHOP_J16) {
-			$link = 'index.php?option=com_content&amp;task=element&amp;tmpl=component&amp;object=checkout';
-			$js = '
-function jSelectArticle(id, title, object) {
-	document.getElementById(object+"_terms").value = id;
-	window.top.hikashop.closeBox();
-}
-';
-			$this->doc->addScriptDeclaration($js);
-		} else {
-			$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;function=jSelectArticle_checkout';
-			$js = '
+
+		$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;function=jSelectArticle_checkout';
+		$js = '
 function jSelectArticle_checkout(id, title, catid, object) {
 	document.getElementById("checkout_terms").value = id;
 	hikashop.closeBox();
 }
 ';
-			$this->doc->addScriptDeclaration($js);
-		}
+		$this->doc->addScriptDeclaration($js);
+
 		echo $this->popup->display(
 			'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
 			'TERMS_AND_CONDITIONS_SELECT_ARTICLE',
@@ -188,7 +179,7 @@ jQuery(document).ready(function(){
 				$values[] = JHTML::_('select.option', 0, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_POPUP'));
 			elseif( $selector == 0 )
 				$selector = 1;
-			echo JHTML::_('hikaselect.radiolist',  $values, 'config[checkout_address_selector]', '', 'value', 'text', $selector );
+			echo JHTML::_('hikaselect.radiolist',  $values, 'config[checkout_address_selector]', 'class="custom-select"', 'value', 'text', $selector );
 		?></td>
 	</tr>
 <?php

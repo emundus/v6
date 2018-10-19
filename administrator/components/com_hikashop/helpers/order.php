@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,7 +81,7 @@ class hikashopOrderHelper {
 		$order = hikaInput::get()->post->get('order', array(), 'array');
 		if($useCID) {
 			$cid = hikaInput::get()->post->get('cid', array(), 'array');
-			JArrayHelper::toInteger($cid);
+			hikashop_toInteger($cid);
 		} else {
 			$cid = array_keys($order);
 		}
@@ -95,17 +95,13 @@ class hikashopOrderHelper {
 		if(!empty($this->groupMap)){
 			$query = 'SELECT `'.$main.'` FROM '.hikashop_table($this->table).' WHERE `'.$main.'` IN ('.implode(',',$cid).') '. $this->group();
 			$database->setQuery($query);
-			if(!HIKASHOP_J25){
-				$results = $database->loadResultArray();
-			} else {
-				$results = $database->loadColumn();
-			}
+			$results = $database->loadColumn();
 
 			$newcid = array();
 			$neworder=array();
 			foreach($cid as $key => $val){
 				if(in_array($val,$results)){
-					$newcid[] = $val;
+					$newcid[] = (int)$val;
 					if($useCID) {
 						$neworder[] = $order[$key];
 					} else {
@@ -116,7 +112,7 @@ class hikashopOrderHelper {
 
 			$cid = $newcid;
 			$order = $neworder;
-			if($main!=$pkey){
+			if($main!=$pkey && count($cid)){
 				$query = 'SELECT `'.$main.'`,`'.$pkey.'` FROM '.hikashop_table($this->table).' WHERE `'.$main.'` IN ('.implode(',',$cid).') '. $this->group();
 				$database->setQuery($query);
 				$results = $database->loadObjectList($main);
@@ -176,7 +172,7 @@ class hikashopOrderHelper {
 		$max++;
 		$query = 'UPDATE '.hikashop_table($this->table).' SET `'.$orderingMap.'` ='.$max.' WHERE `'.$orderingMap.'`=0' . $this->group();
 		$db->setQuery($query);
-		$db->query();
+		$db->execute();
 		$query = 'SELECT `'.$orderingMap.'`,`'.$this->pkey.'` FROM '.hikashop_table($this->table) . $this->group(true);
 		$query .= ' ORDER BY `'.$orderingMap.'` ASC';
 		$db->setQuery($query);

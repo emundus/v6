@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -76,16 +76,17 @@ window.hikashop.ready(function(){ SqueezeBox.fromElement(\'hikashop_notice_box_t
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$display = trim($this->steps[$step]);
 		$layouts = explode('_',$display);
+		$obj =& $this;
 		foreach($layouts as $layout) {
 			$layout = trim($layout);
 			if(method_exists($this, $layout)) {
 				$this->$layout();
 			} else {
-				$dispatcher->trigger('onInitCheckoutStep', array($layout, &$this));
+				$app->triggerEvent('onInitCheckoutStep', array($layout, &$obj));
 			}
 		}
 		$this->assignRef('steps',$this->steps);
@@ -134,11 +135,7 @@ function hikashopCheckMethods() {
 	return true;
 }';
 
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration("\n<!--\n".$js."\n//-->\n");
 		$this->assignRef('doc', $doc);
 
@@ -213,6 +210,16 @@ function hikashopCheckMethods() {
 
 		$this->params->set('show_delete', $config->get('checkout_cart_delete', 1));
 		$this->params->set('show_cart_image', $config->get('show_cart_image'));
+
+		global $Itemid;
+		$checkout_itemid = $config->get('checkout_itemid');
+		if(!empty($checkout_itemid)) {
+			$Itemid = $checkout_itemid;
+		}
+		$this->url_itemid = '';
+		if(!empty($Itemid)) {
+			$this->url_itemid = '&Itemid='.$Itemid;
+		}
 
 		if(hikashop_level(2)) {
 			$fieldsClass = hikashop_get('class.field');

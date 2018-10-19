@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,12 +32,12 @@ class hikashopPaymentClass extends hikashopClass {
 
 	function save(&$element, $reorder = true) {
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 		if(empty($element->payment_id))
-			$dispatcher->trigger('onBeforeHikaPluginCreate', array('payment', &$element, &$do));
+			$app->triggerEvent('onBeforeHikaPluginCreate', array('payment', &$element, &$do));
 		else
-			$dispatcher->trigger('onBeforeHikaPluginUpdate', array('payment', &$element, &$do));
+			$app->triggerEvent('onBeforeHikaPluginUpdate', array('payment', &$element, &$do));
 
 		if(!$do)
 			return false;
@@ -79,13 +79,10 @@ class hikashopPaymentClass extends hikashopClass {
 			$query = 'SELECT payment_type FROM ' . hikashop_table('payment') . ' WHERE payment_id = ' . (int)$element->payment_id;
 			$db->setQuery($query);
 			$name = $db->loadResult();
-			if(!HIKASHOP_J16) {
-				$query = 'UPDATE '.hikashop_table('plugins',false).' SET published = 1 WHERE published = 0 AND element = ' . $db->Quote($name) . ' AND folder = ' . $db->Quote('hikashoppayment');
-			} else {
-				$query = 'UPDATE '.hikashop_table('extensions',false).' SET enabled = 1 WHERE enabled = 0 AND type = ' . $db->Quote('plugin') . ' AND element = ' . $db->Quote($name) . ' AND folder = ' . $db->Quote('hikashoppayment');
-			}
+
+			$query = 'UPDATE '.hikashop_table('extensions',false).' SET enabled = 1 WHERE enabled = 0 AND type = ' . $db->Quote('plugin') . ' AND element = ' . $db->Quote($name) . ' AND folder = ' . $db->Quote('hikashoppayment');
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 		return $status;
 	}
@@ -117,7 +114,7 @@ class hikashopPaymentClass extends hikashopClass {
 		}
 
 		JPluginHelper::importPlugin('hikashoppayment');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$max = 0;
 		$payment = '';
 
@@ -215,7 +212,7 @@ class hikashopPaymentClass extends hikashopClass {
 		$this->checkPaymentOptions($order);
 
 		$usable_methods = array();
-		$dispatcher->trigger('onPaymentDisplay', array(&$order, &$methods, &$usable_methods));
+		$app->triggerEvent('onPaymentDisplay', array(&$order, &$methods, &$usable_methods));
 
 		if(is_array($usable_methods) && !empty($usable_methods)) {
 			foreach($usable_methods as $k => $usable_method) {
@@ -337,8 +334,8 @@ class hikashopPaymentClass extends hikashopClass {
 
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onCheckPaymentOptions', array( &$order->paymentOptions, &$order ) );
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onCheckPaymentOptions', array( &$order->paymentOptions, &$order ) );
 
 		if(!empty($order->paymentOptions['recurring'])) {
 			if(empty($order->order_payment_params))
@@ -449,7 +446,7 @@ class hikashopPaymentClass extends hikashopClass {
 		return $ret;
 	}
 
-	public function fillListingColumns(&$rows, &$listing_columns, &$view) {
+	public function fillListingColumns(&$rows, &$listing_columns, &$view, $type = null) {
 		$listing_columns['price'] = array(
 			'name' => 'PRODUCT_PRICE',
 			'col' => 'col_display_price'
@@ -503,11 +500,13 @@ class hikashopPaymentClass extends hikashopClass {
 				$restrictions[] = JText::_('SHIPPING_SUFFIX') . ':' . $row->plugin_params->payment_zip_suffix;
 			if(!empty($row->payment_zone_namekey)) {
 				$zone = $view->zoneClass->get($row->payment_zone_namekey);
-				$restrictions[] = JText::_('ZONE') . ':' . $zone->zone_name_english;
+				if(!empty($zone))
+					$restrictions[] = JText::_('ZONE') . ':' . $zone->zone_name_english;
+				else
+					$restrictions[] = JText::_('ZONE') . ':' . 'INVALID';
 			}
 			$row->col_display_restriction = implode('<br/>', $restrictions);
-
-			unset($row);
 		}
+		unset($row);
 	}
 }

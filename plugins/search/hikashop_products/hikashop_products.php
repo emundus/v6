@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,12 +16,7 @@ class plgSearchHikashop_products extends JPlugin{
 		parent::__construct($subject, $config);
 		if(!isset($this->params)){
 			$plugin = JPluginHelper::getPlugin('search', 'hikashop_products');
-			if(version_compare(JVERSION,'2.5','<')){
-				jimport('joomla.html.parameter');
-				$this->params = new JParameter($plugin->params);
-			} else {
-				$this->params = new JRegistry(@$plugin->params);
-			}
+			$this->params = new JRegistry(@$plugin->params);
 		}
 	}
 
@@ -101,11 +96,8 @@ class plgSearchHikashop_products extends JPlugin{
 		$catFilters = array('category_published=1','category_type=\'product\'');
 		hikashop_addACLFilters($catFilters,'category_access');
 		$db->setQuery('SELECT category_id FROM '.hikashop_table('category').' WHERE '.implode(' AND ',$catFilters));
-		if(!HIKASHOP_J25){
-			$cats = $db->loadResultArray();
-		} else {
-			$cats = $db->loadColumn();
-		}
+		$cats = $db->loadColumn();
+
 		if(!empty($cats)){
 			$filters[]='b.category_id IN ('.implode(',',$cats).')';
 		}
@@ -120,11 +112,8 @@ class plgSearchHikashop_products extends JPlugin{
 
 		if($multi){
 			$registry = JFactory::getConfig();
-			if(!HIKASHOP_J25){
-				$code = $registry->getValue('config.jflang');
-			}else{
-				$code = $registry->get('language');
-			}
+			$code = $registry->get('language');
+
 			$lg = $trans->getId($code);
 			$filters2[] = "b.reference_table='hikashop_product'";
 			$filters2[] = "b.published=1";
@@ -192,7 +181,7 @@ class plgSearchHikashop_products extends JPlugin{
 		$count = 0;
 		if($multi && !empty($lg)){
 			$db->setQuery('SET SQL_BIG_SELECTS=1');
-			$db->query();
+			$db->execute();
 			$query = ' SELECT DISTINCT '.$select.' FROM '.hikashop_table($trans_table,false) . ' AS b LEFT JOIN '.hikashop_table('product').' AS a ON b.reference_id=a.product_id WHERE '.implode(' AND ',$filters2).' ORDER BY '.$order;
 			$db->setQuery($query, 0, $limit);
 			$rows = $db->loadObjectList("id");
@@ -200,7 +189,7 @@ class plgSearchHikashop_products extends JPlugin{
 			if($count){
 				$limit = $limit-$count;
 				$ids = array_keys($rows);
-				JArrayHelper::toInteger($ids);
+				hikashop_toInteger($ids);
 				$filters[]='a.product_id NOT IN ('.implode(',', $ids).')';
 			}
 		}
@@ -210,7 +199,7 @@ class plgSearchHikashop_products extends JPlugin{
 				$select.=', b.category_id as category_id';
 			}
 			$db->setQuery('SET SQL_BIG_SELECTS=1');
-			$db->query();
+			$db->execute();
 			$filters = implode(' AND ',$filters);
 			if(isset($filters1)){
 				$filters = '('.$filters.') AND ('.implode(' OR ',$filters1).')';
@@ -229,7 +218,7 @@ class plgSearchHikashop_products extends JPlugin{
 
 			if($multi && !empty($lg)){
 				$ids = array_keys($rows);
-				JArrayHelper::toInteger($ids);
+				hikashop_toInteger($ids);
 				$query = ' SELECT * FROM '.hikashop_table($trans_table,false) . ' WHERE reference_table=\'hikashop_product\' AND language_id=\''.$lg.'\' AND published=1 AND reference_id IN ('.implode(',', $ids).')';
 				$db->setQuery($query);
 				$trans = $db->loadObjectList();

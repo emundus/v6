@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,7 @@ if(!empty($this->editing_variant))
 				echo JText::_('RESTRICTIONS');
 			?></th>
 			<th style="width:60px;text-align:center">
-				<a href="#" onclick="return window.productMgr.editPrice('<?php echo $form_key ?>', 0);"><img src="<?php echo HIKASHOP_IMAGES; ?>plus.png" alt="<?php echo JText::_('ADD'); ?>"/></a>
+				<button href="#" class="hikabtn btn-primary" onclick="return window.productMgr.editPrice('<?php echo $form_key ?>', 0);" title="<?php echo JText::_('ADD'); ?>"><i class="fa fa-plus"></i></button>
 			</th>
 		</tr>
 	</thead>
@@ -99,8 +99,8 @@ if(!empty($this->editing_variant))
 			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_value]'; ?>" value="<?php if($this->config->get('floating_tax_prices',0)){ echo @$price->price_value_with_tax; }else{ echo @$price->price_value; } ?>" />
 			</td>
 			<td style="text-align:center">
-				<a href="#edit" onclick="window.productMgr.editPrice('<?php echo $form_key ?>', <?php echo $price->price_id;?>); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt="<?php echo JText::_('HIKA_EDIT'); ?>"></a>
-				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a>
+				<a href="#edit" onclick="window.productMgr.editPrice('<?php echo $form_key ?>', <?php echo $price->price_id;?>); return false;" title="<?php echo JText::_('HIKA_EDIT'); ?>"><i class="fas fa-pen"></i></a>
+				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-trash"></i></a>
 			</td>
 		</tr>
 <?php
@@ -125,7 +125,7 @@ if(!empty($this->editing_variant))
 			</td>
 			<td style="text-align:center;">
 				{EDIT_BUTTON}
-				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"/></a>
+				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-trash"></i></a>
 			</td>
 		</tr>
 	</tbody>

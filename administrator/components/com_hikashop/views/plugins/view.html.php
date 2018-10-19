@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ class PluginsViewPlugins extends hikashopView{
 	var $ctrl = 'plugins';
 	var $nameListing = 'PLUGINS';
 	var $nameForm = 'PLUGINS';
-	var $icon = 'plugin';
+	var $icon = 'puzzle-piece';
 	var $triggerView = true;
 
 	function display($tpl = null) {
@@ -42,17 +42,15 @@ class PluginsViewPlugins extends hikashopView{
 		$type = $app->getUserStateFromRequest(HIKASHOP_COMPONENT.'.plugin_type', 'plugin_type', 'shipping');
 		$this->assignRef('plugin_type',$type);
 
-		if(HIKASHOP_J16) {
-			$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'plugin\' AND enabled = 1 AND access <> 1 AND (folder=\'hikashoppayment\' OR folder=\'hikashopshipping\') ORDER BY ordering ASC';
-			$db->setQuery($query);
-			$plugins = $db->loadObjectList();
-			if(!empty($plugins)) {
-				$s = '(';
-				foreach ($plugins as $p)
-					$s .= $p->name.', ';
-				$s = rtrim($s,', ').')';
-				$app->enqueueMessage(JText::sprintf('PLUGIN_ACCESS_WARNING',$s),'warning');
-			}
+		$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'plugin\' AND enabled = 1 AND access <> 1 AND (folder=\'hikashoppayment\' OR folder=\'hikashopshipping\') ORDER BY ordering ASC';
+		$db->setQuery($query);
+		$plugins = $db->loadObjectList();
+		if(!empty($plugins)) {
+			$s = '(';
+			foreach ($plugins as $p)
+				$s .= $p->name.', ';
+			$s = rtrim($s,', ').')';
+			$app->enqueueMessage(JText::sprintf('PLUGIN_ACCESS_WARNING',$s),'warning');
 		}
 
 		if(!in_array($type, array('shipping', 'payment', 'plugin'))) {
@@ -60,6 +58,14 @@ class PluginsViewPlugins extends hikashopView{
 			return false;
 		}
 
+		if($type == 'payment') {
+			$this->icon  = 'hand-holding-usd fa-money';
+			$this->nameListing = 'PAYMENT_METHODS';
+		}
+		if($type == 'shipping') {
+			$this->icon  = 'shipping-fast fa-truck';
+			$this->nameListing = 'SHIPPING_METHODS';
+		}
 		hikashop_setTitle(JText::_($this->nameListing), $this->icon, $this->ctrl.'&plugin_type='.$type);
 
 		$cfg = array(
@@ -73,9 +79,18 @@ class PluginsViewPlugins extends hikashopView{
 			'plugin.'.$type.'_id'
 		);
 
-		$pageInfo = $this->getPageInfo($cfg['order_sql_value']);
+		$pageInfo = $this->getPageInfo($cfg['order_sql_value'], 'asc',array('plugin' => '', 'published' => 0));
 
 		$filters = array();
+		$joins = '';
+
+		if(!empty($pageInfo->filter->plugin)) {
+			$filters[] = 'extensions.element = '.$db->Quote($pageInfo->filter->plugin);
+			$joins.= 'LEFT JOIN ' . hikashop_table('extensions',false) . ' AS extensions ON extensions.element = plugin.'.$type.'_type AND extensions.type=\'plugin\' AND extensions.folder = '.$db->Quote('hikashop'.$type).'';
+		}
+		if(!empty($pageInfo->filter->published))
+			$filters[] = 'plugin.'.$type.'_published = '.(int)($pageInfo->filter->published-1);
+
 		$order = '';
 
 		$this->processFilters($filters, $order, $searchMap);
@@ -83,10 +98,11 @@ class PluginsViewPlugins extends hikashopView{
 		JPluginHelper::importPlugin('hikashop');
 		if(in_array($type, array('shipping', 'payment')))
 			JPluginHelper::importPlugin('hikashop'.$type);
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeHikaPluginConfigurationListing', array($type, &$filters, &$order, &$searchMap, &$extrafilters, &$this));
+		$app = JFactory::getApplication();
+		$obj =& $this;
+		$app->triggerEvent('onBeforeHikaPluginConfigurationListing', array($type, &$filters, &$order, &$searchMap, &$extrafilters, &$obj));
 
-		$query = 'FROM '.hikashop_table($cfg['table']).' AS plugin '.$filters.$order;
+		$query = 'FROM '.hikashop_table($cfg['table']).' AS plugin '.$joins.$filters.$order;
 
 		$this->getPageInfoTotal($query, '*');
 
@@ -116,20 +132,22 @@ class PluginsViewPlugins extends hikashopView{
 		if(!empty($pluginInterfaceClass) && method_exists($pluginInterfaceClass, 'fillListingColumns'))
 			$pluginInterfaceClass->fillListingColumns($rows, $listing_columns, $this);
 
-		$dispatcher->trigger('onAfterHikaPluginConfigurationListing', array($type, &$rows, &$listing_columns, &$this));
+		$app->triggerEvent('onAfterHikaPluginConfigurationListing', array($type, &$rows, &$listing_columns, &$obj));
 
 		$this->assignRef('listing_columns', $listing_columns);
 
 		$this->getPagination();
 		$this->getOrdering('plugin.'.$type.'_ordering', true);
 
-		if(!HIKASHOP_J16) {
-			$db->setQuery('SELECT id, published, name, element FROM '.hikashop_table('plugins',false).' WHERE `folder` = '.$db->Quote('hikashop'.$type));
-		} else {
-			$db->setQuery('SELECT extension_id as id, enabled as published, name, element FROM '.hikashop_table('extensions',false).' WHERE `folder` = '.$db->Quote('hikashop'.$type).' AND type=\'plugin\'');
-		}
+		$db->setQuery('SELECT extension_id as id, enabled as published, name, element FROM '.hikashop_table('extensions',false).' WHERE `folder` = '.$db->Quote('hikashop'.$type).' AND type=\'plugin\'');
 		$plugins = $db->loadObjectList('element');
 		$this->assignRef('plugins', $plugins);
+		$this->pluginValues = array();
+		$this->pluginValues[] = JHTML::_('select.option', '', JText::_('ALL_PLUGINS'));
+		foreach($plugins as $plugin) {
+			$this->pluginValues[] = JHTML::_('select.option', $plugin->element, $plugin->name);
+		}
+		$this->pulbishedType = hikashop_get('type.published');
 
 		$this->toolbar = array(
 			'|',
@@ -165,19 +183,16 @@ class PluginsViewPlugins extends hikashopView{
 			$group = 'hikashop';
 		else
 			$group = 'hikashop' . $type;
-		if(!HIKASHOP_J16) {
-			$db->setQuery('SELECT * FROM '.hikashop_table('plugins',false).' WHERE `folder` = '.$db->Quote($group).' ORDER BY published DESC, name ASC, ordering ASC');
-		} else {
-			$db->setQuery('SELECT extension_id as id, enabled as published,name,element FROM '.hikashop_table('extensions',false).' WHERE `folder` = '.$db->Quote($group).' AND type=\'plugin\' ORDER BY enabled DESC, name ASC, ordering ASC');
-		}
+		$db->setQuery('SELECT extension_id as id, enabled as published,name,element FROM '.hikashop_table('extensions',false).' WHERE `folder` = '.$db->Quote($group).' AND type=\'plugin\' ORDER BY enabled DESC, name ASC, ordering ASC');
 		$plugins = $db->loadObjectList();
 
 		if($type == 'plugin')
 			JPluginHelper::importPlugin('hikashop');
 		else
 			JPluginHelper::importPlugin('hikashop'.$type);
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onAfterHikaPluginConfigurationSelectionListing', array($type, &$plugins, &$this));
+		$app = JFactory::getApplication();
+		$obj =& $this;
+		$app->triggerEvent('onAfterHikaPluginConfigurationSelectionListing', array($type, &$plugins, &$obj));
 
 		$query = 'SELECT * FROM '.hikashop_table($type);
 		$db->setQuery($query);
@@ -249,15 +264,10 @@ class PluginsViewPlugins extends hikashopView{
 				$plugin = hikashop_import('hikashop', $this->plugin_name);
 
 				if(!is_subclass_of($plugin, 'hikashopPlugin')) {
-					if(!HIKASHOP_J16) {
-						$url = 'index.php?option=com_plugins&view=plugin&client=site&task=edit&cid[]=';
-						$db->setQuery("SELECT id FROM `#__plugins` WHERE `folder` = 'hikashop' and element=".$db->Quote($this->plugin_name));
-						$plugin_id = $db->loadResult();
-					}else{
-						$url = 'index.php?option=com_plugins&task=plugin.edit&extension_id=';
-						$db->setQuery("SELECT extension_id as id FROM `#__extensions` WHERE `folder` = 'hikashop' AND `type`='plugin' AND element=".$db->Quote($this->plugin_name));
-						$plugin_id = $db->loadResult();
-					}
+					$url = 'index.php?option=com_plugins&task=plugin.edit&extension_id=';
+					$db->setQuery("SELECT extension_id as id FROM `#__extensions` WHERE `folder` = 'hikashop' AND `type`='plugin' AND element=".$db->Quote($this->plugin_name));
+					$plugin_id = $db->loadResult();
+
 					$app->redirect($url.$plugin_id);
 				}
 			} else
@@ -287,8 +297,8 @@ class PluginsViewPlugins extends hikashopView{
 			$filters = array();
 
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onHikaPluginListing', array($type, &$querySelect, &$queryFrom, &$queryWhere, &$filters));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onHikaPluginListing', array($type, &$querySelect, &$queryFrom, &$queryWhere, &$filters));
 
 			if(!empty($querySelect)) $querySelect = ', ' . implode(',', $querySelect);
 			else $querySelect = '';
@@ -364,8 +374,8 @@ class PluginsViewPlugins extends hikashopView{
 			$extra_blocks = array();
 
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onHikaPluginConfiguration', array($type, &$plugin, &$this->element, &$extra_config, &$extra_blocks));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onHikaPluginConfiguration', array($type, &$plugin, &$this->element, &$extra_config, &$extra_blocks));
 
 			$this->assignRef('extra_config', $extra_config);
 			$this->assignRef('extra_blocks', $extra_blocks);
@@ -386,8 +396,7 @@ class PluginsViewPlugins extends hikashopView{
 			$this->toolbar = $this->data['toolbar'];
 		} else {
 			$this->toolbar = array(
-				'save',
-				'apply',
+				array('name' => 'group', 'buttons' => array( 'apply', 'save')),
 				'cancel',
 				'|'
 			);
@@ -484,6 +493,7 @@ class PluginsViewPlugins extends hikashopView{
 		$editor->name = $type.'_description';
 		$name = $editor->name;
 		$editor->content = @$element->$name;
+		$editor->height = 150;
 
 		$this->assignRef('transHelper', $transHelper);
 		$this->assignRef('tabs', $tabs);
@@ -657,7 +667,7 @@ class PluginsViewPlugins extends hikashopView{
 						foreach($value[2] as $listKey => $listData){
 							$values[] = JHTML::_('select.option', $listKey, JText::_($listData));
 						}
-						$html .= JHTML::_('hikaselect.radiolist', $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="inputbox" size="1"', 'value', 'text', @$this->element->$paramsType->$key);
+						$html .= JHTML::_('hikaselect.radiolist', $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="custom-select" size="1"', 'value', 'text', @$this->element->$paramsType->$key);
 						break;
 
 					case 'list':
@@ -665,7 +675,7 @@ class PluginsViewPlugins extends hikashopView{
 						foreach($value[2] as $listKey => $listData){
 							$values[] = JHTML::_('select.option', $listKey,JText::_($listData));
 						}
-						$html .= JHTML::_('select.genericlist', $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="inputbox" size="1"', 'value', 'text', @$this->element->$paramsType->$key);
+						$html .= JHTML::_('select.genericlist', $values, 'data['.$type.']['.$paramsType.']['.$key.']' , 'class="custom-select" size="1"', 'value', 'text', @$this->element->$paramsType->$key);
 						break;
 
 					case 'orderstatus':
@@ -700,11 +710,7 @@ class PluginsViewPlugins extends hikashopView{
 		$path = JPATH_THEMES.DS.$app->getTemplate().DS.'hikashop'.$type.DS.$name;
 
 		if(!file_exists($path)) {
-			if(!HIKASHOP_J16) {
-				$path = JPATH_PLUGINS.DS.'hikashop'.$type.DS.$name;
-			} else {
-				$path = JPATH_PLUGINS.DS.'hikashop'.$type.DS.$this->name.DS.$name;
-			}
+			$path = JPATH_PLUGINS.DS.'hikashop'.$type.DS.$this->name.DS.$name;
 			if(!file_exists($path)) {
 				return '';
 			}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,39 +15,18 @@ class hikashopJoomla_aclType {
 	protected function load() {
 		$this->groups = array();
 		$db = JFactory::getDBO();
-		if(version_compare(JVERSION,'1.6.0','<')) {
-
-			$db->setQuery('SELECT a.* FROM `#__core_acl_aro_groups` AS a WHERE a.value = \'USERS\'');
-			$userRoot = $db->loadObject();
-
-			$db->setQuery('SELECT a.* FROM `#__core_acl_aro_groups` AS a WHERE a.lft > ' . (int)$userRoot->lft . ' AND a.lft < ' . (int)$userRoot->rgt . ' ORDER BY a.lft ASC');
-			$groups = $db->loadObjectList('id');
-			foreach($groups as &$group){
-				if(isset($groups[$group->parent_id])){
-					$group->level = intval(@$groups[$group->parent_id]->level) + 1;
-				} else {
-					$group->level = 0;
-				}
-				$group->text = JText::_( $group->name );
+		$db->setQuery('SELECT a.*, a.title as text, a.id as value FROM `#__usergroups` AS a ORDER BY a.lft ASC');
+		$groups = $db->loadObjectList('id');
+		foreach($groups as &$group){
+			if(isset($groups[$group->parent_id])){
+				$group->level = intval(@$groups[$group->parent_id]->level) + 1;
+			} else {
+				$group->level = 0;
 			}
-			unset($group);
-			foreach($groups as &$group) {
-				$this->groups[] = $group;
-			}
-		} else {
-			$db->setQuery('SELECT a.*, a.title as text, a.id as value FROM `#__usergroups` AS a ORDER BY a.lft ASC');
-			$groups = $db->loadObjectList('id');
-			foreach($groups as &$group){
-				if(isset($groups[$group->parent_id])){
-					$group->level = intval(@$groups[$group->parent_id]->level) + 1;
-				} else {
-					$group->level = 0;
-				}
-			}
-			unset($group);
-			foreach($groups as &$group) {
-				$this->groups[] = $group;
-			}
+		}
+		unset($group);
+		foreach($groups as &$group) {
+			$this->groups[] = $group;
 		}
 	}
 
@@ -71,7 +50,7 @@ class hikashopJoomla_aclType {
 		$ret = '<div id="'.$id.'_otree" class="oTree"></div><input type="hidden" value="'.$values.'" name="'.$map.'" id="'.$id.'"/>
 <script type="text/javascript">
 var data_'.$id.' = ' . $this->getData($values, $allBtn, $min) . ';
-'.$id.' = new window.oTree("'.$id.'",{rootImg:"'.HIKASHOP_IMAGES.'otree/", showLoading:false, useSelection:false, checkbox:true},null,data_'.$id.',true);
+'.$id.' = new window.oTree("'.$id.'",{rootImg:"'.HIKASHOP_IMAGES.'", showLoading:false, useSelection:false, checkbox:true},null,data_'.$id.',true);
 '.$id.'.callbackCheck = function(treeObj, id, value) {
 	var node = treeObj.get(id), d = document, e = d.getElementById("'.$id.'");
 	if(node.state == 5) {
@@ -223,27 +202,60 @@ window.aclMgr.updateJoomlaAcl = function(el,id,tree_id) {
 		$values = array(
 			JHTML::_('select.option', '', JText::_($empty))
 		);
-		foreach($this->groups as $group) {
-			$name = str_repeat('- ', $group->level) . $group->text;
-			$values[] = JHTML::_('select.option', $group->value, $name);
-		}
-		$class = hikashop_get('class.field');
-		$userFields = $class->getData('all','user');
-		if($userFields){
-			$values[] = JHTML::_('select.optgroup','-- '.JText::sprintf('CUSTOM_FIELDS_X',JText::_('HIKA_USER')).' --');
-			foreach($userFields as $field){
-				$values[] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+
+		$fieldClass = hikashop_get('class.field');
+		$userFields = $fieldClass->getData('all','user');
+		$addressFields = $fieldClass->getData('all','address');
+
+		if(!HIKASHOP_J40) {
+			foreach($this->groups as $group) {
+				$name = str_repeat('- ', $group->level) . $group->text;
+				$values[] = JHTML::_('select.option', $group->value, $name);
 			}
-		}
-		$addressFields = $class->getData('all','address');
-		if($addressFields){
-			$values[] = JHTML::_('select.optgroup','-- '.JText::sprintf('CUSTOM_FIELDS_X',JText::_('ADDRESS')).' --');
-			foreach($addressFields as $field){
-				$values[] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+			if($userFields){
+				$values[] = JHTML::_('select.optgroup','-- '.JText::sprintf('CUSTOM_FIELDS_X',JText::_('HIKA_USER')).' --');
+				foreach($userFields as $field){
+					$values[] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+				}
 			}
+			if($addressFields) {
+				$values[] = JHTML::_('select.optgroup','-- '.JText::sprintf('CUSTOM_FIELDS_X',JText::_('ADDRESS')).' --');
+				foreach($addressFields as $field){
+					$values[] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+				}
+			}
+
+			return JHTML::_('select.genericlist', $values, $map, 'class="custom-select" size="1"', 'value', 'text', $value);
 		}
 
-		return JHTML::_('select.genericlist', $values, $map, 'class="inputbox" size="1"', 'value', 'text', $value);
+		$groups = array(
+			'' => array('items' => array(
+				JHTML::_('select.option', '', JText::_($empty))
+			))
+		);
+		foreach($this->groups as $group) {
+			$name = str_repeat('- ', $group->level) . $group->text;
+			$groups['']['items'][] = JHTML::_('select.option', $group->value, $name);
+		}
+		if($userFields) {
+			$groups['user_field'] = array(
+				'text' => JText::sprintf('CUSTOM_FIELDS_X',JText::_('HIKA_USER')),
+				'items' => array()
+			);
+			foreach($userFields as $field){
+				$groups['user_field']['items'][] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+			}
+		}
+		if($addressFields) {
+			$groups['adddress_field'] = array(
+				'text' => JText::sprintf('CUSTOM_FIELDS_X',JText::_('ADDRESS')),
+				'items' => array()
+			);
+			foreach($addressFields as $field){
+				$groups['adddress_field']['items'][] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+			}
+		}
+		return JHtml::_('select.groupedlist', $groups, $map, array('list.attr'=>'class="custom-select"', 'group.id' => 'id', 'list.select' => array($value)));
 	}
 
 	public function getChildrenList() {

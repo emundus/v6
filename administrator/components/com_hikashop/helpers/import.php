@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -80,7 +80,7 @@ class hikashopImportHelper
 		$this->all_fields = array_merge($this->fields,array('product_name','product_published','product_code','product_created','product_modified','product_sale_start','product_sale_end','product_type','product_quantity'));
 		$this->db = JFactory::getDBO();
 
-		if(version_compare(JVERSION,'3.0','<')) {
+		if(!HIKASHOP_J30) {
 			$columnsProductTable = $this->db->getTableFields(hikashop_table('product'));
 			$this->columnsProductTable = array_keys($columnsProductTable[hikashop_table('product')]);
 		} else {
@@ -172,7 +172,7 @@ class hikashopImportHelper
 					$products = array($newProduct);
 					if(!empty($this->template->variants)){
 						foreach($this->template->variants as $variant){
-							$copy = (!HIKASHOP_PHP5) ? $variant : clone($variant);
+							$copy = clone($variant);
 							unset($copy->product_id);
 							$copy->product_parent_id = $newProduct->product_code;
 							$copy->product_code = $newProduct->product_code.'_'.$copy->product_code;
@@ -217,7 +217,7 @@ class hikashopImportHelper
 			$products = array($newProduct);
 			if(!empty($this->template->variants)){
 				foreach($this->template->variants as $variant){
-					$copy = (!HIKASHOP_PHP5) ? $variant : clone($variant);
+					$copy = clone($variant);
 					$copy->product_parent_id = $newProduct->product_code;
 					$copy->product_code = str_replace($this->template->product_code,$newProduct->product_code,$copy->product_code);
 					unset($copy->product_id);
@@ -225,16 +225,16 @@ class hikashopImportHelper
 				}
 			}
 			JPluginHelper::importPlugin( 'hikashop' );
-			$dispatcher = JDispatcher::getInstance();
+			$app = JFactory::getApplication();
 			$do = true;
-			$dispatcher->trigger( 'onBeforeProductCopy', array( & $this->template, & $products[0], & $do) );
+			$app->triggerEvent( 'onBeforeProductCopy', array( & $this->template, & $products[0], & $do) );
 			if(!$do){
 				return false;
 			}
 
 			$this->_insertProducts($products);
 
-			$dispatcher->trigger( 'onAfterProductCopy', array( & $this->template, & $products[0]) );
+			$app->triggerEvent( 'onAfterProductCopy', array( & $this->template, & $products[0]) );
 		}
 		return true;
 	}
@@ -371,11 +371,7 @@ class hikashopImportHelper
 	function _deleteUnecessaryVariants(){
 		if(!empty($this->products_already_in_db)){
 			$this->db->setQuery('SELECT product_id FROM '.hikashop_table('product').' WHERE product_parent_id IN ('.implode(',',$this->products_already_in_db).') AND product_id NOT IN ('.implode(',',$this->new_variants_in_db).') AND product_type=\'variant\'');
-			if(!HIKASHOP_J25){
-				$variants_to_be_deleted = $this->db->loadResultArray();
-			} else {
-				$variants_to_be_deleted = $this->db->loadColumn();
-			}
+			$variants_to_be_deleted = $this->db->loadColumn();
 			if(!empty($variants_to_be_deleted)){
 				$productClass = hikashop_get('class.product');
 				$productClass->delete($variants_to_be_deleted);
@@ -767,7 +763,7 @@ class hikashopImportHelper
 			$this->_getFilesExtraData($product->images, $product,'images');
 		}
 
-		if(empty($product->product_name)){
+		if(empty($product->product_name) && $product->product_type != 'variant'){
 			if(!empty($product->files)){
 				if(!is_array($product->files)){
 					$this->_separate($product->files);
@@ -982,7 +978,7 @@ class hikashopImportHelper
 			}
 		}
 
-		if(empty($product->product_name)&&!empty($this->template->product_name)){
+		if(empty($product->product_name) && !empty($this->template->product_name) && $product->product_type != 'variant'){
 			$product->product_name = $this->template->product_name;
 		}
 
@@ -1046,7 +1042,7 @@ class hikashopImportHelper
 		if($product->product_type=='main' && $main && !isset($product->product_parent_id)){
 			if(!empty($this->template->variants)){
 				foreach($this->template->variants as $variant){
-					$copy = (!HIKASHOP_PHP5) ? $variant : clone($variant);
+					$copy = clone($variant);
 					unset($copy->product_id);
 					$copy->product_parent_id = $product->product_code;
 					$copy->product_code = $product->product_code.'_'.$copy->product_code;
@@ -1137,7 +1133,7 @@ class hikashopImportHelper
 			$db = JFactory::getDBO();
 			$base = substr($img,0,strrpos($img,'.'));
 			$db->setQuery('INSERT IGNORE INTO '.hikashop_table('file').' (`file_name`,`file_description`,`file_path`,`file_type`,`file_ref_id`) VALUES ('.$db->Quote($base).',\'\','.$db->Quote($img).',\'category\','.(int)$new_id.');');
-			$db->query();
+			$db->execute();
 		}
 		return $new_id;
 	}
@@ -1178,9 +1174,9 @@ class hikashopImportHelper
 		if($data[$namekey] && !empty($image)){
 			$base = substr($image,0,strrpos($image,'.'));
 			$this->db->setQuery('DELETE FROM '.hikashop_table('file').' WHERE file_type = \'category\' AND file_ref_id='.(int)$data[$namekey].';');
-			$this->db->query();
+			$this->db->execute();
 			$this->db->setQuery('INSERT IGNORE INTO '.hikashop_table('file').' (`file_name`,`file_description`,`file_path`,`file_type`,`file_ref_id`) VALUES ('.$this->db->Quote($base).',\'\','.$this->db->Quote($image).',\'category\','.(int)$data[$namekey].');');
-			$this->db->query();
+			$this->db->execute();
 		}
 		return $data[$namekey];
 	}
@@ -1210,11 +1206,7 @@ class hikashopImportHelper
 	function _getAccess($access){
 		static $data=array();
 		if(!isset($data[$access])){
-			if(version_compare(JVERSION,'1.6','<')){
-				$query = 'SELECT id FROM '.hikashop_table('core_acl_aro_groups',false).' WHERE name='.$this->db->Quote($access);
-			}else{
-				$query = 'SELECT id FROM '.hikashop_table('usergroups',false).' WHERE title='.$this->db->Quote($access);
-			}
+			$query = 'SELECT id FROM '.hikashop_table('usergroups',false).' WHERE title='.$this->db->Quote($access);
 			$this->db->setQuery($query);
 			$data[$access] = (int)$this->db->loadResult();
 		}
@@ -1249,7 +1241,7 @@ class hikashopImportHelper
 						$totalValid++;
 						if( $totalValid%$this->perBatch == 0){
 							$this->db->setQuery($insert.implode('),(',$values).')');
-							$this->db->query();
+							$this->db->execute();
 							$totalValid=0;
 							$values=array();
 						}
@@ -1265,11 +1257,11 @@ class hikashopImportHelper
 					if( $totalValid%$this->perBatch == 0){
 						if(!empty($ids)){
 							$this->db->setQuery('DELETE FROM '.hikashop_table('price').' WHERE price_product_id IN ('.implode(',',$ids).')');
-							$this->db->query();
+							$this->db->execute();
 							$ids=array();
 						}
 						$this->db->setQuery($insert.implode('),(',$values).')');
-						$this->db->query();
+						$this->db->execute();
 						$totalValid=0;
 						$values=array();
 					}
@@ -1279,10 +1271,10 @@ class hikashopImportHelper
 		if(!empty($values)){
 			if(!empty($ids)){
 				$this->db->setQuery('DELETE FROM '.hikashop_table('price').' WHERE price_product_id IN ('.implode(',',$ids).')');
-				$this->db->query();
+				$this->db->execute();
 			}
 			$this->db->setQuery($insert.implode('),(',$values).')');
-			$this->db->query();
+			$this->db->execute();
 		}
 	}
 
@@ -1312,7 +1304,7 @@ class hikashopImportHelper
 							$totalValid++;
 							if( $totalValid%$this->perBatch == 0){
 								$this->db->setQuery($insert.implode('),(',$values).')');
-								$this->db->query();
+								$this->db->execute();
 								$totalValid=0;
 								$values=array();
 							}
@@ -1330,11 +1322,11 @@ class hikashopImportHelper
 					if( $totalValid%$this->perBatch == 0){
 						if(!empty($ids)){
 							$this->db->setQuery('DELETE FROM '.hikashop_table('product_category').' WHERE product_id IN ('.implode(',',$ids).')');
-							$this->db->query();
+							$this->db->execute();
 							$ids=array();
 						}
 						$this->db->setQuery($insert.implode('),(',$values).')');
-						$this->db->query();
+						$this->db->execute();
 						$totalValid=0;
 						$values=array();
 					}
@@ -1344,10 +1336,10 @@ class hikashopImportHelper
 		if(!empty($values)){
 			if(!empty($ids)){
 				$this->db->setQuery('DELETE FROM '.hikashop_table('product_category').' WHERE product_id IN ('.implode(',',$ids).')');
-				$this->db->query();
+				$this->db->execute();
 			}
 			$this->db->setQuery($insert.implode('),(',$values).')');
-			$this->db->query();
+			$this->db->execute();
 		}
 	}
 
@@ -1374,7 +1366,7 @@ class hikashopImportHelper
 						$totalValid++;
 						if( $totalValid && $totalValid%$this->perBatch == 0){
 							$this->db->setQuery($insert.implode('),(',$values).')');
-							$this->db->query();
+							$this->db->execute();
 							$totalValid=0;
 							$values=array();
 						}
@@ -1398,12 +1390,12 @@ class hikashopImportHelper
 					if( $totalValid && $totalValid%$this->perBatch == 0){
 						if(!empty($ids)){
 							$this->db->setQuery('DELETE FROM '.hikashop_table('product_related').' WHERE product_id IN ('.implode(',',$ids).') AND product_related_type='.$this->db->Quote($type));
-							$this->db->query();
+							$this->db->execute();
 							$ids=array();
 						}
 						if(!empty($id)){
 							$this->db->setQuery($insert.implode('),(',$values).')');
-							$this->db->query();
+							$this->db->execute();
 						}
 						$totalValid=0;
 						$values=array();
@@ -1414,11 +1406,11 @@ class hikashopImportHelper
 		}
 		if(!empty($ids)){
 			$this->db->setQuery('DELETE FROM '.hikashop_table('product_related').' WHERE product_id IN ('.implode(',',$ids).') AND product_related_type='.$this->db->Quote($type));
-			$this->db->query();
+			$this->db->execute();
 		}
 		if(count($values)){
 			$this->db->setQuery($insert.implode('),(',$values).')');
-			$this->db->query();
+			$this->db->execute();
 		}
 	}
 
@@ -1445,12 +1437,12 @@ class hikashopImportHelper
 						if(!empty($ids)){
 							if(!$this->keep_other_variants) {
 								$this->db->setQuery('DELETE FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
-								$this->db->query();
+								$this->db->execute();
 							}
 							$ids=array();
 						}
 						$this->db->setQuery($insert.implode('),(',$values).')');
-						$this->db->query();
+						$this->db->execute();
 						$totalValid=0;
 						$values=array();
 					}
@@ -1460,10 +1452,10 @@ class hikashopImportHelper
 		if(!empty($values)){
 			if(!empty($ids) && !$this->keep_other_variants){
 				$this->db->setQuery('DELETE FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
-				$this->db->query();
+				$this->db->execute();
 			}
 			$this->db->setQuery($insert.implode('),(',$values).')');
-			$this->db->query();
+			$this->db->execute();
 		}
 	}
 
@@ -1527,11 +1519,11 @@ class hikashopImportHelper
 					if( $totalValid%$this->perBatch == 0){
 						if(!empty($ids)){
 							$this->db->setQuery('DELETE FROM '.hikashop_table($trans_table,false).' WHERE (' . implode(') OR (', $ids) . ')');
-							$this->db->query();
+							$this->db->execute();
 							$ids=array();
 						}
 						$this->db->setQuery($insert.implode('),(',$values).')');
-						$this->db->query();
+						$this->db->execute();
 						$totalValid=0;
 						$values=array();
 					}
@@ -1540,10 +1532,10 @@ class hikashopImportHelper
 			if(!empty($values)){
 				if(!empty($ids)){
 					$this->db->setQuery('DELETE FROM '.hikashop_table($trans_table,false).' WHERE (' . implode(') OR (', $ids) . ')');
-					$this->db->query();
+					$this->db->execute();
 				}
 				$this->db->setQuery($insert.implode('),(',$values).')');
-				$this->db->query();
+				$this->db->execute();
 			}
 		}
 	}
@@ -1578,7 +1570,7 @@ class hikashopImportHelper
 						$totalValid++;
 						if($totalValid%$this->perBatch == 0) {
 							$this->db->setQuery($insert . implode('),(', $values).')');
-							$this->db->query();
+							$this->db->execute();
 							$totalValid = 0;
 							$values = array();
 						}
@@ -1599,11 +1591,11 @@ class hikashopImportHelper
 					if( $totalValid%$this->perBatch == 0){
 						if(!empty($ids)){
 							$this->db->setQuery('DELETE FROM '.hikashop_table('file').' WHERE file_ref_id IN ('.implode(',',$ids).') AND file_type=\''.$db_type.'\'');
-							$this->db->query();
+							$this->db->execute();
 							$ids = array();
 						}
 						$this->db->setQuery($insert.implode('),(',$values).')');
-						$this->db->query();
+						$this->db->execute();
 						$totalValid=0;
 						$values=array();
 					}
@@ -1614,10 +1606,10 @@ class hikashopImportHelper
 		if(!empty($values)){
 			if(!empty($ids)){
 				$this->db->setQuery('DELETE FROM '.hikashop_table('file').' WHERE file_ref_id IN ('.implode(',',$ids).') AND file_type=\''.$db_type.'\'');
-				$this->db->query();
+				$this->db->execute();
 			}
 			$this->db->setQuery($insert.implode('),(',$values).')');
-			$this->db->query();
+			$this->db->execute();
 		}
 	}
 
@@ -1904,7 +1896,7 @@ class hikashopImportHelper
 					$totalValid++;
 					if( $totalValid%$this->perBatch == 0){
 						$this->db->setQuery($insert.implode('),(',$lines).')');
-						$this->db->query();
+						$this->db->execute();
 						if($type=='main' || $this->countVariant){
 							$this->totalInserted += count($lines);
 						}
@@ -1914,7 +1906,7 @@ class hikashopImportHelper
 				}
 				if(!empty($lines)){
 					$this->db->setQuery($insert.implode('),(',$lines).')');
-					$this->db->query();
+					$this->db->execute();
 					if($type=='main' || $this->countVariant){
 						$this->totalInserted += count($lines);
 					}
@@ -2003,7 +1995,7 @@ class hikashopImportHelper
 
 		$sql =  "UPDATE `#__hikashop_config` SET config_value=1 WHERE config_namekey = '".$this->importName."_import_state';";
 		$this->db->setQuery($sql);
-		$this->db->query();
+		$this->db->execute();
 		$this->refreshPage = true;
 		echo '<p>The import will restart and import new elements...</p>';
 

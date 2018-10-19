@@ -114,11 +114,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		$url = $this->getParam('url');
 		$sef_url = $this->getParam('sef_url', false);
+		$email_tmpl = $this->getParam('email_tmpl', 'referent_letter');
 
 		// Récupération des données du mail
 		$query = 'SELECT id, subject, emailfrom, name, message
                 FROM #__emundus_setup_emails
-                WHERE lbl="referent_letter"';
+                WHERE lbl="'.$email_tmpl.'"';
 		$db->setQuery($query);
 		$db->execute();
 		$obj = $db->loadObjectList();

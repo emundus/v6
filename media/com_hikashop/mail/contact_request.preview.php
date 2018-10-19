@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,10 +21,10 @@ class contact_requestPreviewMaker {
 			$element->$column = strip_tags($value);
 		}
 		$config =& hikashop_config();
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		JPluginHelper::importPlugin('hikashop');
 		$send = (int)$config->get('product_contact', 0);
-		$dispatcher->trigger('onBeforeSendContactRequest', array(&$element, &$send));
+		$app->triggerEvent('onBeforeSendContactRequest', array(&$element, &$send));
 
 		$subject = JText::_('CONTACT_REQUEST');
 		if(!empty($element->product_id)) {

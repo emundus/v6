@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,12 +17,7 @@ class plgHikashopCartnotify extends JPlugin
 			return;
 
 		$plugin = JPluginHelper::getPlugin('hikashop', 'cartnotify');
-		if(!HIKASHOP_J25) {
-			jimport('joomla.html.parameter');
-			$this->params = new JParameter(@$plugin->params);
-		} else {
-			$this->params = new JRegistry(@$plugin->params);
-		}
+		$this->params = new JRegistry(@$plugin->params);
 	}
 
 	public function onBeforeCompileHead() {
@@ -42,18 +37,8 @@ class plgHikashopCartnotify extends JPlugin
 		$doc = JFactory::getDocument();
 		$base = ($app->isAdmin()) ? '..' : JURI::base(true);
 
-		if(HIKASHOP_J30)
-			JHtml::_('jquery.framework');
-		else
-			hikashop_loadJslib('jquery');
-
-		if(HIKASHOP_J25) {
-			$doc->addScript($base.'/plugins/hikashop/cartnotify/media/notify.min.js');
-			$doc->addStyleSheet($base.'/plugins/hikashop/cartnotify/media/notify-metro.css');
-		} else {
-			$doc->addScript($base.'/plugins/hikashop/media/notify.min.js');
-			$doc->addStyleSheet($base.'/plugins/hikashop/media/notify-metro.css');
-		}
+		hikashop_loadJslib('notify');
+		$doc->addScript($base.'/plugins/hikashop/cartnotify/media/notify.js');
 
 		$reference = $this->params->get('notification_reference', 'global');
 
@@ -76,11 +61,19 @@ class plgHikashopCartnotify extends JPlugin
 			$params['autoHide'] = false;
 		}
 
+		$url = '';
+		if($this->params->get('auto_redirect', 'no_redirect') == 'on_success') {
+			$menusClass = hikashop_get('class.menus');
+			$url = $menusClass->getCheckoutURL();
+		}
+
 		$js = '
 jQuery.notify.defaults('.json_encode($params).');
 window.cartNotifyParams = '.json_encode(array(
 		'reference' => $reference,
 		'img_url' => HIKASHOP_IMAGES.'icons/icon-32-newproduct.png',
+		'redirect_url' => $url,
+		'redirect_delay' => $this->params->get('auto_redirect_delay', 4000),
 		'title' => JText::_('PRODUCT_ADDED_TO_CART'),
 		'text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_CART'),
 		'wishlist_title' => JText::_('PRODUCT_ADDED_TO_WISHLIST'),
@@ -105,13 +98,8 @@ window.cartNotifyParams = '.json_encode(array(
 		$doc = JFactory::getDocument();
 
 		$base = ($app->isAdmin()) ? '..' : JURI::base(true);
-		if(HIKASHOP_J25) {
-			$doc->addScript($base.'/plugins/hikashop/cartnotify/media/notify-vex.js');
-			$doc->addStyleSheet($base.'/plugins/hikashop/cartnotify/media/notify-metro.css');
-		} else {
-			$doc->addScript($base.'/plugins/hikashop/media/notify-vex.js');
-			$doc->addStyleSheet($base.'/plugins/hikashop/media/notify-metro.css');
-		}
+		$doc->addScript($base.'/plugins/hikashop/cartnotify/media/notify-vex.js');
+		$doc->addStyleSheet($base.'/media/com_hikashop/css/notify-metro.css');
 
 		$menusClass = hikashop_get('class.menus');
 		$url_checkout = $menusClass->getCheckoutURL(true);
