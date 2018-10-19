@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ class ZoneViewZone extends hikashopView
 	var $ctrl= 'zone';
 	var $nameListing = 'ZONES';
 	var $nameForm = 'ZONES';
-	var $icon = 'langmanager';
+	var $icon = 'map-marker-alt';
 
 	function display($tpl = null)
 	{
@@ -42,7 +42,7 @@ class ZoneViewZone extends hikashopView
 			$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart', 0, 'int' );
 		}
 		$pageInfo->search = $app->getUserStateFromRequest( $this->paramBase.".search", 'search', '', 'string' );
-		$pageInfo->search = JString::strtolower(trim($pageInfo->search));
+		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
 		if(empty($pageInfo->limit->value)) $pageInfo->limit->value = 500;
 		$database	= JFactory::getDBO();
 		$searchMap = array('a.zone_code_3','a.zone_code_2','a.zone_name_english','a.zone_name','a.zone_id');
@@ -148,9 +148,7 @@ class ZoneViewZone extends hikashopView
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&zone_id='.$zone_id);
 
 		$this->toolbar = array(
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION,'1.7','>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')

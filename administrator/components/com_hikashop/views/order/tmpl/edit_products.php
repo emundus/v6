@@ -1,25 +1,20 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div class="hika_toolbar">
-	<div class="hika_toolbar_btn hika_btn_32">
-		<div class="hika_toolbar_right">
-			<div class="btn"><a href="#save" onclick="return window.hikashop.submitform('save','hikashop_order_product_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName"><?php echo JText::_('HIKA_SAVE'); ?></span></a></div>
-		</div>
-		<div style="clear:right"></div>
-	</div>
-</div>
+?><h1><?php echo JText::_('PRODUCT'); ?>
+<?php
+	if(!empty($this->orderProduct->product_id))
+		echo ' : ' . (int)@$this->orderProduct->product_id . ' - ' . @$this->originalProduct->product_name;
+?>
+</h1>
 <form action="<?php echo hikashop_completeLink('order&task=save&subtask=products&tmpl=component'); ?>" name="hikashop_order_product_form" id="hikashop_order_product_form" method="post" enctype="multipart/form-data">
 	<dl class="hika_options">
-		<dt class="hikashop_order_product_id"><label><?php echo JText::_('PRODUCT'); ?></label></dt>
-		<dd class="hikashop_order_product_id"><?php echo (int)@$this->orderProduct->product_id; ?> - <?php echo @$this->originalProduct->product_name; ?></dd>
-
 		<dt class="hikashop_order_product_name"><label><?php echo JText::_('HIKA_NAME'); ?></label></dt>
 		<dd class="hikashop_order_product_name">
 			<input type="text" name="data[order][product][order_product_name]" value="<?php echo $this->escape(@$this->orderProduct->order_product_name); ?>" />
@@ -92,6 +87,8 @@ window.orderMgr.orderproduct_history_changed = function(el) {
 <?php if(!empty($this->extra_data['js'])) { echo $this->extra_data['js']; } ?>
 </script>
 	</dl>
+<div style="clear:both;"></div>
+	<a class="btn btn-success" href="#save" onclick="return window.hikashop.submitform('save','hikashop_order_product_form');"><i class="fa fa-save"></i> <?php echo JText::_('HIKA_SAVE'); ?></a>
 	<input type="hidden" name="data[order][history][history_type]" value="modification" />
 	<input type="hidden" name="data[order][product][order_product_id]" value="<?php echo @$this->orderProduct->order_product_id;?>" />
 	<input type="hidden" name="data[order][product][product_id]" value="<?php echo @$this->orderProduct->product_id;?>" />

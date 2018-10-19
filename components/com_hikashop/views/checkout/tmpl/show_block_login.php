@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,7 +28,7 @@ window.checkout.submitLogin = function(step, id, action) {
 }
 if(empty($this->ajax)) {
 ?>
-<div id="hikashop_checkout_login_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" class="hikashop_checkout_login">
+<div id="hikashop_checkout_login_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" data-checkout-step="<?php echo $this->step; ?>" data-checkout-pos="<?php echo $this->module_position; ?>" class="hikashop_checkout_login">
 <?php
 }
 ?>

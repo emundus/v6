@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,9 +39,12 @@ defined('_JEXEC') or die('Restricted access');
 		<input type="hidden" name="task" value="saveaddress"/>
 		<input type="hidden" name="data[address][address_user_id]" value="<?php echo $this->user_id;?>"/>
 		<input type="hidden" name="data[address][address_id]" value="<?php echo (int)@$this->address->address_id;?>"/>
+		<input type="hidden" name="data[address][address_type]" value="<?php echo @$this->address->address_type;?>"/>
 <?php
 	echo JHTML::_( 'form.token' );
-	echo $this->cart->displayButton(JText::_('OK'),'ok',$this->params,hikashop_completeLink('user&task=saveaddress'),'if(hikashopCheckChangeForm(\'address\',\'hikashop_address_form\')) document.forms[\'hikashop_address_form\'].submit(); return false;','style="float:right"');
 ?>
+		<a href="#" onclick="if(hikashopCheckChangeForm('address','hikashop_address_form')) document.forms['hikashop_address_form'].submit(); return false;" class="btn btn-success">
+			<i class="fa fa-save"></i> <?php echo JText::_('OK'); ?>
+		</a>
 	</form>
 </div>

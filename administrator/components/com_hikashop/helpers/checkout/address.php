@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,6 +32,15 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 			'type' => 'radio',
 			'default' => 'both',
 		),
+		'same_address' =>  array(
+			'name' => 'SHOW_SHIPPING_SAME_ADDRESS_CHECKBOX',
+			'type' => 'boolean',
+			'default' => 1,
+			'showon' => array(
+				'key' => 'read_only',
+				'values' => array(0)
+			)
+		),
 	);
 
 	public function getParams() {
@@ -60,17 +69,20 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
 
+		$type = !empty($params['type']) ? $params['type'] : 'both';
+
 		$address_missing = false;
-		if(empty($cart->cart_billing_address_id)){
-			$address_missing = true;
-		}
-		if(empty($cart->cart_shipping_address_ids)){
+		if(empty($cart->cart_billing_address_id) && in_array($type, array('billing', 'both'))) {
 			$address_missing = true;
 		}
 
-		if($address_missing){
+		if(empty($cart->cart_shipping_address_ids) && in_array($type, array('shipping', 'both')) && $checkoutHelper->isShipping()) {
+			$address_missing = true;
+		}
+
+		if($address_missing) {
 			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::_('CREATE_OR_SELECT_ADDRESS'),'error');
+			$app->enqueueMessage(JText::_('CREATE_OR_SELECT_ADDRESS'), 'error');
 		}
 		return !$address_missing;
 	}
@@ -296,6 +308,9 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		if(!in_array(@$params['type'], array('shipping', 'both', ''))) {
 			$params['show_shipping'] = false;
 		}
+
+		if(!isset($params['same_address']))
+			$params['same_address'] = 1;
 
 
 		$params['display'] = $checkoutHelper->isLoggedUser() && ($params['show_billing'] || $params['show_shipping']);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,8 +22,8 @@ class hikashopPopupHelper {
 			'image' => array()
 		);
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHikashopPopupList', array( &$plugins ));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onHikashopPopupList', array( &$plugins ));
 		return $plugins;
 	}
 
@@ -58,8 +58,8 @@ class hikashopPopupHelper {
 
 		$plugins = $this->getPlugins();
 		if(isset($plugins['content'][$popupMode])) {
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onHikashopPopupDisplay', array( $popupMode, 'content', &$html, $text, $title, $url, $id, $params ));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onHikashopPopupDisplay', array( $popupMode, 'content', &$html, $text, $title, $url, $id, $params ));
 		}
 		if(!empty($html))
 			return $html;
@@ -289,8 +289,8 @@ window.localPage.createBox = function(el,href,options) {
 		}
 		$plugins = $this->getPlugins();
 		if(isset($plugins['image'][$popupMode])) {
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onHikashopPopupDisplay', array( $popupMode, 'image', &$html, $content, $url, $id, $attr, $params ));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onHikashopPopupDisplay', array( $popupMode, 'image', &$html, $content, $url, $id, $attr, $params ));
 		}
 		if(!empty($html))
 			return $html;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -115,10 +115,10 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$this->checkout_data = array();
-
+		$obj =& $this;
 		foreach($this->workflow['steps'][$this->workflow_step]['content'] as $k => &$content) {
 			$task = $content['task'];
 			$this->block_position = $k;
@@ -127,7 +127,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			if(!empty($ctrl)) {
 				$this->checkout_data[$k] = $ctrl->display($this, $content['params']);
 			} else {
-				$dispatcher->trigger('onInitCheckoutStep', array($task, &$this));
+				$app->triggerEvent('onInitCheckoutStep', array($task, &$obj));
 			}
 		}
 		unset($content);
@@ -179,20 +179,20 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 
 		$ctrl = hikashop_get('helper.checkout-' . $block_task);
+		$obj =& $this;
 		if(!empty($ctrl)) {
 			$this->checkout_data[$block_pos] = $ctrl->display($this, $content['params']);
 		} else {
-			$dispatcher->trigger('onInitCheckoutStep', array($block_task, &$this));
+			$app->triggerEvent('onInitCheckoutStep', array($block_task, &$obj));
 		}
-
-		$dispatcher->trigger('onHikashopBeforeDisplayView', array(&$this));
+		$app->triggerEvent('onHikashopBeforeDisplayView', array(&$obj));
 
 		echo $this->displayBlock($block_task, $block_pos, $content['params']);
 
-		$dispatcher->trigger('onHikashopAfterDisplayView', array(&$this));
+		$app->triggerEvent('onHikashopAfterDisplayView', array(&$obj));
 
 		$events = $checkoutHelper->getEvents();
 		if(!empty($events)) {
@@ -234,8 +234,9 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		}
 
 		$ret = '';
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onCheckoutStepDisplay', array($layout, &$ret, &$this, $pos, $options));
+		$app = JFactory::getApplication();
+		$obj =& $this;
+		$app->triggerEvent('onCheckoutStepDisplay', array($layout, &$ret, &$obj, $pos, $options));
 		return $ret;
 	}
 

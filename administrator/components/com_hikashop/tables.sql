@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_cart_product` (
 	`cart_product_option_parent_id` int(10) unsigned DEFAULT '0',
 	`cart_product_wishlist_id` int(11) NOT NULL DEFAULT '0',
 	`cart_product_wishlist_product_id` int(11) NOT NULL DEFAULT '0',
+	`cart_product_ref_price` decimal(17,5) DEFAULT NULL,
 	PRIMARY KEY (`cart_product_id`),
 	KEY `cart_id` (`cart_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;
@@ -356,6 +357,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_order` (
 	`order_billing_address_id` int(10) unsigned NOT NULL DEFAULT '0',
 	`order_shipping_address_id` int(10) unsigned NOT NULL DEFAULT '0',
 	`order_user_id` int(10) unsigned NOT NULL DEFAULT '0',
+	`order_parent_id` int(10) unsigned NOT NULL DEFAULT '0',
 	`order_status` varchar(255) NOT NULL DEFAULT '',
 	`order_type` varchar(255) NOT NULL DEFAULT 'sale',
 	`order_number` varchar(255) NOT NULL DEFAULT '',
@@ -426,6 +428,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_order_product` (
 	`order_product_shipping_price` decimal(17,5) NOT NULL DEFAULT '0.00000',
 	`order_product_shipping_tax` decimal(17,5) NOT NULL DEFAULT '0.00000',
 	`order_product_shipping_params` TEXT NULL,
+	`order_product_params` TEXT NULL,
 	PRIMARY KEY (`order_product_id`),
 	KEY `order_id` (`order_id`),
 	KEY `product_id` (`product_id`)

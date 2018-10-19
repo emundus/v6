@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 <input type="hidden" name="<?php echo hikashop_getFormToken(); ?>" id="hikashop_checkout_token" value="1"/>
 <input type="hidden" name="cart_id" value="<?php echo $this->cart_id; ?>"/>
 <input type="submit" style="display:none;"/>
-<div id="hikashop_checkout" class="hikashop_checkout_page hikashop_checkout_page_step<?php echo $this->step; ?>"><?php
+<div id="hikashop_checkout" data-checkout-step="<?php echo $this->step; ?>" class="hikashop_checkout_page hikashop_checkout_page_step<?php echo $this->step; ?>"><?php
 
 if((int)$this->config->get('display_checkout_bar', 2) > 0) {
 	echo $this->displayBlock('bar', 0, array(

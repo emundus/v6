@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -66,7 +66,7 @@ hikaInput::get()->set('from_display',true);
 					$options[] = JHTML::_('hikaselect.option', $k, JText::_($v));
 				}
 			}
-			echo JHTML::_('select.genericlist', $options, 'config[popup_mode]', '', 'value', 'text', $this->config->get('popup_mode', 'inherit'));
+			echo JHTML::_('select.genericlist', $options, 'config[popup_mode]', 'class="custom-select"', 'value', 'text', $this->config->get('popup_mode', 'inherit'));
 		?></td>
 	</tr>
 	<tr>
@@ -84,7 +84,7 @@ hikaInput::get()->set('from_display',true);
 			$options[] = JHTML::_('hikaselect.option', $k, JText::_($v));
 		}
 	}
-	echo JHTML::_('select.genericlist', $options, 'config[image_popup_mode]', 'onchange="return window.localPage.imagepopupmode(this);"', 'value', 'text', $this->config->get('image_popup_mode', 'mootools'));
+	echo JHTML::_('select.genericlist', $options, 'config[image_popup_mode]', 'class="custom-select" onchange="return window.localPage.imagepopupmode(this);"', 'value', 'text', $this->config->get('image_popup_mode', 'mootools'));
 ?>
 <script type="text/javascript">
 if(!window.localPage)
@@ -131,7 +131,7 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('comments_feature');?>><?php echo JText::_('COMMENTS_ENABLED_ON_PRODUCTS'); ?></td>
 		<td><?php
-			echo JHTML::_('hikaselect.radiolist', $values, 'config[comments_feature]', '', 'value', 'text', $this->config->get('comments_feature') );
+			echo JHTML::_('hikaselect.radiolist', $values, 'config[comments_feature]', 'class="custom-select"', 'value', 'text', $this->config->get('comments_feature') );
 		?></td>
 	</tr>
 <?php } ?>
@@ -205,31 +205,19 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('product_show_modules');?>><?php echo JText::_('PRODUCT_SHOW_MODULES'); ?></td>
 		<td>
-			<input type="hidden" name="config[product_show_modules]'; ?>" id="menumodules"  value="<?php echo $this->config->get('product_show_modules'); ?>" />
 <?php
-	echo $this->popup->display(
-		'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
-		'SELECT_MODULES',
-		'\''.hikashop_completeLink('modules&task=selectmodules&control=menu&name=modules',true).'\'+\'&modules=\'+document.getElementById(\'menumodules\').value',
-		'linkmenumodules',
-		750, 375, '', '', 'link',true
-	);
-?>
-			<br/>
-<?php
-	$modules = explode(',', $this->config->get('product_show_modules'));
-	$modulesClass = hikashop_get('class.modules');
-	foreach($modules as $module) {
-		$element = $modulesClass->get($module);
-		if(!empty($element->title)) {
-			if(HIKASHOP_J30) {
-				$link = JRoute::_('index.php?option=com_modules&view=module&layout=edit&id=' . (int)@$element->id);
-			} else {
-				$link = hikashop_completeLink('modules&task=edit&cid=' . (int)@$element->id);
-			}
-			echo '<a href="'.$link.'">'.JText::sprintf('OPTIONS_FOR_X', @$element->title).'</a><br/>';
-		}
-	}
+		echo $this->nameboxType->display(
+			'config[product_show_modules]',
+			explode(',', $this->config->get('product_show_modules')),
+			hikashopNameboxType::NAMEBOX_MULTIPLE,
+			'modules',
+			array(
+				'delete' => true,
+				'sort' => true,
+				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+				'force_data' => true
+			)
+		);
 ?>
 		</td>
 	</tr>
@@ -255,7 +243,7 @@ window.localPage.imagepopupmode = function(el) {
 					JHTML::_('hikaselect.option', 'radio', JText::_('FIELD_RADIO')),
 					JHTML::_('hikaselect.option', 'per_product', JText::_('ON_A_PER_PRODUCT_BASIS'))
 				);
-				echo JHTML::_('select.genericlist', $options, 'config[product_selection_method]', '', 'value', 'text', $this->config->get('product_selection_method', 'generic'));
+				echo JHTML::_('select.genericlist', $options, 'config[product_selection_method]', 'class="custom-select"', 'value', 'text', $this->config->get('product_selection_method', 'generic'));
 			} else {
 				echo hikashop_getUpgradeLink('essential');
 			}
@@ -565,7 +553,12 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_margin');?>><?php echo JText::_('ITEM_BOX_MARGIN');?></td>
 		<td>
-			<input name="config[default_params][margin]" type="text" value="<?php echo @$this->default_params['margin'];?>" />px
+			<div class="hk-input-group">
+				<input name="config[default_params][margin]" type="text" class="hk-form-control" value="<?php echo @$this->default_params['margin'];?>" />
+				<div class="hk-input-group-append">
+					<span class="hk-input-group-text">px</span>
+				</div>
+			</div>
 		</td>
 	</tr>
 	<tr>
@@ -576,7 +569,7 @@ window.localPage.imagepopupmode = function(el) {
 				JHTML::_('select.option', '1', JText::_('HIKASHOP_YES')),
 				JHTML::_('select.option', '2', JText::_('THUMBNAIL'))
 			);
-			echo JHTML::_('hikaselect.radiolist', $values, 'config[default_params][border_visible]' , '', 'value', 'text', @$this->default_params['border_visible']);
+			echo JHTML::_('hikaselect.radiolist', $values, 'config[default_params][border_visible]' , 'class="custom-select"', 'value', 'text', @$this->default_params['border_visible']);
 		?></td>
 	</tr>
 	<tr>

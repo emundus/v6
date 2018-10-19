@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -249,22 +249,22 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			return false;
 
 		if($this->payment_params->debug)
-			echo print_r($vars, true) . "\r\n\r\n";
+			$this->writeToLog($vars);
 
 		if(empty($dbOrder)) {
-			echo 'Could not load any order for your notification ' . @$vars['invoice'];
+			$this->writeToLog('Could not load any order for your notification ' . @$vars['invoice']);
 			return false;
 		}
 
-		if($this->payment_params->debug) {
-			echo print_r($dbOrder, true) . "\r\n\r\n";
-		}
+		if($this->payment_params->debug)
+			$this->writeToLog($dbOrder);
+
 
 		$order_id = $dbOrder->order_id;
 
 		$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id=' . $order_id;
 		$order_text = "\r\n" . JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE);
-		$order_text .= "\r\n" . str_replace('<br/>', "\r\n", JText::sprintf('ACCESS_ORDER_WITH_LINK', $url));
+		$order_text .= "\r\n" . str_replace('<br/>', "\r\n", JText::sprintf('ACCESS_ORDER_WITH_LINK', $url, $url));
 
 		if(!empty($this->payment_params->ips)){
 			$ip = hikashop_getIP();
@@ -302,7 +302,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		}
 
 		if($this->payment_params->debug)
-			echo print_r($url, true) . "\r\n\r\n";
+			$this->writeToLog($url);
 
 		$response = $this->verifyIPN();
 
@@ -310,7 +310,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			$response = $this->sendRequest($url, $data);
 
 		if($this->payment_params->debug)
-			echo print_r($response, true) . "\r\n\r\n";
+			$this->writeToLog($response);
 
 		if(empty($response)){
 			$email = new stdClass();
@@ -323,12 +323,12 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			return false;
 		}
 
-		echo 'PayPal transaction id: '.@$vars['txn_id'] . "\r\n\r\n";
+		$this->writeToLog('PayPal transaction id: '.@$vars['txn_id']);
 
 		$history = new stdClass();
 		$history->notified = 0;
 		$history->amount = @$vars['mc_gross'].@$vars['mc_currency'];
-		$history->data = ob_get_contents();
+		$history->data = $this->writeToLog();
 
 		$verified = preg_match('#VERIFIED#i', $response);
 		if(!$verified) {
@@ -337,13 +337,13 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Paypal').'invalid transaction';
 				$email->body = JText::sprintf("Hello,\r\n A paypal notification was refused because it could not be verified by the paypal server")."\r\n\r\n".JText::sprintf('CHECK_DOCUMENTATION',HIKASHOP_HELPURL.'payment-paypal-error#invalidtnx').$order_text;
 				if($this->payment_params->debug)
-					echo 'invalid transaction'."\n\n\n";
+					$this->writeToLog('invalid transaction');
 			} else {
 				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Paypal').'invalid response';
 				$email->body = JText::sprintf("Hello,\r\n A paypal notification was refused because the response from the paypal server was invalid")."\r\n\r\n".JText::sprintf('CHECK_DOCUMENTATION',HIKASHOP_HELPURL.'payment-paypal-error#invalidresponse').$order_text;
 
 				if($this->payment_params->debug)
-					echo 'invalid response'."\n\n\n";
+					$this->writeToLog('invalid response');
 			}
 			$action = false;
 			$this->modifyOrder($action, null, $history, $email);
@@ -360,7 +360,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			$this->modifyOrder($action, null, $history, $email);
 
 			if($this->payment_params->debug)
-				echo 'payment ' . $vars['payment_status'] . "\r\n\r\n";
+				$this->writeToLog('payment ' . $vars['payment_status']);
 			return false;
 		}
 
@@ -403,6 +403,18 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 
 		$this->modifyOrder($order_id, $order_status, $history, $email);
 		return true;
+	}
+
+	function writeToLog($data = null) {
+		$this->cachedDebug = '';
+
+		if(!empty($data)) {
+			hikashop_writeToLog($data, $this->name);
+			if(is_array($data) || is_object($data))
+				$data = str_replace(array("\r","\n","\r\n"),"\r\n",print_r($data, true))."\r\n\r\n";
+			$this->cachedDebug .= $data;
+		}
+		return $this->cachedDebug;
 	}
 
 	protected function sendRequest($url, $data){

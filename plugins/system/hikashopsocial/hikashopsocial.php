@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,19 +20,26 @@ class plgSystemHikashopsocial extends JPlugin {
 	function onAfterRender() {
 		$app = JFactory::getApplication();
 
-		$option = JRequest::getVar('option');
-		$ctrl = JRequest::getVar('ctrl');
-		$task = JRequest::getVar('task');
+		if(version_compare(JVERSION,'3.0','>=')) {
+			$option = $app->input->getVar('option');
+			$ctrl = $app->input->getVar('ctrl');
+			$task = $app->input->getVar('task');
+		} else {
+			$option = JRequest::getVar('option');
+			$ctrl = JRequest::getVar('ctrl');
+			$task = JRequest::getVar('task');
+		}
+
 		if($app->isAdmin() || !in_array($option, array('com_hikashop', 'com_hikamarket', '')) || !in_array($ctrl, array('product', 'category', 'vendor')) || !in_array($task, array('show', 'listing')))
 			return;
 
 		if(!defined('HIKASHOP_COMPONENT'))
 			return;
 
-		$body = JResponse::getBody();
+		if(class_exists('JResponse'))
+			$body = JResponse::getBody();
 		$alternate_body = false;
 		if(empty($body)){
-			$app = JFactory::getApplication();
 			$body = $app->getBody();
 			$alternate_body = true;
 		}
@@ -429,9 +436,16 @@ function twitterPop(str) {
 	}
 
 	function _getElementInfo() {
-		$option = JRequest::getVar('option');
-		$ctrl = JRequest::getVar('ctrl');
-		$task = JRequest::getVar('task');
+		if(version_compare(JVERSION,'3.0','>=')) {
+			$app = JFactory::getApplication();
+			$option = $app->input->getVar('option');
+			$ctrl = $app->input->getVar('ctrl');
+			$task = $app->input->getVar('task');
+		} else {
+			$option = JRequest::getVar('option');
+			$ctrl = JRequest::getVar('ctrl');
+			$task = JRequest::getVar('task');
+		}
 
 		$ret = new stdClass();
 

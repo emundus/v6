@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -122,8 +122,7 @@ class hikashopAddressClass extends hikashopClass {
 
 	function displayAddress(&$fields, &$address, $view = 'address', $text = false) {
 		$params = new HikaParameter('');
-		if(HIKASHOP_J25)
-			$params->set('address', $address);
+		$params->set('address', $address);
 
 		$js = '';
 		$fieldsClass = hikashop_get('class.field');
@@ -247,12 +246,11 @@ class hikashopAddressClass extends hikashopClass {
 			return false;
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
 		$do = true;
 		if($new) {
 			if(!empty($addressData->address_user_id)) {
 				$query = 'SELECT count(*) as cpt FROM '.hikashop_table('address').' WHERE address_user_id = '.(int)$addressData->address_user_id.' AND address_published = 1 AND address_default = 1';
-				if(in_array($addressData->address_type, array('shipping', 'billing'))) {
+				if(in_array(@$addressData->address_type, array('shipping', 'billing'))) {
 					$query .= ' AND address_type IN (\'\', \'both\', '.$this->database->Quote($addressData->address_type).')';
 				}
 				$this->database->setQuery($query);
@@ -262,9 +260,9 @@ class hikashopAddressClass extends hikashopClass {
 				}
 			}
 
-			$dispatcher->trigger('onBeforeAddressCreate', array( &$addressData, &$do) );
+			$app->triggerEvent('onBeforeAddressCreate', array( &$addressData, &$do) );
 		} else {
-			$dispatcher->trigger('onBeforeAddressUpdate', array( &$addressData, &$do) );
+			$app->triggerEvent('onBeforeAddressUpdate', array( &$addressData, &$do) );
 		}
 
 		if(!$do)
@@ -298,7 +296,7 @@ class hikashopAddressClass extends hikashopClass {
 				$query .= ' AND address_type=' . $this->database->Quote($type);
 			}
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 
 			if(!empty($type)) {
 				$config = hikashop_config();
@@ -327,11 +325,11 @@ class hikashopAddressClass extends hikashopClass {
 		if(!empty($oldData) && (int)$oldData->address_id != (int)$status) {
 			$query = 'UPDATE '.hikashop_table('cart').' SET cart_billing_address_id = '.(int)$status.' WHERE user_id = '.(int)$oldData->address_user_id.' AND cart_billing_address_id = '.(int)$oldData->address_id;
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 
 			$query = 'UPDATE '.hikashop_table('cart').' SET cart_shipping_address_ids = '.(int)$status.' WHERE user_id = '.(int)$oldData->address_user_id.' AND cart_shipping_address_ids = '.(int)$oldData->address_id;
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 
 			if(!empty($app) && !$app->isAdmin()) {
 				$cartClass = hikashop_get('class.cart');
@@ -348,9 +346,9 @@ class hikashopAddressClass extends hikashopClass {
 
 		if($new) {
 			$addressData->address_id = (int)$status;
-			$dispatcher->trigger( 'onAfterAddressCreate', array( &$addressData ) );
+			$app->triggerEvent( 'onAfterAddressCreate', array( &$addressData ) );
 		} else {
-			$dispatcher->trigger( 'onAfterAddressUpdate', array( &$addressData ) );
+			$app->triggerEvent( 'onAfterAddressUpdate', array( &$addressData ) );
 		}
 
 		return $status;
@@ -505,9 +503,9 @@ class hikashopAddressClass extends hikashopClass {
 		$elements = (int)$elements;
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do=true;
-		$dispatcher->trigger( 'onBeforeAddressDelete', array( & $elements, & $do) );
+		$app->triggerEvent( 'onBeforeAddressDelete', array( & $elements, & $do) );
 		if(!$do){
 			return false;
 		}
@@ -545,7 +543,7 @@ class hikashopAddressClass extends hikashopClass {
 				}
 			}
 
-			$dispatcher->trigger( 'onAfterAddressDelete', array( & $elements ) );
+			$app->triggerEvent( 'onAfterAddressDelete', array( & $elements ) );
 		}
 		return $status;
 	}

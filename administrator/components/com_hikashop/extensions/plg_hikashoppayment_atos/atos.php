@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -118,13 +118,13 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 		$router = $this->app->getRouter();
 		$mode_sef = ($router->getMode() == JROUTER_MODE_SEF) ? true : false;
 
-		if(HIKASHOP_J16){
-			$db = JFactory::getDBO();
-			$query = 'SELECT * FROM '.hikashop_table('extensions', false).' WHERE name=\'plg_system_languagefilter\' AND folder=\'system\' AND enabled=1';
-			$db->setQuery($query);
-			$plugin = $db->loadResult();
-		}
-		if(HIKASHOP_J16 && !empty($plugin)){
+
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM '.hikashop_table('extensions', false).' WHERE name=\'plg_system_languagefilter\' AND folder=\'system\' AND enabled=1';
+		$db->setQuery($query);
+		$plugin = $db->loadResult();
+
+		if(!empty($plugin)){
 			if($mode_sef) {
 				$vars["automatic_response_url"] = HIKASHOP_LIVE.'atos.php/'.$this->locale;
 				$vars["cancel_return_url"] = HIKASHOP_LIVE.'atos.php/'.$this->locale;

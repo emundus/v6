@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,28 +25,24 @@ class UpdateViewUpdate extends hikashopView{
 	function wizard(){
 		$db = JFactory::getDBO();
 
-		hikashop_setTitle(JText::_('HIKA_WIZARD'),'config','update&task=wizard');
+		hikashop_setTitle(JText::_('HIKA_WIZARD'),'magic','update&task=wizard');
 
-		if (!HIKASHOP_PHP5) {
-			$bar =& JToolBar::getInstance('toolbar');
-		}else{
-			$bar = JToolBar::getInstance('toolbar');
-		}
-		$bar->appendButton( 'Link', 'hikashop', JText::_('HIKA_SKIP'), hikashop_completeLink('update&task=post_install&fromversion=&update=0') );
+		$bar = JToolBar::getInstance('toolbar');
+		$bar->appendButton( 'Link', 'arrow-right', JText::_('HIKA_SKIP'), hikashop_completeLink('update&task=post_install&fromversion=&update=0') );
 
 		$languagesCodes = array();
 		$languagesNames = array();
-		if(HIKASHOP_J25){
-			$db->setQuery('SELECT * FROM '.hikashop_table('languages',false).' WHERE `published` = 1');
-			$languages = $db->loadObjectList();
-			foreach($languages as $language){
-				$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$language->lang_code.DS.$language->lang_code.'.com_hikashop.ini';
-				if(!JFile::exists($path)){
-					$languagesCodes[] = $language->lang_code;
-					$languagesNames[] = $language->title;
-				}
+
+		$db->setQuery('SELECT * FROM '.hikashop_table('languages',false).' WHERE `published` = 1');
+		$languages = $db->loadObjectList();
+		foreach($languages as $language){
+			$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$language->lang_code.DS.$language->lang_code.'.com_hikashop.ini';
+			if(!JFile::exists($path)){
+				$languagesCodes[] = $language->lang_code;
+				$languagesNames[] = $language->title;
 			}
 		}
+
 		if(!empty($languagesCodes))
 			$languageCodes = implode('_',$languagesCodes);
 		if(!empty($languagesNames))
@@ -74,7 +70,10 @@ class UpdateViewUpdate extends hikashopView{
 
 		hikashop_loadJslib('jquery');
 		$app = JFactory::getApplication();
-		$app->enqueueMessage(JText::_('WELCOME_WIZARD', 'success'));
+		if(!HIKASHOP_J30)
+			$app->enqueueMessage(JText::_('WELCOME_WIZARD', 'success'));
+		else
+			$app->enqueueMessage(JText::_('WELCOME_WIZARD'));
 	}
 	function state(){
 		$namekey = hikaInput::get()->getCmd('namekey','');

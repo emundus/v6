@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop Add to Cart notification Plugin</name>
-	<creationDate>03 septembre 2018</creationDate>
-	<version>3.5.1</version>
+	<creationDate>18 octobre 2018</creationDate>
+	<version>4.0.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -30,6 +30,11 @@
 			<option value="left">HIKA_CARTNOTIF_POS_LEFT</option>
 		</param>
 		<param name="delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_DELAY_LBL" description="HIKA_CARTNOTIFICATION_DELAY_DESC" />
+		<param name="auto_redirect" type="list" default="on_success" label="HIKA_CARTNOTIFICATION_REDIRECT" description="HIKA_CARTNOTIFICATION_REDIRECT_DESC">
+			<option value="on_success">HIKA_CARTNOTIFICATION_ON_SUCCESS</option>
+			<option value="no_redirect">HIKA_CARTNOTIFICATION_NO_REDIRECT</option>
+		</param>
+		<param name="auto_redirect_delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_LBL" description="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_DESC" />
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
@@ -50,6 +55,11 @@
 					<option value="left">HIKA_CARTNOTIF_POS_LEFT</option>
 				</field>
 				<field name="delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_DELAY_LBL" description="HIKA_CARTNOTIFICATION_DELAY_DESC" />
+				<field name="auto_redirect" type="list" default="on_success" label="HIKA_CARTNOTIFICATION_REDIRECT" description="HIKA_CARTNOTIFICATION_REDIRECT_DESC">
+					<option value="on_success">HIKA_CARTNOTIFICATION_ON_SUCCESS</option>
+					<option value="no_redirect">HIKA_CARTNOTIFICATION_NO_REDIRECT</option>
+				</field>
+				<field name="auto_redirect_delay" type="text" size="50" default="4000" label="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_LBL" description="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_DESC" />
 			</fieldset>
 		</fields>
 	</config>

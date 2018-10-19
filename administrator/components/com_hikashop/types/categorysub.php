@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -64,11 +64,7 @@ class hikashopCategorysubType {
 			if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')){
 				$this->categories = $db->loadObjectList('','stdClass',false);
 			}elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase')||class_exists('JDatabaseMySQLx'))){
-				if(HIKASHOP_J25){
-					$this->categories = $db->loadObjectList('','stdClass',false);
-				}else{
-					$this->categories = $db->loadObjectList('',false);
-				}
+				$this->categories = $db->loadObjectList('','stdClass',false);
 			}else{
 				$this->categories = $db->loadObjectList();
 			}
@@ -174,13 +170,32 @@ class hikashopCategorysubType {
 		if($this->type == 'status') {
 			$order_statusType = hikashop_get('type.order_status');
 			$addAll = empty($form);
-			return $order_statusType->display($map, $value, $attribute, $addAll);
+			if($this->multiple) {
+				if(strpos($attribute,'onchange="')!==false)
+					$attribute = str_replace('onchange="', 'onchange="window.hikashop.checkOrderStatusSelectChange(this);', $attribute);
+				$js = '
+window.hikashop.checkOrderStatusSelectChange = function(el) {
+	if(!el.selectedOptions.length) {
+		el.value = \'\';
+		return;
+	}
+	for(var i=0 ; i<el.selectedOptions.length ; i++) {
+		if(el.selectedOptions[i].value==\'\')
+			el.remove(i);
+	}
+
+};
+				';
+				$doc = JFactory::getDocument();
+				$doc->addScriptDeclaration($js);
+			}
+			return $order_statusType->display($map, $value, 'class="custom-select"'.$attribute, $addAll);
 		}
 
 		$this->load($form);
 		if(!empty($id))
-			return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox"'.$attribute, 'value', 'text', $value , $id);
-		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox"'.$attribute, 'value', 'text', $value );
+			return JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select"'.$attribute, 'value', 'text', $value , $id);
+		return JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select"'.$attribute, 'value', 'text', $value );
 	}
 
 	public function displaySingle($map, $value, $type = '', $root = 0, $delete = false) {

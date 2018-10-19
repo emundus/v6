@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,8 +20,8 @@ class hikashopLayoutType {
 			$this->values['inherit'] = JHTML::_('select.option', 'inherit', JText::_('HIKA_INHERIT'));
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onHkLayoutTypeLoad', array(&$this->values));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onHkLayoutTypeLoad', array(&$this->values));
 	}
 
 	public function display($map, $value, &$js, $update = true, $id = '', $control = '', $module = false) {
@@ -46,7 +46,7 @@ class hikashopLayoutType {
 		}
 
 		if(!empty($id))
-			return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox" size="1" '.$options, 'value', 'text', $value, 'layout_select'.$control, $id);
-		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox" size="1" '.$options, 'value', 'text', $value, 'layout_select'.$control );
+			return JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select" size="1" '.$options, 'value', 'text', $value, 'layout_select'.$control, $id);
+		return JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select" size="1" '.$options, 'value', 'text', $value, 'layout_select'.$control );
 	}
 }

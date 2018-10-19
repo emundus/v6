@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -82,6 +82,8 @@ class ProductViewProduct extends HikaShopView {
 		$params = array(
 			'price_display_type' => 'inherit',
 			'random' => '-1',
+			'show_vote' => '-1',
+			'show_vote_product' => '-1',
 			'limit' => '',
 			'product_synchronize' => 4,
 			'div_item_layout_type' => 'inherit',
@@ -125,6 +127,19 @@ class ProductViewProduct extends HikaShopView {
 			$this->params->set('recently_viewed', 0);
 		}
 
+		if($config->get('enable_status_vote') == 'nothing') {
+			$this->params->set('show_vote', 0);
+			$this->params->set('show_vote_product', 0);
+		} else {
+			$value = $this->params->get('show_vote');
+			$old_value = $this->params->get('show_vote_product');
+			if($value === null && $old_value !== null) 
+				$this->params->set('show_vote', $old_value);
+			elseif($value === null)
+				$this->params->set('show_vote', '-1');
+			$this->params->set('show_vote_product', $this->params->get('show_vote'));
+		}
+
 		foreach($params as $k => $v) {
 			if($this->params->get($k, $v) == $v)
 				$this->params->set($k, @$defaultParams[$k]);
@@ -151,9 +166,6 @@ class ProductViewProduct extends HikaShopView {
 				$this->tmpl_ajax = true;
 			}
 		}
-
-		if($config->get('enable_status_vote') == 'nothing')
-			$this->params->set('show_vote_product', 0);
 
 		if($this->params->get('product_order', 'ordering') == 'ordering')
 			$table = 'a';
@@ -226,11 +238,7 @@ class ProductViewProduct extends HikaShopView {
 								if(empty($pathway)) {
 									$query = "SELECT a.category_id FROM ".hikashop_table('product_category').' AS a INNER JOIN '.hikashop_table('category').' AS b ON a.category_id=b.category_id WHERE b.category_published=1 AND a.product_id='.$product_id.' ORDER BY a.product_category_id ASC';
 									$database->setQuery($query);
-									if(!HIKASHOP_J25){
-										$pageInfo->filter->cid = $database->loadResultArray();
-									} else {
-										$pageInfo->filter->cid = $database->loadColumn();
-									}
+									$pageInfo->filter->cid = $database->loadColumn();
 								} else {
 									$pageInfo->filter->cid = array($pathway);
 								}
@@ -383,7 +391,7 @@ class ProductViewProduct extends HikaShopView {
 
 		if(!empty($pageInfo->filter->cid)) {
 			if(is_array($pageInfo->filter->cid)){
-				JArrayHelper::toInteger($pageInfo->filter->cid);
+				hikashop_toInteger($pageInfo->filter->cid);
 			}
 			$acl_filters = array();
 			hikashop_addACLFilters($acl_filters,'category_access');
@@ -394,11 +402,7 @@ class ProductViewProduct extends HikaShopView {
 				$acl_filters[]='category_id IN ('.implode(',',$pageInfo->filter->cid).')';
 				$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE '.implode(' AND ',$acl_filters);
 				$database->setQuery($query);
-				if(!HIKASHOP_J25){
-					$pageInfo->filter->cid = $database->loadResultArray();
-				} else {
-					$pageInfo->filter->cid = $database->loadColumn();
-				}
+				$pageInfo->filter->cid = $database->loadColumn();
 			}
 		}
 
@@ -485,10 +489,7 @@ class ProductViewProduct extends HikaShopView {
 				if(count($mainIds)){
 					$queryDiscount = 'SELECT DISTINCT product_related_id FROM #__hikashop_product_related WHERE product_related_type=\'related\' AND product_id IN ('.implode(',',$mainIds).')';
 					$database->setQuery($queryDiscount);
-					if(!HIKASHOP_J25)
-						$related_products = $database->loadResultArray();
-					else
-						$related_products = $database->loadColumn();
+					$related_products = $database->loadColumn();
 					if(count($related_products)){
 						$ids = implode(',',$related_products);
 					}
@@ -623,8 +624,10 @@ class ProductViewProduct extends HikaShopView {
 		}
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger( 'onBeforeProductListingLoad', array( & $filters, & $order, & $this, & $select, & $select2, & $a, & $b, & $on) );
+		$app = JFactory::getApplication();
+		$view =& $this;
+		$app->triggerEvent( 'onBeforeProductListingLoad', array( & $filters, & $order, & $view, & $select, & $select2, & $a, & $b, & $on) );
+		unset($view);
 
 		$translationFilter = '';
 		if(isset($filters['translation'])) {
@@ -703,7 +706,7 @@ class ProductViewProduct extends HikaShopView {
 		}
 		$this->assignRef('productFields', $productClass->productFields);
 
-		if(!empty($productClass->itemFields)) {
+		if(!empty($productClass->itemFields) && $this->params->get('display_custom_item_fields', 0)) {
 			$null = array();
 			$this->fieldsClass->addJS($null, $null, $null);
 
@@ -1152,8 +1155,8 @@ class ProductViewProduct extends HikaShopView {
 			}
 
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onAfterProductCharacteristicsLoad', array( &$element, &$mainCharacteristics, &$characteristics ));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onAfterProductCharacteristicsLoad', array( &$element, &$mainCharacteristics, &$characteristics ));
 
 			if(!empty($element->variants)) {
 				$this->addCharacteristics($element, $mainCharacteristics, $characteristics);
@@ -1395,11 +1398,7 @@ class ProductViewProduct extends HikaShopView {
 				' WHERE ('.implode(') AND (',$filters).') '.
 				' GROUP BY a.product_id ORDER BY a.ordering ASC';
 			$database->setQuery($query);
-			if(!HIKASHOP_J25) {
-				$articles = $database->loadResultArray();
-			} else {
-				$articles = $database->loadColumn();
-			}
+			$articles = $database->loadColumn();
 
 			if(!empty($articles)) {
 				$pathway_sef_name = $config->get('pathway_sef_name', 'category_pathway');
@@ -1617,7 +1616,7 @@ class ProductViewProduct extends HikaShopView {
 			}
 		}
 		$cids = $c;
-		JArrayHelper::toInteger($cids);
+		hikashop_toInteger($cids);
 
 		$empty = '';
 		$default_params = $config->get('default_params');
@@ -1823,7 +1822,7 @@ class ProductViewProduct extends HikaShopView {
 
 		if(isset($_REQUEST['hikashop_product_characteristic'])) {
 			if(is_array($_REQUEST['hikashop_product_characteristic'])) {
-				JArrayHelper::toInteger($_REQUEST['hikashop_product_characteristic']);
+				hikashop_toInteger($_REQUEST['hikashop_product_characteristic']);
 				$chars = $_REQUEST['hikashop_product_characteristic'];
 			} else {
 				$chars = hikaInput::get()->getCmd('hikashop_product_characteristic','');
@@ -2159,17 +2158,21 @@ class ProductViewProduct extends HikaShopView {
 		}
 		$this->assignRef('rows', $rows);
 
-		if($this->params->get('show_shipping') || $this->params->get('show_coupon')) {
+		if($this->params->get('show_shipping') || $this->params->get('show_coupon') || $this->params->get('show_payment')) {
 			$total =& $fullcart->full_total;
 		} else {
 			$total =& $fullcart->total;
 		}
+
+		$displayingPrices = $this->retrieveCartDisplayingPrices($fullcart);
+		$this->assignRef('displayingPrices', $displayingPrices);
+
 		$this->assignRef('total', $total);
 
 		$shipping_price = null;
 		if(!empty($fullcart->shipping)) {
 			foreach($fullcart->shipping as $shipping) {
-				if(!isset($shipping->shipping_price) && isset($shipping->shipping_price_with_tax) ) {
+				if(!isset($shipping->shipping_price) && isset($shipping->shipping_price_with_tax)) {
 					$shipping->shipping_price = $shipping->shipping_price_with_tax;
 				}
 				if(!isset($shipping->shipping_price))
@@ -2185,6 +2188,17 @@ class ProductViewProduct extends HikaShopView {
 			}
 		}
 		$this->assignRef('shipping_price', $shipping_price);
+
+		$payment_price = null;
+		if(!empty($fullcart->payment)) {
+			$payment_price = 0.0;
+			if(isset($fullcart->payment->payment_price))
+				$payment_price = $fullcart->payment->payment_price;
+
+			if($this->params->get('price_with_tax') && isset($fullcart->payment->payment_price_with_tax))
+				$payment_price = $fullcart->payment->payment_price_with_tax;
+		}
+		$this->assignRef('payment_price', $payment_price);
 
 		$cartHelper = hikashop_get('helper.cart');
 		$this->assignRef('cartHelper', $cartHelper);
@@ -2221,7 +2235,82 @@ class ProductViewProduct extends HikaShopView {
 
 		$this->legacyCartInit();
 	}
+	private function retrieveCartDisplayingPrices($fullcart) {
+		if(empty($fullcart) || empty($fullcart->cart_products) || empty($fullcart->full_total) || empty($fullcart->total))
+			return;
 
+		$displayingPrices = new stdClass();
+		$displayingPrices->total = new stdClass();
+		$displayingPrices->taxes = array();
+
+		if(!$this->params->get('show_shipping') && !$this->params->get('show_coupon') && !$this->params->get('show_payment')) {
+			$displayingPrices->price_currency_id = $fullcart->total->prices[0]->price_currency_id;
+			$displayingPrices->total->price_value = $fullcart->total->prices[0]->price_value;
+			$displayingPrices->total->price_value_with_tax = $fullcart->total->prices[0]->price_value_with_tax;
+
+			$displayingPrices->taxes = $fullcart->total->prices[0]->taxes;
+
+			return $displayingPrices;
+		}
+		$displayingPrices->price_currency_id = $fullcart->full_total->prices[0]->price_currency_id;
+		$displayingPrices->total->price_value = $fullcart->full_total->prices[0]->price_value;
+		$displayingPrices->total->price_value_with_tax = $fullcart->full_total->prices[0]->price_value_with_tax;
+
+		$displayingPrices->taxes = $fullcart->full_total->prices[0]->taxes;
+
+		if(!$this->params->get('show_payment')){
+			if(isset($fullcart->payment->payment_price) && $fullcart->payment->payment_price > 0 && $fullcart->payment->payment_price < $displayingPrices->total->price_value)
+				$displayingPrices->total->price_value -= $fullcart->payment->payment_price;
+
+			if(isset($fullcart->payment->payment_price_with_tax) && $fullcart->payment->payment_price_with_tax > 0 && $fullcart->payment->payment_price_with_tax < $displayingPrices->total->price_value_with_tax)
+				$displayingPrices->total->price_value_with_tax -= $fullcart->payment->payment_price_with_tax;
+
+			if(isset($fullcart->payment->taxes)){
+				foreach($fullcart->payment->taxes as $payment_tax){
+					if(array_key_exists($payment_tax->tax_namekey, $displayingPrices->taxes)){
+						$displayingPrices->taxes[$payment_tax->tax_namekey]->tax_amount -= $payment_tax->tax_amount;
+					}
+				}
+			}
+
+		}
+		if(!$this->params->get('show_shipping') && !empty($fullcart->shipping)){
+			$shipping_price = 0;
+			$shipping_price_with_tax = 0;
+			foreach($fullcart->shipping as $shipping) {
+				if(isset($shipping->shipping_price) && $shipping->shipping_price > 0 && $shipping->shipping_price < $displayingPrices->total->price_value)
+					$shipping_price += $shipping->shipping_price;
+				if(isset($shipping->shipping_price_with_tax) && $shipping->shipping_price_with_tax > 0 && $shipping->shipping_price_with_tax < $displayingPrices->total->price_value_with_tax)
+					$shipping_price_with_tax += $shipping->shipping_price_with_tax;
+
+				if(isset($shipping->taxes)){
+					foreach($shipping->taxes as $shipping_tax){
+						if(array_key_exists($shipping_tax->tax_namekey, $displayingPrices->taxes)){
+							$displayingPrices->taxes[$shipping_tax->tax_namekey]->tax_amount -= $shipping_tax->tax_amount;
+						}
+					}
+				}
+
+				if($this->params->get('show_coupon') && isset($fullcart->coupon->taxes) && isset($fullcart->coupon->discount_shipping_percent) && $fullcart->coupon->discount_shipping_percent > 0){
+					foreach($fullcart->coupon->taxes as $coupon_tax){
+						if(array_key_exists($coupon_tax->tax_namekey, $displayingPrices->taxes)){
+							$displayingPrices->taxes[$coupon_tax->tax_namekey]->tax_amount -= $coupon_tax->tax_amount;
+						}
+					}
+				}
+			}
+			$displayingPrices->total->price_value -= $shipping_price;
+			$displayingPrices->total->price_value_with_tax -= $shipping_price_with_tax;
+		}
+		if(!$this->params->get('show_coupon')){
+			if(isset($fullcart->coupon->discount_value_without_tax) && $fullcart->coupon->discount_value_without_tax > 0 && $fullcart->coupon->discount_value_without_tax < $displayingPrices->total->price_value)
+				$displayingPrices->total->price_value += $fullcart->coupon->discount_value_without_tax;
+
+			if(isset($fullcart->coupon->discount_value) && $fullcart->coupon->discount_value > 0 && $fullcart->coupon->discount_value < $displayingPrices->total->price_value_with_tax)
+				$displayingPrices->total->price_value_with_tax += $fullcart->coupon->discount_value;
+		}
+		return $displayingPrices;
+	}
 	public function legacyCartInit() {
 		global $Itemid;
 		$this->url_itemid = '';
@@ -2267,11 +2356,9 @@ class ProductViewProduct extends HikaShopView {
 		$config =& hikashop_config();
 		$this->assignRef('config',$config);
 
-		$menu	= $app->getMenu()->getActive();
-
-		if($menu->getParams()->get('show_page_heading'))
+		$menu = $app->getMenu()->getActive();
+		if(!empty($menu) && $menu->getParams()->get('show_page_heading'))
 			$this->title = $menu->getParams()->get('page_heading');
-
 
 		$imageHelper = hikashop_get('helper.image');
 		$this->assignRef('imageHelper',$imageHelper);
@@ -2566,7 +2653,8 @@ window.hikashop.ready(function(){
 		$js = $this->getJS();
 
 		$modal = JHTML::script('system/modal.js',false,true,true);
-		$body = JResponse::getBody();
+		if(class_exists('JResponse'))
+			$body = JResponse::getBody();
 		$alternate_body = false;
 		if(empty($body)){
 			$app = JFactory::getApplication();
@@ -2613,11 +2701,7 @@ window.hikashop.ready(function(){
 			if(!strpos($body,$mootoolsmore))$body=str_replace('</head>','<script src="'.$mootoolsmore.'" type="text/javascript"></script></head>',$body);
 			$core = JHtml::script('system/core.js', false, true,true);
 			if(!strpos($body,$core))$body=str_replace('</head>','<script src="'.$core.'" type="text/javascript"></script></head>',$body);
-			if(!HIKASHOP_J16){
-				$modalcss = JHtml::stylesheet('system/modal.css', '',array());
-			}else{
-				$modalcss = JHtml::stylesheet('system/modal.css', array(), true,true);
-			}
+			$modalcss = JHtml::stylesheet('system/modal.css', array(), true,true);
 
 			if(!strpos($body,$modal)) $body=str_replace('</head>','<script src="'.$modal.'" type="text/javascript"></script></head>',$body);
 			if(!strpos($body,$modalcss)) $body=str_replace('</head>','<link rel="stylesheet" href="'.$modalcss.'" type="text/css" /></head>',$body);

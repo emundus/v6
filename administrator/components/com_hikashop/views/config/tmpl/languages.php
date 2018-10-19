@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -74,7 +74,7 @@ defined('_JEXEC') or die('Restricted access');
 	$k = 0;
 	for($i = 0,$a = count($this->languages);$i<$a;$i++){
 		$row =& $this->languages[$i];
-?>		
+?>
 		<tr class="row<?php echo $k; ?>">
 			<td class="hk_center">
 			<?php echo $i+1; ?>
@@ -101,7 +101,7 @@ defined('_JEXEC') or die('Restricted access');
 <table style="margin-bottom: 8px;">
 	<tr>
 		<td style="width: 25%; font-weight: bold; padding: 8px;">
-			If required language file isn't listed here, you have to add this language file in your Joomla, in Extensions => Language(s)
+			<?php echo JText::_('INSTALL_MISSING_LANGUAGE_IN_JOOMLA'); ?>
 		</td>
 	</tr>
 </table>

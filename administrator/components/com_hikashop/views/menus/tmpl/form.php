@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,16 +29,6 @@ defined('_JEXEC') or die('Restricted access');
 					<legend><?php echo JText::_( 'HIKA_DETAILS' ); ?></legend>
 
 					<table class="admintable table" cellspacing="1">
-						<?php if(version_compare(JVERSION,'1.6','<')){ ?>
-						<tr>
-							<td class="key">
-								<?php echo JText::_( 'HIKA_NAME' ); ?>
-							</td>
-							<td>
-								<input class="text_area" type="text" name="menu[name]" id="title" size="35" value="<?php echo $this->escape(@$this->element->name); ?>" />
-							</td>
-						</tr>
-						<?php }else{ ?>
 						<tr>
 							<td class="key">
 								<?php echo JText::_( 'HIKA_TITLE' ); ?>
@@ -47,7 +37,6 @@ defined('_JEXEC') or die('Restricted access');
 								<input class="text_area" type="text" name="menu[title]" id="title" size="35" value="<?php echo $this->escape(@$this->element->title); ?>" />
 							</td>
 						</tr>
-						<?php } ?>
 						<tr>
 							<td class="key">
 								<?php echo JText::_( 'HIKA_ALIAS' ); ?>
@@ -61,7 +50,7 @@ defined('_JEXEC') or die('Restricted access');
 								<?php echo JText::_( 'SHOW_IMAGE' ); ?>
 							</td>
 							<td>
-								<?php echo JHTML::_('hikaselect.booleanlist',  $this->control.'[show_image]', 'class="inputbox"', @$this->element->hikashop_params['show_image'] ); ?>
+								<?php echo JHTML::_('hikaselect.booleanlist',  $this->control.'[show_image]', 'class="custom-select"', @$this->element->hikashop_params['show_image'] ); ?>
 							</td>
 						</tr>
 						<tr>
@@ -71,7 +60,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['show_description']))$this->element->hikashop_params['show_description']=1;
-								echo JHTML::_('hikaselect.booleanlist',  $this->control.'[show_description]', 'class="inputbox"', $this->element->hikashop_params['show_description'] ); ?>
+								echo JHTML::_('hikaselect.booleanlist',  $this->control.'[show_description]', 'class="custom-select"', $this->element->hikashop_params['show_description'] ); ?>
 							</td>
 						</tr>
 						<tr>
@@ -79,7 +68,7 @@ defined('_JEXEC') or die('Restricted access');
 								<?php echo JText::_( 'HIKA_PUBLISHED' ); ?>
 							</td>
 							<td>
-								<?php echo JHTML::_('hikaselect.booleanlist',  'menu[published]', 'class="inputbox"', @$this->element->published ); ?>
+								<?php echo JHTML::_('hikaselect.booleanlist',  'menu[published]', 'class="custom-select"', @$this->element->published ); ?>
 							</td>
 						</tr>
 						<tr>
@@ -122,7 +111,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['random'])) $this->element->hikashop_params['random'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[random]' , '', 'value', 'text', @$this->element->hikashop_params['random']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[random]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['random']);
 								?>
 							</td>
 						</tr>
@@ -259,7 +248,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['recently_viewed'])) $this->element->hikashop_params['recently_viewed'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[recently_viewed]' , '', 'value', 'text', @$this->element->hikashop_params['recently_viewed']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[recently_viewed]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['recently_viewed']); ?>
 							</td>
 						</tr>
 						<tr>
@@ -269,7 +258,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['add_to_cart'])) $this->element->hikashop_params['add_to_cart'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_cart]' , '', 'value', 'text', @$this->element->hikashop_params['add_to_cart']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_cart]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['add_to_cart']); ?>
 							</td>
 						</tr>
 						<tr>
@@ -277,7 +266,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['show_quantity_field'])) $this->element->hikashop_params['show_quantity_field'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[show_quantity_field]', '', 'value', 'text', @$this->element->hikashop_params['show_quantity_field'] );
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[show_quantity_field]', 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['show_quantity_field'] );
 								?>
 							</td>
 						</tr>
@@ -288,7 +277,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php if(hikashop_level(1)){
 								if(!isset($this->element->hikashop_params['add_to_wishlist'])) $this->element->hikashop_params['add_to_wishlist'] = '-1';
-									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_wishlist]' , '', 'value', 'text', @$this->element->hikashop_params['add_to_wishlist']);
+									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_wishlist]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['add_to_wishlist']);
 								}else{
 									$this->element->hikashop_params['add_to_wishlist'] = 0;
 									echo hikashop_getUpgradeLink('essential');
@@ -301,7 +290,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['link_to_product_page'])) $this->element->hikashop_params['link_to_product_page'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[link_to_product_page]' , '', 'value', 'text', @$this->element->hikashop_params['link_to_product_page']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[link_to_product_page]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['link_to_product_page']); ?>
 							</td>
 						</tr>
 						<tr>
@@ -311,7 +300,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 									if(!isset($this->element->hikashop_params['show_vote_product'])) $this->element->hikashop_params['show_vote_product'] = '-1';
-									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_vote_product]', '', 'value', 'text', @$this->element->hikashop_params['show_vote_product']);
+									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_vote_product]', 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['show_vote_product']);
 								?>
 							</td>
 						</tr>
@@ -334,7 +323,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 									if(!isset($this->element->hikashop_params['show_out_of_stock'])) $this->element->hikashop_params['show_out_of_stock'] = '-1';
-									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_out_of_stock]', '', 'value', 'text', @$this->element->hikashop_params['show_out_of_stock']);
+									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_out_of_stock]', 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['show_out_of_stock']);
 								?>
 							</td>
 						</tr>
@@ -355,7 +344,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['show_original_price'])) $this->element->hikashop_params['show_original_price'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[show_original_price]' , '', 'value', 'text', @$this->element->hikashop_params['show_original_price']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[show_original_price]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['show_original_price']); ?>
 							</td>
 						</tr>
 						<tr id="show_discount_line">
@@ -387,7 +376,7 @@ defined('_JEXEC') or die('Restricted access');
 								<td>
 									<?php
 									if(!isset($this->element->hikashop_params['display_custom_item_fields'])) $this->element->hikashop_params['display_custom_item_fields'] = '-1';
-									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_custom_item_fields]' , '', 'value', 'text', @$this->element->hikashop_params['display_custom_item_fields']);
+									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_custom_item_fields]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['display_custom_item_fields']);
 									?>
 								</td>
 							</tr>
@@ -398,7 +387,7 @@ defined('_JEXEC') or die('Restricted access');
 								<td>
 									<?php
 									if(!isset($this->element->hikashop_params['display_filters'])) $this->element->hikashop_params['display_filters'] = '-1';
-									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_filters]' , '', 'value', 'text', @$this->element->hikashop_params['display_filters']);
+									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_filters]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['display_filters']);
 									?>
 								</td>
 							</tr>
@@ -410,7 +399,7 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['display_badges'])) $this->element->hikashop_params['display_badges'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_badges]' , '', 'value', 'text', @$this->element->hikashop_params['display_badges']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_badges]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['display_badges']); ?>
 							</td>
 						</tr>
 						<tr>
@@ -493,7 +482,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['number_of_products'])) $this->element->hikashop_params['number_of_products'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[number_of_products]' , '', 'value', 'text', @$this->element->hikashop_params['number_of_products']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[number_of_products]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['number_of_products']);
 								?>
 							</td>
 						</tr>
@@ -504,7 +493,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['only_if_products'])) $this->element->hikashop_params['only_if_products'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[only_if_products]' , '', 'value', 'text', @$this->element->hikashop_params['only_if_products']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[only_if_products]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['only_if_products']);
 								?>
 							</td>
 						</tr>
@@ -606,7 +595,7 @@ if(!empty($this->extra_blocks['products'])) {
 								if(!isset($this->element->hikashop_params['border_visible'])) $this->element->hikashop_params['border_visible'] = '-1';
 								$arr2 = $arr;
 								$arr2[] = JHTML::_('select.option', 2, JText::_('THUMBNAIL'));
-								echo JHTML::_('hikaselect.radiolist', $arr2, $this->control.'[border_visible]' , '', 'value', 'text', @$this->element->hikashop_params['border_visible']);
+								echo JHTML::_('hikaselect.radiolist', $arr2, $this->control.'[border_visible]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['border_visible']);
 								?>
 							</td>
 						</tr>
@@ -617,7 +606,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['rounded_corners'])) $this->element->hikashop_params['rounded_corners'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[rounded_corners]' , '', 'value', 'text', @$this->element->hikashop_params['rounded_corners']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[rounded_corners]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['rounded_corners']);
 								?>
 							</td>
 						</tr>
@@ -628,7 +617,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['text_center'])) $this->element->hikashop_params['text_center'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[text_center]' , '', 'value', 'text', @$this->element->hikashop_params['text_center']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[text_center]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['text_center']);
 								?>
 							</td>
 						</tr>
@@ -713,11 +702,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="menu[id]" value="<?php echo (int)@$this->element->id; ?>" />
-	<?php if(version_compare(JVERSION,'1.6','<')){ ?>
-		<input type="hidden" name="menu[componentid]" value="<?php echo @$this->element->conponentid; ?>" />
-	<?php }else{ ?>
-		<input type="hidden" name="menu[component_id]" value="<?php echo @$this->element->conponent_id; ?>" />
-	<?php } ?>
+	<input type="hidden" name="menu[component_id]" value="<?php echo @$this->element->conponent_id; ?>" />
 	<input type="hidden" name="menu[type]" value="component" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getVar('ctrl');?>" />

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -163,8 +163,8 @@ class MassactionController extends hikashopController{
 		$currentFilterData = $filters[$table][$num][$currentType];
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$messages = $dispatcher->trigger('onCount'.ucfirst($table).'MassFilter'.$currentType, array(&$query, $currentFilterData, $num));
+		$app = JFactory::getApplication();
+		$messages = $app->triggerEvent('onCount'.ucfirst($table).'MassFilter'.$currentType, array(&$query, $currentFilterData, $num));
 
 		echo implode(' | ', $messages);
 		exit;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -61,16 +61,16 @@ echo $this->nameboxVariantType->display(
 <?php if($this->jms_integration){ ?>
 	<dt><?php echo JText::_('SITE_ID'); ?></dt>
 	<dd>
-		<?php echo str_replace('class="inputbox"','class="inputbox no-chzn" style="width:90px;"', MultisitesHelperUtils::getComboSiteIDs( @$this->price->price_site_id, 'hikashop_' . $this->form_key . '_site_edit', JText::_( 'SELECT_A_SITE'))); ?>
+		<?php echo str_replace('class="custom-select"','class="custom-select no-chzn" style="width:90px;"', MultisitesHelperUtils::getComboSiteIDs( @$this->price->price_site_id, 'hikashop_' . $this->form_key . '_site_edit', JText::_( 'SELECT_A_SITE'))); ?>
 	</dd>
 <?php } ?>
 </dl>
 <div style="float:right">
 	<button onclick="return window.productMgr.addPrice('<?php echo $this->form_key; ?>');" class="btn btn-success">
-		<img src="<?php echo HIKASHOP_IMAGES; ?>save.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_OK'); ;?>
+		<i class="fa fa-save"></i> <?php echo JText::_('HIKA_OK'); ;?>
 	</button>
 </div>
 <button onclick="<?php if(!empty($this->price->price_id)) echo 'window.productMgr.restorePriceRow('.$this->price->price_id.');'; ?>return window.productMgr.cancelNewPrice('<?php echo $this->form_key ?>');" class="btn btn-danger">
-	<img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_CANCEL'); ;?>
+	<i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ;?>
 </button>
 <div style="clear:both"></div>

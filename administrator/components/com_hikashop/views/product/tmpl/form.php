@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -267,7 +267,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 				JHTML::_('hikaselect.option', 'RefurbishedCondition', JText::_('HIKA_REFURBISHED')),
 				JHTML::_('hikaselect.option', '', JText::_('HIKA_NONE'))
 			);
-			echo JHTML::_('select.genericlist', $options, 'data[product][product_condition]', '', 'value', 'text', @$this->product->product_condition);
+			echo JHTML::_('select.genericlist', $options, 'data[product][product_condition]', 'class="custom-select"', 'value', 'text', @$this->product->product_condition);
 ?>
 			</dd>
 <?php
@@ -367,24 +367,15 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 	if(hikashop_acl('product/edit/volume')) { ?>
 			<dt class="hikashop_product_volume"><label for="data_product__product_length"><?php echo JText::_('PRODUCT_VOLUME'); ?></label></dt>
 			<dd class="hikashop_product_volume">
-				<div class="input-prepend">
-					<span class="add-on"><?php
-						echo str_replace('#MYTEXT#', '<i class="hk-icon-14 icon-14-length"></i>', hikashop_tooltip(JText::_('PRODUCT_LENGTH'), '', '', '#MYTEXT#', '', 0));
-					?></span>
-					<input size="10" style="width:50px" type="text" id="data_product__product_length" name="data[product][product_length]" value="<?php echo $this->escape(@$this->product->product_length); ?>"/>
-				</div>
-				<div class="input-prepend">
-					<span class="add-on"><?php
-						echo str_replace('#MYTEXT#', '<i class="hk-icon-14 icon-14-width"></i>', hikashop_tooltip(JText::_('PRODUCT_WIDTH'), '', '', '#MYTEXT#', '', 0));
-					?></span>
-					<input size="10" style="width:50px" type="text" id="data_product__product_width" name="data[product][product_width]" value="<?php echo $this->escape(@$this->product->product_width); ?>"/>
-				</div>
-				<div class="input-prepend">
-					<span class="add-on"><?php
-						echo str_replace('#MYTEXT#', '<i class="hk-icon-14 icon-14-height"></i>', hikashop_tooltip(JText::_('PRODUCT_HEIGHT'), '', '', '#MYTEXT#', '', 0));
-					?></span>
-					<input size="10" style="width:50px" type="text" id="data_product__product_height" name="data[product][product_height]" value="<?php echo $this->escape(@$this->product->product_height); ?>"/>
-				</div>
+				<div class="input-prepend"><?php
+					echo str_replace('#MYTEXT#', '<span class="add-on"><i class="hk-icon-14 icon-14-length"></i></span><input size="10" style="width:50px" type="text" id="data_product__product_length" name="data[product][product_length]" value="' . $this->escape(@$this->product->product_length) . '"/>', hikashop_tooltip(JText::_('PRODUCT_LENGTH'), '', '', '#MYTEXT#', '', 0));
+				?></div>
+				<div class="input-prepend"><?php
+					echo str_replace('#MYTEXT#', '<span class="add-on"><i class="hk-icon-14 icon-14-width"></i></span><input size="10" style="width:50px" type="text" id="data_product__product_width" name="data[product][product_width]" value="' . $this->escape(@$this->product->product_width) . '"/>', hikashop_tooltip(JText::_('PRODUCT_WIDTH'), '', '', '#MYTEXT#', '', 0));
+				?></div>
+				<div class="input-prepend"><?php
+					echo str_replace('#MYTEXT#', '<span class="add-on"><i class="hk-icon-14 icon-14-height"></i></span><input size="10" style="width:50px" type="text" id="data_product__product_height" name="data[product][product_height]" value="' . $this->escape(@$this->product->product_height) . '"/>', hikashop_tooltip(JText::_('PRODUCT_HEIGHT'), '', '', '#MYTEXT#', '', 0));
+				?></div>
 				<?php echo $this->volume->display('data[product][product_dimension_unit]', @$this->product->product_dimension_unit, 'dimension', '', 'class="no-chzn" style="width:93px;"'); ?>
 			</dd>
 <?php
@@ -502,7 +493,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 					JHTML::_('hikaselect.option', 'radio', JText::_('FIELD_RADIO')),
 					JHTML::_('hikaselect.option', 'per_product', JText::_('ON_A_PER_PRODUCT_BASIS'))
 				);
-				echo JHTML::_('select.genericlist', $options, 'data[product][product_option_method]', '', 'value', 'text', @$this->product->product_option_method);
+				echo JHTML::_('select.genericlist', $options, 'data[product][product_option_method]', 'class="custom-select"', 'value', 'text', @$this->product->product_option_method);
 			} else {
 				echo hikashop_getUpgradeLink('essential');
 			} ?></dd>
@@ -514,9 +505,9 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 
 <?php
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
+	$app = JFactory::getApplication();
 	$html = array();
-	$dispatcher->trigger('onProductFormDisplay', array( &$this->product, &$html ));
+	$app->triggerEvent('onProductFormDisplay', array( &$this->product, &$html ));
 
 	if((!empty($this->fields) && hikashop_acl('product/edit/customfields')) || !empty($html)) {
 ?>
@@ -582,23 +573,17 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 	}
 
 	$html = array();
-	$dispatcher->trigger('onProductDisplay', array( &$this->product, &$html ) );
+	$app->triggerEvent('onProductDisplay', array( &$this->product, &$html ) );
+	$app->triggerEvent('onProductBlocksDisplay', array(&$this->product, &$html));
 	if(!empty($html)){
-		echo '<div style="clear:both"></div>';
+		echo '<div class="hkc-xl-clear"></div>';
+		$i = 0;
 		foreach($html as $h){
+			$i++;
 			echo $h;
-		}
-	}
-
-	if(hikashop_acl('product/edit/plugin')) {
-		$html = array();
-		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onProductBlocksDisplay', array(&$this->product, &$html));
-		if(!empty($html)) {
-			echo '<div style="clear:both"></div>';
-			foreach($html as $h) {
-				echo $h;
+			if($i == 3) {
+				$i = 0;
+				echo '<div class="hkc-xl-clear"></div>';
 			}
 		}
 	}

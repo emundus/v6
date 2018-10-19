@@ -39,18 +39,19 @@ class EmundusModelStats extends JModelLegacy {
                     $query =  " SELECT uuid() AS `id`,
                                                 count(`el`.`id`) AS `nombre`,
                                                 `el`.`fnum_to` AS `num_offre`,
-                                                date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
-                                                date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
-                                                date_format(`el`.`timestamp`,'%u') AS `_week`,
-                                                date_format(`el`.`timestamp`,'%b') AS `_month`,
-                                                date_format(`el`.`timestamp`,'%Y') AS `_year`,
                                             (SELECT `jos_emundus_projet`.`titre`
-                                            FROM `jos_emundus_projet`
-                                            WHERE (convert(`jos_emundus_projet`.`fnum`
-                                            USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`
+                                                FROM `jos_emundus_projet`
+                                                WHERE (convert(`jos_emundus_projet`.`fnum`
+                                                USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`,
+                                            (SELECT `jos_emundus_projet`.`contact_nom`
+                                                FROM `jos_emundus_projet`
+                                                WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `contact`,
+                                            (SELECT COUNT(`jos_emundus_cifre_links`.`id`)
+                                                 FROM `jos_emundus_cifre_links`
+                                                 WHERE (convert(`jos_emundus_cifre_links`.`fnum_to`USING utf8) LIKE `el`.`fnum_to`) AND jos_emundus_cifre_links.state = 2) AS `accept`
                                         FROM `jos_emundus_logs` `el`
                                         WHERE (`el`.`action_id` = 32)
-                                        GROUP BY  `el`.`fnum_to`,date_format(`el`.`timestamp`,'%Y%m%d')";
+                                        GROUP BY  `el`.`fnum_to`";
 
                     $label = JText::_("jos_emundus_stats_nombre_candidature_offre");
                 break;
@@ -84,7 +85,7 @@ class EmundusModelStats extends JModelLegacy {
                                             date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
                                             date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
                                             date_format(`el`.`timestamp`,'%u') AS `_week`,
-                                            date_format(`el`.`timestamp`,'%b') AS `_month`,
+                                            date_format(`el`.`timestamp`,'%m') AS `_month`,
                                             date_format(`el`.`timestamp`,'%Y') AS `_year`
                                     FROM `jos_emundus_logs` `el`
                                     WHERE (`el`.`action_id` = -(2))
@@ -98,17 +99,15 @@ class EmundusModelStats extends JModelLegacy {
                     $query =    " SELECT uuid() AS `id`,
                                                     count(`el`.`id`) AS `nombre`,
                                                     `el`.`fnum_to` AS `num_offre`,
-                                                    date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
-                                                    date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
-                                                    date_format(`el`.`timestamp`,'%u') AS `_week`,
-                                                    date_format(`el`.`timestamp`,'%b') AS `_month`,
-                                                    date_format(`el`.`timestamp`,'%Y') AS `_year`,
                                                 (SELECT `jos_emundus_projet`.`titre`
                                                 FROM `jos_emundus_projet`
-                                                WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`
+                                                WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`,
+                                                (SELECT `jos_emundus_projet`.`contact_nom`
+                                                FROM `jos_emundus_projet`
+                                                WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `contact`
                                             FROM `jos_emundus_logs` `el`
                                             WHERE (`el`.`action_id` = 33)
-                                            GROUP BY  `el`.`fnum_to`,date_format(`el`.`timestamp`,'%Y%m%d')";
+                                            GROUP BY  `el`.`fnum_to`";
 
                     $label = JText::_("jos_emundus_stats_nombre_consult_offre");
                     break;

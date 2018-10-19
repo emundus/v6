@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -164,7 +164,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 			$i = 0;
 			$new_usable_rates = array();
 			foreach($receivedMethods as $method) {
-				$new_usable_rates[$i] = (!HIKASHOP_PHP5) ? $rate : clone($rate);
+				$new_usable_rates[$i] = clone($rate);
 				$new_usable_rates[$i]->shipping_price += round($method['value'], 2);
 				$selected_method = '';
 				$name = '';
@@ -483,7 +483,7 @@ function checkAllBox(id, type){
 		if(empty($null->shipping_address->address_country->zone_code_2))
 			$null->shipping_address->address_country->zone_code_2 = 'US';
 		$data['destCountry'] = $null->shipping_address->address_country->zone_code_2;
-		$data['destStatecode'] = $null->shipping_address->address_state->zone_code_3;
+		$data['destStatecode'] = @$null->shipping_address->address_state->zone_code_3;
 		$data['city'] = $warehouse->city;
 		$data['zip'] = $warehouse->zip;
 		$data['stateCode'] = @$warehouse->statecode;
@@ -684,7 +684,7 @@ function checkAllBox(id, type){
 			$destStateCode = '<StateProvinceCode>'. $data['destStatecode'] .'</StateProvinceCode>';
 			$negotiated_rate = $data['negotiated_rate'];
 		}
-		$xml = 
+		$xml =
 '<'.'?xml version="1.0" ?'.'>
 	<AccessRequest xml:lang=\'en-US\'>
 		<AccessLicenseNumber>'. $data['accessLicenseNumber'] .'</AccessLicenseNumber>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -796,8 +796,8 @@ class hikashopImageHelper {
 			$ret->path = $filename = $config->get('default_image');
 			if($ret->path == 'barcode.png') {
 				$fullFilename = HIKASHOP_MEDIA.'images'.DS . ltrim($ret->path, DS);
-				$ret->url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
-				$ret->origin_url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
+				$ret->url = rtrim(HIKASHOP_IMAGES, '/') . '/' . ltrim($ret->path, '/');
+				$ret->origin_url = rtrim(HIKASHOP_IMAGES, '/') . '/' . ltrim($ret->path, '/');
 				$ret->filename = $ret->path;
 			} else {
 				$fullFilename = $this->uploadFolder . $ret->path;
@@ -806,7 +806,6 @@ class hikashopImageHelper {
 				return $ret;
 			}
 			$clean_filename = JPath::clean(realpath($fullFilename));
-			unset($ret->url);
 			unset($ret->filename);
 		}
 
@@ -879,7 +878,8 @@ class hikashopImageHelper {
 			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
 			if(empty($ret->origin_url))
 				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
-
+			else
+				$ret->url = $ret->origin_url;
 			return $ret;
 		}
 		unset($ret->url);
@@ -926,8 +926,8 @@ class hikashopImageHelper {
 
 		$options['scaling'] = $scaling;
 		$thumbSize = array(
-			'x' => empty($options['forcesize']) ? $scaling[0] : $size['x'],
-			'y' => empty($options['forcesize']) ? $scaling[1] : $size['y'],
+			'x' => empty($options['forcesize']) || empty($size['x']) ? $scaling[0] : $size['x'],
+			'y' => empty($options['forcesize']) || empty($size['y']) ? $scaling[1] : $size['y'],
 		);
 		$resThumb = $this->createThumbRes($resMain, $thumbSize, $options);
 

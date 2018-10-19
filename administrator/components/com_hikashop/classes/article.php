@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,9 +32,9 @@ class hikashopArticleClass extends hikashopClass {
 		if(!empty($search)) {
 			$searchMap = array('c.title', 'c.alias', 'c.id');
 			if(!HIKASHOP_J30)
-				$searchVal = '\'%' . $this->db->getEscaped(JString::strtolower($search), true) . '%\'';
+				$searchVal = '\'%' . $this->db->getEscaped(HikaStringHelper::strtolower($search), true) . '%\'';
 			else
-				$searchVal = '\'%' . $this->db->escape(JString::strtolower($search), true) . '%\'';
+				$searchVal = '\'%' . $this->db->escape(HikaStringHelper::strtolower($search), true) . '%\'';
 			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
 		}
 

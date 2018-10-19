@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ class ViewViewView extends hikashopView{
 	var $ctrl= 'view';
 	var $nameListing = 'VIEWS';
 	var $nameForm = 'VIEWS';
-	var $icon = 'view';
+	var $icon = 'file-code';
 
 	public function display($tpl = null) {
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -64,9 +64,9 @@ class ViewViewView extends hikashopView{
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$pluginViews = array();
-		$dispatcher->trigger('onViewsListingFilter', array(&$pluginViews, $pageInfo->filter->client_id));
+		$app->triggerEvent('onViewsListingFilter', array(&$pluginViews, $pageInfo->filter->client_id));
 		if(!empty($pluginViews)) {
 			$i = 2;
 			foreach($pluginViews as $pluginView) {
@@ -76,9 +76,6 @@ class ViewViewView extends hikashopView{
 		$this->assignRef('pluginViews', $pluginViews);
 
 		jimport('joomla.filesystem.folder');
-		if(version_compare(JVERSION,'1.6','<')){
-			require_once (rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_templates'.DS.'helpers'.DS.'template.php');
-		}
 		$templates = array();
 		$templateValues = array();
 
@@ -159,26 +156,18 @@ class ViewViewView extends hikashopView{
 			if(!empty($clientTemplates)){
 				$client	= JApplicationHelper::getClientInfo($client_id);
 				$tBaseDir = $client->path.DS.'templates';
-				if(version_compare(JVERSION,'1.6','<')){
-					$joomlaTemplates = TemplatesHelper::parseXMLTemplateFiles($tBaseDir);
-				}else{
-					$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'template\' AND client_id='.(int)$client_id;
-					$db = JFactory::getDBO();
-					$db->setQuery($query);
-					$joomlaTemplates = $db->loadObjectList();
-					foreach($joomlaTemplates as $k => $v){
-						$joomlaTemplates[$k]->assigned = $joomlaTemplates[$k]->protected;
-						$joomlaTemplates[$k]->published = $joomlaTemplates[$k]->enabled;
-						$joomlaTemplates[$k]->directory = $joomlaTemplates[$k]->element;
-					}
 
+				$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'template\' AND client_id='.(int)$client_id;
+				$db = JFactory::getDBO();
+				$db->setQuery($query);
+				$joomlaTemplates = $db->loadObjectList();
+				foreach($joomlaTemplates as $k => $v){
+					$joomlaTemplates[$k]->assigned = $joomlaTemplates[$k]->protected;
+					$joomlaTemplates[$k]->published = $joomlaTemplates[$k]->enabled;
+					$joomlaTemplates[$k]->directory = $joomlaTemplates[$k]->element;
 				}
 
 				for($i = 0; $i < count($joomlaTemplates); $i++)  {
-					if(version_compare(JVERSION,'1.6','<')){
-						$joomlaTemplates[$i]->assigned = TemplatesHelper::isTemplateAssigned($joomlaTemplates[$i]->directory);
-						$joomlaTemplates[$i]->published = TemplatesHelper::isTemplateDefault($joomlaTemplates[$i]->directory, $client->id);
-					}
 					if($joomlaTemplates[$i]->published || $joomlaTemplates[$i]->assigned){
 						$templateValues[$joomlaTemplates[$i]->directory]=$joomlaTemplates[$i]->directory;
 
@@ -330,8 +319,7 @@ class ViewViewView extends hikashopView{
 		}
 
 		$this->toolbar = array(
-			'save',
-			'apply',
+			array('name' => 'group', 'buttons' => array( 'apply', 'save')),
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')

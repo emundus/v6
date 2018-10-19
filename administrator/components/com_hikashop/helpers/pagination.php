@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -147,11 +147,8 @@ class hikashopBridgePaginationHelper extends JPagination {
 
 	function _list_footer($list) {
 		$html = '<div class="list-footer pagination pagination-toolbar clearfix">'."\n";
-		if(HIKASHOP_J16) {
-			$display = JText::_('JGLOBAL_DISPLAY_NUM');
-		} else {
-			$display = JText::_('DISPLAY NUM');
-		}
+		$display = JText::_('JGLOBAL_DISPLAY_NUM');
+
 		$html .= "\n<div class=\"limit\">".$display.$list['limitfield']."</div>";
 		$html .= $list['pageslinks'];
 		$html .= "\n<div class=\"counter\">".$list['pagescounter']."</div>";
@@ -211,7 +208,7 @@ class hikashopBridgePaginationHelper extends JPagination {
 		if($config->get('pagination_viewall', 1))
 			$limits[] = JHTML::_('select.option', '0', JText::_('HIKA_ALL'));
 
-		if(version_compare(JVERSION,'3.0','<')){
+		if(!HIKASHOP_J30){
 			$viewall = $this->_viewall;
 		} else {
 			$viewall = @$this->viewall;

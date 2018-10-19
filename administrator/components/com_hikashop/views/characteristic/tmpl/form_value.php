@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,11 +10,11 @@ defined('_JEXEC') or die('Restricted access');
 ?><div style="float:right">
 	<?php
 		echo $this->popup->display(
-			'<img src="'.HIKASHOP_IMAGES.'add.png"/>'.JText::_('ADD'),
+			'<i class="fa fa-plus"></i> '.JText::_('ADD'),
 			'ADD',
 			 hikashop_completeLink("characteristic&task=editpopup&characteristic_parent_id=".@$this->element->characteristic_id,true ),
 			'value_add_button',
-			860, 480, '', '', 'button'
+			860, 480, 'class="btn btn-success"', '', 'link'
 		);
 	?>
 </div>
@@ -56,11 +56,11 @@ defined('_JEXEC') or die('Restricted access');
 		<tr id="characteristic_<?php echo $row->characteristic_id.'_'.$id;?>">
 			<td><?php
 				echo $this->popup->display(
-					'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
+					'<i class="fas fa-pen"></i>',
 					'ADD',
 					hikashop_completeLink("characteristic&task=editpopup&cid=".$row->characteristic_id.'&characteristic_parent_id='.$this->element->characteristic_id.'&id='.$id,true ),
 					'value_'.$row->characteristic_id.'_edit_button',
-					860, 480, '', '', 'link'
+					860, 480, 'title="'.JText::_('HIKA_EDIT').'"', '', 'link'
 				);
 			?></td>
 			<td><?php
@@ -85,7 +85,9 @@ defined('_JEXEC') or die('Restricted access');
 				<input type="text" size="3" name="characteristic_ordering[<?php echo $row->characteristic_id;?>]" id="characteristic_ordering[<?php echo $row->characteristic_id;?>][<?php echo $id;?>]" value="<?php echo $row->characteristic_ordering;?>"/>
 			</td>
 			<td class="hk_center">
-				<a href="#" onclick="return deleteRow('characteristic_div_<?php echo $row->characteristic_id.'_'.$id;?>','characteristic[<?php echo $row->characteristic_id;?>][<?php echo $id;?>]','characteristic_<?php echo $row->characteristic_id.'_'.$id;?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
+				<a title="<?php echo Jtext::_('HIKA_DELETE'); ?>" href="#" onclick="return deleteRow('characteristic_div_<?php echo $row->characteristic_id.'_'.$id;?>','characteristic[<?php echo $row->characteristic_id;?>][<?php echo $id;?>]','characteristic_<?php echo $row->characteristic_id.'_'.$id;?>');">
+					<i class="fa fa-trash"></i>
+				</a>
 			</td>
 			<td width="1%" class="hk_center">
 				<?php echo $row->characteristic_id; ?>

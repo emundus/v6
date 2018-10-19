@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -35,31 +35,20 @@ class hikashopColorType {
 	}
 
 	function displayAll($id, $map, $color) {
-		if(HIKASHOP_J25) {
-			$xmlConf = new SimpleXMLElement('<field name="'.$map.'" type="color" label=""></field>');
-			JFormHelper::loadFieldClass('color');
-			$jform = new JForm('hikashop');
-			$fieldTag = new JFormFieldColor();
-			$fieldTag->setForm($jform);
-			$fieldTag->setup($xmlConf, $color);
-			return $fieldTag->input;
-		}
-
-		$code = '<input type="text" name="'.$map.'" id="color'.$id.'" onchange=\'applyColorExample'.$id.'()\' class="inputbox" size="10" value="'.$color.'" />'.
-			' <input size="10" maxlength="0" style=\'cursor:pointer;background-color:'.$color.'\' onclick="if(document.getElementById(\'colordiv'.$id.'\').style.display == \'block\'){document.getElementById(\'colordiv'.$id.'\').style.display = \'none\';}else{document.getElementById(\'colordiv'.$id.'\').style.display = \'block\';}" id=\'colorexample'.$id.'\' />'.
-			'<div id=\'colordiv'.$id.'\' style=\'display:none;position:absolute;background-color:white;border:1px solid grey;z-index:999\'>'.$this->display($id).'</div>';
-		return $code;
+		$xmlConf = new SimpleXMLElement('<field name="'.$map.'" type="color" label=""></field>');
+		JFormHelper::loadFieldClass('color');
+		$jform = new JForm('hikashop');
+		$fieldTag = new JFormFieldColor();
+		$fieldTag->setForm($jform);
+		$fieldTag->setup($xmlConf, $color);
+		return $fieldTag->input;
 	}
 
 	function display($id = '') {
 		$js = 'function applyColor'.$id.'(newcolor){document.getElementById(\'color'.$id.'\').value = newcolor; document.getElementById("colordiv'.$id.'").style.display = "none";applyColorExample'.$id.'();}';
 		$js .= 'function applyColorExample'.$id.'(){document.getElementById(\'colorexample'.$id.'\').style.backgroundColor = document.getElementById(\'color'.$id.'\').value; document.getElementById("colordiv'.$id.'").style.display = "none";}';
 
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration($js);
 
 		$text = '<table><tr>';

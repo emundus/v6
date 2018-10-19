@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -86,7 +86,7 @@ if((int)$this->config->get('show_quantity_field') >= 2) {
 		}
 	}
 ?>
-<?php if($this->params->get('show_vote_product')){ $columns++; ?>
+<?php if($this->params->get('show_vote')){ $columns++; ?>
 					<th class="hikashop_product_vote title hk_center">
 						<?php echo JText::_('VOTE'); ?>
 					</th>
@@ -202,7 +202,7 @@ foreach($this->rows as $row) {
 		}
 	}
 ?>
-<?php if($this->params->get('show_vote_product')) { ?>
+<?php if($this->params->get('show_vote')) { ?>
 						<td class="hikashop_product_vote_row"><?php
 							$this->row =& $row;
 							$this->setLayout('listing_vote');

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,7 +17,7 @@ class orderController extends hikashopController {
 		parent::__construct($config,$skip);
 
 		$this->display = array_merge($this->display, array(
-			'invoice', 'cancel', 'download',
+			'invoice', 'cancel', 'download', 'order_products',
 			'pay', 'cancel_order', 'reorder'
 		));
 	}
@@ -45,12 +45,7 @@ class orderController extends hikashopController {
 		global $Itemid;
 		$suffix = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
 
-		if(!HIKASHOP_J16) {
-			$url = 'index.php?option=com_user&view=login';
-		} else {
-			$url = 'index.php?option=com_users&view=login';
-		}
-
+		$url = 'index.php?option=com_users&view=login';
 		$app->redirect(JRoute::_($url . $suffix . '&return='.urlencode(base64_encode(hikashop_currentUrl('', false))), false));
 		return false;
 	}
@@ -339,7 +334,7 @@ class orderController extends hikashopController {
 			hikaInput::get()->set('layout', 'pay');
 			return $this->display();
 		}
-		$invalidToken = ((!HIKASHOP_J25 && !JRequest::checkToken('request')) || (HIKASHOP_J25 && !JSession::checkToken('request')));
+		$invalidToken = (!JSession::checkToken('request'));
 		if(!empty($paymentMethod) && !empty($paymentMethod->custom_html) && (hikaInput::get()->getInt('payment_custom_html', 0) == 0 || $invalidToken)) {
 			hikaInput::get()->set('layout', 'pay');
 			return $this->display();
@@ -602,6 +597,18 @@ class orderController extends hikashopController {
 		$this->setRedirect(hikashop_completeLink('user'.$url, false, true));
 	}
 
+	public function order_products() {
+		$tmpl = hikaInput::get()->getString('tmpl', '');
+		if(!in_array($tmpl, array('raw','ajax','component')))
+			return false;
+		if(!$this->_check(false))
+			exit;
+		hikaInput::get()->set('layout', 'order_products');
+		hikashop_cleanBuffers();
+		parent::display();
+		exit;
+	}
+
 	public function getUploadSetting($upload_key, $caller = '') {
 		if(empty($upload_key))
 			return false;
@@ -686,8 +693,8 @@ class orderController extends hikashopController {
 		if(substr($field_table, 0, 4) == 'plg.') {
 			$externalValues = array();
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onTableFieldsLoad', array( &$externalValues ) );
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onTableFieldsLoad', array( &$externalValues ) );
 			$found = false;
 			foreach($externalValues as $external) {
 				if($external->value == $field_table) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -119,6 +119,12 @@ echo $this->leftmenu(
 			echo JHTML::_('hikaselect.booleanlist', 'config[display_add_to_wishlist_for_free_products]', '', $this->config->get('display_add_to_wishlist_for_free_products', 1));
 		?></td>
 	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('enable_multiwishlist');?>><?php echo JText::_('ENABLE_MULTI_WISHLIST'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[enable_multiwishlist]', '', $this->config->get('enable_multiwishlist', 1));
+		?></td>
+	</tr>
 <?php } ?>
 </table>
 	</div></div>
@@ -144,7 +150,7 @@ $vote_active = in_array($this->config->get('enable_status_vote', 0), array('vote
 		JHTML::_('select.option', 'two', JText::_('HIKA_VOTE_OR_COMMENT') ),
 		JHTML::_('select.option', 'both', JText::_('HIKA_VOTE_AND_COMMENT') )
 	);
-	echo JHTML::_('hikaselect.genericlist', $arr, "config[enable_status_vote]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('enable_status_vote', 0));
+	echo JHTML::_('hikaselect.genericlist', $arr, "config[enable_status_vote]", 'class="custom-select" size="1"', 'value', 'text', $this->config->get('enable_status_vote', 0));
 		?></td>
 	</tr>
 <?php if($vote_active || $comment_active){ ?>
@@ -156,7 +162,7 @@ $vote_active = in_array($this->config->get('enable_status_vote', 0), array('vote
 		JHTML::_('select.option', 'registered', JText::_('HIKA_VOTE_REGISTERED') ),
 		JHTML::_('select.option', 'buyed', JText::_('HIKA_VOTE_BOUGHT') )
 	);
-	echo JHTML::_('hikaselect.genericlist', $arr, "config[access_vote]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('access_vote', 0));
+	echo JHTML::_('hikaselect.genericlist', $arr, "config[access_vote]", 'class="custom-select" size="1"', 'value', 'text', $this->config->get('access_vote', 0));
 		?></td>
 	</tr>
 <?php } ?>
@@ -223,7 +229,7 @@ $vote_active = in_array($this->config->get('enable_status_vote', 0), array('vote
 	if($this->config->get('useful_rating', 1)){
 		$arr[] = JHTML::_('select.option', 'helpful', JText::_('HELPFUL') );
 	}
-	echo JHTML::_('hikaselect.genericlist', $arr, "config[vote_comment_sort]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('vote_comment_sort', 0));
+	echo JHTML::_('hikaselect.genericlist', $arr, "config[vote_comment_sort]", 'class="custom-select" size="1"', 'value', 'text', $this->config->get('vote_comment_sort', 0));
 		?></td>
 	</tr>
 	<tr>
@@ -263,10 +269,22 @@ $vote_active = in_array($this->config->get('enable_status_vote', 0), array('vote
 		JHTML::_('select.option', 'helpful', JText::_('HIKA_VOTE_USEFUL_COUNT') ),
 		JHTML::_('select.option', 'thumbs', JText::_('HIKA_VOTE_USEFUL_HAND') ),
 	);
-	echo JHTML::_('hikaselect.genericlist', $arr, "config[vote_useful_style]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('vote_useful_style', 0));
+	echo JHTML::_('hikaselect.genericlist', $arr, "config[vote_useful_style]", 'class="custom-select" size="1"', 'value', 'text', $this->config->get('vote_useful_style', 0));
 		?></td>
 	</tr>
-<?php } ?>
+<?php
+}
+if($vote_active || $comment_active) {
+?>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('vote_ip');?>><?php echo JText::_('LOG_IP_ADDRESS'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[vote_ip]', '', $this->config->get('vote_ip', 1));
+		?></td>
+	</tr>
+<?php
+}
+?>
 </table>
 	</div></div>
 </div>
@@ -307,7 +325,7 @@ if(!empty($this->affiliate_active)) {
 		JHTML::_('select.option', 1, JText::_('USE_CANONICAL_URL_IF_SPECIFIED') ),
 		JHTML::_('select.option', 2, JText::_('USE_CANONICAL_URL_AND_GENERATE_IT_IF_MISSING') ),
 	);
-	echo JHTML::_('hikaselect.genericlist', $arr, "config[force_canonical_urls]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('force_canonical_urls',1));
+	echo JHTML::_('hikaselect.genericlist', $arr, "config[force_canonical_urls]", 'class="custom-select" size="1"', 'value', 'text', $this->config->get('force_canonical_urls',1));
 		?></td>
 	</tr>
 <?php
@@ -444,7 +462,7 @@ function keywords_num_visible(value) {
 		JHTML::_('select.option', '1', JText::_('MOBILE_DEVICES') ),
 		JHTML::_('select.option', 'always', JText::_('HIKA_ALWAYS') ),
 	);
-	echo JHTML::_('hikaselect.genericlist', $arr, "config[filter_collapsable]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('filter_collapsable', 1));
+	echo JHTML::_('hikaselect.genericlist', $arr, "config[filter_collapsable]", 'class="custom-select" size="1"', 'value', 'text', $this->config->get('filter_collapsable', 1));
 		?></td>
 	</tr>
 <?php } else { ?>
@@ -475,7 +493,7 @@ function keywords_num_visible(value) {
 		JHTML::_('select.option', 'atom', JText::_('ATOM_ONLY')),
 		JHTML::_('select.option', 'both', JText::_('ALL_FEED'))
 	);
-	echo JHTML::_('hikaselect.genericlist', $hikarss_format, "config[hikarss_format]" , 'size="1"', 'value', 'text', $this->config->get('hikarss_format', 'both'));
+	echo JHTML::_('hikaselect.genericlist', $hikarss_format, "config[hikarss_format]" , 'class="custom-select" size="1"', 'value', 'text', $this->config->get('hikarss_format', 'both'));
 		?></td>
 	</tr>
 <?php if($this->config->get('hikarss_format', 'both') != 'none'){ ?>
@@ -506,7 +524,7 @@ function keywords_num_visible(value) {
 		JHTML::_('select.option', 'product_created', JText::_('ORDER_CREATED')),
 		JHTML::_('select.option', 'product_modified', JText::_('HIKA_LAST_MODIFIED'))
 	);
-	echo JHTML::_('hikaselect.genericlist', $hikarss_order, "config[hikarss_order]" , 'size="1"', 'value', 'text', $this->config->get('hikarss_order','product_id'));
+	echo JHTML::_('hikaselect.genericlist', $hikarss_order, "config[hikarss_order]" , 'class="custom-select" size="1"', 'value', 'text', $this->config->get('hikarss_order','product_id'));
 		?></td>
 	</tr>
 	<tr>

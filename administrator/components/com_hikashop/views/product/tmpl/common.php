@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -134,9 +134,9 @@ defined('_JEXEC') or die('Restricted access');
 				</tr>
 <?php
 	JPluginHelper::importPlugin( 'hikashop' );
-	$dispatcher = JDispatcher::getInstance();
+	$app = JFactory::getApplication();
 	$html = array();
-	$dispatcher->trigger( 'onProductFormDisplay', array( & $this->element, & $html ) );
+	$app->triggerEvent( 'onProductFormDisplay', array( & $this->element, & $html ) );
 	if(!empty($html)){
 		foreach($html as $h){
 			echo $h;
@@ -161,7 +161,7 @@ defined('_JEXEC') or die('Restricted access');
 					<td colspan="2">
 <?php
 	$html = array();
-	$dispatcher->trigger( 'onProductDisplay', array( & $this->element, & $html ) );
+	$app->triggerEvent( 'onProductDisplay', array( & $this->element, & $html ) );
 	if(!empty($html)){
 		foreach($html as $h){
 			echo $h;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -31,6 +31,6 @@ class hikashopPaymentType{
 		if(!$form){
 			$attribute .= ' onchange="document.adminForm.submit();"';
 		}
-		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox" '.$this->extra.' '.$attribute, 'value', 'text', $value );
+		return JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select" '.$this->extra.' '.$attribute, 'value', 'text', $value );
 	}
 }

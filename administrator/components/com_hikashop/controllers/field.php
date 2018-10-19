@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,11 +22,7 @@ class FieldController extends hikashopController {
 	}
 
 	function store($new = false) {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken() || die('Invalid Token');
-		} else {
-			JSession::checkToken() || die('Invalid Token');
-		}
+		JSession::checkToken() || die('Invalid Token');
 
 		$app = JFactory::getApplication();
 
@@ -54,11 +50,7 @@ class FieldController extends hikashopController {
 	}
 
 	public function remove() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken() || die('Invalid Token');
-		} else {
-			JSession::checkToken() || die('Invalid Token');
-		}
+		JSession::checkToken() || die('Invalid Token');
 
 		$cids = hikaInput::get()->get('cid', array(), 'array');
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,19 +34,22 @@ class hikashopLimitparentType{
 		}
 		$url=hikashop_completeLink('field&task=parentfield&type='.$type.'&value='.$parent_value,true,true);
 		$js ="
-		function hikashopLoadParent(namekey){
-			try{
-				new Ajax('".$url."&namekey='+namekey, { method: 'get', onComplete: function(result) { old = window.document.getElementById('parent_value'); if(old){ old.innerHTML = result;}}}).request();
-			}catch(err){
-				new Request({url:'".$url."&namekey='+namekey, method: 'get', onComplete: function(result) { old = window.document.getElementById('parent_value'); if(old){ old.innerHTML = result;}}}).send();
+function hikashopLoadParent(namekey){
+	window.Oby.xRequest('".$url."&namekey='+namekey, null,
+		function(xhr,params) {
+			old = window.document.getElementById('parent_value');
+			if(old){
+				old.innerHTML = xhr.responseText;
 			}
 		}
-		window.hikashop.ready(function(){
-			hikashopLoadParent(document.getElementById('limit_parent_select').value);
-		});
+	);
+}
+window.hikashop.ready(function(){
+	hikashopLoadParent(document.getElementById('limit_parent_select').value);
+});
 		";
 		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( $js );
-		return JHTML::_('select.genericlist',   $this->values, $map, 'class="inputbox" size="1" onChange="hikashopLoadParent(this.value);"', 'value', 'text', $value, 'limit_parent_select' );
+		return JHTML::_('select.genericlist',   $this->values, $map, 'class="custom-select" size="1" onChange="hikashopLoadParent(this.value);"', 'value', 'text', $value, 'limit_parent_select' );
 	}
 }

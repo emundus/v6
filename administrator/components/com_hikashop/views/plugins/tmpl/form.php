@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <div>
-	<form action="index.php?option=<?php echo HIKASHOP_COMPONENT; ?>&amp;ctrl=plugins" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
+	<form action="<?php echo hikashop_completeLink('plugins'); ?>" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
 <?php
 if(!empty($this->plugin->pluginView)) {
 	$this->setLayout($this->plugin->pluginView);
@@ -25,23 +25,13 @@ if(!empty($this->plugin->pluginView)) {
 	$plugin_images = $type . '_images';
 	$plugin_name = $type . '_name';
 	$plugin_name_input = $plugin_name . '_input';
-
-	if(!HIKASHOP_BACK_RESPONSIVE) {
 ?>
-<div id="page-plugins">
-	<table style="width:100%">
-	<tr>
-		<td valign="top" width="50%">
-<?php
-	} else {
-?>
-<div id="page-plugins" class="row-fluid">
-	<div class="span6">
-<?php
-	}
-?>
-		<fieldset class="adminform" id="htmlfieldset">
-			<legend><?php echo JText::_( 'MAIN_INFORMATION' ); ?></legend>
+<div id="page-plugins" class="hk-row-fluid hikashop_backend_tile_edition">
+	<div class="hkc-md-6">
+		<div class="hikashop_tile_block"><div>
+			<div class="hikashop_tile_title"><?php
+				echo JText::_('MAIN_INFORMATION');
+			?></div>
 <?php
 	$this->$plugin_name_input = 'data['.$type.']['.$plugin_name.']';
 	if($this->translation) {
@@ -51,22 +41,32 @@ if(!empty($this->plugin->pluginView)) {
 	}
 	echo $this->loadTemplate();
 ?>
-		</fieldset>
-<?php
-	if(!HIKASHOP_BACK_RESPONSIVE) {
-?>
-		</td>
-		<td valign="top" width="50%">
-<?php
-	} else {
-?>
 	</div>
-	<div class="span6 hikaspanleft">
+	</div>
+<?php
+	if(!empty($this->content)) {
+?>
+		<div class="hikashop_tile_block"><div>
+		<div class="hikashop_tile_title"><?php
+			echo JText::_('PLUGIN_SPECIFIC_CONFIGURATION');
+		?></div>
+			<table class="admintable table"><?php
+				echo $this->content;
+			?></table>
+		</div></div>
 <?php
 	}
+
+	if(!empty($this->extra_blocks)) {
+		echo implode("\r\n", $this->extra_blocks);
+	}
 ?>
-		<fieldset class="adminform">
-			<legend><?php echo JText::_('PLUGIN_GENERIC_CONFIGURATION'); ?></legend>
+	</div>
+	<div class="hkc-md-6">
+		<div class="hikashop_tile_block"><div>
+			<div class="hikashop_tile_title"><?php
+				echo JText::_('PLUGIN_GENERIC_CONFIGURATION');
+			?></div>
 			<table class="admintable table">
 <?php
 	if($this->multiple_plugin) {
@@ -264,7 +264,7 @@ function hika_payment_algorithm(el) {
 							JHTML::_('select.option', '4', JText::_('HTML_VERSION'))
 						);
 
-						echo JHTML::_('select.genericlist', $values, "data[shipping][shipping_params][shipping_override_address]" , 'onchange="hika_shipping_override(this);"', 'value', 'text', @$this->element->shipping_params->shipping_override_address );
+						echo JHTML::_('select.genericlist', $values, "data[shipping][shipping_params][shipping_override_address]" , 'class="custom-select"  onchange="hika_shipping_override(this);"', 'value', 'text', @$this->element->shipping_params->shipping_override_address );
 					?>
 						<script type="text/javascript">
 						function hika_shipping_override(el) {
@@ -301,20 +301,19 @@ function hika_payment_algorithm(el) {
 						?></label>
 					</td>
 					<td>
-						<span id="override_tax_zone_id"><?php
-							echo @$this->element->shipping_params->override_tax_zone->zone_id.' '.@$this->element->shipping_params->override_tax_zone->zone_name_english;
-						?><input type="hidden" name="data[shipping][shipping_params][override_tax_zone]" value="<?php echo @$this->element->shipping_params->override_tax_zone->zone_id; ?>" />
-						</span><?php
-							echo $this->popup->display(
-								'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
-								'OVERRIDE_TAX_ZONE',
-								 hikashop_completeLink("zone&task=selectchildlisting&type=".$type."&subtype=override_tax_zone_id&column=zone_id&map=data[shipping][shipping_params][override_tax_zone]",true ),
-								'override_tax_zone_id_link',
-								760, 480, '', '', 'link'
-							);
-						?><a href="#" onclick="document.getElementById('override_tax_zone_id').innerHTML='<input type=\'hidden\' name=\'data[shipping][shipping_params][override_tax_zone]\' value=\'\' />';return false;" >
-							<img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="delete"/>
-						</a>
+						<?php
+						echo $this->nameboxType->display(
+							'data[shipping][shipping_params][override_tax_zone]',
+							@$this->element->shipping_params->override_tax_zone->zone_id,
+							hikashopNameboxType::NAMEBOX_SINGLE,
+							'zone',
+							array(
+								'delete' => true,
+								'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+								'zone_types' => array('country' => 'COUNTRY', 'tax' => 'TAXES'),
+							)
+						);
+						?>
 					</td>
 				</tr>
 <?php
@@ -325,112 +324,34 @@ function hika_payment_algorithm(el) {
 	}
 ?>
 			</table>
-		</fieldset>
+		</div></div>
 <?php
-	if(!empty($this->content)) {
-?>
-		<fieldset class="adminform">
-			<legend><?php echo JText::_('PLUGIN_SPECIFIC_CONFIGURATION'); ?></legend>
-			<table class="admintable table"><?php
-				echo $this->content;
-			?></table>
-		</fieldset>
-<?php
-	}
 
-	if(!empty($this->extra_blocks)) {
-		echo implode("\r\n", $this->extra_blocks);
-	}
 
 	if($this->plugin_type == 'payment' || $this->plugin_type == 'shipping') {
 ?>
-		<fieldset class="adminform">
-<?php
-		$restriction_fields = array(
-			'zone_id',
-			'payment_shipping_methods_id',
-			'payment_currency',
-			array('payment_params','payment_min_price'),
-			array('payment_params','payment_max_price'),
-			array('payment_params','payment_min_quantity'),
-			array('payment_params','payment_max_quantity'),
-			array('payment_params','payment_min_weight'),
-			array('payment_params','payment_max_weight'),
-			array('payment_params','payment_min_volume'),
-			array('payment_params','payment_max_volume'),
-			array('payment_params','payment_zip_prefix'),
-			array('payment_params','payment_min_zip'),
-			array('payment_params','payment_max_zip'),
-			array('payment_params','payment_zip_suffix'),
-			'shipping_currency',
-			array('shipping_params','shipping_warehouse_filter'),
-			array('shipping_params','shipping_min_price'),
-			array('shipping_params','shipping_max_price'),
-			array('shipping_params','shipping_min_quantity'),
-			array('shipping_params','shipping_max_quantity'),
-			array('shipping_params','shipping_min_weight'),
-			array('shipping_params','shipping_max_weight'),
-			array('shipping_params','shipping_min_volume'),
-			array('shipping_params','shipping_max_volume'),
-			array('shipping_params','shipping_zip_prefix'),
-			array('shipping_params','shipping_min_zip'),
-			array('shipping_params','shipping_max_zip'),
-			array('shipping_params','shipping_zip_suffix'),
-		);
-
-		$field_style = 'style="display:none;"';
-		$checked = '';
-		$is_restriction = false;
-		foreach($restriction_fields as $f) {
-			$e = $this->element;
-			if(is_array($f)) {
-				$g = $f[0];
-				$f = $f[1];
-				if(!empty($g)) {
-					if(isset($this->element->$g))
-						$e = $this->element->$g;
-					else
-						continue;
-				}
-			}
-			if(!empty($e->$f)) {
-				if(is_array($e->$f)) {
-					if(count($e->$f) > 1 || (count($e->$f) == 1 && reset($e->$f) != '')) {
-						$is_restriction = true;
-						break;
-					}
-				} else {
-					$is_restriction = true;
-					break;
-				}
-			}
-		}
-		if($is_restriction) {
-			$field_style = '';
-			$checked='checked';
-		}
-?>
-			<legend><input type="checkbox" id="restrictions_checkbox" name="restrictions_checkbox" onchange="var display_fieldset ='none'; if(this.checked){ display_fieldset = 'block'; } document.getElementById('restrictions').style.display=display_fieldset;" <?php echo $checked;?> /><label style="cursor:pointer;" for="restrictions_checkbox"><?php echo JText::_('HIKA_RESTRICTIONS'); ?></label></legend>
-			<div id="restrictions" <?php echo $field_style; ?>>
+		<div class="hikashop_tile_block"><div>
+			<div class="hikashop_tile_title"><?php
+				echo JText::_('HIKA_RESTRICTIONS');
+			?></div>
 				<table class="admintable table">
 					<tr>
 						<td class="key"><?php echo JText::_('ZONE'); ?></td>
 						<td>
-							<span id="zone_id"><?php
-								echo @$this->element->zone_id.' '.@$this->element->zone_name_english;
-								$plugin_zone_namekey = $type.'_zone_namekey';
-							?><input type="hidden" name="data[<?php echo $type;?>][<?php echo $type;?>_zone_namekey]" value="<?php echo @$this->element->$plugin_zone_namekey; ?>" />
-							</span><?php
-								echo $this->popup->display(
-									'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
-									'ZONE',
-									 hikashop_completeLink("zone&task=selectchildlisting&type=".$type,true ),
-									'zone_id_link',
-									760, 480, '', '', 'link'
-								);
-							?><a href="#" onclick="document.getElementById('zone_id').innerHTML='<input type=\'hidden\' name=\'data[<?php echo $type;?>][<?php echo $type;?>_zone_namekey]\' value=\'\' />';return false;" >
-								<img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="delete"/>
-							</a>
+						<?php
+						$plugin_zone_namekey = $type.'_zone_namekey';
+						echo $this->nameboxType->display(
+							'data['.$type.']['.$type.'_zone_namekey]',
+							@$this->element->$plugin_zone_namekey,
+							hikashopNameboxType::NAMEBOX_SINGLE,
+							'zone',
+							array(
+								'delete' => true,
+								'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+								'zone_types' => array('country' => 'COUNTRY', 'shipping' => 'SHIPPING'),
+							)
+						);
+						?>
 						</td>
 					</tr>
 <?php
@@ -773,12 +694,14 @@ function hika_payment_algorithm(el) {
 ?>
 				</table>
 			</div>
-		</fieldset>
+		</div>
 <?php
 	}
 ?>
-		<fieldset class="adminform">
-			<legend><?php echo JText::_('ACCESS_LEVEL'); ?></legend>
+		<div class="hikashop_tile_block"><div style="min-height:auto;">
+			<div class="hikashop_tile_title"><?php
+				echo JText::_('ACCESS_LEVEL');
+			?></div>
 <?php
 	if(hikashop_level(2)) {
 		$acltype = hikashop_get('type.acl');
@@ -788,22 +711,9 @@ function hika_payment_algorithm(el) {
 		echo '<small style="color:red">'.JText::_('ONLY_FROM_BUSINESS').'</small>';
 	}
 ?>
-		</fieldset>
-<?php
-	if(!HIKASHOP_BACK_RESPONSIVE) {
-?>
-		</td>
-	</tr>
-	</table>
-</div>
-<?php
-	} else {
-?>
+		</div></div>
 	</div>
 </div>
-<?php
-	}
-?>
 		<input type="hidden" name="data[<?php echo $type;?>][<?php echo $type;?>_id]" value="<?php echo $this->id;?>"/>
 		<input type="hidden" name="data[<?php echo $type;?>][<?php echo $type;?>_type]" value="<?php echo $this->name;?>"/>
 		<input type="hidden" name="task" value="save"/>

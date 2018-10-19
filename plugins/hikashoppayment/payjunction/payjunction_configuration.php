@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -44,7 +44,7 @@ hikashop_loadJslib('mootools');
 		$values[] = JHTML::_('select.option', 'www.payjunction.com', 'Production Server');
 		$values[] = JHTML::_('select.option', 'www.payjunctionlabs.com', 'Test Server');
 
-		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][domain]" , 'class="inputbox" size="1"', 'value', 'text', @$this->element->payment_params->domain ); ?>
+		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][domain]" , 'class="custom-select" size="1"', 'value', 'text', @$this->element->payment_params->domain ); ?>
 	</td>
 </tr>
 <tr>
@@ -97,7 +97,7 @@ hikashop_loadJslib('mootools');
 		$values[] = JHTML::_('select.option', 'W', 'Match 9 Digit Zip');
 		$values[] = JHTML::_('select.option', 'Z', 'Match 5 Digit Zip');
 
-		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][security_avs]" , 'class="inputbox" size="1"', 'value', 'text', @$this->element->payment_params->security_avs ); ?>
+		echo JHTML::_('select.genericlist',   $values, "data[payment][payment_params][security_avs]" , 'class="custom-select" size="1"', 'value', 'text', @$this->element->payment_params->security_avs ); ?>
 	</td>
 </tr>
 <tr>

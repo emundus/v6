@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,13 +33,9 @@ defined('_JEXEC') or die('Restricted access');
 	<tbody>
 <?php
 	$k = 0;
-	if(!HIKASHOP_J16) {
-		$publishedid = 'published-';
-		$url = 'index.php?option=com_plugins&amp;view=plugin&amp;client=site&amp;task=edit&amp;cid[]=';
-	}else{
-		$publishedid = 'enabled-';
-		$url = 'index.php?option=com_plugins&amp;task=plugin.edit&amp;extension_id=';
-	}
+	$publishedid = 'enabled-';
+	$url = 'index.php?option=com_plugins&amp;task=plugin.edit&amp;extension_id=';
+
 	foreach($this->plugins as $i => &$row) {
 ?>
 		<tr class="row<?php echo $k; ?>">

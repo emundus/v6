@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -49,7 +49,7 @@ class FieldViewField extends hikashopView {
 		$fieldTitle = '';
 		if(!empty($field->field_id))
 			$fieldTitle = ' : '.$field->field_namekey;
-		hikashop_setTitle(JText::_('FIELD').$fieldTitle, 'field', 'field&task=edit&field_id='.$fieldid);
+		hikashop_setTitle(JText::_('FIELD').$fieldTitle, 'check-square', 'field&task=edit&field_id='.$fieldid);
 
 
 		hikashop_loadJslib('jquery');
@@ -72,8 +72,7 @@ function setVisible(value) {
 		$doc->addScriptDeclaration($script);
 
 		$this->toolbar = array(
-			'save',
-			'apply',
+			array('name' => 'group', 'buttons' => array( 'apply', 'save')),
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => 'field-form')
@@ -184,7 +183,7 @@ function setVisible(value) {
 					$categories[$k]->category_id = $cat;
 				}
 
-				JArrayHelper::toInteger($this->categories);
+				hikashop_toInteger($this->categories);
 
 				$db = JFactory::getDBO();
 				$db->setQuery('SELECT * FROM '.hikashop_table('category').' WHERE category_id IN ('.implode(',', $this->categories).')');
@@ -222,8 +221,9 @@ function setVisible(value) {
 		$this->assignRef('nameboxType', $nameboxType);
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onCustomfieldEdit', array(&$field, &$this));
+		$app = JFactory::getApplication();
+		$obj =& $this;
+		$app->triggerEvent('onCustomfieldEdit', array(&$field, &$obj));
 	}
 
 	public function listing() {
@@ -259,7 +259,7 @@ function setVisible(value) {
 		$pagination = hikashop_get('helper.pagination', $total, 0, $total);
 		$this->assignRef('pagination', $pagination);
 
-		hikashop_setTitle(JText::_('FIELDS'),'field','field');
+		hikashop_setTitle(JText::_('FIELDS'),'check-square','field');
 
 		$manage = hikashop_isAllowed($config->get('acl_field_manage', 'all'));
 		$this->assignRef('manage', $manage);

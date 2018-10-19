@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -312,7 +312,12 @@ class plgHikashoppaymentservired extends hikashopPaymentPlugin {
 
 		$iv = str_repeat("\x00", 8);
 
-		$encryptkey = mcrypt_encrypt(MCRYPT_3DES, $decodekey, (string)$orderServired, MCRYPT_MODE_CBC, $iv);
+		$message_padded = $orderServired;
+		if (strlen($message_padded) % 8) {
+		    $message_padded = str_pad($message_padded,
+		        strlen($message_padded) + 8 - strlen($message_padded) % 8, "\0");
+		}
+		$encryptkey = openssl_encrypt($message_padded, "DES-EDE3-CBC", $decodekey, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING, $iv);
 
 		$HmacSign = hash_hmac('sha256', $encodedparams, $encryptkey, true);
 

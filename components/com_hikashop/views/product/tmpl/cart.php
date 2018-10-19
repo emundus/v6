@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -80,9 +80,9 @@ $css_button = $this->config->get('css_button', 'hikabtn');
 $css_button_checkout = $this->config->get('css_button_checkout', 'hikashop_cart_proceed_to_checkout');
 
 $print_button = $this->popup->display(
-	'<img src="'.HIKASHOP_IMAGES.'print.png" alt="'.JText::_('HIKA_PRINT').'" />',
+	'<i class="fas fa-print"></i>',
 	'HIKA_PRINT', hikashop_completeLink('cart&task=printcart&cid='.$this->element->cart_id, true),
-	'hikashop_print_popup', 760, 480, '', '', 'link'
+	'hikashop_print_popup', 760, 480, 'title="'.JText::_('HIKA_PRINT').'"', '', 'link'
 );
 $this->setLayout('listing_price');
 $this->params->set('show_quantity_field', 0);
@@ -186,8 +186,8 @@ if(!empty($small_cart)) {
 	if($this->element->cart_type == 'cart' && $small_cart == 1 && $this->params->get('show_cart_delete', 1)) {
 		$delete = hikashop_completeLink('product&task=cleancart');
 ?>
-	<a class="hikashop_small_cart_clean_link" href="<?php echo $delete; ?>" onclick="window.location='<?php echo $delete. (strpos($delete, '?') ? '&amp;' : '?') .'return_url='; ?>'+window.btoa(window.location); return false;">
-		<img src="<?php echo HIKASHOP_IMAGES . 'delete2.png';?>" style="max-width:inherit;" border="0" alt="<?php echo JText::_('EMPTY_THE_CART'); ?>" />
+	<a class="hikashop_small_cart_clean_link" title="<?php echo JText::_('EMPTY_THE_CART'); ?>" href="<?php echo $delete; ?>" onclick="window.location='<?php echo $delete. (strpos($delete, '?') ? '&amp;' : '?') .'return_url='; ?>'+window.btoa(window.location); return false;">
+		<i class="fa fa-times-circle"></i>
 	</a>
 <?php
 	}
@@ -218,7 +218,6 @@ if(!empty($small_cart)) {
 	<div class="hikashop_cart_dropdown_content" id="hikashop_cart_dropdown_<?php echo $module_id; ?>" style="display:none;<?php echo $alignment; ?>">
 <?php
 }
-
 $shows = array(
 	'price' => (int)$this->params->get('show_price', 1),
 	'coupon' => (int)$this->params->get('show_coupon', 0),
@@ -308,7 +307,7 @@ if(!empty($shows['payment']) && !empty($this->element->payment) && $this->elemen
 				?></td>
 <?php } ?>
 				<td class="hikashop_cart_module_payment_value"><?php
-					echo $this->currencyClass->format($this->element->payment->payment_price, $this->total->prices[0]->price_currency_id);
+					echo $this->currencyClass->format($this->payment_price, $this->total->prices[0]->price_currency_id);
 				?></td>
 <?php if(!empty($columns['delete'])) { ?>
 				<td></td>
@@ -333,17 +332,17 @@ if(!empty($shows['payment']) && !empty($this->element->payment) && $this->elemen
 <?php
 if(!empty($shows['taxes']) && isset($this->total->prices[0])) {
 	if ($this->config->get('detailed_tax_display') && !empty($this->total->prices[0]->taxes)) {
-		foreach($this->total->prices[0]->taxes as $taxname => $taxdata){
+		foreach($this->displayingPrices->taxes as $taxname => $taxdata){
 ?>
 			<tr>
 <?php
 			if($colspan > 0) { ?>
 				<td class="hikashop_cart_module_tax_title" colspan="<?php echo $colspan; ?>"><?php
-					echo $taxname;
+					echo hikashop_translate($taxname);
 				?></td>
 <?php 		} ?>
 				<td class="hikashop_cart_module_tax_value"><?php
-					echo $this->currencyClass->format($taxdata->tax_amount, $this->total->prices[0]->price_currency_id);
+					echo $this->currencyClass->format($taxdata->tax_amount, $this->displayingPrices->price_currency_id);
 				?></td>
 <?php 		if(!empty($columns['delete'])) { ?>
 				<td></td>
@@ -360,8 +359,8 @@ if(!empty($shows['taxes']) && isset($this->total->prices[0])) {
 				?></td>
 <?php 		} ?>
 				<td class="hikashop_cart_module_tax_value"><?php
-					$taxes = round($this->element->full_total->prices[0]->price_value_with_tax - $this->element->full_total->prices[0]->price_value, $this->currencyClass->getRounding($this->element->full_total->prices[0]->price_currency_id));
-					echo $this->currencyClass->format($taxes, $this->total->prices[0]->price_currency_id);
+					$taxes = round($this->displayingPrices->total->price_value_with_tax - $this->displayingPrices->total->price_value, $this->currencyClass->getRounding($this->displayingPrices->price_currency_id));
+					echo $this->currencyClass->format($taxes, $this->displayingPrices->price_currency_id);
 				?></td>
 <?php 		if(!empty($columns['delete'])) { ?>
 				<td></td>
@@ -378,9 +377,30 @@ if(!empty($shows['taxes']) && isset($this->total->prices[0])) {
 				?></td>
 <?php } ?>
 				<td class="hikashop_cart_module_product_total_value"><?php
-					$this->row = $this->total;
-					echo $this->loadTemplate();
-				?></td>
+					if($this->params->get('price_with_tax', 3) == 3) {
+						$this->params->set('price_with_tax', (int)$this->config->get('price_with_tax'));
+					}
+					$total_price = '';
+					if($this->params->get('price_with_tax')){
+						$total_price .= $this->currencyClass->format($this->displayingPrices->total->price_value_with_tax, $this->displayingPrices->price_currency_id);
+					}
+					if($this->params->get('price_with_tax')==2){
+						$total_price .= JText::_('PRICE_BEFORE_TAX');
+					}
+					if($this->params->get('price_with_tax')==2||!$this->params->get('price_with_tax')){
+						$total_price .= $this->currencyClass->format($this->displayingPrices->total->price_value, $this->displayingPrices->price_currency_id);
+					}
+					if($this->params->get('price_with_tax')==2){
+						$total_price .= JText::_('PRICE_AFTER_TAX');
+					}
+					?>
+					<span class="hikashop_product_price_full">
+						<span class="hikashop_product_price hikashop_product_price_0">
+							<?php echo $total_price; ?>
+						</span>
+					</span>
+				</td>
+<?php //exit; ?>
 <?php if(!empty($columns['delete'])) { ?>
 				<td></td>
 <?php } ?>
@@ -537,6 +557,10 @@ foreach($this->element->products as $k => $product) {
 		if(!empty($shows['taxes']) && $this->params->get('price_with_tax') == 1)
 			$this->params->set('price_with_tax',0);
 
+		if($this->params->get('show_discount', 3) == 3 && isset($this->default_params['show_discount'])) {
+			$this->params->set('show_discount', (int)$this->default_params['show_discount']);
+		}
+
 		echo $this->loadTemplate();
 
 		if(!empty($shows['taxes']) && $price_with_tax_option == 1)
@@ -549,7 +573,9 @@ foreach($this->element->products as $k => $product) {
 		$delete_url .= ((strpos($delete_url, '?') === false) ? '?' : '&') . 'return_url='.urlencode(base64_encode(urldecode($this->params->get('url'))));
 ?>
 				<td class="hikashop_cart_module_product_delete_value hikashop_cart_value">
-					<a href="<?php echo $delete_url; ?>" data-cart-id="<?php echo (int)$this->element->cart_id; ?>" data-cart-type="<?php echo $this->escape($this->element->cart_type); ?>" data-cart-product-id="<?php echo (int)$product->cart_product_id; ?>" onclick="if(window.hikashop) { return window.hikashop.deleteFromCart(this, null, 'hikashop_cart_<?php echo $module_id; ?>'); }" title="<?php echo JText::_('HIKA_DELETE'); ?>"><img src="<?php echo HIKASHOP_IMAGES . 'delete2.png';?>" style="max-width:inherit;" border="0" alt="<?php echo JText::_('HIKA_DELETE'); ?>" /></a>
+					<a href="<?php echo $delete_url; ?>" data-cart-id="<?php echo (int)$this->element->cart_id; ?>" data-cart-type="<?php echo $this->escape($this->element->cart_type); ?>" data-cart-product-id="<?php echo (int)$product->cart_product_id; ?>" onclick="if(window.hikashop) { return window.hikashop.deleteFromCart(this, null, 'hikashop_cart_<?php echo $module_id; ?>'); }" title="<?php echo JText::_('HIKA_DELETE'); ?>">
+						<i class="fa fa-times-circle"></i>
+					</a>
 				</td>
 <?php
 	}

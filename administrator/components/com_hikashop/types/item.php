@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -48,7 +48,23 @@ class hikashopItemType {
 	}
 
 	function loadValues($optGroup, $files) {
-		$this->values[] = JHTML::_('select.optgroup', $optGroup);
+		if(!HIKASHOP_J40) {
+			$this->values[] = JHTML::_('select.optgroup', $optGroup);
+			foreach($files as $file){
+				if(preg_match('#^listing_((?!div|list|price|table|vote).*)\.php$#',$file,$match)){
+					$val = strtoupper($match[1]);
+					$trans = JText::_($val);
+					if($trans==$val){
+						$trans=$match[1];
+					}
+					$this->values[$match[1]] = JHTML::_('select.option', $match[1], $trans);
+				}
+			}
+			$this->values[] = JHTML::_('select.optgroup', $optGroup);
+			return;
+		}
+
+		$values = array();
 		foreach($files as $file){
 			if(preg_match('#^listing_((?!div|list|price|table|vote).*)\.php$#',$file,$match)){
 				$val = strtoupper($match[1]);
@@ -56,12 +72,13 @@ class hikashopItemType {
 				if($trans==$val){
 					$trans=$match[1];
 				}
-				$this->values[$match[1]] = JHTML::_('select.option', $match[1], $trans);
+				$values[$match[1]] = JHTML::_('select.option', $match[1], $trans);
 			}
 		}
-		if(HIKASHOP_J16) {
-			$this->values[] = JHTML::_('select.optgroup', $optGroup);
-		}
+		$this->values[] = array(
+			'text' => $optGroup,
+			'items' => $values
+		);
 	}
 
 	function load() {
@@ -81,13 +98,19 @@ class hikashopItemType {
 			$default = '';
 			if(isset($defaultParams['div_item_layout_type']))
 				$default = ' ('.@$this->values[$defaultParams['div_item_layout_type']]->text.')';
-			$this->values[] = JHTML::_('select.option', 'inherit', JText::_('HIKA_INHERIT').$default);
+			if(!HIKASHOP_J40)
+				$this->values[] = JHTML::_('select.option', 'inherit', JText::_('HIKA_INHERIT').$default);
+			else
+				$this->values[''] = array('items' => array( JHTML::_('select.option', 'inherit', JText::_('HIKA_INHERIT').$default)) );
 		}
 	}
 
 	function display($map, $value, &$js, $option = '') {
 		$this->load();
-		$options = 'class="inputbox" size="1" '.$option;
-		return JHTML::_('select.genericlist', $this->values, $map, $options, 'value', 'text', $value);
+		$options = 'class="custom-select" size="1" '.$option;
+
+		if(!HIKASHOP_J40)
+			return JHTML::_('select.genericlist', $this->values, $map, $options, 'value', 'text', $value );
+		return JHTML::_('select.groupedlist', $this->values, $map, array('list.attr'=>'class="custom-select"', 'group.id' => 'id', 'list.select' => array($value)) );
 	}
 }

@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.5.1
+ * @version    4.0.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -90,7 +90,7 @@ HKTooltip.prototype = {
 		this.setContent();
 
 		if (this.options.animation) {
-			$tip.addClass('fade');
+			$tip.addClass('hkfade');
 		}
 
 		placement = typeof this.options.placement == 'function' ?
@@ -169,7 +169,7 @@ HKTooltip.prototype = {
 	setContent: function () {
 		var $tip = this.tip(), title = this.getTitle();
 		$tip.find('.hk-tooltip-inner')[this.options.html ? 'html' : 'text'](title);
-		$tip.removeClass('fade in top bottom left right');
+		$tip.removeClass('hkfade in top bottom left right');
 	},
 
 	hide: function () {
@@ -192,7 +192,7 @@ HKTooltip.prototype = {
 			});
 		}
 
-		$.support.transition && this.$tip.hasClass('fade') ?
+		$.support.transition && this.$tip.hasClass('hkfade') ?
 			removeWithAnimation() :
 			$tip.detach();
 

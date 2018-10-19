@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop Validate free order Plugin</name>
-	<creationDate>07 août 2018</creationDate>
-	<version>3.5.1</version>
+	<creationDate>18 octobre 2018</creationDate>
+	<version>4.0.0</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -17,11 +17,19 @@
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
 		</param>
+		<param name="send_payment_notif" type="radio" default="1" label="SEND_PAYMENT_EMAIL" description="FREE_ORDER_SEND_PAYMENT_EMAIL">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
+		</param>
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
 				<field name="send_confirmation" type="radio" default="1" label="SEND_CONFIRMATION_EMAIL" description="FREE_ORDER_SEND_CONFIRMATION_EMAIL" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
+				<field name="send_payment_notif" type="radio" default="1" label="SEND_PAYMENT_EMAIL" description="FREE_ORDER_SEND_PAYMENT_EMAIL">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>

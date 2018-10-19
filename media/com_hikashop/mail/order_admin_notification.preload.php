@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -333,7 +333,7 @@ if(!empty($data->cart->products)){
 		if($config->get('detailed_tax_display') && !empty($data->cart->order_tax_info)) {
 			foreach($data->cart->order_tax_info as $tax) {
 				$cartFooters[] = array(
-					'NAME' => $tax->tax_namekey,
+					'NAME' => hikashop_translate($tax->tax_namekey),
 					'VALUE' => $currencyHelper->format($tax->tax_amount,$data->cart->order_currency_id)
 				);
 			}
@@ -442,8 +442,8 @@ ob_start();
 	}
 
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
-	$dispatcher->trigger('onAfterOrderProductsListingDisplay', array(&$data->cart, 'email_notification_html'));
+	$app = JFactory::getApplication();
+	$app->triggerEvent('onAfterOrderProductsListingDisplay', array(&$data->cart, 'email_notification_html'));
 
 $content = ob_get_clean();
 $vars['ORDER_SUMMARY'] = trim($content);

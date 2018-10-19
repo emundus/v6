@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,14 +32,49 @@ class OrderViewOrder extends hikashopView {
 
 		$config = hikashop_config();
 		$this->assignRef('config', $config);
+		global $Itemid;
+		$this->Itemid = $Itemid;
 
-		hikashop_setPageTitle('ORDERS');
+		$menus	= $app->getMenu();
+		$menu	= $menus->getActive();
+		$show_page_heading = true;
+		$params = null;
+		if(!empty($menu)) {
+			$params = $menu->getParams();
+			$show_page_heading = $params->get('show_page_heading');
+		}
+		if(is_null($show_page_heading)) {
+			$com_menus = JComponentHelper::getParams('com_menus');
+			if(!empty($com_menus))
+				$show_page_heading = $com_menus->get('show_page_heading');
+		}
+		if(!empty($menu) && $menu->link == 'index.php?option=com_hikashop&view=order&layout=listing') {
+			if($show_page_heading)
+				$this->title = $params->get('page_heading');
+			hikashop_setPageTitle($menu->title);
+		} else {
+			if($show_page_heading)
+				$this->title = JText::_('ORDERS');
+			hikashop_setPageTitle('ORDERS');
+			$pathway = $app->getPathway();
+			$pathway->addItem(JText::_('ORDERS'), hikashop_completeLink('order&Itemid='.$Itemid));
+
+			$this->toolbar = array(
+				'back' => array(
+					'icon' => 'back',
+					'name' => JText::_('HIKA_BACK'),
+					'url' => hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid),
+					'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
+				)
+			);
+		}
 
 		$this->loadRef(array(
 			'currencyClass' => 'class.currency',
 			'cartHelper' => 'helper.cart',
 			'dropdownHelper' => 'helper.dropdown',
 			'toolbarHelper' => 'helper.toolbar',
+			'popupHelper' => 'helper.popup',
 		));
 
 		$params = new HikaParameter();
@@ -48,6 +83,22 @@ class OrderViewOrder extends hikashopView {
 
 		$extraFilters = array();
 		$pageInfo = $this->getPageInfo('hk_order.order_created', 'desc', $extraFilters);
+
+		$text_asc = JText::_('ASCENDING');
+		$text_desc = JText::_('DESCENDING');
+		$ordering_values = array(
+			'hk_order.order_status' => JText::_('ORDER_STATUS'),
+			'hk_order.order_created' => JText::_('DATE'),
+			'hk_order.order_full_price' => JText::_('HIKASHOP_TOTAL'),
+		);
+		$this->ordering_values = array();
+		foreach($ordering_values as $k => $v) {
+			if($k == 'hk_order.order_status')
+				continue;
+			$this->ordering_values[$k.' asc'] = $v . ' ' .$text_asc;
+			$this->ordering_values[$k.' desc'] = $v . ' ' .$text_desc;
+		}
+		$this->full_ordering = $this->pageInfo->filter->order->value . ' ' . strtolower($this->pageInfo->filter->order->dir);
 
 		$filters = array(
 			'hk_order.order_type = ' . $db->Quote('sale'),
@@ -73,6 +124,29 @@ class OrderViewOrder extends hikashopView {
 		if(!empty($pageInfo->search)) {
 			$rows = hikashop_search($pageInfo->search, $rows, 'order_id');
 		}
+
+		$address_data = array();
+		$address_html = array();
+		foreach($rows as $row) {
+			if((empty($row->order_shipping_method) && empty($row->order_shipping_id)) || empty($row->order_shipping_address_id))
+				continue;
+			$address_data[(int)$row->order_shipping_address_id] = (int)$row->order_shipping_address_id;
+		}
+		if(!empty($address_data)) {
+			$query = ' SELECT * FROM ' . hikashop_table('address') . ' WHERE address_id IN (' . implode(',', $address_data) . ')';
+			$db->setQuery($query);
+			$address_data = $db->loadObjectList('address_id');
+
+			$addressClass = hikashop_get('class.address');
+			$addressClass->loadZone($address_data, 'name','frontcomp');
+			$fields = $addressClass->fields;
+
+			foreach($address_data as $k => $v) {
+				$address_html[$k] = $addressClass->displayAddress($fields, $v, 'address');
+			}
+		}
+		$this->address_data = $address_data;
+		$this->address_html = $address_html;
 
 		$this->action_column = false;
 
@@ -112,6 +186,9 @@ class OrderViewOrder extends hikashopView {
 			$this->action_column = true;
 		}
 
+		$first_row = reset($rows);
+		$this->order_products( (int)$first_row->order_id );
+
 		$this->assignRef('rows', $rows);
 
 		$this->getPagination();
@@ -125,16 +202,7 @@ class OrderViewOrder extends hikashopView {
 		$this->assignRef('cart',$cart);
 		$currencyClass = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper',$currencyClass);
-
-		global $Itemid;
-		$this->toolbar = array(
-			'back' => array(
-				'icon' => 'back',
-				'name' => JText::_('HIKA_BACK'),
-				'url' => hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid)
-			),
-		);
-		$this->title = JText::_('ORDERS');
+		hikashop_loadJslib('tooltip');
 	}
 
 	public function pay() {
@@ -225,8 +293,6 @@ class OrderViewOrder extends hikashopView {
 		}
 		$this->assignRef('products',$products);
 
-		hikashop_setPageTitle(JText::_('HIKASHOP_ORDER').':'.$this->element->order_number);
-
 		global $Itemid;
 		$url_itemid = '';
 		if(!empty($Itemid)) {
@@ -249,6 +315,7 @@ class OrderViewOrder extends hikashopView {
 				'icon' => 'pay',
 				'name' => JText::_('PAY_NOW'),
 				'url' => hikashop_completeLink($url),
+				'fa' => array('html' => '<i class="far fa-credit-card"></i>')
 			);
 			$toolbar_array['pay'] = $pay;
 		}
@@ -266,7 +333,8 @@ class OrderViewOrder extends hikashopView {
 						'id' => 'hikashop_print_cart',
 						'width' => 760,
 						'height' => 480
-					)
+					),
+					'fa' => array('html' => '<i class="fas fa-print"></i>')
 				);
 			}
 			$user = JFactory::getUser();
@@ -274,7 +342,8 @@ class OrderViewOrder extends hikashopView {
 				$back = array(
 					'icon' => 'back',
 					'name' => JText::_('HIKA_BACK'),
-					'javascript' =>  "submitbutton('cancel'); return false;"
+					'javascript' =>  "submitbutton('cancel'); return false;",
+					'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
 				);
 				$toolbar_array['back'] = $back;
 			}
@@ -282,6 +351,17 @@ class OrderViewOrder extends hikashopView {
 
 		if(count($toolbar_array))
 			$this->toolbar = $toolbar_array;
+
+
+		$app = JFactory::getApplication();
+		$menus	= $app->getMenu();
+		$menu	= $menus->getActive();
+		$pathway = $app->getPathway();
+		if(empty($menu) || $menu->link != 'index.php?option=com_hikashop&view=order&layout=listing')
+			$pathway->addItem(JText::_('ORDERS'), hikashop_completeLink('order&Itemid='.$Itemid));
+		$title = JText::_('HIKASHOP_ORDER').':'.$this->element->order_number;
+		$pathway->addItem($title, hikashop_completeLink('order&task=show&order_id=' . $this->element->order_id . '&Itemid=' . $Itemid));
+		hikashop_setPageTitle($title);
 		if($this->invoice_type == 'order' || empty($this->element->order_invoice_number))
 			$this->title = JText::_('HIKASHOP_ORDER').': '.$this->element->order_number;
 		else
@@ -297,6 +377,52 @@ class OrderViewOrder extends hikashopView {
 		$doc->addScriptDeclaration("\n<!--\n".$js."\n//-->\n");
 	}
 
+	public function order_products($order_id = null) {
+		if($order_id === null)
+			$order_id = hikashop_getCID();
+
+		$this->config = hikashop_config();
+
+		$this->loadRef(array(
+			'imageHelper' => 'helper.image',
+			'currencyClass' => 'class.currency',
+		));
+		$orderClass = hikashop_get('class.order');
+		$this->row = $orderClass->loadFullOrder($order_id, true);
+
+		$product_ids = array();
+		foreach($this->row->products as $product) {
+			$product_ids[(int)$product->product_id] = (int)$product->product_id;
+		}
+
+		$this->products = array();
+		if(count($product_ids)) {
+			$db = JFactory::getDBO();
+			$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',', $product_ids). ')');
+			$this->products = $db->loadObjectList('product_id');
+
+			$parent_ids = array();
+			$productClass = hikashop_get('class.product');
+			foreach($this->products as $k => $product) {
+				if(!empty($product->product_parent_id))
+					$parent_ids[$product->product_id] = (int)$product->product_parent_id;
+				else
+					$productClass->addAlias($this->products[$k]);
+			}
+			if(count($parent_ids)) {
+				$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',', $parent_ids). ')');
+				$parents = $db->loadObjectList('product_id');
+				foreach($parent_ids as $variant_id => $parent_id){
+					if(!isset($parents[$parent_id]))
+						continue;
+					$productClass->addAlias($parents[$parent_id]);
+					$this->products[$variant_id]->product_alias = $parents[$parent_id]->product_alias;
+					$this->products[$variant_id]->product_canonical = $parents[$parent_id]->product_canonical;
+				}
+			}
+		}
+	}
+
 	protected function &_order($type) {
 		$order_id = hikashop_getCID('order_id');
 		$app = JFactory::getApplication();
@@ -304,8 +430,8 @@ class OrderViewOrder extends hikashopView {
 			$order_id = $app->getUserState('com_hikashop.order_id');
 		}
 		if(!empty($order_id)){
-			$class = hikashop_get('class.order');
-			$order = $class->loadFullOrder($order_id,($type=='order'?true:false));
+			$orderClass = hikashop_get('class.order');
+			$order = $orderClass->loadFullOrder($order_id,($type=='order'?true:false));
 		}
 		if(empty($order)){
 			$app->redirect(hikashop_completeLink('order&task=listing',false,true));

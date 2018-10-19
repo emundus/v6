@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,22 +16,17 @@ class ImportController extends hikashopController
 	var $helperImport;
 	var $db;
 
-	function __construct()
-	{
+	public function __construct() {
 		parent::__construct();
 		$this->db = JFactory::getDBO();
-		$this->modify[]='import';
+		$this->modify[] = 'import';
 		$this->registerDefaultTask('show');
 		$this->importHelper = hikashop_get('helper.import');
 	}
 
-	function import()
-	{
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken('request') || die('Invalid Token');
-		} else {
-			JSession::checkToken('request') || die('Invalid Token');
-		}
+	public function import() {
+		JSession::checkToken('request') || die('Invalid Token');
+
 		$function = hikaInput::get()->getCmd('importfrom');
 		$this->importHelper->addTemplate(hikaInput::get()->getInt('template_product',0));
 

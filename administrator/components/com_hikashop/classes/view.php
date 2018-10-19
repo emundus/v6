@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -42,7 +42,7 @@ class hikashopViewClass extends hikashopClass {
 		JClientHelper::setCredentialsFromRequest('ftp');
 		$ftp = JClientHelper::getCredentials('ftp');
 
-		if(!JPath::check($element->override) && HIKASHOP_J25)
+		if(!JPath::check($element->override))
 			return false;
 
 		jimport('joomla.filesystem.file');
@@ -118,9 +118,9 @@ class hikashopViewClass extends hikashopClass {
 			} else {
 				$view = '';
 				JPluginHelper::importPlugin('hikashop');
-				$dispatcher = JDispatcher::getInstance();
+				$app = JFactory::getApplication();
 				$pluginViews = array();
-				$dispatcher->trigger('onViewsListingFilter', array(&$pluginViews, $obj->client_id));
+				$app->triggerEvent('onViewsListingFilter', array(&$pluginViews, $obj->client_id));
 				if(!empty($pluginViews)) {
 					foreach($pluginViews as $pluginView) {
 						if($pluginView['client_id'] == $obj->client_id && $pluginView['component'] == $obj->type_name) {
@@ -142,7 +142,7 @@ class hikashopViewClass extends hikashopClass {
 		}
 		$obj->path = $obj->folder.$obj->filename;
 
-		if(!JPath::check($obj->path) && HIKASHOP_J25)
+		if(!JPath::check($obj->path))
 			return false;
 
 		$obj->file = substr($obj->filename,0,strlen($obj->filename)-4);

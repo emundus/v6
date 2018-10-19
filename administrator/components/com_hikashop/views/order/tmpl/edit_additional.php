@@ -1,21 +1,13 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div class="hika_toolbar">
-	<div class="hika_toolbar_btn hika_btn_32">
-		<div class="hika_toolbar_right">
-			<div class="btn"><a href="#save" onclick="document.getElementById('hikashop_order_notify').value = 1;return window.hikashop.submitform('save','hikashop_order_additional_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName"><?php echo JText::_('HIKA_SAVE_AND_NOTIFY'); ?></span></a></div>
-			<div class="btn"><a href="#save" onclick="return window.hikashop.submitform('save','hikashop_order_additional_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName"><?php echo JText::_('HIKA_SAVE'); ?></span></a></div>
-		</div>
-		<div style="clear:right"></div>
-	</div>
-</div>
+?><h1><?php echo JText::_('ORDER_ADD_INFO'); ?></h1>
 <form action="<?php echo hikashop_completeLink('order&task=save&subtask=additional&tmpl=component'); ?>" name="hikashop_order_additional_form" id="hikashop_order_additional_form" method="post" enctype="multipart/form-data">
 	<dl class="hika_options">
 		<dt class="hikashop_order_additional_subtotal"><label><?php echo JText::_('SUBTOTAL'); ?></label></dt>
@@ -104,7 +96,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 					<tr>
 						<td><?php echo $product->order_product_name; ?></td>
-						<td><?php echo JHTML::_('select.genericlist', $warehouses, $map, 'class="inputbox"', 'value', 'text', $value); ?></td>
+						<td><?php echo JHTML::_('select.genericlist', $warehouses, $map, 'class="custom-select"', 'value', 'text', $value); ?></td>
 					</tr>
 <?php
 			}
@@ -145,7 +137,7 @@ defined('_JEXEC') or die('Restricted access');
 	if(!empty($this->order->additional)) {
 ?>
 <input type="hidden" name="data[order][additional]" value="1"/>
-<?php	
+<?php
 		foreach($this->order->additional as $additional) {
 			if(!empty($additional->order_product_price)) {
 				$additional->order_product_price = (float)$additional->order_product_price;
@@ -209,6 +201,10 @@ defined('_JEXEC') or die('Restricted access');
 			<span><input onchange="window.orderMgr.orderadditional_usermsg_changed(this);" type="checkbox" id="hikashop_history_orderadditional_usermsg_send" name="data[history][usermsg_send]" value="1"/><label for="hikashop_history_orderadditional_usermsg_send" style="display:inline-block"><?php echo JText::_('SEND_USER_MESSAGE');?></label></span><br/>
 			<textarea id="hikashop_history_orderadditional_usermsg" name="data[history][usermsg]" style="display:none;"></textarea>
 		</dd>
+
+		<a href="#save" class="btn btn-success" onclick="document.getElementById('hikashop_order_notify').value = 1;return window.hikashop.submitform('save','hikashop_order_additional_form');"><i class="fa fa-save"></i> <?php echo JText::_('HIKA_SAVE_AND_NOTIFY'); ?></a>
+		<a href="#save" class="btn btn-success" onclick="return window.hikashop.submitform('save','hikashop_order_additional_form');"><i class="fa fa-save"></i> <?php echo JText::_('HIKA_SAVE'); ?></a>
+
 <script type="text/javascript">
 if(!window.orderMgr)
 	window.orderMgr = {};

@@ -105,8 +105,6 @@ $attachment = array();
 if (!empty($obj_letter[0][0]))
     $attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
 
-var_dump($recipients);
-    die();
 foreach ($recipients as $recipient) {
     if (isset($recipient['email']) && !empty($recipient['email'])) {
         $attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
@@ -115,7 +113,6 @@ foreach ($recipients as $recipient) {
                     WHERE uploaded = 1 
                     AND fnum LIKE '.$db->Quote($current_user->fnum).' AND email LIKE '.$db->Quote($recipient['email']);
 
-        die($query);
         //$query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$attachment_id.' AND fnum like '.$db->Quote($current_user->fnum);
         $db->setQuery( $query );
         $db->execute();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 		$close_minute = $this->config->get('store_close_minute',0);
 		if($open_hour!=$close_hour || $open_minute!=$close_minute){
 			function getCurrentDate($format = '%H'){
-				if(version_compare(JVERSION,'1.6.0','>=')) $format = str_replace(array('%H','%M'),array('H','i'),$format);
+				$format = str_replace(array('%H','%M'),array('H','i'),$format);
 				return (int)JHTML::_('date',time()- date('Z'),$format,null);
 			}
 			$current_hour = hikashop_getDate(time(),'%H');
@@ -141,7 +141,7 @@ defined('_JEXEC') or die('Restricted access');
 		<form action="<?php echo hikashop_completeLink('checkout&task=step&step='.($this->step+1).$url_itemid); ?>" method="post" name="hikashop_checkout_form" enctype="multipart/form-data" onsubmit="if('function' == typeof(hikashopSubmitForm)) { hikashopSubmitForm('hikashop_checkout_form'); return false; } else { return true; }">
 		<?php
 	}
-	$dispatcher = JDispatcher::getInstance();
+	$app = JFactory::getApplication();
 	$this->nextButton = true;
 	foreach($this->layouts as $layout) {
 		$layout = trim($layout);
@@ -153,7 +153,8 @@ defined('_JEXEC') or die('Restricted access');
 			echo $this->loadTemplate();
 		} else {
 			$html = '';
-			$dispatcher->trigger('onCheckoutStepDisplay', array($layout, &$html, &$this, null, null));
+			$obj =& $this;
+			$app->triggerEvent('onCheckoutStepDisplay', array($layout, &$html, &$obj, null, null));
 			if(!empty($html)) {
 				echo $html;
 			}

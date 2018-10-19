@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,10 +26,10 @@ class hikashopCharacteristicClass extends hikashopClass{
 		}
 
 		$element->values = hikaInput::get()->get('characteristic', array(), 'array' );
-		JArrayHelper::toInteger($element->values);
+		hikashop_toInteger($element->values);
 		$element->values_ordering = hikaInput::get()->get('characteristic_ordering', array(), 'array' );
-		JArrayHelper::toInteger($element->values);
-		JArrayHelper::toInteger($element->values_ordering);
+		hikashop_toInteger($element->values);
+		hikashop_toInteger($element->values_ordering);
 
 		$status = $this->save($element);
 
@@ -58,18 +58,18 @@ class hikashopCharacteristicClass extends hikashopClass{
 		}
 		$query = 'DELETE FROM '.hikashop_table('characteristic').' WHERE characteristic_parent_id = '.$status.$filter;
 		$this->database->setQuery($query);
-		$this->database->query();
+		$this->database->execute();
 
 		if(count($element->values)){
 			$query = 'UPDATE '.hikashop_table('characteristic').' SET characteristic_parent_id='.$status.' WHERE characteristic_id IN ('.implode(',',$element->values).') AND characteristic_parent_id<1';
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 		}
 		if(count($element->values_ordering)){
 			foreach($element->values_ordering as $key => $value){
 				if(!$value) continue;
 				$this->database->setQuery('UPDATE '.hikashop_table('characteristic').' SET characteristic_ordering='.(int)$value.' WHERE characteristic_id='.(int)$element->values[$key]);
-				$this->database->query();
+				$this->database->execute();
 			}
 		}
 	}
@@ -87,11 +87,7 @@ class hikashopCharacteristicClass extends hikashopClass{
 			$obj->characteristics = array_merge($obj->characteristics,$this->database->loadObjectList('characteristic_id','stdClass',false));
 		}elseif(!$app->isAdmin() && $translationHelper->isMulti(true) && (class_exists('JFDatabase')||class_exists('JDatabaseMySQLx'))){
 			$this->database->setQuery($query);
-			if(HIKASHOP_J25){
-				$obj->characteristics = array_merge($obj->characteristics,$this->database->loadObjectList('characteristic_id','stdClass',false));
-			}else{
-				$obj->characteristics = array_merge($obj->characteristics,$this->database->loadObjectList('characteristic_id',false));
-			}
+			$obj->characteristics = array_merge($obj->characteristics,$this->database->loadObjectList('characteristic_id','stdClass',false));
 		}
 		if(!empty($obj->characteristics)){
 			foreach($obj->characteristics as $characteristic){
@@ -190,8 +186,8 @@ class hikashopCharacteristicClass extends hikashopClass{
 			asort($ret[0]);
 		} else {
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onNameboxCharacteristicsLoad', array( $typeConfig, &$fullLoad, $mode, $value, $search, $options, &$ret ));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onNameboxCharacteristicsLoad', array( $typeConfig, &$fullLoad, $mode, $value, $search, $options, &$ret ));
 		}
 		unset($characteristics);
 

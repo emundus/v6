@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -44,13 +44,8 @@ if(!HIKASHOP_RESPONSIVE) {
 			echo '<input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/></input>';
 	?>
 <?php
-if(!HIKASHOP_J16){
-	$reset = 'index.php?option=com_user&view=reset';
-	$remind = 'index.php?option=com_user&view=remind';
-}else{
-	$reset = 'index.php?option=com_users&view=reset';
-	$remind = 'index.php?option=com_users&view=remind';
-}
+$reset = 'index.php?option=com_users&view=reset';
+$remind = 'index.php?option=com_users&view=remind';
 ?>
 <ul>
 	<li>

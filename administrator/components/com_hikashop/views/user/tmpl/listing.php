@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,11 +10,11 @@ defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('user'); ?>" method="post" name="adminForm" id="adminForm">
 
-<div class="hk-row">
+<div class="hk-row-fluid">
 	<div class="hkc-md-5"><?php
-		echo $this->searchType->display('search', $this->pageInfo->search);
+		echo $this->loadHkLayout('search', array());
 	?></div>
-	<div class="hkc-md-7"><?php
+	<div class="hkc-md-7 hikashop_listing_filters"><?php
 		if(@$this->affiliate_active && !empty($this->partner)) {
 			echo $this->partner->display("filter_partner",$this->pageInfo->filter->filter_partner, false);
 		}
@@ -93,7 +93,9 @@ $count = 7 + count($this->fields);
 			?></td>
 			<td class="hk_center">
 <?php if($this->manage){ ?>
-				<a href="<?php echo hikashop_completeLink('user&task=edit&cid='.(int)$row->user_id); ?>"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt="edit"/></a>
+				<a href="<?php echo hikashop_completeLink('user&task=edit&cid='.(int)$row->user_id); ?>" title="<?php echo JText::_('HIKA_EDIT'); ?>">
+					<i class="fas fa-pen"></i>
+				</a>
 <?php } ?>
 			</td>
 			<td><?php

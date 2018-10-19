@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -63,7 +63,7 @@ class plgHikashopMassaction_user extends JPlugin
 
 			$value->type = 'user';
 
-			$output= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][haveDontHave][have]" id="userfilter'.$key.'haveDontHavetype" onchange="countresults(\''.$table->table.'\','.$key.')">';
+			$output= '<select class="custom-select chzn-done not-processed" name="filter['.$table->table.']['.$key.'][haveDontHave][have]" id="userfilter'.$key.'haveDontHavetype" onchange="countresults(\''.$table->table.'\','.$key.')">';
 			$datas = array('have'=>'HIKA_HAVE','donthave'=>'HIKA_DONT_HAVE');
 			$display = 'style="display: none;"';
 			foreach($datas as $k => $data){
@@ -74,7 +74,7 @@ class plgHikashopMassaction_user extends JPlugin
 			}
 			$output.= '</select>';
 
-			$output.= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][haveDontHave][type]" id="userfilter'.$key.'haveDontHavetype" onchange="showSubSelect(this.value,'.$key.'); countresults(\''.$table->table.'\','.$key.')">';
+			$output.= '<select class="custom-select chzn-done not-processed" name="filter['.$table->table.']['.$key.'][haveDontHave][type]" id="userfilter'.$key.'haveDontHavetype" onchange="showSubSelect(this.value,'.$key.'); countresults(\''.$table->table.'\','.$key.')">';
 			$datas = array('order'=>'HIKASHOP_ORDER','order_status'=>'ORDER_STATUS','address'=>'ADDRESS');
 			$display = 'style="display: none;"';
 			foreach($datas as $k => $data){
@@ -85,7 +85,7 @@ class plgHikashopMassaction_user extends JPlugin
 			}
 			$output.= '</select>';
 
-			$output .= '<select class="chzn-done not-processed" id="userfilter'.$key.'haveDontHaveorderStatus" '.$display.' name="filter['.$table->table.']['.$key.'][haveDontHave][order_status]" onchange="countresults(\''.$table->table.'\','.$key.')">';
+			$output .= '<select class="custom-select chzn-done not-processed" id="userfilter'.$key.'haveDontHaveorderStatus" '.$display.' name="filter['.$table->table.']['.$key.'][haveDontHave][order_status]" onchange="countresults(\''.$table->table.'\','.$key.')">';
 			if(is_array($orderStatuses)){
 				foreach($orderStatuses as $orderStatus){
 					$selected = '';
@@ -210,37 +210,21 @@ class plgHikashopMassaction_user extends JPlugin
 			switch($filter['type']){
 				case 'order':
 					$db->setQuery('SELECT order_user_id FROM '.hikashop_table('order').' GROUP BY order_user_id');
-					if(!HIKASHOP_J25){
-						$ids = $db->loadResultArray();
-					} else {
-						$ids = $db->loadColumn();
-					}
+					$ids = $db->loadColumn();
 					break;
 				case 'order_status':
 					$db->setQuery('SELECT order_user_id FROM '.hikashop_table('order').' WHERE order_status = '.$db->quote($filter['order_status']).' GROUP BY order_user_id');
-					if(!HIKASHOP_J25){
-						$ids = $db->loadResultArray();
-					} else {
-						$ids = $db->loadColumn();
-					}
+					$ids = $db->loadColumn();
 					if($filter['have'] != 'have'){
 						$db->setQuery('SELECT order_user_id FROM '.hikashop_table('order').' GROUP BY order_user_id');
-						if(!HIKASHOP_J25){
-							$allIds = $db->loadResultArray();
-						} else {
-							$allIds = $db->loadColumn();
-						}
+						$allIds = $db->loadColumn();
 						$ids = array_diff($allIds, $ids);
 						$qSearch = 'IN';
 					}
 					break;
 				case 'address':
 					$db->setQuery('SELECT address_user_id FROM '.hikashop_table('address').' GROUP BY address_user_id');
-					if(!HIKASHOP_J25){
-						$ids = $db->loadResultArray();
-					} else {
-						$ids = $db->loadColumn();
-					}
+					$ids = $db->loadColumn();
 					break;
 			}
 			if($ids == null){
@@ -264,15 +248,8 @@ class plgHikashopMassaction_user extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!HIKASHOP_J16){
-				$db->setQuery('SELECT user.id FROM '.hikashop_table('users',false).' AS user LEFT JOIN '.hikashop_table('core_acl_aro_groups',false).' AS group ON user.gid = group.name WHERE group.id = '.(int)$filter['group']);
-			}else{
-				$db->setQuery('SELECT user_id FROM '.hikashop_table('user_usergroup_map',false).'  WHERE group_id = '.(int)$filter['group']);
-			}
-			if(!HIKASHOP_J25)
-				$users = $db->loadResultArray();
-			else
-				$users = $db->loadColumn();
+			$db->setQuery('SELECT user_id FROM '.hikashop_table('user_usergroup_map',false).'  WHERE group_id = '.(int)$filter['group']);
+			$users = $db->loadColumn();
 			if(!empty($users))
 				$query->where[] = 'hk_user.user_cms_id'.' '.$filter['type'].' ('.implode(',',$users).')';
 		}
@@ -345,7 +322,7 @@ class plgHikashopMassaction_user extends JPlugin
 		$possibleTables = array($current,'joomla_users');
 		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
 		$value = $this->massaction->updateValuesSecure($action,$possibleTables,$queryTables);
-		JArrayHelper::toInteger($ids);
+		hikashop_toInteger($ids);
 		$db = JFactory::getDBO();
 
 
@@ -375,7 +352,7 @@ class plgHikashopMassaction_user extends JPlugin
 				}
 				$query .= 'WHERE hk_'.$current.'.'.$current.'_id IN ('.implode(',',$id).')';
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 			}
 		}else{
 			$query = 'UPDATE '.hikashop_table($current).' AS hk_'.$current.' ';
@@ -396,7 +373,7 @@ class plgHikashopMassaction_user extends JPlugin
 			}
 			$query .= 'WHERE hk_'.$current.'.'.$current.'_id IN ('.implode(',',$ids).')';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 
 	}
@@ -422,41 +399,23 @@ class plgHikashopMassaction_user extends JPlugin
 	function onProcessUserMassActionchangeGroup(&$elements,&$action,$k){
 		$user_ids = array();
 		$values = array();
-		if(!HIKASHOP_J25){
-			foreach($elements as $element){
-				$user_ids[] = $element->user_cms_id;
-			}
-			$db = JFactory::getDBO();
-			$db->setQuery('SELECT id FROM '.hikashop_table('core_acl_aro',false).' WHERE value IN ('.implode(',',$user_ids).')');
-			$user_ids = $db->loadResultArray();
 
-			$db->setQuery('DELETE FROM '.hikashop_table('core_acl_groups_aro_map',false).' WHERE aro_id IN ('.implode(',',$user_ids).')');
-			$db->query();
+		foreach($elements as $element){
+			$user_ids[] = $element->user_cms_id;
+			$values[] = '('.$element->user_cms_id.','.$action['value'].')';
+		}
+		$db = JFactory::getDBO();
+		if($action['type'] != 'add'){
+			$filters = '';
+			if($action['type'] == 'remove')
+				$filters = ' AND group_id = '.(int)$action['value'];
 
-			foreach($user_ids as $user_id){
-				$values[$user_id] = '('.$action['value'].',"",'.$user_id.')';
-			}
-			$db->setQuery('INSERT INTO '.hikashop_table('core_acl_groups_aro_map',false).' VALUES '.implode(',',$values));
-			$db->query();
-
-		}else {
-			foreach($elements as $element){
-				$user_ids[] = $element->user_cms_id;
-				$values[] = '('.$element->user_cms_id.','.$action['value'].')';
-			}
-			$db = JFactory::getDBO();
-			if($action['type'] != 'add'){
-				$filters = '';
-				if($action['type'] == 'remove')
-					$filters = ' AND group_id = '.(int)$action['value'];
-
-				$db->setQuery('DELETE FROM '.hikashop_table('user_usergroup_map',false).' WHERE user_id IN ('.implode(',',$user_ids).')'.$filters);
-				$db->query();
-			}
-			if($action['type'] != 'remove'){
-				$db->setQuery('REPLACE INTO '.hikashop_table('user_usergroup_map',false).' VALUES '.implode(',',$values));
-				$db->query();
-			}
+			$db->setQuery('DELETE FROM '.hikashop_table('user_usergroup_map',false).' WHERE user_id IN ('.implode(',',$user_ids).')'.$filters);
+			$db->execute();
+		}
+		if($action['type'] != 'remove'){
+			$db->setQuery('REPLACE INTO '.hikashop_table('user_usergroup_map',false).' VALUES '.implode(',',$values));
+			$db->execute();
 		}
 
 		$app = JFactory::getApplication();
@@ -464,7 +423,7 @@ class plgHikashopMassaction_user extends JPlugin
 		$handler = $config->get('session_handler', 'none');
 		if($handler=='database'){
 			$db->setQuery('DELETE FROM '.hikashop_table('session',false).' WHERE client_id=0 AND userid IN ('.implode(',',$user_ids).')');
-			$db->query();
+			$db->execute();
 		}
 		if(!$app->isAdmin()){
 			foreach($user_ids as $user_id){

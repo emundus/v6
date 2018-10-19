@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -61,8 +61,8 @@ class hikashopCheckoutHelper {
 		$this->shop_closed = false;
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onCheckoutWorkflowLoad', array(&$this->checkout_workflow, &$this->shop_closed, $this->cart_id));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onCheckoutWorkflowLoad', array(&$this->checkout_workflow, &$this->shop_closed, $this->cart_id));
 
 	}
 
@@ -166,7 +166,7 @@ class hikashopCheckoutHelper {
 		$override = false;
 		foreach($currentShipping as $shipping_id => $selectedMethod) {
 			if(!empty($selectedMethod) && method_exists($selectedMethod, 'getShippingAddress')) {
-				$override = $selectedMethod->getShippingAddress($shipping_id);
+				$override = $selectedMethod->getShippingAddress($shipping_id, $cart);
 			}
 		}
 
@@ -428,8 +428,8 @@ class hikashopCheckoutHelper {
 
 		$markers = array();
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onCheckoutGetCartMarkers', array(&$markers, &$cart));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onCheckoutGetCartMarkers', array(&$markers, &$cart));
 		if(!empty($markers)) {
 			$ret['plugins'] = $markers;
 		}
@@ -481,12 +481,12 @@ class hikashopCheckoutHelper {
 		}
 
 		if(!empty($markers['plugins'])) {
-			$dispatcher = JDispatcher::getInstance();
+			$app = JFactory::getApplication();
 			foreach($markers['plugins'] as $k => $v) {
 				if($v === $newMarkers['plugin'][$k])
 					continue;
 				$evts = array();
-				$dispatcher->trigger('onCheckoutProcessCartMarker', array($k, &$evts, $v, $newMarkers['plugin'][$k]));
+				$app->triggerEvent('onCheckoutProcessCartMarker', array($k, &$evts, $v, $newMarkers['plugin'][$k]));
 				foreach($evts as $e) {
 					$this->addEvent($e, $params);
 				}

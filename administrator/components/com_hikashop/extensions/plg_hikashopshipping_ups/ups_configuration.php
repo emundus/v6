@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,6 +29,11 @@ function ups_addRow() {
 	return false;
 }
 </script>
+<style>
+#warehouse_listing .row0 input, #warehouse_listing .row0 a, #warehouse_listing .row0 select {
+    width: 100px;
+}
+</style>
 	<tr>
 		<td class="key">
 			<label for="data[shipping][shipping_params][access_code]"><?php
@@ -84,7 +89,7 @@ function ups_addRow() {
 				JHTML::_('select.option', '19', JText::_('Letter Center') ),
 				JHTML::_('select.option', '20', JText::_('Air Service Center') ),
 			);
-			echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][pickup_type]", 'class="inputbox" size="1"', 'value', 'text', @$this->element->shipping_params->pickup_type);
+			echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][pickup_type]", 'class="custom-select" size="1"', 'value', 'text', @$this->element->shipping_params->pickup_type);
 		?></td>
 	</tr>
 	<tr>
@@ -99,18 +104,13 @@ function ups_addRow() {
 				JHTML::_('select.option', 'res', JText::_('RESIDENTIAL_ADDRESS') ),
 				JHTML::_('select.option', 'com', JText::_('COMMERCIAL_ADDRESS') ),
 			);
-			echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][destination_type]", 'class="inputbox" size="1"', 'value', 'text', @$this->element->shipping_params->destination_type);
+			echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][destination_type]", 'class="custom-select" size="1"', 'value', 'text', @$this->element->shipping_params->destination_type);
 		?></td>
 	</tr>
 </table>
 </fieldset>
 <fieldset>
 	<legend><?php echo JText::_( 'WAREHOUSE' ); ?></legend>
-	<div style="text-align:right;">
-		<button class="btn" type="button" onclick="return ups_addRow();">
-			<img src="<?php echo HIKASHOP_IMAGES; ?>add.png"/><?php echo JText::_('ADD');?>
-		</button>
-	</div>
 	<table class="adminlist table table-striped" cellpadding="1" width="100%" id="warehouse_listing_table">
 		<thead>
 			<tr>
@@ -119,10 +119,8 @@ function ups_addRow() {
 				<th class="title"><?php echo JText::_( 'STATEPROVINCE_CODE' ); ?></th>
 				<th class="title"><?php echo JText::_( 'CITY' ); ?></th>
 				<th class="title"><?php echo JText::_( 'COUNTRY' ); ?></th>
-				<th class="title"><?php echo JText::_( 'ZONE' ); ?></th>
 				<th class="title"><?php echo JText::_( 'UNITS' ); ?></th>
 				<th class="title"><?php echo JText::_( 'CURRENCY' ); ?></th>
-				<th class="title"><?php echo JText::_( 'HIKA_DELETE' ); ?></th>
 			</tr>
 		</thead>
 		<tbody id="warehouse_listing">
@@ -155,14 +153,6 @@ function ups_addRow() {
 				<td>
 					<?php $countryList=$country->display("warehouse[$i][country]", @$row->country, false , "style='width:100px;'"); echo $countryList; ?>
 				</td>
-				<td class="hk_center">
-					<span id="warehouse_<?php echo $i;?>_zone">
-						<?php if(!empty($row->zone_name)){ echo $row->zone_name;} ?>
-						<input type="hidden" name="warehouse[<?php echo $i;?>][zone]" value="<?php echo @$row->zone ?>"/>
-					</span>
-					<a class="modal" rel="{handler: 'iframe', size: {x: 760, y: 480}}" href="<?php echo hikashop_completeLink("zone&task=selectchildlisting&type=shipping&subtype=warehouse_".$i."_zone&map=warehouse[".$i."][zone]&tmpl=component"); ?>" ><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png"/></a>
-					<a href="#" onclick="return deleteZone('warehouse_<?php echo $i;?>_zone');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
-				</td>
 				<td>
 					<select id="warehouse_<?php echo $i;?>_units"  name="warehouse[<?php echo $i;?>][units]">
 						<option <?php if(@$row->units=='lb')  echo "selected=\"selected\""; ?> value="lb">LB/IN</option>
@@ -174,9 +164,6 @@ function ups_addRow() {
 					$currencyList=$currency->display("warehouse[$i][currency]", @$row->currency, 'id="warehouse_'.$i.'_currency"  name="warehouse['.$i.'][currency]"');
 					echo $currencyList;
 				?></td>
-				<td class="hk_center">
-					<a href="#" onclick="return deleteRow('warehouse_<?php echo $i;?>_zip','warehouse_<?php echo $i;?>_zip_input','warehouse_<?php echo $i;?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
-				</td>
 			</tr>
 <?php
 	}
@@ -208,13 +195,6 @@ function ups_addRow() {
 				<td>
 					<?php $countryList=$country->display("warehouse[##][country]", '', false , 'style="width:100px;" class="chzn-done"','warehouse_##_country_input'); echo $countryList; ?>
 				</td>
-				<td class="hk_center">
-					<span id="warehouse_##_zone">
-						<input type="hidden" name="warehouse[##][zone]" value=""/>
-					</span>
-					<a class="modal" rel="{handler: 'iframe', size: {x: 760, y: 480}}" href="<?php echo hikashop_completeLink("zone&task=selectchildlisting&type=shipping&subtype=warehouse_##_zone&map=warehouse[##][zone]&tmpl=component"); ?>" onclick="SqueezeBox.fromElement(this,{parse: 'rel'});return false;" ><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png"/></a>
-					<a href="#" onclick="return deleteZone('warehouse_##_zone');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
-				</td>
 				<td>
 					<select class="chzn-done" id="warehouse_##_units_input" name="warehouse[##][units]">
 						<option value="lb">LB/IN</option>
@@ -226,9 +206,6 @@ function ups_addRow() {
 					$currencyList=$currency->display("warehouse[##][currency]", '', 'name="warehouse[##][curency]" class="chzn-done"','warehouse_##_currency_input');
 					echo $currencyList;
 				?></td>
-				<td class="hk_center">
-					<a href="#" onclick="return deleteRow('warehouse_##_zip','warehouse_##_zip_input','warehouse_##');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
-				</td>
 			</tr>
 		</table>
 	</div>

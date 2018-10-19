@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,6 +59,13 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			if($logout) {
 				$app->setUserState(HIKASHOP_COMPONENT.'.user_id', 0);
 				hikashop_loadUser(false, true);
+
+				if(!isset($params['address_on_registration'])) {
+					$config = hikashop_config();
+					$params['address_on_registration'] = $config->get('address_on_registration', 1);
+				}
+				if(!$params['address_on_registration'])
+					$_SESSION['hikashop_previously_guest_as'] = $user_id;
 
 				$checkoutHelper = hikashopCheckoutHelper::get();
 				$cart = $checkoutHelper->getCart();
@@ -146,11 +153,11 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 
 		$old_messages = $app->getMessageQueue();
 
-		$error = $app->login($credentials, $options);
+		$result = $app->login($credentials, $options);
 
 		$user = JFactory::getUser();
 
-		if(JError::isError($error) || $user->guest) {
+		if($result !== true || $user->guest) {
 			$new_messages = $app->getMessageQueue();
 			if(count($old_messages) < count($new_messages)) {
 				$new_messages = array_slice($new_messages, count($old_messages));
@@ -305,10 +312,10 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 				'username' => (string)$ret['registerData']->username,
 				'password' => (string)$ret['registerData']->password
 			);
-			$error = $app->login($credentials, $options);
+			$result = $app->login($credentials, $options);
 			$juser = JFactory::getUser();
 
-			if(!JError::isError($error) && !$juser->guest) {
+			if($result === true  && !$juser->guest) {
 				$userClass = hikashop_get('class.user');
 				$user_id = $userClass->getID($juser->get('id'));
 				if(!empty($user_id)) {
@@ -429,7 +436,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function checkMarker($markerName, $oldMarkers, $newMarkers, &$controller, $params) {
-		if(!in_array($markerName, array('billing_address', 'billing_addresses', 'shipping_address', 'shipping_addresses','user')))
+		if(!in_array($markerName, array('billing_address', 'billing_addresses', 'shipping_address', 'shipping_addresses', 'user')))
 			return true;
 
 		if(!empty($params['register_done'])){

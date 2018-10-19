@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -75,19 +75,16 @@ defined('_JEXEC') or die('Restricted access');
 		<td>
 			<input class="inputbox" id="affiliate_terms" name="config[affiliate_terms]" type="text" size="20" value="<?php echo $this->config->get('affiliate_terms'); ?>">
 <?php
-	if(!HIKASHOP_J16) {
-		$link = 'index.php?option=com_content&amp;task=element&amp;tmpl=component&amp;object=affiliate';
-	} else {
-		$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;function=jSelectArticle_terms';
-		$js = "
+	$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;function=jSelectArticle_terms';
+	$js = '
 function jSelectArticle_terms(id, title, catid, object) {
-	document.getElementById('affiliate_terms').value = id;
+	document.getElementById("affiliate_terms").value = id;
 	hikashop.closeBox();
 }
-";
-		$doc = JFactory::getDocument();
-		$doc->addScriptDeclaration($js);
-	}
+';
+	$doc = JFactory::getDocument();
+	$doc->addScriptDeclaration($js);
+
 	echo $this->popup->display(
 		'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
 		'Select one article which will be displayed for the affiliate program Terms & Conditions',

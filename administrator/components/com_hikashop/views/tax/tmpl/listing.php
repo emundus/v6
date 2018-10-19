@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,53 +9,49 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=taxation" method="post"  name="adminForm" id="adminForm">
-	<table>
-		<tr>
-			<?php
-				 if ( !empty( $this->extrafilters)) {
-					 foreach($this->extrafilters as $name => $filterObj) {
-						 if(is_string($filterObj)){
-							 echo $filterObj;
-						 }elseif( isset( $filterObj->objSearch) && method_exists($filterObj->objSearch,'displayFilter')){
-							 echo $filterObj->objSearch->displayFilter($name, $this->pageInfo->filter);
-						 }else if ( isset( $filterObj->filter_html_search)){
-							 echo $filterObj->filter_html_search;
-						 }
-					 }
-				 }
-			?>
-			<td width="100%">
-				<?php echo JText::_( 'FILTER' ); ?>:
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" onchange="document.adminForm.submit();" />
-				<button class="btn" onclick="this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
-				<button class="btn" onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
-			</td>
-			<td nowrap="nowrap">
-			<?php
-				if ( !empty( $this->extrafilters)) {
-					foreach($this->extrafilters as $name => $filterObj) {
-						if(is_string($filterObj)){
-							echo $filterObj;
-						}elseif(isset( $filterObj->objDropdown) && method_exists($filterObj->objDropdown,'displayFilter')){
-							echo $filterObj->objDropdown->displayFilter($name, $this->pageInfo->filter);
-						}else if ( isset( $filterObj->filter_html_dropdown)){
-							echo $filterObj->filter_html_dropdown;
-						}
-					}
-				}
-				if(!is_numeric($this->pageInfo->filter->filter_start) && !empty($this->pageInfo->filter->filter_start)) $this->pageInfo->filter->filter_start = strtotime($this->pageInfo->filter->filter_start);
-				if(!is_numeric($this->pageInfo->filter->filter_end) && !empty($this->pageInfo->filter->filter_end)) $this->pageInfo->filter->filter_end = strtotime($this->pageInfo->filter->filter_end);
-				echo JText::_('FROM').' ';
-				echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_start?@$this->pageInfo->filter->filter_start:''),'%d %B %Y'), 'filter_start','period_start','%Y-%m-%d',array('size'=>'10',''));
-				echo ' '.JText::_('TO').' ';
-				echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_end?@$this->pageInfo->filter->filter_end:''),'%d %B %Y'), 'filter_end','period_end','%Y-%m-%d',array('size'=>'10',''));
-				$this->category->multiple = true;
-				echo $this->category->display("filter_status",$this->pageInfo->filter->filter_status,'',false);
-			?>
-				<button class="btn" onclick="this.form.submit();"><?php echo JText::_( 'FILTER' ); ?></button>
-			</td>
-		</tr>
-	</table>
+<div class="hk-row-fluid">
+	<div class="hkc-md-4">
+<?php
+	echo $this->loadHkLayout('search', array());
+?>
+	</div>
+	<div class="hkc-md-8 hikashop_listing_filters">
+<?php
+	 if ( !empty( $this->extrafilters)) {
+		 foreach($this->extrafilters as $name => $filterObj) {
+			 if(is_string($filterObj)){
+				 echo $filterObj;
+			 }elseif( isset( $filterObj->objSearch) && method_exists($filterObj->objSearch,'displayFilter')){
+				 echo $filterObj->objSearch->displayFilter($name, $this->pageInfo->filter);
+			 }else if ( isset( $filterObj->filter_html_search)){
+				 echo $filterObj->filter_html_search;
+			 }
+		 }
+	 }
+
+	if ( !empty( $this->extrafilters)) {
+		foreach($this->extrafilters as $name => $filterObj) {
+			if(is_string($filterObj)){
+				echo $filterObj;
+			}elseif(isset( $filterObj->objDropdown) && method_exists($filterObj->objDropdown,'displayFilter')){
+				echo $filterObj->objDropdown->displayFilter($name, $this->pageInfo->filter);
+			}else if ( isset( $filterObj->filter_html_dropdown)){
+				echo $filterObj->filter_html_dropdown;
+			}
+		}
+	}
+	if(!is_numeric($this->pageInfo->filter->filter_start) && !empty($this->pageInfo->filter->filter_start)) $this->pageInfo->filter->filter_start = strtotime($this->pageInfo->filter->filter_start);
+	if(!is_numeric($this->pageInfo->filter->filter_end) && !empty($this->pageInfo->filter->filter_end)) $this->pageInfo->filter->filter_end = strtotime($this->pageInfo->filter->filter_end);
+	echo JText::_('FROM').' ';
+	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_start?@$this->pageInfo->filter->filter_start:''),'%d %B %Y'), 'filter_start','period_start','%Y-%m-%d',array('size'=>'10',''));
+	echo ' '.JText::_('TO').' ';
+	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_end?@$this->pageInfo->filter->filter_end:''),'%d %B %Y'), 'filter_end','period_end','%Y-%m-%d',array('size'=>'10',''));
+	$this->category->multiple = true;
+	echo $this->category->display("filter_status",$this->pageInfo->filter->filter_status,'',false);
+?>
+		<button class="btn btn-primary" onclick="this.form.submit();"><?php echo JText::_( 'FILTER' ); ?></button>
+	</div>
+</div>
 	<table class="adminlist table table-striped table-hover" cellpadding="1">
 		<thead>
 			<tr>

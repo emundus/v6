@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,8 +9,8 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_invoice_main_div">
 	<div id="print" style="float:right">
-		<a href="#" onclick="document.getElementById('print').style.visibility='hidden';window.focus();window.print();return false;">
-			<img src="<?php echo HIKASHOP_IMAGES; ?>print.png"/>
+		<a class="btn btn-primary" href="#" onclick="document.getElementById('print').style.visibility='hidden';window.focus();window.print();return false;">
+			<i class="fa fa-print"></i> <?php echo JText::_('HIKA_PRINT'); ?>
 		</a>
 	</div>
 	<br/>
@@ -399,7 +399,7 @@ defined('_JEXEC') or die('Restricted access');
 							<tr>
 								<td class="hikashop_order_tax_title key" colspan="<?php echo $colspan; ?>">
 									<label><?php
-										echo $tax->tax_namekey;
+										echo hikashop_translate($tax->tax_namekey);
 									?></label>
 								</td>
 								<td class="hikashop_order_tax_value"><?php
@@ -527,8 +527,8 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 <?php
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
-	$dispatcher->trigger('onAfterOrderProductsListingDisplay', array(&$this->order, 'order_back_invoice'));
+	$app = JFactory::getApplication();
+	$app->triggerEvent('onAfterOrderProductsListingDisplay', array(&$this->order, 'order_back_invoice'));
 ?>
 		<tr>
 			<td>

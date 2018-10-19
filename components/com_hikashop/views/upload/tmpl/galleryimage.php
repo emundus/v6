@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><fieldset>
 	<div class="toolbar" id="toolbar" style="float: right;">
-		<button class="btn" type="button" onclick="window.hikamarket.submitform('galleryselect','adminForm');"><img style="vertical-align: middle" src="<?php echo HIKASHOP_IMAGES; ?>save.png"/><?php echo JText::_('OK'); ?></button>
+		<button class="btn" type="button" onclick="window.hikamarket.submitform('galleryselect','adminForm');"><i class="fa fa-save"></i> <?php echo JText::_('OK'); ?></button>
 	</div>
 </fieldset>
 <form action="<?php echo hikamarket::completeLink('upload&task=galleryimage', true); ?>" method="post" name="adminForm" id="adminForm">

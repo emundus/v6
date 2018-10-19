@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,33 +10,16 @@ defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 
 <?php if($this->config->get('category_explorer')){?>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-<div id="page-category">
-	<table style="width:100%">
-		<tr>
-			<td style="vertical-align:top;border:1px solid #CCC;background-color: #F3F3F3" width="200px">
-				<?php echo hikashop_setExplorer('category&task=listing',$this->pageInfo->filter->filter_id,false,$this->type); ?>
-			</td>
-			<td style="vertical-align:top;">
-<?php } else { ?>
-<div id="page-category" class="row-fluid">
-	<div class="span2">
+<div id="page-categories" class="hk-row-fluid">
+	<div class="hkc-md-2">
 		<?php echo hikashop_setExplorer('category&task=listing',$this->pageInfo->filter->filter_id,false,$this->type); ?>
 	</div>
-	<div class="span10">
+	<div class="hkc-md-10">
 <?php } ?>
-<?php } ?>
-		<?php $count = 7; ?>
+		<?php $count = 6; ?>
 			<form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=category" method="post"  name="adminForm" id="adminForm">
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-				<table style="width:100%">
-					<tr>
-						<td>
-<?php } else {?>
-				<div class="row-fluid">
-					<div class="span6">
-<?php } ?>
-
+				<div class="hk-row-fluid">
+					<div class="hkc-md-6">
 							<?php
 								 if ( !empty( $this->extrafilters)) {
 									 foreach($this->extrafilters as $name => $filterObj) {
@@ -53,25 +36,13 @@ defined('_JEXEC') or die('Restricted access');
 <?php if(!$this->config->get('category_explorer')){ ?>
 							<a href="<?php echo hikashop_completeLink('category&task=listing&filter_id=0'); ?>"><?php echo JText::_( 'ROOT' ); ?>/</a>
 							<?php echo $this->breadCrumb.'<br/>'; ?>
-<?php } ?>
-							<?php echo JText::_( 'FILTER' ); ?>:
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-							<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-							<button class="btn" onclick="this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
-							<button class="btn" onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
-						</td>
-						<td>
-<?php } else { ?>
-						<div class="input-prepend input-append" style="margin-top:4px;">
-							<span class="add-on"><i class="icon-filter"></i></span>
-							<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" onchange="this.form.submit();" />
-							<button class="btn" onclick="this.form.limitstart.value=0;this.form.submit();"><i class="icon-search"></i></button>
-							<button class="btn" onclick="this.form.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-						</div>
+<?php
+	}
+	echo $this->loadHkLayout('search', array());
+ ?>
 					</div>
-					<div class="span6">
+					<div class="hkc-md-6">
 						<div class="expand-filters" style="width:auto;float:right">
-<?php } ?>
 							<?php
 								if ( !empty( $this->extrafilters)) {
 									foreach($this->extrafilters as $name => $filterObj) {
@@ -86,16 +57,10 @@ defined('_JEXEC') or die('Restricted access');
 								}
 							?>
 							<?php echo $this->childDisplay; ?>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-						</td>
-					</tr>
-				</table>
-<?php } else {?>
 						</div>
 						<div style="clear:both"></div>
 					</div>
 				</div>
-<?php } ?>
 				<table id="hikashop_category_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 					<thead>
 						<tr>
@@ -104,9 +69,6 @@ defined('_JEXEC') or die('Restricted access');
 							</th>
 							<th class="title titlebox">
 								<input type="checkbox" name="toggle" value="" onclick="hikashop.checkAll(this);" />
-							</th>
-							<th class="title titlebox">
-								<?php echo JText::_('HIKA_EDIT'); ?>
 							</th>
 							<?php if($this->category_image){ $count++; ?>
 							<th class="title titlebox">
@@ -166,21 +128,23 @@ defined('_JEXEC') or die('Restricted access');
 								<td class="hk_center">
 									<?php echo JHTML::_('grid.id', $i, $row->category_id ); ?>
 								</td>
-								<td width="1%" class="hk_center">
-									<?php if($this->manage){ ?>
-										<a href="<?php echo hikashop_completeLink('category&task=edit&cid[]='.$row->category_id); ?>">
-											<img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt="edit"/>
-										</a>
-									<?php } ?>
-								</td>
 								<?php if($this->category_image){ ?>
 								<td>
 									<?php echo $this->image->display(@$row->file_path,true,"",'','', 100, 100); ?>
 								</td>
 								<?php } ?>
 								<td>
+									<div>
+									<?php if($this->manage){ ?>
+										<a href="<?php echo hikashop_completeLink('category&task=edit&cid[]='.$row->category_id); ?>" title="<?php echo JText::_('HIKA_EDIT'); ?>">
+									<?php } ?>
+											<?php echo $row->translation; ?> <i class="fas fa-pen"></i>
+									<?php if($this->manage){ ?>
+										</a>
+									<?php } ?>
+									</div>
 									<a href="<?php echo hikashop_completeLink('category&filter_id='.$row->category_id); ?>">
-										<?php echo $row->translation; ?>
+										<?php echo JText::_('LISTING_OF_SUBCATEGORIES'); ?> <i class="fa fa-chevron-right"></i>
 									</a>
 								</td>
 								<?php
@@ -215,7 +179,7 @@ defined('_JEXEC') or die('Restricted access');
 											<?php
 										}else{ echo $row->category_ordering; }
 									}else{ ?>
-										<a href="#" title="<?php echo JText::_('CHANGE_SUB_ELEMENT_FILTER_TO_REORDER_ELEMENTS'); ?>"><img src="<?php echo HIKASHOP_IMAGES; ?>delete2.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a>
+										<a href="#" title="<?php echo JText::_('CHANGE_SUB_ELEMENT_FILTER_TO_REORDER_ELEMENTS'); ?>"><i class="fa fa-times-circle"></i></a>
 									<?php } ?>
 								</td>
 								<td class="hk_center">
@@ -243,13 +207,6 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JHTML::_( 'form.token' ); ?>
 			</form>
 <?php if($this->config->get('category_explorer')){?>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-		</tr>
-	</table>
-</div>
-<?php } else { ?>
 	</div>
 </div>
-<?php } ?>
 <?php } ?>

@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php if(empty($this->ajax)) { ?>
-<div id="hikashop_checkout_shipping_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" class="hikashop_checkout_shipping">
+<div id="hikashop_checkout_shipping_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" data-checkout-step="<?php echo $this->step; ?>" data-checkout-pos="<?php echo $this->module_position; ?>" class="hikashop_checkout_shipping">
 <?php } ?>
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
@@ -17,6 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 $this->checkoutHelper->displayMessages('shipping');
 $cart = $this->checkoutHelper->getCart();
 
+$shipping_json = array();
 if(!empty($cart->usable_methods->shipping)) {
 	$several_groups = (count($cart->shipping_groups) > 1);
 
@@ -83,6 +84,7 @@ if(!empty($cart->usable_methods->shipping)) {
 					$s_id = is_numeric($s->shipping_id) ? (int)$s->shipping_id : $s->shipping_id;
 					if($s_id === $shipping_id && (!$several_groups || $s->shipping_warehouse_id === $shipping->shipping_warehouse_id)) {
 						$selected = true;
+						$shipping_json[$shipping_group_key] = (int)$shipping->shipping_id;
 						break;
 					}
 				}
@@ -142,6 +144,24 @@ if(!empty($cart->usable_methods->shipping)) {
 		?></div>
 <?php
 			}
+
+		if(empty($this->options['read_only']) && !empty($shipping->custom_html)) {
+?>
+	<div id="<?php echo $container_id; ?>__custom" class="hikashop_checkout_shipping_custom" style="<?php echo $selected ? '' : ' display:none;'; ?>">
+<?php
+			echo $this->checkoutHelper->getCustomHtml($shipping->custom_html, 'checkout[shipping]['.$shipping_group_key.'][custom]['.$shipping->shipping_id.']');
+
+			if(empty($shipping->custom_html_no_btn)) {
+?>
+		<div class="hikashop_checkout_shipping_submit">
+			<button class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_shipping_submit" id="hikabtn_checkout_shipping_submit_g<?php echo $shipping_group_key; ?>_p<?php echo $shipping->shipping_id; ?>" onclick="return window.checkout.submitCustomShipping('<?php echo $shipping->shipping_type; ?>','<?php echo $shipping_group_key; ?>',<?php echo (int)$shipping->shipping_id; ?>,<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);"><?php echo JText::_('HIKA_SUBMIT'); ?></button>
+		</div>
+<?php
+			}
+?>
+	</div>
+<?php
+		}
 ?>
 	</td></tr>
 <?php
@@ -175,22 +195,40 @@ if(empty($this->ajax)) { ?>
 </div>
 <script type="text/javascript">
 if(!window.checkout) window.checkout = {};
+window.checkout.selectedShipping = <?php echo json_encode($shipping_json); ?>;
 window.Oby.registerAjax(['checkout.shipping.updated','cart.updated'], function(params){
 	if(params && (params.cart_empty || (params.resp && params.resp.empty))) return;
+	if(window.checkout.isSource(params, <?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>))
+		return;
 	window.checkout.refreshShipping(<?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>);
 });
 window.checkout.refreshShipping = function(step, id) { return window.checkout.refreshBlock('shipping', step, id); };
 window.checkout.submitShipping = function(step, id) { return window.checkout.submitBlock('shipping', step, id); };
+window.checkout.submitCustomShipping = function(name, group, id, step, pos) {
+	var ret = window.Oby.fireAjax('customshipping.submit', {method: name, shipping_group: group, shipping_id: id, step: step, pos: pos});
+	if(ret === false || ret.length == 0) return window.checkout.submitBlock('shipping', step, pos);
+	return false;
+};
 window.checkout.shippingSelected = function(el) {
 	var data = window.Oby.evalJSON(el.getAttribute('data-hk-checkout'));
-
+	window.checkout.setLoading(null, true);
 	var url = "<?php echo hikashop_completeLink('checkout&task=submitblock&blocktask=shipping'.$this->cartIdParam.'&Itemid='.$this->itemid, 'ajax', false, true); ?>",
 		formData = 'cid=' + encodeURIComponent(data.step) + '&blockpos=' + encodeURIComponent(data.pos) + '&selectionOnly=1&' + encodeURI('checkout[shipping]['+data.warehouse+'][id]') + '=' + encodeURIComponent(data.id) + '&' + encodeURI(window.checkout.token)+'=1';
 	window.Oby.xRequest(url, {mode:"POST", data: formData}, function(x,p) {
+		window.checkout.setLoading(null, false);
 		var r = window.Oby.evalJSON(x.responseText);
+		if(r && r.ret > 0)
+			window.checkout.selectedShipping[data.warehouse] = data.id;
 		if(r && r.events)
-			window.checkout.processEvents(r.events);
+			window.checkout.processEvents(r.events, {step:<?php echo (int)$this->step; ?>, pos:<?php echo (int)$this->module_position; ?>});
 	});
+	var prefix = 'hikashop_checkout_shipping_' + data.step + '_' + data.pos + '__' + data.warehouse + '__';
+	if(window.checkout.selectedShipping[data.warehouse] > 0) {
+		var b = prefix + window.checkout.selectedShipping[data.warehouse];
+		window.hikashop.setArrayDisplay([b + '__custom'], false);
+	}
+	var b = prefix + data.id;
+	window.hikashop.setArrayDisplay([b + '__custom'], true);
 };
 </script>
 <?php }

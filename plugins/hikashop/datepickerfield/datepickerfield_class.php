@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -68,7 +68,7 @@ class fieldOpt_datepicker_options {
 	<tr>
 		<td class="key">'.JText::_('DATE_PICKER_OPT_SHOW_MONTHS').'</td>
 		<td>'.
-			JHTML::_('select.genericlist', $months, "field_options[datepicker_options][show_months]", '', 'value', 'text', @$value['show_months']).
+			JHTML::_('select.genericlist', $months, "field_options[datepicker_options][show_months]", 'class="custom-select"', 'value', 'text', @$value['show_months']).
 		'</td>
 	</tr>
 	<tr>
@@ -92,7 +92,7 @@ class fieldOpt_datepicker_options {
 	<tr>
 		<td class="key">'.JText::_('DATE_PICKER_OPT_EXCLUDES').'</td>
 		<td>
-			'.JHTML::_('select.genericlist', $excludeFormats, "field_options[datepicker_options][exclude_days_format]", '', 'value', 'text', @$value['exclude_days_format']).'<br/>
+			'.JHTML::_('select.genericlist', $excludeFormats, "field_options[datepicker_options][exclude_days_format]", 'class="custom-select"', 'value', 'text', @$value['exclude_days_format']).'<br/>
 			<textarea name="field_options__datepicker_options__excludes">'.@$value['excludes'].'</textarea>
 		</td>
 	</tr>
@@ -142,10 +142,8 @@ class hikashopDatepickerfield {
 		} else {
 			$timeoffset = $jconfig->get('offset');
 		}
-		if(HIKASHOP_J16){
-			$dateC = JFactory::getDate(time(),$timeoffset);
-			$timeoffset = $dateC->getOffsetFromGMT(true);
-		}
+		$dateC = JFactory::getDate(time(),$timeoffset);
+		$timeoffset = $dateC->getOffsetFromGMT(true);
 		$this->timeoffset = $timeoffset *60*60 + date('Z');
 	}
 
@@ -215,11 +213,8 @@ class hikashopDatepickerfield {
 		} else {
 			$base = JURI::base(true);
 		}
-		if(HIKASHOP_J25) {
-			$doc->addScript($base.'/plugins/hikashop/datepickerfield/jquery-ui-i18n.js');
-		} else {
-			$doc->addScript($base.'/plugins/hikashop/jquery-ui-i18n.js');
-		}
+
+		$doc->addScript($base.'/plugins/hikashop/datepickerfield/jquery-ui-i18n.js');
 
 		$js = '
 window.hikashopDatepicker_excludeWDays = function(date, w, d, dt, rg) {
@@ -617,12 +612,7 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 			$value = $value['y'] . '/' . $value['m'] . '/' . $value['d'];
 			if(empty($this->params)) {
 				$plugin = JPluginHelper::getPlugin('hikashop', 'datepickerfield');
-				if(version_compare(JVERSION,'2.5','<')) {
-					jimport('joomla.html.parameter');
-					$this->params = new JParameter(@$plugin->params);
-				} else {
-					$this->params = new JRegistry(@$plugin->params);
-				}
+				$this->params = new JRegistry(@$plugin->params);
 			}
 			if($this->params->get('time_shift', 0))
 				$value .= ' 12:00:00';

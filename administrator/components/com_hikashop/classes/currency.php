@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -55,7 +55,7 @@ class hikashopCurrencyClass extends hikashopClass{
 	function getTaxedPrice(&$price, $zone_id, $tax_category_id, $round = 2) {
 		if(is_array($tax_category_id)) {
 			$this->taxRates = $tax_category_id;
-		}else{
+		} else {
 			$this->taxRates = array();
 			$taxRate = (float)$this->getTax($zone_id, $tax_category_id);
 
@@ -95,7 +95,7 @@ class hikashopCurrencyClass extends hikashopClass{
 	function getUntaxedPrice(&$price, $zone_id, $tax_category_id, $round = 2) {
 		if(is_array($tax_category_id)) {
 			$this->taxRates = $tax_category_id;
-		}else{
+		} else {
 			$this->taxRates = array();
 			$taxRate = (float)$this->getTax($zone_id, $tax_category_id);
 			if(empty($taxRate))
@@ -239,8 +239,9 @@ class hikashopCurrencyClass extends hikashopClass{
 				}
 
 				JPluginHelper::importPlugin('hikashop');
-				$dispatcher = JDispatcher::getInstance();
-				$dispatcher->trigger('onHikashopGetTax', array( &$this, $zone_id, $tax_category_id, $type, &$matches, &$taxPlans));
+				$app = JFactory::getApplication();
+				$obj =& $this;
+				$app->triggerEvent('onHikashopGetTax', array( &$obj, $zone_id, $tax_category_id, $type, &$matches, &$taxPlans));
 
 				if(count($matches)!=0){
 					$type = 'state';
@@ -462,17 +463,15 @@ class hikashopCurrencyClass extends hikashopClass{
 		$config =& hikashop_config();
 		$query ='SELECT currency_id FROM '.hikashop_table('currency').' WHERE currency_published=1 OR currency_id = '.(int) $config->get('main_currency',1);
 		$this->database->setQuery($query);
-		if(!HIKASHOP_J25)
-			$list = $this->database->loadResultArray();
-		else
-			$list = $this->database->loadColumn();
+		$list = $this->database->loadColumn();
 		return $list;
 	}
 
 	function getListingPrices(&$rows, $zone_id, $currency_id, $price_display_type = 'all', $user_id = 0) {
-		return $this->getProductsPrices($rows, array('zone_id'=>$zone_id, 'currency_id'=>$currency_id, 'price_display_type'=>$price_display_type, 'user_id'=>$user_id));
+		return $this->getProductsPrices($rows, array('zone_id' => $zone_id, 'currency_id' => $currency_id, 'price_display_type' => $price_display_type, 'user_id' => $user_id));
 	}
-	function getProductsPrices(&$rows, $options = array()){
+
+	function getProductsPrices(&$rows, $options = array()) {
 		if(!empty($options['zone_id'])){
 			$zone_id = (int)$options['zone_id'];
 		}else{
@@ -510,23 +509,23 @@ class hikashopCurrencyClass extends hikashopClass{
 		$variant_ids = $this->_loadProductVariants($rows, $ids);
 		$all_ids = array_merge($ids, $variant_ids);
 
-		if($loadDiscounts){
+		if($loadDiscounts) {
 			$product_matches = array('discount_product_id IN (\'\',\'0\',\''.implode('\',\'', $ids) . '\')');
 			foreach($all_ids  as $id) {
 				$product_matches[] = 'discount_product_id LIKE \'%,'.(int)$id.',%\'';
 			}
 			$filters = array(
-				'discount_type=\'discount\'',
-				'discount_published=1',
-				'(discount_quota>discount_used_times OR discount_quota=0)',
-				'discount_start < '.time(),
-				'(discount_end > '.time().' OR discount_end = 0)',
-				'( ('.implode(') OR (' , $product_matches).') )',
-				'(discount_flat_amount != 0 OR discount_percent_amount != 0)'
+				'discount_type' => 'discount_type=\'discount\'',
+				'discount_published' => 'discount_published=1',
+				'discount_quota' => '(discount_quota > discount_used_times OR discount_quota = 0)',
+				'discount_start' => 'discount_start < '.time(),
+				'discount_end' => '(discount_end > '.time().' OR discount_end = 0)',
+				'product_match' => '( ('.implode(') OR (' , $product_matches).') )',
+				'discount_valid_amount' => '(discount_flat_amount != 0 OR discount_percent_amount != 0)'
 			);
 
 			if($config->get('force_discount_currency', 1)){
-				$filters[] = '(discount_flat_amount = 0 OR discount_currency_id ='.(int)$currency_id.')';
+				$filters['force_currency'] = '(discount_flat_amount = 0 OR discount_currency_id ='.(int)$currency_id.')';
 			}
 			if(!$app->isAdmin() || (int)$user_id > 0) {
 				hikashop_addACLFilters($filters,'discount_access', '', 2, false, (int)$user_id);
@@ -534,11 +533,24 @@ class hikashopCurrencyClass extends hikashopClass{
 					$uid = hikashop_loadUser(false);
 				else
 					$uid = $user_id;
-				$filters[] = "(discount_user_id = '' OR discount_user_id LIKE '%,".(int)$uid.",%')";
+				$filters['discount_user'] = "(discount_user_id = '' OR discount_user_id LIKE '%,".(int)$uid.",%')";
 			}
+
+			$trigger_options = array(
+				'ids' => $ids,
+				'variant_ids' => $variant_ids,
+				'currency_id' => $currency_id,
+				'user_id' => $user_id,
+				'zone_id' => $zone_id
+			);
+			JPluginHelper::importPlugin('hikashop');
+			$app->triggerEvent('onBeforeLoadProductPriceDiscount', array( &$filters, $rows, $trigger_options ));
+
 			$query = 'SELECT * FROM '.hikashop_table('discount').' WHERE '.implode(' AND ', $filters);
 			$this->database->setQuery($query);
 			$discounts = $this->database->loadObjectList();
+
+			$app->triggerEvent('onAfterLoadProductPriceDiscount', array( &$discounts, &$rows, $filters, $trigger_options ));
 		}
 
 		$now = time();
@@ -868,9 +880,9 @@ class hikashopCurrencyClass extends hikashopClass{
 						$rows[$k]->all_prices = $matches;
 					} else {
 						$rows[$k]->all_prices =& $rows[$k]->prices;
+					}
 				}
 			}
-		}
 		}
 
 
@@ -898,7 +910,7 @@ class hikashopCurrencyClass extends hikashopClass{
 				$cids[$currency_id] = $currency_id;
 			if(empty($cids[$main_currency]))
 				$cids[$main_currency] = $main_currency;
-			JArrayHelper::toInteger($cids);
+			hikashop_toInteger($cids);
 			$query = 'SELECT * FROM '.hikashop_table('currency').' WHERE currency_id IN ('.implode(',',$cids).')';
 			$this->database->setQuery($query);
 			$currencies = $this->database->loadObjectList('currency_id');
@@ -1037,8 +1049,8 @@ class hikashopCurrencyClass extends hikashopClass{
 						}
 					}
 
-				}else{
-					$unset[]=$k2;
+				}else {
+					$unset[] = $k2;
 				}
 			}
 		}
@@ -1049,42 +1061,44 @@ class hikashopCurrencyClass extends hikashopClass{
 		}
 	}
 
-
-
-	function selectDiscount(&$product,&$discounts,$zone_id,$parent=null){
-		$discountsSelected= array();
+	public function selectDiscount(&$product, &$discounts, $zone_id, $parent = null) {
+		$discountsSelected = array();
 		$discountSkippedBecauseOverQuota = false;
 		$id = $product->product_id;
-		if($product->product_type!='main' && !empty($product->product_parent_id)){
+		if($product->product_type != 'main' && !empty($product->product_parent_id)) {
 			$id = $product->product_parent_id;
 		}
 		static $zones = array();
 		$zoneClass = hikashop_get('class.zone');
-		if(empty($zones[$zone_id])){
-			foreach($discounts as $discount){
-				if($discount->discount_zone_id){
+		if(empty($zones[$zone_id])) {
+			foreach($discounts as $discount) {
+				if($discount->discount_zone_id) {
 					$zones[$zone_id] = $zoneClass->getZoneParents($zone_id);
 					break;
 				}
 			}
 		}
 
-		foreach($discounts as $discount){
-			$value = sprintf('%09.2f',$discount->discount_flat_amount).'_'.sprintf('%09.4f',$discount->discount_percent_amount);
+		foreach($discounts as $discount) {
+			$value = sprintf('%09.2f', $discount->discount_flat_amount) . '_' . sprintf('%09.4f', $discount->discount_percent_amount);
 
-			if($discount->discount_zone_id){
-				if(!is_array($discount->discount_zone_id)) $discount->discount_zone_id = explode(',',$discount->discount_zone_id);
-				$zone = $zoneClass->getZones($discount->discount_zone_id,'zone_namekey','zone_namekey',true);
-				if($zone && !count(array_intersect($zone,$zones[$zone_id]))){
+			if($discount->discount_zone_id) {
+				if(!is_array($discount->discount_zone_id))
+					$discount->discount_zone_id = explode(',',trim($discount->discount_zone_id,','));
+				if(empty($discount->discount_zone_loaded)) {
+					$discount->discount_zone_id = $zoneClass->getZones($discount->discount_zone_id, 'zone_namekey', 'zone_namekey', true);
+					$discount->discount_zone_loaded = true;
+				}
+				if($discount->discount_zone_id && !count(array_intersect($discount->discount_zone_id, $zones[$zone_id]))) {
 					continue;
 				}
 			}
-			if(!empty($product->cart_product_quantity) && empty($product->discount)){
-				if(!isset($this->cartDiscountsLeft[$discount->discount_code])){
+			if(!empty($product->cart_product_quantity) && empty($product->discount)) {
+				if(!isset($this->cartDiscountsLeft[$discount->discount_code])) {
 					$this->cartDiscountsLeft[$discount->discount_code] = $discount->discount_quota-$discount->discount_used_times;
 				}
 
-				if(!empty($discount->discount_quota) && $this->cartDiscountsLeft[$discount->discount_code]<$product->cart_product_quantity){
+				if(!empty($discount->discount_quota) && $this->cartDiscountsLeft[$discount->discount_code]<$product->cart_product_quantity) {
 					$discountSkippedBecauseOverQuota = true;
 					continue;
 				}
@@ -1103,115 +1117,117 @@ class hikashopCurrencyClass extends hikashopClass{
 				if(in_array($product->product_id, $discount->discount_product_id)) {
 					$discountsSelected[0][$value] = $discount;
 					continue;
-				}elseif(!empty($product->product_parent_id) && in_array($product->product_parent_id, $discount->discount_product_id)) {
+				} elseif(!empty($product->product_parent_id) && in_array($product->product_parent_id, $discount->discount_product_id)) {
 					$discountsSelected[5][$value] = $discount;
 					continue;
 				}
 			}
 
-			if(empty($discount->discount_product_id) && !empty($discount->discount_category_id)){
+			if(empty($discount->discount_product_id) && !empty($discount->discount_category_id)) {
 				if(!is_array($discount->discount_category_id))
 					$discount->discount_category_id = explode(',',trim($discount->discount_category_id, ','));
-				if($discount->discount_category_childs){
+				if($discount->discount_category_childs) {
 					static $childs=array();
 					$key = implode(',',$discount->discount_category_id);
-					if(!isset($childs[$key])){
-						$classCategory = hikashop_get('class.category');
-						$childs[$key]=$classCategory->getChildren($discount->discount_category_id,true,array(),'',0,999,false,'a.category_id');
-						$childs[$key]=array_merge($childs[$key],$classCategory->getCategories($discount->discount_category_id,'category_id'));
+					if(!isset($childs[$key])) {
+						if(empty($categoryClass))
+							$categoryClass = hikashop_get('class.category');
+						$childs[$key] = $categoryClass->getChildren($discount->discount_category_id, true, array(), '', 0, 999, false, 'a.category_id');
+						$childs[$key] = array_merge($childs[$key], $categoryClass->getCategories($discount->discount_category_id, 'category_id'));
 					}
 
-					static $products=array();
+					static $products = array();
 					$catIds = array();
-					foreach($childs[$key] as $cat){
+					foreach($childs[$key] as $cat) {
 						if(!empty($cat) && is_object($cat))
 							$catIds[] = (int)$cat->category_id;
 					}
 					$key = implode(',',$catIds);
-					if(!isset($products[$key])){
+					if(!isset($products[$key])) {
 						$this->database->setQuery('SELECT product_id FROM #__hikashop_product_category WHERE category_id IN ('.$key.')');
-						if(!HIKASHOP_J25){
-							$products[$key] = $this->database->loadResultArray();
-						} else {
-							$products[$key] = $this->database->loadColumn();
-						}
+						$products[$key] = $this->database->loadColumn();
 					}
-					if(empty($products[$key]) || !in_array($product->product_id,$products[$key]) && !in_array($product->product_parent_id,$products[$key])){
+					if(empty($products[$key]) || !in_array($product->product_id,$products[$key]) && !in_array($product->product_parent_id, $products[$key])) {
 						continue;
 					}
 				}
 				$categories = $this->_getCategories($id,$discount->discount_category_childs);
-				if(!empty($categories)){
-					foreach($categories as $val){
-						if(in_array($val->category_id,$discount->discount_category_id)){
-							$discountsSelected[10][$val->category_depth][$value]=$discount;
+				if(!empty($categories)) {
+					foreach($categories as $val) {
+						if(in_array($val->category_id,$discount->discount_category_id)) {
+							$discountsSelected[10][$val->category_depth][$value] = $discount;
 							continue;
 						}
 					}
 				}
 			}
 
-			if(empty($discount->discount_product_id) && empty($discount->discount_category_id)){
-				$discountsSelected[20][$value]=$discount;
+			if(empty($discount->discount_product_id) && empty($discount->discount_category_id)) {
+				$discountsSelected[20][$value] = $discount;
 			}
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onSelectDiscount', array(&$product, &$discountsSelected, &$discounts, $zone_id, &$parent));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onSelectDiscount', array(&$product, &$discountsSelected, &$discounts, $zone_id, &$parent));
 
-		if(!empty($discountsSelected)){
+		if(!empty($discountsSelected)) {
 			ksort($discountsSelected);
 			$discount = array_shift($discountsSelected);
-			if(is_array($discount)){
+			if(is_array($discount)) {
 				krsort($discount);
 				$discount = array_shift($discount);
-				if(is_array($discount)){
+				if(is_array($discount)) {
 					krsort($discount);
 					$discount = array_shift($discount);
 				}
 			}
 			$product->discount = hikashop_copy($discount);
-		}elseif($discountSkippedBecauseOverQuota){
+		} elseif($discountSkippedBecauseOverQuota) {
 		}
 	}
 
-	function convertDiscounts(&$discounts,&$currencies,$currency_id,$main_currency){
+	public function convertDiscounts(&$discounts, &$currencies, $currency_id, $main_currency) {
 		$unset = array();
-		foreach($discounts as $k => $discount){
-			if($discount->discount_currency_id!=$currency_id){
-				if(bccomp($discounts[$k]->discount_flat_amount,0,5)){
-					if(isset($currencies[$discount->discount_currency_id]) && isset($currencies[$currency_id]) && isset($currencies[$main_currency])){
-						$discounts[$k]->discount_flat_amount_orig = $discounts[$k]->discount_flat_amount;
-						$discounts[$k]->discount_currency_id_orig = $discounts[$k]->discount_currency_id;
-						$discounts[$k]->discount_currency_id = $currency_id;
-						$srcCurrency = $currencies[$discount->discount_currency_id_orig];
-						$dstCurrency = $currencies[$currency_id];
-						$mainCurrency =  $currencies[$main_currency];
-						if($srcCurrency->currency_id!=$mainCurrency->currency_id){
-							if(bccomp($srcCurrency->currency_percent_fee,0,2)){
-								$discounts[$k]->discount_flat_amount+=$discounts[$k]->discount_flat_amount*floatval($srcCurrency->currency_percent_fee)/100.0;
-							}
-							if(bccomp($srcCurrency->currency_rate,0,2)){
-								$discounts[$k]->discount_flat_amount=floatval($discounts[$k]->discount_flat_amount)/floatval($srcCurrency->currency_rate);
-							}
-						}
-						if($dstCurrency->currency_id!=$mainCurrency->currency_id){
-							$discounts[$k]->discount_flat_amount=floatval($discounts[$k]->discount_flat_amount)*floatval($dstCurrency->currency_rate);
-							if(bccomp($dstCurrency->currency_percent_fee,0,2)){
-								$discounts[$k]->discount_flat_amount+=$discounts[$k]->discount_flat_amount*floatval($dstCurrency->currency_percent_fee)/100.0;
-							}
-						}
-					}else{
-						$unset[]=$k;
-					}
-				}else{
-					$discounts[$k]->discount_flat_amount=0;
+		foreach($discounts as $k => $discount) {
+			if($discount->discount_currency_id == $currency_id)
+				continue;
+
+			if(bccomp($discounts[$k]->discount_flat_amount, 0, 5) == 0) {
+				$discounts[$k]->discount_flat_amount = 0;
+				continue;
+			}
+
+			if(!isset($currencies[$discount->discount_currency_id]) || !isset($currencies[$currency_id]) || !isset($currencies[$main_currency])) {
+				$unset[] = $k;
+				continue;
+			}
+
+			$discounts[$k]->discount_flat_amount_orig = $discounts[$k]->discount_flat_amount;
+			$discounts[$k]->discount_currency_id_orig = $discounts[$k]->discount_currency_id;
+			$discounts[$k]->discount_currency_id = $currency_id;
+
+			$srcCurrency = $currencies[$discount->discount_currency_id_orig];
+			$dstCurrency = $currencies[$currency_id];
+			$mainCurrency =  $currencies[$main_currency];
+
+			if($srcCurrency->currency_id != $mainCurrency->currency_id) {
+				if(bccomp($srcCurrency->currency_percent_fee, 0, 2)) {
+					$discounts[$k]->discount_flat_amount += floatval($discounts[$k]->discount_flat_amount) * floatval($srcCurrency->currency_percent_fee) / 100.0;
+				}
+				if(bccomp($srcCurrency->currency_rate, 0, 2)) {
+					$discounts[$k]->discount_flat_amount = floatval($discounts[$k]->discount_flat_amount) / floatval($srcCurrency->currency_rate);
+				}
+			}
+			if($dstCurrency->currency_id != $mainCurrency->currency_id) {
+				$discounts[$k]->discount_flat_amount = floatval($discounts[$k]->discount_flat_amount) * floatval($dstCurrency->currency_rate);
+				if(bccomp($dstCurrency->currency_percent_fee, 0, 2)) {
+					$discounts[$k]->discount_flat_amount += $discounts[$k]->discount_flat_amount * floatval($dstCurrency->currency_percent_fee) / 100.0;
 				}
 			}
 		}
-		if(!empty($unset)){
-			foreach($unset as $u){
+		if(empty($unset)) {
+			foreach($unset as $u) {
 				unset($discounts[$u]);
 			}
 		}
@@ -1458,8 +1474,7 @@ class hikashopCurrencyClass extends hikashopClass{
 			'(p.price_end_date < 1 OR p.price_end_date > ' . $now . ')'
 		);
 		$product_matches = array(
-			'discount_product_id = \'0\'',
-			'discount_product_id = \'\''
+			'discount_product_id IN (\'\',\'0\')'
 		);
 
 		if(!empty($ids)) {
@@ -1470,7 +1485,6 @@ class hikashopCurrencyClass extends hikashopClass{
 
 				$ids_string[] = (int)$id;
 				$product_matches[] = 'discount_product_id LIKE \'%,'.(int)$id.',%\'';
-				$product_matches[] = 'discount_product_id = \''.(int)$id.'\'';
 			}
 			if(empty($ids_string)) {
 				if(empty($element->product_id))
@@ -1479,6 +1493,7 @@ class hikashopCurrencyClass extends hikashopClass{
 				$ids_string = array((int)$element->product_id);
 				$ids = array((int)$element->product_id);
 			}
+			$product_matches[0] = 'discount_product_id IN (\'\',\'0\',\''.implode('\',\'', $ids_string) . '\')';
 			$filters[] = 'p.price_product_id IN ('.implode(',', $ids_string).')';
 		} else {
 			$ids_string = '0';
@@ -1520,18 +1535,18 @@ class hikashopCurrencyClass extends hikashopClass{
 		}
 
 		$filters = array(
-			'discount_type = \'discount\'',
-			'discount_published = 1',
-			'discount_quota > discount_used_times OR discount_quota = 0',
-			'discount_start < '.time(),
-			'discount_end > '.time().' OR discount_end = 0',
-			''.implode(' OR ', $product_matches).'',
-			'discount_flat_amount != 0 OR discount_percent_amount != 0'
+			'discount_type' => 'discount_type = \'discount\'',
+			'discount_published' => 'discount_published = 1',
+			'discount_quota' => 'discount_quota > discount_used_times OR discount_quota = 0',
+			'discount_start' => 'discount_start < '.time(),
+			'discount_end' => 'discount_end > '.time().' OR discount_end = 0',
+			'product_match' => ''.implode(' OR ', $product_matches).'',
+			'discount_valid_amount' => 'discount_flat_amount != 0 OR discount_percent_amount != 0'
 		);
 
 		$config = hikashop_config();
-		if($config->get('force_discount_currency', 1)){
-			$filters[] = '(discount_flat_amount = 0 OR discount_currency_id ='.(int)$currency_id.')';
+		if($config->get('force_discount_currency', 1)) {
+			$filters['force_currency'] = '(discount_flat_amount = 0 OR discount_currency_id ='.(int)$currency_id.')';
 		}
 		if(!$app->isAdmin() || (int)$user_id > 0) {
 			hikashop_addACLFilters($filters, 'discount_access', '', 2, false, (int)$user_id);
@@ -1539,12 +1554,24 @@ class hikashopCurrencyClass extends hikashopClass{
 				$uid = hikashop_loadUser(false);
 			else
 				$uid = $user_id;
-			$filters[] = "(discount_user_id = '' OR discount_user_id LIKE '%,".(int)$uid.",%')";
+			$filters['discount_user'] = "(discount_user_id = '' OR discount_user_id LIKE '%,".(int)$uid.",%')";
 		}
+
+		$trigger_options = array(
+			'ids' => $ids,
+			'variant_ids' => null,
+			'currency_id' => $currency_id,
+			'user_id' => $user_id,
+			'zone_id' => $zone_id
+		);
+		JPluginHelper::importPlugin('hikashop');
+		$app->triggerEvent('onBeforeLoadProductPriceDiscount', array( &$filters, $element, $trigger_options ));
 
 		$query = 'SELECT * FROM '.hikashop_table('discount').' WHERE ('.implode(') AND (',$filters) . ')';
 		$this->database->setQuery($query);
 		$discounts = $this->database->loadObjectList();
+
+		$app->triggerEvent('onAfterLoadProductPriceDiscount', array( &$discounts, &$element, $filters, $trigger_options ));
 
 		if(!empty($discounts)) {
 			foreach($discounts as $discount) {
@@ -1555,18 +1582,18 @@ class hikashopCurrencyClass extends hikashopClass{
 		}
 
 		$null = null;
-		$currencies = $this->getCurrencies($currency_ids,$null);
+		$currencies = $this->getCurrencies($currency_ids, $null);
 
-		$this->convertPrice($element,$currencies,$currency_id,$main_currency);
+		$this->convertPrice($element, $currencies, $currency_id, $main_currency);
 
 		if(!empty($discounts)) {
-			$this->cartDiscountsLeft=array();
-			$this->productsDone=array();
-			$this->convertDiscounts($discounts,$currencies,$currency_id,$main_currency);
-			$this->addDiscountToPrices($element,$discounts,$discount_before_tax,$zone_id);
+			$this->cartDiscountsLeft = array();
+			$this->productsDone = array();
+			$this->convertDiscounts($discounts, $currencies, $currency_id, $main_currency);
+			$this->addDiscountToPrices($element, $discounts, $discount_before_tax, $zone_id);
 
 			if(!empty($element->options)) {
-				$this->addDiscountToPrices($element->options,$discounts,$discount_before_tax,$zone_id);
+				$this->addDiscountToPrices($element->options, $discounts, $discount_before_tax, $zone_id);
 			}
 		}
 	}
@@ -1815,9 +1842,7 @@ class hikashopCurrencyClass extends hikashopClass{
 	}
 
 	function addAdditionals(&$rows, &$additional_total, $total, $currency_id) {
-		if(!HIKASHOP_PHP5) {
-			$additional_total = $total;
-		} elseif(is_array($total->prices)) {
+		if(is_array($total->prices)) {
 			if(empty($additional_total))
 				$additional_total = new stdClass();
 			$additional_total->prices = array(clone(reset($total->prices)));
@@ -1916,8 +1941,8 @@ class hikashopCurrencyClass extends hikashopClass{
 		}
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeCalculateProductPriceForQuantity', array( &$product) );
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeCalculateProductPriceForQuantity', array( &$product) );
 
 		if(function_exists('hikashop_product_price_for_quantity_in_cart')) {
 			hikashop_product_price_for_quantity_in_cart($product);
@@ -1925,7 +1950,7 @@ class hikashopCurrencyClass extends hikashopClass{
 			$this->quantityPrices($product->prices, @$product->cart_product_quantity, $product->cart_product_total_quantity);
 		}
 
-		$dispatcher->trigger('onAfterCalculateProductPriceForQuantity', array( &$product) );
+		$app->triggerEvent('onAfterCalculateProductPriceForQuantity', array( &$product) );
 	}
 
 	function quantityPrices(&$prices, $quantity, $total_quantity) {
@@ -2025,24 +2050,24 @@ class hikashopCurrencyClass extends hikashopClass{
 						continue;
 				}
 
-				if(empty($row->prices)){
+				if(empty($row->prices)) {
 					if(empty($element->prices))
 						continue;
-					$element->variants[$k]->prices =hikashop_copy($element->prices);
+					$element->variants[$k]->prices = hikashop_copy($element->prices);
 
 					if(!empty($element->variants[$k]->cart_product_total_variants_quantity)) {
 						$element->variants[$k]->cart_product_total_quantity = $element->variants[$k]->cart_product_total_variants_quantity;
 					}
 
-					if((float) $element->variants[$k]->product_price_percentage > 0){
+					if((float) $element->variants[$k]->product_price_percentage > 0) {
 						foreach($element->variants[$k]->prices as $k2 => $row2) {
 							foreach(get_object_vars($row2) as $key => $value) {
 								if(in_array($key, array('taxes_without_discount', 'taxes', 'taxes_orig'))) {
 									foreach($value as $taxKey => $tax) {
-										$element->variants[$k]->prices[$k2]->taxes[$taxKey]->tax_amount = @$tax->tax_amount * (float) $element->variants[$k]->product_price_percentage / 100;
+										$element->variants[$k]->prices[$k2]->taxes[$taxKey]->tax_amount = @$tax->tax_amount * (float)$element->variants[$k]->product_price_percentage / 100;
 									}
 								} elseif(is_numeric($value) && !in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
-									$element->variants[$k]->prices[$k2]->$key = $value * (float) $element->variants[$k]->product_price_percentage / 100;
+									$element->variants[$k]->prices[$k2]->$key = $value * (float)$element->variants[$k]->product_price_percentage / 100;
 								}
 							}
 						}
@@ -2074,7 +2099,7 @@ class hikashopCurrencyClass extends hikashopClass{
 		$main_currency = 1 / $currencies[$new_currency]->currency_rate;
 		$query = 'UPDATE '.hikashop_table('currency').' SET currency_rate = currency_rate * '.$main_currency;
 		$this->database->setQuery($query);
-		return $this->database->query();
+		return $this->database->execute();
 	}
 
 	function save(&$element) {
@@ -2104,7 +2129,7 @@ class hikashopCurrencyClass extends hikashopClass{
 
 		if($discount_before_tax) {
 			if(bccomp($discount->discount_flat_amount,0,5) !== 0) {
-				$price->price_value = $price->price_value -floatval($discount->discount_flat_amount);
+				$price->price_value = $price->price_value - floatval($discount->discount_flat_amount);
 			} else {
 				$price->price_value = (($price->price_value * (100.0 - floatval($discount->discount_percent_amount))) / 100.0);
 				if(isset($price->price_orig_value)) {
@@ -2199,7 +2224,6 @@ class hikashopCurrencyClass extends hikashopClass{
 		if(!empty($discount->discount_tax) && !empty($discount->products)) {
 			$taxes = $this->getProductTaxes($discount->products, !$discount_before_tax);
 		}
-
 		foreach($prices->prices as $k => $price) {
 			if(isset($prices->prices[$k]->price_value_without_discount_with_tax) && $prices->prices[$k]->price_value_without_discount_with_tax > 0)
 				continue;
@@ -2219,17 +2243,23 @@ class hikashopCurrencyClass extends hikashopClass{
 					$untaxed = null;
 					if($discount_before_tax) {
 						$discount->discount_flat_amount = $this->getTaxedPrice($discount->discount_flat_amount_without_tax, $zone_id, $taxes, $round);
+						$discount->taxes = $this->taxRates;
 						$discount->discount_value_without_tax = $discount->discount_flat_amount_without_tax;
 						$untaxed = $discount->discount_flat_amount_without_tax;
 					} else if($floating_tax) {
 						$untaxed = $discount->discount_flat_amount;
 					}
 					if($untaxed !== null) {
-						$discount->taxes = array();
-						foreach($price->taxes as $namekey => $tax) {
-							$discount->taxes[$namekey] = clone($tax);
-							$discount->taxes[$namekey]->tax_amount = $this->round($untaxed * $tax->tax_rate, $round);
-							$price->taxes[$namekey]->tax_amount = $tax->tax_amount - $discount->taxes[$namekey]->tax_amount;
+						if(!isset($discount->taxes)) {
+							foreach($price->taxes as $namekey => $tax) {
+								$discount->taxes[$namekey] = clone($tax);
+								$discount->taxes[$namekey]->tax_amount = $this->round($untaxed * $tax->tax_rate, $round);
+								$price->taxes[$namekey]->tax_amount = $tax->tax_amount - $discount->taxes[$namekey]->tax_amount;
+							}
+						}else{
+							foreach($discount->taxes as $tax){
+								$price->taxes[$tax->tax_namekey]->tax_amount -= $tax->tax_amount;
+							}
 						}
 					}
 					$prices->prices[$k]->price_value_with_tax = $price->price_value_with_tax - floatval($discount->discount_flat_amount);
@@ -2274,15 +2304,12 @@ class hikashopCurrencyClass extends hikashopClass{
 	}
 
 	function &addShipping(&$shippings, &$ref_total) {
-		if(!HIKASHOP_PHP5){
-			$total = &$ref_total;
-		} else {
-			$total = new stdClass();
-			$price = reset($ref_total->prices);
-			if(is_null($price))
-				$price = new stdClass();
-			$total->prices = array(clone($price));
-		}
+		$total = new stdClass();
+		$price = reset($ref_total->prices);
+		if(is_null($price))
+			$price = new stdClass();
+		$total->prices = array(clone($price));
+
 		foreach($total->prices as $k => $price) {
 			$total->prices[$k]->price_value_without_shipping_with_tax = $price->price_value_with_tax;
 			$total->prices[$k]->price_value_without_shipping = $price->price_value;
@@ -2318,16 +2345,12 @@ class hikashopCurrencyClass extends hikashopClass{
 	}
 
 	function addPayment(&$payment, &$total) {
-		if(!HIKASHOP_PHP5) {
-			$payment->total = $total;
-		} else {
-			$price = reset($total->prices);
-			if(is_null($price))
-				$price = new stdClass();
-			if(!isset($payment->total) || is_null($payment->total))
-				$payment->total = new stdClass();
-			$payment->total->prices = array(clone($price));
-		}
+		$price = reset($total->prices);
+		if(is_null($price))
+			$price = new stdClass();
+		if(!isset($payment->total) || is_null($payment->total))
+			$payment->total = new stdClass();
+		$payment->total->prices = array(clone($price));
 
 		if(isset($payment->total->prices[0]->price_value_without_payment))
 			return true;
@@ -2413,8 +2436,8 @@ class hikashopCurrencyClass extends hikashopClass{
 		unset($rate);
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onAfterProcessShippings', array(&$usable_rates, &$cart));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onAfterProcessShippings', array(&$usable_rates, &$cart));
 	}
 
 	function processPayments(&$usable_rates, &$cart, $zone_id = null) {
@@ -2453,8 +2476,8 @@ class hikashopCurrencyClass extends hikashopClass{
 		unset($rate);
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onAfterProcessPayments', array(&$usable_rates, &$cart));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onAfterProcessPayments', array(&$usable_rates, &$cart));
 	}
 
 	function addTax(&$prices, &$element, &$currency_ids, $zone_id, $product_tax_id) {

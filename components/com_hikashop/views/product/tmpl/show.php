@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,9 @@ if(!empty($this->categories)) {
 $app = JFactory::getApplication();
 if(empty($this->element)) {
 	if($this->config->get('404_when_product_not_found',1)){
-		JError::raiseError(404, JText::_('PRODUCT_NOT_FOUND'));
+		header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
+		$app = JFactory::getApplication();
+		$app->enqueueMessage(JText::_('PRODUCT_NOT_FOUND'), 'error');
 		echo '</div>';
 		return;
 	}
@@ -140,16 +142,22 @@ $contact = $this->config->get('product_contact',0);
 if(empty($this->element->variants) || $this->params->get('characteristic_display') == 'list') {
 	if(hikashop_level(1) && !empty($this->element->options)) {
 		$priceUsed = 0;
+		$unit_price = false;
 		if(!empty($this->row->prices)) {
 			foreach($this->row->prices as $price) {
-				if(!isset($price->price_min_quantity) || !empty($this->cart_product_price) || $price->price_min_quantity > 1)
+				if(!isset($price->price_min_quantity) || !empty($this->cart_product_price) || $unit_price)
+					continue;
+				if($price->price_min_quantity <= 1)
+					$unit_price = true;
+
+				$name = 'price_value';
+				if($this->params->get('price_with_tax'))
+					$name = 'price_value_with_tax';
+
+				if(!$unit_price && $price->$name > $priceUsed)
 					continue;
 
-				if($this->params->get('price_with_tax')) {
-					$priceUsed = $price->price_value_with_tax;
-				} else {
-					$priceUsed = $price->price_value;
-				}
+				$priceUsed = $price->$name;
 			}
 		}
 ?>
@@ -237,19 +245,12 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 	?></div>
 	<div id="hikashop_product_contact_<?php echo $variant_name; ?>" style="display:none;"><?php
 		if(hikashop_level(1) && ($contact == 2 || ($contact == 1 && !empty ($this->element->main->product_contact)))) {
-			$params = @$this->params;
-			global $Itemid;
-			$url_itemid = '';
-			if(!empty($Itemid)) {
-				$url_itemid = '&Itemid='.$Itemid;
-			}
-			echo $this->cart->displayButton(
-				JText::_('CONTACT_US_FOR_INFO'),
-				'contact_us',
-				$params,
-				''.hikashop_completeLink('product&task=contact&cid=' . $variant->product_id.$url_itemid),
-				'window.location=\'' . hikashop_completeLink('product&task=contact&cid=' . $variant->product_id.$url_itemid) . '\';return false;'
-			);
+			$css_button = $this->config->get('css_button', 'hikabtn');
+?>
+			<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$variant->product_id . $this->url_itemid); ?>" class="<?php echo $css_button; ?>"><?php
+				echo JText::_('CONTACT_US_FOR_INFO');
+			?></a>
+<?php
 		}
 	?></div>
 <?php

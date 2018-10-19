@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -118,11 +118,7 @@ class plgHikashoppaymentCommon extends hikashopPaymentPlugin
 
 	function onAfterHikaPluginConfigurationSelectionListing($type, &$plugins, &$parent){
 		if($type!='payment') return true;
-		if(version_compare(JVERSION,'1.6','<')){
-			$query='SELECT * FROM '.hikashop_table('plugins',false).' WHERE folder=\'payment\' ORDER BY ordering ASC';
-		}else{
-			$query='SELECT extension_id as id, enabled as published,name,element FROM '.hikashop_table('extensions',false).' WHERE folder=\'payment\' AND type=\'plugin\' ORDER BY ordering ASC';
-		}
+		$query='SELECT extension_id as id, enabled as published,name,element FROM '.hikashop_table('extensions',false).' WHERE folder=\'payment\' AND type=\'plugin\' ORDER BY ordering ASC';
 		$database = JFactory::getDBO();
 		$database->setQuery($query);
 		$payments = $database->loadObjectList();

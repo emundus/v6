@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,7 +41,7 @@ $site_id_value = '';
 if(file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php')){
 	include_once( JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php');
 	if ( class_exists( 'MultisitesHelperUtils') && method_exists( 'MultisitesHelperUtils', 'getComboSiteIDs')) {
-		$comboSiteIDs = str_replace('class="inputbox"','class="inputbox chzn-done"',MultisitesHelperUtils::getComboSiteIDs( '', 'price[price_site_id][##]', JText::_( 'SELECT_A_SITE')));
+		$comboSiteIDs = str_replace('class="custom-select"','class="custom-select chzn-done"',MultisitesHelperUtils::getComboSiteIDs( '', 'price[price_site_id][##]', JText::_( 'SELECT_A_SITE')));
 		if( !empty( $comboSiteIDs)){
 			$site_id_title = '<th class="title">'. JText::_( 'SITE_ID' ).'</th>';
 			$site_id_value = '<td>'. $comboSiteIDs.'</td>';
@@ -121,7 +121,7 @@ if($this->config->get('floating_tax_prices',0)){
 					</td>
 					<?php }
 					if(!empty($site_id_value)){
-						echo '<td>'.str_replace('class="inputbox"','class="inputbox chzn-done"',MultisitesHelperUtils::getComboSiteIDs( @$row->price_site_id, 'price[price_site_id]['.$i.']', JText::_( 'SELECT_A_SITE'))).'</td>';
+						echo '<td>'.str_replace('class="custom-select"','class="custom-select chzn-done"',MultisitesHelperUtils::getComboSiteIDs( @$row->price_site_id, 'price[price_site_id]['.$i.']', JText::_( 'SELECT_A_SITE'))).'</td>';
 					}; ?>
 					<td>
 						<?php
@@ -132,7 +132,7 @@ if($this->config->get('floating_tax_prices',0)){
 						} ?>
 					</td>
 					<td>
-						<a href="#" onclick="hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete2.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a>
+						<a href="#" onclick="hikashop.deleteRow(this); return false;"><i class="fa fa-times-circle"></i></a>
 					</td>
 				</tr>
 			<?php
@@ -181,7 +181,7 @@ if(!in_array($this->element->product_type,array('main','template'))){ ?>
 				--
 			</td>
 			<td>
-				<a href="#" onclick="hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete2.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a>
+				<a href="#" onclick="hikashop.deleteRow(this); return false;"><i class="fa fa-times-circle"></i></a>
 			</td>
 		</tr>
 	</table>

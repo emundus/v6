@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,68 +20,14 @@ $doc->addScriptDeclaration($js);
 ?>
 <div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('view'); ?>" method="post"  name="adminForm" id="adminForm">
-<?php if($this->ftp){ ?>
-	<fieldset title="<?php echo JText::_('DESCFTPTITLE'); ?>">
-		<legend><?php echo JText::_('DESCFTPTITLE'); ?></legend>
-
-		<?php echo JText::_('DESCFTP'); ?>
-
-		<?php if(JError::isError($this->ftp)){ ?>
-			<p><?php
-				if(method_exists($this->ftp, '__toString'))
-					$msg = $this->ftp->__toString();
-				else
-					$msg = @$this->ftp->message;
-				echo JText::_( $msg );
-			?></p>
-		<?php } ?>
-
-		<table class="adminform nospace">
-		<tbody>
-		<tr>
-			<td width="120">
-				<label for="username"><?php echo JText::_('HIKA_USERNAME'); ?>:</label>
-			</td>
-			<td>
-				<input type="text" id="username" name="username" class="input_box" size="70" value="" />
-			</td>
-		</tr>
-		<tr>
-			<td width="120">
-				<label for="password"><?php echo JText::_('HIKA_PASSWORD'); ?>:</label>
-			</td>
-			<td>
-				<input type="password" id="password" name="password" class="input_box" size="70" value="" />
-			</td>
-		</tr>
-		</tbody>
-		</table>
-	</fieldset>
-<?php } ?>
-
-<?php if(HIKASHOP_BACK_RESPONSIVE) { ?>
-	<div class="row-fluid">
-		<div class="span4">
-			<div class="input-prepend input-append">
-				<span class="add-on"><i class="icon-filter"></i></span>
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-				<button class="btn" onclick="this.form.limitstart.value=0;this.form.submit();"><i class="icon-search"></i></button>
-				<button class="btn" onclick="this.form.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-			</div>
-		</div>
-		<div class="span8">
-<?php } else { ?>
-	<table>
-		<tr>
-			<td width="100%">
-				<?php echo JText::_('FILTER'); ?>:
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-				<button class="btn" onclick="this.form.limitstart.value=0;this.form.submit();"><?php echo JText::_('GO'); ?></button>
-				<button class="btn" onclick="this.form.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><?php echo JText::_('RESET'); ?></button>
-			</td>
-			<td nowrap="nowrap">
-<?php }
-
+<div class="hk-row-fluid">
+	<div class="hkc-xs-4">
+<?php
+	echo $this->loadHkLayout('search', array());
+?>
+	</div>
+	<div class="hkc-xs-8 hikashop_listing_filters">
+<?php
 	if(!empty($this->pluginViews)) {
 		$values = array(
 			JHTML::_('select.option', '', JText::_('ALL')),
@@ -95,20 +41,14 @@ $doc->addScriptDeclaration($js);
 			}
 		}
 		unset($components);
-		echo JHTML::_('hikaselect.genericlist', $values, 'component', 'class="inputbox" onchange="document.adminForm.submit();return false;" size="1"', 'value', 'text', $this->pageInfo->filter->component);
+		echo JHTML::_('hikaselect.genericlist', $values, 'component', 'class="custom-select" onchange="document.adminForm.submit();return false;" size="1"', 'value', 'text', $this->pageInfo->filter->component);
 	}
-	echo JHTML::_('hikaselect.genericlist', $this->viewTypes, "viewType", 'class="inputbox" size="1" onchange="document.adminForm.submit();return false;"', 'value', 'text', @$this->pageInfo->filter->viewType);
+	echo JHTML::_('hikaselect.genericlist', $this->viewTypes, "viewType", 'class="custom-select" size="1" onchange="document.adminForm.submit();return false;"', 'value', 'text', @$this->pageInfo->filter->viewType);
 	echo $this->templateType->display("template",$this->pageInfo->filter->template,$this->templateValues);
 	echo $this->viewType->display("client_id",$this->pageInfo->filter->client_id);
-
-if(HIKASHOP_BACK_RESPONSIVE) { ?>
-		</div>
+?>
 	</div>
-<?php } else { ?>
-			</td>
-		</tr>
-	</table>
-<?php } ?>
+</div>
 	<table id="hikashop_view_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 		<thead>
 			<tr>
@@ -161,8 +101,9 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 						?>
 					</td>
 					<td>
+						<?php echo $row->template; ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_templates&task=edit&cid[]='.strip_tags($row->template).'&client='.$row->client_id); ?>">
-							<?php echo $row->template; ?>
+							<i class="fa fa-chevron-right"></i>
 						</a><?php
 						if($row->type_name != HIKASHOP_COMPONENT && !empty($row->component)) {
 							echo ' - ' . $row->component;

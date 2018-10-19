@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -55,20 +55,18 @@ class UserController extends hikashopController {
 
 	public function setdefault() {
 		$newDefaultId = hikaInput::get()->getInt('address_default', 0);
-		if($newDefaultId){
-			if(!HIKASHOP_J25) {
-				JRequest::checkToken('request') || die('Invalid Token');
-			} else {
-				JSession::checkToken('request') || die('Invalid Token');
-			}
-			$addressClass = hikashop_get('class.address');
-			$oldData = $addressClass->get($newDefaultId);
-			if(!empty($oldData)){
-				$user_id = hikashop_getCID('user_id');
-				if($user_id==$oldData->address_user_id){
-					$oldData->address_default = 1;
-					$addressClass->save($oldData);
-				}
+		if(!$newDefaultId)
+			return $this->edit();
+
+		JSession::checkToken('request') || die('Invalid Token');
+
+		$addressClass = hikashop_get('class.address');
+		$oldData = $addressClass->get($newDefaultId);
+		if(!empty($oldData)) {
+			$user_id = hikashop_getCID('user_id');
+			if($user_id==$oldData->address_user_id) {
+				$oldData->address_default = 1;
+				$addressClass->save($oldData);
 			}
 		}
 		$this->edit();
@@ -103,14 +101,11 @@ class UserController extends hikashopController {
 		if(empty($addressData)){
 			$ok=false;
 		}else{
-			$address_id = $addressClass->save($addressData);
+			if(in_array(@$addressData->address_type, array('billing', '', 'both','shipping')))
+				$address_id = $addressClass->save($addressData);
 		}
-		if(!$ok || !$address_id){
+		if(!$ok || !@$address_id){
 			$app = JFactory::getApplication();
-			if(version_compare(JVERSION,'1.6','<')){
-				$session = JFactory::getSession();
-				$session->set('application.queue', $app->_messageQueue);
-			}
 			echo '<html><head><script type="text/javascript">javascript: history.go(-1);</script></head><body></body></html>';
 			exit;
 		}

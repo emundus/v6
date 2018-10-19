@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ echo $this->leftmenu(
 			JHTML::_('select.option', '1',  JText::_('DISPLAY_FRONTCOMP') ),
 			JHTML::_('select.option', '2',  JText::_('HIKA_ALL') ),
 		);
-		echo JHTML::_('hikaselect.genericlist', $arr, "config[display_view_files]" , '', 'value', 'text',$this->config->get('display_view_files', 0) );?></td>
+		echo JHTML::_('hikaselect.genericlist', $arr, "config[display_view_files]" , 'class="custom-select"', 'value', 'text',$this->config->get('display_view_files', 0) );?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('cart_retaining_period');?>><?php echo JText::_('CART_RETAINING_PERIOD'); ?></td>
@@ -98,7 +98,7 @@ echo $this->leftmenu(
 			JHTML::_('select.option', 'REDIRECT_URL',  JText::_('REDIRECT_URL') ),
 			JHTML::_('select.option', 'REQUEST_URI',  JText::_('REQUEST_URI') ),
 		);
-		echo JHTML::_('hikaselect.genericlist', $arr, "config[server_current_url_mode]" , '', 'value', 'text',$this->config->get('server_current_url_mode','REQUEST_URI') );?></td>
+		echo JHTML::_('hikaselect.genericlist', $arr, "config[server_current_url_mode]" , 'class="custom-select"', 'value', 'text',$this->config->get('server_current_url_mode','REQUEST_URI') );?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('partner_id');?>><?php echo JText::_('AFFILIATE');?></td>
@@ -180,14 +180,14 @@ echo $this->leftmenu(
 		$minutes = array();
 		for($i = 0; $i < 60; $i++) $minutes[] = JHTML::_('select.option', $i,$i);
 		echo JText::_('OPENS_AT');
-		echo JHTML::_('select.genericlist', $hours, 'config[store_open_hour]', 'class="inputbox" size="1"', 'value', 'text', $this->config->get('store_open_hour', 0)).
+		echo JHTML::_('select.genericlist', $hours, 'config[store_open_hour]', 'class="custom-select" size="1"', 'value', 'text', $this->config->get('store_open_hour', 0)).
 			JText::_('HOURS');
-		echo JHTML::_('select.genericlist', $minutes, "config[store_open_minute]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('store_open_minute', 0)).
+		echo JHTML::_('select.genericlist', $minutes, "config[store_open_minute]", 'class="custom-select" size="1"', 'value', 'text', $this->config->get('store_open_minute', 0)).
 			JText::_('HIKA_MINUTES').'<br/>';
 		echo JText::_('CLOSES_AT');
-		echo JHTML::_('select.genericlist', $hours, 'config[store_close_hour]', 'class="inputbox" size="1"', 'value', 'text', $this->config->get('store_close_hour', 0)).
+		echo JHTML::_('select.genericlist', $hours, 'config[store_close_hour]', 'class="custom-select" size="1"', 'value', 'text', $this->config->get('store_close_hour', 0)).
 			JText::_('HOURS');
-		echo JHTML::_('select.genericlist', $minutes, 'config[store_close_minute]', 'class="inputbox" size="1"', 'value', 'text', $this->config->get('store_close_minute', 0)).
+		echo JHTML::_('select.genericlist', $minutes, 'config[store_close_minute]', 'class="custom-select" size="1"', 'value', 'text', $this->config->get('store_close_minute', 0)).
 			JText::_('HIKA_MINUTES');
 	}else{
 		echo '<small style="color:red">'.JText::_('ONLY_COMMERCIAL').'</small>';

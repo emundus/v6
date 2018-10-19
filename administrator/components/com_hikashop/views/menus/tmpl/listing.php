@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -49,13 +49,9 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 				<th class="title titlebox">
 					<input type="checkbox" name="toggle" value="" onclick="hikashop.checkAll(this);" />
 				</th>
-				<th class="title">
-					<?php if(version_compare(JVERSION,'1.6','<')){
-						echo JHTML::_('grid.sort', JText::_('HIKA_NAME'), 'name', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
-					}else{
-						echo JHTML::_('grid.sort', JText::_('HIKA_TITLE'), 'title', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
-					}?>
-				</th>
+				<th class="title"><?php
+					echo JHTML::_('grid.sort', JText::_('HIKA_TITLE'), 'title', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+				?></th>
 				<th class="title">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKA_ALIAS'), 'alias', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
@@ -93,11 +89,7 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 						<?php if($this->manage){ ?>
 							<a href="<?php echo hikashop_completeLink('menus&task=edit&cid[]='.$row->id);?>">
 						<?php } ?>
-						<?php if(version_compare(JVERSION,'1.6','<')){
-							echo $row->name;
-						}else{
-							echo $row->title;
-						} ?>
+						<?php echo $row->title; ?>
 						<?php if($this->manage){ ?>
 						</a>
 						<?php } ?>

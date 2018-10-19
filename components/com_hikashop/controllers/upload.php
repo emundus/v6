@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,8 +37,8 @@ class uploadController extends hikashopController {
 		if(!empty($controllerName)) {
 			if(substr($controllerName, 0, 4) == 'plg.') {
 				JPluginHelper::importPlugin('hikashop');
-				$dispatcher = JDispatcher::getInstance();
-				$dispatcher->trigger('onUploadControllerGet', array($controllerName, &$this->base_controller));
+				$app = JFactory::getApplication();
+				$app->triggerEvent('onUploadControllerGet', array($controllerName, &$this->base_controller));
 			} else
 				$this->base_controller = hikashop_get('controller.'.$controllerName, array(), true);
 
@@ -289,11 +289,7 @@ class uploadController extends hikashopController {
 	}
 
 	public function upload() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken() || die('Invalid Token');
-		} else {
-			JSession::checkToken() || die('Invalid Token');
-		}
+		JSession::checkToken() || die('Invalid Token');
 		$this->initController();
 
 		$config = hikashop_config();

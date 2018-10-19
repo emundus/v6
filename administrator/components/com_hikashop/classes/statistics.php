@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -131,7 +131,7 @@ class hikashopStatisticsClass extends hikashopClass {
 			'format' => 'price',
 			'type' => 'tile',
 			'tile' => array(
-				'icon' => array('type' => 'fa', 'value' => 'money'),
+				'icon' => array('type' => 'fa', 'value' => 'money fa-money-bill-alt'),
 				'view' => hikashop_completeLink('order&task=listing'),
 			),
 			'vars' => array(
@@ -364,7 +364,7 @@ class hikashopStatisticsClass extends hikashopClass {
 			'format' => 'percentage',
 			'type' => 'tile',
 			'tile' => array(
-				'icon' => array('type' => 'fa', 'value' => 'tachometer'),
+				'icon' => array('type' => 'fa', 'value' => 'tachometer fa-tachometer-alt'),
 			),
 			'vars' => array(
 				'DATE_RANGE' => 'this.month',
@@ -475,8 +475,8 @@ class hikashopStatisticsClass extends hikashopClass {
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$extra_list = $dispatcher->trigger('onHikashopStatisticPluginList', array(
+		$app = JFactory::getApplication();
+		$extra_list = $app->triggerEvent('onHikashopStatisticPluginList', array(
 			array(
 				'created' => $created_status,
 				'valid' => $valid_order_statuses,
@@ -746,7 +746,7 @@ class hikashopStatisticsClass extends hikashopClass {
 		if($limit === null)
 			$limit = -1;
 		$this->db->setQuery('SET @@session.time_zone = \'+00:00\'');
-		$this->db->query();
+		$this->db->execute();
 		$this->db->setQuery($query, $offset, $limit);
 		switch($queryData['get']) {
 			case 'object':
@@ -927,8 +927,8 @@ jQuery(window).on("resize", function(){
 				break;
 			case 'plugin':
 				JPluginHelper::importPlugin('hikashop');
-				$dispatcher = JDispatcher::getInstance();
-				$ret = $dispatcher->trigger('onHikashopStatisticPluginDisplay', array($data));
+				$app = JFactory::getApplication();
+				$ret = $app->triggerEvent('onHikashopStatisticPluginDisplay', array($data));
 				if(!empty($ret) && is_array($ret)) {
 					$arr = $ret;
 					$ret = reset($ret);
@@ -1083,7 +1083,6 @@ jQuery(window).on("resize", function(){
 		$footer = '';
 		$extra_class = '';
 		if(!empty($data['tile']['icon']['type']) && $data['tile']['icon']['type'] == 'fa') {
-			hikashop_loadJsLib('font-awesome');
 			$icon = '<i class="fa fa-'.$data['tile']['icon']['value'].'"></i>';
 		}
 

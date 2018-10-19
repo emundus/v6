@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -131,6 +131,19 @@ class hikashopNameboxType {
 			'url_params' => array('TABLE'),
 			'url' => 'cart&task=findList&table={TABLE}'
 		),
+		'modules' => array(
+			'class' => 'class.modules',
+			'name' => 'id',
+			'mode' => 'list',
+			'displayFormat' => '{title} ({id})',
+			'url' => 'modules&task=getValues',
+			'options' => array(
+				'olist' => array(
+					'table' => array('title' => 'HIKA_NAME', 'module' => 'HIKA_TYPE', 'id' => 'ID'),
+					'displayFormat' => '{title} ({id})'
+				)
+			)
+		),
 		'order' => array(
 			'class' => 'class.order',
 			'name' => 'order_number',
@@ -250,8 +263,8 @@ class hikashopNameboxType {
 			$loaded_types = array();
 
 			JPluginHelper::importPlugin('hikashop');
-			$dispatcher = JDispatcher::getInstance();
-			$dispatcher->trigger('onNameboxTypesLoad', array(&$loaded_types));
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onNameboxTypesLoad', array(&$loaded_types));
 		}
 
 		foreach($loaded_types as $k => $v) {
@@ -394,7 +407,7 @@ class hikashopNameboxType {
 		<input type="hidden" name="'.$map.'" id="'.$id.'_valuehidden" value="'.$key.'"/><span id="'.$id.'_valuetext">'.$name.'</span>
 		'.(!$delete ?
 			'<a class="editbutton" href="#" onclick="return false;"><span>-</span></a>' :
-			'<a class="closebutton" href="#" onclick="window.oNameboxes[\''.$id.'\'].clean(this,\''.$cleanText.'\');return false;"><span>X</span></a>'
+			'<a class="closebutton" href="#" onclick="window.oNameboxes[\''.$id.'\'].clean(this,\''.$cleanText.'\');return false;" title="'.JText::_('HIKA_DELETE').'"><span>X</span></a>'
 		).'
 	</div>
 	<div class="nametext">
@@ -419,13 +432,13 @@ class hikashopNameboxType {
 					}
 					$ret .= "\r\n".'<div class="namebox" id="'.$id.'-'.$key.'">'.
 						'<input type="hidden" name="'.$map.'[]" value="'.$key.'"/>'.$name.
-						' <a class="closebutton" href="#" onclick="window.oNameboxes[\''.$id.'\'].unset(this,\''.$key.'\');window.oNamebox.cancelEvent();return false;"><span>X</span></a>'.
+						' <a class="closebutton" href="#" onclick="window.oNameboxes[\''.$id.'\'].unset(this,\''.$key.'\');window.oNamebox.cancelEvent();return false;" title="'.JText::_('HIKA_DELETE').'"><span>X</span></a>'.
 						'</div>';
 				}
 			}
 			$ret .= "\r\n".'<div class="namebox" style="display:none;" id="'.$id.'tpl">'.
 				'<input type="hidden" name="{map}" value="{key}"/>{name}'.
-				' <a class="closebutton" href="#" onclick="window.oNameboxes[\''.$id.'\'].unset(this,\'{key}\');window.oNamebox.cancelEvent();return false;"><span>X</span></a>'.
+				' <a class="closebutton" href="#" onclick="window.oNameboxes[\''.$id.'\'].unset(this,\'{key}\');window.oNamebox.cancelEvent();return false;" title="'.JText::_('HIKA_DELETE').'"><span>X</span></a>'.
 				'</div>';
 			$ret .= "\r\n".'<div class="nametext">'.
 				'<input id="'.$id.'_text" type="text" style="width:50px;min-width:60px" onfocus="window.oNameboxes[\''.$id.'\'].focus(this);" onkeyup="window.oNameboxes[\''.$id.'\'].search(this);" onchange="window.oNameboxes[\''.$id.'\'].search(this);"/>'.
@@ -533,7 +546,9 @@ class hikashopNameboxType {
 		if(!empty($typeConfig['mode']) && $typeConfig['mode'] == 'tree') {
 			$ret .= '
 <div class="namebox-popup">
-	<div id="'.$id.'_otree" style="display:none;" class="oTree namebox-popup-content"></div>
+	<div style="display:none;" data-oresize="'.$id.'" class="namebox-popup-resize namebox-popup-container">
+		<div id="'.$id.'_otree" class="oTree namebox-popup-content"></div>
+	</div>
 </div>
 <script type="text/javascript">
 new window.oNamebox(
@@ -546,7 +561,9 @@ new window.oNamebox(
 		else {
 			$ret .= '
 <div class="namebox-popup">
-	<div id="'.$id.'_olist" style="display:none;" class="oList namebox-popup-content"></div>
+	<div style="display:none;" data-oresize="'.$id.'" class="namebox-popup-resize namebox-popup-container">
+		<div id="'.$id.'_olist" class="oList namebox-popup-content"></div>
+	</div>
 </div>
 <script type="text/javascript">
 new window.oNamebox(

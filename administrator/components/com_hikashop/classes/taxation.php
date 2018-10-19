@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,14 +54,14 @@ class hikashopTaxationClass extends hikashopClass{
 
 	function save(&$element){
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 		$new = true;
 		if(!empty($element->taxation_id)){
-			$dispatcher->trigger('onBeforeTaxUpdate', array( &$element, &$do) );
+			$app->triggerEvent('onBeforeTaxUpdate', array( &$element, &$do) );
 			$new = false;
 		}else{
-			$dispatcher->trigger('onBeforeTaxCreate', array( &$element, &$do) );
+			$app->triggerEvent('onBeforeTaxCreate', array( &$element, &$do) );
 		}
 		if(!$do){
 			return false;
@@ -70,9 +70,9 @@ class hikashopTaxationClass extends hikashopClass{
 		$result = parent::save($element);
 
 		if(!$new){
-			$dispatcher->trigger('onAfterTaxUpdate', array( &$element) );
+			$app->triggerEvent('onAfterTaxUpdate', array( &$element) );
 		}else{
-			$dispatcher->trigger('onAfterTaxCreate', array( &$element) );
+			$app->triggerEvent('onAfterTaxCreate', array( &$element) );
 		}
 		return $result;
 	}

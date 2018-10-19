@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -69,7 +69,6 @@ if(in_array($pagination, array('top', 'both')) && $this->params->get('show_limit
 </form>
 <?php
 }
-
 $attributes = ($columns > 1 && $this->params->get('consistencyheight', 1)) ? ' data-consistencyheight=".hikashop_subcontainer"' : '';
 
 if(empty($this->tmpl_ajax)) {
@@ -127,19 +126,17 @@ if(!empty($this->rows)) {
 		$itemLayoutType = $this->params->get('div_item_layout_type');
 
 		foreach($this->rows as $row) {
-?>
+?>		
 		<div class="hkc-md-<?php echo (int)$span; ?> hikashop_product hikashop_product_column_<?php echo $current_column; ?> hikashop_product_row_<?php echo $current_row; ?>">
 			<div class="hikashop_container">
 				<div class="hikashop_subcontainer <?php echo $this->borderClass; ?>">
 <?php
-
 			$this->quantityLayout = $this->getProductQuantityLayout($row);
-
 			$this->row =& $row;
 			$this->setLayout('listing_' . $itemLayoutType);
 			echo $this->loadTemplate();
 			unset($this->row);
-?>
+?>				
 				</div>
 			</div>
 		</div>
@@ -237,7 +234,7 @@ window.localPage.infiniteScroll = function(container_name) {
 		window.localPage.infiniteScrollPage++;
 
 		setTimeout(function(){
-<?php if($this->params->get('show_vote_product')) { ?>
+<?php if($this->params->get('show_vote')) { ?>
 			if(window.hikaVotes)
 				initVote(newNode);
 			hkjQuery('[data-toggle="hk-tooltip"]').hktooltip({"html": true,"container": "body"});
@@ -300,7 +297,6 @@ window.hikashop.ready(function() { window.localPage.checkInfiniteScroll('<?php e
 <?php
 	}
 }
-
 if(empty($this->tmpl_ajax)) {
 ?>
 </div>

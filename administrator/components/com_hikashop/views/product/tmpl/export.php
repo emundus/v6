@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,7 @@ $classProduct = hikashop_get('class.product');
 $characteristic->loadConversionTables($this);
 
 $db = JFactory::getDBO();
-if(version_compare(JVERSION,'3.0','<')){
+if(!HIKASHOP_J30){
 	$columnsTable = $db->getTableFields(hikashop_table('product'));
 	$columnsArray = reset($columnsTable);
 } else {

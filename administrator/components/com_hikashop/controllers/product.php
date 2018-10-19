@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -181,20 +181,12 @@ class ProductController extends hikashopController {
 
 				case 'add':
 				case 'duplicate':
-					if(!HIKASHOP_J25) {
-						JRequest::checkToken('request') || die('Invalid Token');
-					} else {
-						JSession::checkToken('request') || die('Invalid Token');
-					}
+					JSession::checkToken('request') || die('Invalid Token');
 					hikaInput::get()->set('layout', 'form_variants_add');
 					break;
 
 				case 'delete';
-					if(!HIKASHOP_J25) {
-						JRequest::checkToken('request') || die('Invalid Token');
-					} else {
-						JSession::checkToken('request') || die('Invalid Token');
-					}
+					JSession::checkToken('request') || die('Invalid Token');
 					$cid = hikaInput::get()->get('cid', array(), 'array');
 					if(empty($cid)) {
 						ob_end_clean();
@@ -211,18 +203,14 @@ class ProductController extends hikashopController {
 					exit;
 
 				case 'populate':
-					if(!HIKASHOP_J25) {
-						JRequest::checkToken('request') || die('Invalid Token');
-					} else {
-						JSession::checkToken('request') || die('Invalid Token');
-					}
+					JSession::checkToken('request') || die('Invalid Token');
 					hikaInput::get()->set('layout', 'form_variants_add');
 
 					$productClass = hikashop_get('class.product');
 					$data = hikaInput::get()->get('data', array(), 'array');
 					if(isset($data['variant_duplicate'])) {
 						$cid = hikaInput::get()->get('cid', array(), 'array');
-						JArrayHelper::toInteger($cid);
+						hikashop_toInteger($cid);
 						$ret = $productClass->duplicateVariant($product_id, $cid, $data);
 					} else
 						$ret = $productClass->populateVariant($product_id, $data);
@@ -255,11 +243,7 @@ class ProductController extends hikashopController {
 		$productClass = hikashop_get('class.product');
 		switch($subtask) {
 			case 'add':
-				if(!HIKASHOP_J25) {
-					JRequest::checkToken() || die('Invalid Token');
-				} else {
-					JSession::checkToken() || die('Invalid Token');
-				}
+				JSession::checkToken() || die('Invalid Token');
 				$characteristic_id = hikaInput::get()->getInt('characteristic_id', 0);
 				$characteristic_value_id = hikaInput::get()->getInt('characteristic_value_id', 0);
 				$ret = $productClass->addCharacteristic($product_id, $characteristic_id, $characteristic_value_id);
@@ -271,11 +255,7 @@ class ProductController extends hikashopController {
 				exit;
 
 			case 'remove':
-				if(!HIKASHOP_J25) {
-					JRequest::checkToken() || die('Invalid Token');
-				} else {
-					JSession::checkToken() || die('Invalid Token');
-				}
+				JSession::checkToken() || die('Invalid Token');
 				$characteristic_id = hikaInput::get()->getInt('characteristic_id', 0);
 				$ret = $productClass->removeCharacteristic($product_id, $characteristic_id);
 				ob_end_clean();
@@ -492,9 +472,9 @@ class ProductController extends hikashopController {
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
-		$dispatcher->trigger('onHikaBeforeFileSave', array(&$file, &$do));
+		$app->triggerEvent('onHikaBeforeFileSave', array(&$file, &$do));
 
 		if(!$do)
 			return false;
@@ -509,7 +489,7 @@ class ProductController extends hikashopController {
 		}
 		hikaInput::get()->set('cid',$file->file_id);
 
-		$dispatcher->trigger('onHikaAfterFileSave', array(&$file));
+		$app->triggerEvent('onHikaAfterFileSave', array(&$file));
 
 		return true;
 	}

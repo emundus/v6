@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,8 +23,12 @@ $dest = 'hikashop_user_addresses_show';
 if(!isset($this->edit) || $this->edit !== true ) {
 ?>
 		<div class="hika_edit">
-			<a href="<?php echo hikashop_completeLink($update_url, 'ajax');?>" onclick="return window.addressMgr.get(this,'<?php echo $dest; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt=""/><span><?php echo JText::_('HIKA_EDIT'); ?></span></a>
-			<a href="<?php echo hikashop_completeLink($delete_url, 'ajax');?>" onclick="return window.addressMgr.delete(this,<?php echo (int)@$this->address->address_id; ?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt=""/><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
+			<a href="<?php echo hikashop_completeLink($update_url, 'ajax');?>" onclick="return window.addressMgr.get(this,'<?php echo $dest; ?>');">
+				<i class="fas fa-pen"></i> <span><?php echo JText::_('HIKA_EDIT'); ?></span>
+			</a>
+			<a href="<?php echo hikashop_completeLink($delete_url, 'ajax');?>" onclick="return window.addressMgr.delete(this,<?php echo (int)@$this->address->address_id; ?>);">
+				<i class="fa fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span>
+			</a>
 		</div>
 <?php
 } else {
@@ -91,9 +95,9 @@ if(isset($this->edit) && $this->edit === true) {
 	<?php echo JHTML::_('form.token'); ?>
 
 	<div style="float:right">
-		<a href="<?php echo hikashop_completeLink($save_url, 'ajax');?>" onclick="return window.addressMgr.form(this,'<?php echo $dest; ?>');" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikashop_checkout_address_ok_button"><img src="<?php echo HIKASHOP_IMAGES; ?>save2.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_OK'); ;?></a>
+		<a href="<?php echo hikashop_completeLink($save_url, 'ajax');?>" onclick="return window.addressMgr.form(this,'<?php echo $dest; ?>');" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn-success hikashop_checkout_address_ok_button"><i class="fa fa-save"></i> <?php echo JText::_('HIKA_OK'); ;?></a>
 	</div>
-	<a href="<?php echo hikashop_completeLink($show_url, 'ajax');?>" onclick="return window.addressMgr.get(this,'<?php echo $dest; ?>');" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikashop_checkout_address_cancel_button"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_CANCEL'); ;?></a>
+	<a href="<?php echo hikashop_completeLink($show_url, 'ajax');?>" onclick="return window.addressMgr.get(this,'<?php echo $dest; ?>');" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn-danger hikashop_checkout_address_cancel_button"><i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ;?></a>
 </div>
 <?php
 } else {

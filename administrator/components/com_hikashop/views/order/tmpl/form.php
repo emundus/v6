@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -218,7 +218,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 					<tr>
 						<td class="key">
-							<?php echo $tax->tax_namekey; ?>
+							<?php echo hikashop_translate($tax->tax_namekey); ?>
 						</td>
 						<td><?php
 							echo $this->currencyHelper->format($tax->tax_amount,$this->order->order_currency_id);
@@ -342,9 +342,9 @@ defined('_JEXEC') or die('Restricted access');
 								);
 
 								if(empty($this->order->order_partner_paid)){
-									echo JText::_('NOT_PAID').'<img src="'.HIKASHOP_IMAGES.'delete2.png" />';
+									echo JText::_('NOT_PAID').'<i class="fa fa-times-circle"></i>';
 								}else{
-									echo JText::_('PAID').'<img src="'.HIKASHOP_IMAGES.'ok.png" />';
+									echo JText::_('PAID').'<i class="fa fa-check"></i>';
 								}
 							?>
 						</td>
@@ -560,8 +560,8 @@ defined('_JEXEC') or die('Restricted access');
 			</fieldset>
 <?php
 	JPluginHelper::importPlugin('hikashop');
-	$dispatcher = JDispatcher::getInstance();
-	$dispatcher->trigger('onAfterOrderProductsListingDisplay', array(&$this->order, 'order_back_show'));
+	$app = JFactory::getApplication();
+	$app->triggerEvent('onAfterOrderProductsListingDisplay', array(&$this->order, 'order_back_show'));
 ?>
 
 <?php if(!empty($this->order->history)) { ?>

@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php if(empty($this->ajax)) { ?>
-<div id="hikashop_checkout_coupon_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" class="hikashop_checkout_coupon">
+<div id="hikashop_checkout_coupon_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" data-checkout-step="<?php echo $this->step; ?>" data-checkout-pos="<?php echo $this->module_position; ?>" class="hikashop_checkout_coupon">
 <?php } ?>
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 	<label for="hikashop_checkout_coupon_input_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>"><?php echo JText::_('HIKASHOP_ENTER_COUPON'); ?></label>
 	<div class="input-append">
 		<input class="hikashop_checkout_coupon_field" id="hikashop_checkout_coupon_input_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" type="text" name="checkout[coupon]" value=""/>
-		<button type="submit" onclick="return window.checkout.submitCoupon(<?php echo $this->step.','.$this->module_position; ?>);" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_coupon_add"><?php
+		<button type="submit" onclick="return window.checkout.submitCoupon(<?php echo $this->step.','.$this->module_position; ?>);" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn-primary hikabtn_checkout_coupon_add"><?php
 			echo JText::_('ADD');
 		?></button>
 		</div>
@@ -36,7 +36,7 @@ defined('_JEXEC') or die('Restricted access');
 				$url_itemid = '&Itemid=' . $Itemid;
 ?>
 	<a href="#removeCoupon" onclick="return window.checkout.removeCoupon(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);" title="<?php echo JText::_('REMOVE_COUPON'); ?>">
-		<img src="<?php echo HIKASHOP_IMAGES . 'delete2.png';?>" alt="<?php echo JText::_('REMOVE_COUPON'); ?>" />
+		<i class="fa fa-trash"></i>
 	</a>
 <?php
 		}

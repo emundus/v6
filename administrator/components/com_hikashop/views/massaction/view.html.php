@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ class MassactionViewMassaction extends hikashopView{
 	var $ctrl= 'massaction';
 	var $nameListing = 'HIKA_MASSACTION';
 	var $nameForm = 'HIKA_MASSACTION';
-	var $icon = 'massaction';
+	var $icon = 'cogs';
 
 	function display($tpl=null,$params=null){
 		$this->params = $params;
@@ -28,14 +28,11 @@ class MassactionViewMassaction extends hikashopView{
 
 		$enabled = JPluginHelper::isEnabled('system', 'hikashopmassaction');
 		if(!$enabled){
-			if(HIKASHOP_J25)
-				$query = 'UPDATE '.hikashop_table('extensions',false).' SET enabled = 1 WHERE type = "plugin" AND element = "hikashopmassaction" AND folder = "system";';
-			else
-				$query = 'UPDATE '.hikashop_table('plugins',false).' SET published = 1 WHERE element = "hikashopmassaction" AND folder = "system";';
+			$query = 'UPDATE '.hikashop_table('extensions',false).' SET enabled = 1 WHERE type = "plugin" AND element = "hikashopmassaction" AND folder = "system";';
 
 			$db = JFactory::getDBO();
 			$db->setQuery($query);
-			$success = $db->query();
+			$success = $db->execute();
 			if($success)
 				$app->enqueueMessage(JText::_('HIKA_MASSACTION_SYSTEM_PLUGIN_PUBLISHED'));
 		}
@@ -59,7 +56,7 @@ class MassactionViewMassaction extends hikashopView{
 		$searchMap = array('a.massaction_id','a.massaction_name','a.massaction_description','a.massaction_table');
 
 		if(!empty($pageInfo->search)){
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
+			$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($pageInfo->search)),true).'%\'';
 			$filters[] =  implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal";
 		}
 		$order = '';
@@ -126,9 +123,7 @@ class MassactionViewMassaction extends hikashopView{
 		$this->toolbar = array(
 			array('name' => 'confirm','check'=>false, 'msg'=> JText::_('PROCESS_WARNING'),'icon'=>'upload','alt'=>JText::_('PROCESS'), 'task' => 'process'),
 			'|',
-			'save',
-			array('name' => 'save2new', 'display' => version_compare(JVERSION,'1.7','>=')),
-			'apply',
+			'save-group',
 			'cancel',
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')
@@ -155,20 +150,20 @@ class MassactionViewMassaction extends hikashopView{
 
 		$tables = array();
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onMassactionTableLoad', array( &$tables ) );
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onMassactionTableLoad', array( &$tables ) );
 		$loadedData = $element;
 
 		foreach($tables as $k => $table) {
 			$tables[$k]->triggers = array();
 			$tables[$k]->triggers_html = array();
-			$dispatcher->trigger('onMassactionTableTriggersLoad', array( &$tables[$k], &$tables[$k]->triggers,&$tables[$k]->triggers_html, &$loadedData) );
+			$app->triggerEvent('onMassactionTableTriggersLoad', array( &$tables[$k], &$tables[$k]->triggers,&$tables[$k]->triggers_html, &$loadedData) );
 			$tables[$k]->filters = array();
 			$tables[$k]->filters_html = array();
-			$dispatcher->trigger('onMassactionTableFiltersLoad', array( &$tables[$k], &$tables[$k]->filters,&$tables[$k]->filters_html, &$loadedData) );
+			$app->triggerEvent('onMassactionTableFiltersLoad', array( &$tables[$k], &$tables[$k]->filters,&$tables[$k]->filters_html, &$loadedData) );
 			$tables[$k]->actions = array();
 			$tables[$k]->actions_html = array();
-			$dispatcher->trigger('onMassactionTableActionsLoad', array( &$tables[$k], &$tables[$k]->actions,&$tables[$k]->actions_html, &$loadedData) );
+			$app->triggerEvent('onMassactionTableActionsLoad', array( &$tables[$k], &$tables[$k]->actions,&$tables[$k]->actions_html, &$loadedData) );
 			$table->typevaluesTriggers = array();
 			$table->typevaluesFilters = array();
 			$table->typevaluesActions = array();
@@ -327,48 +322,24 @@ var actionId = {};
 
 
 
-		if(!HIKASHOP_J16){
-			$js .= 	'function submitbutton(pressbutton){
-						if (pressbutton != \'save\') {
-							submitform( pressbutton );
-							return;
-						}';
-		}else{
-			$js .= 	'Joomla.submitbutton = function(pressbutton) {
-						if (pressbutton != \'save\') {
-							Joomla.submitform(pressbutton,document.adminForm);
-							return;
-						}';
-		}
-		if(!HIKASHOP_J16){
-			$js .= 	"submitform( pressbutton );";
-		}else{
-			$js .= 	"Joomla.submitform(pressbutton,document.adminForm);";
-		}
+		$js .= 	'Joomla.submitbutton = function(pressbutton) {
+					if (pressbutton != \'save\') {
+						Joomla.submitform(pressbutton,document.adminForm);
+						return;
+					}';
+		$js .= 	"Joomla.submitform(pressbutton,document.adminForm);";
 		$js .="}";
 
 		$js .= "
 				function countresults(table,num){
+					var o = window.Oby; data = o.getFormData(document.getElementById('adminForm'), true);
 					document.getElementById(table+'countresult_'+num).innerHTML = '<span class=\"onload\"></span>';
-					var form = document.id('adminForm');
-					var data = form.toQueryString();
 					data += '&task=countresults&ctrl=massaction';
-					try{
-						new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=massaction&task=countresults&table='+table+'&num='+num,{
-							method: 'post',
-							data: data,
-							update: document.getElementById(table+'countresult_'+num)
-						}).request();
-					}catch(err){
-						new Request({
-							method: 'post',
-							data: data,
-							url: 'index.php?option=com_hikashop&tmpl=component&ctrl=massaction&task=countresults&table='+table+'&num='+num,
-							onSuccess: function(responseText, responseXML) {
-								document.getElementById(table+'countresult_'+num).innerHTML = responseText;
-							}
-						}).send();
-					}
+					o.xRequest('index.php?option=com_hikashop&tmpl=component&ctrl=massaction&task=countresults&table='+table+'&num='+num, {data: data, mode: 'POST'},
+						function(xhr,params) {
+							document.getElementById(table+'countresult_'+num).innerHTML = xhr.responseText;
+						}
+					);
 				}";
 		if(!isset($loadedData->massaction_table)) $currentTable = 'product'; else $currentTable = $loadedData->massaction_table;
 		$js .= '
@@ -379,12 +350,7 @@ var actionId = {};
 			currentoption = newoption;
 		}';
 
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
-
+		$doc = JFactory::getDocument();
 
 
 		if(!empty($_POST['html_results'])){
@@ -439,12 +405,11 @@ var actionId = {};
 			if(isset($hikashop['dataid'])){
 
 
-				if(!isset($this->dispatcher)){
-					JPluginHelper::importPlugin('hikashop');
-					$this->dispatcher = JDispatcher::getInstance();
-				}
+				JPluginHelper::importPlugin('hikashop');
 				$reload = array();
-				$this->dispatcher->trigger('onReloadPageMassActionAfterEdition',array(&$reload));
+				$app = JFactory::getApplication();
+
+				$app->triggerEvent('onReloadPageMassActionAfterEdition',array(&$reload));
 				$this->assignRef('reload',$reload);
 
 				$this->params->data_id = $hikashop['dataid'];
@@ -522,11 +487,10 @@ var actionId = {};
 		hikashop_securefield($table);
 		hikashop_securefield($data);
 
-		if(!isset($this->dispatcher)){
-			JPluginHelper::importPlugin('hikashop');
-			$this->dispatcher = JDispatcher::getInstance();
-		}
-		$this->dispatcher->trigger('onLoadResultMassActionAfterEdition',array($data,$data_id,$table,$column,$type,$id,$value,&$query));
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+
+		$app->triggerEvent('onLoadResultMassActionAfterEdition',array($data,$data_id,$table,$column,$type,$id,$value,&$query));
 
 		if(!empty($query) && !is_array($query)){
 			$database->setQuery($query);
@@ -587,14 +551,14 @@ var actionId = {};
 
 				hikashop_securefield($table);
 				hikashop_securefield($column);
-				JArrayHelper::toInteger($ids);
+				hikashop_toInteger($ids);
 				$this->assignRef('ids', $ids);
 				if(!empty($ids)){
-					if(!isset($this->dispatcher)){
-						JPluginHelper::importPlugin('hikashop');
-						$this->dispatcher = JDispatcher::getInstance();
-					}
-					$this->dispatcher->trigger('onLoadDatatMassActionBeforeEdition',array($data,$data_id,$table,$column,$type,$ids,&$query,&$this));
+					JPluginHelper::importPlugin('hikashop');
+					$obj =& $this;
+					$app = JFactory::getApplication();
+
+					$app->triggerEvent('onLoadDatatMassActionBeforeEdition',array($data,$data_id,$table,$column,$type,$ids,&$query,&$obj));
 					if(!empty($query)){
 						$database->setQuery($query);
 						$rows = $database->loadObjectList();
@@ -701,11 +665,10 @@ var actionId = {};
 				$html.= '<br/>';
 				break;
 			default:
-				if(!isset($this->dispatcher)){
-					JPluginHelper::importPlugin('hikashop');
-					$this->dispatcher = JDispatcher::getInstance();
-				}
-				$this->dispatcher->trigger('onDisplayFieldMassAction'.$field,array($field,$params));
+				JPluginHelper::importPlugin('hikashop');
+				$app = JFactory::getApplication();
+
+				$app->triggerEvent('onDisplayFieldMassAction'.$field,array($field,$params));
 				break;
 		}
 		$html.= '<br/>';

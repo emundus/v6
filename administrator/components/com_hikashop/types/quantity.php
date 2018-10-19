@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,7 @@ class hikashopQuantityType {
 
 	public function display($map, $value, $config = true) {
 		$this->load($config);
-		return JHTML::_('hikaselect.radiolist', $this->values, $map, '', 'value', 'text', (int)$value);
+		return JHTML::_('hikaselect.radiolist', $this->values, $map, 'class="custom-select"', 'value', 'text', (int)$value);
 	}
 
 	public function displayInput($map, $value) {
@@ -34,7 +34,7 @@ class hikashopQuantityType {
 			hikashop_loadJsLib('tooltip');
 			$ret = '<div class="input-append">'.
 				'<input type="text" name="'.$map.'" id="'.$id.'" value="'.$value.'" onfocus="this.setSelectionRange(0, this.value.length)" '.$attribs.'/>'.
-				'<button class="btn" data-toggle="hk-tooltip" data-title="'.JText::_('UNLIMITED', true).'" onclick="document.getElementById(\''.$id.'\').value=\''.JText::_('UNLIMITED').'\';return false;"><i class="icon-remove"></i></button>'.
+				'<span class="add-on" data-toggle="hk-tooltip" data-title="'.JText::_('UNLIMITED', true).'" onclick="document.getElementById(\''.$id.'\').value=\''.JText::_('UNLIMITED').'\';return false;"><i class="fas fa-infinity"></i></span>'.
 				'</div>';
 		} else {
 			$ret = '<div class="product_quantity_j25" style="display: inline; margin-left: 2px;"><input type="text" name="'.$map.'" id="'.$id.'" value="'.$value.'" onfocus="this.setSelectionRange(0, this.value.length)" '.$attribs.'/>' .

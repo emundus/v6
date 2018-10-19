@@ -1,17 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><fieldset>
-	<div class="toolbar" id="toolbar" style="float: right;">
-		<button class="btn" type="button" onclick="submitbutton('addfile');"><img src="<?php echo HIKASHOP_IMAGES; ?>save.png"/><?php echo JText::_('OK'); ?></button>
-	</div>
-</fieldset>
+?><div class="title" style="float: left;"><h1><?php echo empty($this->element->file_id) ? JText::_('NEW_FILE') : JText::_('EDIT_FILE'); ?></h1></div>
+<div class="toolbar" id="toolbar" style="float: right;">
+	<button class="btn btn-success" type="button" onclick="submitbutton('addfile');"><i class="fa fa-save"></i> <?php echo JText::_('OK'); ?></button>
+</div>
+
 <div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('product'); ?>" method="post" name="adminForm" id="adminForm" enctype="multipart/form-data">
 	<table width="100%">
@@ -40,7 +40,7 @@ defined('_JEXEC') or die('Restricted access');
 					JHTML::_('select.option', 'upload', JText::_('HIKA_FILE_MODE_UPLOAD')),
 					JHTML::_('select.option', 'path', JText::_('HIKA_FILE_MODE_PATH'))
 				);
-				echo JHTML::_('hikaselect.genericlist', $values, "data[filemode]", 'class="inputbox" size="1" onchange="hikashop_switchmode(this);"', 'value', 'text', 'upload');
+				echo JHTML::_('hikaselect.genericlist', $values, "data[filemode]", 'class="custom-select" size="1" onchange="hikashop_switchmode(this);"', 'value', 'text', 'upload');
 			?>
 			<script type="text/javascript">
 			function hikashop_switchmode(el) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class ImportViewImport extends hikashopView{
 	var $ctrl= 'import';
-	var $icon = 'import';
+	var $icon = 'download';
 	function display($tpl = null){
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
 		$function = $this->getLayout();
@@ -28,10 +28,7 @@ class ImportViewImport extends hikashopView{
 		$config =& hikashop_config();
 
 		hikashop_setTitle(JText::_('IMPORT'),$this->icon,$this->ctrl.'&task=show');
-		$importIcon = 'upload';
-		if(HIKASHOP_J30) {
-			$importIcon = 'import';
-		}
+		$importIcon = 'import';
 		$this->toolbar = array(
 			array('name' => 'custom', 'icon' => $importIcon, 'alt' => JText::_('IMPORT'), 'task' => 'import', 'check' => false),
 			'|',
@@ -121,8 +118,8 @@ class ImportViewImport extends hikashopView{
 		$importData[] = $openc;
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger( 'onDisplayImport', array( & $importData) );
+		$app = JFactory::getApplication();
+		$app->triggerEvent( 'onDisplayImport', array( & $importData) );
 
 		$this->assignRef('importData',$importData);
 		$importValues = array();
@@ -148,13 +145,11 @@ class ImportViewImport extends hikashopView{
 			currentoptionFolder = newoption;
 		}';
 
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( $js );
-		JHTML::_('behavior.modal');
+		$this->nameboxType = hikashop_get('type.namebox');
+		hikashop_loadJsLib('tooltip');
+
 	}
 
 }

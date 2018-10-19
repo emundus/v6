@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,11 +45,7 @@ class ConfigController extends hikashopController {
 
 	public function store($new = false) {
 		$app = JFactory::getApplication();
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken() || die('Invalid Token');
-		} else {
-			JSession::checkToken() || die('Invalid Token');
-		}
+		JSession::checkToken() || die('Invalid Token');
 		$fileClass = hikashop_get('class.file');
 		$source = is_array($_POST['config'])?'post':'request'; //to avoid strange bugs on some web servers where the config array might be only in one of the two global variable :/
 		$formData = hikaInput::get()->{$source}->get('config', array(), 'array');
@@ -72,7 +68,7 @@ class ConfigController extends hikashopController {
 		}
 		$config =& hikashop_config();
 
-		$nameboxes = array('simplified_registration');
+		$nameboxes = array('simplified_registration', 'product_show_modules');
 		foreach($nameboxes as $namebox) {
 			if(!isset($formData[$namebox])) {
 				$formData[$namebox] = '';
@@ -85,7 +81,7 @@ class ConfigController extends hikashopController {
 	 	if(!empty($deleteAclCats)) {
 			$db = JFactory::getDBO();
 	 		$db->setQuery("DELETE FROM `#__hikashop_config` WHERE `config_namekey` LIKE 'acl_".implode("%' OR `config_namekey` LIKE 'acl_",$deleteAclCats)."%'");
-	 		$db->query();
+	 		$db->execute();
 	 	}
 		$ids = $fileClass->storeFiles('default_image',0);
 		if(!empty($ids)) {
@@ -189,22 +185,14 @@ class ConfigController extends hikashopController {
 				}
 			}
 		}
-		$js="
-			function setVisible(value){
-				value=parseInt(value);
-				if(value==1){
-					document.getElementById('sef_cat_name').style.display = '';
-					document.getElementById('sef_prod_name').style.display = '';
-				}else{
-					document.getElementById('sef_cat_name').style.display = 'none';
-					document.getElementById('sef_prod_name').style.display = 'none';
-				}
-			}";
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
+		$js = '
+function setVisible(value) {
+	value = parseInt(value);
+	var d = document, disp = (value == 1) ? "" : "none";
+	d.getElementById("sef_cat_name").style.display = disp;
+	d.getElementById("sef_prod_name").style.display = disp;
+}';
+		$doc = JFactory::getDocument();
 	 	$doc->addScriptDeclaration($js);
 
 		$config->load();
@@ -230,9 +218,9 @@ class ConfigController extends hikashopController {
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashopshipping');
 		JPluginHelper::importPlugin('hikashoppayment');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$list = array();
-		$dispatcher->trigger('onCheckoutStepList', array(&$list));
+		$app->triggerEvent('onCheckoutStepList', array(&$list));
 		if(!empty($list)) {
 			foreach($list as $k => $v) {
 				if(!in_array($k, $ok))
@@ -266,8 +254,6 @@ class ConfigController extends hikashopController {
 	}
 
 	protected function _saveAddressFormat() {
-		if(!HIKASHOP_J25)
-			return;
 		$format = trim(hikaInput::get()->getRaw( 'config_address_format',''));
 		if(empty($format))
 			return;
@@ -457,7 +443,7 @@ class ConfigController extends hikashopController {
 	}
 
 	public function savelanguage() {
-		JRequest::checkToken() || die( 'Invalid Token' );
+		JSession::checkToken() || die( 'Invalid Token' );
 		$this->_savelanguage();
 		return $this->language();
 	}
@@ -467,11 +453,8 @@ class ConfigController extends hikashopController {
 	}
 
 	public function savecss() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken() || die('Invalid Token');
-		} else {
-			JSession::checkToken() || die('Invalid Token');
-		}
+		JSession::checkToken() || die('Invalid Token');
+
 		$file = hikaInput::get()->getCmd('file');
 		if(!preg_match('#^([-_a-z0-9]*)_([-_a-z0-9]*)$#i',$file,$result)){
 			hikashop_display('Could not load the file '.htmlentities($file).' properly');
@@ -517,7 +500,7 @@ class ConfigController extends hikashopController {
 
 
 	public function send() {
-		JRequest::checkToken() || die( 'Invalid Token' );
+		JSession::checkToken() || die( 'Invalid Token' );
 		$bodyEmail = hikaInput::get()->getString('mailbody');
 		$code = hikaInput::get()->getString('code');
 		hikaInput::get()->set('code',$code);
@@ -551,11 +534,7 @@ class ConfigController extends hikashopController {
 	}
 
 	public function share() {
-		if(!HIKASHOP_J25) {
-			JRequest::checkToken() || die('Invalid Token');
-		} else {
-			JSession::checkToken() || die('Invalid Token');
-		}
+		JSession::checkToken() || die('Invalid Token');
 
 		if($this->_savelanguage()) {
 			hikaInput::get()->set( 'layout', 'share' );
@@ -606,9 +585,6 @@ class ConfigController extends hikashopController {
 			hikashop_display(JText::_('HIKASHOP_SUCC_SAVED'),'success');
 			$updateHelper = hikashop_get('helper.update');
 			$updateHelper->installMenu($code);
-			$js = "window.top.document.getElementById('image$code').src = '".HIKASHOP_IMAGES."'edit.png''";
-			$doc = JFactory::getDocument();
-			$doc->addScriptDeclaration( $js );
 		} else {
 			hikashop_display(JText::sprintf('FAIL_SAVE',$path),'error');
 		}

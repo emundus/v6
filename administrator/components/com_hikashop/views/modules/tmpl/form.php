@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,7 +47,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 								<?php echo JText::_( 'SHOW_TITLE' ); ?>
 							</td>
 							<td>
-								<?php echo JHTML::_('hikaselect.booleanlist',  'module'.$this->control.'[showtitle]', 'class="inputbox"', @$this->element->showtitle ); ?>
+								<?php echo JHTML::_('hikaselect.booleanlist',  'module'.$this->control.'[showtitle]', 'class="custom-select"', @$this->element->showtitle ); ?>
 							</td>
 						</tr>
 						<tr>
@@ -55,7 +55,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 								<?php echo JText::_( 'HIKA_PUBLISHED' ); ?>
 							</td>
 							<td>
-								<?php echo JHTML::_('hikaselect.booleanlist',  'module'.$this->control.'[published]', 'class="inputbox"', @$this->element->published ); ?>
+								<?php echo JHTML::_('hikaselect.booleanlist',  'module'.$this->control.'[published]', 'class="custom-select"', @$this->element->published ); ?>
 							</td>
 						</tr>
 						<?php if($this->element->module=='mod_hikashop'){ ?>
@@ -108,7 +108,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['random'])) $this->element->hikashop_params['random'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[random]' , '', 'value', 'text', @$this->element->hikashop_params['random']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[random]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['random']);
 
 								?>
 							</td>
@@ -307,7 +307,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['recently_viewed']) || $this->element->hikashop_params['recently_viewed'] == '-1') $this->element->hikashop_params['recently_viewed'] = 0;
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[recently_viewed]' , '', 'value', 'text', @$this->element->hikashop_params['recently_viewed']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[recently_viewed]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['recently_viewed']); ?>
 							</td>
 						</tr>
 						<tr>
@@ -317,7 +317,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['add_to_cart'])) $this->element->hikashop_params['add_to_cart'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_cart]' , '', 'value', 'text', @$this->element->hikashop_params['add_to_cart']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_cart]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['add_to_cart']); ?>
 							</td>
 						</tr>
 						<tr>
@@ -325,7 +325,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['show_quantity_field'])) $this->element->hikashop_params['show_quantity_field'] = '0';
-								echo JHTML::_('hikaselect.booleanlist',  $this->control.'[show_quantity_field]', 'class="inputbox"', @$this->element->hikashop_params['show_quantity_field'] );
+								echo JHTML::_('hikaselect.booleanlist',  $this->control.'[show_quantity_field]', 'class="custom-select"', @$this->element->hikashop_params['show_quantity_field'] );
 								?>
 							</td>
 						</tr>
@@ -337,7 +337,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 								if(hikashop_level(1)){
 									if(!isset($this->element->hikashop_params['add_to_wishlist']))
 										$this->element->hikashop_params['add_to_wishlist'] = '-1';
-									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_wishlist]' , '', 'value', 'text', @$this->element->hikashop_params['add_to_wishlist']);
+									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[add_to_wishlist]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['add_to_wishlist']);
 								}else{
 									$this->element->hikashop_params['add_to_wishlist'] = 0;
 									echo hikashop_getUpgradeLink('essential');
@@ -351,7 +351,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['link_to_product_page'])) $this->element->hikashop_params['link_to_product_page'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[link_to_product_page]' , '', 'value', 'text', @$this->element->hikashop_params['link_to_product_page']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[link_to_product_page]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['link_to_product_page']); ?>
 							</td>
 						</tr>
 						<?php } ?>
@@ -362,7 +362,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 									if(!isset($this->element->hikashop_params['show_vote_product'])) $this->element->hikashop_params['show_vote_product'] = '-1';
-									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_vote_product]', '', 'value', 'text', @$this->element->hikashop_params['show_vote_product']);
+									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_vote_product]', 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['show_vote_product']);
 								?>
 							</td>
 						</tr>
@@ -385,7 +385,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 									if(!isset($this->element->hikashop_params['show_out_of_stock'])) $this->element->hikashop_params['show_out_of_stock'] = '-1';
-									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_out_of_stock]', '', 'value', 'text', @$this->element->hikashop_params['show_out_of_stock']);
+									echo JHTML::_('hikaselect.radiolist',  $arr, $this->control.'[show_out_of_stock]', 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['show_out_of_stock']);
 								?>
 							</td>
 						</tr>
@@ -406,7 +406,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['show_original_price'])) $this->element->hikashop_params['show_original_price'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[show_original_price]' , '', 'value', 'text', @$this->element->hikashop_params['show_original_price']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[show_original_price]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['show_original_price']); ?>
 							</td>
 						</tr>
 						<tr id="<?php echo 'show_discount_line_'.$this->controlid ?>">
@@ -438,7 +438,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 								<td>
 									<?php
 									if(!isset($this->element->hikashop_params['display_custom_item_fields'])) $this->element->hikashop_params['display_custom_item_fields'] = '-1';
-									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_custom_item_fields]' , '', 'value', 'text', @$this->element->hikashop_params['display_custom_item_fields']);
+									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_custom_item_fields]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['display_custom_item_fields']);
 									?>
 								</td>
 							</tr>
@@ -451,7 +451,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 								<td>
 									<?php
 									if(!isset($this->element->hikashop_params['display_filters'])) $this->element->hikashop_params['display_filters'] = '-1';
-									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_filters]' , '', 'value', 'text', @$this->element->hikashop_params['display_filters']);
+									echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_filters]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['display_filters']);
 									?>
 								</td>
 							</tr>
@@ -463,7 +463,7 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['display_badges'])) $this->element->hikashop_params['display_badges'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_badges]' , '', 'value', 'text', @$this->element->hikashop_params['display_badges']); ?>
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_badges]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['display_badges']); ?>
 							</td>
 						</tr>
 						<tr>
@@ -547,7 +547,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['links_on_main_categories'])) $this->element->hikashop_params['links_on_main_categories'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[links_on_main_categories]' , '', 'value', 'text', @$this->element->hikashop_params['links_on_main_categories']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[links_on_main_categories]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['links_on_main_categories']);
 								?>
 							</td>
 						</tr>
@@ -558,7 +558,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['number_of_products'])) $this->element->hikashop_params['number_of_products'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[number_of_products]' , '', 'value', 'text', @$this->element->hikashop_params['number_of_products']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[number_of_products]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['number_of_products']);
 								?>
 							</td>
 						</tr>
@@ -569,7 +569,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['only_if_products'])) $this->element->hikashop_params['only_if_products'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[only_if_products]' , '', 'value', 'text', @$this->element->hikashop_params['only_if_products']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[only_if_products]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['only_if_products']);
 								?>
 							</td>
 						</tr>
@@ -838,7 +838,7 @@ if(!empty($this->extra_blocks['products'])) {
 								if(!isset($this->element->hikashop_params['border_visible'])) $this->element->hikashop_params['border_visible'] = '-1';
 								$arr2 = $arr;
 								$arr2[] = JHTML::_('select.option', 2, JText::_('THUMBNAIL'));
-								echo JHTML::_('hikaselect.radiolist', $arr2, $this->control.'[border_visible]' , '', 'value', 'text', @$this->element->hikashop_params['border_visible']);
+								echo JHTML::_('hikaselect.radiolist', $arr2, $this->control.'[border_visible]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['border_visible']);
 								?>
 							</td>
 						</tr>
@@ -849,7 +849,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['rounded_corners'])) $this->element->hikashop_params['rounded_corners'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[rounded_corners]' , '', 'value', 'text', @$this->element->hikashop_params['rounded_corners']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[rounded_corners]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['rounded_corners']);
 								?>
 							</td>
 						</tr>
@@ -860,7 +860,7 @@ if(!empty($this->extra_blocks['products'])) {
 							<td>
 								<?php
 								if(!isset($this->element->hikashop_params['text_center'])) $this->element->hikashop_params['text_center'] = '-1';
-								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[text_center]' , '', 'value', 'text', @$this->element->hikashop_params['text_center']);
+								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[text_center]' , 'class="custom-select"', 'value', 'text', @$this->element->hikashop_params['text_center']);
 								?>
 							</td>
 						</tr>

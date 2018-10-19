@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -44,7 +44,7 @@ class hikashopCategoryClass extends hikashopClass {
 
 		if(!is_array($ids))
 			return array();
-		JArrayHelper::toInteger($ids);
+		hikashop_toInteger($ids);
 
 		$query = 'SELECT '.preg_replace('#[^a-z_, ]#','',$columns).' FROM #__hikashop_category WHERE category_id IN ('.implode(',',$ids).')';
 		$this->database->setQuery($query);
@@ -62,7 +62,7 @@ class hikashopCategoryClass extends hikashopClass {
 		$jconfig = JFactory::getConfig();
 		if(!$jconfig->get('unicodeslugs')) {
 			$lang = JFactory::getLanguage();
-			$element->alias = str_replace(',','-',$lang->transliterate($element->alias));
+			$element->alias = str_replace(array(',', "'", '"'), array('-', '-', '-'), $lang->transliterate($element->alias));
 		}
 
 		$app = JFactory::getApplication();
@@ -133,17 +133,17 @@ class hikashopCategoryClass extends hikashopClass {
 			$translationHelper->handleTranslations('category', $status, $element);
 
 			if($category_id > 0) {
-				$query = 'DELETE FROM ' . hikashop::table('file') . ' WHERE file_type=\'category\' AND file_ref_id = ' . (int)$category_id . ' ';
+				$query = 'DELETE FROM ' . hikashop_table('file') . ' WHERE file_type=\'category\' AND file_ref_id = ' . (int)$category_id . ' ';
 				if($category_image_id != 0)
 					$query .= ' AND file_id != ' . $category_image_id;
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 			if($category_image_id > 0 && $category_id == 0) {
-				$query = 'UPDATE ' . hikashop::table('file') . ' SET file_ref_id = '.(int)$status.' WHERE file_type=\'category\' AND file_ref_id = 0 AND file_id = '.$category_image_id;
+				$query = 'UPDATE ' . hikashop_table('file') . ' SET file_ref_id = '.(int)$status.' WHERE file_type=\'category\' AND file_ref_id = 0 AND file_id = '.$category_image_id;
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 		} else {
 			hikaInput::get()->set('fail', $element);
@@ -219,12 +219,12 @@ class hikashopCategoryClass extends hikashopClass {
 		}
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
 		if($new)
-			$dispatcher->trigger( 'onBeforeCategoryCreate', array( & $element, & $do) );
+			$app->triggerEvent( 'onBeforeCategoryCreate', array( & $element, & $do) );
 		else
-			$dispatcher->trigger( 'onBeforeCategoryUpdate', array( & $element, & $do) );
+			$app->triggerEvent( 'onBeforeCategoryUpdate', array( & $element, & $do) );
 
 		if(!$do)
 			return false;
@@ -236,9 +236,9 @@ class hikashopCategoryClass extends hikashopClass {
 
 		if($new) {
 			$element->$pkey = $status;
-			$dispatcher->trigger( 'onAfterCategoryCreate', array( & $element ) );
+			$app->triggerEvent( 'onAfterCategoryCreate', array( & $element ) );
 		} else
-			$dispatcher->trigger( 'onAfterCategoryUpdate', array( & $element ) );
+			$app->triggerEvent( 'onAfterCategoryUpdate', array( & $element ) );
 
 		if($new && $ordering) {
 			$orderHelper = hikashop_get('helper.order');
@@ -254,15 +254,15 @@ class hikashopCategoryClass extends hikashopClass {
 		if($new) {
 			$query = 'UPDATE '.$table.' SET category_right = category_right + 2 WHERE category_right >= '.(int)$newParentElement->category_right.$filter;
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 
 			$query = 'UPDATE '.$table.' SET category_left = category_left + 2 WHERE category_left >= '.(int)$newParentElement->category_right.$filter;
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 
 			$query = 'UPDATE '.$table.' SET category_left = '.(int)$newParentElement->category_right.', category_right = '.(int)($newParentElement->category_right+1).', category_depth = '.(int)($newParentElement->category_depth+1).' WHERE '.$pkey.' = '.$status.' LIMIT 1';
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 		} elseif($recalculate) {
 			$query = 'SELECT category_left,category_right,category_depth,'.$pkey.',category_parent_id FROM '.$table.$filter.' ORDER BY category_left ASC';
 			$this->database->setQuery($query);
@@ -282,11 +282,11 @@ class hikashopCategoryClass extends hikashopClass {
 			if($element->category_type == 'status' && !empty($old->category_type)) {
 				$query = 'UPDATE '.hikashop_table('config').' SET config_value = REPLACE(config_value,'.$this->database->Quote($old->category_type).','.$this->database->Quote($element->category_type).')';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 
 				$query = 'UPDATE '.hikashop_table('payment').' SET payment_params = REPLACE(payment_params,'.$this->database->Quote(strlen($old->category_type).':"'.$old->category_type).','.$this->database->Quote(strlen($element->category_type).':"'.$element->category_type).')';
 				$this->database->setQuery($query);
-				$this->database->query();
+				$this->database->execute();
 			}
 
 		}
@@ -297,7 +297,7 @@ class hikashopCategoryClass extends hikashopClass {
 		if(!is_array($elements))
 			$elements = array($elements);
 
-		JArrayHelper::toInteger($elements);
+		hikashop_toInteger($elements);
 		$status = true;
 		$pkey = end($this->pkeys);
 		$table = hikashop_table(end($this->tables));
@@ -308,9 +308,9 @@ class hikashopCategoryClass extends hikashopClass {
 		$products=array();
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
+		$app = JFactory::getApplication();
 		$do = true;
-		$dispatcher->trigger('onBeforeCategoryDelete', array( & $elements, & $do) );
+		$app->triggerEvent('onBeforeCategoryDelete', array( & $elements, & $do) );
 
 		if(!$do)
 			return false;
@@ -336,11 +336,7 @@ class hikashopCategoryClass extends hikashopClass {
 			if($data->category_type == 'product') {
 				$query = 'SELECT product_id FROM '.hikashop_table('product_category').' WHERE category_id='.$element;
 				$this->database->setQuery($query);
-				if(!HIKASHOP_J25){
-					$products = array_merge($products, $this->database->loadResultArray());
-				} else {
-					$products = array_merge($products, $this->database->loadColumn());
-				}
+				$products = array_merge($products, $this->database->loadColumn());
 			}
 
 			if(!empty($data->category_type))
@@ -350,26 +346,26 @@ class hikashopCategoryClass extends hikashopClass {
 			if($data->category_right - $data->category_left != 1 ) {
 				$query = 'UPDATE '.$table.' SET '.$parent.' = '.$data->$parent.' WHERE '.$parent.' = '.$element;
 				$this->database->setQuery($query);
-				$status = $status && $this->database->query();
+				$status = $status && $this->database->execute();
 
 				$query = 'UPDATE '.$table.' SET category_depth = category_depth - 1, category_left = category_left - 1, category_right = category_right - 1 WHERE category_left > '.$data->category_left.' AND category_right < '.$data->category_right . $filter;
 				$this->database->setQuery($query);
-				$status = $status && $this->database->query();
+				$status = $status && $this->database->execute();
 			}
 
 			$query = 'UPDATE '.$table.' SET category_right = category_right - 2 WHERE category_right > '.$data->category_right.$filter;
 			$this->database->setQuery($query);
-			$status = $status && $this->database->query();
+			$status = $status && $this->database->execute();
 
 			$query = 'UPDATE '.$table.' SET category_left = category_left - 2 WHERE category_left > '.$data->category_right.$filter;
 			$this->database->setQuery($query);
-			$status = $status && $this->database->query();
+			$status = $status && $this->database->execute();
 
 			$status = $status && parent::delete($element);
 		}
 
 		if($status) {
-			$dispatcher->trigger('onAfterCategoryDelete', array( & $elements ) );
+			$app->triggerEvent('onAfterCategoryDelete', array( & $elements ) );
 
 			if(!empty($parentIds)){
 				$orderHelper = hikashop_get('helper.order');
@@ -404,7 +400,7 @@ class hikashopCategoryClass extends hikashopClass {
 					}
 					$query = 'INSERT IGNORE INTO '.hikashop_table('product_category').' (category_id,product_id) VALUES '.implode(',',$insert).';';
 					$this->database->setQuery($query);
-					$this->database->query();
+					$this->database->execute();
 
 					$orderHelper = hikashop_get('helper.order');
 					$orderHelper->pkey = 'product_category_id';
@@ -437,10 +433,10 @@ class hikashopCategoryClass extends hikashopClass {
 			$category_type = $this->database->loadResult();
 			if(empty($category_id)) {
 				$this->database->setQuery('INSERT IGNORE INTO '.hikashop_table('category').' (category_id, category_type, category_namekey, category_name) VALUES (1, \'root\', \'root\', \'root\')');
-				$this->database->query();
+				$this->database->execute();
 			} else {
 				$this->database->setQuery('UPDATE '.hikashop_table('category').' SET category_type = \'root\' WHERE category_id = 1');
-				$this->database->query();
+				$this->database->execute();
 			}
 		}
 		return $id;
@@ -535,8 +531,8 @@ class hikashopCategoryClass extends hikashopClass {
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeCategoryListingLoad', array( &$filters, &$order, &$this->parentObject, &$leftjoin));
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeCategoryListingLoad', array( &$filters, &$order, &$this->parentObject, &$leftjoin));
 
 		if(!empty($filters))
 			$filters = ' WHERE '.implode(' AND ', $filters);
@@ -573,11 +569,7 @@ class hikashopCategoryClass extends hikashopClass {
 			if(class_exists('JFalangDatabase')) {
 				$rows = $this->database->loadObjectList('', 'stdClass', false);
 			} elseif((class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
-				if(HIKASHOP_J25) {
-					$rows = $this->database->loadObjectList('', 'stdClass', false);
-				} else {
-					$rows = $this->database->loadObjectList('', false);
-				}
+				$rows = $this->database->loadObjectList('', 'stdClass', false);
 			} else {
 				$rows = $this->database->loadObjectList();
 			}
@@ -651,13 +643,9 @@ class hikashopCategoryClass extends hikashopClass {
 			}
 			if(empty($locale)){
 				$config = JFactory::getConfig();
-				if(!HIKASHOP_J16){
-					$locale = $config->getValue('config.language');
-				} else {
-					$locale = $config->get('language');
-					if($locale === null)
-						$locale = $config->get('config.language');
-				}
+				$locale = $config->get('language');
+				if($locale === null)
+					$locale = $config->get('config.language');
 			}
 			$lgid = $translationHelper->getId($locale);
 			$trans_table = 'jf_content';
@@ -769,7 +757,7 @@ class hikashopCategoryClass extends hikashopClass {
 		if($currentLeft != $element->category_right || $currentLeft != $element->category_left || $currentDepth!=$element->category_depth) {
 			$query = 'UPDATE '.hikashop_table(end($this->tables)). ' SET category_left='.$currentLeft.', category_right='.$left.', category_depth='.$currentDepth.' WHERE '.$pkey.' = '.(int)$element->$pkey.' LIMIT 1';
 			$this->database->setQuery($query);
-			$this->database->query();
+			$this->database->execute();
 		}
 		return array($depth,$left);
 	}
@@ -806,11 +794,7 @@ class hikashopCategoryClass extends hikashopClass {
 		}
 
 		$db->setQuery($query);
-		if(!HIKASHOP_J25)
-			$category_products = $db->loadResultArray();
-		else
-			$category_products = $db->loadColumn();
-
+		$category_products = $db->loadColumn();
 		return $category_products;
 	}
 

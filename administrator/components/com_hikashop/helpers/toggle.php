@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,9 +20,7 @@ class hikashopToggleHelper{
 	function _getToggle($column) {
 		$params = new stdClass();
 		$params->mode = 'pictures';
-		if(!HIKASHOP_J16){
-			$params->pictures = array(0=>'images/publish_x.png',1=>'images/tick.png',-2=>'images/publish_x.png');
-		}elseif(!HIKASHOP_J30){
+		if(!HIKASHOP_J30){
 			$params->aclass = array(0=>'grid_false',1=>'grid_true',-2=>'grid_false');
 		} else {
 			$params->aclass = array(0=>'icon-unpublish',1=>'icon-publish',-2=>'icon-unpublish');
@@ -50,12 +48,9 @@ class hikashopToggleHelper{
 			if(!$pictureincluded){
 				$pictureincluded = true;
 				$js = "function joomTogglePicture(id, newvalue, table ".$jsparams."){
-					window.document.getElementById(id).className = 'onload';
-					try{
-						new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",{ method: 'get', update: $(id), onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
-					}catch(err){
-						new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",method: 'get', onComplete: function(response) { $(id).innerHTML = response; window.document.getElementById(id).className = 'loading'; }}).send();
-					}
+					var mydiv = document.getElementById(id);
+					mydiv.className = 'onload';
+					window.Oby.xRequest('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.", {update: mydiv, mode:'GET'}, function(xhr){ mydiv.className = 'loading'; });
 				}";
 
 				$doc = JFactory::getDocument();
@@ -75,12 +70,8 @@ class hikashopToggleHelper{
 			if(!$classincluded){
 				$classincluded = true;
 				$js = "function joomToggleClass(id, newvalue, table ".$jsparams."){
-					var mydiv=$(id); mydiv.innerHTML = ''; mydiv.className = 'onload';
-					try{
-						new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",{ method: 'get', update: $(id), onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
-					}catch(err){
-						new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",method: 'get', onComplete: function(response) { $(id).innerHTML = response; window.document.getElementById(id).className = 'loading'; }}).send();
-					}
+					var mydiv=document.getElementById(id); mydiv.innerHTML = ''; mydiv.className = 'onload';
+					window.Oby.xRequest('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.", {update: mydiv, mode:'GET'}, function(xhr){ mydiv.className = 'loading'; });
 				}";
 
 				$doc = JFactory::getDocument();
@@ -113,18 +104,11 @@ class hikashopToggleHelper{
 		if(!$pictureincluded){
 			$pictureincluded = true;
 			$js = "function joomRadioPicture(id, newvalue, table ".$jsparams."){
-				window.document.getElementById(id).className = 'onload';
-				try{
-					new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",{ method: 'get', onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
-				}catch(err){
-					new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",method: 'get', onComplete: function(response) { window.document.getElementById(id).className = 'loading'; }}).send();
-				}
+				var mydiv = window.document.getElementById(id);
+				mydiv.className = 'onload';
+				window.Oby.xRequest('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",{update: mydiv, mode:'GET'}, function(xhr){ mydiv.className = 'loading'; });
 			}";
-			if (!HIKASHOP_PHP5) {
-				$doc =& JFactory::getDocument();
-			}else{
-				$doc = JFactory::getDocument();
-			}
+			$doc = JFactory::getDocument();
 			$doc->addScriptDeclaration( $js );
 		}
 		$desc = empty($params->description[$value]) ? '' : $params->description[$value];
@@ -142,8 +126,8 @@ class hikashopToggleHelper{
 
 	function delete($lineId,$elementids,$table,$confirm = false,$text=''){
 		$this->addDeleteJS();
-		if(empty($text)) $text = '<img src="'.HIKASHOP_IMAGES.'delete.png"/>';
-		return '<a href="javascript:void(0);" onclick="joomDelete(\''.$lineId.'\',\''.$elementids.'\',\''.$table.'\','. ($confirm ? 'true' : 'false').')">'.$text.'</a>';
+		if(empty($text)) $text = '<i class="fa fa-trash"></i>';
+		return '<a href="javascript:void(0);" onclick="joomDelete(\''.$lineId.'\',\''.$elementids.'\',\''.$table.'\','. ($confirm ? 'true' : 'false').')" title="'.JText::_('HIKA_DELETE').'">'.$text.'</a>';
 	}
 
 	function addDeleteJS(){
@@ -155,17 +139,9 @@ class hikashopToggleHelper{
 					if(!confirm('".JText::_('HIKA_VALIDDELETEITEMS',true)."')) return false;
 				}
 
-				try{
-					new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->extra.$this->token."&task=delete&value='+elementids+'&table='+table, { method: 'get', onComplete: function() {window.document.getElementById(lineid).style.display = 'none';}}).request();
-				}catch(err){
-					new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->extra.$this->token."&task=delete&value='+elementids+'&table='+table,method: 'get', onComplete: function() { window.document.getElementById(lineid).style.display = 'none'; }}).send();
-				}
+				window.Oby.xRequest('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->extra.$this->token."&task=delete&value='+elementids+'&table='+table, {mode:'GET'}, function(xhr) {window.document.getElementById(lineid).style.display = 'none';});
 			}";
-			if (!HIKASHOP_PHP5) {
-				$doc =& JFactory::getDocument();
-			}else{
-				$doc = JFactory::getDocument();
-			}
+			$doc = JFactory::getDocument();
 			$doc->addScriptDeclaration( $js );
 		}
 	}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,17 +9,13 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('email_history'); ?>" method="post" name="adminForm" id="adminForm" >
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-<div id="page-email_log">
-	<table style="width:100%">
-		<tr>
-			<td valign="top" width="50%">
-<?php } else { ?>
-<div id="page-email_log" class="row-fluid">
-	<div class="span6">
-<?php } ?>
-				<fieldset class="adminform" id="htmlfieldset_general">
-					<legend><?php echo JText::_('MAIN_INFORMATION'); ?></legend>
+<div id="page-email_log" class="hk-row-fluid hikashop_backend_tile_edition">
+	<div class="hkc-md-6">
+				<div class="hikashop_tile_block">
+					<div>
+						<div class="hikashop_tile_title"><?php
+							echo JText::_('MAIN_INFORMATION');
+						?></div>
 					<table class="admintable table">
 						<tr>
 							<td class="key">
@@ -102,9 +98,12 @@ defined('_JEXEC') or die('Restricted access');
 							</td>
 						</tr>
 					</table>
-				</fieldset>
-				<fieldset class="adminform" id="htmlfieldset_additional">
-					<legend><?php echo JText::_('ORDER_ADD_INFO'); ?></legend>
+				</div></div>
+				<div class="hikashop_tile_block">
+					<div>
+						<div class="hikashop_tile_title"><?php
+							echo JText::_('ORDER_ADD_INFO');
+						?></div>
 					<table class="admintable table">
 						<tr>
 							<td class="key">
@@ -142,10 +141,13 @@ defined('_JEXEC') or die('Restricted access');
 						</tr>
 <?php } ?>
 					</table>
-				</fieldset>
+				</div></div>
 <?php if(!empty($data->email_log_params['attachments'])) { ?>
-				<fieldset class="adminform" id="htmlfieldset_attachments">
-					<legend><?php echo JText::_('ATTACHMENTS'); ?></legend>
+				<div class="hikashop_tile_block">
+					<div>
+						<div class="hikashop_tile_title"><?php
+							echo JText::_('ATTACHMENTS');
+						?></div>
 					<table class="adminlist table table-striped table-hover">
 						<thead>
 							<tr>
@@ -184,25 +186,12 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 						</tbody>
 					</table>
-				</fieldset>
+				</div></div>
 <?php } ?>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-			<td valign="top" width="50%">
-<?php } else { ?>
 	</div>
-	<div class="span6">
-<?php } ?>
-
+	<div class="hkc-md-6">
 		<?php echo $this->loadTemplate('param'); ?>
-
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-		</tr>
-	</table>
-<?php } else { ?>
 	</div>
-<?php } ?>
 </div>
 
 	<div style="clear:both" class="clr"></div>

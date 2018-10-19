@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.5.1
+ * @version	4.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,37 +9,15 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('currency'); ?>" method="post"  name="adminForm" id="adminForm">
-<?php if(HIKASHOP_BACK_RESPONSIVE) { ?>
-	<div class="row-fluid">
-		<div class="span8">
-			<div class="input-prepend input-append">
-				<span class="add-on"><i class="icon-filter"></i></span>
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-				<button class="btn" onclick="this.form.limitstart.value=0;this.form.submit();"><i class="icon-search"></i></button>
-				<button class="btn" onclick="this.form.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-			</div>
+	<div class="hk-row-fluid">
+		<div class="hkc-md-8">
+<?php
+	echo $this->loadHkLayout('search', array());
+?>
 		</div>
-		<div class="span4">
-<?php } else { ?>
-	<table>
-		<tr>
-			<td width="100%">
-				<?php echo JText::_('FILTER'); ?>:
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-				<button class="btn" onclick="this.form.limitstart.value=0;this.form.submit();"><?php echo JText::_('GO'); ?></button>
-				<button class="btn" onclick="this.form.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><?php echo JText::_('RESET'); ?></button>
-			</td>
-			<td nowrap="nowrap">
-<?php }
-
-if(HIKASHOP_BACK_RESPONSIVE) { ?>
+		<div class="hkc-md-4">
 		</div>
 	</div>
-<?php } else { ?>
-			</td>
-		</tr>
-	</table>
-<?php } ?>
 	<table id="hikashop_currency_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 		<thead>
 			<tr>
