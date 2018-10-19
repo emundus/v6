@@ -957,8 +957,8 @@ class EmundusModelApplication extends JModelList
                             }
                             unset($element);
                             //$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
-                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
-                            $this->_db->setQuery($query);
+	                        $query = 'SELECT table_join FROM #__fabrik_joins WHERE list_id='.$itemt->table_id.' AND group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
+	                        $this->_db->setQuery($query);
                             $table = $this->_db->loadResult();
 
                             if ($itemg->group_id == 174)
