@@ -813,7 +813,7 @@ function data_to_img($match) {
 }
 
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null) {
-	jimport( 'joomla.html.parameter' );
+	jimport('joomla.html.parameter');
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
@@ -845,14 +845,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	// Get form HTML
 	$htmldata = '';
 	$forms ='';
-	//var_dump($form_post);
+
 	if ($form_post || !empty($form_ids))
 		$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order);
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-	
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Decision Publique');
 	$pdf->SetTitle('Application Form');
@@ -877,8 +876,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	} catch (Exception $e) {
 		JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
 	}
-//die(str_replace("#_", "jos", $query));
-
 
 	//get logo
     $template 	= $app->getTemplate(true);
@@ -898,8 +895,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	if (is_file($logo))
 		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 
-
-
 	unset($logo);
 	unset($title);
 
@@ -913,7 +908,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetFont('helvetica', '', 10);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
-
 
 	/*** Applicant   ***/
 	$htmldata .=
@@ -952,8 +946,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.label-darkred { background-color: #96281B }
 
 	</style>';
-	//var_dump($options[0]);die;
-	if(!empty($options) && $options[0] != "" && $options[0] != "0"){
+
+	if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 		$htmldata .= '<div class="card">
 					<table width="100%"><tr>';
 		if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
@@ -975,29 +969,27 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		$dt = new DateTime('NOW', new DateTimeZone('UTC'));
 		// change the timezone of the object without changing it's time
 		$dt->setTimezone(new DateTimeZone($offset));
-
-		//var_dump($options);
 	
-		if(in_array("aid", $options)){
+		if (in_array("aid", $options)) {
 			$htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>';
 		}
-		if(in_array("afnum", $options)){
+		if (in_array("afnum", $options)) {
 			$htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
 		}
-		if(in_array("aemail", $options)){
+		if (in_array("aemail", $options)) {
 			$htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
 		}
-		if(in_array("aapp-sent", $options)){
+		if (in_array("aapp-sent", $options)) {
 			$htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
 		}
-		if(in_array("adoc-print", $options)){
+		if (in_array("adoc-print", $options)) {
 			$htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
 		}
-		if(in_array("status", $options)){
+		if (in_array("status", $options)) {
 			$status = $m_files->getStatusByFnums(explode(',', $fnum));
 			$htmldata .= '<div class="sent">'.JText::_('PDF_STATUS').' : '.$status[$fnum]['value'].'</div>';
 		}
-		if(in_array("tags", $options)){
+		if (in_array("tags", $options)) {
 			$tags = $m_files->getTagsByFnum(explode(',', $fnum));
 			$htmldata .='<br/><table><tr><td style="display: inline;"> ';
 			foreach($tags as $tag){
@@ -1006,10 +998,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			$htmldata .='</td></tr></table>';
 		}
 		$htmldata .= '</td></tr></table></div>';
-	}elseif($options[0] == "0"){
+	} elseif ($options[0] == "0") {
 		
 		$htmldata .= '';
-	}else{
+	} else {
 		$htmldata .= '<div class="card">
 					<table width="100%"><tr>';
 		if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
@@ -1021,7 +1013,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 		<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
 
-		if(isset($item->maiden_name))
+		if (isset($item->maiden_name))
 			$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 
 		$date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
@@ -1042,17 +1034,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		</table>
 		</div>';
 	}
-	
 	/**  END APPLICANT   ****/
 
-	//var_dump($forms);die;
 	$htmldata .= $forms;
-	//die($htmldata);
 	// Listes des fichiers chargés
-	if(!empty($options)){
-		if(in_array("upload", $options)){
+	if (!empty($options)) {
+		if (in_array("upload", $options)) {
 			$uploads = $m_application->getUserAttachmentsByFnum($fnum);
-			$nbuploads=0;
+			$nbuploads = 0;
 			foreach ($uploads as $upload) {
 				if (strrpos($upload->filename, "application_form") === false) {
 					$nbuploads++;
@@ -1065,24 +1054,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 			$htmldata .='<div class="file_upload">';
 			$htmldata .= '<ol>';
-			foreach ($uploads as $upload){
-				if (strrpos($upload->filename,"application_form")=== false) {
+			foreach ($uploads as $upload) {
+				if (strrpos($upload->filename,"application_form") === false) {
 					$path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
 					$htmldata .= '<li><b>' . $upload->value . '</b>';
 					$htmldata .= '<ul>';
 					$htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
 					$htmldata .= '</ul>';
 					$htmldata .= '</li>';
-
 				}
-
 			}
 			$htmldata .='</ol></div>';
 		}
 	}
 
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
-
 
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
@@ -1097,11 +1083,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		chmod(EMUNDUS_PATH_ABS.$item->user_id, 0777);
 	}
 
-
 	@chdir('tmp');
 	if ($output) {
 		if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
-			//$output?'FI':'F'
 			$name = 'application_form_'.date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
             $attachment = $m_application->getAttachmentByLbl("_application_form");
@@ -1109,7 +1093,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			$values = array($item->user_id, $attachment['id'], $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
 			$data 	= array('key' => $keys, 'value' => $values);
 			$m_application->uploadAttachment($data);
-
 		} else
 			$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'FI');
 	} else
