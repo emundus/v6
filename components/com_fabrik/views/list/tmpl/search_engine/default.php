@@ -15,28 +15,10 @@ $doc = JFactory::getDocument();
 $doc->addStyleSheet('media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 $doc->addScript('media/com_emundus/lib/chosen/chosen.jquery.js');
 $doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
-// Helper function to convert html > ul > li to a PHP array
-function ul_to_array($ul) {
 
-	if (is_string($ul)) {
 
-		// encode & appropiately to avoid parsing warnings
-		$ul = preg_replace('/&(?!#?[a-z0-9]+;)/', '&amp;', $ul);
-		if (!$ul = simplexml_load_string($ul))
-			return false;
-		return ul_to_array($ul);
-
-	} elseif (is_object($ul)) {
-
-		$output = array();
-		foreach ($ul->li as $li) {
-			$output[] = (isset($li->ul)) ? ul_to_array($li->ul) : (string) $li;
-		}
-		return $output;
-
-	} else {
-		return false;
-	}
+function jsonDecode($val) {
+	return (!empty(json_decode($val)))?json_decode($val):$val;
 }
 
 
@@ -87,11 +69,14 @@ echo $this->table->intro;
 				if (!empty($this->rows[0])) {
 					foreach ($this->rows[0] as $k => $v) {
 						foreach ($this->headings as $key => $val) {
+							$raw = $key.'_raw';
 							if (array_key_exists($key, $v->data)) {
 								if (strcasecmp($v->data->$key, "1") == 0)
 									$data[$i][$val] = $v->data->$key;
-								else
+								else {
 									$data[$i][$key] = $v->data->$key;
+									$data[$i][$raw] = $v->data->$raw;
+								}
 							}
 						}
 						if (array_key_exists('fabrik_view_url', $v->data)) {
@@ -146,8 +131,8 @@ echo $this->table->intro;
 							if ($d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'] == 'oui')
 								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
 
-							$themes = ul_to_array($d['data_thematics___thematic']);
-							$departments = ul_to_array($d['data_departements___departement_nom']);
+							$themes = jsonDecode($d['data_thematics___thematic_raw']);
+							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
 
 							?>
                             <tr>
@@ -161,10 +146,10 @@ echo $this->table->intro;
                                             <i class="fa fa-users"></i> <strong>Projet adressé à : &nbsp;</strong><?php echo strtolower(implode( '&#32;-&#32;', $cherches)); ?>
                                         </div>
                                         <div class="em-search-engine-thematics">
-                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?implode('</div> - <div class="em-highlight">', $themes):'Aucune thématique'; ?></div>
+                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?is_array($themes)?implode('</div> - <div class="em-highlight">', $themes):$themes:'Aucune thématique'; ?></div>
                                         </div>
                                         <div class="em-search-engine-departments">
-                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?implode('</div> - <div class="em-highlight">', $departments):'Aucun département'; ?></div>
+                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?is_array($departments)?implode('</div> - <div class="em-highlight">', $departments):$departments:'Aucun département'; ?></div>
                                         </div>
 										<?php if (JFactory::getUser()->guest) :?>
                                             <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
