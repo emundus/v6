@@ -20,7 +20,7 @@ $viewArray = [
     "jos_emundus_stats_nombre_relations_etablies" => "Nombre de relations établies",
     "jos_emundus_stats_nationality" => "Nationalité",
     "jos_emundus_stats_gender" => "Genre",
-    "jos_emundus_stats_files" => "Dossiers",
+    "jos_emundus_stats_files_graph" => "Dossiers",
     "jos_emundus_stats_relation_realise_accepte_par_profil" => " Nombre de demandes réalisée/acceptées par profil"
 ];
 
@@ -85,7 +85,7 @@ foreach ($viewArray as $key => $value) {
                 $nationality = 'true';
             break;
 
-            case 'jos_emundus_stats_files':
+            case 'jos_emundus_stats_files_graph':
                 $files = 'true';
             break;
 
