@@ -149,7 +149,7 @@ class EmundusModelStats extends JModelLegacy {
                                     LEFT JOIN `jos_emundus_personal_detail` `epd` ON((`ecc`.`applicant_id` = `epd`.`user`))) 
                                     WHERE ((`epd`.`nationality` is not null) 
                                         AND (`ecc`.`submitted` = 1)) 
-                                    GROUP BY `epd`.`nationality`";
+                                    GROUP BY `epd`.`nationality`, `ecc`.`id`";
 
                     $label = JText::_("jos_emundus_stats_nationality");
                 break;
@@ -173,7 +173,7 @@ class EmundusModelStats extends JModelLegacy {
                     $label = JText::_("jos_emundus_stats_gender");
                 break;
 
-                case 'jos_emundus_stats_files':
+                case 'jos_emundus_stats_files_graph':
                     $columnNames = array('nb', 'schoolyear', 'campaign', 'course', 'submitted', 'status', 'value', 'campaign_id', 'published');
                     $query =    " SELECT `ecc`.`id` AS `id`,
                                             count(distinct `ecc`.`fnum`) AS `nb`,
@@ -189,30 +189,27 @@ class EmundusModelStats extends JModelLegacy {
                                     LEFT JOIN `jos_emundus_setup_campaigns` `esc` on((`esc`.`id` = `ecc`.`campaign_id`)))
                                     LEFT JOIN `jos_emundus_setup_status` `ess` on((`ess`.`step` = `ecc`.`status`)))
                                     LEFT JOIN `jos_users` `u` on((`u`.`id` = `ecc`.`user_id`)))
-                                    GROUP BY  `ecc`.`campaign_id`,`ecc`.`status`";
+                                    GROUP BY  `ecc`.`campaign_id`,`ecc`.`status`, `ecc`.`id`";
 
                     $label = JText::_("jos_emundus_stats_files");
                 break;
             }
             
             $db->setQuery($query);
-            if($boolean == true) {
+            if ($boolean == true) {
                 try {
-
                     return $db->loadResult();
-
-                }catch(Exception $e) {
+                } catch(Exception $e) {
                     JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
                 }
-            }
-            else {
+            } else {
                 try {
                     $db->setQuery($query);
                     
-                    if(!empty($db->loadResult())) 
+                    if (!empty($db->loadResult()))
                         $query = "CREATE VIEW " . $view . " AS " . $query;
                     
-                }catch(Exception $e) {
+                } catch(Exception $e) {
                     JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
                     return false;
                 }
@@ -356,8 +353,6 @@ class EmundusModelStats extends JModelLegacy {
             JLog::add('Error getting stats on account types at m/stats in query: '.$elementQuery->__toString(), JLog::ERROR, 'com_emundus');
         }
 
-        
-
     }
     
     
@@ -398,7 +393,7 @@ class EmundusModelStats extends JModelLegacy {
                 $moduleParams->set('mod_em_list_id7', $id);
             break;
 
-            case 'jos_emundus_stats_files':
+            case 'jos_emundus_stats_files_graphs':
                 $moduleParams->set('mod_em_list_id8', $id);
             break;
 
