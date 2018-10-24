@@ -12,9 +12,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 <div class="container">
 
     <div class="explination">
-        <b>Bienvenu sur votre tableau de bord</b>
-        <p>Vous pouvez désormais consulter les différentes statistiques de votre plateforme à partir de cette page.</p>
-        <p>Vous avez la possibilité de choisir et changer la période pour chaque graphe, les données en relation changeront dynamiquement. </p>
+        <?php echo JText::_('MOD_EMUNDUS_GRAPHS_INTRO'); ?>
     </div>
 
 
@@ -293,6 +291,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         }
         return colorArray;
     }
+
     // Account function
     function afficheComptes(value,periode) {
 
@@ -307,7 +306,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                 chosenvalue: value,
                 periode: periode
             }),
-            success: function (result) {
+            success: function(result) {
                 if (result.status) {
                     if (document.getElementById("userCount").childNodes.length > 1)
                         document.getElementById("userCount").childNodes[1].remove();
@@ -356,7 +355,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     });
                 }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
@@ -469,7 +468,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         stacked: false,
                         ticks: {
                             beginAtZero: true,
-                            userCallback: function (label, index, labels) {
+                            userCallback: function(label, index, labels) {
                                 // when the floored value is the same as the value we have a whole number
                                 if (Math.floor(label) === label) {
                                     return label;
@@ -491,8 +490,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             data:({
                 periode: periode
             }),
-            success: function (resultCand) {
-
+            success: function(resultCand) {
                 if (resultCand.status) {
                     jQuery.ajax({
                         type: "post",
@@ -501,7 +499,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                         data:({
                             periode: periode
                         }),
-                        success: function (resultOffre) {
+                        success: function(resultOffre) {
                             if (document.getElementById("countCandidature").childNodes.length > 1)
                                 document.getElementById("countCandidature").childNodes[1].remove();
                             document.getElementById("countCandidature").append(resultCand.count);
@@ -554,26 +552,25 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                                 }
                             });
                         },
-                        error: function (jqXHR, textStatus, errorThrown) {
+                        error: function(jqXHR, textStatus, errorThrown) {
                             console.log(jqXHR.responseText);
                         }
                     });
                 }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
     }
     // Connection Function
     function afficheConnections(periode) {
-
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getconnections",
             dataType: 'json',
-            data:({periode: periode}),
-            success: function (result) {
+            data:({ periode: periode }),
+            success: function(result) {
                 if (result.status) {
 
                     if (document.getElementById("countConnexion").childNodes.length > 1)
@@ -621,7 +618,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     });
                 }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
@@ -632,7 +629,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getgender",
             dataType: 'json',
-            success: function (result) {
+            success: function(result) {
                 if (result.status) {
                     if (genderChart != undefined || genderChart != null)
                         genderChart.destroy();
@@ -647,22 +644,22 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                             }],
                             // These labels appear in the legend and in the tooltips when hovering different arcs
                             labels: [
-                                'Male',
-                                'Female'
+                                '<?php echo JText::_('MOD_EMUNDUS_GRAPHS_MALE'); ?>',
+                                '<?php echo JText::_('MOD_EMUNDUS_GRAPHS_FEMALE'); ?>'
                             ]
                         },
                         options: {
                             maintainAspectRatio: false,
                             title:{
                                 display: true,
-                                text: "Genres",
+                                text: "<?php echo JText::_('MOD_EMUNDUS_GRAPHS_GENDERS'); ?>",
                                 fontSize: 20
                             }
                         }
                     });
                 }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
@@ -672,7 +669,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getnationality",
             dataType: 'json',
-            success: function (result) {
+            success: function(result) {
                 if (result.status) {
                     if (nationChart != undefined || nationChart != null)
                         nationChart.destroy();
@@ -695,7 +692,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                             },
                             title:{
                                 display: true,
-                                text: "Nationalités",
+                                text: "<?php echo JText::_('MOD_EMUNDUS_GRAPHS_NATIONALITIES'); ?>",
                                 fontSize: 20
                             },
                             scales: options
@@ -703,7 +700,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     });
                 }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
@@ -713,7 +710,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getfiles",
             dataType: 'json',
-            success: function (result) {
+            success: function(result) {
                 var nbArray = [];
                 var valArray = [];
                 if (filesChart != undefined || filesChart != null)
@@ -737,9 +734,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     },
                     options: {
                         maintainAspectRatio: false,
-                        title:{
+                        title: {
                             display: true,
-                            text: "Offres",
+                            text: "<?php echo JText::_('MOD_EMUNDUS_GRAPHS_FILES'); ?>",
                             fontSize: 20
                         }
                     }
@@ -757,22 +754,23 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=addview&format=raw",
             dataType: 'json',
-            data:({view: view}),
-            success: function (result) {
+            data: ({ view: view }),
+            success: function(result) {
                 if (result.status) {
                     jQuery.ajax({
                         type: "post",
                         url: "index.php?option=com_emundus&controller=stats&task=linkfabrik&format=raw",
                         dataType: 'json',
-                        data:({view: view,
+                        data:({
+                            view: view,
                             listid: result.listid
                         }),
                         success: function(res) {
-                            if(res.status) {
+                            if (res.status) {
                                 location.reload();
                             }
                         },
-                        error: function (jqXHR, textStatus, errorThrown) {
+                        error: function(jqXHR, textStatus, errorThrown) {
                             alert("Impossible de relier à Fabrik");
                             console.log(jqXHR.responseText);
                         }
@@ -784,12 +782,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     document.getElementById(view).prepend(nono);
                 }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         })
     }
-    jQuery(document).ready(function () {
+    jQuery(document).ready(function() {
         var projectButton = document.createElement("div");
         projectButton.className = "btn";
         var ProjectIcon = document.createElement("i");
@@ -804,7 +802,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         document.getElementById("summaryProjects").append(document.createElement("br"));
         afficheProjets();
         jQuery('#viewTable').each(function() {
-            if(jQuery(this).find('tr').children("td").length < 2) {
+            if (jQuery(this).find('tr').children("td").length < 2) {
                 jQuery(this).hide();
             }
         });
@@ -833,7 +831,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             var button = document.createElement("div");
             button.className = "btn";
             var icon = document.createElement("i");
-            icon.className ="search icon";
+            icon.className = "search icon";
             button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID8"); ?>");
@@ -844,13 +842,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             document.getElementById("summaryFiles").append(document.createElement("br"));
             afficheFiles();
         }
-        if (<?php echo $comptes; ?> ) {
+        if (<?php echo $comptes; ?>) {
             // create button to export user data
             document.getElementById("userRow").setAttribute("style", "display:block;");
             var button = document.createElement("div");
             button.className = "btn";
             var icon = document.createElement("i");
-            icon.className ="search icon";
+            icon.className = "search icon";
             button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID1"); ?>");
@@ -858,13 +856,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             OffreClick.append(text);
             button.append(OffreClick);
             document.getElementById("userSummary").append(button);
-
             document.getElementById("userSummary").append(document.createElement("br"));
             // create button to see contacts
             var buttonC = document.createElement("div");
             buttonC.className = "btn";
             var iconC = document.createElement("i");
-            iconC.className ="search icon";
+            iconC.className = "search icon";
             buttonC.append(iconC);
             var contacts = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID2"); ?>");
@@ -883,9 +880,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             var buttonCand = document.createElement("div");
             buttonCand.className = "btn";
             var icon1 = document.createElement("i");
-            icon1.className ="search icon";
+            icon1.className = "search icon";
             var icon2 = document.createElement("i");
-            icon2.className ="search icon";
+            icon2.className = "search icon";
             buttonCand.append(icon1);
             buttonCon.append(icon2);
             var exportDonnees1 = document.createElement("a");
@@ -903,7 +900,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             var valuePeriodeCand = jQuery('.periodeCand').val();
             afficheOffres(valuePeriodeCand);
         }
-        if (<?php echo $con; ?> ) {
+        if (<?php echo $con; ?>) {
             document.getElementById("connectionRow").setAttribute("style", "display:block;");
             var button = document.createElement("div");
             button.className = "btn";
@@ -922,22 +919,22 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
     });
 
-    jQuery('.compte').on('change', function () {
+    jQuery('.compte').on('change', function() {
         var value = jQuery(this).val();
         var valuePeriodecompte = jQuery('.periodeCompte').val();
         afficheComptes(value, valuePeriodecompte);
         countType(value);
     });
-    jQuery('.periodeCompte').on('change', function () {
+    jQuery('.periodeCompte').on('change', function() {
         var value = jQuery('.compte').val();
         var valuePeriodecompte = jQuery(this).val();
         afficheComptes(value, valuePeriodecompte);
     });
-    jQuery('.periodeCand').on('change', function () {
+    jQuery('.periodeCand').on('change', function() {
         var valuePeriodeCand = jQuery(this).val();
         afficheOffres(valuePeriodeCand);
     });
-    jQuery('.periodeCo').on('change',function () {
+    jQuery('.periodeCo').on('change',function() {
         var valuePeriodeCand = jQuery(this).val();
         afficheConnections(valuePeriodeCand);
     });

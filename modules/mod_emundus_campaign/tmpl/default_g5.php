@@ -17,12 +17,12 @@ if ($locallang == "fr-FR") {
 ?>
 <form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
 	<?php if (isset($searchword) && !empty($searchword)) :?>
-		<div class="rt-grid-12">
+		<div class="g-block size-100">
 			<p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
 		</div>
 	<?php endif; ?>
-	<div class="rt-grid-12" id="navfilter">
-		<div class="rt-grid-4 navrowtabs">
+	<div class="g-grid" id="navfilter">
+		<div class="g-block size-30 navrowtabs">
 			<ul id="tabslist" class="nav nav-tabs">
 				<?php if ($mod_em_campaign_param_tab) :?>
 					<?php foreach ($mod_em_campaign_list_tab as $tab) :?>
@@ -31,7 +31,7 @@ if ($locallang == "fr-FR") {
 				<?php endif; ?>
 			</ul>
 		</div>
-		<div class="rt-grid-4 navorder">
+		<div class="g-block size-30 navorder">
 			<p><?php if ($order == "start_date") :?>
 					<?php if ($ordertime == "desc") :?>
 						<a href="index.php?order_date=start_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i>
@@ -44,9 +44,9 @@ if ($locallang == "fr-FR") {
 				<?php endif; ?>
 			</p>
 		</div>
-		<div class="rt-grid-4 navsearch">
+		<div class="g-block size-30 navsearch">
 			<div class="navsearch-content">
-				<div class="rt-grid-4">
+				<div class="g-block size-100">
 					<div class="input-group">
 						<input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
 						<span class="input-group-btn">
@@ -56,7 +56,6 @@ if ($locallang == "fr-FR") {
 				</div><!-- /.col-lg-6 -->
 			</div>
 		</div>
-		<div class="rt-grid-1"></div>
 	</div>
 
 	<div class="tab-content">
@@ -86,7 +85,7 @@ if ($locallang == "fr-FR") {
 					</div> <!-- close campaign block (rt12 toclose) -->
 				</div> <!-- close campaignbymonth block -->
 			<?php } // end !empty($oldmonth) ?>
-			<div class="rt-grid-12 campaignbymonth">
+			<div class="g-block size-100 campaignbymonth">
 				<div class="campaign-month-label">
 					<div class="position-me">
 						<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
@@ -167,7 +166,7 @@ if ($locallang == "fr-FR") {
 							</div> <!-- close campaign block (rt12 toclose) -->
 						</div> <!-- close campaignbymonth block -->
 					<?php } ?>
-				<div class="rt-grid-12 campaignbymonth">
+				<div class="g-block size-100 campaignbymonth">
 					<div class="campaign-month-label">
 						<div class="position-me">
 							<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
@@ -238,7 +237,7 @@ if ($locallang == "fr-FR") {
 				</div> <!-- close campaign block (rt12 toclose) -->
 			</div> <!-- close campaignbymonth block -->
 		<?php } ?>
-		<div class="rt-grid-12 campaignbymonth">
+		<div class="g-block size-100 campaignbymonth">
 			<div class="campaign-month-label">
 				<div class="position-me">
 					<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
@@ -309,7 +308,7 @@ if ($locallang == "fr-FR") {
 							</div> <!-- close campaign block (rt12 toclose) -->
 						</div> <!-- close campaignbymonth block -->
 						<?php } ?>
-						<div class="rt-grid-12 campaignbymonth">
+						<div class="g-block size-100 campaignbymonth">
 							<div class="campaign-month-label">
 								<div class="position-me">
 									<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
@@ -381,12 +380,23 @@ if ($locallang == "fr-FR") {
             var id = jQuery(this).attr("href").substr(1);
             jQuery.cookie("tabactive", id);
             jQuery(this).tab('show');
-            if (jQuery(window).width() > 768) {
-                jQuery('.position-me').each(function () {
-                    var h = jQuery(this).parent().parent().height()-23;
-                    jQuery(this).width(h);
-                });
-            }
+
+            // This timeout waits for the animation to complete before resizing the label.
+            setTimeout(function() {
+                if (jQuery(window).width() > 768) {
+                    jQuery('.position-me').each(function () {
+                        var h = jQuery(this).parent().parent().height()-23;
+                        jQuery(this).width(h);
+                    });
+                }
+                else if (jQuery(window).width() == 768) {
+                    jQuery('.position-me').each(function () {
+                        var h = jQuery(this).parent().parent().height()-38;
+                        jQuery(this).width(h);
+                    });
+                }
+            }, 200);
+
         });
 
         if (jQuery(window).width() > 768) {
@@ -395,8 +405,7 @@ if ($locallang == "fr-FR") {
                 jQuery(this).width(h);
             });
         }
-
-        if (jQuery(window).width() == 768) {
+        else if (jQuery(window).width() == 768) {
             jQuery('.position-me').each(function () {
                 var h = jQuery(this).parent().parent().height()-38;
                 jQuery(this).width(h);

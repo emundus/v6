@@ -119,7 +119,7 @@ defined('_JEXEC') or die;
                 success: function(result) {
                     if (result.status) {
                         // When we successfully change the status, we simply dynamically change the button.
-                        jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-danger" onclick="breakUp(\'breakup\','+id+')"> <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?> </button>');
+                        jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-primary" onclick="breakUp(\'breakup\','+id+')"> <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?> </button>');
                     } else {
                         var actionText = document.getElementById('em-action-text-'+id);
                         actionText.classList.remove('hidden');

@@ -12,53 +12,8 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 ?>
 
-<style>
-    .dropdown-header {
-        display: block;
-        padding: 3px 20px;
-        font-size: 12px;
-        line-height: 1.42857143;
-        color: #777;
-        white-space: nowrap;
-    }
-
-    .dropdown-menu-right {
-        right: 0;
-        left: auto;
-    }
-
-    #userDropdownIcon {
-        background-color: #<?php echo $primary_color; ?>;
-        border: solid 1px white;
-        color: #<?php echo $secondary_color; ?>;
-    }
-
-    #userDropdownIcon:hover,
-    #userDropdownIcon.active {
-        border: 1px solid;
-        box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
-        outline-color: rgba(255, 255, 255, 0);
-        outline-offset: 15px;
-        background-color: #<?php echo $secondary_color; ?>;
-        color: #fff;
-    }
-
-    #userDropdownMenu .divider {
-        height: 1px;
-        margin: 9px 1px;
-        overflow: hidden;
-        background-color: #e5e5e5;
-        border-bottom: 1px solid #fff;
-    }
-
-    #userDropdownMenu li>a:hover,
-    #userDropdownMenu .active>a {
-        background: #<?php echo $secondary_color; ?>;
-    }
-</style>
-
 <!-- Button which opens up the dropdown menu. -->
-<div class='dropdown' id="userDropdown" style="float: right;">
+<div class='dropdown' id="userDropdown">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <i class="big circular user outline icon" id="userDropdownIcon"></i>
     </div>

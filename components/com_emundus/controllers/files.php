@@ -1678,15 +1678,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $decision   = $jinput->getInt('decision', 0);
         $admission  = $jinput->getInt('admission', 0);
         $ids        = $jinput->getVar('ids', null);
-        $formid    = $jinput->getVar('formids', null);
-        $attachid  = $jinput->getVar('attachids', null);
-        $option    = $jinput->getVar('options', null);
+        $formid     = $jinput->getVar('formids', null);
+        $attachid   = $jinput->getVar('attachids', null);
+        $option     = $jinput->getVar('options', null);
 
-        $formids = explode(',', $formid);
-        $attachids = explode(',', $attachid);
-        $options = explode(',', $option);
-        //var_dump($formids);
-        $exists_files = array();
+        $formids    = explode(',', $formid);
+        $attachids  = explode(',', $attachid);
+        $options    = explode(',', $option);
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
@@ -1694,9 +1692,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $validFnums[] = $fnum;
         }
 
-        //var_dump($formids);
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
-        //var_dump($fnumsInfo);
         if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file))
             $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $file);
         else
@@ -1734,7 +1730,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                     if ($attachment || !empty($attachment_to_export)){
                         $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
-                        if($options[0] != "0"){
+                        if ($options[0] != "0") {
                             $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
                         }
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
@@ -1744,14 +1740,13 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($assessment)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
 
-
                 if ($decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
 
                 if ($admission)
                     $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
-                if(($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
+                if (($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
                     $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
 
             }
