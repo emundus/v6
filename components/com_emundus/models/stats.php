@@ -393,7 +393,7 @@ class EmundusModelStats extends JModelLegacy {
                 $moduleParams->set('mod_em_list_id7', $id);
             break;
 
-            case 'jos_emundus_stats_files_graphs':
+            case 'jos_emundus_stats_files_graph':
                 $moduleParams->set('mod_em_list_id8', $id);
             break;
 
@@ -617,7 +617,7 @@ class EmundusModelStats extends JModelLegacy {
 
         $query
             ->select($db->quoteName('*'))
-            ->from($db->quoteName('#__emundus_stats_files'));
+            ->from($db->quoteName('#__emundus_stats_files_graph'));
 
         $db->setQuery($query);
         
