@@ -186,7 +186,35 @@ if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($c
         <table class="em-register-table">
 			<legend><?php echo JText::_($fieldset->label);?></legend>
 		<?php endif;?>
+
+
+        <tr class="em-checkBox-tr">
+            <?php echo $this->form->getLabel('spacer'); ?>
+        </tr>
+
+        <tr class="em-checkBox-tr">
+            <td class="em-checkBox-label">
+                <?php echo $this->form->getLabel('firstname', 'emundus_profile'); ?>
+            </td>
+            <td class="em-input">
+                <?php echo $this->form->getInput('firstname', 'emundus_profile'); ?>
+            </td>
+        </tr>
+
+        <tr class="em-checkBox-tr">
+            <td class="em-checkBox-label">
+                <?php echo $this->form->getLabel('lastname', 'emundus_profile'); ?>
+            </td>
+            <td class="em-input">
+                <?php echo $this->form->getInput('lastname', 'emundus_profile'); ?>
+            </td>
+        </tr>
+
+
 		<?php foreach($fields as $field):?>
+                <?php if ($field->name == 'jform[emundus_profile][lastname]' || $field->name == 'jform[emundus_profile][firstname]' || $field->name == 'jform[spacer]') :?>
+                    <?php continue; ?>
+                <?php else: ?>
 				<?php if ($field->hidden):?>
 				<?php else:?>
 					<?php if ($field->type == 'Checkbox'):?>
@@ -216,6 +244,7 @@ if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($c
 
 					<?php endif;?>
 				<?php endif;?>
+            <?php endif;?>
 		<?php endforeach;?>
 		</table>
 	<?php endif;?>
