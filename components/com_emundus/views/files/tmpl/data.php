@@ -117,7 +117,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</table>
 		</div>
 		<div class="well">
-			<label for = "pager-select"><?php echo JText::_('DISPLAY') ?></label>
+			<label for="pager-select" class="em-paginate-label"><?php echo JText::_('DISPLAY') ?></label>
 			<select name="pager-select" class="chzn-select" id="pager-select">
 				<option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?php echo JText::_('ALL')?></option>
 				<option value="5" <?php if ($this->pagination->limit == 5) { echo "selected=true"; } ?>>5</option>
@@ -181,10 +181,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                     url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
                     dataType:"json",
                     data:({fnum: fnum.fnum}),
-                    success: function(result)
-                    {
-                        if (result.status && result.fnumInfos != null)
-                        {
+                    success: function(result) {
+                        if (result.status && result.fnumInfos != null) {
                             console.log(result);
                             var fnumInfos = result.fnumInfos;
                             fnum.name = fnumInfos.name;
@@ -196,8 +194,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                             $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
-                    error: function (jqXHR, textStatus, errorThrown)
-                    {
+                    error: function (jqXHR) {
                         $('.em-dimmer').remove();
                         $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
