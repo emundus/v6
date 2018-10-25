@@ -108,14 +108,14 @@ if ($this->show_info_panel) :
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <div class="input-group">';
                 if ($this->show_shortdesc_input) {
-                    $div .= '<div class="col-sm-5"><label><span>'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div>';
+                    $div .= '<div class="col-sm-12"><label><span style="display: none;">'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div>';
                 }
                 if ($this->show_browse_button) {
-                    $div .= '<label for="file" class="custom-file-upload"><input type="file" name="file"/><span>'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
+                    $div .= '<div class="col-sm-12"><label for="file" class="custom-file-upload"><input type="file" name="file"/><span>'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
                 }
                     $div .= '<input type="hidden" class="form-control" readonly="">';
                 if ($this->show_browse_button) {
-                    $div .= '<input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>';
+                    $div .= '<input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></div>';
                 }
                 $div .= '</div>';
 
