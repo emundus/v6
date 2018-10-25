@@ -899,6 +899,44 @@ $(document).ready(function()
                 case 'search':
                     search();
                     break;
+                case 'save-filter':
+                    $.ajaxQ.abortAll();
+                    var filName = prompt(filterName);
+                    if (filName != null) {
+                        $.ajax({
+                            type: 'POST',
+                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=savefilters&Itemid=' + itemId,
+                            dataType: 'json',
+                            data: ({
+                                name: filName
+                            }),
+                            success: function(result) {
+                                if (result.status) {
+                                    $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
+                                    $("#select_filter").trigger("chosen:updated");
+                                    $('#saved-filter').show();
+                                    setTimeout(function(e) {
+                                        $('#saved-filter').hide();
+                                    }, 600);
+
+                                } else {
+                                    $('#error-filter').show();
+                                    setTimeout(function(e) {
+                                        $('#error-filter').hide();
+                                    }, 600);
+                                }
+
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                console.log(jqXHR.responseText);
+                            }
+                        })
+                    } else {
+                        alert(filterEmpty);
+
+                        filName = prompt(filterName, "name");
+                    }
+                    break;
                 default:
                     break;
             }
@@ -969,44 +1007,6 @@ $(document).ready(function()
             e.handle = true;
             var id = $(this).attr('id');
             switch (id) {
-                case 'save-filter':
-                    $.ajaxQ.abortAll();
-                    var filName = prompt(filterName);
-                    if (filName != null) {
-                        $.ajax({
-                            type: 'POST',
-                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=savefilters&Itemid=' + itemId,
-                            dataType: 'json',
-                            data: ({
-                                name: filName
-                            }),
-                            success: function(result) {
-                                if (result.status) {
-                                    $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
-                                    $("#select_filter").trigger("chosen:updated");
-                                    $('#saved-filter').show();
-                                    setTimeout(function(e) {
-                                        $('#saved-filter').hide();
-                                    }, 600);
-
-                                } else {
-                                    $('#error-filter').show();
-                                    setTimeout(function(e) {
-                                        $('#error-filter').hide();
-                                    }, 600);
-                                }
-
-                            },
-                            error: function(jqXHR, textStatus, errorThrown) {
-                                console.log(jqXHR.responseText);
-                            }
-                        })
-                    } else {
-                        alert(filterEmpty);
-
-                        filName = prompt(filterName, "name");
-                    }
-                    break;
                 case 'del-filter':
                     $.ajaxQ.abortAll();
                     var id = $('#select_filter').val();

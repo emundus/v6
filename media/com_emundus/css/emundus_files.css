@@ -16,6 +16,7 @@ p {
 }
 
 .em-excel_elts {
+.em-excel_elts {
     display: inline-block;
     width: 90%;
     line-height: 0.8em;
@@ -311,7 +312,7 @@ thead th:hover {
     width: 15px;
     position: fixed;
     top: 50%;
-    margin-left: -15px;
+    left: 0;
     background-color: rgba(142, 142, 142, 0.83);
 }
 

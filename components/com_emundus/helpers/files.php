@@ -972,14 +972,10 @@ class EmundusHelperFiles
     ** @return string HTML to display in page for filter block.
     */  //$filts_details, $filts_options, $tables
     public function createFilterBlock($params, $types, $tables) {
+
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles;
         $h_files = new EmundusHelperFiles;
-
-        /*$document = JFactory::getDocument();
-        $document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
-        $document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
-        $document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );*/
 
         $session        = JFactory::getSession();
         $filt_menu      = $session->get('filt_menu');
@@ -1021,8 +1017,8 @@ class EmundusHelperFiles
         $filters = '';
         
         $cs = '';
-        if(!empty($current_s)){
-            foreach($current_s as $c){
+        if (!empty($current_s)) {
+            foreach ($current_s as $c) {
                // $key = explode(': ', $c);
                // $tag = JText::_($key[0]).": ".$key[1];
                 $cs .= $c .',';
@@ -1030,17 +1026,12 @@ class EmundusHelperFiles
             $cs = rtrim($cs, ',');
         }
         
-
-        
         
         // Quick filter
         $quick = '<div id="filters">
-                    <div>
-                        <div id="quick" class="form-group">
-                            <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">'.
-                        '</div>
-                        
-                    </div>
+                    <div id="quick" class="form-group">
+                        <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">'.
+                    '</div>
                 </div>';
        
         $filters .= $quick;
@@ -1059,18 +1050,21 @@ class EmundusHelperFiles
                                 }
                         });
                     </script>';
-                    
-
 
         $filters .= '<fieldset class="em_filters_filedset">';
+
         if (@$params['profile'] !== NULL) {
             $profile = '';
             $hidden = $types['profile'] != 'hidden' ? false : true;
-            if ($types['profile'] != 'hidden')
+
+            if (!$hidden) {
                 $profile .= '<div class="form-group" id="profile">
-                                    <label class="control-label">'.JText::_('PROFILE').'</label>';
-            $profile .= '           <select class="search_test em-filt-select" id="select_profile" name="profile" '.($types['profile'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
-                         <option value="0">'.JText::_('ALL').'</option>';
+                	            <label class="control-label">'.JText::_('PROFILE').'</label>';
+            }
+
+            $profile .= ' <select class="search_test em-filt-select" id="select_profile" name="profile" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
+                         	<option value="0">'.JText::_('ALL').'</option>';
+
             $profiles = $h_files->getApplicants();
             foreach ($profiles as $prof) {
                 $profile .= '<option value="'.$prof->id.'"';
@@ -1078,47 +1072,49 @@ class EmundusHelperFiles
                     $profile .= ' selected="true"';
                 $profile .= '>'.$prof->label.'</option>';
             }
+
             $profile .= '</select>';
-            if ($types['profile'] != 'hidden')
+            if (!$hidden)
                 $profile .= '</div>';
             $filters .= $profile;
-        }
-        //if($debug==1) $div .= '<input name="view_calc" type="checkbox" onclick="document.pressed=this.name" value="1" '.$view_calc==1?'checked=checked':''.' />';
 
-        //******other profiles filter ******************
-        if (@$params['profile'] !== NULL) {
+            // Other profiles
             $profile = '';
             $hidden = $types['o_profiles'] != 'hidden' ? false : true;
-            if ($types['o_profiles'] != 'hidden')
+            if (!$hidden) {
                 $profile .= '<div class="form-group" id="o_profiles">
-                                    <label class="control-label">'.JText::_('OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
-                                    </label> ';
+                                    <label class="control-label">'.JText::_('OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a></label> ';
+            }
                                     
-            $profile .= '           <select class="testSelAll em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($types['o_profiles'] == 'hidden' ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            $profiles = $h_files->getApplicants();
+            $profile .= ' <select class="testSelAll em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
+
             foreach ($profiles as $prof) {
                 $profile .= '<option value="'.$prof->id.'"';
-                /*if(!empty($oprofiles) && (in_array($prof->id, $oprofiles) || $prof->id == $oprofiles))
-                    $profile .= ' selected="true"';*/
                 $profile .= '>'.$prof->label.'</option>';
             }
             $profile .= '</select>';
-            if ($types['o_profiles'] != 'hidden')
+
+            if (!$hidden)
                 $profile .= '</div>';
+
             $filters .= $profile;
-           
         }
 
         if (@$params['profile_users'] !== NULL) {
+
             $hidden = $types['profile_users'] != 'hidden' ? false : true;
             $profile_user = '';
-            if ($types['profile_users'] != 'hidden')
+
+            if (!$hidden) {
                 $profile_user .= '<div class="form-group" id="profile_users">
                                     <label class="control-label">'.JText::_('PROFILE_FILTER').'</label>';
-            $profile_user .= '      <select class="search_test em-filt-select" id="select_profile_users" name="profile_users" '.($types['profile_users'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
-                         <option value="0">'.JText::_('ALL').'</option>';
+            }
+
+            $profile_user .= ' <select class="search_test em-filt-select" id="select_profile_users" name="profile_users" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
+                         		<option value="0">'.JText::_('ALL').'</option>';
+
             $profile_users = $h_files->getProfiles();
-            $prefilter = count($filt_params['profile_users'])>0?true:false;
+            $prefilter = count($filt_params['profile_users']) > 0?true:false;
 
             foreach ($profile_users as $profu) {
                 if (!$prefilter || ($prefilter && in_array($profu->id, $params['profile_users']))) {
@@ -1129,8 +1125,9 @@ class EmundusHelperFiles
                 }
             }
             $profile_user .= '</select>';
-            if ($types['profile_users'] != 'hidden')
-                $profile_user .= '</div>'/*<script>$(document).ready(function() {$("#select_profile_users").chosen({width: "75%"}); })</script>'*/;
+
+            if (!$hidden)
+                $profile_user .= '</div>';
             $filters .= $profile_user;
         }
 
@@ -1138,14 +1135,15 @@ class EmundusHelperFiles
             $eval = '';
             $hidden = $types['evaluator'] != 'hidden' ? false : true;
 
-            if ($types['evaluator'] != 'hidden') {
+            if (!$hidden) {
 	            $eval .= '<div class="em_filters" id="evaluator">
                                <label class="control-label">' . JText::_('ASSESSOR_USER_FILTER') . '</label>
                                <div class="em_filtersElement">';
             }
 
-            $eval .= '<select class="search_test em-filt-select" id="select_user" name="user" '.($types['evaluator'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
-                      <option value="0">'.JText::_('ALL').'</option>';
+            $eval .= '<select class="search_test em-filt-select" id="select_user" name="user" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
+                      	<option value="0">'.JText::_('ALL').'</option>';
+
             $evaluators = $h_files->getEvaluators();
             foreach ($evaluators as $evaluator) {
                 $eval .= '<option value="'.$evaluator->id.'"';
@@ -1154,8 +1152,10 @@ class EmundusHelperFiles
                 $eval .= '>'.$evaluator->name.'</option>';
             }
             $eval .= '</select>';
-            if ($types['evaluator'] != 'hidden')
+
+            if (!$hidden)
                 $eval .= '</div></div>';
+
             $filters .= $eval;
         }
 
@@ -1163,24 +1163,27 @@ class EmundusHelperFiles
             $group_eval = '';
             $hidden = $types['evaluator_group'] != 'hidden' ? false : true;
 
-            if ($types['evaluator_group'] != 'hidden') {
+            if (!$hidden) {
 	            $group_eval .= '<div class="em_filters" id="gp_evaluator">
                                    <label class="control-label">' . JText::_('GROUP_FILTER') . '</label>
                                    <div class="em_filtersElement">';
             }
 
-            $group_eval .= '<select class="search_test em-filt-select" id="select_groups" name="evaluator_group" '.($types['evaluator_group'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '"" ').'>
+            $group_eval .= '<select class="search_test em-filt-select" id="select_groups" name="evaluator_group" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '"" ').'>
                             <option value="0">'.JText::_('ALL').'</option>';
+
             $groups = $h_files->getGroups();
             foreach ($groups as $group) {
                 $group_eval .= '<option value="'.$group->id.'"';
-                if($current_group_eval == $group->id)
+                if ($current_group_eval == $group->id)
                     $group_eval .= ' selected="true"';
                 $group_eval .= '>'.$group->label.'</option>';
             }
             $group_eval .= '</select>';
-            if ($types['evaluator_group'] != 'hidden')
+
+            if (!$hidden)
                 $group_eval .= '</div></div>';
+
             $filters .= $group_eval;
         }
 
@@ -1195,7 +1198,7 @@ class EmundusHelperFiles
             unset($sub_values);
             $final_grade = '';
 
-            if ($types['finalgrade'] != 'hidden') {
+            if (!$hidden) {
 	            $final_grade .= '<div class="em_filters" id="finalgrade">
                                     <div class="em_label"><label class="control-label">' . JText::_('FINAL_GRADE_FILTER') . '</label></div>
                                     <div class="em_filtersElement">';
@@ -1203,9 +1206,9 @@ class EmundusHelperFiles
 
             $final_grade .= '<select class="search_test em-filt-select" id="select_finalgrade" name="finalgrade" '.($types['finalgrade'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                              <option value="0">'.JText::_('PLEASE_SELECT').'</option>';
-            $groupe ="";
+            $groupe = "";
             for ($i = 0; $i < count($final_gradeList); $i++) {
-                $val = substr($p_grade[$i],1,1);
+                $val = substr($p_grade[$i], 1, 1);
                 $final_grade .= '<option value="'.$val.'"';
                 if ($val == $current_finalgrade)
                     $final_grade .= ' selected="true"';
@@ -1220,16 +1223,20 @@ class EmundusHelperFiles
 
         if (@$params['missing_doc'] !== NULL) {
             $hidden = $types['missing_doc'] != 'hidden' ? false : true;
-            $missing_docList = $h_files->getMissing_doc();
             $missing_doc = '';
-            if (@$types['missing_doc'] != 'hidden')
+
+            if (!$hidden) {
                 $missing_doc .= '<div class="em_filters" id="missing_doc">
                                     <div class="em_label">
                                         <label>'.JText::_('MISSING_DOC').'</label>
                                     </div>
                                     <div class="em_filtersElement">';
-            $missing_doc .= '<select class="search_test em-filt-select" id="select_missing_doc" name="missing_doc" '.(@$types['missing_doc'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
+            }
+
+            $missing_doc .= '<select class="search_test em-filt-select" id="select_missing_doc" name="missing_doc" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                                 <option value="0">'.JText::_('ALL').'</option>';
+
+	        $missing_docList = $h_files->getMissing_doc();
             foreach ($missing_docList as $md) {
                 $missing_doc .= '<option value="'.$md->attachment_id.'"';
                 if ($miss_doc == $md->attachment_id)
@@ -1237,9 +1244,9 @@ class EmundusHelperFiles
                 $missing_doc .= '>'.$md->value.'</option>';
             }
             $missing_doc .= '</select>';
-            if ($types['schoolyear'] != 'hidden') {
+
+            if (!$hidden) {
                 $missing_doc .= '</div></div>';
-                //$missing_doc .= '<script>$(document).ready(function() {$("#select_missing_doc").chosen({width:"75%"});})</script>';
             }
             $filters .= $missing_doc;
         }
@@ -1247,86 +1254,97 @@ class EmundusHelperFiles
         if (@$params['complete'] !== NULL) {
             $complete = '';
             $hidden = $types['complete'] != 'hidden' ? false : true;
-            if ($types['complete'] != 'hidden')
+
+            if (!$hidden) {
                 $complete .= '<div class="em_filters" id="complete">
-                                <div class="em_label"><label class="control-label">'.JText::_('COMPLETE_APPLICATION').'</label></div>
+                                <div class="em_label">
+                                	<label class="control-label">'.JText::_('COMPLETE_APPLICATION').'</label>
+                                </div>
                                 <div class="em_filtersElement">';
-            $complete .= '<select class="search_test em-filt-select" id="select_complete" name="complete" '.($types['complete'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
+            }
+
+            $complete .= '<select class="search_test em-filt-select" id="select_complete" name="complete" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                             <option value="0">'.JText::_('ALL').'</option>';
+
             $complete .= '<option value="1"';
             if ($complete_application == 1)
                 $complete .= ' selected="true"';
             $complete .= '>'.JText::_('YES').'</option>';
+
             $complete .= '<option value="2"';
             if ($complete_application == 2)
                 $complete .= ' selected="true"';
             $complete .= '>'.JText::_('NO').'</option>';
+
             $complete .= '</select>';
-            if ($types['complete'] != 'hidden')
+            if (!$hidden)
                 $complete .= '</div></div>';
+
             $filters .= $complete;
         }
 
         if (@$params['validate'] !== NULL) {
             $validate = '';
             $hidden = $types['validate'] != 'hidden' ? false : true;
-            if ($types['validate'] != 'hidden')
+
+            if (!$hidden) {
                 $validate .= '<div class="em_filters" id="validate">
                                 <div class="em_label"><label class="control-label">'.JText::_('VALIDATED_APPLICATION').'</label></div>
                                 <div class="em_filtersElement">';
-            $validate .= '<select class="search_test em-filt-select" id="select_validate" name="validate" '.($types['validate'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
+            }
+
+            $validate .= '<select class="search_test em-filt-select" id="select_validate" name="validate" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                             <option value="0">'.JText::_('ALL').'</option>';
+
             $validate .= '<option value="1"';
             if ($validate_application == 1)
                 $validate .= ' selected="true"';
             $validate .= '>'.JText::_('VALIDATED').'</option>';
+
             $validate .= '<option value="2"';
             if ($validate_application == 2)
                 $validate .= ' selected="true"';
             $validate .= '>'.JText::_('UNVALIDATED').'</option>';
+
             $validate .= '</select>';
-            if ($types['validate'] != 'hidden')
+            if (!$hidden)
                 $validate .= '</div></div>';
             $filters .= $validate;
         }
 
         if (@$params['campaign'] !== NULL) {
             $hidden = $types['campaign'] != 'hidden' ? false : true;
-            $campaignList = $h_files->getCampaigns();
             $campaign = '';
-            if ($types['campaign'] != 'hidden') {
+
+            if (!$hidden) {
                 $campaign .= '<div id="campaign">
-                            <div class="em_label">
-                            <label class="control-label">'.JText::_('CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
-                            </label>
-                            </div>
-                          <div class="em_filtersElement">';
+                            	<div class="em_label">
+                            		<label class="control-label">'.JText::_('CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a></label>
+                            	</div>
+                          		<div class="em_filtersElement">';
             }
             $campaign .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_campaigns" name="campaign" multiple=multiple"" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$campaign .= '<option value="%" ';
-            if ((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2)
-                $campaign .= ' selected="true"';
-            $campaign .= '>'.JText::_('ALL').'</option>';*/
-           
+
+	        $campaignList = $h_files->getCampaigns();
             foreach ($campaignList as $c) {
                 $campaign .= '<option value="'.$c->id.'"';
                 if (!empty($current_campaign) && in_array($c->id, $current_campaign))
                     $campaign .= ' selected="true"';
                 $campaign .= '>'.$c->label.' - '.$c->year.'</option>';
             }
+
             $campaign .= '</select>';
             if (!$hidden) {
                 $campaign .= '</div></div>';
-                //$campaign .= '<script>$(document).ready(function() {$("#select_multiple_campaigns").chosen({width:"75%"}); })</script>';
             }
+
             $filters .= $campaign;
-            
         }
 
         if ($params['schoolyear'] !== NULL) {
-            $schoolyearList = $h_files->getSchoolyears();
             $schoolyear = '';
             $hidden = $types['schoolyear'] != 'hidden' ? false : true;
+
             if (!$hidden) {
                 $schoolyear .= '<div id="schoolyear">
                                     <div class="em_label"><label class="control-label">'.JText::_('SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
@@ -1335,11 +1353,9 @@ class EmundusHelperFiles
             }
 
             $schoolyear .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_schoolyears" name="schoolyear" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$schoolyear .= '<option value="%" ';
-            if (($current_schoolyear[0]=="%" || empty($current_schoolyear[0])) && count($current_schoolyear)<2 )
-                $schoolyear .= ' selected="true"';
-            $schoolyear .= '>'.JText::_('ALL').'</option>';*/
-            foreach ($schoolyearList as $key=>$value) {
+
+	        $schoolyearList = $h_files->getSchoolyears();
+            foreach ($schoolyearList as $key => $value) {
                 $schoolyear .= '<option value="'.$value->schoolyear.'"';
                 if (!empty($current_schoolyear) && in_array($value->schoolyear, $current_schoolyear))
                     $schoolyear .= ' selected="true"';
@@ -1348,7 +1364,6 @@ class EmundusHelperFiles
             $schoolyear .= '</select>';
             if (!$hidden) {
                 $schoolyear .= '</div></div>';
-                //$schoolyear .= '<script>$(document).ready(function() {$("#select_multiple_schoolyears").chosen({width:"75%"});})</script>';
             }
             $filters .= $schoolyear;
             
@@ -1356,8 +1371,8 @@ class EmundusHelperFiles
 
         if (@$params['programme'] !== NULL) {
             $hidden = $types['programme'] != 'hidden' ? false : true;
-            $programmeList = $h_files->getProgrammes($params['programme']);
             $programme = '';
+
             if (!$hidden) {
                 $programme .= '<div id="programme">
                     <div class="em_label"><label class="control-label">'.JText::_('PROGRAMME').'&ensp;<a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
@@ -1365,27 +1380,23 @@ class EmundusHelperFiles
                     <div class="em_filtersElement">';
             }
             $programme .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_programmes" name="programme" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$programme .= '<option value="%" ';
-            if ((@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 )
-                $programme .= ' selected="true"';
-            $programme .= '>'.JText::_('ALL').'</option>';*/
 
+	        $programmeList = $h_files->getProgrammes($params['programme']);
             foreach ($programmeList as $p) {
                 $programme .= '<option value="'.$p->code.'"';
                 if (!empty($current_programme) && in_array($p->code, $current_programme)){
                     $programme .= ' selected="true"';
                     $program_selected = true;
                 }
-                   
                 $programme .= '>'.$p->label.' - '.$p->code.'</option>';
             }
+
             $programme .= '</select>';
             if (!$hidden) {
                 $programme .= '</div></div>';
-                //$programme .= '<script>$(document).ready(function() {$("#select_multiple_programmes").chosen({width: "75%"});})</script>';
             }
+
             $filters .= $programme;
-           
         }
 
         if (@$params['status'] !== NULL) {
@@ -1399,7 +1410,6 @@ class EmundusHelperFiles
                 }
             }
 
-
             $status = '';
             if (!$hidden) {
                 $status .= '<div class="em_filters" id="status">
@@ -1409,10 +1419,6 @@ class EmundusHelperFiles
                 
             }
             $status .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select" ' : '').' id="select_multiple_status" name="status" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-           /* $status .= '<option value="%" ';
-            if ((@$current_status[0] == "%" || !isset($current_status[0])) && (count(@$current_status)<2 ))
-                $status .= ' selected="true"';
-            $status .= '>'.JText::_('ALL').'</option>';*/
 
             foreach ($statusList as $p) {
                 $status .= '<option value="'.$p->step.'"';
@@ -1423,70 +1429,69 @@ class EmundusHelperFiles
             $status .= '</select>';
             if (!$hidden) {
                 $status .= '</div></div>';
-                //$status .= '<script>$(document).ready(function() {$("#select_multiple_status").chosen({width: "75%"});});</script>';
-                
-                
             }
             $filters .= $status;
-            
-                
         }
 
         if ($params['published'] !== NULL) {
             $hidden = $types['published'] != 'hidden' ? false : true;
-            $published='';
+            $published = '';
+
             if (!$hidden) {
-                $published.= '<div class="em_filters" id="published">
-                <div class="em_label"><label class="control-label">'.JText::_('PUBLISH').'</label></div>';
-                $published .= '<div class="em_filtersElement">';
-                $published .= '<select class="search_test em-filt-select" id="select_published" name="published" '.($types['published'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
-                        <option value="1"';
-                if ($current_published=='1')
+                $published .= '<div class="em_filters" id="published">
+                				<div class="em_label">
+                					<label class="control-label">'.JText::_('PUBLISH').'</label>
+                				</div>
+                				<div class="em_filtersElement">
+                					<select class="search_test em-filt-select" id="select_published" name="published" '.($hidden ? 'style="visibility:hidden" ' : '').'>
+                                        <option value="1"';
+
+                if ($current_published == '1')
                     $published .= "selected='true'";
-                $published .='>'.JText::_("PUBLISHED").'</option>
+                $published .= '>'.JText::_("PUBLISHED").'</option>
                         <option value="0"';
-                if ($current_published=='0')
+
+                if ($current_published == '0')
                     $published .= "selected='true'";
-                $published .='>'. JText::_("ARCHIVED").'</option>
+                $published .= '>'. JText::_("ARCHIVED").'</option>
                         <option value="-1"';
-                if ($current_published=='-1')
+
+                if ($current_published == '-1')
                     $published .= "selected='true'";
                 $published .='>'.JText::_("TRASHED").'</option>
                 </select>';
                 $published .='</div></div>';
             }
-            $filters .= $published;
 
+            $filters .= $published;
         }
 
-        if (@$params['tag'] !== NULL){
+        if (@$params['tag'] !== NULL) {
             $hidden = $types['tag'] != 'hidden' ? false : true;
-            $tagList = $m_files->getAllTags();
             $tag = '';
+
             if (!$hidden) {
                 $tag .= '<div id="tag">
-                    <div class="em_label"><label class="control-label">'.JText::_('TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
-                    </label></div>
-                    <div class="em_filtersElement">';
+                    		<div class="em_label">
+                    			<label class="control-label">'.JText::_('TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a></label>
+                            </div>
+                    		<div class="em_filtersElement">';
             }
             $tag .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_tags" name="tag" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$tag .= '<option value="%" ';
-            if ((@$current_tag[0] == "%" || !isset($current_tag[0])) && (count(@$current_tag)<2 ))
-                $tag .= ' selected="true"';
-            $tag .= '>'.JText::_('ALL').'</option>';*/
 
+	        $tagList = $m_files->getAllTags();
             foreach ($tagList as $p) {
                 $tag .= '<option value="'.$p['id'].'"';
-                if(!empty($current_tag) && in_array($p['id'], (array)$current_tag)) $tag .= ' selected="true"';
+                if (!empty($current_tag) && in_array($p['id'], (array)$current_tag))
+                	$tag .= ' selected="true"';
                 $tag .= '>'.$p['label'].'</option>';
             }
             $tag .= '</select>';
             if (!$hidden) {
                 $tag .= '</div></div>';
-                //$tag .= '<script>$(document).ready(function() {$("#select_multiple_tags").chosen({width: "75%"});})</script>';
             }
+
             $filters .= $tag;
-            
         }
         
         //Advance filter builtin
@@ -1496,20 +1501,25 @@ class EmundusHelperFiles
             $hidden = $types['adv_filter'] != 'hidden' ? false : true;
             $elements = $h_files->getElements();
             
-            $adv_filter = '<div class="em_filters" id="em_adv_filters">';
-            $adv_filter .= '<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>';
-            $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><br/><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
-            $adv_filter .= '<div id="advanced-filters" class="form-group">';
+            $adv_filter = '<div class="em_filters" id="em_adv_filters">
+								<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>
+								<div>
+									<button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button>
+								</div>
+								<br/>
+								<input type="hidden" value="'.count($search).'" id="nb-adv-filter" />
+								<div id="advanced-filters" class="form-group">';
 
             if (!empty($search)) {
-                $i=1;
+
+                $i = 1;
                 $selected_adv = "";
                 foreach ($search as $key => $val) {
-                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'">';
-                    $adv_filter .= '<select class="chzn-select em-filt-select" id="elements" name="elements">
-                    <option value="">'.JText::_('PLEASE_SELECT').'</option>';
-                    $menu ="";
-                    $groupe ="";
+                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'">
+										<select class="chzn-select em-filt-select" id="elements" name="elements">
+                                            <option value="">'.JText::_('PLEASE_SELECT').'</option>';
+                    $menu = "";
+                    $groupe = "";
 
                     foreach ($elements as $element) {
                         $menu_tmp = $element->title;
@@ -1529,8 +1539,6 @@ class EmundusHelperFiles
                             $groupe = $groupe_tmp;
                         }
 
-
-
                         $adv_filter .= '<option class="emundus_search_elm" value="'.$element->id.'"';
                         $table_name = (isset($element->table_join)?$element->table_join:$element->table_name);
                         if ($table_name.'.'.$element->element_name == $key) {
@@ -1541,7 +1549,7 @@ class EmundusHelperFiles
                     }
                     $adv_filter .= '</select> ';
 
-                    if($selected_adv != "")
+                    if ($selected_adv != "")
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                         
                     $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="glyphicon glyphicon-trash" ></span></button>';
@@ -1551,123 +1559,149 @@ class EmundusHelperFiles
             }
             $adv_filter .= '</div></div>';
 
-
             $filters .= $adv_filter;
         }
 
         //Other filters builtin
         if (@$params['other'] !== NULL && !empty($tables) && $tables[0] != "") {
-            $filters .= '</fieldset><fieldset class="em_filters_other">';
-            $hidden = $types['other'] != 'hidden' ? false : true;
-            $other_elements = $h_files->getElementsOther($tables);
-            $other_filter = '<div class="em_filters" id="em_other_filters"><a href="javascript:addElementOther();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('OTHER_FILTERS').'</span>';
-            $other_filter .= '<input type="hidden" value="0" id="theValue_other" />';
-            $other_filter .= '<img src="'.JURI::base(true).'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
-            $other_filter .= '<div id="otherDiv">';
 
-            if (count($search_other)>0 && isset($search_other) && is_array($search_other)) {
-                $i=0;
+            $filters .= '</fieldset><fieldset class="em_filters_other">';
+
+            $other_elements = $h_files->getElementsOther($tables);
+            $other_filter = '<div class="em_filters" id="em_other_filters">
+								<a href="javascript:addElementOther();">
+									<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('OTHER_FILTERS').'</span>
+									<input type="hidden" value="0" id="theValue_other" />
+									<img src="'.JURI::base(true).'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/>
+								</a>
+								<div id="otherDiv">';
+
+            if (count($search_other) > 0 && isset($search_other) && is_array($search_other)) {
+                $i = 0;
                 $selected_other = "";
+
                 foreach ($search_other as $sf) {
-                    $other_filter .= '<div id="filter_other'.$i.'">';
-                    $other_filter .= '<select class="search_test em-filt-select" id="elements-others" name="elements_other" id="elements_other" >
-                            <option value="">'.JText::_('PLEASE_SELECT').'</option>';
+
+                    $other_filter .= '<div id="filter_other'.$i.'">
+										<select class="search_test em-filt-select" id="elements-others" name="elements_other" id="elements_other" >
+                            				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+
                     $groupe = "";
                     $length = 50;
-                    if (!empty($other_elements))
-                        foreach($other_elements as $element_other) {
+
+                    if (!empty($other_elements)) {
+
+                        foreach ($other_elements as $element_other) {
                             $groupe_tmp = $element_other->group_label;
                             $dot_grp = strlen($groupe_tmp)>=$length?'...':'';
                             $dot_elm = strlen($element_other->element_label)>=$length?'...':'';
+
                             if ($groupe != $groupe_tmp) {
                                 $other_filter .= '<option class="emundus_search_grp" disabled="disabled" value="">'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'</option>';
                                 $groupe = $groupe_tmp;
                             }
+
                             $other_filter .= '<option class="emundus_search_elm_other" value="'.$element_other->table_name.'.'.$element_other->element_name.'"'; // = result_for; engaged; scholarship...
-                            if($element_other->table_name.'.'.$element_other->element_name == $sf){
+
+	                        if ($element_other->table_name.'.'.$element_other->element_name == $sf){
                                 $other_filter .= ' selected';
                                 $selected_other = $element_other;
                             }
                             $other_filter .= '>'.substr($element_other->element_label, 0, $length).$dot_elm.'</option>';
                         }
+                    }
                     $other_filter .= '</select>';
-                    if (!isset($search_values_other[$i])) $search_values_other[$i] = "";
+
+                    if (!isset($search_values_other[$i]))
+                    	$search_values_other[$i] = "";
                     if ($selected_other != "")
                         $other_filter .= $h_files->setSearchBox($selected_other, $search_values_other[$i], "elements_values_other", $i);
+
                     $other_filter .= '<a href="javascript:clearAdvanceFilter(\'filter_other'.$i.'\'); javascript:removeElement(\'filter_other'.$i.'\', 2);"><img src="'.JURI::base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
                     $i++;
                     $other_filter .= '</div>';
                 }
             }
             $other_filter .= '</div></div>';
+
             $filters .= $other_filter;
         }
 
         if (@$params['newsletter'] !== NULL) {
-            $hidden = $types['newsletter'] != 'hidden' ? false : true;
-            $filters.= '<div class="em_filters" id="newsletter">
-                        <div class="em_label"><label class="control-label">'.JText::_('NEWSLETTER').'</label></div>';
-            $filters .= '<div class="em_filtersElement">
-                        <select class="search_test em-filt-select" id="select_newsletter" name="newsletter" '.($types['newsletter'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
-                            <option value="0"';
-            if(@$newsletter == 0) $filters .= ' selected';
-            $filters.='>'.JText::_("ALL").'</option>
+
+        	$hidden = $types['newsletter'] != 'hidden' ? false : true;
+
+            $filters .= '<div class="em_filters" id="newsletter">
+                        	<div class="em_label">
+                        		<label class="control-label">'.JText::_('NEWSLETTER').'</label>
+                            </div>
+                            <div class="em_filtersElement">
+                        		<select class="search_test em-filt-select" id="select_newsletter" name="newsletter" '.($hidden ? 'style="visibility:hidden" ' : '').'>
+                                    <option value="0"';
+
+            if (@$newsletter == 0)
+            	$filters .= ' selected';
+
+            $filters .= '>'.JText::_("ALL").'</option>
                             <option value="1"';
-            if(@$newsletter == 1) $filters .= ' selected';
-            $filters.='>'.JText::_("JYES").'</option>
+
+            if (@$newsletter == 1)
+            	$filters .= ' selected';
+
+            $filters .= '>'.JText::_("JYES").'</option>
                         </select>
-                    </div>';
-            //$filters.='<div class="em_filtersElement"><input id="check_newsletter" name="newsletter" onMouseUp="if(this.checked==true){this.value=0;}else{this.value=1;}" type="checkbox" value="0" '.($newsletter==1?'checked=checked':'').' /></div>';
-            $filters.='</div>';
+                    </div>
+                </div>';
         }
 
         if (@$params['group'] !== NULL) {
+
             $hidden = $types['group'] != 'hidden' ? false : true;
-            $groupList = $m_files->getAllGroups();
+
             $group = '';
             if (!$hidden) {
                 $group .= '<div id="group">
-                    <div class="em_label"><label class="control-label">'.JText::_('GROUP').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
-                    </label></div>
-                    <div class="em_filtersElement">';
+                    		<div class="em_label">
+                    			<label class="control-label">'.JText::_('GROUP').' &ensp;
+                    				<a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
+                    			</label>
+                            </div>
+                    		<div class="em_filtersElement">';
             }
             $group .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_groups" name="group" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$group .= '<option value="%" ';
-            if ((@$group[0] == "%" || empty($group[0])) && count(@$group) < 2)
-                $group .= ' selected="true"';
-            $group .= '>'.JText::_('ALL').'</option>';*/
 
+	        $groupList = $m_files->getAllGroups();
             foreach ($groupList as $p) {
                 $group .= '<option value="'.$p['id'].'"';
                 if (!empty($current_group) && in_array($p['id'], $current_group))
                     $group .= ' selected="true"';
                 $group .= '>'.$p['label'].'</option>';
             }
+
             $group .= '</select>';
             if (!$hidden) {
                 $group .= '</div></div>';
-                //$group .= '<script>$(document).ready(function() {$("#select_multiple_groups").chosen({width: "75%"});})</script>';
             }
+
             $filters .= $group;
-           
         }
 
         if (@$params['institution'] !== NULL) {
             $hidden = $types['institution'] != 'hidden' ? false : true;
-            $institutionList = $m_files->getAllInstitutions();
+
             $institution = '';
             if (!$hidden) {
                 $institution .= '<div id="group">
-                    <div class="em_label"><label class="control-label">'.JText::_('UNIVERSITY').' &ensp; <a href="javascript:clearchosen(\'#select_multiple_institutions\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
-                    </label></div>
-                    <div class="em_filtersElement">';
+                    				<div class="em_label">
+                    					<label class="control-label">'.JText::_('UNIVERSITY').' &ensp; 
+                    						<a href="javascript:clearchosen(\'#select_multiple_institutions\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a>
+                    					</label>
+                                    </div>
+                    				<div class="em_filtersElement">';
             }
             $institution .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_institutions" name="institution" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
-            /*$institution .= '<option value="%" ';
-            if ((@$institution[0] == "%" || empty($institution[0])) && count(@$institution) < 2)
-                $institution .= ' selected="true"';
-            $institution .= '>'.JText::_('ALL').'</option>';*/
 
+	        $institutionList = $m_files->getAllInstitutions();
             foreach ($institutionList as $p) {
                 $institution .= '<option value="'.$p['id'].'"';
                 if (!empty($current_institution) && in_array($p['id'], $current_institution))
@@ -1677,29 +1711,33 @@ class EmundusHelperFiles
             $institution .= '</select>';
             if (!$hidden) {
                 $institution .= '</div></div>';
-               // $institution .= '<script>$(document).ready(function() {$("#select_multiple_institutions").chosen({width: "75%"});})</script>';
             }
+
             $filters .= $institution;
-            
         }
 
         if (@$params['spam_suspect'] !== NULL) {
             $hidden = $types['spam_suspect'] != 'hidden' ? false : true;
-            $filters.= '<div class="em_filters" id="spam_suspect"><div class="em_label"><label class="control-label">'.JText::_('SPAM_SUSPECT').'</label></div>';
-            $filters .= '<div class="em_filtersElement">
-                        <select class="search_test" id="select_spam-suspect" name="spam_suspect" '.($types['spam_suspect'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
-                            <option value="0"';
+
+            $filters.= '<div class="em_filters" id="spam_suspect">
+							<div class="em_label">
+								<label class="control-label">'.JText::_('SPAM_SUSPECT').'</label>
+							</div>
+							<div class="em_filtersElement">
+                        		<select class="search_test" id="select_spam-suspect" name="spam_suspect" '.($hidden ? 'style="visibility:hidden" ' : '').'>
+                                    <option value="0"';
+
             if (@$spam_suspect == 0)
                 $filters .= ' selected';
             $filters.='>'.JText::_("ALL").'</option>
                             <option value="1"';
+
             if (@$spam_suspect == 1)
                 $filters .= ' selected';
-            $filters.='>'.JText::_("JYES").'</option>
+            $filters .= '>'.JText::_("JYES").'</option>
                         </select>
-                    </div>';
-            // $filters.= '<div class="em_filtersElement"><input id="check_spam-suspect" name="spam_suspect" onMouseUp="if(this.checked==true){this.value=1;}else{this.value=0;}" type="checkbox" value="0" '.($spam_suspect==1?'checked=checked':'').' /></div>';
-            $filters.= '</div>';
+                    </div>
+                </div>';
         }
        
         // Buttons
@@ -1707,11 +1745,11 @@ class EmundusHelperFiles
         $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br><br>';
 
         $filters .= '<script>
-                            $( "#showhide" ).click(function() {
-                                if($("#showhide i").hasClass("icon-chevron-up")){
+                            $("#showhide").click(function() {
+                                if ($("#showhide i").hasClass("icon-chevron-up")) {
                                     $(".em_filters_filedset").toggle(400);
                                     $("#showhide").html('."'".'<i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS')."'".');
-                                }else{
+                                } else {
                                       $(".em_filters_filedset").toggle(400);
                                       $("#showhide").html('."'".'<i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS')."'".');
                                 }
@@ -1722,9 +1760,9 @@ class EmundusHelperFiles
         // User filter
         $research_filters = $h_files->getEmundusFilters();
         $filters .='<fieldset>
-                            <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
-                            <table><tr><td style="width:95%; padding-right: 5px">
-                                <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
+                        <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
+                        <table><tr><td style="width:95%; padding-right: 5px">
+                            <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
                                 <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
@@ -1734,24 +1772,26 @@ class EmundusHelperFiles
                     $filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
             }
         }
-        $filters .= '</select></td>';
-        $filters .=' <td> <button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="glyphicon glyphicon-trash"></i></button></td></tr></table>
-                                <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                    <strong>'.JText::_('FILTER_SAVED').'</strong>
-                                </div>
-                                <div class="alert alert-dismissable alert-success em-alert-filter" id="deleted-filter">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                    <strong>'.JText::_('FILTER_DELETED').'</strong>
-                                </div>
-                                <div class="alert alert-dismissable alert-danger em-alert-filter" id="error-filter">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                    <strong>'.JText::_('SQL_ERROR').'</strong>
-                                </div>
-                            </fieldset>
-                <script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().EmundusHelperJavascript::clearAdvanceFilter().'</script>';
-        $filters .= '</fieldset>';
-        $filters .= '<script>
+        $filters .= '</select>
+					</td>
+					<td> 
+						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="glyphicon glyphicon-trash"></i></button></td></tr></table>
+                            <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <strong>'.JText::_('FILTER_SAVED').'</strong>
+                            </div>
+                            <div class="alert alert-dismissable alert-success em-alert-filter" id="deleted-filter">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <strong>'.JText::_('FILTER_DELETED').'</strong>
+                            </div>
+                            <div class="alert alert-dismissable alert-danger em-alert-filter" id="error-filter">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <strong>'.JText::_('SQL_ERROR').'</strong>
+                            </div>
+                        </fieldset>
+                		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().EmundusHelperJavascript::clearAdvanceFilter().'</script>
+                    </fieldset>
+                    <script>
                         $(document).ready(function() {
 
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
