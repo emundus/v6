@@ -75,7 +75,7 @@ if ($this->show_info_panel) :
 
             if ($attachment->nb>0)
                     foreach($attachment->liste as $item) {
-                    $div .= '<tr>
+                    $div .= '<tr class="em-added-files">
                         <td>';
                         if($item->can_be_viewed==1) {
                         $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
@@ -106,20 +106,18 @@ if ($this->show_info_panel) :
                 $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
                 <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
-                <div class="input-group">
-                    <span class="input-group-btn">';
+                <div class="input-group">';
+                if ($this->show_shortdesc_input) {
+                    $div .= '<div class="col-sm-5"><label><span>'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div>';
+                }
                 if ($this->show_browse_button) {
-                    $div .= '<input type="file" name="file" style="opacity:1;font-size:18px;margin-left: 15px;" />';
+                    $div .= '<label for="file" class="custom-file-upload"><input type="file" name="file"/><span>'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
                 }
                     $div .= '<input type="hidden" class="form-control" readonly="">';
-                if ($this->show_shortdesc_input) {
-                    $div .= '<div class="col-sm-5"><input type="text" class="form-control" name="description" placeholder="'.JText::_('SHORT_DESC').'" /></div>';
-                }
                 if ($this->show_browse_button) {
                     $div .= '<input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>';
                 }
-                $div .= '</span>
-                </div>';
+                $div .= '</div>';
 
                 $div .= '<script>
 var maxFilesize = "'.ini_get("upload_max_filesize").'";
@@ -221,14 +219,14 @@ Dropzone.options.formA'.$attachment->id.' =  {
                 //$div .= '</div>';
                 $div .= '</td>
             </tr>
-            <tr>
+            <tr class="em-allowed-files">
                 <td>
                 <p><em>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
                 </td>
             </tr>';
             } else {
                 $div .= '
-            <tr>
+            <tr class="em-no-more-files">
                 <td>
                 <p>'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p>
                 </td>
