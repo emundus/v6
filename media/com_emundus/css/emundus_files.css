@@ -311,7 +311,7 @@ thead th:hover {
     width: 15px;
     position: fixed;
     top: 50%;
-    margin-left: -15px;
+    left: 0;
     background-color: rgba(142, 142, 142, 0.83);
 }
 
@@ -438,8 +438,7 @@ thead th:hover {
 }
 
 .table-hover>tbody>tr>td.success:hover,
-.table-hover>tbody>tr>th.success:hover,
-    {
+.table-hover>tbody>tr>th.success:hover {
     background-color: #d0e9c6 !important;
 }
 
@@ -467,8 +466,7 @@ thead th:hover {
 }
 
 .table-hover>tbody>tr>td.warning:hover,
-.table-hover>tbody>tr>th.warning:hover,
-    {
+.table-hover>tbody>tr>th.warning:hover {
     background-color: #faf2cc !important;
 }
 
@@ -675,4 +673,8 @@ label[for="em-file_to_upload"]:hover {
         -webkit-transform:scale(1);
         -moz-transform:scale(1);
     }
+}
+
+.em-nopadding {
+    padding: 0 !important;
 }
