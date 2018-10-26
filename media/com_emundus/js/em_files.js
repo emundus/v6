@@ -171,20 +171,20 @@ function reloadFilter(view)
 }
 */
 // load Menu action
-function reloadActions(view, fnum, onCheck) {
+function reloadActions(view, fnum, onCheck, async) {
 
     view = (typeof view === 'undefined') ? 'files' : view;
     fnum = (typeof fnum === 'undefined') ? 0 : fnum;
+    async = (typeof async === 'undefined') ? false : async;
     //addDimmer();
 
     var multi = $('.em-check:checked').length;
     $.ajax({
         type: 'GET',
-        async: false,
+        async: async,
         url: 'index.php?option=com_emundus&view='+view+'&layout=menuactions&format=raw&Itemid=' + itemId+ '&display=none&fnum='+fnum+'&multi='+multi,
         dataType: 'html',
-        success: function(data)
-        {
+        success: function(data) {
             //$('.em-dimmer').remove();
             //$(".col-md-9 .panel.panel-default").remove();
             $('.navbar.navbar-inverse').empty();
@@ -319,7 +319,9 @@ function tableOrder(order) {
 
 // Open Application file
 function openFiles(fnum) {
-    reloadActions(undefined, fnum.fnum);
+    // Run the reload actions function without waiting for return.
+    setTimeout(function(){reloadActions(undefined, fnum.fnum, false, true);},0);
+
     //var fnum = fnum.fnum;
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
@@ -416,7 +418,7 @@ function openFiles(fnum) {
         success: function(result) {
             //$('#em-hide-filters, #em-last-open, #em-appli-menu').show();
             $('#em-last-open .list-group .active').removeClass('active');
-            if($('#'+fnum.fnum+'_ls_op').is(':visible')) {
+            if ($('#'+fnum.fnum+'_ls_op').is(':visible')) {
                 $('#'+fnum.fnum+'_ls_op' ).addClass('active');
             } else {
                 if (fnum.hasOwnProperty('name')) {
@@ -1154,9 +1156,9 @@ $(document).ready(function() {
     $(document).on('click', '.em_file_open', function(e) {
         $.ajaxQ.abortAll();
         if (e.handle !== true) {
-           addDimmer();
+            addDimmer();
             e.handle = true;
-            var fnum = new Object();
+            var fnum = {};
             fnum.fnum = $(this).attr('id');
             var sid = parseInt(fnum.fnum.substr(21, 7));
             var cid = parseInt(fnum.fnum.substr(14, 7));
