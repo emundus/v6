@@ -13,7 +13,8 @@
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
-JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
+JHTML::stylesheet('media/com_emundus/css/emundus_panel.css');
+JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 
 ?>
 
@@ -27,14 +28,15 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 						<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 					</div>
 					<div class="buttons" style="float:right; margin-top:0px">
-						<input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="<?php echo JText::_('SEARCH_BTN');?>"/>&ensp;
-						<input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>&ensp;
-						<button class="btn btn-sm btn-warning" id="save-filter" style="width:50px;" title="<?php echo JText::_('SAVE_FILTER');?>"><i class="ui save icon"></i></button><br/><br/>
+                        <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('SEARCH_BTN');?>"/>&ensp;
+                        <input value="&#xf05e" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
+						<input value="&#xf0c7" type="button" class="btn btn-sm btn-warning" id="save-filter" style="font-family: 'Font Awesome 5 Free';" title="<?php echo JText::_('SAVE_FILTER');?>"/>
+                        <br/><br/>
 					</div>
 				</div>
 				
 				<div class="panel-body">
-					<?php echo @$this->filters ?>
+					<?php echo @$this->filters; ?>
 				</div>
 			</div>
 
@@ -58,10 +60,9 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 
 			<div class="panel panel-info em-hide" id="em-assoc-files">
 				<div class="panel-heading">
-					<h3 class="panel-title"><?php echo JText::_('LINKED_APPLICATION_FILES')?></h3>
+					<h3 class="panel-title"><?php echo JText::_('LINKED_APPLICATION_FILES'); ?></h3>
 				</div>
 				<div class="panel-body">
-
 				</div>
 			</div>
 
@@ -70,7 +71,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 			<div class="clearfix"></div>
 			<div class="panel panel-info em-hide" id="em-last-open">
 				<div class="panel-heading">
-					<h3 class="panel-title"><?php echo JText::_('LAST_OPEN_FILES')?></h3>
+					<h3 class="panel-title"><?php echo JText::_('LAST_OPEN_FILES'); ?></h3>
 				</div>
 				<div class="panel-body">
 					<div class="list-group">
@@ -80,7 +81,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 		</div>
 
 		<div class="col-md-9 main-panel">
-			<div  id="em-hide-filters">
+			<div id="em-hide-filters">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
 			<div class="navbar navbar-inverse">
@@ -90,7 +91,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS')?></span>
+					<span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS'); ?></span>
 				</div>
 
 			</div>
@@ -103,14 +104,14 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 <script type="text/javascript">
 	var itemId = '<?php echo @$this->itemId;?>';
 	var cfnum = '<?php echo @$this->cfnum;?>';
-	var filterName = '<?php echo JText::_('FILTER_NAME');?>';
-	var filterEmpty = '<?php echo JText::_('ALERT_EMPTY_FILTER');?>';
-	var nodelete = '<?php echo JText::_('CAN_NOT_DELETE_FILTER');?>';
-	var jtextArray = ['<?php echo JText::_('ENTER_COMMENT')?>',
-	                  '<?php echo JText::_('TITLE')?>',
-	                  '<?php echo JText::_('COMMENT_SENT')?>'];
-	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>';
-	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>';
+	var filterName = '<?php echo JText::_('FILTER_NAME'); ?>';
+	var filterEmpty = '<?php echo JText::_('ALERT_EMPTY_FILTER'); ?>';
+	var nodelete = '<?php echo JText::_('CAN_NOT_DELETE_FILTER'); ?>';
+	var jtextArray = ['<?php echo JText::_('ENTER_COMMENT'); ?>',
+	                  '<?php echo JText::_('TITLE'); ?>',
+	                  '<?php echo JText::_('COMMENT_SENT'); ?>'];
+	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'; ?>';
+	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'; ?>';
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
