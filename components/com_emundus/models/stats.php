@@ -31,170 +31,171 @@ class EmundusModelStats extends JModelLegacy {
 
     // $boolean is to return a boolean instead of the query String 
     public function addView($view, $boolean = false) {
-            $db = JFactory::getDbo();
-            switch($view) {
-                case 'jos_emundus_stats_nombre_candidature_offre':
-                    
-                    $columnNames = array('nombre', 'num_offre', '_date', '_day', '_week', '_month','_year', 'titre');
-                    $query =  " SELECT uuid() AS `id`,
-                                                count(`el`.`id`) AS `nombre`,
-                                                `el`.`fnum_to` AS `num_offre`,
-                                                date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
-                                                date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
-                                                date_format(`el`.`timestamp`,'%u') AS `_week`,
-                                                date_format(`el`.`timestamp`,'%b') AS `_month`,
-                                                date_format(`el`.`timestamp`,'%Y') AS `_year`,
-                                            (SELECT `jos_emundus_projet`.`titre`
-                                                FROM `jos_emundus_projet`
-                                                WHERE (convert(`jos_emundus_projet`.`fnum`
-                                                USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`,
-                                            (SELECT `jos_emundus_projet`.`contact_nom`
-                                                FROM `jos_emundus_projet`
-                                                WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `contact`,
-                                            (SELECT COUNT(`jos_emundus_cifre_links`.`id`)
-                                                 FROM `jos_emundus_cifre_links`
-                                                 WHERE (convert(`jos_emundus_cifre_links`.`fnum_to`USING utf8) LIKE `el`.`fnum_to`) AND jos_emundus_cifre_links.state = 2) AS `accept`
-                                        FROM `jos_emundus_logs` `el`
-                                        WHERE (`el`.`action_id` = 32)
-                                        GROUP BY  `el`.`fnum_to`";
+        $db = JFactory::getDbo();
+        switch($view) {
+            case 'jos_emundus_stats_nombre_candidature_offre':
 
-                    $label = JText::_("jos_emundus_stats_nombre_candidature_offre");
-                break;
-
-                case 'jos_emundus_stats_nombre_comptes':
-                        $columnNames = array('nombre', '_date', '_day', '_week', '_month','_year', 'profile_id', 'profile_label');
-                        $query =  " SELECT uuid() AS `id`,
-                                            count(`eu`.`profile`) AS `nombre`,
-                                            date_format(`eu`.`registerDate`,'%Y%m%d') AS `_date`,
-                                            date_format(`eu`.`registerDate`,'%Y-%m-%d') AS `_day`,
-                                            date_format(`eu`.`registerDate`,'%u') AS `_week`,
-                                            date_format(`eu`.`registerDate`,'%b') AS `_month`,
-                                            date_format(`eu`.`registerDate`,'%Y') AS `_year`,
-                                            `sp`.`id` AS `profile_id`,
-                                            `sp`.`label` AS `profile_label`
-                                    FROM (`jos_emundus_users` `eu`
-                                    LEFT JOIN `jos_emundus_setup_profiles` `sp` on((`sp`.`id` = `eu`.`profile`)))
-                                    WHERE `eu`.`profile` IN 
-                                        (SELECT `jos_emundus_setup_profiles`.`id`
-                                        FROM `jos_emundus_setup_profiles`
-                                        WHERE (`jos_emundus_setup_profiles`.`published` = 1))
-                                    GROUP BY  `eu`.`profile`,date_format(`eu`.`registerDate`,'%Y%m%d')";
-
-                        $label = JText::_("jos_emundus_stats_nombre_comptes");
-                break;
-
-                case 'jos_emundus_stats_nombre_connexions':
-                    $columnNames = array('nombre_connexions', '_date', '_day', '_week', '_month','_year');   
-                    $query =   " SELECT uuid() AS `id`,
-                                            count(`el`.`id`) AS `nombre_connexions`,
+                $columnNames = array('nombre', 'num_offre', '_date', '_day', '_week', '_month','_year', 'titre');
+                $query =  " SELECT uuid() AS `id`,
+                                            count(`el`.`id`) AS `nombre`,
+                                            `el`.`fnum_to` AS `num_offre`,
                                             date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
                                             date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
                                             date_format(`el`.`timestamp`,'%u') AS `_week`,
-                                            date_format(`el`.`timestamp`,'%m') AS `_month`,
-                                            date_format(`el`.`timestamp`,'%Y') AS `_year`
+                                            date_format(`el`.`timestamp`,'%b') AS `_month`,
+                                            date_format(`el`.`timestamp`,'%Y') AS `_year`,
+                                        (SELECT `jos_emundus_projet`.`titre`
+                                            FROM `jos_emundus_projet`
+                                            WHERE (convert(`jos_emundus_projet`.`fnum`
+                                            USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`,
+                                        (SELECT `jos_emundus_projet`.`contact_nom`
+                                            FROM `jos_emundus_projet`
+                                            WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `contact`,
+                                        (SELECT COUNT(`jos_emundus_cifre_links`.`id`)
+                                             FROM `jos_emundus_cifre_links`
+                                             WHERE (convert(`jos_emundus_cifre_links`.`fnum_to`USING utf8) LIKE `el`.`fnum_to`) AND jos_emundus_cifre_links.state = 2) AS `accept`
                                     FROM `jos_emundus_logs` `el`
-                                    WHERE (`el`.`action_id` = -(2))
-                                    GROUP BY  date_format(`el`.`timestamp`,'%Y%m%d')";
+                                    WHERE (`el`.`action_id` = 32)
+                                    GROUP BY  `el`.`fnum_to`";
 
-                    $label = JText::_("jos_emundus_stats_nombre_connexions");
+                $label = JText::_("jos_emundus_stats_nombre_candidature_offre");
+            break;
+
+            case 'jos_emundus_stats_nombre_comptes':
+                    $columnNames = array('nombre', '_date', '_day', '_week', '_month','_year', 'profile_id', 'profile_label');
+                    $query =  " SELECT uuid() AS `id`,
+                                        count(`eu`.`profile`) AS `nombre`,
+                                        date_format(`eu`.`registerDate`,'%Y%m%d') AS `_date`,
+                                        date_format(`eu`.`registerDate`,'%Y-%m-%d') AS `_day`,
+                                        date_format(`eu`.`registerDate`,'%u') AS `_week`,
+                                        date_format(`eu`.`registerDate`,'%b') AS `_month`,
+                                        date_format(`eu`.`registerDate`,'%Y') AS `_year`,
+                                        `sp`.`id` AS `profile_id`,
+                                        `sp`.`label` AS `profile_label`
+                                FROM (`jos_emundus_users` `eu`
+                                LEFT JOIN `jos_emundus_setup_profiles` `sp` on((`sp`.`id` = `eu`.`profile`)))
+                                WHERE `eu`.`profile` IN 
+                                    (SELECT `jos_emundus_setup_profiles`.`id`
+                                    FROM `jos_emundus_setup_profiles`
+                                    WHERE (`jos_emundus_setup_profiles`.`published` = 1))
+                                GROUP BY  `eu`.`profile`,date_format(`eu`.`registerDate`,'%Y%m%d')";
+
+                    $label = JText::_("jos_emundus_stats_nombre_comptes");
+            break;
+
+            case 'jos_emundus_stats_nombre_connexions':
+                $columnNames = array('nombre_connexions', '_date', '_day', '_week', '_month','_year');
+                $query =   " SELECT uuid() AS `id`,
+                                        count(`el`.`id`) AS `nombre_connexions`,
+                                        date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
+                                        date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
+                                        date_format(`el`.`timestamp`,'%u') AS `_week`,
+                                        date_format(`el`.`timestamp`,'%m') AS `_month`,
+                                        date_format(`el`.`timestamp`,'%Y') AS `_year`
+                                FROM `jos_emundus_logs` `el`
+                                WHERE (`el`.`action_id` = -(2))
+                                GROUP BY  date_format(`el`.`timestamp`,'%Y%m%d')";
+
+                $label = JText::_("jos_emundus_stats_nombre_connexions");
+            break;
+
+            case 'jos_emundus_stats_nombre_consult_offre':
+                $columnNames = array('nombre', 'num_offre', '_date', '_day', '_week', '_month','_year', 'titre');
+                $query =    " SELECT uuid() AS `id`,
+                                                count(`el`.`id`) AS `nombre`,
+                                                `el`.`fnum_to` AS `num_offre`,
+                                                date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
+                                            date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
+                                            date_format(`el`.`timestamp`,'%u') AS `_week`,
+                                            date_format(`el`.`timestamp`,'%b') AS `_month`,
+                                            date_format(`el`.`timestamp`,'%Y') AS `_year`,
+                                            (SELECT `jos_emundus_projet`.`titre`
+                                            FROM `jos_emundus_projet`
+                                            WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`,
+                                            (SELECT `jos_emundus_projet`.`contact_nom`
+                                            FROM `jos_emundus_projet`
+                                            WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `contact`
+                                        FROM `jos_emundus_logs` `el`
+                                        WHERE (`el`.`action_id` = 33)
+                                        GROUP BY  `el`.`fnum_to`";
+
+                $label = JText::_("jos_emundus_stats_nombre_consult_offre");
                 break;
 
-                case 'jos_emundus_stats_nombre_consult_offre':
-                    $columnNames = array('nombre', 'num_offre', '_date', '_day', '_week', '_month','_year', 'titre');
-                    $query =    " SELECT uuid() AS `id`,
-                                                    count(`el`.`id`) AS `nombre`,
-                                                    `el`.`fnum_to` AS `num_offre`,
-                                                    date_format(`el`.`timestamp`,'%Y%m%d') AS `_date`,
-                                                date_format(`el`.`timestamp`,'%Y-%m-%d') AS `_day`,
-                                                date_format(`el`.`timestamp`,'%u') AS `_week`,
-                                                date_format(`el`.`timestamp`,'%b') AS `_month`,
-                                                date_format(`el`.`timestamp`,'%Y') AS `_year`,
-                                                (SELECT `jos_emundus_projet`.`titre`
-                                                FROM `jos_emundus_projet`
-                                                WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `titre`,
-                                                (SELECT `jos_emundus_projet`.`contact_nom`
-                                                FROM `jos_emundus_projet`
-                                                WHERE (convert(`jos_emundus_projet`.`fnum`USING utf8) LIKE `el`.`fnum_to`) limit 1) AS `contact`
-                                            FROM `jos_emundus_logs` `el`
-                                            WHERE (`el`.`action_id` = 33)
-                                            GROUP BY  `el`.`fnum_to`";
+            case 'jos_emundus_stats_nombre_relations_etablies':
+                $columnNames = array('nombre_rel_etablies', '_date', '_day', '_week', '_month','_year');
+                $query =   " SELECT uuid() AS `id`,
+                                            count(`er`.`id`) AS `nombre_rel_etablies`,
+                                            date_format(`er`.`timestamp`,'%Y%m%d') AS `_date`,
+                                            date_format(`er`.`timestamp`,'%Y-%m-%d') AS `_day`,
+                                            date_format(`er`.`timestamp`,'%u') AS `_week`,
+                                            date_format(`er`.`timestamp`,'%b') AS `_month`,
+                                            date_format(`er`.`timestamp`,'%Y') AS `_year`
+                                    FROM `jos_emundus_relations` `er`
+                                    GROUP BY  date_format(`er`.`timestamp`,'%Y%m%d')";
+            break;
 
-                    $label = JText::_("jos_emundus_stats_nombre_consult_offre");
-                    break;
+            case 'jos_emundus_stats_nationality':
+                $columnNames = array('schoolyear', 'nb', 'nationality', 'campaign','course');
+                $query =    " SELECT `ecc`.`id` AS `id`,
+                                `esc`.`year` AS `schoolyear`,       
+                                count(distinct `ecc`.`applicant_id`) AS `nb`,
+                                `epd`.`nationality` AS `nationality`,
+                                `esc`.`label` AS `campaign`,
+                                `esc`.`training` AS `course` 
+                                FROM (((`jos_emundus_declaration` `ed` 
+                                JOIN `jos_emundus_campaign_candidature` `ecc` ON((`ed`.`user` = `ecc`.`applicant_id`))) 
+                                LEFT JOIN `jos_emundus_setup_campaigns` `esc` ON((`esc`.`id` = `ecc`.`campaign_id`))) 
+                                LEFT JOIN `jos_emundus_personal_detail` `epd` ON((`ecc`.`applicant_id` = `epd`.`user`))) 
+                                WHERE ((`epd`.`nationality` is not null) 
+                                    AND (`ecc`.`submitted` = 1)) 
+                                GROUP BY `epd`.`nationality`, `ecc`.`id`";
 
-                case 'jos_emundus_stats_nombre_relations_etablies':
-                    $columnNames = array('nombre_rel_etablies', '_date', '_day', '_week', '_month','_year');
-                    $query =   " SELECT uuid() AS `id`,
-                                                count(`er`.`id`) AS `nombre_rel_etablies`,
-                                                date_format(`er`.`timestamp`,'%Y%m%d') AS `_date`,
-                                                date_format(`er`.`timestamp`,'%Y-%m-%d') AS `_day`,
-                                                date_format(`er`.`timestamp`,'%u') AS `_week`,
-                                                date_format(`er`.`timestamp`,'%b') AS `_month`,
-                                                date_format(`er`.`timestamp`,'%Y') AS `_year`
-                                        FROM `jos_emundus_relations` `er`
-                                        GROUP BY  date_format(`er`.`timestamp`,'%Y%m%d')";
-                break;
+                $label = JText::_("jos_emundus_stats_nationality");
+            break;
 
-                case 'jos_emundus_stats_nationality':
-                    $columnNames = array('schoolyear', 'nb', 'nationality', 'campaign','course');
-                    $query =    " SELECT `ecc`.`id` AS `id`,
-                                    `esc`.`year` AS `schoolyear`,       
-                                    count(distinct `ecc`.`applicant_id`) AS `nb`,
-                                    `epd`.`nationality` AS `nationality`,
-                                    `esc`.`label` AS `campaign`,
-                                    `esc`.`training` AS `course` 
-                                    FROM (((`jos_emundus_declaration` `ed` 
-                                    JOIN `jos_emundus_campaign_candidature` `ecc` ON((`ed`.`user` = `ecc`.`applicant_id`))) 
-                                    LEFT JOIN `jos_emundus_setup_campaigns` `esc` ON((`esc`.`id` = `ecc`.`campaign_id`))) 
-                                    LEFT JOIN `jos_emundus_personal_detail` `epd` ON((`ecc`.`applicant_id` = `epd`.`user`))) 
-                                    WHERE ((`epd`.`nationality` is not null) 
-                                        AND (`ecc`.`submitted` = 1)) 
-                                    GROUP BY `epd`.`nationality`, `ecc`.`id`";
+            case 'jos_emundus_stats_gender':
+                $columnNames = array('schoolyear', 'nb', 'gender', 'campaign','course');
+                $query =   " SELECT `ecc`.`id` AS `id`,
+                                        `esc`.`year` AS `schoolyear`,
+                                        count(distinct `ecc`.`applicant_id`) AS `nb`,
+                                        `epd`.`gender` AS `gender`,
+                                        `esc`.`label` AS `campaign`,
+                                        `esc`.`training` AS `course`
+                                FROM (((`jos_emundus_declaration` `ed`
+                                JOIN `jos_emundus_campaign_candidature` `ecc` on((`ed`.`user` = `ecc`.`applicant_id`)))
+                                LEFT JOIN `jos_emundus_setup_campaigns` `esc` on((`esc`.`id` = `ecc`.`campaign_id`)))
+                                LEFT JOIN `jos_emundus_personal_detail` `epd` on((`ecc`.`applicant_id` = `epd`.`user`)))
+                                WHERE ((`epd`.`gender` is NOT null)
+                                    AND (`ecc`.`submitted` = 1))
+                                GROUP BY  `epd`.`gender`";
 
-                    $label = JText::_("jos_emundus_stats_nationality");
-                break;
+                $label = JText::_("jos_emundus_stats_gender");
+            break;
 
-                case 'jos_emundus_stats_gender':
-                    $columnNames = array('schoolyear', 'nb', 'gender', 'campaign','course');
-                    $query =   " SELECT `ecc`.`id` AS `id`,
-                                            `esc`.`year` AS `schoolyear`,
-                                            count(distinct `ecc`.`applicant_id`) AS `nb`,
-                                            `epd`.`gender` AS `gender`,
-                                            `esc`.`label` AS `campaign`,
-                                            `esc`.`training` AS `course`
-                                    FROM (((`jos_emundus_declaration` `ed`
-                                    JOIN `jos_emundus_campaign_candidature` `ecc` on((`ed`.`user` = `ecc`.`applicant_id`)))
-                                    LEFT JOIN `jos_emundus_setup_campaigns` `esc` on((`esc`.`id` = `ecc`.`campaign_id`)))
-                                    LEFT JOIN `jos_emundus_personal_detail` `epd` on((`ecc`.`applicant_id` = `epd`.`user`)))
-                                    WHERE ((`epd`.`gender` is NOT null)
-                                        AND (`ecc`.`submitted` = 1))
-                                    GROUP BY  `epd`.`gender`";
+            case 'jos_emundus_stats_files_graph':
+                $columnNames = array('nb', 'schoolyear', 'campaign', 'course', 'submitted', 'status', 'value', 'campaign_id', 'published');
+                $query =    " SELECT `ecc`.`id` AS `id`,
+                                        count(distinct `ecc`.`fnum`) AS `nb`,
+                                        `esc`.`year` AS `schoolyear`,
+                                        `esc`.`label` AS `campaign`,
+                                        `esc`.`training` AS `course`,
+                                        `ecc`.`submitted` AS `submitted`,
+                                        `ecc`.`status` AS `status`,
+                                        `ess`.`value` AS `value`,
+                                        `ecc`.`campaign_id` AS `campaign_id`,
+                                        `ecc`.`published` AS `published`
+                                FROM (((`jos_emundus_campaign_candidature` `ecc`
+                                LEFT JOIN `jos_emundus_setup_campaigns` `esc` on((`esc`.`id` = `ecc`.`campaign_id`)))
+                                LEFT JOIN `jos_emundus_setup_status` `ess` on((`ess`.`step` = `ecc`.`status`)))
+                                LEFT JOIN `jos_users` `u` on((`u`.`id` = `ecc`.`user_id`)))
+                                GROUP BY  `ecc`.`campaign_id`,`ecc`.`status`, `ecc`.`id`";
 
-                    $label = JText::_("jos_emundus_stats_gender");
-                break;
+                $label = JText::_("jos_emundus_stats_files");
+            break;
+        }
 
-                case 'jos_emundus_stats_files_graph':
-                    $columnNames = array('nb', 'schoolyear', 'campaign', 'course', 'submitted', 'status', 'value', 'campaign_id', 'published');
-                    $query =    " SELECT `ecc`.`id` AS `id`,
-                                            count(distinct `ecc`.`fnum`) AS `nb`,
-                                            `esc`.`year` AS `schoolyear`,
-                                            `esc`.`label` AS `campaign`,
-                                            `esc`.`training` AS `course`,
-                                            `ecc`.`submitted` AS `submitted`,
-                                            `ecc`.`status` AS `status`,
-                                            `ess`.`value` AS `value`,
-                                            `ecc`.`campaign_id` AS `campaign_id`,
-                                            `ecc`.`published` AS `published`
-                                    FROM (((`jos_emundus_campaign_candidature` `ecc`
-                                    LEFT JOIN `jos_emundus_setup_campaigns` `esc` on((`esc`.`id` = `ecc`.`campaign_id`)))
-                                    LEFT JOIN `jos_emundus_setup_status` `ess` on((`ess`.`step` = `ecc`.`status`)))
-                                    LEFT JOIN `jos_users` `u` on((`u`.`id` = `ecc`.`user_id`)))
-                                    GROUP BY  `ecc`.`campaign_id`,`ecc`.`status`, `ecc`.`id`";
-
-                    $label = JText::_("jos_emundus_stats_files");
-                break;
-            }
-            
+        if (!empty($query)) {
             $db->setQuery($query);
             if ($boolean == true) {
                 try {
@@ -205,10 +206,10 @@ class EmundusModelStats extends JModelLegacy {
             } else {
                 try {
                     $db->setQuery($query);
-                    
+
                     if (!empty($db->loadResult()))
                         $query = "CREATE VIEW " . $view . " AS " . $query;
-                    
+
                 } catch(Exception $e) {
                     JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
                     return false;
@@ -216,7 +217,7 @@ class EmundusModelStats extends JModelLegacy {
 
                 $db->setQuery($query);
                 try {
-                            
+
                     $db->execute();
                     // Fuction which creates Entitre fabrik and returns the List id so we can link it after
                     $listId = $this->createFabrik($view, $columnNames,$label);
@@ -225,7 +226,9 @@ class EmundusModelStats extends JModelLegacy {
                     JLog::add('Error getting stats on account types at m/stats in query: '.$query, JLog::ERROR, 'com_emundus');
                     return false;
                 }
-            }   
+            }
+        }
+        return false;
     }
 
 
