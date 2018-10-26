@@ -106,6 +106,37 @@ class EmundusModelProgramme extends JModelList
     }
 
     /**
+     * @param $published  int     get published or unpublished programme
+     * @param $codeList   array   array of IN and NOT IN programme code to get
+     * @return array
+     * get list of declared programmes
+     */
+    public function getProgramme($code) {
+        
+	if (empty($code))
+	    return false;
+	    
+        $db = JFactory::getDbo();	
+
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from ($db->quoteName('#__emundus_setup_programmes'))
+            ->where($db->quoteName('code') . ' LIKE '.$db->quote($code));
+
+        $db->setQuery($query);
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObject();
+        } catch(Exception $e) {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
+    /**
      * @param   array $data the row to add in table.
      *
      * @return boolean

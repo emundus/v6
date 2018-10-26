@@ -63,55 +63,138 @@ if (!empty($s_elements)) {
         text-shadow: none ;
         font-size: 14px;
     }
+
+    .em-element-id, .em-element-title-id {
+        width: 120px;
+        display: inline-block;
+    }
+
+    .em-element-label, .em-element-title-label {
+        width: auto;
+        display: inline-block;
+    }
+
 </style>
 
-	<?php
+	<?php if (count($this->elements) > 0) : ?>
+        <div class="em-program-title">
+            <h1><?php echo $this->program; ?></h1>
+        </div>
+        <div id="emundus_elements">
+        <?php
+            $tbl_tmp='';
+		    $grp_tmp='';
+        ?>
 
-    if (count($this->elements) > 0) {
-
-        echo '<div id="emundus_elements">';
-        $tbl_tmp='';
-		$grp_tmp='';
-
-		foreach ($this->elements as $t) {
-			if ($tbl_tmp == '') {
-				echo '<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
-						<div class="panel-heading"><legend>';
+		<?php foreach ($this->elements as $t) : ?>
+			<?php if ($tbl_tmp == '') : ?>
+                <?php
                 $label = explode("-", $t->table_label);
                 $label = $label[1];
-				echo ' <label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.'</label></legend></div><div class="panel-body">
-					  <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
-						<div class="panel-heading"><legend>';
+                ?>
+				<div class="panel panel-primary excel" id="emundus_table_<?php echo$t->table_id; ?>">
+                    <div class="panel-heading">
+                        <legend>
+                            <label for="emundus_checkall_tbl_<?php echo$t->table_id; ?>"><?php echo JText::_($label); ?></label>
+                        </legend>
+                    </div>
 
-				echo ' <label for="emundus_checkall_grp_'.$t->group_id.'"> '.$t->group_label.'</label></legend></div><div class="panel-body">';
-			} elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
-					echo '</div></div></div></div>
-						<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
-							<div class="panel-heading"><legend>';
-                $label = explode("-", $t->table_label);
-                $label = $label[1];
-					echo ' <label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.'</label></legend></div><div class="panel-body">
-						<div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
-							<div class="panel-heading"><legend>';
+                    <div class="panel-body">
+					  <div class="panel panel-info excel" id="emundus_grp_<?php echo$t->group_id; ?>">
+						<div class="panel-heading">
+                            <legend>
+                                <label for="emundus_checkall_grp_'<?php echo $t->group_id; ?>"><?php echo JText::_($t->group_label); ?></label>
+                            </legend>
+                        </div>
 
-					echo ' <label for="emundus_checkall_grp_'.$t->group_id.'"> '.$t->group_label.'</label></legend></div><div class="panel-body">';
-			} else {
-				if ($t->group_id != $grp_tmp && $grp_tmp != '') {
-						echo '</div></div><div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
-								<div class="panel-heading"><legend>';
+                        <div class="panel-body">
+                            <div class="em-element-title">
+                                <div class="em-element-title-id">
+                                    <p>ID</p>
+                                </div>
+                                <div class="em-element-title-label">
+                                    <p>Label utilisé</p>
+                                </div>
+                            </div>
+            <?php elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') : ?>
+                <?php
+                    $label = explode("-", $t->table_label);
+                    $label = $label[1];
+                ?>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                </div>
+                <div class="panel panel-primary excel" id="emundus_table_<?php echo$t->table_id; ?>">
+                    <div class="panel-heading">
+                        <legend>
+                            <label for="emundus_checkall_tbl_<?php echo $t->table_id; ?>"><?php echo JText::_($label); ?></label>
+                        </legend>
+                    </div>
 
-						echo ' <label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</legend></div><div class="panel-body">';
-				}
-			}
+                    <div class="panel-body">
+						<div class="panel panel-info excel" id="emundus_grp_<?php echo$t->group_id; ?>'">
+							<div class="panel-heading">
+                                <legend>
+                                    <label for="emundus_checkall_grp_<?php echo$t->group_id; ?>"><?php echo JText::_($t->group_label); ?></label>
+                                </legend>
+                            </div>
+                            <div class="panel-body">
+                                <div class="panel-body">
+                                    <div class="em-element-title">
+                                        <div class="em-element-title-id">
+                                            <p></p>
+                                        </div>
+                                        <div class="em-element-title-label">
+                                            <p></p>
+                                        </div>
+                                    </div>
+                                </div>
+			<?php else : ?>
+				<?php if ($t->group_id != $grp_tmp && $grp_tmp != '') : ?>
+						    </div>
+                        </div>
 
-			echo ' <label class="label-element" for="emundus_elm_'.$t->id.'">${'.$t->id.'} '.$t->element_label.'</label><br> ';
+                        <div class="panel panel-info excel" id="emundus_grp_<?php echo$t->group_id; ?>">
+                            <div class="panel-heading">
+                                <legend>
+                                    <label for="emundus_checkall_grp_<?php echo$t->group_id; ?>"><?php echo JText::_($t->group_label); ?></label>
+                                </legend>
+                            </div>
+                            <div class="panel-body">
+                                <div class="panel-body">
+                                    <div class="em-element-title">
+                                        <div class="em-element-title-id">
+                                            <p></p>
+                                        </div>
+                                        <div class="em-element-title-label">
+                                            <p></p>
+                                        </div>
+                                    </div>
+				<?php endif; ?>
+			<?php endif; ?>
+                            <div class="em-element">
+                                <div class="em-element-id">
+                                    <?php echo '${'.$t->id.'}'; ?>
+                                </div>
+                                <div class="em-element-label">
+                                    <?php echo JText::_($t->element_label); ?>
+                                </div>
+                            </div>
+                            <br>
 
-			$tbl_tmp=$t->table_id;
-			$grp_tmp=$t->group_id;
-		}
-		echo '</div></div></div></div>';
-		echo '</div>';
-    } else {
-        echo JText::_('NO_FORM_DEFINED');
-    }
-?>
+            <?php
+                $tbl_tmp=$t->table_id;
+                $grp_tmp=$t->group_id;
+            ?>
+		<?php endforeach; ?>
+		                    </div>
+                        </div>
+                    </div>
+                </div>
+		    </div>
+     <?php else: ?>
+        <?php echo JText::_('NO_FORM_DEFINED'); ?>
+    <?php endif; ?>
+
