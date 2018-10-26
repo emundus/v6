@@ -1048,6 +1048,18 @@ class EmundusHelperFiles
                                     return true;
                                 }
                         });
+                    </script>
+                    <button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button><br><br>
+					<script>
+                        $("#showhide").click(function() {
+                            if ($("#showhide i").hasClass("icon-chevron-up")) {
+                                $(".em_filters_filedset").toggle(400);
+                                $("#showhide").html('."'".'<i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS')."'".');
+                            } else {
+                                  $(".em_filters_filedset").toggle(400);
+                                  $("#showhide").html('."'".'<i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS')."'".');
+                            }
+                        });   
                     </script>';
 
         $filters .= '<fieldset class="em_filters_filedset">';
@@ -1745,20 +1757,6 @@ class EmundusHelperFiles
        
         // Buttons
         $filters .=' </fieldset>';
-        $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br><br>';
-
-        $filters .= '<script>
-                            $("#showhide").click(function() {
-                                if ($("#showhide i").hasClass("icon-chevron-up")) {
-                                    $(".em_filters_filedset").toggle(400);
-                                    $("#showhide").html('."'".'<i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS')."'".');
-                                } else {
-                                      $(".em_filters_filedset").toggle(400);
-                                      $("#showhide").html('."'".'<i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS')."'".');
-                                }
-                            });   
-                    </script>';
-
 
         // User filter
         $research_filters = $h_files->getEmundusFilters();
