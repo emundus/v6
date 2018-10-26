@@ -1745,7 +1745,7 @@ class EmundusHelperFiles
        
         // Buttons
         $filters .=' </fieldset>';
-        $filters .= '<br><button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button> <br><br>';
+        $filters .= '<button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button><br><br>';
 
         $filters .= '<script>
                             $("#showhide").click(function() {
