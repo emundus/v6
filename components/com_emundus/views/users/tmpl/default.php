@@ -7,6 +7,7 @@
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
+JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 
 
 //var_dump($this->users);
@@ -21,9 +22,9 @@ JHTML::_('behavior.tooltip');
 				<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 			</div>
 			<div class="buttons" style="float:right; margin-top:0px">
-				<input value="&#xe003" type="button" class="btn btn-sm btn-info glyphicon glyphicon-search" name="search" id="search"  title="<?php echo JText::_('SEARCH_BTN');?>"/>&ensp;
-				<input value="&#xe090" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-ban-circle" name="clear-search" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>&ensp;
-				<button class="btn btn-sm btn-warning" id="save-filter" style="width:50px;" title="<?php echo JText::_('SAVE_FILTER');?>"><i class="ui save icon"></i></button><br/><br/>
+                <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('SEARCH_BTN');?>"/>&ensp;
+                <input value="&#xf05e" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
+                <input value="&#xf0c7" type="button" class="btn btn-sm btn-warning" id="save-filter" style="font-family: 'Font Awesome 5 Free';" title="<?php echo JText::_('SAVE_FILTER');?>"/>
 			</div>
 		</div>
 		<div class="panel-body">
