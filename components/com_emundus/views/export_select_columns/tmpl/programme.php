@@ -64,12 +64,12 @@ if (!empty($s_elements)) {
         font-size: 14px;
     }
 
-    .em-element-id {
+    .em-element-id, .em-element-title-id {
         width: 120px;
         display: inline-block;
     }
 
-    .em-element-label {
+    .em-element-label, .em-element-title-label {
         width: auto;
         display: inline-block;
     }
@@ -77,7 +77,9 @@ if (!empty($s_elements)) {
 </style>
 
 	<?php if (count($this->elements) > 0) : ?>
-
+        <div class="em-program-title">
+            <h1><?php echo $this->program; ?></h1>
+        </div>
         <div id="emundus_elements">
         <?php
             $tbl_tmp='';
@@ -90,22 +92,30 @@ if (!empty($s_elements)) {
                 $label = explode("-", $t->table_label);
                 $label = $label[1];
                 ?>
-				<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
+				<div class="panel panel-primary excel" id="emundus_table_<?php echo$t->table_id; ?>">
                     <div class="panel-heading">
                         <legend>
-                            <label for="emundus_checkall_tbl_'.$t->table_id.'"><?php echo JText::_($label); ?></label>
+                            <label for="emundus_checkall_tbl_<?php echo$t->table_id; ?>"><?php echo JText::_($label); ?></label>
                         </legend>
                     </div>
 
                     <div class="panel-body">
-					  <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+					  <div class="panel panel-info excel" id="emundus_grp_<?php echo$t->group_id; ?>">
 						<div class="panel-heading">
                             <legend>
-                                <label for="emundus_checkall_grp_'.$t->group_id.'"><?php echo JText::_($t->group_label); ?></label>
+                                <label for="emundus_checkall_grp_'<?php echo $t->group_id; ?>"><?php echo JText::_($t->group_label); ?></label>
                             </legend>
                         </div>
 
                         <div class="panel-body">
+                            <div class="em-element-title">
+                                <div class="em-element-title-id">
+                                    <p>ID</p>
+                                </div>
+                                <div class="em-element-title-label">
+                                    <p>Label utilisé</p>
+                                </div>
+                            </div>
             <?php elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') : ?>
                 <?php
                     $label = explode("-", $t->table_label);
@@ -115,33 +125,53 @@ if (!empty($s_elements)) {
                       </div>
                     </div>
                 </div>
-                <div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
+                </div>
+                <div class="panel panel-primary excel" id="emundus_table_<?php echo$t->table_id; ?>">
                     <div class="panel-heading">
                         <legend>
-                            <label for="emundus_checkall_tbl_'.$t->table_id.'"><?php echo JText::_($label); ?></label>
+                            <label for="emundus_checkall_tbl_<?php echo $t->table_id; ?>"><?php echo JText::_($label); ?></label>
                         </legend>
                     </div>
 
                     <div class="panel-body">
-						<div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+						<div class="panel panel-info excel" id="emundus_grp_<?php echo$t->group_id; ?>'">
 							<div class="panel-heading">
                                 <legend>
-                                    <label for="emundus_checkall_grp_'.$t->group_id.'"><?php echo JText::_($t->group_label); ?></label>
+                                    <label for="emundus_checkall_grp_<?php echo$t->group_id; ?>"><?php echo JText::_($t->group_label); ?></label>
                                 </legend>
                             </div>
                             <div class="panel-body">
+                                <div class="panel-body">
+                                    <div class="em-element-title">
+                                        <div class="em-element-title-id">
+                                            <p></p>
+                                        </div>
+                                        <div class="em-element-title-label">
+                                            <p></p>
+                                        </div>
+                                    </div>
+                                </div>
 			<?php else : ?>
 				<?php if ($t->group_id != $grp_tmp && $grp_tmp != '') : ?>
 						    </div>
                         </div>
 
-                        <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+                        <div class="panel panel-info excel" id="emundus_grp_<?php echo$t->group_id; ?>">
                             <div class="panel-heading">
-                                <legend>';
-                                    <label for="emundus_checkall_grp_'.$t->group_id.'"><?php echo JText::_($t->group_label); ?></label>
+                                <legend>
+                                    <label for="emundus_checkall_grp_<?php echo$t->group_id; ?>"><?php echo JText::_($t->group_label); ?></label>
                                 </legend>
                             </div>
                             <div class="panel-body">
+                                <div class="panel-body">
+                                    <div class="em-element-title">
+                                        <div class="em-element-title-id">
+                                            <p></p>
+                                        </div>
+                                        <div class="em-element-title-label">
+                                            <p></p>
+                                        </div>
+                                    </div>
 				<?php endif; ?>
 			<?php endif; ?>
                             <div class="em-element">

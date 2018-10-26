@@ -28,6 +28,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	function __construct($config = array()){
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'programme.php');
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -36,9 +37,10 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	}
 
     function display($tpl = null) {
-
+        $m_program  = new EmundusModelProgramme();
         require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+
 
         $jinput = JFactory::getApplication()->input;
         $prg    = $jinput->getVar('code', null);
@@ -47,7 +49,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
         
         $camp   = $jinput->getVar('camp', null);
 
-
+        $program    = $m_program->getProgramme($prg);
         $code       = array();
         $camps       = array();
         $code[]     = $prg;
@@ -84,6 +86,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
         
         $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
+        $this->assignRef('program', $program->label);
 		parent::display($tpl);
     }
 }
