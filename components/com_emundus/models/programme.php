@@ -112,7 +112,11 @@ class EmundusModelProgramme extends JModelList
      * get list of declared programmes
      */
     public function getProgramme($code) {
-        $db = JFactory::getDbo();
+        
+	if (empty($code))
+	    return false;
+	    
+        $db = JFactory::getDbo();	
 
         $query = $db->getQuery(true);
 
@@ -128,7 +132,7 @@ class EmundusModelProgramme extends JModelList
             return $db->loadObject();
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
-            return array();
+            return false;
         }
     }
 
