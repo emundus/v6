@@ -122,14 +122,14 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-        if(EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
         } else die(JText::_('ACCESS_DENIED'));
 
         exit();
     }
 
-    function pdf_thesis(){
+    function pdf_thesis() {
         $user = JFactory::getSession()->get('emundusUser');
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
         $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
@@ -147,14 +147,14 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-        if(EmundusHelperAccess::asPartnerAccessLevel($user->id) || EmundusHelperAccess::isApplicant($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id) || EmundusHelperAccess::isApplicant($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
         } else die(JText::_('ACCESS_DENIED'));
 
         exit();
     }
 
-    function export_pdf(){
+    function export_pdf() {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
@@ -224,7 +224,6 @@ class EmundusController extends JControllerLegacy {
         echo json_encode($res);
         exit();
     }
-
 
 
     /*
@@ -383,8 +382,7 @@ class EmundusController extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $m_profile = new EmundusModelProfile;
-	    $app = JFactory::getApplication();
-        $jinput = $app->input;
+        $jinput = JFactory::getApplication()->input;
 
         $student_id    = $jinput->get->get('sid');
         $upload_id     = $jinput->get->get('uid');
@@ -393,7 +391,7 @@ class EmundusController extends JControllerLegacy {
         $nb            = $jinput->get->get('nb');
         $layout        = $jinput->get->get('layout');
         $format        = $jinput->get->get('format');
-        $itemid        = $jinput->get->get('Itemid', $app->getMenu()->getActive()->id);
+        $itemid        = $jinput->get('Itemid');
         $fnum          = $jinput->get->get('fnum');
         $current_user  = JFactory::getSession()->get('emundusUser');
         $chemin = EMUNDUS_PATH_ABS;
@@ -561,7 +559,6 @@ class EmundusController extends JControllerLegacy {
     }
 
      // *****************switch profile controller************
-
      function switchprofile() {
         include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
@@ -572,10 +569,9 @@ class EmundusController extends JControllerLegacy {
         $ids = explode('.', $profile_fnum);
         $profile = $ids[0];
 
-
-        $current_user 	= JFactory::getUser();
-        $session    = JFactory::getSession();
-        $aid        = $session->get('emundusUser');
+        $current_user = JFactory::getUser();
+        $session = JFactory::getSession();
+        $aid = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;
 
@@ -592,9 +588,9 @@ class EmundusController extends JControllerLegacy {
                         $campaign       = $m_profile->getCampaignById($infos['campaign_id']);
                         $application    = $m_profile->getFnumDetails($fnum);
 
-                        if ($aid->id != $infos['applicant_id']) return;
-                        //unset($aid->id);
-                        //$aid->groups[$profile["acl_aro_groups"]]  = $profile["acl_aro_groups"];
+                        if ($aid->id != $infos['applicant_id'])
+                        	return;
+
                         $aid->profile       = $profile['profile_id'];
                         $aid->profile_label = $profile['label'];
                         $aid->menutype      = $profile['menutype'];
@@ -648,15 +644,8 @@ class EmundusController extends JControllerLegacy {
 
                     $aid->profile_label = $profiles["label"];
                     $aid->menutype = $profiles["menutype"];
-                    //$aid->university_id          = $profile["university_id"];
-                    // unset($aid->id);
-                    //S $aid->groups[$profile["acl_aro_groups"]]  = $profile["acl_aro_groups"];
                     $aid->applicant = 0;
-
-
                 }
-                //$m_users = new EmundusModelUsers;
-                //$m_users->changeCurrentUserProfile($current_user->id, $emProfile->id);
             }
         }
         $session->set('emundusUser', $aid);
@@ -703,11 +692,11 @@ class EmundusController extends JControllerLegacy {
             return false;
         }
 
-        $chemin         = EMUNDUS_PATH_ABS;
-        $post           = JRequest::get('post');
-        $attachments    = $post['attachment'];
-        $descriptions   = $post['description'];
-        $labels         = $post['label'];
+        $chemin = EMUNDUS_PATH_ABS;
+        $post = JRequest::get('post');
+        $attachments = $post['attachment'];
+        $descriptions = $post['description'];
+        $labels = $post['label'];
 
         if (!empty($_FILES)) {
             $files = array($_FILES["file"]);
