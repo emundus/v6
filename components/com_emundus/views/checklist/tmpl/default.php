@@ -331,7 +331,7 @@ function OnSubmitForm() {
     }
     switch(document.pressed) {
         case 'sendAttachment':
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&duplicate=<?php echo $duplicate; ?>&Itemid=<?php echo $itemid; ?>";
+            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>";
         break;
         default: return false;
     }
@@ -341,7 +341,7 @@ function OnSubmitForm() {
 var hash = window.location.hash;
 if (hash != '') {
     $( hash ).addClass( "ui warning message" );
-};
+}
 
 function processSelectedFiles(fileInput) {
     var files = fileInput.files;
