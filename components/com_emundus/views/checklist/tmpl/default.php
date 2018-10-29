@@ -57,6 +57,7 @@ if ($this->show_info_panel) :
         </div>
     <?php endif; ?>
         <?php
+        $file_upload = 1;
         $attachment_list_mand = "";
         $attachment_list_opt = "";
         foreach($this->attachments as $attachment) {
@@ -111,7 +112,7 @@ if ($this->show_info_panel) :
                     $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span >'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div></div>';
                 }
                 if ($this->show_browse_button) {
-                    $div .= '<div class="row"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input type="file" name="file"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
+                    $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
                 }
                     $div .= '<input type="hidden" class="form-control" readonly="">';
                 if ($this->show_browse_button) {
@@ -214,6 +215,9 @@ Dropzone.options.formA'.$attachment->id.' =  {
 
     }
 };
+
+
+
 </script>';
                 $div .= '</form>';
                 //$div .= '</div>';
@@ -238,6 +242,8 @@ Dropzone.options.formA'.$attachment->id.' =  {
                 $attachment_list_mand .= $div;
             else
                 $attachment_list_opt .= $div;
+
+            $file_upload++;
         }
     ?>
 
@@ -289,8 +295,7 @@ $(document).ready( function() {
     });
 });
 
-$(document).on('click', '.em_form .document', function(f)
-{
+$(document).on('click', '.em_form .document', function(f) {
     var id = $(this).attr('id');
     $("fieldset").removeClass( "hover" );
     $("#a"+id).addClass( "hover" );
@@ -337,5 +342,21 @@ var hash = window.location.hash;
 if (hash != '') {
     $( hash ).addClass( "ui warning message" );
 };
+
+function processSelectedFiles(fileInput) {
+    var files = fileInput.files;
+    for (var i = 0; i < files.length; i++) {
+        var row = fileInput.parentNode.parentNode.parentNode.id;
+        var rowId = document.getElementById(row);
+
+        var fileParagraphe = document.createElement("p");
+        fileParagraphe.className = "em-added-file";
+        fileParagraphe.innerHTML = files[i].name;
+
+        rowId.after(fileParagraphe);
+    }
+
+
+}
 
 </script>
