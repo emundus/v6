@@ -15,7 +15,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 <div class="container-fluid">
 <div class="row">
-<div class="col-md-3">
+<div class="col-md-3 side-panel">
 	<div class="panel panel-info" id="em-user-filters">
 		<div class="panel-heading" style="height:55px">
 			<div style="float:left; position:absolute">
@@ -65,7 +65,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 	</div>
 </div>
 
-<div class="col-md-9 ">
+<div class="col-md-9 main-panel">
 	<div  id="em-hide-filters">
 		<span class="glyphicon glyphicon-chevron-left"></span>
 	</div>
@@ -142,10 +142,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 
 <script type="text/javascript">
-/*	<?php echo @$this->addElement; ?>
-	<?php echo @$this->submitForm; ?>
-	<?php echo @$this->delayAct; ?>
-	*/
+
 	var itemId = "<?php echo $this->itemId;?>";
 	var filterName = "<?php echo JText::_('FILTER_NAME');?>";
 	var filterEmpty = "<?php echo JText::_('ALERT_EMPTY_FILTER');?>";
@@ -155,20 +152,18 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 	                  "<?php echo JText::_('COMMENT_SENT')?>"];
 	var loading = "<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>";
 	var loadingLine = "<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>";
-	$(document).ready(function()
-	                  {
-						  
-                          $('#rt-mainbody-surround').children().addClass('mainemundus');
-                          $('#rt-main').children().addClass('mainemundus');
-                          $('#rt-main').children().children().addClass('mainemundus');
+	$(document).ready(function() {
+          $('#rt-mainbody-surround').children().addClass('mainemundus');
+          $('#rt-main').children().addClass('mainemundus');
+          $('#rt-main').children().children().addClass('mainemundus');
 
-                          $('.chzn-select').chosen({width:'75%'});
-		                  $('body').on('hidden.bs.modal', '.modal', function () {
-			                  var itemid = getCookie("application_itemid");
-			                  $('#em-appli-menu .list-group-item#'+itemid).trigger('click');
-			                  $(this).removeData('bs.modal');
-			                  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button></div>');
-		                  });
-	                  })
+          $('.chzn-select').chosen({width:'75%'});
+          $('body').on('hidden.bs.modal', '.modal', function() {
+              var itemid = getCookie("application_itemid");
+              $('#em-appli-menu .list-group-item#'+itemid).trigger('click');
+              $(this).removeData('bs.modal');
+              $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button></div>');
+          });
+      });
 	reloadActions('files');
 </script>
