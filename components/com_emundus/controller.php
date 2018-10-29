@@ -383,21 +383,23 @@ class EmundusController extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $m_profile = new EmundusModelProfile;
+	    $app = JFactory::getApplication();
+        $jinput = $app->input;
 
-        $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $upload_id     = JRequest::getVar('uid', null, 'GET', 'none',0);
-        $attachment_id = JRequest::getVar('aid', null, 'GET', 'none',0);
-        $duplicate     = JRequest::getVar('duplicate', null, 'GET', 'none',0);
-        $nb            = JRequest::getVar('nb', null, 'GET', 'none',0);
-        $layout        = JRequest::getVar('layout', null, 'GET', 'none',0);
-        $format        = JRequest::getVar('format', null, 'GET', 'none',0);
-        $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $student_id    = $jinput->get->get('sid');
+        $upload_id     = $jinput->get->get('uid');
+        $attachment_id = $jinput->get->get('aid');
+        $duplicate     = $jinput->get->get('duplicate');
+        $nb            = $jinput->get->get('nb');
+        $layout        = $jinput->get->get('layout');
+        $format        = $jinput->get->get('format');
+        $itemid        = $jinput->get->get('Itemid', $app->getMenu()->getActive()->id);
+        $fnum          = $jinput->get->get('fnum');
         $current_user  = JFactory::getSession()->get('emundusUser');
         $chemin = EMUNDUS_PATH_ABS;
-        $db     = JFactory::getDBO();
+        $db = JFactory::getDBO();
 
-        if (EmundusHelperAccess::isApplicant($current_user->id)){
+        if (EmundusHelperAccess::isApplicant($current_user->id)) {
             $user = $current_user;
             $fnum = $user->fnum;
             if ($duplicate == 1 && $nb <= 1 && $copy_application_form == 1) {
@@ -408,8 +410,7 @@ class EmundusController extends JControllerLegacy {
                 $where = ' AND user_id='.$user->id.' AND id='.$upload_id;
             }
 
-        } elseif(EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) ||
-                 EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+        } elseif (EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
             $fnums = $db->Quote($fnum);
         } else {
@@ -429,7 +430,8 @@ class EmundusController extends JControllerLegacy {
                     AND fnum IN ('.$fnums.') '.$where;
 
         try {
-            $db->setQuery( $query );
+
+            $db->setQuery($query);
             $files = $db->loadAssocList();
 
             if (count($files) == 0) {
@@ -440,6 +442,7 @@ class EmundusController extends JControllerLegacy {
                 } else $this->setRedirect($url, $message, 'error');
 
             } else {
+
                 try {
 
                     $file_id = array();
