@@ -345,18 +345,23 @@ if (hash != '') {
 
 function processSelectedFiles(fileInput) {
     var files = fileInput.files;
-    for (var i = 0; i < files.length; i++) {
-        var row = fileInput.parentNode.parentNode.parentNode.id;
-        var rowId = document.getElementById(row);
-
+    var row = fileInput.parentNode.parentNode.parentNode.id;
+    var rowId = document.getElementById(row);
+    if($(rowId).find('.em-added-file').length > 0) {
+        if (files.length > 0)
+            $(rowId).find('.em-added-file')[0].innerHTML = files[0].name;
+        else
+            $(rowId).find('.em-added-file')[0].innerHTML = "";
+    } else {
         var fileParagraphe = document.createElement("p");
         fileParagraphe.className = "em-added-file";
-        fileParagraphe.innerHTML = files[i].name;
+        if (files.length > 0)
+            fileParagraphe.innerHTML = files[0].name;
+        else
+            fileParagraphe.innerHTML = "";
 
-        rowId.after(fileParagraphe);
+        rowId.append(fileParagraphe);
     }
-
-
 }
 
 </script>
