@@ -253,7 +253,7 @@ if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($c
 		<div>
 			<button type="submit" class="validate"><?php echo JText::_('JREGISTER');?></button>
 			<?php echo JText::_('COM_USERS_OR');?>
-			<a href="<?php echo JRoute::_('index.php');?>" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
+			<a href="/" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
 			<input type="hidden" name="option" value="com_users" />
 			<input type="hidden" name="course" value="<?php echo $course; ?>" />
 			<input type="hidden" name="cid" value="<?php echo $cid; ?>" />
