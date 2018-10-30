@@ -350,7 +350,12 @@ else
                 field[0].value = form_values[field[0].id];
             if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
                 field[0].setStyles({backgroundColor: '#F7F2B2'});
-
+	    field[0].onblur = function() {
+		if ("<?php echo $browser; ?>" != "IE")
+		    this.setStyles({backgroundColor: '#fff'});
+	    $("jform_name").value = firstname.value + ' ' + lastname.value;
+	    $("jform_email1").value = $("jform_username").value;
+			}
             if ("<?php echo $browser; ?>" != "IE") {
                 field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
                 field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
@@ -384,7 +389,7 @@ else
 
 
     }
-    //check_field();
+    check_field();
 
 
 </script>
