@@ -216,6 +216,7 @@ if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($c
                     <?php continue; ?>
                 <?php else: ?>
 				<?php if ($field->hidden):?>
+                    <?php echo $field->input;?>
 				<?php else:?>
 					<?php if ($field->type == 'Checkbox'):?>
 
@@ -349,12 +350,7 @@ else
                 field[0].value = form_values[field[0].id];
             if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
                 field[0].setStyles({backgroundColor: '#F7F2B2'});
-            field[0].onblur = function() {
-                if ("<?php echo $browser; ?>" != "IE")
-                    this.setStyles({backgroundColor: '#fff'});
-                $("jform_name").value = firstname.value + ' ' + lastname.value;
-                $("jform_email1").value = $("jform_username").value;
-            }
+
             if ("<?php echo $browser; ?>" != "IE") {
                 field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
                 field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
@@ -372,11 +368,11 @@ else
 
         email1 = document.getElementById("jform_email1");
         email1.onchange = function() {
+
             if (!validateEmail(this.value))
                 $('em_msg_jform[email1]').innerHTML = "<?php echo JText::_('COM_USERS_INVALID_EMAIL');?>";
             else
                 $('em_msg_jform[email1]').innerHTML = "";
-
             username.value = this.value;
         };
 
@@ -388,7 +384,7 @@ else
 
 
     }
-    check_field();
+    //check_field();
 
 
 </script>
