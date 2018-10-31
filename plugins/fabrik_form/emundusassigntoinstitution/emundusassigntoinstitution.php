@@ -90,13 +90,13 @@ class PlgFabrik_FormEmundusAssignToInstitution extends plgFabrik_Form {
 		$institution_ids = [];
 		$institution = $this->getParam('institution_1');
 		if (!empty($institution))
-			$institution_ids[] = (!empty($jinput->post->get($institution.'_raw'))) ? $jinput->post->get($institution.'_raw') : $jinput->post->get($institution);
+			$institution_ids[] = (!empty($jinput->post->get($institution.'_raw'))) ? $jinput->post->get($institution.'_raw') : (is_array($jinput->post->get($institution))) ? $jinput->post->get($institution)[0]: $jinput->post->get($institution);
 		$institution = $this->getParam('institution_2');
 		if (!empty($institution))
-			$institution_ids[] = (!empty($jinput->post->get($institution.'_raw'))) ? $jinput->post->get($institution.'_raw') : $jinput->post->get($institution);
+			$institution_ids[] = (!empty($jinput->post->get($institution.'_raw'))) ? $jinput->post->get($institution.'_raw') : (is_array($jinput->post->get($institution))) ? $jinput->post->get($institution)[0]: $jinput->post->get($institution);
 		$institution = $this->getParam('institution_3');
 		if (!empty($institution))
-			$institution_ids[] = (!empty($jinput->post->get($institution.'_raw'))) ? $jinput->post->get($institution.'_raw') : $jinput->post->get($institution);
+			$institution_ids[] = (!empty($jinput->post->get($institution.'_raw'))) ? $jinput->post->get($institution.'_raw') : (is_array($jinput->post->get($institution))) ? $jinput->post->get($institution)[0]: $jinput->post->get($institution);
 		unset($institution);
 
 		if (empty($institution_ids))
