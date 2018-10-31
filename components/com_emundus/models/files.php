@@ -3,7 +3,7 @@
  * @package         Joomla
  * @subpackage      eMundus
  * @link            http://www.emundus.fr
- * @copyright       Copyright (C) 2015 eMundus. All rights reserved.
+ * @copyright       Copyright (C) 2018 eMundus. All rights reserved.
  * @license         GNU/GPL
  * @author          Benjamin Rivalland
  */
@@ -911,11 +911,11 @@ class EmundusModelFiles extends JModelLegacy
             if($val[0] == "USERNAME"){
                  //the request is an username
                
-				$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-				if (!in_array('jos_users', $tableAlias))
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-				$q['users'] = true;
-			
+                $q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                if (!in_array('jos_users', $tableAlias))
+                    $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                $q['users'] = true;
+            
             }
             if($val[0] == "LAST_NAME"){
                 //the request is an lastname
@@ -1047,10 +1047,10 @@ class EmundusModelFiles extends JModelLegacy
                 }else{
                     $q['q'][]= ' and ( u.username LIKE "%' . ($val[1]) . '%" ) ';
                 }
-				//$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-				if (!in_array('jos_users', $tableAlias))
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-				$q['users'] = true;
+                //$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                if (!in_array('jos_users', $tableAlias))
+                    $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                $q['users'] = true;
                
                 $username = $username + 1;
             }
@@ -1767,11 +1767,11 @@ if (JFactory::getUser()->id == 63)
             if (!empty($fnums) && !empty($tags)) {
                 foreach ($fnums as $fnum) {
 
-                	// Log the tag in the eMundus logging system.
-	                EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
+                    // Log the tag in the eMundus logging system.
+                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
 
-	                foreach ($tags as $tag) {
-	                    $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                    foreach ($tags as $tag) {
+                        $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
                     }
                 }
             }
@@ -1867,8 +1867,8 @@ if (JFactory::getUser()->id == 63)
         try {
             $db = $this->getDbo();
             foreach ($fnums as $fnum) {
-	            // Log the update.
-	            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
+                // Log the update.
+                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
                 $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
                 $db->setQuery($query);
                 $res = $db->execute();
@@ -2171,7 +2171,7 @@ where 1 order by ga.fnum asc, g.title';
         $leftJoin = '';
         $leftJoinMulti = '';
         $tableAlias = [
-        	'jos_emundus_setup_campaigns' => 'esc',
+            'jos_emundus_setup_campaigns' => 'esc',
             'jos_emundus_campaign_candidature' => 'c',
             'jos_emundus_setup_programmes' => 'sp',
             'jos_users' => 'u',
@@ -2282,12 +2282,17 @@ where 1 order by ga.fnum asc, g.title';
 
         $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
 
+        $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
+        if (!$hasAccessEval) {
+            $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
+        }
+
         if ($pas !=0 )
             $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
 
 /*echo str_replace("#_", "jos", $query);
 die();*/
-		try {
+        try {
             $db->setQuery($query);
             return $db->loadAssocList();
         } catch (Exception $e) {
@@ -3073,55 +3078,6 @@ die();*/
         }
     }
 
-    /**
-     * @param $fnum
-     * @return bool|mixed
-     */
-    // HESAM COMPLETE FILE
-    public function completeFile($fnum)
-    {
-        try
-        {
-            $db = JFactory::getDbo();
-
-            $query = 'UPDATE #__emundus_campaign_candidature SET status= 2
-                        WHERE fnum like '.$db->Quote($fnum);
-
-            $db->setQuery($query);
-            return $db->query() ;
-        }
-        catch(Exception $e)
-        {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
-    /**
-     * @param $fnum
-     * @return bool|mixed
-     */
-    // HESAM PUBLISH FILE
-    public function publishFile($fnum)
-    {
-        try
-        {
-            $db = JFactory::getDbo();
-
-            $query = 'UPDATE #__emundus_campaign_candidature SET status= 1
-                        WHERE fnum like '.$db->Quote($fnum);
-
-            $db->setQuery($query);
-            return $db->query() ;
-        }
-        catch(Exception $e)
-        {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
 
     /*
      * CCIRS functions
