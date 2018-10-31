@@ -23,6 +23,9 @@ $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
 
+if(empty($this->data['jos_emundus_setup_teaching_unity___id']))
+    JFactory::getApplication()->redirect("/rechercher");
+
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 $m_files = new EmundusModelFiles();
