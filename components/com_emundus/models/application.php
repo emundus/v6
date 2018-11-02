@@ -907,6 +907,7 @@ class EmundusModelApplication extends JModelList
 
                         if ($itemg->group_id == 14) {
                             $forms .='<table>';
+                            $modulo = 0;
                             foreach($elements as &$element) {
                                 if (!empty($element->label) && $element->label != ' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
@@ -937,7 +938,11 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                    if($modulo%2)
+                                        $forms .= '<tr class="table-strip-1"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                    else
+                                        $forms .= '<tr class="table-strip-2"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                    $modulo++;
                                 }
                             }
                             $forms .='</table>';
@@ -1085,6 +1090,7 @@ class EmundusModelApplication extends JModelList
                             // AFFICHAGE EN LIGNE
                         } else {
                             $forms .='<table>';
+                            $modulo = 0;
                             foreach($elements as &$element) {
                                 if(!empty($element->label) && $element->label!=' ') {
                                     $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -1160,8 +1166,13 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-                                    
-                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+
+                                    // modulo for strips css //
+                                    if($modulo%2)
+                                        $forms .= '<tr class="table-strip-1"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                    else
+                                        $forms .= '<tr class="table-strip-2"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                    $modulo++;
                                     unset($params);
                                 }
                             }
