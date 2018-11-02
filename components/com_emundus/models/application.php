@@ -937,7 +937,7 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td>: '.JText::_($elt).'</td></tr>';
+                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
                                 }
                             }
                             $forms .='</table>';
@@ -1161,7 +1161,7 @@ class EmundusModelApplication extends JModelList
                                     else
                                         $elt = $element->content;
                                     
-                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td>: '.JText::_($elt).'</td></tr>';
+                                    $forms .= '<tr><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
                                     unset($params);
                                 }
                             }
