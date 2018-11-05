@@ -131,7 +131,6 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
                     {
                         if (result.status && result.fnumInfos != null)
                         {
-                            console.log(result);
                             var fnumInfos = result.fnumInfos;
                             fnum.name = fnumInfos.name;
                             fnum.label = fnumInfos.label;

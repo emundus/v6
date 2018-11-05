@@ -6,19 +6,21 @@ JFactory::getSession()->set('application_layout', 'assoc_files');
 		<div class = "panel-heading">
 			<div class = "panel-title">
 				<a data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse">
-					<h6><span class="label label-<?php echo $camp->class?>"> <?php echo $camp->step_value?></span> <em><?php echo $camp->year?></em> - <strong><?php echo $camp->label?></strong>
-						<div class="pull-right btn-group">
-						<?php if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $camp->fnum)): ?>
-							<button id="em-delete-files" class = "btn btn-danger btn-xs pull-right" title="<?php echo JText::_('DELETE_APPLICATION_FILE')?>">
-								<span class="glyphicon glyphicon-trash"></span>
-							</button>
-						<?php endif; ?>
-						<?php if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $camp->fnum)): ?>
-							<button id="em-see-files" class = "btn btn-info btn-xs pull-right" title="<?php echo JText::_('OPEN_APPLICATION_FILE')?>">
-								<span class="glyphicon glyphicon-eye-open"></span>
-							</button>
-						<?php endif; ?>
-						</div>
+                    <span class="label label-<?php echo $camp->class?>"> <?php echo $camp->step_value?></span>
+                    <div class="pull-right btn-group">
+                        <?php if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $camp->fnum)): ?>
+                            <button id="em-delete-files" class = "btn btn-danger btn-xs pull-right" title="<?php echo JText::_('DELETE_APPLICATION_FILE')?>">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        <?php endif; ?>
+                        <?php if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $camp->fnum)): ?>
+                            <button id="em-see-files" class = "btn btn-info btn-xs pull-right" title="<?php echo JText::_('OPEN_APPLICATION_FILE')?>">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+					<h6>
+                        <em><?php echo $camp->year?></em> - <strong><?php echo $camp->label?></strong>
 					</h6>
 
 					<div class="clearfix"></div>

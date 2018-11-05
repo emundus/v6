@@ -183,7 +183,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                     data:({fnum: fnum.fnum}),
                     success: function(result) {
                         if (result.status && result.fnumInfos != null) {
-                            console.log(result);
                             var fnumInfos = result.fnumInfos;
                             fnum.name = fnumInfos.name;
                             fnum.label = fnumInfos.label;
