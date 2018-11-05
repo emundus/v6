@@ -184,11 +184,6 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 					var li = ' <li class="list-group-item" id="'+result.id+'">'+
 						'<div class="row">'+
 							'<div class="col-xs-10 col-md-11">'+
-                            '<div class="action" style="float: right;">'+
-                                '<button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">'+
-                                    '<span class="glyphicon glyphicon-trash"></span>'+
-                                '</button>'+
-                            '</div>'+
 								'<div>'+
 									'<a href="#" class="comment-name">'+escapeHtml(title)+'</a>'+
                                     '<input style="display: none;" name="cname" type="text" value="'+escapeHtml(title)+'">'+
@@ -204,6 +199,11 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                             '<span class="glyphicon glyphicon-edit"></span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
+                                        '<div class="action">'+
+                                            '<button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">'+
+                                                '<span class="glyphicon glyphicon-trash"></span>'+
+                                            '</button>'+
+                                        '</div>'+
                                     '</div>'+
                                     '<div class="actions-edit-comment" style="display: none">'+
                                         '<button type="button" class="btn btn-danger btn-xs cancel-edit-comment" title="<?php echo JText::_('CANCEL');?>" >'+
