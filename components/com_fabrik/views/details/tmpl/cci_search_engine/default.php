@@ -23,7 +23,7 @@ $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
 
-if(empty($this->data['jos_emundus_setup_teaching_unity___id']))
+if(empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
     JFactory::getApplication()->redirect("/rechercher");
 
 

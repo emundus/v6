@@ -1049,7 +1049,7 @@ class EmundusHelperFiles
                                 }
                         });
                     </script>
-                    <button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button><br><br>
+                    <button type="button" class="btn btn-xs" id="showhide" style="width:100%"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button><br>
 					<script>
                         $("#showhide").click(function() {
                             if ($("#showhide i").hasClass("icon-chevron-up")) {
@@ -1760,9 +1760,9 @@ class EmundusHelperFiles
 
         // User filter
         $research_filters = $h_files->getEmundusFilters();
-        $filters .='<fieldset>
+        $filters .='<fieldset id="em_select_filter">
                         <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
-                        <table><tr><td style="width:95%; padding-right: 5px">
+                        
                             <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
                                 <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
@@ -1774,9 +1774,8 @@ class EmundusHelperFiles
             }
         }
         $filters .= '</select>
-					</td>
-					<td> 
-						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="glyphicon glyphicon-trash"></i></button></td></tr></table>
+					
+						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="glyphicon glyphicon-trash"></i></button>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                 <strong>'.JText::_('FILTER_SAVED').'</strong>
