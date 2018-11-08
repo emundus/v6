@@ -319,7 +319,7 @@ else
     function check_field() {
 		
 		campaign_id = "<?php echo $campaign_id ?>";
-        campaign = jQuery('jform_emundus_profile_campaign');
+        campaign = document.getElementById("jform_emundus_profile_campaign");
         if (campaign_id != "") {
             for (var i=0 ; i<campaign.options.length ; ++i) {
                 if (campaign.options[i].value == campaign_id)
