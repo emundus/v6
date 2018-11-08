@@ -368,7 +368,7 @@ else
 		    			this.setStyles({backgroundColor: '#fff'});
 		
 					document.getElementById("jform_name").value = firstname.value + ' ' + lastname.value;
-					document.getElementById("jform_email1").value = jQuery("jform_username").value;
+					document.getElementById("jform_email1").value = document.getElementById("jform_username").value;
 			
 				}
 
