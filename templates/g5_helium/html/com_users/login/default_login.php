@@ -98,7 +98,7 @@ JHtml::_('behavior.formvalidator');
 		<?php $usersConfig = JComponentHelper::getParams('com_users'); ?>
 		<?php if ($usersConfig->get('allowUserRegistration')) : ?>
 			<li>
-                <?php if(!empty($this->cid) && !empty($this->course)) :?>
+                <?php if(!empty($this->campaign) && !empty($this->course)) :?>
                     <a href="<?php echo JRoute::_('index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->cid); ?>">
                         <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
                     </a>
