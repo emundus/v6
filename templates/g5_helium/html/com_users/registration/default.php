@@ -318,7 +318,7 @@ else
 
     function check_field() {
 		
-		campaign_id = "<?php echo $campaign_id ?>";
+	campaign_id = "<?php echo (isset($campaign_id)) ? $campaign_id : ''; ?>";
         campaign = document.getElementById("jform_emundus_profile_campaign");
         if (campaign_id != "") {
             for (var i=0 ; i<campaign.options.length ; ++i) {
