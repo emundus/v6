@@ -3114,7 +3114,9 @@ class EmundusControllerFiles extends JControllerLegacy
 		else
 			$partner = '';
 
-	    // Build the variables found in the article.
+        // Build the variables found in the article.
+        // TODO: Change the name to use the session name.
+        $daysWord = (intval($product[0]['days']) > 1)?'jours':'jour';
 	    $post = [
 	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
@@ -3125,8 +3127,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		    '/{PRODUCT_CONTENT}/' => $product[0]['content'],
 		    '/{PRODUCT_MANAGER}/' => $product[0]['manager_firstname'].' '.mb_strtoupper($product[0]['manager_lastname']),
 		    '/{EXPORT_DATE}/' => date('d F Y'),
-		    '/{DAYS}/' => intval($product[0]['days']),
-		    '/{TOTAL_HOURS}/' => $product[0]['days'] * $product[0]['hpd'],
+		    '/{DAYS}/' => intval($product[0]['days']).' '.$daysWord." pour un total de : ".$product[0]['days'] * $product[0]['hpd']." heures",
 		    '/{SESSIONS}/' => $sessions,
 		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
