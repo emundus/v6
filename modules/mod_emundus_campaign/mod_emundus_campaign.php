@@ -23,6 +23,7 @@ $mod_em_campaign_itemid=$params->get('mod_em_campaign_itemid');
 $mod_em_campaign_itemid2=$params->get('mod_em_campaign_itemid2');
 $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
+$redirect_url=$params->get('mod_em_campaign_link', 'registration');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
 
