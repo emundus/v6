@@ -3073,7 +3073,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			->select([
 				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'),
 				$this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
-				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours_per_day','hpd'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant')
+				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours_per_day','hpd'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
 			])
 			->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
@@ -3115,12 +3115,11 @@ class EmundusControllerFiles extends JControllerLegacy
 			$partner = '';
 
         // Build the variables found in the article.
-        // TODO: Change the name to use the session name.
         $daysWord = (intval($product[0]['days']) > 1)?'jours':'jour';
 	    $post = [
 	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
-	    	'/{PRODUCT_NAME}/' => ucfirst(mb_strtolower($product[0]['name'])),
+	    	'/{PRODUCT_NAME}/' => ucfirst(mb_strtolower($product[0]['session_label'])),
 			'/{PRODUCT_OBJECTIVES}/' => $product[0]['objectives'],
 		    '/{PRODUCT_PREREQUISITES}/' => $product[0]['prerec'],
 		    '/{PRODUCT_AUDIENCE}/' => $product[0]['audience'],
