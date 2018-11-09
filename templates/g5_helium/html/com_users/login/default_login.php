@@ -33,7 +33,8 @@ JHtml::_('behavior.formvalidator');
 	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
 		</div>
 	<?php endif; ?>
-	<form action="<?php echo JRoute::_('index.php?option=com_users&task=user.login'); ?>" method="post" class="form-validate form-horizontal well">
+
+	<form action="<?php echo (!empty($this->redirect)) ? '/index.php?option=com_users&task=user.login&redirect='.$this->redirect : '/index.php?option=com_users&task=user.login'; ?>" method="post" class="form-validate form-horizontal well">
 		<fieldset>
 			<?php foreach ($this->form->getFieldset('credentials') as $field) : ?>
 				<?php if (!$field->hidden) : ?>
@@ -71,9 +72,9 @@ JHtml::_('behavior.formvalidator');
 			<?php endif; ?>
 			<div class="control-group">
 				<div class="controls">
-					<button type="submit" class="btn btn-primary">
-						<?php echo JText::_('JLOGIN'); ?>
-					</button>
+                    <button type="submit" class="btn btn-primary">
+                        <?php echo JText::_('JLOGIN'); ?>
+                    </button>
 				</div>
 			</div>
 			<?php $return = $this->form->getValue('return', '', $this->params->get('login_redirect_url', $this->params->get('login_redirect_menuitem'))); ?>

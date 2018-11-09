@@ -236,13 +236,20 @@ class plgUserEmundus extends JPlugin
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
-   
-        parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
-        $previous_url = base64_decode($return_url['return']);
-        if(empty($previous_url)){
-            $return_url = $jinput->POST->getVar('return');
-            $previous_url = base64_decode($return_url);
+        $redirect = $jinput->get->getBase64('redirect');
+
+        if(empty($redirect)) {
+            parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
+            $previous_url = base64_decode($return_url['return']);
+            if(empty($previous_url)){
+                $return_url = $jinput->POST->getVar('return');
+                    $previous_url = base64_decode($return_url);
+            }
         }
+        else {
+            $previous_url = base64_decode($redirect);
+        }
+
         
         if (!$app->isAdmin()) {
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');

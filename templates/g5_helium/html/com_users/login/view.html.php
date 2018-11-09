@@ -42,8 +42,11 @@ class UsersViewLogin extends JViewLegacy
 		$this->params = $this->state->get('params');
 
 		// Get campaign ID and course from url
+        $jinput = JFactory::getApplication()->input;
         $this->campaign = $jinput->get->get('cid');
         $this->course   = $jinput->get->get('course');
+
+
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
