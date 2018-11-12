@@ -8,7 +8,7 @@
 
 
 use Joomla\Application\AbstractWebApplication;
-use Joomla\Http\Http;
+jimport( 'joomla.client.http' );
 use Joomla\Input\Input;
 use Joomla\OAuth2\Client;
 use Joomla\Registry\Registry;
@@ -24,7 +24,7 @@ class EmundusControllerOauth2 {
      */
     protected $options;
     /**
-     * @var    Http  Mock client object.
+     * @var    JHttp  Mock client object.
      */
     protected $client;
     /**
@@ -45,8 +45,7 @@ class EmundusControllerOauth2 {
      *
      * @return  void
      */
-    public function __construct()
-    {
+    public function __construct() {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $this->data['redirect_uri']  = $eMConfig->get('redirecturl');
         $this->data['clientid']      = $eMConfig->get('clientid');
@@ -55,19 +54,12 @@ class EmundusControllerOauth2 {
         $this->data['tokenurl']      = $eMConfig->get('tokenurl');
 
         $this->options = new Registry;
-        $this->http = $this->getMockBuilder('Joomla\Http\Http')->getMock();
+        $this->http = new JHttp();
         $array = array();
         $this->input = new Input($array);
-        $this->application = $this->getMockForAbstractClass(
-            'Joomla\Application\AbstractWebApplication',
-            array(),
-            '',
-            true,
-            true,
-            true,
-            array('redirect')
-        );
-        $this->object = new Client($this->options, $this->http, $this->input, $this->application);    }
+        $this->application = new JApplicationWeb();
+        $this->object = new Client($this->options, $this->http, $this->input, $this->application);
+    }
 
 
     /**
