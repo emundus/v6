@@ -8,7 +8,7 @@
 
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
-
+use Joomla\Oauth2\Client;
 jimport('joomla.application.component.controller');
 
 /**
