@@ -58,7 +58,7 @@ class EmundusControllerOauth2 {
         $array = array();
         $this->input = new Input($array);
         $this->application = new JApplicationWeb();
-        $this->object = new Client($this->options, $this->http, $this->input, $this->application);
+        $this->object = new JOAuth2Client($this->options, $this->http, $this->input, $this->application);
     }
 
 
