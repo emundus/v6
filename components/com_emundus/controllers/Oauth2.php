@@ -27,8 +27,6 @@ class EmundusControllerOauth2 {
 
     public function authenticate()
     {
-        $oauth = new JOAuth2Client();
-        $oauth->createUrl();
-        $oauth->authenticate();
+
     }
 }
