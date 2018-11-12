@@ -838,31 +838,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 	    calling Oauth2 controller
 	*/
 	public function oauth() {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $jinput      = JFactory::getApplication()->input;
-
-        $data['redirect_uri']   = $eMConfig->get('redirecturl');
-        $data['clientid']       = $eMConfig->get('clientid');
-        $data['clientsecret']   = $eMConfig->get('clientsecret');
-        $data['authurl']        = $eMConfig->get('authurl');
-        $data['tokenurl']       = $eMConfig->get('tokenurl');
-        $data['code']           = $jinput->get->get('code');
-        if(!$data['code'] ){
-            die('something went wrong!');
-        }
-        $options = array(
-            'http' => array(
-                'header'  => "Content-type: application/json\r\n",
-                'method'  => 'POST',
-                'content' => json_encode($data)
-            )
-        );
-        $context  = stream_context_create($options);
-        $result = file_get_contents($data['tokenurl'] , false, $context);
-        var_dump($result);
- //       $oauth = new JOAuth2Client();
-   //     $oauth->createUrl();
-     //   $oauth->authenticate();
+	    $em_oauth = new EmundusControllerOauth2();
+        $em_oauth->testAuth();
         header('Location: '.JRoute::_('/'));
     }
 
