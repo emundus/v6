@@ -7,11 +7,7 @@
  */
 
 
-use  \Joomla\CMS\Application\BaseApplication;
 use \Joomla\Registry\Registry;
-use \JHttp;
-use \JInput;
-use Joomla\Input\Input;
 use Joomla\OAuth2\Client;
 
 
@@ -67,7 +63,7 @@ class EmundusControllerOauth2 {
         $this->http = new JHttp();
         $array = array();
         $this->input = new JInput($array);
-        $this->application = new JApplicationWeb().doExecute();
+        $this->application = new JApplicationWeb;
         $this->object = new JOAuth2Client();
     }
 
