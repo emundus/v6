@@ -339,6 +339,7 @@ $controller   = new $classname();
 $user = JFactory::getUser();
 $name = $app->input->get('view', '', 'WORD');
 $task = $app->input->get('task', '', 'WORD');
+$oauth = $app->input->get('task', '', 'WORD');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf')
@@ -346,7 +347,7 @@ if ($task == 'getproductpdf')
 
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
     $controller->execute($task);
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs') {
+} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && $oauth != 'oauth') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else {
     if ($name != 'search_engine') {
