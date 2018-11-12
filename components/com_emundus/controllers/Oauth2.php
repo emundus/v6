@@ -53,7 +53,21 @@ class EmundusControllerOauth2 {
         $this->data['clientsecret']  = $eMConfig->get('clientsecret');
         $this->data['authurl']       = $eMConfig->get('authurl');
         $this->data['tokenurl']      = $eMConfig->get('tokenurl');
-    }
+
+        $this->options = new Registry;
+        $this->http = $this->getMockBuilder('Joomla\Http\Http')->getMock();
+        $array = array();
+        $this->input = new Input($array);
+        $this->application = $this->getMockForAbstractClass(
+            'Joomla\Application\AbstractWebApplication',
+            array(),
+            '',
+            true,
+            true,
+            true,
+            array('redirect')
+        );
+        $this->object = new Client($this->options, $this->http, $this->input, $this->application);    }
 
 
     /**
