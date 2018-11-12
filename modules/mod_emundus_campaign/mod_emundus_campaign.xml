@@ -57,6 +57,10 @@
 						<option value="purple">LIST_PURPLE</option>
 						<option value="black">LIST_BLACK</option>
 					</field>
+					<field type="list" name="mod_em_campaign_link" default="registration" label="MOD_EM_CAMPAIGN_LINK" description="MOD_EM_CAMPAIGN_LINK_DESC">
+						<option value="registration">REGISTRATION_URL</option>
+						<option value="login">LOGIN_URL</option>
+					</field>
 				</fieldset>
 			</fields>
 		</config>

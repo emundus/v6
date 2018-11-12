@@ -138,7 +138,7 @@ class EmundusModelCampaign extends JModelList
 		$query = 'SELECT esc.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
-					WHERE esc.applicant_id='.$this->_user->id.'
+					WHERE ecc.applicant_id='.$this->_user->id.'
 					ORDER BY ecc.date_submitted DESC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();

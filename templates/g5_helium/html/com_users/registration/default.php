@@ -318,8 +318,8 @@ else
 
     function check_field() {
 		
-		campaign_id = "<?php echo $campaign_id ?>";
-        campaign = jQuery('jform_emundus_profile_campaign');
+	campaign_id = "<?php echo (isset($campaign_id)) ? $campaign_id : ''; ?>";
+        campaign = document.getElementById("jform_emundus_profile_campaign");
         if (campaign_id != "") {
             for (var i=0 ; i<campaign.options.length ; ++i) {
                 if (campaign.options[i].value == campaign_id)
@@ -368,7 +368,7 @@ else
 		    			this.setStyles({backgroundColor: '#fff'});
 		
 					document.getElementById("jform_name").value = firstname.value + ' ' + lastname.value;
-					document.getElementById("jform_email1").value = jQuery("jform_username").value;
+					document.getElementById("jform_email1").value = document.getElementById("jform_username").value;
 			
 				}
 

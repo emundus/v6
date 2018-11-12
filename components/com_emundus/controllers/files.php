@@ -3073,7 +3073,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			->select([
 				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'),
 				$this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
-				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours_per_day','hpd'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant')
+				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours_per_day','hpd'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
 			])
 			->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
@@ -3097,12 +3097,20 @@ class EmundusControllerFiles extends JControllerLegacy
 			$start_year = date('y',strtotime($session['date_start']));
 			$end_year = date('y',strtotime($session['date_end']));
 
-			if ($start_month == $end_month && $start_year == $end_year)
-				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-			elseif ($start_month != $end_month && $start_year == $end_year)
-				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-			elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-				$sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+            if (intval($session['days']) == 1) {
+                
+                $sessions .= '<li>Le '.strftime('%e',strtotime($session['date_start']))." ".strftime('%B',strtotime($session['date_end']))." ".date('Y',strtotime($session['date_end']));
+            
+            } else {
+
+                if ($start_month == $end_month && $start_year == $end_year)
+                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                elseif ($start_month != $end_month && $start_year == $end_year)
+                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+
+            }
 
 			$sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
 		}
@@ -3114,19 +3122,19 @@ class EmundusControllerFiles extends JControllerLegacy
 		else
 			$partner = '';
 
-	    // Build the variables found in the article.
+        // Build the variables found in the article.
+        $daysWord = (intval($product[0]['days']) > 1)?'jours':'jour';
 	    $post = [
 	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
-	    	'/{PRODUCT_NAME}/' => ucfirst(mb_strtolower($product[0]['name'])),
+	    	'/{PRODUCT_NAME}/' => ucfirst(mb_strtolower($product[0]['session_label'])),
 			'/{PRODUCT_OBJECTIVES}/' => $product[0]['objectives'],
 		    '/{PRODUCT_PREREQUISITES}/' => $product[0]['prerec'],
 		    '/{PRODUCT_AUDIENCE}/' => $product[0]['audience'],
 		    '/{PRODUCT_CONTENT}/' => $product[0]['content'],
 		    '/{PRODUCT_MANAGER}/' => $product[0]['manager_firstname'].' '.mb_strtoupper($product[0]['manager_lastname']),
 		    '/{EXPORT_DATE}/' => date('d F Y'),
-		    '/{DAYS}/' => intval($product[0]['days']),
-		    '/{TOTAL_HOURS}/' => $product[0]['days'] * $product[0]['hpd'],
+		    '/{DAYS}/' => intval($product[0]['days']).' '.$daysWord." pour un total de : ".$product[0]['days'] * $product[0]['hpd']." heures",
 		    '/{SESSIONS}/' => $sessions,
 		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
@@ -3138,7 +3146,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	    $body = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $article))));
 	    $footer = '<hr><p>La CCI Rochefort et Saintonge (CCIRS) se réserve le droit d’adapter les informations de cette fiche.</br>
 					La CCIRS est un organisme de formation enregistré sous le numéro 5417 P00 1017, certifié « Facilitateur en Acquisition de Compétences » sous la référence CPS FAC 041</p>
-					<p>{PRODUCT_MANAGER} - competencesetformation@rochefort.cci.fr - 05 46 84 70 92 - www.competencesetformation.fr</p> <p>Fiche pédagogique éditée le 19 septembre 2018 - ';
+					<p>{PRODUCT_MANAGER} - competencesetformation@rochefort.cci.fr - 05 46 84 70 92 - www.competencesetformation.fr</p> <p>Fiche pédagogique éditée le '.date('d F Y').' - ';
 	    $footer = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $footer))));
 
 	    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');

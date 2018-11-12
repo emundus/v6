@@ -97,7 +97,7 @@ if ($locallang == "fr-FR") {
 				<?php } // end $oldmonth != $month ?>
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-						<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online==1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
+						<h4><a href="/index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online==1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
 						<p>
 							<?php
 								$text = '';
@@ -121,14 +121,16 @@ if ($locallang == "fr-FR") {
 						</div>
 					</div>
 					<div class="below-content">
+                        <?php $formUrl = base64_encode('/index.php?option=com_fabrik&view=form&formid=102&course='.$result->code.'&cid='.$result->id); ?>
+
 						<?php if ($result->apply_online == 1) :?>
 							<a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
 							<?php
-								// The register URL does not work  with SEF, this workaround helps counter this.
-								if ($sef == 0)
-									$register_url = "index.php?option=com_users&view=registration&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
-								else
-									$register_url = "registration?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
+                                // The register URL does not work  with SEF, this workaround helps counter this.
+                                if ($sef == 0)
+                                    $register_url = "index.php?option=com_users&view=".$redirect_url."&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                                else
+                                    $register_url = $redirect_url."?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
 							?>
 							<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
 						<?php else :?>
@@ -178,7 +180,7 @@ if ($locallang == "fr-FR") {
 				<?php } ?>
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-						<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online == 1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
+						<h4><a href="/index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online == 1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
 						<p>
 							<?php
 								$text = '';
@@ -249,7 +251,7 @@ if ($locallang == "fr-FR") {
 				<?php } ?>
 			<div class="campaign-content">
 				<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-					<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if($result->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>"><?php echo $result->label; ?></a></h4>
+					<h4><a href="/index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if($result->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>"><?php echo $result->label; ?></a></h4>
 					<p>
 						<?php
 							$text = '';
@@ -320,7 +322,7 @@ if ($locallang == "fr-FR") {
 								<?php } ?>
 								<div class="campaign-content">
 									<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-										<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online == 1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
+										<h4><a href="/index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online == 1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
 										<p>
 											<?php
 												$text = '';
