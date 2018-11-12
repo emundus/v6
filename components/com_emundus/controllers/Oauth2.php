@@ -7,8 +7,9 @@
  */
 
 
-use \Joomla\Registry\Registry;
+use Joomla\Registry\Registry;
 use Joomla\OAuth2\Client;
+use Joomla\CMS\Application\WebApplication;
 
 
 
@@ -63,7 +64,7 @@ class EmundusControllerOauth2 {
         $this->http = new JHttp();
         $array = array();
         $this->input = new JInput($array);
-        $this->application = new JApplicationWeb;
+        $this->application = new JApplicationWeb.execute();
         $this->object = new JOAuth2Client();
     }
 
