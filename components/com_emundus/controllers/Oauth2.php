@@ -7,12 +7,9 @@
  */
 
 
-use Joomla\Application\AbstractWebApplication;
-jimport( 'joomla.client.http' );
-use Joomla\Input\Input;
+
 use Joomla\OAuth2\Client;
-use Joomla\Registry\Registry;
-use PHPUnit\Framework\TestCase;
+
 
 
 class EmundusControllerOauth2 {
@@ -20,31 +17,40 @@ class EmundusControllerOauth2 {
     protected $data = null;
 
     /**
-     * @var    Registry  Options for the Client object.
+     * @var    Registry  Options for the JOAuth2Client object.
+     * @since  12.3
      */
     protected $options;
+
     /**
-     * @var    JHttp  Mock client object.
+     * @var    JHttp  The HTTP client object to use in sending HTTP requests.
+     * @since  12.3
      */
-    protected $client;
+    protected $http;
+
     /**
-     * @var    Input  The input object to use in retrieving GET/POST data.
+     * @var    JInput  The input object to use in retrieving GET/POST data.
+     * @since  12.3
      */
     protected $input;
+
     /**
-     * @var    AbstractWebApplication|\PHPUnit_Framework_MockObject_MockObject  The application object to send HTTP headers for redirects.
+     * @var    JApplicationWeb  The application object to send HTTP headers for redirects.
+     * @since  12.3
      */
     protected $application;
+
     /**
-     * @var    Client  Object under test.
-     */
-    protected $object;
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
+     * Constructor.
      *
-     * @return  void
+     * @param   Registry         $options      JOAuth2Client options object
+     * @param   JHttp            $http         The HTTP client object
+     * @param   JInput           $input        The input object
+     * @param   JApplicationWeb  $application  The application object
+     *
+     * @since   12.3
      */
+
     public function __construct() {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $this->data['redirect_uri']  = $eMConfig->get('redirecturl');
@@ -56,9 +62,9 @@ class EmundusControllerOauth2 {
         $this->options = new Registry;
         $this->http = new JHttp();
         $array = array();
-        $this->input = new Input($array);
+        $this->input = new JInput($array);
         $this->application = new JApplicationWeb();
-        $this->object = new JOAuth2Client($this->options, $this->http, $this->input, $this->application);
+        $this->object = new JOAuth2Client();
     }
 
 
