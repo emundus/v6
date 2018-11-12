@@ -219,4 +219,12 @@
 		<field name="ldapFilters" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_DESC" />
 		<field name="ldapElements" type="text" required="false" label="COM_EMUNDUS_LDAP_ELEMENTS_LABEL" description="COM_EMUNDUS_LDAP_ELEMENTS_DESC" default="uid, mail, givenName, sn, telephoneNumber" />
 	</fieldset>
+
+	<fieldset name="oauth2" label="COM_EMUNDUS_OAUTH2" description="COM_EMUNDUS_OAUTH_DESC">
+		<field name="clientid" type="text" menu="hide" label="COM_EMUNDUS_OAUTH_CLIENT" description="COM_EMUNDUS_OAUTH_CLIENT_DESC"/>
+		<field name="clientsecret" type="password" menu="hide" label="COM_EMUNDUS_OAUTH_CLIENT_SECRET" description="COM_EMUNDUS_OAUTH_CLIENT_SECRET_DESC"/>
+		<field name="redirecturl" type="text" label="COM_EMUNDUS_OAUTH_REDIRECT" description="COM_EMUNDUS_OAUTH_REDIRECT_DESC" />
+		<field name="authurl" type="text" label="COM_EMUNDUS_OAUTH_AUTH_URL" description="COM_EMUNDUS_OAUTH_AUTH_URL_DESC" />
+		<field name="tokenurl" type="text" label="COM_EMUNDUS_OAUTH_TOKEN_URL" description="COM_EMUNDUS_OAUTH_TOKEN_URL_DESC" />
+	</fieldset>
 </config>
