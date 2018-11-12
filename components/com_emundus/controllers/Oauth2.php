@@ -7,27 +7,27 @@
  */
 
 
-require Joomla\Oauth2\Client;
+use Joomla\Oauth2\Client;
 
 
 class EmundusControllerOauth2 {
     // set Oauth2 parameters
-    protected $data = Registry;
+    protected $data = null;
 
     public function __construct()
     {
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $data['redirect_uri']  = $eMConfig->get('redirecturl');
-        $data['clientid']      = $eMConfig->get('clientid');
-        $data['clientsecret']  = $eMConfig->get('clientsecret');
-        $data['authurl']       = $eMConfig->get('authurl');
-        $data['tokenurl']      = $eMConfig->get('tokenurl');
+        $this->data['redirect_uri']  = $eMConfig->get('redirecturl');
+        $this->data['clientid']      = $eMConfig->get('clientid');
+        $this->data['clientsecret']  = $eMConfig->get('clientsecret');
+        $this->data['authurl']       = $eMConfig->get('authurl');
+        $this->data['tokenurl']      = $eMConfig->get('tokenurl');
     }
 
 
     public function authenticate()
     {
-        $oauth = new JOAuth2Client($this->data);
+        $oauth = new JOAuth2Client();
         $oauth->createUrl();
         $oauth->authenticate();
     }
