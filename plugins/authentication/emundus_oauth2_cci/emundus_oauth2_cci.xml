@@ -8,7 +8,7 @@
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>emundus.fr</authorUrl>
 	<version>3.8.13</version>
-	<description>PLG_USER_JOOMLA_XML_DESCRIPTION</description>
+	<description>PLG_AUTHENTICATION_EMUNDUS_OAUTH2_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="emundus_oauth2_cci">emundus_oauth2_cci.php</filename>
 		<filename>index.html</filename>
