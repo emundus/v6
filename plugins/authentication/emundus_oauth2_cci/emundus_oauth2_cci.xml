@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.8.13" type="plugin" group="user">
-	<name>plg_user_emundus_oauth2_cci</name>
+<extension version="3.8.13" type="plugin" group="authentication">
+	<name>plg_authentication_emundus_oauth2_cci</name>
 	<author>Hugo Moracchini</author>
 	<creationDate>November 2018</creationDate>
 	<copyright>(C) 2019 eMundus All rights reserved.</copyright>
@@ -10,12 +10,12 @@
 	<version>3.8.13</version>
 	<description>PLG_USER_JOOMLA_XML_DESCRIPTION</description>
 	<files>
-		<filename plugin="emundus_oauth2">emundus_oauth2_cci.php</filename>
+		<filename plugin="emundus_oauth2_cci">emundus_oauth2_cci.php</filename>
 		<filename>index.html</filename>
 	</files>
 	<languages>
-		<language tag="en-GB">language/en-GB/en-GB.plg_system_emundus_oauth2_cci.ini</language>
-		<language tag="en-GB">language/en-GB/en-GB.plg_system_emundus_oauth2_cci.sys.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_emundus_oauth2_cci.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_emundus_oauth2_cci.sys.ini</language>
 	</languages>
 	<config>
 		<fields name="params">
