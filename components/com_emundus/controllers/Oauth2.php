@@ -46,7 +46,8 @@ class EmundusControllerOauth2 {
      *
      * @param   Registry         $options      JOAuth2Client options object
      * @param   JHttp            $http         The HTTP client object
-     * @param   JInput           $input        The input object
+     * @param   JInput           $input        The input objectinsecurse_password
+     *
      * @param   JApplicationWeb  $application  The application object
      *
      * @since   12.3
@@ -61,11 +62,10 @@ class EmundusControllerOauth2 {
         $this->data['tokenurl']      = $eMConfig->get('tokenurl');
 
         $this->options = new Registry;
-        $this->http = new JHttp();
-        $array = array();
-        $this->input = new JInput($array);
-        $this->application = new JApplicationWeb.execute();
-        $this->object = new JOAuth2Client();
+        $this->http = new JHttp($this->options);
+        $this->input = JFactory::getApplication()->input;
+        $this->application = new JApplicationWeb;
+        $this->object = new JOAuth2Client($this->options, $this->http, $this->input, $this->application);
     }
 
 
