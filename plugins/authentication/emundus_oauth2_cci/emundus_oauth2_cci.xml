@@ -16,6 +16,8 @@
 	<languages>
 		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_emundus_oauth2_cci.ini</language>
 		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_emundus_oauth2_cci.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/fr-FR.plg_authentication_emundus_oauth2_cci.ini</language>
+		<language tag="fr-Fr">language/fr-FR/fr-FR.plg_authentication_emundus_oauth2_cci.sys.ini</language>
 	</languages>
 	<config>
 		<fields name="params">
