@@ -116,7 +116,7 @@ if ($this->show_info_panel) :
                 }
                     $div .= '<input type="hidden" class="form-control" readonly="">';
                 if ($this->show_browse_button) {
-                    $div .= '<input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></div></div>';
+                    $div .= '<input class="btn btn-success em_send_uploaded_file" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></div></div>';
                 }
                 $div .= '</div>';
 
@@ -281,6 +281,8 @@ $(document).on('change', '.btn-file :file', function() {
 });
 
 $(document).ready( function() {
+    $('.em_send_uploaded_file').attr("disabled", "disabled");
+
     $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
 
         var input = $(this).parents('.input-group').find(':text'),
@@ -360,6 +362,7 @@ function processSelectedFiles(fileInput) {
         else
             fileParagraphe.innerHTML = "";
 
+        $(rowId).find( ".em_send_uploaded_file" ).removeAttr("disabled");
         rowId.append(fileParagraphe);
     }
 }
