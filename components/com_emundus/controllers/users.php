@@ -832,15 +832,4 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 
 	}
-
-	/*
-	    Oauth2 connection
-	    calling Oauth2 controller
-	*/
-	public function oauth() {
-	    $em_oauth = new EmundusControllerOauth2();
-        $em_oauth->testAuth();
-        header('Location: '.JRoute::_('/'));
-    }
-
 }
