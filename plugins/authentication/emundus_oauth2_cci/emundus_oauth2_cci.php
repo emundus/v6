@@ -43,10 +43,10 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
 		$this->loadLanguage();
-		$this->scopes = implode(',', $this->params->get('scopes', 'openid'));
-		$this->authUrl = $this->params->get('authurl');
+		$this->scopes = explode(',', $this->params->get('scopes', 'openid'));
+		$this->authUrl = $this->params->get('auth_url');
 		$this->domain = $this->params->get('domain');
-		$this->tokenUrl = $this->params->get('tokenurl');
+		$this->tokenUrl = $this->params->get('token_url');
 	}
 
 	/**
@@ -61,7 +61,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 	 */
 	public function onUserAuthenticate($credentials, $options, &$response) {
 
-		$response->type = 'ccirs';
+		$response->type = 'OAuth2';
 
 		if (JArrayHelper::getValue($options, 'action') == 'core.login.site') {
 
@@ -83,26 +83,15 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 					}
 				}
 
-				// TODO: Find profile URL.
-				$url = 'https://'.$this->domain.'/'.$username;
-				if ($this->params->get('access') == 2) {
-					$oauth2 = new JOAuth2Client;
-					$oauth2->setToken($token);
-					$result = $oauth2->query($url);
-				} else {
-					$client = JHttpFactory::getHttp();
-					$result = $client->get($url);
-				}
-				// TODO: Get firstname + lastname, email.
-				$body = new SimpleXMLElement($result->body);
-				$bio = $body->{'orcid-profile'}->{'orcid-bio'};
-				$name = (string)$bio->{'personal-details'}->{'given-names'}.' '.
-					(string)$bio->{'personal-details'}->{'family-name'};
-				$email = (string)$bio->{'contact-details'}->{'email'};
-				$response->email = $email;
-				$response->fullname = $name;
-				$response->username = $username;
-				// TODO: Generate password for user and add it to the response?
+				$url = $this->params->get('sso_account_url');
+				$oauth2 = new JOAuth2Client;
+				$oauth2->setToken($token);
+				$result = $oauth2->query($url);
+
+				$body = json_decode($result->body);
+				$response->email = $body->email;
+				$response->fullname = $body->name;
+				$response->username = $body->preferred_username;
 				$response->status = JAuthentication::STATUS_SUCCESS;
 				$response->error_message = '';
 
@@ -122,9 +111,9 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 	public function onOauth2Authenticate() {
 		$oauth2 = new JOAuth2Client;
 		$oauth2->setOption('authurl', $this->authUrl);
-		$oauth2->setOption('clientid', $this->params->get('clientid'));
+		$oauth2->setOption('clientid', $this->params->get('client_id'));
 		$oauth2->setOption('scope', $this->scopes);
-		$oauth2->setOption('redirecturi', $this->params->get('redirecturl'));
+		$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
 		$oauth2->setOption('requestparams', array('access_type'=>'offline', 'approval_prompt'=>'auto'));
 		$oauth2->setOption('sendheaders', true);
 		$oauth2->authenticate();
@@ -142,28 +131,25 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		// Build HTTP POST query requesting token.
 		$oauth2 = new JOAuth2Client;
 		$oauth2->setOption('tokenurl', $this->tokenUrl);
-		$oauth2->setOption('clientid', $this->params->get('clientid'));
-		$oauth2->setOption('clientsecret', $this->params->get('clientsecret'));
+		$oauth2->setOption('clientid', $this->params->get('client_id'));
+		$oauth2->setOption('clientsecret', $this->params->get('client_secret'));
+		$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
 		$result = $oauth2->authenticate();
 
-		// The token returned is parsed, it contains the value which will be used as a username.
-		$token = json_decode(JArrayHelper::getValue(array_keys($result), 0), true);
-		$token['created'] = json_decode(JArrayHelper::getValue($result, 'created'));
-
-		// Get the log in credentials.
+		// We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
 		$credentials = array();
-		$credentials['username']  = JArrayHelper::getValue($token, 'username');
+		$credentials['username']  = 'temporary_username';
 
 		// Adding the token to the login options allows Joomla to use it for logging in.
 		$options = array();
-		$options['token']  = $token;
+		$options['token']  = $result;
 
 		$app = JFactory::getApplication();
 
 		// Perform the log in.
 		if (true === $app->login($credentials, $options)) {
 			$user = new JUser(JUserHelper::getUserId($credentials['username']));
-			$user->setParam('token', json_encode($token));
+			$user->setParam('token', json_encode($result));
 			$user->save();
 			return true;
 		} else {

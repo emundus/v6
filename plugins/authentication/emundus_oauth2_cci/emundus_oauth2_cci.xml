@@ -22,12 +22,13 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="clientid" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_DESC"/>
-				<field name="clientsecret" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_DESC"/>
+				<field name="client_id" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_DESC"/>
+				<field name="client_secret" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_DESC"/>
 				<field name="scopes" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SCOPES_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SCOPES_DESC" default="openid" />
-				<field name="authurl" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_AUTHURL_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_AUTHURL_DESC"/>
-				<field name="tokenurl" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TOKENURL_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TOKENURL_DESC"/>
-				<field name="redirecturl" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_REDIRECTURL_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_REDIRECTURL_DESC"/>
+				<field name="auth_url" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_AUTHURL_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_AUTHURL_DESC"/>
+				<field name="token_url" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TOKENURL_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TOKENURL_DESC"/>
+				<field name="redirect_url" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_REDIRECTURL_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_REDIRECTURL_DESC"/>
+				<field name="sso_account_url" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_ACCOUNTURL_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_ACCOUNT_URL_DESC" />
 			</fieldset>
 		</fields>
 	</config>
