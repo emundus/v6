@@ -102,6 +102,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 				$response->email = $email;
 				$response->fullname = $name;
 				$response->username = $username;
+				// TODO: Generate password for user and add it to the response?
 				$response->status = JAuthentication::STATUS_SUCCESS;
 				$response->error_message = '';
 
@@ -137,21 +138,28 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 	 * @throws Exception
 	 */
 	public function onOauth2Authorise() {
+
+		// Build HTTP POST query requesting token.
 		$oauth2 = new JOAuth2Client;
 		$oauth2->setOption('tokenurl', $this->tokenUrl);
 		$oauth2->setOption('clientid', $this->params->get('clientid'));
 		$oauth2->setOption('clientsecret', $this->params->get('clientsecret'));
 		$result = $oauth2->authenticate();
+
+		// The token returned is parsed, it contains the value which will be used as a username.
 		$token = json_decode(JArrayHelper::getValue(array_keys($result), 0), true);
 		$token['created'] = json_decode(JArrayHelper::getValue($result, 'created'));
-		// Get the log in options.
-		$options = array();
+
 		// Get the log in credentials.
 		$credentials = array();
 		$credentials['username']  = JArrayHelper::getValue($token, 'username');
+
+		// Adding the token to the login options allows Joomla to use it for logging in.
 		$options = array();
 		$options['token']  = $token;
+
 		$app = JFactory::getApplication();
+
 		// Perform the log in.
 		if (true === $app->login($credentials, $options)) {
 			$user = new JUser(JUserHelper::getUserId($credentials['username']));

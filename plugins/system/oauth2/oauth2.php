@@ -44,9 +44,8 @@ class PlgSystemOauth2 extends JPlugin {
 
 			$code = JArrayHelper::getValue($queries, 'code', null, 'WORD');
 			$session_state = JArrayHelper::getValue($queries, 'session_state', null, 'WORD');
-
-			// TODO: What about cases where &code is found in the URL for other reasons, does this break things?
-			if (count($queries) === 2 && !empty($session_state) && !empty($code)) {
+			
+			if (!empty($session_state) && !empty($code)) {
 				$array = $dispatcher->trigger('onOauth2Authorise', array());
 
 				// redirect user to appropriate area of site.
