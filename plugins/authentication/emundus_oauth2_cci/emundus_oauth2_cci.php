@@ -146,17 +146,14 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		// Adding the token to the login options allows Joomla to use it for logging in.
 		$options = array();
 		$options['token']  = $result;
+		$options['provider'] = 'cciconnect';
 
 		$app = JFactory::getApplication();
 
 		// Perform the log in.
-		if (true === $app->login($credentials, $options)) {
-			$user = new JUser(JUserHelper::getUserId($credentials['username']));
-			$user->setParam('token', json_encode($result));
-			$user->save();
+		if (true === $app->login($credentials, $options))
 			return true;
-		} else {
+		else
 			return false;
-		}
 	}
 }

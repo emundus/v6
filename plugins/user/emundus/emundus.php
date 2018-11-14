@@ -244,16 +244,27 @@ class plgUserEmundus extends JPlugin
         if (!$app->isAdmin()) {
 
 	        // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
-	        if ($user['type'] == 'OAuth2' && $user['isnew'] == true) {
+	        if ($user['type'] == 'OAuth2') {
 
-		        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-		        $m_users = new EmundusModelUsers();
-		        $user_params = [
-		        	'firstname' => $user['firstname'],
-			        'lastname' => $user['lastname'],
-			        'profile' => $user['profile']
-		        ];
-		        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+	        	// Insert the eMundus user info into the DB.
+		        if ($user['isnew'] == true) {
+			        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+			        $m_users = new EmundusModelUsers();
+			        $user_params = [
+				        'firstname' => $user['firstname'],
+				        'lastname' => $user['lastname'],
+				        'profile' => $user['profile']
+			        ];
+			        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+		        }
+
+		        // Add the Oauth provider type to the Joomla user params.
+		        if (!empty($options['provider'])) {
+			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
+			        $o_user->setParam('OAuth2', $options['provider']);
+			        $o_user->save();
+			        return true;
+		        }
 	        }
 
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
