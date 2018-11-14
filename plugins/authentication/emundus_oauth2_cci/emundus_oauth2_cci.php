@@ -91,6 +91,9 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 				$body = json_decode($result->body);
 				$response->email = $body->email;
 				$response->fullname = $body->name;
+				$response->firstname = $body->given_name;
+				$response->lastname = $body->family_name;
+				$response->profile = $this->params->get('emundus_profile', 1006);
 				$response->username = $body->preferred_username;
 				$response->status = JAuthentication::STATUS_SUCCESS;
 				$response->error_message = '';
@@ -98,7 +101,6 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 			} catch (Exception $e) {
 				// log error.
 				$response->status = JAuthentication::STATUS_FAILURE;
-				$message = JText::_('JGLOBAL_AUTH_UNKNOWN_ACCESS_DENIED');
 				return false;
 			}
 		}

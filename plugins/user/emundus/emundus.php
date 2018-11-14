@@ -90,16 +90,16 @@ class plgUserEmundus extends JPlugin
      * @return  void
      * @since   1.6
      */
-    public function onUserAfterSave($user, $isnew, $success, $msg)
-    {
+    public function onUserAfterSave($user, $isnew, $success, $msg) {
         // Initialise variables.
-        $jinput         = JFactory::getApplication()->input;
+	    $db             = JFactory::getDBO();
+	    $config         = JFactory::getConfig();
+	    $app            = JFactory::getApplication();
+        $jinput         = $app->input;
 
         $details        = $jinput->post->get('jform', null, 'none');
-        $app            = JFactory::getApplication();
-        $config         = JFactory::getConfig();
+
         $mail_to_user   = $this->params->get('mail_to_user', 1);
-        $db             = JFactory::getDBO();
 
         if (count($details) > 0) {
             //$profile = @isset($details['emundus_profile']['profile'])?@$details['emundus_profile']['profile']:@$details['profile'];
@@ -115,7 +115,7 @@ class plgUserEmundus extends JPlugin
             if ($isnew) {
                 // @TODO    Suck in the frontend registration emails here as well. Job for a rainy day.
 
-                // Update name and fistname from #__users
+                // Update name and firstname from #__users
                 $db->setQuery(' UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'",
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
@@ -179,13 +179,6 @@ class plgUserEmundus extends JPlugin
                     // catch any database errors.
                 }
 
-                // Insert data in #__emundus_users_profiles_history
-                /*$db->setQuery('INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user['id'].','.$profile.',"profile")');
-                try {
-                    $db->Query();
-                } catch (Exception $e) {
-                    // catch any database errors.
-                }*/
                 if (isset($campaign_id) && !empty($campaign_id)) {
                     // Insert data in #__emundus_campaign_candidature
                     $query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].','.$campaign_id.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
@@ -227,8 +220,7 @@ class plgUserEmundus extends JPlugin
      * @return  boolean True on success
      * @since   1.5
      */
-    public function onUserLogin($user, $options = array())
-    {
+    public function onUserLogin($user, $options = array()) {
         // Here you would do whatever you need for a login routine with the credentials
         // Remember, this is not the authentication routine as that is done separately.
         // The most common use of this routine would be logging the user into a third party application
@@ -238,20 +230,32 @@ class plgUserEmundus extends JPlugin
         $jinput = JFactory::getApplication()->input;
         $redirect = $jinput->get->getBase64('redirect');
 
-        if(empty($redirect)) {
+        if (empty($redirect)) {
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
             $previous_url = base64_decode($return_url['return']);
-            if(empty($previous_url)){
+            if (empty($previous_url)) {
                 $return_url = $jinput->POST->getVar('return');
-                    $previous_url = base64_decode($return_url);
+                $previous_url = base64_decode($return_url);
             }
-        }
-        else {
+        } else {
             $previous_url = base64_decode($redirect);
         }
-
         
         if (!$app->isAdmin()) {
+
+	        // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
+	        if ($user['type'] == 'OAuth2' && $user['isnew'] == true) {
+
+		        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		        $m_users = new EmundusModelUsers();
+		        $user_params = [
+		        	'firstname' => $user['firstname'],
+			        'lastname' => $user['lastname'],
+			        'profile' => $user['profile']
+		        ];
+		        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+	        }
+
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
             $m_profile = new EmundusModelProfile;
             $m_profile->initEmundusSession();
