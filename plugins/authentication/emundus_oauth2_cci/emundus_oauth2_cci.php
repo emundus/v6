@@ -75,14 +75,6 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 			try {
 
 				$token = JArrayHelper::getValue($options, 'token');
-				if ($user = new JUser(JUserHelper::getUserId($username))) {
-					if ($user->get('block') || $user->get('activation')) {
-						$response->status = JAuthentication::STATUS_FAILURE;
-						$response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
-						return;
-					}
-				}
-
 				$url = $this->params->get('sso_account_url');
 				$oauth2 = new JOAuth2Client;
 				$oauth2->setToken($token);
@@ -96,8 +88,16 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 				$response->profile = $this->params->get('emundus_profile', 1006);
 				$response->username = $body->preferred_username;
 				$response->status = JAuthentication::STATUS_SUCCESS;
-				$response->isnew = true;
+				$response->isnew = empty(JUserHelper::getUserId($body->preferred_username));
 				$response->error_message = '';
+
+				if ($user = new JUser(JUserHelper::getUserId($body->preferred_username))) {
+					if ($user->get('block') || $user->get('activation')) {
+						$response->status = JAuthentication::STATUS_FAILURE;
+						$response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+						return;
+					}
+				}
 
 			} catch (Exception $e) {
 				// log error.
