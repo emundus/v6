@@ -156,4 +156,99 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		else
 			return false;
 	}
+
+	// After the login has been executed, we need to send the user an email.
+	public function onUserAfterLogin($user, $options = array()) {
+
+		// Do not send an email if this is not the first the user's first rodeo.
+		if (!$user['isnew'] || $user['type'] != 'OAuth2')
+			return true;
+
+		$user_id = JUserHelper::getUserId($user['username']);
+
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
+
+		$m_messages = new EmundusModelMessages();
+		$m_emails   = new EmundusModelEmails();
+
+		$user   = JFactory::getUser();
+		$config = JFactory::getConfig();
+
+		$template = $m_messages->getEmail($this->params->get('email_id'));
+
+		// Get default mail sender info
+		$mail_from_sys = $config->get('mailfrom');
+		$mail_from_sys_name = $config->get('fromname');
+
+		// If no mail sender info is provided, we use the system global config.
+		$mail_from_name = $mail_from_sys;
+		$mail_from      = $template->emailfrom;
+
+		// If the email sender has the same domain as the system sender address.
+		if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+			$mail_from_address = $mail_from;
+		else {
+			$mail_from_address = $mail_from_sys;
+			$mail_from_name = $mail_from_sys_name;
+		}
+
+		// Set sender
+		$sender = [
+			$mail_from_address,
+			$mail_from_name
+		];
+
+		$post = [
+			'USER_NAME'     => $user['fullname'],
+			'SITE_URL'      => JURI::base(),
+			'USER_EMAIL'    => $user['email'],
+			'USER_PASS'     => $user['password'],
+			'USERNAME'      => $user['username']
+		];
+
+		$tags = $m_emails->setTags($user_id, $post);
+
+		// Tags are replaced with their corresponding values using the PHP preg_replace function.
+		$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
+		$body = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
+		if ($template != false)
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+
+		// Configure email sender
+		$mailer = JFactory::getMailer();
+		$mailer->setSender($sender);
+		$mailer->addReplyTo($mail_from, $mail_from_name);
+		$mailer->addRecipient($user['email']);
+		$mailer->setSubject($subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
+
+		// Send and log the email.
+		$send = $mailer->Send();
+
+		if ($send !== true) {
+
+			JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+
+		} else {
+
+			$sent[] = $user['email'];
+			$log = [
+				'user_id_to'    => $user_id,
+				'subject'       => $subject,
+				'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user['email'].'</i><br>'.$body,
+				'type'          => $template->type
+			];
+			$m_emails->logEmail($log);
+
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
+			return true;
+		}
+
+	}
 }
