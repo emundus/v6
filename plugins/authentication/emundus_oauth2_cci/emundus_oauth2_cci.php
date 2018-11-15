@@ -158,22 +158,22 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 	}
 
 	// After the login has been executed, we need to send the user an email.
-	public function onUserAfterLogin($user, $options = array()) {
+	public function onOAuthAfterRegister(...$user_info) {
 
-		// Do not send an email if this is not the first the user's first rodeo.
-		if (!$user['isnew'] || $user['type'] != 'OAuth2')
-			return true;
+		$user['username'] = $user_info[3];
+		$user['password'] = $user_info[4];
+		$user['email'] = $user_info[5];
+		$user['name'] = $user_info[6];
 
 		$user_id = JUserHelper::getUserId($user['username']);
 
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 		$m_messages = new EmundusModelMessages();
 		$m_emails   = new EmundusModelEmails();
 
-		$user   = JFactory::getUser();
 		$config = JFactory::getConfig();
 
 		$template = $m_messages->getEmail($this->params->get('email_id'));
@@ -249,6 +249,5 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 			$app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
 			return true;
 		}
-
 	}
 }

@@ -264,6 +264,10 @@ class plgUserEmundus extends JPlugin
 			        $o_user->save();
 			        $user['password'] = $pass;
 			        unset($pass, $password);
+
+			        JPluginHelper::importPlugin('authentication');
+			        $dispatcher = JEventDispatcher::getInstance();
+			        $dispatcher->trigger('onOAuthAfterRegister', $user);
 		        }
 
 		        // Add the Oauth provider type to the Joomla user params.
