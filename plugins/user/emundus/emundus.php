@@ -256,6 +256,14 @@ class plgUserEmundus extends JPlugin
 				        'profile' => $user['profile']
 			        ];
 			        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+
+			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
+			        $pass = bin2hex(openssl_random_pseudo_bytes(4));
+			        $password = array('password' => $pass, 'password2' => $pass);
+			        $o_user->bind($password);
+			        $o_user->save();
+			        $user['password'] = $pass;
+			        unset($pass, $password);
 		        }
 
 		        // Add the Oauth provider type to the Joomla user params.
@@ -263,8 +271,9 @@ class plgUserEmundus extends JPlugin
 			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
 			        $o_user->setParam('OAuth2', $options['provider']);
 			        $o_user->save();
-			        return true;
 		        }
+
+		        $previous_url = "";
 	        }
 
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
@@ -276,7 +285,9 @@ class plgUserEmundus extends JPlugin
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 	        $user = JFactory::getSession()->get('emundusUser');
 	        EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
-	        $app->redirect($previous_url);
+
+	        if (!empty($previous_url))
+	            $app->redirect($previous_url);
         }
         return true;
     }
