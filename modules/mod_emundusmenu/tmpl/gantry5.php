@@ -11,6 +11,17 @@ defined('_JEXEC') or die;
 
 // Note. It is important to remove spaces between elements.
 ?>
+<style type='text/css'>
+    .edge .g-active{
+        position: absolute !important;
+        left: -100% !important;
+        z-index: 1 !important ;
+        margin-left: -50px !important;
+        top: -9px !important;
+        /* right: 100%; */
+        margin-top: 2px !important;
+    }
+</style>
 <nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"
     <?php
     $tag = '';
@@ -84,3 +95,26 @@ defined('_JEXEC') or die;
     ?>
     </ul>
 </nav>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        jQuery(".g-sublevel > li").on('mouseenter', function (e) {
+            if (jQuery('ul', this).length) {
+                var elm = jQuery('ul:first', this);
+                var off = elm.offset();
+                var l = off.left;
+                var w = elm.width();
+                var docH = jQuery("#g-page-surround").height();
+                var docW = jQuery("#g-page-surround").width();
+                var isEntirelyVisible = (l + w <= docW);
+
+                if (!isEntirelyVisible) {
+                    jQuery(this).addClass('edge');
+                } else {
+                    jQuery(this).removeClass('edge');
+                }
+            }
+        });
+    });
+</script>
