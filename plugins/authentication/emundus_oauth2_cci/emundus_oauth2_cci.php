@@ -87,7 +87,6 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 				$response->lastname = $body->family_name;
 				$response->profile = $this->params->get('emundus_profile', 1006);
 				$response->username = $body->preferred_username;
-				$response->remember = true;
 				$response->status = JAuthentication::STATUS_SUCCESS;
 				$response->isnew = empty(JUserHelper::getUserId($body->preferred_username));
 				$response->error_message = '';
