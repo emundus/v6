@@ -274,6 +274,7 @@ class plgUserEmundus extends JPlugin
 		        if (!empty($options['provider'])) {
 			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
 			        $o_user->setParam('OAuth2', $options['provider']);
+			        $o_user->setParam('token', json_encode($options['token']));
 			        $o_user->save();
 		        }
 

@@ -151,7 +151,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$app = JFactory::getApplication();
 
 		// Perform the log in.
-		if (true === $app->login($credentials, $options))
+		if ($app->login($credentials, $options) === true)
 			return true;
 		else
 			return false;
