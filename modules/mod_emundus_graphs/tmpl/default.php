@@ -808,21 +808,33 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         });
         if (<?php echo $nationality; ?>) {
             document.getElementById("nationRow").setAttribute("style", "display:block;");
+            var button = document.createElement("div");
+            button.className = "btn";
+            var icon = document.createElement("i");
+            icon.className = "search icon";
+            button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID7"); ?>");
             OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id7');?>&Itemid=0' );
             OffreClick.append(text);
-            document.getElementById("summaryNationality").append(OffreClick);
+            button.append(OffreClick);
+            document.getElementById("summaryNationality").append(button);
             document.getElementById("summaryNationality").append(document.createElement("br"));
             afficheNationality();
         }
         if (<?php echo $gender; ?>) {
             document.getElementById("genderRow").setAttribute("style", "display:block;");
+            var button = document.createElement("div");
+            button.className = "btn";
+            var icon = document.createElement("i");
+            icon.className = "search icon";
+            button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID9"); ?>");
             OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
             OffreClick.append(text);
-            document.getElementById("summaryGender").append(OffreClick);
+            button.append(OffreClick);
+            document.getElementById("summaryGender").append(button);
             document.getElementById("summaryGender").append(document.createElement("br"));
             afficheGenre();
         }
