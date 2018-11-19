@@ -268,7 +268,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
                                     <div class="em-option-buttons">
                                         <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
-                                        <a href="/demande-de-pre-inscription?session=<?php echo $session['code']; ?>" class="em-option-login">s'inscrire</a>
+                                        <a href="/demande-de-pre-inscription?session=<?php echo $session['session_code']; ?>" class="em-option-login">s'inscrire</a>
                                     </div>
                                 <?php else: ?>
                                     <div class="em-option-buttons">
