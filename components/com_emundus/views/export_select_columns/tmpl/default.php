@@ -62,6 +62,9 @@ if (!empty($s_elements)) {
         text-shadow: none ;
         font-size: 14px;
     }
+    label {
+        display: inline!important;
+    }
 </style>
 
 	<?php
