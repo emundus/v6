@@ -875,7 +875,7 @@ class EmundusModelAdmission extends JModelList
 							if ($value[0] == "%" || empty($value[0]))
 								$query['q'] .= ' ';
 							else
-								$query['q'] .= ' and sp.code IN ("' . implode('","', $value) . '") ';
+								$query['q'] .= ' and #__emundus_setup_programmes.code IN ("' . implode('","', $value) . '") ';
 
 						}
 						break;
@@ -1215,7 +1215,7 @@ class EmundusModelAdmission extends JModelList
 		$query .= ' FROM #__emundus_campaign_candidature as c
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+					LEFT JOIN #__emundus_setup_programmes on #__emundus_setup_programmes.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
 					LEFT JOIN #__users as u on u.id = c.applicant_id
 					LEFT JOIN #__emundus_admission as jos_emundus_admission on jos_emundus_admission.fnum = c.fnum
@@ -1240,7 +1240,7 @@ class EmundusModelAdmission extends JModelList
 		// ONLY FILES LINKED TO MY GROUPS
 		//$code = $userModel->getUserGroupsProgrammeAssoc(JFactory::getUser()->id);
 		//$fnum_assoc = $userModel->getApplicantsAssoc(JFactory::getUser()->id);
-		$query .= ' AND (sp.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
+		$query .= ' AND (#__emundus_setup_programmes.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
 		//////////////////////////////////////////////////////////////
 
 //		if (in_array('overall', $em_blocks_names))

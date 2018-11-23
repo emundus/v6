@@ -527,8 +527,9 @@ class EmundusModelProfile extends JModelList
 
 		$profiles = $m_users->getApplicantProfiles();
 		$profile_array = array();
-			foreach($profiles as $pf)
-				array_push($profile_array, $pf->id);
+		foreach ($profiles as $pf) {
+			array_push($profile_array, $pf->id);
+		}
 
 		$profile = $this->getCurrentProfile($current_user->id);
 
@@ -538,8 +539,7 @@ class EmundusModelProfile extends JModelList
 			
 			// If the profile number is 8 that means he has been admitted
 			// This means that regardless of his other applications he must be considered admitted
-
-			//var_dump($profile_array);die;
+			
 			if ($profile['profile'] != 8) {
 				
 					$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);

@@ -39,6 +39,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
     function display($tpl = null) {
         $m_program  = new EmundusModelProgramme();
         require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'decision.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
 
@@ -68,6 +69,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
             die(JText::_('ACCESS_DENIED'));
 
         $m_admission = new EmundusModelAdmission;
+        $m_decision = new EmundusModelDecision;
         $m_eval = new EmundusModelEvaluation;
         
         //TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
@@ -76,7 +78,8 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
 
         if ($form == "decision")
-            $elements = $m_admission->getAdmissionElementsName(0, 0, $code);
+            $elements = $m_decision->getDecisionElementsName(0, 0);
+            //$elements = $m_admission->getAdmissionElementsName(0, 0, $code);
         elseif ($form == "admission")
             $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
         elseif ($form == "evaluation")

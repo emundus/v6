@@ -43,7 +43,7 @@ class EmundusViewProfile extends JViewLegacy
 		$profile = $model->getProfile($p);
 
 		if($profile->published !=1) {
-			JError::raiseError(500, JText::_('CANNOT_SETUP_ATTACHMENTS_TO_NON_APPLICANT_USERS'));
+            $app->enqueueMessage(JText::_('CANNOT_SETUP_ATTACHMENTS_TO_NON_APPLICANT_USERS'));
 			$app->redirect('index.php?option=com_fabrik&view=list&listid=67');
 		}
 		$attachments = $model->getAttachments($p);
