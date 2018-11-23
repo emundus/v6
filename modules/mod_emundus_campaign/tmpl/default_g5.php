@@ -77,9 +77,9 @@ if ($locallang == "fr-FR") {
 						$h = $dteDiff->format("%H");
 
 						if ($order == "start_date")
-							$month = utf8_encode(strftime("%B %Y", strtotime($result->start_date)));
+							$month = strftime("%B %Y", strtotime($result->start_date));
 						else
-							$month = utf8_encode(strftime("%B %Y", strtotime($result->end_date)));
+							$month = strftime("%B %Y", strtotime($result->end_date));
 
 						if ($oldmonth != $month) {
 							if (!empty($oldmonth)) {
