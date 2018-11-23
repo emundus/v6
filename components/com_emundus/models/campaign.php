@@ -413,5 +413,30 @@ class EmundusModelCampaign extends JModelList
 
     }
 
+
+    /**
+     * Gets all elements in teaching unity table
+     * @return array
+     */
+
+    function getTeachingUnity() {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from($db->quoteName('#__emundus_setup_teaching_unity'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            die($query->__toString());
+            JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+
+        }
+    }
+
 }
 ?>

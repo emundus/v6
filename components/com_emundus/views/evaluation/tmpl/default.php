@@ -134,13 +134,11 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
                     {
                         if (result.status && result.fnumInfos != null)
                         {
-                            console.log(result);
                             var fnumInfos = result.fnumInfos;
                             fnum.name = fnumInfos.name;
                             fnum.label = fnumInfos.label;
                             openFiles(fnum);
                         } else {
-                            console.log(result);
                             $('.em-dimmer').remove();
                             $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
                         }
