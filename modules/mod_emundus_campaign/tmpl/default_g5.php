@@ -189,7 +189,7 @@ if ($locallang == "fr-FR") {
 								$textprog = '';
 								$textcamp = '';
 								if ($showcampaign) {
-									$textcamp = strip_tags($result->short_description);
+									$textcamp = $result->short_description;
 								}
 								//$text = $textprog."<br />".$textcamp;
 								echo $textcamp;
