@@ -2621,7 +2621,13 @@ class EmundusControllerFiles extends JControllerLegacy
                         else
                             $setupTags[] = $tag;
                     }
-                    $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
+
+                    if (!empty($idFabrik))
+                        $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
+                    else
+                    	$fabrikElts = array();
+
+
                     $fabrikValues = array();
                     foreach ($fabrikElts as $elt) {
                         $params = json_decode($elt['params']);
