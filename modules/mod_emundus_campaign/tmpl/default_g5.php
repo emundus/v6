@@ -106,7 +106,7 @@ if ($locallang == "fr-FR") {
 								$textprog = '';
 								$textcamp = '';
 								if ($showcampaign) {
-									$textcamp = strip_tags($result->short_description);
+									$textcamp = $result->short_description;
 								}
 								echo $textcamp;
 							?>
@@ -174,7 +174,7 @@ if ($locallang == "fr-FR") {
 					<div class="campaign-month-label">
 						<div class="position-me">
 							<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
-								<p><?php echo ucfirst(utf8_encode($month)); ?></p>
+								<p><?php echo ucfirst($month); ?></p>
 							</div>
 						</div>
 					</div>
@@ -189,7 +189,7 @@ if ($locallang == "fr-FR") {
 								$textprog = '';
 								$textcamp = '';
 								if ($showcampaign) {
-									$textcamp = strip_tags($result->short_description);
+									$textcamp = $result->short_description;
 								}
 								//$text = $textprog."<br />".$textcamp;
 								echo $textcamp;
@@ -206,11 +206,11 @@ if ($locallang == "fr-FR") {
 						</div>
 					</div>
 					<div class="below-content">
-						<?php if($result->apply_online==1) {?>
+						<?php if ($result->apply_online == 1) :?>
 							<a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-						<?php } else { ?>
+						<?php else :?>
 							<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-						<?php } ?>
+						<?php endif; ?>
 					</div>
 				</div><!-- Close campaign-content -->
 				<?php
@@ -245,7 +245,7 @@ if ($locallang == "fr-FR") {
 			<div class="campaign-month-label">
 				<div class="position-me">
 					<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
-						<p><?php echo ucfirst(utf8_encode($month)); ?></p>
+						<p><?php echo ucfirst($month); ?></p>
 					</div>
 				</div>
 			</div>
@@ -260,7 +260,7 @@ if ($locallang == "fr-FR") {
 							$textprog = '';
 							$textcamp = '';
 							if ($showcampaign) {
-								$textcamp = strip_tags($result->short_description);
+								$textcamp = $result->short_description;
 							}
 							//$text = $textprog."<br />".$textcamp;
 							echo $textcamp;
@@ -316,7 +316,7 @@ if ($locallang == "fr-FR") {
 							<div class="campaign-month-label">
 								<div class="position-me">
 									<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
-										<p><?php echo ucfirst(utf8_encode($month)); ?></p>
+										<p><?php echo ucfirst($month); ?></p>
 									</div>
 								</div>
 							</div>
@@ -331,7 +331,7 @@ if ($locallang == "fr-FR") {
 												$textprog = '';
 												$textcamp = '';
 												if ($showcampaign) {
-													$textcamp = strip_tags($result->short_description);
+													$textcamp = $result->short_description;
 												}
 												//$text = $textprog."<br />".$textcamp;
 												echo $textcamp;
