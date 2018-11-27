@@ -2621,7 +2621,13 @@ class EmundusControllerFiles extends JControllerLegacy
                         else
                             $setupTags[] = $tag;
                     }
-                    $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
+
+                    if (!empty($idFabrik))
+                        $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
+                    else
+                    	$fabrikElts = array();
+
+
                     $fabrikValues = array();
                     foreach ($fabrikElts as $elt) {
                         $params = json_decode($elt['params']);
@@ -2797,10 +2803,9 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function exportonedoc() {
-        require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
+        require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-            \PhpOffice\PhpWord\Autoloader::register();
             $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
             \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
         }
