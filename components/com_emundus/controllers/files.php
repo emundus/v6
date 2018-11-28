@@ -3076,7 +3076,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		$query = $this->_db->getQuery(true);
 		$query
 			->select([
-				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'),
+				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'),
 				$this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
 				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
 			])
@@ -3144,7 +3144,8 @@ class EmundusControllerFiles extends JControllerLegacy
 		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
 		    '/{PEDAGOGIE}/' => $product[0]['pedagogie'],
-		    '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">CPF</h2><p style="padding-left: 30px;">code CPF : '.$product[0]['cpf'].' </p>':''
+		    '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">CPF</h2><p style="padding-left: 30px;">code CPF : '.$product[0]['cpf'].' </p>':'',
+		    '/{EVALUATION}/' => $product[0]['evaluation']
 	    ];
 
 	    $export_date = strftime('%e')." ".strftime('%B')." ".date('Y');

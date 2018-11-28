@@ -52,45 +52,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 		$rows_updated = 0;
 
 		$params = $this->getParams();
-		$product_url = $params->get('product_url', null);
 		$session_url = $params->get('session_url', null);
-
-		if (empty($product_url) && empty($session_url))
-			return false;
-
-		if (!empty($product_url)) {
-			// Hash the distant file in order to compare its contents with those of the past.
-			$product_json = file_get_contents($product_url);
-			$product_md5  = md5($product_json);
-
-			//TODO: Add Fabrik logs to this.
-
-			//TODO : Question to client: are we getting the participants from GesCOF, if so, are we inserting them into eMundus?
-
-			// Get the list of files which are porduct JSON files.
-			$product_files = glob(JPATH_ROOT.DS.'plugins'.DS.'fabrik_cron'.DS.'migalFTP'.DS.'files'.DS.'/products-*.json');
-
-			// If the MD5 of the distant file is different than the MD5 of the last saved file.
-			if (empty($product_files) || $product_md5 != substr(explode('-', max($product_files))[2], 0, -5)) {
-
-				// Write the distant file to the local disk and name it as so : products-YYYYMMDD-MD5.json
-				$product_filename = 'products-'.date('Ymd').'-'.$product_md5.'.json';
-				file_put_contents(JPATH_ROOT.DS.'plugins'.DS.'fabrik_cron'.DS.'migalFTP'.DS.'files'.DS.$product_filename, $product_json);
-
-				JLog::add('Created NEW product JSON file with filename: '.$product_filename, JLog::INFO, 'com_emundus');
-
-				// Delete the oldest file (if there are 5).
-				if (sizeof($product_files) >= 5)
-					unlink(min($product_files));
-
-				$parsed_json = json_decode($product_json);
-				if (!empty($parsed_json))
-					/* TODO : Product JSON DB Queries? */ echo '';
-				else
-					JLog::add('Product JSON is empty or invalid', JLog::ERROR, 'com_emundus');
-
-			}
-		}
 
 		if (!empty($session_url)) {
 			// Hash the distant file in order to compare its contents with those of the past.
@@ -221,7 +183,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						->select([
 							't.*',
 							$db->quoteName('c.description', 'desc'),
-							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname'), $db->quoteName('p.pedagogie', 'pedagogie'), $db->quoteName('p.certificate', 'certificate'), $db->quoteName('p.partner', 'partner'), $db->quoteName('p.target', 'target')
+							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname'), $db->quoteName('p.pedagogie', 'pedagogie'), $db->quoteName('p.certificate', 'certificate'), $db->quoteName('p.partner', 'partner'), $db->quoteName('p.target', 'target'), $db->quoteName('p.evaluation', 'evaluation')
 						])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
@@ -439,6 +401,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['target'] != $update_item['produit7'])
 							$fields[] = $db->quoteName('p.target').' = '.$db->quote($update_item['produit7']);
 
+						// Evaluation
+						if ($db_item['evaluation'] != $update_item['evaluation'])
+							$fields[] = $db->quoteName('p.evaluation').' = '.$db->quote($update_item['evaluation']);
+
 						// If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
 
@@ -521,7 +487,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					}
 
 					// DB table struct for different tables.
-					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname', 'pedagogie', 'certificate', 'partner', 'target'];
+					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname', 'pedagogie', 'certificate', 'partner', 'target', 'evaluation'];
 					$campaign_columns   = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
 					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'tax_rate', 'intervenant'];
 
@@ -585,7 +551,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['pedagogie']),
 								$db->quote(''),
 								$db->quote($partner),
-								$db->quote($item['produit7'])
+								$db->quote($item['produit7']),
+								$db->quote($item['evaluation'])
 							]);
 						}
 
