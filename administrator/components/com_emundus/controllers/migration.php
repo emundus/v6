@@ -86,11 +86,9 @@ class EmundusControllerMigration extends JControllerLegacy
 		JLog::add('duplicatefilesforfnum START', JLog::ERROR, 'com_emundus');
 
 		require_once (JPATH_COMPONENT_SITE.DS.'models'.DS.'users.php');
-		require_once (JPATH_COMPONENT_SITE.DS.'models'.DS.'files.php');
 
 		$m_migration = $this->getModel('migration');
 		$m_users = new EmundusModelUsers;
-		$m_files = new EmundusModelFiles;
 
 		// Get all users in campaign_candidatures table
 		$users = $m_migration->getUsersInCC();
@@ -124,7 +122,7 @@ class EmundusControllerMigration extends JControllerLegacy
 			}
 
 			// Next we will copy the one with data to the ones without
-			if (!empty($dataFnum) && !empty($emptyFnum))
+			if (!empty($dataFnum) && !empty($emptyFnums))
 				$m_migration->copyFnumTablePicker($dataFnum, $emptyFnums);
 		}
 
