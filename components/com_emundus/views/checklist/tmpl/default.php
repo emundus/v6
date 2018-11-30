@@ -66,6 +66,8 @@ if ($this->show_info_panel) :
             } else {
                 $class= 'need_ok';
             }
+            var_dump($attachment->allowed_types);
+
             $div = '<fieldset id="a'.$attachment->id.'">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
                     <a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' <i class="resize vertical icon"></i></a>
@@ -225,7 +227,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
             </tr>
             <tr class="em-allowed-files">
                 <td>
-                <p><em>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
+                <p style="display: inline; padding-bottom: 3px;"><em>'. JText::_('PLEASE_ONLY').' <span class="allowedDocs" style="padding-right: 15px;">'.$attachment->allowed_types.'</span></em></p><br><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
                 </td>
             </tr>';
             } else {
@@ -349,22 +351,44 @@ function processSelectedFiles(fileInput) {
     var files = fileInput.files;
     var row = fileInput.parentNode.parentNode.parentNode.id;
     var rowId = document.getElementById(row);
-    if($(rowId).find('.em-added-file').length > 0) {
-        if (files.length > 0)
-            $(rowId).find('.em-added-file')[0].innerHTML = files[0].name;
-        else
-            $(rowId).find('.em-added-file')[0].innerHTML = "";
-    } else {
-        var fileParagraphe = document.createElement("p");
-        fileParagraphe.className = "em-added-file";
-        if (files.length > 0)
-            fileParagraphe.innerHTML = files[0].name;
+    var attachment = rowId.closest('table');
+
+    // We get the html of the allowed documents and put them in an array
+    var allowedDocuments = $(attachment).find(".allowedDocs").html();
+
+    if($(rowId).find(".em-added-file"))
+        $(rowId).find(".em-added-file").remove();
+
+    allowedDocuments = allowedDocuments.split(';');
+
+    // Get the file type that is attached
+    var fileType = files[0].name.split('.').pop();
+
+    var fileParagraphe = document.createElement("p");
+    fileParagraphe.className = "em-added-file";
+
+        if (files.length > 0) {
+            if(allowedDocuments.includes(fileType)) {
+                $(rowId).find(".em_send_uploaded_file").removeAttr("disabled");
+                fileParagraphe.innerHTML = files[0].name;
+            } else {
+                $(rowId).find(".em_send_uploaded_file").attr('disabled', 'disabled');
+                fileParagraphe.addClass('not-allowed');
+                fileParagraphe.innerHTML = "<?php echo JText::_('DOCUMENT_NOT_ALLOWED')?>";
+            }
+           rowId.append(fileParagraphe);
+        }
         else
             fileParagraphe.innerHTML = "";
 
-        $(rowId).find( ".em_send_uploaded_file" ).removeAttr("disabled");
-        rowId.append(fileParagraphe);
-    }
 }
 
 </script>
+
+
+<style>
+    .not-allowed {
+        color: red !important;
+        font-weight: bold;
+    }
+</style>
