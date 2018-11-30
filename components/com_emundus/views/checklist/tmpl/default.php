@@ -66,7 +66,6 @@ if ($this->show_info_panel) :
             } else {
                 $class= 'need_ok';
             }
-            var_dump($attachment->allowed_types);
 
             $div = '<fieldset id="a'.$attachment->id.'">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
