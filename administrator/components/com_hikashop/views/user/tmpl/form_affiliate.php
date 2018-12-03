@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -97,7 +97,7 @@ defined('_JEXEC') or die('Restricted access');
 		<thead>
 			<tr>
 				<th></th>
-				<th><?php echo JText::_('ACTIONS'); ?></th>
+				<th><?php echo JText::_('HIKASHOP_ACTIONS'); ?></th>
 <?php if(!empty($affiliate_payment_delay)) { ?>
 				<th><?php
 					echo hikashop_tooltip(JText::sprintf('AMOUNT_DELAY', $delayType->displayDelay($this->config->get('affiliate_payment_delay'))), JText::_('PAYABLE'), '', JText::_('PAYABLE'))

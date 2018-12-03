@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,7 +36,7 @@ class UpdateViewUpdate extends hikashopView{
 		$db->setQuery('SELECT * FROM '.hikashop_table('languages',false).' WHERE `published` = 1');
 		$languages = $db->loadObjectList();
 		foreach($languages as $language){
-			$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$language->lang_code.DS.$language->lang_code.'.com_hikashop.ini';
+			$path = hikashop_getLanguagePath(JPATH_ROOT).DS.$language->lang_code.DS.$language->lang_code.'.com_hikashop.ini';
 			if(!JFile::exists($path)){
 				$languagesCodes[] = $language->lang_code;
 				$languagesNames[] = $language->title;

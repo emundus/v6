@@ -99,8 +99,11 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 
 			$new      = JUri::getInstance($newURL);
 			$host     = $new->getHost();
-			$fragment = $new->getFragment();
-			$query    = $new->getQuery();
+
+			if ((substr($newURL, 0, 1) !== '/') && (strpos($newURL, '://') === false))
+			{
+				$newURL = '/' . $newURL;
+			}
 
 			if (empty($host))
 			{
@@ -108,6 +111,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 				$new->setHost($base->getHost());
 				$new->setPort($base->getPort());
 				$new->setScheme($base->getScheme());
+				$new->setPath($base->getPath() . $newURL);
 			}
 
 			// Keep URL Params == 1 (override all)

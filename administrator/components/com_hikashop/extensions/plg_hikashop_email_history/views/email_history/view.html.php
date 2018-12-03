@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -31,7 +31,7 @@ class Email_historyViewEmail_history extends hikashopView {
 		$emailHistoryClass = new hikashopPlg_email_historyClass();
 		$emailHistoryClass->initDB();
 
-		$pageInfo = $this->getPageInfo('a.email_log_id');
+		$pageInfo = $this->getPageInfo('a.email_log_id', 'DESC');
 		$pageInfo->filter->filter_type = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type','','string');
 
 		$filters = array();

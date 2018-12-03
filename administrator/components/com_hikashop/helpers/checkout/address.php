@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,6 +41,15 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 				'values' => array(0)
 			)
 		),
+		'multi_address' =>  array(
+			'name' => 'ALLOW_MULTIPLE_ADDRESSES',
+			'type' => 'radio',
+			'default' => 2,
+			'showon' => array(
+				'key' => 'read_only',
+				'values' => array(0)
+			)
+		),
 	);
 
 	public function getParams() {
@@ -59,6 +68,11 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 			JHTML::_('select.option', 'shipping', JText::_('HIKASHOP_SHIPPING_ADDRESS')),
 			JHTML::_('select.option', 'both', JText::_('WIZARD_BOTH'))
 		);
+		$this->params['multi_address']['values'] = array(
+			JHTML::_('select.option', 0, JText::_('HIKASHOP_NO')),
+			JHTML::_('select.option', 2, JText::_('FOR_LOGGED_IN_USERS_ONLY')),
+			JHTML::_('select.option', 1, JText::_('HIKA_ALWAYS')),
+		);
 		return $this->params;
 	}
 
@@ -71,20 +85,48 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 
 		$type = !empty($params['type']) ? $params['type'] : 'both';
 
-		$address_missing = false;
+		$billing_address_missing = false;
+		$shipping_address_missing = false;
 		if(empty($cart->cart_billing_address_id) && in_array($type, array('billing', 'both'))) {
-			$address_missing = true;
+			$billing_address_missing = true;
 		}
 
 		if(empty($cart->cart_shipping_address_ids) && in_array($type, array('shipping', 'both')) && $checkoutHelper->isShipping()) {
-			$address_missing = true;
+			$shipping_address_missing = true;
 		}
 
-		if($address_missing) {
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::_('CREATE_OR_SELECT_ADDRESS'), 'error');
+		if($billing_address_missing || $shipping_address_missing) {
+			$addresses = $checkoutHelper->getAddresses();
+			$billing_addresses = false;
+			$shipping_addresses = false;
+			foreach($addresses['data'] as $address) {
+				if(empty($address->address_type) || $address->address_type == 'both') {
+					$billing_addresses = true;
+					$shipping_addresses = true;
+					break;
+				}
+				if($address->address_type == 'billing')
+					$billing_addresses = true;
+				elseif($address->address_type == 'shipping')
+					$shipping_addresses = true;
+			}
+		};
+
+
+		$app = JFactory::getApplication();
+		if($billing_address_missing) {
+			if($billing_addresses)
+				$app->enqueueMessage(JText::_('SELECT_BILLING_ADDRESS'), 'error');
+			else
+				$app->enqueueMessage(JText::_('ENTER_BILLING_ADDRESS'), 'notice');
 		}
-		return !$address_missing;
+		if($shipping_address_missing) {
+			if($shipping_addresses)
+				$app->enqueueMessage(JText::_('SELECT_SHIPPING_ADDRESS'), 'error');
+			else
+				$app->enqueueMessage(JText::_('ENTER_SHIPPING_ADDRESS'), 'notice');
+		}
+		return !($billing_address_missing || $shipping_address_missing);
 	}
 
 	public function validate(&$controller, &$params, $data = array()) {
@@ -311,7 +353,12 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 
 		if(!isset($params['same_address']))
 			$params['same_address'] = 1;
+		if(!isset($params['multi_address']))
+			$params['multi_address'] = 2;
 
+		$user = JFactory::getUser();
+		if($params['multi_address'] == 2)
+			$params['multi_address'] = empty($user->guest);
 
 		$params['display'] = $checkoutHelper->isLoggedUser() && ($params['show_billing'] || $params['show_shipping']);
 
@@ -322,6 +369,8 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 			$params['address_selector'] = (int)$view->config->get('checkout_address_selector', 0);
 		if(empty($params['address_selector']))
 			$params['address_selector'] = 1;
+
+		$params['display_cancel'] = true;
 
 		if(empty($params['read_only']) && $params['display'] == true) {
 			$addresses = $checkoutHelper->getAddresses();
@@ -353,12 +402,16 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 					elseif($address->address_type == 'shipping')
 						$shipping_addresses = true;
 				}
-				if($params['show_billing'] && $params['show_shipping'] && !$billing_addresses && !$shipping_addresses )
+				if($params['show_billing'] && $params['show_shipping'] && !$billing_addresses && !$shipping_addresses ) {
 					$checkout['address']['new'] = 'billing';
-				elseif($params['show_billing'] && !$billing_addresses)
+					$params['display_cancel'] = false;
+				} elseif($params['show_billing'] && !$billing_addresses) {
 					$checkout['address']['new'] = 'billing';
-				elseif($params['show_shipping'] && !$shipping_addresses)
+					$params['display_cancel'] = false;
+				} elseif($params['show_shipping'] && !$shipping_addresses) {
 					$checkout['address']['new'] = 'shipping';
+					$params['display_cancel'] = false;
+				}
 			}
 
 			if(!empty($checkout['address']['new'])) {

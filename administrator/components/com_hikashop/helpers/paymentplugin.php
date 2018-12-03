@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -558,6 +558,19 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if($cpt > 0)
 				$messages[] = '['.ucfirst($this->name).'] '.JText::_sprintf('X_ORDERS_AUTHORIZATION_RENEW', $cpt);
 		}
+	}
+
+	function getOrderUrl(&$order) {
+		$url = '#';
+		$user = JFactory::getUser();
+		global $Itemid;
+		$url_itemid = (!empty($Itemid)) ? '&Itemid='.$Itemid : '';
+		if(!$user->guest){
+			$url = hikashop_completeLink('order&task=show&cid='.@$order->order_id.$url_itemid);
+		}else{
+			$url = hikashop_completeLink('order&task=show&cid='.@$order->order_id.'&order_token='.@$order->order_token.$url_itemid);
+		}
+		return $url;
 	}
 
 	function writeToLog($data = null) {

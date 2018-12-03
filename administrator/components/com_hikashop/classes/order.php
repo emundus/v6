@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -634,16 +634,7 @@ class hikashopOrderClass extends hikashopClass {
 			$orderProduct->order_product_wishlist_id = (int)@$product->cart_product_wishlist_id;
 			$orderProduct->order_product_wishlist_product_id = (int)@$product->cart_product_wishlist_product_id;
 			$orderProduct->product_subscription_id = (int)@$product->product_subscription_id;
-
-			$text = $product->product_name;
-			if(!empty($product->cart_product_option_parent_id)) {
-				if(!empty($optionElement->variant_name)) {
-					$text = $product->variant_name;
-				} elseif(!empty($product->characteristics_text)) {
-					$text = $product->characteristics_text;
-				}
-			}
-			$orderProduct->order_product_name = $text;
+			$orderProduct->order_product_name = $product->product_name;
 
 			$tax = 0;
 			if(!empty($product->prices[0]->unit_price->price_value_with_tax) && bccomp($product->prices[0]->unit_price->price_value_with_tax,0,5))
@@ -1685,16 +1676,7 @@ class hikashopOrderClass extends hikashopClass {
 		$element->order_url = hikashop_contentLink('order&task=show&cid[]='.$element->order_id.$url, $element, false, false, false, true);
 
 		$element->order = $this->get($element->order_id);
-		$val = str_replace(' ', '_', strtoupper($element->order->order_status));
-		$trans = JText::_($val);
-		if($val == $trans) {
-			if(isset($element->order_status))
-				$element->mail_status = $element->order_status;
-			else
-				$element->mail_status = $element->order->order_status;
-		} else {
-			$element->mail_status = $trans;
-		}
+		$element->mail_status = hikashop_orderStatus($element->order->order_status);
 
 		$mailClass = hikashop_get('class.mail');
 		$element->mail = $mailClass->get('order_notification',$element);
@@ -1710,12 +1692,10 @@ class hikashopOrderClass extends hikashopClass {
 			$element->mail->dst_name = '';
 		}
 		$lang = JFactory::getLanguage();
-		if(!method_exists($lang, 'publicLoadLanguage'))
-			$lang = new hikaLanguage($lang);
-		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
+		$override_path = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
 		$lang->load(HIKASHOP_COMPONENT, JPATH_SITE, null, true );
 		if(file_exists($override_path))
-			$lang->publicLoadLanguage($override_path, 'override');
+			hikashop_loadTranslationFile($override_path);
 	}
 
 	public function loadNotification($order_id, $type = 'order_status_notification', $params = null) {
@@ -1747,24 +1727,14 @@ class hikashopOrderClass extends hikashopClass {
 		$order->order_url = hikashop_contentLink('order&task=show&cid[]='.$order->order_id.$url, $order, false, false, false, true);
 		$app = JFactory::getApplication();
 
-		if(!isset($order->mail_status) && isset($order->order_status)) {
-			if($app->isAdmin()) {
-				$locale = $this->loadLocale($order);
 
-				if(!empty($order->order_current_locale) && $order->order_current_locale != $locale) {
-				} elseif(!empty($order->value)) {
-					$order->mail_status = $order->value;
-				}
-			} else {
-			}
+		$locale = $this->loadLocale($order);
 
-			if(empty($order->mail_status)) {
-				$order->mail_status = hikashop_orderStatus($order->order_status);
-			}
-		}
 
 		if(!isset($order->mail_status))
 			$order->mail_status = '';
+		if(empty($order->mail_status) && isset($order->order_status))
+			$order->mail_status = hikashop_orderStatus($order->order_status);
 
 		$mail_status = $order->mail_status;
 		if(!empty($params))
@@ -1798,14 +1768,14 @@ class hikashopOrderClass extends hikashopClass {
 		if(!empty($this->oldLocale)) {
 			$config->set('language', $this->oldLocale);
 			$debug = $config->get('debug');
-			JFactory::$language = new hikaLanguage($this->oldLocale, $debug);
+			JFactory::$language = new JLanguage($this->oldLocale, $debug);
 		}
 		$lang = JFactory::getLanguage();
-		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
+		$override_path = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
 
 		$lang->load(HIKASHOP_COMPONENT, JPATH_SITE, null, true);
 		if(file_exists($override_path))
-			$lang->publicLoadLanguage($override_path, 'override');
+			hikashop_loadTranslationFile($override_path);
 	}
 
 	public function loadLocale(&$order) {
@@ -1833,13 +1803,13 @@ class hikashopOrderClass extends hikashopClass {
 		$this->oldLocale=$config->get('language');
 		$config->set('language',$locale);
 		$debug = $config->get('debug');
-		JFactory::$language = new hikaLanguage($locale, $debug);
+		JFactory::$language = new JLanguage($locale, $debug);
 
 		$lang = JFactory::getLanguage();
-		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$locale.'.override.ini';
+		$override_path = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$locale.'.override.ini';
 		$lang->load(HIKASHOP_COMPONENT, JPATH_SITE, $locale, true );
 		if(file_exists($override_path))
-			$lang->publicLoadLanguage($override_path,'override');
+			hikashop_loadTranslationFile($override_path);
 		return $locale;
 	}
 

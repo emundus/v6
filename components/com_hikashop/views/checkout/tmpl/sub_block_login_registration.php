@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -166,15 +166,57 @@ if(!empty($this->options['address_on_registration']) && !empty($this->extraField
 <?php
 	}
 	if(!empty($this->options['same_address'])) {
+		$checked = '';
+		$attribute = '';
+		if(!empty($this->options['same_address_pre_checked'])) {
+			$checked = ' checked';
+			$attribute = ' style="display:none;"';
+		}
 ?>
 	<div class="hkform-group control-group hikashop_registration_same_address_line" id="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address'; ?>">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input class="hikashop_checkout_same_address_checkbox" id="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address_input'; ?>" type="checkbox" name="data[same_address]" value="1"/>
+			<input class="hikashop_checkout_same_address_checkbox" id="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address_input'; ?>" data-displayzone="hikashop_registration_shipping_address_<?php echo $this->step . '_' . $this->module_position; ?>" onchange="window.checkout.sameAddressToggle(this);" type="checkbox" name="data[same_address]"<?php echo $checked; ?> value="1"/>
 			<label for="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address_input'; ?>"><?php echo JText::_('SAME_FOR_SHIPPING'); ?></label>
 		</div>
 	</div>
+	<div class="hikashop_registration_shipping_address_title" id="hikashop_registration_shipping_address_<?php echo $this->step . '_' . $this->module_position; ?>_title" <?php echo $attribute; ?>>
+		<legend><?php echo JText::_( 'HIKASHOP_SHIPPING_ADDRESS' ); ?></legend>
+	</div>
+	<div class="hikashop_registration_shipping_address" id="hikashop_registration_shipping_address_<?php echo $this->step . '_' . $this->module_position; ?>" <?php echo $attribute; ?>>
 <?php
+		$type = 'shipping_address';
+		foreach($this->extraFields[$type] as $fieldName => $oneExtraField) {
+?>
+		<div class="hkform-group control-group hikashop_registration_<?php echo $fieldName;?>_line" id="hikashop_address_shipping_<?php echo $this->step . '_' . $this->module_position . '_' . $oneExtraField->field_namekey; ?>">
+<?php
+		$classname = $labelcolumnclass.' hkcontrol-label';
+		echo $this->fieldsClass->getFieldName($oneExtraField, true, $classname);
+?>
+			<div class="<?php echo $inputcolumnclass;?>">
+<?php
+		$onWhat = ($oneExtraField->field_type == 'radio') ? 'onclick' : 'onchange';
+		$this->fieldsClass->prefix = 'shipping_';
+		echo $this->fieldsClass->display(
+				$oneExtraField,
+				@$this->$type->$fieldName,
+				'data['.$type.']['.$fieldName.']',
+				false,
+				'class="hkform-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'address_shipping_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
+				false,
+				$this->extraFields[$type],
+				@$this->$type,
+				false
+		);
+?>
+			</div>
+		</div>
+<?php
+	}
+?>
+	</div>
+<?php
+
 	}
 }
 
@@ -219,4 +261,19 @@ window.hikashop.ready(function() {
 	if(container)
 		document.formvalidator.attachToForm(container);
 });
+window.checkout.sameAddressToggle = function(el) {
+	var d = document, zoneName = el.getAttribute('data-displayzone'), zone = d.getElementById(zoneName), title = d.getElementById(zoneName+'_title');
+	if(!zone)
+		return;
+	if(el.checked)
+		zone.style.display = 'none';
+	else
+		zone.style.display = '';
+	if(!title)
+		return;
+	if(el.checked)
+		title.style.display = 'none';
+	else
+		title.style.display = '';
+};
 </script>

@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS `#__securitycheckpro`;
+DROP TABLE IF EXISTS `#__securitycheckpro`;
 CREATE TABLE `#__securitycheckpro` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `Product` VARCHAR(100) NOT NULL,
@@ -445,7 +446,30 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_jbusinessdirectory','component','4.9.3','<=','3.0.0','>=','J-Business Directory Component','SQL Injection Vulnerability','Aug 12 2018','Version 4.9.3 and previous','update','4.9.4'),
 ('com_jcomments','component','3.0.5','<=','3.0.0','>=','JComments Component','Input Validation Vulnerability','Aug 17 2018','Version 3.0.5 and previous','update','3.0.6'),
 ('com_mobile','component','2.1.24','==','3.0.0','>=','Mobilejoomla Component','Malicious redirects Vulnerability','Aug 17 2018','Version 2.1.24','update','2.1.25'),
-('Joomla!','core','3.8.11','<=','3.0.0','>=','Joomla! multiple vulnerabilities','3 security vulnerabilities','Aug 28 2018','Joomla! versions 1.5.0 through 3.8.11','update','3.8.12');
+('Joomla!','core','3.8.11','<=','3.0.0','>=','Joomla! multiple vulnerabilities','3 security vulnerabilities','Aug 28 2018','Joomla! versions 1.5.0 through 3.8.11','update','3.8.12'),
+('com_virtuemart_magiczoomplus','component','4.9.4','<=','3.0.0','>=','Magiczoomplus for Virtuemart Component','Multiple Vulnerabilities','Sep 17 2018','Version 4.9.4 and previous','update','4.9.6'),
+('com_magiczoomplus','component','3.3.4','<=','3.0.0','>=','Magiczoomplus for Joomla Component','Multiple Vulnerabilities','Sep 17 2018','Version 3.3.4 and previous','update','3.3.6'),
+('com_timetableschedule','component','3.6.8','==','3.0.0','>=','Timetable Schedule Component','SQL Injection vulnerability','Oct 01 2018','Version 3.6.8','none','No details'),
+('com_articleman','component','4.3.9','==','3.0.0','>=','Article Factory Manager Component','SQL Injection vulnerability','Oct 01 2018','Version 4.3.9','none','No details'),
+('com_aindexdictionaries','component','1.0','==','3.0.0','>=','AlphaIndex Dictionaries Component','SQL Injection vulnerability','Oct 01 2018','Version 1.0','none','No details'),
+('com_rbids','component','4.3.8','==','3.0.0','>=','Reverse Auction Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 4.3.8','none','No details'),
+('com_collectionfactory','component','4.1.9','==','3.0.0','>=','Collection Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 4.1.9','none','No details'),
+('com_swapfactory','component','2.2.1','==','3.0.0','>=','Swap Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 2.2.1','none','No details'),
+('com_extroform','component','2.1.5','==','3.0.0','>=','eXtroForms Component','SQL Injection vulnerability','Oct 01 2018','Version 2.1.5','none','No details'),
+('com_dutchfactory','component','2.0.2','==','3.0.0','>=','Dutch Auction Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 2.0.2','none','No details'),
+('com_socialfactory','component','3.8.3','==','3.0.0','>=','Social Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 3.8.3','none','No details'),
+('com_jobsfactory','component','2.0.4','==','3.0.0','>=','Jobs Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 2.0.4','none','No details'),
+('com_questions','component','1.4.3','==','3.0.0','>=','Questions Component','SQL Injection vulnerability','Oct 01 2018','Version 1.4.3','none','No details'),
+('com_pennyfactory','component','2.0.4','==','3.0.0','>=','Penny Auction Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 2.0.4','none','No details'),
+('com_rafflefactory','component','3.5.2','==','3.0.0','>=','Raffle Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 3.5.2','none','No details'),
+('com_pofos','component','1.6.1','==','3.0.0','>=','Responsive Portfolio Component','SQL Injection vulnerability','Oct 01 2018','Version 1.6.1','none','No details'),
+('com_auctionfactory','component','4.5.5','==','3.0.0','>=','Auction Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 4.5.5','none','No details'),
+('com_microdealfactory','component','2.0.4','==','3.0.0','>=','Micro Deal Factory Component','SQL Injection vulnerability','Oct 01 2018','Version 2.0.4','none','No details'),
+('jckeditor','plugin','6.4.4','==','3.0.0','>=','JCK Editor Plugin','SQL Injection vulnerability','Oct 01 2018','Version 6.4.4','none','No details'),
+('cwattachments','plugin','1.0.6','==','3.0.0','>=','CW Article Attachments Plugin','SQL Injection vulnerability','Oct 01 2018','Version 1.0.6','none','No details'),
+('Joomla!','core','3.8.12','<=','3.0.0','>=','Joomla! multiple vulnerabilities','4 security vulnerabilities','Oct 09 2018','Joomla! versions 1.5.0 through 3.8.12','update','3.8.13'),
+('com_kunena','component','5.1.5','<','3.0.0','>=','Kunena Component','Two low vulnerabilities','Oct 22 2018','Version 3.0 through 5.1.4','update','5.1.5'),
+('com_jimtawl','component','2.2.7','==','3.0.0','>=','Jimtawl Component','Sql Injection vulnerabilitiy','Nov 18 2018','Version 2.2.7','update','2.2.8');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -564,7 +588,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.23');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.27');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

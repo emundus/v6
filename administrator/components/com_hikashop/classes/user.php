@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -444,12 +444,15 @@ class hikashopUserClass extends hikashopClass {
 		$userData = $fieldClass->getFilteredInput('user', $old, 'msg', $input_data['user']);
 		$addressData = null;
 		if($input_data['address'] !== null)
-			$addressData = $fieldClass->getFilteredInput('address', $old, 'msg', $input_data['address']);
+			$addressData = $fieldClass->getFilteredInput(array('billing_address','address'), $old, 'msg', $input_data['address']);
+		$shippingAddressData = null;
+		if($input_data['shipping_address'] !== null)
+			$shippingAddressData = $fieldClass->getFilteredInput(array('shipping_address','address', 'shipping_'), $old, 'msg', $input_data['shipping_address']);
 
 		$status = true;
 		$messages = array();
 
-		if($registerData === false || $addressData === false || $userData === false) {
+		if($registerData === false || $addressData === false || $userData === false  || $shippingAddressData === false) {
 			$messages = $fieldClass->messages;
 			$fieldClass->messages = array();
 			$status = false;
@@ -549,13 +552,22 @@ class hikashopUserClass extends hikashopClass {
 			'messages' => array(),
 			'registerData' => &$registerData,
 			'userData' => &$userData,
-			'addressData' => &$addressData
+			'addressData' => &$addressData,
+			'shippingAddressData' => &$shippingAddressData
 		);
 
 
 		if(!empty($addressData->address_vat)) {
 			$vatHelper = hikashop_get('helper.vat');
 			if(!$vatHelper->isValid($addressData)) {
+				$ret['status'] = false;
+				$ret['messages']['VAT_NUMBER_NOT_VALID'] = array(JText::_('VAT_NUMBER_NOT_VALID'), 'warning');
+				return $ret;
+			}
+		}
+		if(!empty($shippingAddressData->address_vat)) {
+			$vatHelper = hikashop_get('helper.vat');
+			if(!$vatHelper->isValid($shippingAddressData)) {
 				$ret['status'] = false;
 				$ret['messages']['VAT_NUMBER_NOT_VALID'] = array(JText::_('VAT_NUMBER_NOT_VALID'), 'warning');
 				return $ret;
@@ -765,6 +777,18 @@ class hikashopUserClass extends hikashopClass {
 				$ret['address_id'] = $addressClass->save($addressData);
 			}
 		}
+		if(!empty($shippingAddressData)) {
+			if(isset($shippingAddressData->address_id))
+				unset($shippingAddressData->address_id);
+
+			$shippingAddressData->address_type = 'shipping';
+
+			if(!empty($shippingAddressData)) {
+				$shippingAddressData->address_user_id = $ret['user_id'];
+				$addressClass = hikashop_get('class.address');
+				$ret['shipping_address_id'] = $addressClass->save($shippingAddressData);
+			}
+		}
 
 		$send_email = ($mode != 2);
 		$app->triggerEvent('onAfterHikaUserRegistration', array(&$ret, $input_data, $mode, &$send_email));
@@ -781,6 +805,7 @@ class hikashopUserClass extends hikashopClass {
 			$mailClass = hikashop_get('class.mail');
 			$registerData->user_data =& $userData;
 			$registerData->address_data =& $addressData;
+			$registerData->shipping_address_data =& $shippingAddressData;
 			$registerData->active = $useractivation;
 
 			$original_password = null;
@@ -829,6 +854,7 @@ class hikashopUserClass extends hikashopClass {
 
 			unset($registerData->user_data);
 			unset($registerData->address_data);
+			unset($registerData->shipping_address_data);
 			unset($registerData->active);
 			unset($registerData->activation_url);
 			unset($registerData->partner_url);

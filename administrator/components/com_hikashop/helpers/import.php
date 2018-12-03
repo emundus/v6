@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -369,7 +369,7 @@ class hikashopImportHelper
 	}
 
 	function _deleteUnecessaryVariants(){
-		if(!empty($this->products_already_in_db)){
+		if(!empty($this->products_already_in_db) && !$this->keep_other_variants){
 			$this->db->setQuery('SELECT product_id FROM '.hikashop_table('product').' WHERE product_parent_id IN ('.implode(',',$this->products_already_in_db).') AND product_id NOT IN ('.implode(',',$this->new_variants_in_db).') AND product_type=\'variant\'');
 			$variants_to_be_deleted = $this->db->loadColumn();
 			if(!empty($variants_to_be_deleted)){
@@ -531,7 +531,10 @@ class hikashopImportHelper
 		}
 
 		if(!isset($product->product_tax_id) || strlen($product->product_tax_id)<1){
-			$product->product_tax_id = $this->tax_category;
+			if(!empty($this->template))
+				$product->product_tax_id = $this->template->product_tax_id;
+			else
+				$product->product_tax_id = $this->tax_category;
 		}else{
 			if(!is_numeric($product->product_tax_id)){
 				$id = $this->_getCategory($product->product_tax_id,0,!$this->createCategories,'tax');

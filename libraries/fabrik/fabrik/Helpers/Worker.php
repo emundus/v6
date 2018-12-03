@@ -13,6 +13,7 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\FCipher;
 use DateTime;
 use Exception;
 use FabTable;
@@ -142,7 +143,7 @@ class Worker
 
 		if (array_key_exists('extension', $path_parts))
 		{
-			$image_extensions_eregi = 'bmp|gif|jpg|jpeg|png|pdf';
+			$image_extensions_eregi = 'bmp|gif|jpg|jpeg|png';
 
 			return preg_match('/' . $image_extensions_eregi . '/i', $path_parts['extension']) > 0;
 		}
@@ -698,26 +699,15 @@ class Worker
 	/**
 	 * Get the crypt object
 	 *
+	 * @param  string  type  type of encryption (aes, crypt or simple)
+	 *
 	 * @since  3.1
 	 *
-	 * @return  JCrypt
+	 * @return  Fabrik\Helpers\FCipher
 	 */
-	public static function getCrypt()
+	public static function getCrypt($type = 'simple')
 	{
-		jimport('joomla.crypt.crypt');
-		jimport('joomla.crypt.key');
-		$config = JFactory::getConfig();
-		$secret = $config->get('secret', '');
-
-		if (trim($secret) == '')
-		{
-			throw new RuntimeException('You must supply a secret code in your Joomla configuration.php file');
-		}
-
-		$key   = new JCryptKey('simple', $secret, $secret);
-		$crypt = new JCrypt(new JCryptCipherSimple, $key);
-
-		return $crypt;
+		return new FCipher($type);
 	}
 
 	/**
@@ -907,6 +897,8 @@ class Worker
 			$user = JFactory::getUser();
 		}
 
+		$user->levels = $user->getAuthorisedViewLevels();
+
 		if (is_object($user))
 		{
 			foreach ($user as $key => $val)
@@ -1091,7 +1083,7 @@ class Worker
 	 * only want to use for stricty internal use that won't ever get shown to the user
 	 *
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public static function unsafeReplacements()
 	{
@@ -1109,7 +1101,7 @@ class Worker
 	 * Get an associative array of replacements strings and values
 	 *
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public static function globalReplacements()
 	{
@@ -1127,8 +1119,9 @@ class Worker
 			'{$jConfig_mailfrom}' => $config->get('mailfrom'),
 			'{where_i_came_from}' => $app->input->server->get('HTTP_REFERER', '', 'string'),
 			'{date}' => date('Ymd'),
+			'{year}' => date('Y'),
 			'{mysql_date}' => date('Y-m-d H:i:s'),
-			'{session.token}' => $token,
+			'{session.token}' => $token
 		);
 
 		foreach ($_SERVER as $key => $val)
@@ -1138,6 +1131,19 @@ class Worker
 				$replacements['{$_SERVER->' . $key . '}']    = $val;
 				$replacements['{$_SERVER-&gt;' . $key . '}'] = $val;
 			}
+		}
+
+		if ($app->isClient('administrator'))
+		{
+			$replacements['{formview}'] = 'task=form.view';
+			$replacements['{listview}'] = 'task=list.view';
+			$replacements['{detailsview}'] = 'task=details.view';
+		}
+		else
+		{
+			$replacements['{formview}'] = 'view=form';
+			$replacements['{listview}'] = 'view=list';
+			$replacements['{detailsview}'] = 'view=details';
 		}
 
 		return array_merge($replacements, self::langReplacements());
@@ -1847,7 +1853,7 @@ class Worker
 			try
 			{
 				$fabrikDb->execute();
-			} catch (Exception $e)
+			} catch (\Exception $e)
 			{
 				// Fail silently
 			}
@@ -2016,7 +2022,7 @@ class Worker
 		try
 		{
 			$dt = new DateTime($d);
-		} catch (Exception $e)
+		} catch (\Exception $e)
 		{
 			return false;
 		}
@@ -2106,12 +2112,12 @@ class Worker
 	 * See if data is JSON or not.
 	 *
 	 * @param   mixed $data Date to test
-	 *
+	 * @params  bool  $quotedString  should we treat a single quoted string as JSON
 	 * @since    3.0.6
 	 *
 	 * @return bool
 	 */
-	public static function isJSON($data)
+	public static function isJSON($data, $quotedString = true)
 	{
 		if (!is_string($data))
 		{
@@ -2121,6 +2127,11 @@ class Worker
 		if (is_numeric($data))
 		{
 			return false;
+		}
+
+		if (!$quotedString)
+		{
+			$data = trim($data, '"');
 		}
 
 		return json_decode($data) !== null;
@@ -2228,7 +2239,7 @@ class Worker
 		{
 			$mailer->addRecipient($recipient, $recipientName);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			return false;
 		}
@@ -2237,7 +2248,7 @@ class Worker
 		{
 			$mailer->addCc($cc);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			// not sure if we should bail if Cc is bad, for now just soldier on
 		}
@@ -2246,7 +2257,7 @@ class Worker
 		{
 			$mailer->addBcc($bcc);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			// not sure if we should bail if Bcc is bad, for now just soldier on
 		}
@@ -2257,7 +2268,7 @@ class Worker
 			{
 				$mailer->addAttachment($attachment);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
 				// most likely file didn't exist, ignore
 			}
@@ -2276,7 +2287,7 @@ class Worker
 				{
 					$mailer->addReplyTo($replyTo[$i], $replyToName[$i]);
 				}
-				catch (Exception $e)
+				catch (\Exception $e)
 				{
 					// carry on
 				}
@@ -2288,7 +2299,7 @@ class Worker
 			{
 				$mailer->addReplyTo($replyTo, $replyToName);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
 				// carry on
 			}
@@ -2302,7 +2313,7 @@ class Worker
 		{
 			$mailer->setSender(array($from, $fromName, $autoReplyTo));
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			return false;
 		}
@@ -2343,7 +2354,7 @@ class Worker
 		{
 			$ret = $mailer->Send();
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			return false;
 		}
@@ -2612,7 +2623,16 @@ class Worker
 	 */
 	public static function canPdf($puke = true)
 	{
-		$file = COM_FABRIK_LIBRARY . '/vendor/dompdf/dompdf/composer.json';
+		$config = \JComponentHelper::getParams('com_fabrik');
+
+		if ($config->get('fabrik_pdf_lib', 'dompdf') === 'dompdf')
+		{
+			$file = COM_FABRIK_LIBRARY . '/vendor/dompdf/dompdf/composer.json';
+		}
+		else
+		{
+			$file = COM_FABRIK_LIBRARY . '/vendor/mpdf/mpdf/composer.json';
+		}
 
 		if (!JFile::exists($file))
 		{
@@ -2633,21 +2653,23 @@ class Worker
 	 * Get a cache handler
 	 * $$$ hugh - added $listModel arg, needed so we can see if they have set "Disable Caching" on the List
 	 *
-	 * @param   object $listModel List Model
+	 * @param   object  $listModel  List Model
+	 * @param   string  $group  group name (will default to package)
+	 * @param   int  $ttl  time to live in minutes, defaults to J! config
 	 *
 	 * @since   3.0.7
 	 *
 	 * @return  JCache
 	 */
-	public static function getCache($listModel = null)
+	public static function getCache($listModel = null, $group = null, $ttl = null)
 	{
+		$config  = JFactory::getConfig();
 		$app     = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$time    = ((float) 2 * 60 * 60);
+		$package = isset($group) ? $group : $app->getUserState('com_fabrik.package', 'fabrik');
+		$time    = isset($ttl) ? (int) $ttl : (int) $config->get('cachetime');
 		$base    = JPATH_BASE . '/cache/';
 		$opts    = array('defaultgroup' => 'com_' . $package, 'cachebase' => $base, 'lifetime' => $time, 'language' => 'en-GB', 'storage' => 'file');
 		$cache   = JCache::getInstance('callback', $opts);
-		$config  = JFactory::getConfig();
 		$doCache = $config->get('caching', 0) > 0 ? true : false;
 
 		if ($doCache && $listModel !== null)
@@ -2658,6 +2680,67 @@ class Worker
 		$cache->setCaching($doCache);
 
 		return $cache;
+	}
+
+	/**
+	 * Is caching enabled
+	 *
+	 * @param   object  $listModel  List Model
+	 * @param   bool    $noGuest    disable caching for guests
+	 *
+	 * @since   3.8
+	 *
+	 * @return  JCache
+	 */
+	public static function useCache($listModel = null, $noGuest = true, $excludedFormats = null)
+	{
+		$config  = JFactory::getConfig();
+		$app = JFactory::getApplication();
+
+		if (!isset($excludedFormats))
+		{
+			$excludedFormats =  array('raw', 'csv', 'pdf', 'json', 'fabrikfeed', 'feed');
+		}
+
+		// check global J! system cache setting
+		$doCache = $config->get('caching', 0) > 0 ? true : false;
+
+		// if enabled, see if any other settingg disables it
+		if ($doCache)
+		{
+			// Check the Fabrik global option
+			$fabrikConfig = JComponentHelper::getParams('com_fabrik');
+
+			if ($fabrikConfig->get('disable_caching', '0') === '1')
+			{
+				return false;
+			}
+
+			// If a list model has been specified, see if caching is disabled for this list
+			if ($listModel !== null)
+			{
+				if ($listModel->getParams()->get('list_disable_caching', '0') === '1')
+				{
+					return false;
+				}
+			}
+
+			// Check if caching is disabled for guests
+			if ($noGuest)
+			{
+				if (JFactory::getUser()->get('id') === '0')
+				{
+					return false;
+				}
+			}
+
+			if (in_array($app->input->get('format'), $excludedFormats))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

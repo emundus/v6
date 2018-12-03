@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.0.0
+ * @version    4.0.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -85,6 +85,11 @@ var hikashopCheckout = {
 				formData += encodeURI(k) + "=" + encodeURIComponent(data[k]);
 			}
 		}
+
+		var triggers = o.fireAjax('checkoutBlockSubmit', {'type': type, 'cid': step, 'pos': id, 'element': el});
+		if(triggers !== false && triggers.length > 0)
+			return true;
+
 		t.setLoading(el, true, true);
 
 		var url = window.checkout.urls.submit,
@@ -94,6 +99,10 @@ var hikashopCheckout = {
 		o.xRequest(url, params, function(x,p) {
 			if(x.responseText == '401')
 				window.location.reload(true);
+			if(x.status == 303 || x.status == 301) {
+				console.log('[HikaShop Checkout Error] Something on the server side requested a redirect to "' + x.getResponseHeader('Location') + '". It\'s probably a third party plugin which shouldn\'t do that. The page was reload to avoid any issue.');
+				window.location.reload(true);
+			}
 			el = d.getElementById("hikashop_checkout_" + type_clean + "_" + step + "_" + id);
 			t.setLoading(el, false);
 			o.updateElem(el, x.responseText);
@@ -129,10 +138,12 @@ var hikashopCheckout = {
 			t.loading--;
 		// we block the next button while blocks are being submitted to avoid wrong actions to be validated while finishing the checkout
 		if(t.loading) {
-			btn.disabled = true;
+			if(btn)
+				btn.disabled = true;
 			o.addClass(btn, 'next_button_disabled');
 		} else {
-			btn.disabled = false;
+			if(btn)
+				btn.disabled = false;
 			o.removeClass(btn, 'next_button_disabled');
 		}
 	},

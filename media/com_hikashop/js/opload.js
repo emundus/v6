@@ -675,6 +675,7 @@ opload.mergeObject = function(a, b) {
 		if(Object.prototype.hasOwnProperty.call(b, k))
 			to[k] = b[k];
 	}
+	return to;
 };
 opload.cancelEvent = function(evt) {
 	evt.preventDefault();

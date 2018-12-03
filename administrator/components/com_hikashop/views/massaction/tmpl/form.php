@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,7 +43,7 @@ defined('_JEXEC') or die('Restricted access');
 	<input type="hidden" name="data_id" value="<?php echo $this->data_id; ?>" />
 	<input type="hidden" name="tmpl" value="component" />
 	<fieldset>
-		<div class="hikaheader icon-48-hikaaction" style="float: left;"><?php echo JText::_('ACTIONS'); ?></div>
+		<div class="hikaheader icon-48-hikaaction" style="float: left;"><?php echo JText::_('HIKASHOP_ACTIONS'); ?></div>
 		<div class="toolbar" id="toolbar" style="float: right;">
 			<table><tr>
 			<td><a onclick="javascript:if(confirm('<?php echo JText::_('PROCESS_CONFIRMATION',true);?>')){submitbutton('process');} return false;" href="#" ><span class="icon-32-process" title="<?php echo JText::_('PROCESS',true); ?>"></span><?php echo JText::_('PROCESS'); ?></a></td>
@@ -227,7 +227,7 @@ defined('_JEXEC') or die('Restricted access');
 
 				echo '
 				<fieldset class="adminform">
-					<legend>'. JText::_( 'ACTIONS' ).'</legend>
+					<legend>'. JText::_( 'HIKASHOP_ACTIONS' ).'</legend>
 					<div id="all'.$table->table.'actions">';
 				$count = 0;
 				if(!empty($this->loadedData->massaction_actions) && count($this->loadedData->massaction_actions) != 1 && $table->table == $this->loadedData->massaction_table){

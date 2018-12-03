@@ -133,9 +133,11 @@ function checkIsAValidDate($myDateString){
 }
 
 /* Función para cambiar el estado de un array de logs de no leído a leído */
-function mark_read(){
-	$jinput = JFactory::getApplication()->input;
-	$uids = $jinput->get('cid', 0,'array');
+function mark_read($uids=null){
+	if ( empty($uids) ) {
+		$jinput = JFactory::getApplication()->input;
+		$uids = $jinput->get('cid', 0,'array');
+	}	
 	
 	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 	
@@ -303,6 +305,9 @@ function add_to_blacklist() {
 	} catch (Exception $e) {	
 		$applied = false;
 	}
+	
+	// Marcamos los elementos como leidos
+	$this->mark_read($uids);
 		
 }
 
@@ -439,6 +444,9 @@ function add_to_whitelist() {
 	} catch (Exception $e) {	
 		$applied = false;
 	}
+	
+	// Marcamos los elementos como leidos
+	$this->mark_read($uids);
 		
 }
 

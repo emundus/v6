@@ -580,6 +580,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_shipping_price` (
 	`shipping_price_min_quantity` int(11) NOT NULL DEFAULT '0',
 	`shipping_price_value` decimal(15,7) NOT NULL DEFAULT '0.0000000',
 	`shipping_fee_value` decimal(15,7) NOT NULL DEFAULT '0.0000000',
+	`shipping_blocked` tinyint(3) unsigned NOT NULL DEFAULT '0',
 	PRIMARY KEY (`shipping_price_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;
 

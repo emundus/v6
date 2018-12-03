@@ -1,4 +1,22 @@
 <?php die() ?>
+Admin Tools 5.2.0
+================================================================================
++ Referrer Policy option for web.config Maker
++ Referrer Policy option for NginX Conf Maker
++ Rescue URL will tell you if you are using the wrong email address
++ Administrator IP whitelist, Never Block these IPs: you can now add dynamic IP domain names instead of IPs by prefixing them with @.
+~ "Disable editing backend users' properties" will now let Joomla! 3.9 privacy consent to go through
+~ "Forbid frontend Super Administrator login" will now let Joomla! 3.9 privacy consent to go through
+~ Detect if the GeoIP Provider plugin was installed and then deleted but not uninstalled.
+~ Cosmetic improvements to the PHP File Change Scanner progress modal
+# [HIGH] NginX Conf Maker rules removed URL queries from requests without index.php in them
+# [MEDIUM] Feature Monitor Critical Files was not working
+# [MEDIUM] Monitor specific files feature was working only with the last item of the list
+# [LOW] PHP 7.3 warning in the Control Panel page
+# [LOW] URL Redirection required you to enter the subdirectory path when your site is located in a subdirectory instead of a path relative to the site's root URL. This made redirections non-portable.
+# [LOW] Fixed JavaScript issues when Content-Security-Policy header is missing the unsafe-eval value
+# [LOW] Missing filtering option in the Security Exception Logs page
+
 Admin Tools 5.1.4
 ================================================================================
 + PHPShield feature now will block additional stream wrappers

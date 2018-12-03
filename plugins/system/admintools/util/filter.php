@@ -117,9 +117,41 @@ class AtsystemUtilFilter
 
 		$ipv6 = self::isIPv6($ip);
 
+		/**
+		 * Resolve any domains given in the list (e.g. @example.dyndns.info) into IP addresses.
+		 *
+		 * WARNING! This incurs a significant time penalty, up to 3 seconds per DNS query.
+		 */
+		$ipTable = array_map(function ($v) {
+			if (substr($v, 0, 1) != '@')
+			{
+				return $v;
+			}
+
+			/** @see https://secure.php.net/manual/en/function.gethostbyname.php */
+			putenv('RES_OPTIONS=retrans:1 retry:1 timeout:3 attempts:1');
+			$domain = substr($v, 1);
+			$domain = rtrim($domain, '.') . '.';
+			$ip     = gethostbyname($domain);
+
+			if ($ip == $domain)
+			{
+				return '';
+			}
+
+			return $ip;
+		}, $ipTable);
+
+		// Perform the filtering
 		foreach ($ipTable as $ipExpression)
 		{
 			$ipExpression = trim($ipExpression);
+
+			// Ignore empty records
+			if (empty($ipExpression))
+			{
+				continue;
+			}
 
 			// Inclusive IP range, i.e. 123.123.123.123-124.125.126.127
 			if (strstr($ipExpression, '-'))

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -122,6 +122,7 @@ class ImportController extends hikashopController
 		$this->importHelper->update_product_quantity = hikaInput::get()->getInt('textarea_update_product_quantity');
 		$this->importHelper->store_images_locally = hikaInput::get()->getInt('textarea_store_images_locally', 1);
 		$this->importHelper->store_files_locally = hikaInput::get()->getInt('textarea_store_files_locally', 1);
+		$this->importHelper->keep_other_variants = hikaInput::get()->getInt('keep_other_variants', 1);
 		return $this->importHelper->handleContent($content);
 	}
 
@@ -140,6 +141,7 @@ class ImportController extends hikashopController
 		$this->importHelper->update_product_quantity = hikaInput::get()->getInt('file_update_product_quantity');
 		$this->importHelper->store_images_locally = hikaInput::get()->getInt('file_store_images_locally', 1);
 		$this->importHelper->store_files_locally = hikaInput::get()->getInt('file_store_files_locally', 1);
+		$this->importHelper->keep_other_variants = hikaInput::get()->getInt('keep_other_variants', 1);
 		return $this->importHelper->importFromFile($importFile);
 	}
 

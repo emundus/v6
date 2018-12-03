@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5.0" type="plugin" group="system" method="upgrade">
-	<name>System - Admin Tools</name>
+	<name>PLG_SYSTEM_ADMINTOOLS</name>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2010-2018 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU General Public License version 3, or later</license>
-	<creationDate>2018-09-04</creationDate>
-	<version>5.1.4</version>
-	<description>
-		Handles all the system-wide features provided by Admin Tools Core
-	</description>
+	<creationDate>2018-11-16</creationDate>
+	<version>5.2.0</version>
+	<description>PLG_SYSTEM_ADMINTOOLS_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="admintools">admintools.php</filename>
 		<filename plugin="admintools">autoloader.php</filename>
