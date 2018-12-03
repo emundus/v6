@@ -53,6 +53,7 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$this->filters       = $this->get('Filters');
 		$this->showFilters   = $model->showFilters();
 		$this->showTitle     = $input->getInt('show-title', 1);
+		$this->row->label    = FText::_($this->row->label);
 		$this->filterFormURL = $this->get('FilterFormURL');
 
 		$this->canAdd               = (bool) $params->get('fullcalendar-read-only', 0) == 1 ? false : $model->getCanAdd();
@@ -75,10 +76,15 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$tmplPath     = JPATH_ROOT . '/plugins/fabrik_visualization/fullcalendar/views/fullcalendar/tmpl/' . $tpl;
 		$this->_setPath('template', $tmplPath);
 
-		// Store the file in the tmp folder so it can be attached
+		// @TODO create a viz model getLayout() that sets this path precedence
 		$layout             = FabrikHelperHTML::getLayout(
 			'fabrik-visualization-fullcalendar-event-modal-popup',
-			array(JPATH_ROOT . '/plugins/fabrik_visualization/fullcalendar/layouts')
+			array(
+				JPATH_ROOT . '/plugins/fabrik_visualization/fullcalendar/layouts',
+				$tmplPath . '/layouts',
+				JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts/com_fabrik',
+				JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts/com_fabrik/visualization'
+			)
 		);
 		$displayData       = new stdClass;
 		$displayData->id   = 'fabrikEvent_modal';
@@ -286,25 +292,36 @@ class FabrikViewFullcalendar extends JViewLegacy
 	 */
 	private function jLayouts()
 	{
+		$model       = $this->getModel();
+		$params = $model->getParams();
+		$tpl          = $params->get('fullcalendar_layout', 'default');
+		$tmplPath     = JPATH_ROOT . '/plugins/fabrik_visualization/fullcalendar/views/fullcalendar/tmpl/' . $tpl;
+		$paths = array(
+			JPATH_ROOT . '/plugins/fabrik_visualization/fullcalendar/layouts',
+			$tmplPath . '/layouts',
+			JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts/com_fabrik',
+			JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts/com_fabrik/visualization'
+		);
+
 		FabrikHelperHTML::jLayoutJs(
 			'fabrik-visualization-fullcalendar-viewbuttons',
 			'fabrik-visualization-fullcalendar-viewbuttons',
 			(object) array(),
-			array(JPATH_PLUGINS . '/fabrik_visualization/fullcalendar/layouts/')
+			$paths
 		);
 
 		FabrikHelperHTML::jLayoutJs(
 			'fabrik-visualization-fullcalendar-event-popup',
 			'fabrik-visualization-fullcalendar-event-popup',
 			(object) array(),
-			array(JPATH_PLUGINS . '/fabrik_visualization/fullcalendar/layouts/')
+			$paths
 		);
 
 		FabrikHelperHTML::jLayoutJs(
 			'fabrik-visualization-fullcalendar-viewevent',
 			'fabrik-visualization-fullcalendar-viewevent',
 			(object) array(),
-			array(JPATH_PLUGINS . '/fabrik_visualization/fullcalendar/layouts/')
+			$paths
 		);
 
 		$modalOpts = array(

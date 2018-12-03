@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -644,7 +644,12 @@ foreach($results as $i => $oneResult){
 				$field_namekey = $field->field_namekey;
 				foreach($rows as $row){
 					if(!empty($row->$field_namekey)){
-						$values[$row->$field_namekey]=$this->database->Quote($row->$field_namekey);
+						if(is_object($row->$field_namekey) && isset($row->$field_namekey->zone_namekey)) {
+							$values[$row->$field_namekey->zone_namekey]=$this->database->Quote($row->$field_namekey->zone_namekey);
+							continue;
+						}
+						if(is_string($row->$field_namekey))
+							$values[$row->$field_namekey]=$this->database->Quote($row->$field_namekey);
 					}
 				}
 			}
@@ -653,7 +658,7 @@ foreach($results as $i => $oneResult){
 			$query = 'SELECT * FROM '.hikashop_table('zone').' WHERE zone_namekey IN ('.implode(',',$values).') ORDER BY zone_name_english ASC';
 			$this->database->setQuery($query);
 			$zones = $this->database->loadObjectList('zone_namekey');
-			foreach($fields as $k => $field){
+			foreach($fields as $field){
 				if($field->field_type!='zone')
 					continue;
 				$field_namekey = $field->field_namekey;
@@ -797,6 +802,8 @@ foreach($results as $i => $oneResult){
 		$typeName = $type;
 		if(is_array($type)) {
 			$typeName = $type[1];
+			if(isset($type[2]))
+				$this->prefix = $type[2];
 		}
 
 		$app = JFactory::getApplication();
@@ -910,7 +917,7 @@ foreach($results as $i => $oneResult){
 					$productClass = hikashop_get('class.product');
 					$fullProduct = $productClass->get((int)$oldData->product_id);
 				}
-				$product_key = $key.'_values';
+				$product_key = $k.'_values';
 				$field->field_value_all = $field->field_value;
 				if(isset($fullProduct->$product_key))
 					$field->field_value = $fullProduct->$product_key;
@@ -1919,7 +1926,7 @@ class hikashopFieldItem {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage($message, 'error');
 			} else {
-				$this->parent->messages[$field->field_namekey] = array($message, 'error');
+				$this->parent->messages[$this->prefix.$field->field_namekey] = array($message, 'error');
 			}
 		}
 		return false;

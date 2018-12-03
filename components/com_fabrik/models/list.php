@@ -1588,7 +1588,7 @@ class FabrikFEModelList extends JModelForm
 
 						$row->fabrik_edit_url = $edit_link;
 
-						if ($this->canViewDetails() && $this->floatingDetailLink())
+						if ($this->canViewDetails($row) && $this->floatingDetailLink())
 						{
 							$row->fabrik_view = $viewLink;
 							$row->fabrik_actions['fabrik_view'] = $j3 ? $row->fabrik_view : '<li class="fabrik_view">' . $row->fabrik_view . '</li>';
@@ -1596,7 +1596,7 @@ class FabrikFEModelList extends JModelForm
 					}
 					else
 					{
-						if ($this->canViewDetails() && $this->floatingDetailLink())
+						if ($this->canViewDetails($row) && $this->floatingDetailLink())
 						{
 							if (empty($this->_aLinkElements))
 							{
@@ -1612,7 +1612,7 @@ class FabrikFEModelList extends JModelForm
 					}
 				}
 
-				if ($this->canViewDetails() && !$viewLinkAdded && $this->floatingDetailLink())
+				if ($this->canViewDetails($row) && !$viewLinkAdded && $this->floatingDetailLink())
 				{
 					$link = $this->viewDetailsLink($row, 'details');
 					$row->fabrik_view_url = $link;
@@ -2320,12 +2320,26 @@ class FabrikFEModelList extends JModelForm
 		$rowId = $this->getSlug($row);
 		$isAjax = $this->isAjaxLinks() ? '1' : '0';
 		$isCustom = $customLink !== '';
+		$isIcon = false;
+		
+		/* Check if the data component is html, if it is an icon lnk and image parse it out */
+		$html = FabrikHelperHTML::loadDOMDocument($data);
+		$a   = $html->getElementsByTagName('a')->item(0);
+		$img = $html->getElementsByTagName('img')->item(0);
+		if (isset($html) && isset($a) && isset($img))
+		{
+			$isIcon = true;
+		}
 
 		$paths = array(
 			COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $this->getTmpl() . '/layouts/element/' . $elementModel->getFullName(true, false)
 		);
 
-		$layout                  = $this->getLayout('element.fabrik-element-custom-link', $paths);
+		if ($isIcon === true ) {
+			$layout = $this->getLayout('element.fabrik-element-custom-icon-link', $paths);
+		} else {
+			$layout = $this->getLayout('element.fabrik-element-custom-link', $paths);
+		}
 		$displayData             = new stdClass;
 		$displayData->loadMethod = $loadMethod;
 		$displayData->dataList   = $dataList;
@@ -2335,9 +2349,18 @@ class FabrikFEModelList extends JModelForm
 		$displayData->class      = $class;
 		$displayData->link       = $link;
 		$displayData->rowId      = $rowId;
-		$displayData->data       = $data;
 		$displayData->target     = $target;
-		$data                    = $layout->render($displayData);
+
+		if  ($isIcon) {
+			$displayData->data_original = $a->nodeValue;
+			$displayData->opts = $a->getAttribute('opts');
+			$displayData->data = $a->ownerDocument->saveHTML($img);
+			$displayData->title = $a->getAttribute('title');
+		} else {
+			$displayData->data = $data;
+		}
+		
+		$data = $layout->render($displayData);
 
 		return $data;
 	}
@@ -4112,54 +4135,97 @@ class FabrikFEModelList extends JModelForm
     }
 
 	/**
-	 * Check if the user can view the detailed records
+	 * Check if the user can view the detailed record
+	 *
+	 * @param   object  $row  of data currently active
 	 *
 	 * @return  bool
 	 */
-	public function canViewDetails()
+	public function canViewDetails($row = null)
 	{
-		if (!array_key_exists('viewdetails', $this->access))
+		static $acls = array();
+
+		if (isset($row->__pk_val) && !empty($row->__pk_val))
 		{
-			$allowPDF = false;
-
-			if ($this->app->input->get('format', 'html') === 'pdf')
+			/**
+			 * If we've got the results for this PK, return them.  Set result, so customProcessResult() gets it right
+			 */
+			if (array_key_exists($row->__pk_val, $acls))
 			{
-				$config = JComponentHelper::getParams('com_fabrik');
+				return $acls[$row->__pk_val];
+			}
+		}
 
-				if ($config->get('allow_pdf_localhost_view', '0') === '1')
+		$allowPDF = false;
+
+		if ($this->app->input->get('format', 'html') === 'pdf')
+		{
+			$config = JComponentHelper::getParams('com_fabrik');
+
+			if ($config->get('allow_pdf_localhost_view', '0') === '1')
+			{
+				if ($this->localPdf)
 				{
-				    if ($this->localPdf)
-                    {
-                        $allowPDF = true;
-                    }
-                    else {
-                        $whitelist = array(
-                            '127.0.0.1',
-                            '::1'
-                        );
-                        $pdfLocalhostIP = $config->get('allow_pdf_localhost_ip', '');
+					$allowPDF = true;
+				}
+				else {
+					$whitelist = array(
+						'127.0.0.1',
+						'::1'
+					);
+					$pdfLocalhostIP = $config->get('allow_pdf_localhost_ip', '');
 
-                        if (!empty($pdfLocalhostIP)) {
-                            $whitelist[] = $pdfLocalhostIP;
-                        }
+					if (!empty($pdfLocalhostIP)) {
+						$whitelist[] = $pdfLocalhostIP;
+					}
 
-                        if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
-                            $allowPDF = true;
-                        }
-                    }
+					if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
+						$allowPDF = true;
+					}
+				}
+			}
+
+		}
+
+		if ($allowPDF)
+		{
+			$this->access->viewdetails = true;
+		}
+		else
+		{
+			/**
+			 * Allow the plugin to take precedence.  If no plugins, or all plugin(s) return null (or any
+			 * value other than true or false) then we drop through to normal useDo/ACL checks.  If any plugin returns
+			 * false, access is denied.  If no plugin returns false, and any return true, access is allowed.
+			 */
+			$pluginCanView = FabrikWorker::getPluginManager()->runPlugins('onCanView', $this, 'list', $row);
+
+			// At least one plugin run, so plugin results take precedence over anything else.
+			if (!empty($pluginCanView))
+			{
+				// test false first, so if any plugin returns false, access is denied
+				if (in_array(false, $pluginCanView, true))
+				{
+					$this->access->viewdetails = false;
 				}
 
+				if (in_array(true, $pluginCanView, true))
+				{
+					$this->access->viewdetails = true;
+				}
 			}
 
-			if ($allowPDF)
-			{
-				$this->access->viewdetails = true;
-			}
-			else
+			// no plugin preference, so use normal ACL
+			if (!array_key_exists('viewdetails', $this->access))
 			{
 				$groups                    = $this->user->getAuthorisedViewLevels();
 				$this->access->viewdetails = in_array($this->getParams()->get('allow_view_details'), $groups);
 			}
+		}
+
+		if (isset($row->__pk_val) && !empty($row->__pk_val))
+		{
+			$acls[$row->__pk_val] = $this->access->viewdetails;
 		}
 
 		return $this->access->viewdetails;
@@ -4417,7 +4483,7 @@ class FabrikFEModelList extends JModelForm
 	}
 
 	/**
-	 * Check use can view the list
+	 * Check user can view the list
 	 *
 	 * @return  bool  can view or not
 	 */
@@ -5224,49 +5290,6 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		return $this->isView;
-
-		/* $$$ hugh - because querying INFORMATION_SCHEMA can be very slow (like minutes!) on
-		 * a shared host, I made a small change.  The edit table view now adds a hidden 'isview'
-		* param, defaulting to -1 on new tables.  So the following code should only ever execute
-		* one time, when a new table is saved.  Before this change, because 'isview' wasn't
-		* included on the edit view (because it's not a "real" user settable param), so didn't
-		* exist when we picked up the params from the submitted data, this code was running (twice!)
-		* every time a table was saved.
-		* http://fabrikar.com/forums/showthread.php?t=16622&page=6
-		*/
-
-		/*
-		if (isset($this->isView))
-		{
-			return $this->isView;
-		}
-
-		$db = FabrikWorker::getDbo();
-		$table = $this->getTable();
-		$cn = $this->getConnection();
-
-		$c = $cn->getConnection();
-		$dbName = $c->database;
-
-		if ($table->db_table_name == '')
-		{
-			return;
-		}
-
-		// @todo JQueryBuilder this?
-		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $db->q($table->db_table_name)
-		. " AND table_type = 'view' AND table_schema = " . $db->q($dbName);
-		$db->setQuery($sql);
-		$row = $db->loadObjectList();
-		$this->isView = empty($row) ? "0" : "1";
-
-		// Store and save param for following tests
-		$params->set('isview', $this->isView);
-		$table->params = (string) $params;
-		$table->store();
-
-		return $this->isView;
-		*/
 	}
 
 	/**
@@ -5462,8 +5485,9 @@ class FabrikFEModelList extends JModelForm
 					{
 						$matchSql[] = 'MATCH(' . implode(',', $fields) . ')' . ' ' . $condition . ' (' . $db->q($value) . ' IN BOOLEAN MODE)';
 					}
-
-					$this->filters['sqlCond'][$i] = '(' . implode(' OR ', $matchSql) . ')';
+					$mode = $this->app->input->get('search-mode-advanced', 'all');
+					$join = $mode === 'none' ? ' AND ' : ' OR ';
+					$this->filters['sqlCond'][$i] = '(' . implode($join, $matchSql) . ')';
 				}
 				else
 				{
@@ -6562,18 +6586,11 @@ class FabrikFEModelList extends JModelForm
 			|| ($params->get('search-mode', '0') == 'OR'))
 		{
 			// One field to search them all (and in the darkness bind them)
-			//$requestKey = $this->getFilterModel()->getSearchAllRequestKey();
-			//$v = $this->getFilterModel()->getSearchAllValue('html');
 			$o = new stdClass;
-			//$searchLabel = FText::_($params->get('search-all-label', 'COM_FABRIK_SEARCH'));
-			//$class = FabrikWorker::j3() ? 'fabrik_filter search-query input-medium' : 'fabrik_filter';
 			$o->id = 'searchall_' . $this->getRenderContext();
 			$o->displayValue = '';
-			//$o->filter = '<input type="search" size="20" placeholder="' . $searchLabel . '"title="' . $searchLabel . '" value="' . $v
-			//. '" class="' . $class . '" name="' . $requestKey . '" id="' . $id . '" />';
-
 			$displayData = new stdClass;
-			$displayData->id = $id;
+			$displayData->id = $o->id;
 			$displayData->searchLabel = FText::_($params->get('search-all-label', 'COM_FABRIK_SEARCH'));;
 			$displayData->class = FabrikWorker::j3() ? 'fabrik_filter search-query input-medium' : 'fabrik_filter';
 			$displayData->v = $this->getFilterModel()->getSearchAllValue('html');
@@ -6592,9 +6609,6 @@ class FabrikFEModelList extends JModelForm
 					'search-mode-advanced',
 					$params->get('search-mode-advanced-default', 'all')
 				);
-
-				//$o->filter .= '&nbsp;'
-				//		. JHTML::_('select.genericList', $searchOpts, 'search-mode-advanced', "class='fabrik_filter'", 'value', 'text', $mode);
 			}
 			else
 			{
@@ -7130,10 +7144,13 @@ class FabrikFEModelList extends JModelForm
 			$edit = false;
 		}
 
-		if ($this->canSelectRows() || $this->canEditARow() || $details || $edit || $filtersUnderHeadingsAndGo)
+		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager->runPlugins('button', $this, 'list', array('heading' => true));
+		$pluginHeadings = array_filter($pluginManager->data);
+
+		if (!empty($pluginHeadings) || $this->canSelectRows() || $this->canEditARow() || $details || $edit || $filtersUnderHeadingsAndGo)
 		{
 			// 3.0 actions now go in one column
-			$pluginManager = FabrikWorker::getPluginManager();
 			$headingButtons = array();
 
 			if ($this->deletePossible())
@@ -7141,12 +7158,9 @@ class FabrikFEModelList extends JModelForm
 				$headingButtons[] = $this->deleteButton('', true);
 			}
 
-			$pluginManager->runPlugins('button', $this, 'list', array('heading' => true));
-			$res = array_filter($pluginManager->data);
-
 			if (FabrikWorker::j3())
 			{
-				$headingButtons = array_merge($headingButtons, $res);
+				$headingButtons = array_merge($headingButtons, $pluginHeadings);
 
 				if (empty($headingButtons))
 				{
@@ -7167,12 +7181,12 @@ class FabrikFEModelList extends JModelForm
 			}
 			else
 			{
-				foreach ($res as &$r)
+				foreach ($pluginHeadings as &$r)
 				{
 					$r = $this->actionMethod() == 'dropdown' ? '<li>' . $r . '</li>' : $r;
 				}
 
-				$headingButtons = array_merge($headingButtons, $res);
+				$headingButtons = array_merge($headingButtons, $pluginHeadings);
 				$aTableHeadings['fabrik_actions'] = empty($headingButtons) ? '' : '<ul class="fabrik_action">' . implode("\n", $headingButtons) . '</ul>';
 			}
 
@@ -8318,6 +8332,9 @@ class FabrikFEModelList extends JModelForm
 		$item->name = $item->label = 'id';
 		$item->group_id = $groupId;
 
+		// PR#2031 do not show repeat group parent_id in list by default
+		$item->show_in_list_summary = 0;
+
 		if (!$item->store())
 		{
 			JError::raiseWarning(500, $item->getError());
@@ -8345,6 +8362,9 @@ class FabrikFEModelList extends JModelForm
 		$item->name = $item->label = 'parent_id';
 		$item->hidden = 1;
 		$item->group_id = $groupId;
+
+		// PR#2031 do not show repeat group parent_id in list by default
+		$item->show_in_list_summary = 0;
 
 		if (!$item->store())
 		{
@@ -9262,6 +9282,10 @@ class FabrikFEModelList extends JModelForm
 			return $match;
 		}
 
+		$config = JFactory::getConfig();
+		$prefix = $config->get('dbprefix');
+		$match  = str_replace('#__', $prefix, $match);
+
 		/* strip the {} */
 		$match = JString::substr($match, 1, JString::strlen($match) - 2);
 
@@ -9369,6 +9393,16 @@ class FabrikFEModelList extends JModelForm
 		$keyIdentifier = $this->getKeyIndetifier($row);
 		$row = ArrayHelper::fromObject($row);
 		$link = $this->parseMessageForRowHolder($link, $row);
+
+		// special case, if someone is using a link element placeholder as a custom link
+		if (FabrikWorker::isJSON($link))
+		{
+			$test = FabrikWorker::JSONtoData($link);
+			if (is_object($test) && isset($test->link))
+			{
+				$link = $test->link;
+			}
+		}
 
 		if (preg_match('/([\?&]rowid=)/', htmlspecialchars_decode($link)))
 		{
@@ -10246,6 +10280,8 @@ class FabrikFEModelList extends JModelForm
 
 		if (!empty($url))
 		{
+			// call replaceWithGlobals to handle any {formview} replacement before query string handling
+			$url = $w->replaceWithGlobals($url);
 			$addurl_parts = explode('?', $url);
 
 			if (count($addurl_parts) > 1)
@@ -11915,6 +11951,7 @@ class FabrikFEModelList extends JModelForm
 
 		$formModel = $this->getFormModel();
 		$elementModel = $formModel->getElement($tabsElName);
+		$isDropdown = (is_subclass_of($elementModel, 'PlgFabrik_ElementDropdown') || get_class($elementModel) == 'PlgFabrik_ElementDropdown');
 		$is_join = (is_subclass_of($elementModel, 'PlgFabrik_ElementDatabasejoin') || get_class($elementModel) == 'PlgFabrik_ElementDatabasejoin');
 		if (!$is_join)
 		{
@@ -11948,6 +11985,17 @@ class FabrikFEModelList extends JModelForm
 		JDEBUG ? $profiler->mark('after fabrik list tabs query run') : null;
 		FabrikHelperHTML::debug($counts, 'list getTabCategories counts: ' . $table->label);
 
+		if ($isDropdown) {
+			/* Convert element values to names */
+			foreach ($counts as $key => $count) {
+				$counts[$key][0] = $elementModel->getLabelForValue($counts[$key][0]);
+			}
+			/* Now sort it by these labels */
+			usort($counts, function($a, $b) {
+				return strcmp($a[0], $b[0]);
+			});
+		}
+		
 		/**
 		 * We consolidate by finding the two consecutive rows with the smallest total and merging them.
 		 * To avoid excessive looping if user tabField is too fragmented, we should skip tabs if
@@ -12031,7 +12079,7 @@ class FabrikFEModelList extends JModelForm
 	 * @return  array  Tabs
 	 */
 	public function loadTabs()
-	{
+	{ 
 		$this->tabs = array();
 		$tabs = $this->getTabCategories();
 
@@ -12043,58 +12091,139 @@ class FabrikFEModelList extends JModelForm
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$listId = $this->getId();
 		$tabsField = $this->getTabField();
-		$itemId = FabrikWorker::itemId();
+		if ($this->app->isSite()) {
+			$menu = "menu". $this->app->getMenu()->getActive()->id;
+		} else {
+			$menu = "admin".JFactory::getUser()->id;
+		}
+
+		$inputArray = $this->app->input->getArray();
+		$isPagination = array_key_exists($this->session->getFormToken(), $inputArray);
+
+		/* get the default rows per page, menu then table then system, whichever is first */
+		$defaultRowsPerPage = "";
+		if ($this->app->isSite()) {
+			$defaultRowsPerPage = $this->app->getMenu()->getActive()->params->get('rows_per_page');
+		}
+		if (empty($defaultRowsPerPage)) {
+			$defaultRowsPerPage = $this->getTable()->rows_per_page;
+		}
+		if (empty($defaultRowsPerPage)) {
+			$defaultRowsPerPage = $this->app->get('list_limit', 10);
+		}
+
+		/* get the various current uri parts */
 		$uri = JURI::getInstance();
-		$urlBase = $uri->toString(array('path'));
-		$urlBase .= '?option=com_' . $package . '&';
-
-		if ($this->app->isAdmin())
-		{
-			$urlBase .= 'task=list.view&';
-		}
-		else
-		{
-			$urlBase .= 'view=list&';
+		$uriActiveTab = $uri->getVar($tabsField, null);
+		/* If the tabsField is an array then we are showing merged tabs, we need the merged tabs names for the activeTabName */
+		if (is_array($uriActiveTab)) {
+			$uriActiveTab = implode('-', $uriActiveTab['value']);
 		}
 
-		$urlBase .= 'listid=' . $listId . '&resetfilters=1';
-		$urlEquals = $urlBase . '&' . $tabsField . '=%s';
-		$urlRange = $urlBase . '&' . $tabsField . '[value][]=%s&' . $tabsField . '[value][]=%s&' . $tabsField . '[condition]=BETWEEN';
-		$uri = JURI::getInstance();
-		$thisUri = rawurldecode($uri->toString(array('path', 'query')));
+		/* Null to indicate that the limitstart is not set in the url due to direct menu access) */
+		$ActiveTabLimitStart = FArrayHelper::getValue($inputArray, 'limitstart'.$listId, $uri->getVar('limitstart' . $listId, null));	
+		$ActiveTabLimit = FArrayHelper::getValue($inputArray, 'limit'.$listId, $uri->getVar('limit' . $listId, null));
 
-		foreach ($tabs as $i => $tabArray)
-		{
-			$row = new stdClass;
-			list($label, $range) = $tabArray;
-			$row->label = $label;
+		/* Get the cached tabs */
+		$context = 'com_'.$package.$menu.$item->id.'list'.$listId;
+		$cachedTabs = unserialize($this->app->getUserState($context.'tabs'));
 
-			if (is_null($range))
+		if (empty($cachedTabs)) {
+			$originalUri = clone($uri);
+			/* Build the tabs array */
+			foreach ($tabs as $i => $tabArray)
 			{
-				$row->href = $urlBase;
+				$row = new stdClass;
+				list($label, $range) = $tabArray;
+				$row->label = $label;
+				$row->isAllTab = ($label == FText::_('COM_FABRIK_LIST_TABS_ALL'));
+				
+				if (is_null($range) || $row->isAllTab)
+				{
+					$originalUri->delVar($tabsField);
+				}
+				elseif (!is_array($range))
+				{
+					$originalUri->setVar($tabsField, urlencode($range));
+				}
+				else
+				{
+					list($low, $high) = $range;
+					$row->mergeArray = array('value'=>array(urlencode($low), urlencode($high)), 'condition' => 'BETWEEN');
+					$originalUri->setVar($tabsField, $row->mergeArray);
+				}
+			
+				$row->id = 'list_tabs_' . $this->getId() . '_' . $i;
+				$row->js = false;
+				$originalUri->setVar('limit'.$listId, is_null($ActiveTabLimit) ? $defaultRowsPerPage : $ActiveTabLimit);
+				$originalUri->setVar('limitstart'.$listId, is_null($ActiveTabLimitStart) ? 0 : $ActiveTabLimitStart);
+				$row->href = $originalUri->toString();
+				if ($i == 0) {
+					$row->class='active';
+				}
+				$cachedTabs[$label] = $row;
+			} 
+		}
+		/* Find which tab was last active */
+		foreach($cachedTabs as $key => $data) {
+			if (strpos($data->class, 'active') !== false) {
+				$lastActiveTab = $key;
+				break;
 			}
-			elseif (!is_array($range))
-			{
-				$row->href = sprintf($urlEquals, urlencode($range));
-			}
-			else
-			{
-				list($low, $high) = $range;
-				$row->href = sprintf($urlEquals, sprintf($urlRange, urlencode($low), urlencode($high)));
-			}
-
-			if ($itemId)
-			{
-				$row->href .= '&Itemid=' . $itemId;
-			}
-
-			$row->id = 'list_tabs_' . $this->getId() . '_' . $i;
-			$row->js = false;
-			$row->class = ($thisUri == $row->href) ? 'active' : '';
-			$this->tabs[] = $row;
 		}
 
-		return $this->tabs;
+		/* Set the latest limits */
+		$uri->setVar('limit'.$listId, is_null($ActiveTabLimit) ? $defaultRowsPerPage : $ActiveTabLimit);
+		$uri->setVar('limitstart'.$listId, is_null($ActiveTabLimitStart) ? 0 : $ActiveTabLimitStart);
+
+		/* Handle pagination, the pagination has already happened so are just clearing this stuff from the uri */
+		if ($isPagination) {
+			$uri->setVar('clearordering', null);
+			$uri->setVar('clearfilters', null);
+			$uriActiveTab = $lastActiveTab;
+		}
+		/* Force a filter reset */
+		$uri->setVar('resetfilters', 1);
+		
+		/* Clear this if we just processed a delete */
+		$uri->setVar('fabrik_show_in_list', null);
+		
+		/* if we still do not have an active tab this must be the first call from the menu, default to the first tab */
+		if (is_null($uriActiveTab)) {
+			$uriActiveTab = FArrayHelper::firstKey($cachedTabs);
+		}
+
+		/* If we have changed tabs, clear the last active tabs active class */
+		if ($lastActiveTab != $uriActiveTab) {
+				unset($cachedTabs[$lastActiveTab]->class); 
+		}
+
+		/* If the active tab is not the All tab, set the tabField to filter on */
+		if ($cachedTabs[$uriActiveTab]->isAllTab != 1) {
+			if (property_exists($cachedTabs[$uriActiveTab], 'mergeArray')) {
+				$uri->setVar($tabsField, $cachedTabs[$uriActiveTab]->mergeArray);
+			} else {
+				$uri->setVar($tabsField, $uriActiveTab);
+			}
+		}
+
+		/* Update the active tab href and set it active */
+		$cachedTabs[$uriActiveTab]->href = $uri->toString();
+		$cachedTabs[$uriActiveTab]->class = 'active';
+
+		/* When we first display the list the menu does not have the tabField filter set
+		 * so all the records are in the list. This is OK when there is an All tab as it
+		 * wants all the list data, but when no All tab we need to filter on the tab field
+		 * name of the first tab, so now that we have the href for the first tab all set
+		 * we will simply do a redirect to it and all should be well 
+		 */
+		if (is_null($ActiveTabLimitStart) && is_null($ActiveTabLimit)) {
+			$this->app->redirect($cachedTabs[$uriActiveTab]->href);
+		}
+		
+		$this->app->setUserState($context.'tabs', serialize($cachedTabs));
+
+		return $this->tabs = $cachedTabs;
 	}
 
 	/**

@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.0.0
+ * @version    4.0.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -994,7 +994,8 @@ var hikashop = {
 	checkQuantity: function(el) {
 		var value = parseInt(el.value), old = el.getAttribute('data-hk-qty-old'),
 			min = parseInt(el.getAttribute('data-hk-qty-min')),
-			max = parseInt(el.getAttribute('data-hk-qty-max'));
+			max = parseInt(el.getAttribute('data-hk-qty-max')),
+			allowZero = el.getAttribute('data-hk-allow-zero') == 'true';
 		if(old)
 			old = parseInt(old);
 		// No values - return
@@ -1009,6 +1010,8 @@ var hikashop = {
 		var triggers = window.Oby.fireAjax("quantity.checked", {el:el, value:value, max:max, min:min});
 		if(triggers !== false && triggers.length > 0)
 			return true;
+		if(value == 0 && allowZero)
+			return true;
 		if((value <= max || max == 0) && value >= min)
 			return true;
 		if(max > 0 && value > max) {
@@ -1022,7 +1025,7 @@ var hikashop = {
 			el.value = min;
 			if(hkjQuery.notify) {
 				this.translate(['QUANTITY_CHANGE_IMPOSSIBLE', 'MINIMUM_FOR_PRODUCT_IS_X'], function(trans){
-					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', max), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true});
+					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', min), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true});
 				});
 			}
 		}

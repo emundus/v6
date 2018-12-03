@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -121,7 +121,7 @@ class hikashopSpreadsheetHelper {
 			if($floatValue == (int)$floatValue)
 				$this->buffer .= (int)$value;
 			else
-				$this->buffer .= number_format($floatValue, 5, $this->decimal_separator, '');
+				$this->buffer .= rtrim(number_format($floatValue, 5, $this->decimal_separator, ''), '0,.');
 
 			if(!$lastOne)
 				$this->buffer .= $this->separator;
@@ -176,7 +176,7 @@ class hikashopSpreadsheetHelper {
 			if(is_array($value))
 				continue;
 
-			if( !$this->forceText && is_numeric($value) && (preg_match('[^0-9]',$value) || ltrim($value, '0') === (string)$value) || '0' === (string)$value) {
+			if( !$this->forceText && is_numeric($value) && (preg_match('[^0-9]',$value) || ltrim($value, '0') === (string)$value) || '0' === (string)$value || '0.00000' === (string)$value) {
 				$this->writeNumber($this->currLine, $i++, $value, $lastOne);
 			} else {
 				$this->writeText($this->currLine, $i++, $value, $lastOne);

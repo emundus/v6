@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -186,9 +186,14 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		foreach($formData as $data) {
 			if($data == null)
 				continue;
+
+			$shipping_blocked = 0;
+			if(isset($data['blocked']))
+				$shipping_blocked = 1;
+
 			$shipping = null;
 			if(!empty($data['id']) && isset($shippings[$data['id']]) ) {
-				if(empty($data['value']) && empty($data['fee']))
+				if(empty($data['value']) && empty($data['fee']) && !$shipping_blocked)
 					continue;
 
 				$shipping = $shippings[$data['id']];
@@ -197,18 +202,18 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 				if(empty($data['qty']) || (int)$data['qty'] < 1)
 					$data['qty'] = 1;
 
-				if( (int)$shipping->shipping_price_min_quantity != (int)$data['qty'] || (float)$shipping->shipping_price_value != (float)$data['value'] || (float)$shipping->shipping_fee_value != (float)$data['fee']) {
+				if( (int)$shipping->shipping_price_min_quantity != (int)$data['qty'] || (float)$shipping->shipping_price_value != (float)$data['value'] || (float)$shipping->shipping_fee_value != (float)$data['fee'] || (int)$shipping->shipping_blocked != (int)$shipping_blocked) {
 					$query = 'UPDATE ' . hikashop_table('shipping_price') .
-						' SET shipping_price_min_quantity = ' . (int)$data['qty'] . ', shipping_price_value = ' . (float)$data['value'] . ', shipping_fee_value = ' . (float)$data['fee'] .
+						' SET shipping_price_min_quantity = ' . (int)$data['qty'] . ', shipping_price_value = ' . (float)$data['value'] . ', shipping_fee_value = ' . (float)$data['fee'] . ', shipping_blocked = ' . (int)$shipping_blocked .
 						' WHERE shipping_price_id = ' . $data['id'] . ' AND shipping_price_ref_id = ' . $product->product_id . ' AND shipping_price_ref_type = \'product\'';
 					$db->setQuery($query);
 					$db->execute();
 				}
 			} else {
-				if((!empty($data['value']) || !empty($data['fee'])) && !empty($data['shipping_id']) ) {
+				if((!empty($data['value']) || (!empty($data['fee'])) && !empty($data['shipping_id']) || (!empty($data['blocked'])) && !empty($data['shipping_id'])) ) {
 					if(empty($data['qty']) || (int)$data['qty'] < 1)
 						$data['qty'] = 1;
-					$toInsert[] = (int)$data['shipping_id'].','.$product->product_id.',\'product\','.(int)$data['qty'].','.(float)$data['value'].','.(float)$data['fee'];
+					$toInsert[] = (int)$data['shipping_id'].','.$product->product_id.',\'product\','.(int)$data['qty'].','.(float)$data['value'].','.(float)$data['fee'].','.(int)$shipping_blocked;
 				}
 			}
 		}
@@ -218,7 +223,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			$db->execute();
 		}
 		if(!empty($toInsert)) {
-			$db->setQuery('INSERT IGNORE INTO ' . hikashop_table('shipping_price') . ' (`shipping_id`,`shipping_price_ref_id`,`shipping_price_ref_type`,`shipping_price_min_quantity`,`shipping_price_value`,`shipping_fee_value`) VALUES ('.implode('),(',$toInsert).')');
+			$db->setQuery('INSERT IGNORE INTO ' . hikashop_table('shipping_price') . ' (`shipping_id`,`shipping_price_ref_id`,`shipping_price_ref_type`,`shipping_price_min_quantity`,`shipping_price_value`,`shipping_fee_value`,`shipping_blocked`) VALUES ('.implode('),(',$toInsert).')');
 			$db->execute();
 		}
 	}
@@ -257,6 +262,8 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 
 			$shipData = array();
 			foreach ($shippings as $v) {
+				if ( (isset($v->shipping_blocked)) && ($v->shipping_blocked == 1) )
+					$v->shipping_published = 0;
 
 				if ($v->shipping_published == 0)
 					continue;

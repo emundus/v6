@@ -498,6 +498,8 @@ function online_check_files()
 	$model = $this->getModel("filemanager");
 	$error = $model->online_check_files();
 	
+	$jinput = JFactory::getApplication()->input;
+	
 	if ( !$error ) {
 		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
 	} else {
@@ -513,7 +515,8 @@ function online_check_hashes()
 {
 	$model = $this->getModel("filemanager");
 	$error = $model->online_check_hashes();
-
+	
+	$jinput = JFactory::getApplication()->input;
 	
 	if ( !$error ) {
 		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
@@ -535,6 +538,8 @@ function restore_quarantined_file()
 	$model = $this->getModel("filemanager");
 	$model->quarantined_file('restore');
 	
+	$jinput = JFactory::getApplication()->input;
+	
 	$jinput->set('view', 'malwarescan');
 	
 	parent::display();
@@ -545,6 +550,8 @@ function delete_quarantined_file()
 {
 	$model = $this->getModel("filemanager");
 	$model->quarantined_file('delete');
+	
+	$jinput = JFactory::getApplication()->input;
 	
 	$jinput->set('view', 'malwarescan');
 	

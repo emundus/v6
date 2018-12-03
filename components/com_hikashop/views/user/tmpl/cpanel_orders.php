@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,7 +53,7 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 <?php } ?>
 			</div>
 			<div class="hkc-sm-4 hika_cpanel_order_status">
-				<span class="order-label order-label-<?php echo $order->order_status; ?>"><?php echo $order->order_status; ?></span>
+				<span class="order-label order-label-<?php echo $order->order_status; ?>"><?php echo hikashop_orderStatus($order->order_status); ?></span>
 			</div>
 			<div class="hkc-sm-4 hika_cpanel_order_action"><?php
 		$dropData = array(
@@ -104,7 +104,7 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 
 		if(!empty($dropData)) {
 			echo $this->dropdownHelper->display(
-				JText::_('ACTIONS'),
+				JText::_('HIKASHOP_ACTIONS'),
 				$dropData,
 				array('type' => 'btn', 'right' => true, 'up' => false)
 			);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ define('HIKASHOP_JVERSION', $jversion);
 
 define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '4.0.0');
+define('HIKASHOP_VERSION', '4.0.1');
 
 class hikashop {
 	public static function __callStatic($name, $arguments) {
@@ -527,12 +527,10 @@ function hikashop_initModule() {
 		return true;
 	$done = true;
 	$lang = JFactory::getLanguage();
-	if(!method_exists($lang, 'publicLoadLanguage'))
-		$lang = new hikaLanguage($lang);
-	$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
+	$override_path = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
 	$lang->load(HIKASHOP_COMPONENT,JPATH_SITE);
 	if(file_exists($override_path))
-		$lang->publicLoadLanguage($override_path, 'override');
+		hikashop_loadTranslationFile($override_path);
 	return true;
 }
 
@@ -983,7 +981,7 @@ function hikashop_footer() {
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1810181425] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1812031120] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -1158,6 +1156,29 @@ function hikashop_checkRobots() {
 	if(preg_match('#(libwww-perl|python)#i',@$_SERVER['HTTP_USER_AGENT']))
 		die('Not allowed for robots. Please contact us if you are not a robot');
 }
+
+
+function hikashop_loadTranslationFile($path) {
+	$loadOverride = function($filename = null) {
+		$ret = false;
+		if(empty($this->lang) && empty($file)) return $ret;
+		if(empty($filename))
+			$filename = JPATH_BASE.'/language/overrides/'.$this->lang.'.override.ini';
+		if(file_exists($filename) && $contents = $this->parse($filename)) {
+			if(is_array($contents)) {
+				$this->override = $contents;
+				$this->strings = array_merge($this->strings, $this->override);
+				$ret = true;
+			}
+			unset($contents);
+		}
+		return $ret;
+	};
+	$lang = JFactory::getLanguage();
+	$loadOverrideCB = $loadOverride->bindTo($lang, 'JLanguage');
+	$loadOverrideCB($path);
+}
+
 
 function hikashop_loadJslib($name, $data = null) {
 	static $loadLibs = array();
@@ -1412,6 +1433,12 @@ function hikashop_limitString($string, $limit, $replacement = '...', $tooltip = 
 	if($tooltip)
 		return hikashop_tooltip($string, '', '', $new_string, '', 0);
 	return $new_string;
+}
+
+function hikashop_getLanguagePath($basePath = JPATH_BASE, $language = null) {
+	if(HIKASHOP_J40)
+		return JLanguageHelper::getLanguagePath($basePath, $language);
+	return JLanguage::getLanguagePath($basePath, $language);
 }
 
 function hikashop_acl($acl) {
@@ -2555,48 +2582,23 @@ class hikaParameter extends JRegistry {
 	}
 }
 
+class hikaLanguage extends JLanguage {
+	public function __construct($old) {
+		if(is_object($old)) {
+			parent::__construct($old->lang);
+		} else
+			parent::__construct($old);
+	}
+	public function publicLoadLanguage($filename, $extension = 'unknown') {
+		return hikashop_loadTranslationFile($filename);
+	}
+}
+
 if(HIKASHOP_J40) {
 	class HikaStringHelper extends Joomla\String\StringHelper {}
 } else {
 	class HikaStringHelper extends JString {}
 }
-
-class hikaLanguage extends JLanguage {
-	function __construct($old = null) {
-		if(is_string($old)) {
-			parent::__construct($old);
-			$old = JFactory::getLanguage($old);
-		}else{
-			parent::__construct($old->lang);
-		}
-		if(is_object($old)) {
-			$this->strings = $old->strings; $this->override = $old->override; $this->paths = $old->paths;
-			$this->metadata = $old->metadata; $this->locale = $old->locale; $this->lang = $old->lang;
-			$this->default = $old->default; $this->debug = $old->debug; $this->orphans = $old->orphans;
-		}
-	}
-	function publicLoadLanguage($filename, $extension = 'unknown') {
-		if($extension == 'override')
-			return $this->reloadOverride($filename);
-		return $this->loadLanguage($filename, $extension);
-	}
-	function reloadOverride($filename = null) {
-		$ret = false;
-		if(empty($this->lang) && empty($file)) return $ret;
-		if(empty($filename))
-			$filename = JPATH_BASE.'/language/overrides/'.$this->lang.'.override.ini';
-		if(file_exists($filename) && $contents = $this->parse($filename)) {
-			if(is_array($contents)) {
-				$this->override = $contents;
-				$this->strings = array_merge($this->strings, $this->override);
-				$ret = true;
-			}
-			unset($contents);
-		}
-		return $ret;
-	}
-}
-JFactory::$language = new hikaLanguage(JFactory::$language);
 
 define('HIKASHOP_COMPONENT', 'com_hikashop');
 define('HIKASHOP_LIVE', rtrim(JURI::root(),'/').'/');
@@ -2622,10 +2624,11 @@ if(HIKASHOP_J40) {
 	$db->execute();
 }
 
-$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
+$override_path = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$lang->getTag().'.override.ini';
 $lang->load(HIKASHOP_COMPONENT,JPATH_SITE);
-if(file_exists($override_path))
-	$lang->publicLoadLanguage($override_path,'override');
+if(file_exists($override_path)) {
+	hikashop_loadTranslationFile($override_path);
+}
 
 if(defined('HIKASHOP_INSTALL_PRECHECK')) {
 	$databaseHelper = hikashop_get('helper.database');
@@ -2641,6 +2644,17 @@ if($responsive) {
 	define('HIKASHOP_RESPONSIVE', false);
 	define('HK_GRID_BTN', '');
 }
+define('HK_GRID_ROW', 'hk-row');
+define('HK_GRID_THUMBNAILS', 'hk-thumbnails');
+define('HK_GRID_COL_12', 'hkc-md-12');
+define('HK_GRID_COL_10', 'hkc-md-10');
+define('HK_GRID_COL_8', 'hkc-md-8');
+define('HK_GRID_COL_6', 'hkc-md-6');
+define('HK_GRID_COL_4', 'hkc-md-4');
+define('HK_GRID_COL_3', 'hkc-md-3');
+define('HK_GRID_COL_2', 'hkc-md-2');
+define('HK_GRID_COL_1', 'hkc-md-1');
+
 if($configClass->get('bootstrap_back_design', HIKASHOP_J30)) {
 	define('HIKASHOP_BACK_RESPONSIVE', true);
 } else {

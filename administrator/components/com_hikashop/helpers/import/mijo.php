@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -159,7 +159,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 
 	function loadConfiguration()
 	{
-		$this->options = null;
+		$this->options = new stdClass();
 
 		if (defined('DIR_IMAGE')) {
 			if(strpos(DIR_IMAGE, HIKASHOP_ROOT) === false)
@@ -1517,7 +1517,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 			'discount_quota_per_user' => 'uses_customer',
 			'discount_published' => 'status',
 			'discount_code' => 'code',
-			'discount_currency_id' => $main_currency,
+			'discount_currency_id' => $this->db->Quote($main_currency),
 			'discount_flat_amount' => "case when type = 'F' then discount else 0 end",
 			'discount_percent_amount' => "case when type = 'P' then discount else 0 end",
 			'discount_quota' => '0'
@@ -1535,7 +1535,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 		$data = array(
 			'discount_type' => "'coupon'",
 			'discount_code' => 'code',
-			'discount_currency_id' => $main_currency,
+			'discount_currency_id' => $this->db->Quote($main_currency),
 			'discount_flat_amount' => 'amount',
 			'discount_percent_amount' => '0',
 			'discount_published' => 'status',

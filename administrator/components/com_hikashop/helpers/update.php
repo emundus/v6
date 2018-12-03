@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -202,7 +202,7 @@ class hikashopUpdateHelper{
 		if(!empty($extensions)) {
 			$ext_fields = array('`name`','`element`','`folder`','`enabled`','`ordering`','`type`','`access`','`client_id`');
 			if(HIKASHOP_J40)
-				$ext_fields = array_merge($ext_fields, array('`manifest_cache`','`params`','`namespace`'));
+				$ext_fields = array_merge($ext_fields, array('`manifest_cache`','`params`'));
 
 			$queryExtensions = 'INSERT INTO `#__extensions` ('.implode(',', $ext_fields).') VALUES ';
 
@@ -218,7 +218,7 @@ class hikashopUpdateHelper{
 					(int)@$oneExt->client_id,
 				);
 				if(HIKASHOP_J40)
-					$data = array_merge($data, array("''", "''", "''"));
+					$data = array_merge($data, array("''", "''"));
 
 				$queryExtensions .= '('. implode(',', $data) . '),';
 				if($oneExt->type != 'module') {
@@ -410,7 +410,7 @@ class hikashopUpdateHelper{
 					$this->db->setQuery('SELECT id FROM '.hikashop_table('menu',false).' WHERE alias=\'hikashop-menu-for-products-listing\'');
 					$menu_id = $this->db->loadResult();
 					if($menu_id) {
-						$fileContent = JFile::read($destinationFolder.DS.'mod_hikashop_filter.xml');
+						$fileContent = file_get_contents($destinationFolder.DS.'mod_hikashop_filter.xml');
 						if(!empty($fileContent)) {
 							$fileContent = str_replace('name="itemid" type="text" default=""', 'name="itemid" type="text" default="'.$menu_id.'"', $fileContent);
 							JFile::write($destinationFolder.DS.'mod_hikashop_filter.xml', $fileContent);
@@ -466,7 +466,7 @@ class hikashopUpdateHelper{
 			$lang = JFactory::getLanguage();
 			$code = $lang->getTag();
 		}
-		$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';
+		$path = hikashop_getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';
 		if(!file_exists($path)) return;
 		$content = file_get_contents($path);
 		if(empty($content)) return;

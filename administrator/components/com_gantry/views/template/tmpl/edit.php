@@ -141,27 +141,10 @@ function get_badges_layout($name, $override=0, $involved=0, $assignments=0) {
 
 function get_version_update_info(){
 
-	$buffer = '';
-	gantry_import('core.gantryupdates');
-	$gantry_updates = GantryUpdates::getInstance();
-	$currentVersion =  $gantry_updates->getCurrentVersion();
-	$latest_version = $gantry_updates->getLatestVersion();
+	$currentVersion = '4.1.37';
 
-	if (version_compare($latest_version,$currentVersion,'>')){
-		$klass="update";
-		$upd = JText::sprintf('COM_GANTRY_VERSION_UPDATE_OUTOFDATE',$latest_version,'index.php?option=com_installer&view=update');
-	} else {
-		$klass = "noupdate";
-		jimport('joomla.utilities.date');
-		$nextupdate = new JDate($gantry_updates->getLastUpdated()+(24*60*60));
-
-		$upd = JText::sprintf('COM_GANTRY_VERSION_UPDATE_CURRENT');
-	}
-
-	$buffer .= "
-	<div class='gantry-field updater-field ".$klass."'  id='updater'>
-		<div id='updater-bar' class='h2bar'>Gantry <span>v".$currentVersion."</span></div>
-		<div id='updater-desc'>".$upd."</div>
+	$buffer = "<div class='gantry-field updater-field' id='updater'>
+		<div id='updater-bar' class='h2bar'>Gantry Framework <span>v".$currentVersion."</span></div>
 	</div>";
 
 	return $buffer;

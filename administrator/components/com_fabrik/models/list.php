@@ -1493,6 +1493,12 @@ class FabrikAdminModelList extends FabModelAdmin
 				case '4':
 					$element->label = strtoupper($element->label);
 					break;
+				case '5':
+					$element->label = strtoupper(str_replace(" ", "_", $element->label));
+					break;
+				case '6':
+					$element->label = FArrayHelper::getValue($elementLabels, $ordering, $label);
+					break;
 				default:
 					break;
 			}
@@ -2358,12 +2364,11 @@ class FabrikAdminModelList extends FabModelAdmin
 			}
 		}
 
-		$func = create_function('$value', '$db = FabrikWorker::getDbo(true);;return $db->qn($value);');
 		$sql .= implode(', ', $lines);
 
 		if (!empty($keys))
 		{
-			$sql .= ', PRIMARY KEY (' . implode(',', array_map($func, $keys)) . '))';
+			$sql .= ', PRIMARY KEY (' . implode(',', array_map(function($value) use ($db) {return $db->qn($value);}, $keys)) . '))';
 		}
 		else
 		{

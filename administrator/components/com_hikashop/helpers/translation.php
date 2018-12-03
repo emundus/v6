@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -346,7 +346,7 @@ class hikashopTranslationHelper {
 	function getAllLanguages()
 	{
 		jimport('joomla.filesystem.folder');
-		$path = JLanguage::getLanguagePath(JPATH_ROOT);
+		$path = hikashop_getLanguagePath(JPATH_ROOT);
 		$dirs = JFolder::folders( $path );
 		$status_hika = HIKASHOP_IMAGES.'icons/icon-14-hikablue.png';
 		$edit_image = HIKASHOP_IMAGES.'edit.png';

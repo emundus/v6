@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 		echo $this->loadHkLayout('search', array());
 	?></div>
 	<div class="hkc-md-7" style="text-align: right;">
-		<?php $this->filter_type->display('filter_type',$this->pageInfo->filter->filter_type) ?>
+		<?php echo $this->filter_type->display('filter_type',$this->pageInfo->filter->filter_type) ?>
 	</div>
 </div>
 	<table id="hikashop_email_history_listing" class="adminlist table table-striped table-hover" cellpadding="1">

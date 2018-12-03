@@ -106,10 +106,25 @@ class ControlPanel extends Controller
 			}
 		}
 
+		$url = 'index.php?option=com_admintools';
+
+		/**
+		 * Sanity check.
+		 *
+		 * We had a case where the user deleted the plugin files but did not uninstall the plugin. Therefore he saw the
+		 * message to update the database, clicked on the button and got an error page because the plugin (therefore,
+		 * the AkeebaGeoipProvider class) did not really exist on his site.
+		 */
+		if (!class_exists('AkeebaGeoipProvider'))
+		{
+			$message = JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINMISSING');
+			$this->setRedirect($url, $message, 'error');
+
+			return;
+		}
+
 		$geoip  = new AkeebaGeoipProvider();
 		$result = $geoip->updateDatabase();
-
-		$url = 'index.php?option=com_admintools';
 
 		$customRedirect = $this->input->getBase64('returnurl', '');
 		$customRedirect = empty($customRedirect) ? '' : base64_decode($customRedirect);

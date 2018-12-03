@@ -207,7 +207,7 @@ class EmundusModelMigration extends JModelList
 		// First we get a list of all tables containing an fnum collumn
 		try {
 
-			$query = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA LIKE ". JFactory::getConfig()->get('db') ." AND column_name = 'fnum' AND TABLE_NAME NOT IN ('jos_emundus_evaluations', 'jos_emundus_final_grade', 'jos_emundus_admission', 'jos_emundus_group_assoc', 'jos_emundus_comments', 'jos_emundus_emailalert', 'jos_emundus_files_request', 'jos_emundus_users_assoc',  'jos_emundus_campaign_candidature', 'jos_emundus_files_request')";
+			$query = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA LIKE '". JFactory::getConfig()->get('db') ."' AND column_name = 'fnum' AND TABLE_NAME NOT IN ('jos_emundus_evaluations', 'jos_emundus_final_grade', 'jos_emundus_admission', 'jos_emundus_group_assoc', 'jos_emundus_comments', 'jos_emundus_emailalert', 'jos_emundus_files_request', 'jos_emundus_users_assoc',  'jos_emundus_campaign_candidature', 'jos_emundus_files_request')";
 			$this->_db->setQuery($query);
 			$tables = $this->_db->loadObjectList();
 

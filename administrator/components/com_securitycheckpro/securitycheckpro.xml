@@ -7,7 +7,7 @@
 <authorUrl>http://www.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>3.1.2</version>
+<version>3.1.3</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description> 
 
 <!-- Public front end files  -->
@@ -88,8 +88,8 @@
 	<language tag="en-US">language/en-US/en-US.com_securitycheckpro.sys.ini</language>
 	<language tag="hr-HR">language/hr-HR/hr-HR.com_securitycheckpro.ini</language>
 	<language tag="hr-HR">language/hr-HR/hr-HR.com_securitycheckpro.sys.ini</language>
-	<language tag="bs-BA">language/bs-BA/bs-BA.com_securitycheckpro.ini</language>
-	<language tag="bs-BA">language/bs-BA/bs-BA.com_securitycheckpro.sys.ini</language>
+	<language tag="bs-BA">language/bs-BS/bs-BS.com_securitycheckpro.ini</language>
+	<language tag="bs-BA">language/bs-BS/bs-BS.com_securitycheckpro.sys.ini</language>
 	<language tag="pt-PT">language/pt-PT/pt-PT.com_securitycheckpro.ini</language>
 	<language tag="pt-PT">language/pt-PT/pt-PT.com_securitycheckpro.sys.ini</language>
 	<language tag="hu-HU">language/hu-HU/hu-HU.com_securitycheckpro.ini</language>

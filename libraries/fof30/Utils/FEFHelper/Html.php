@@ -44,6 +44,21 @@ abstract class Html
 	 */
 	public static function selectOrderingBackend($pagination, $sortFields, $order, $order_Dir)
 	{
+		if (is_null($sortFields))
+		{
+			$sortFields = [];
+		}
+
+		if (is_string($sortFields))
+		{
+			$sortFields = [$sortFields];
+		}
+
+		if (!is_array($sortFields))
+		{
+			$sortFields = [];
+		}
+
 		return
 			'<div class="akeeba-filter-bar akeeba-filter-bar--right">' .
 			JHtml::_('FEFHelper.browse.orderheader', null, $sortFields, $pagination, $order, $order_Dir) .

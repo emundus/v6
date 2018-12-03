@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -218,8 +218,10 @@ if(hikashop_level(2) && hikaInput::get()->getVar('hikashop_front_end_main', 0) &
 $task = hikaInput::get()->getCmd('task', '');
 $ctrl = hikaInput::get()->getCmd('ctrl', '');
 
-if(!empty($htmlFilter) && $ctrl != 'category')
+if(!empty($htmlFilter) && $ctrl != 'category') {
 	echo $htmlFilter;
+	$htmlFilter = '';
+}
 
 $filter_type = (int)$this->params->get('filter_type');
 $layout_type = $this->params->get('layout_type');

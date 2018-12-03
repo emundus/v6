@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,7 +135,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			hikashop_toInteger($shipping_ids);
 
 			$product_ids = array_keys($shipping_price->products);
-			$query = 'SELECT a.shipping_id, a.shipping_price_ref_id as `ref_id`, a.shipping_price_min_quantity as `min_quantity`, a.shipping_price_value as `price`, a.shipping_fee_value as `fee` '.
+			$query = 'SELECT a.shipping_id, a.shipping_price_ref_id as `ref_id`, a.shipping_price_min_quantity as `min_quantity`, a.shipping_price_value as `price`, a.shipping_fee_value as `fee`, a.shipping_blocked as `blocked`'.
 				' FROM ' . hikashop_table('shipping_price') . ' AS a '.
 				' WHERE a.shipping_id IN (' . implode(',', $shipping_ids) . ') '.
 				' AND a.shipping_price_ref_id IN (' . implode(',', $product_ids) . ') AND a.shipping_price_ref_type = \'product\' '.
@@ -158,11 +158,13 @@ class hikashopShippingPlugin extends hikashopPlugin {
 				}
 			}
 			foreach($ret as $ship) {
-				if($products_qty[$ship->ref_id] > 0 && $ship->min_quantity <= $products_qty[$ship->ref_id]) {
-					$order->shipping_prices[$key]->price_per_product[$ship->shipping_id]['products'][$ship->ref_id] = ($ship->price * $products_qty[$ship->ref_id]) + $ship->fee;
-				}
-			}
+				$order->shipping_prices[$key]->price_per_product[$ship->shipping_id]['blocked'] = 0;
+				if($products_qty[$ship->ref_id] > 0 && $ship->min_quantity <= $products_qty[$ship->ref_id] && $ship->blocked)
+					$order->shipping_prices[$key]->price_per_product[$ship->shipping_id]['blocked'] = 1;
 
+				if($products_qty[$ship->ref_id] > 0 && $ship->min_quantity <= $products_qty[$ship->ref_id])
+					$order->shipping_prices[$key]->price_per_product[$ship->shipping_id]['products'][$ship->ref_id] = ($ship->price * $products_qty[$ship->ref_id]) + $ship->fee;
+			}
 			unset($products_qty);
 		}
 
@@ -183,12 +185,12 @@ class hikashopShippingPlugin extends hikashopPlugin {
 
 					if(isset($rate_prices['products'][$row->product_id])) {
 						$price += $rate_prices['products'][$row->product_id];
-						if($rate_prices['products'][$row->product_id] < 0)
+						if($rate_prices['blocked'])
 							$rate_prices['products']['product_names'][] = '"' . $row->product_name . '"';
 						$rate_prices['products'][$row->product_id] = 0;
 					} elseif(isset($rate_prices['products'][$row->product_parent_id])) {
 						$price += $rate_prices['products'][$row->product_parent_id];
-						if($rate_prices['products'][$row->product_parent_id] < 0)
+						if($rate_prices['blocked'])
 							$rate_prices['products']['product_names'][] = '"' . $order->products['p'.$row->product_id]->product_name . '"';
 						$rate_prices['products'][$row->product_parent_id] = 0;
 					} elseif(!isset($rate->shipping_params->shipping_virtual_included) || $rate->shipping_params->shipping_virtual_included || $row->product_weight > 0) {

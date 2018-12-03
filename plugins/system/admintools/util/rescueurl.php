@@ -84,6 +84,13 @@ abstract class AtsystemUtilRescueurl
 			return;
 		}
 
+		if ($email == 'you@example.com')
+		{
+			echo JText::sprintf('ADMINTOOLS_RESCUEURL_ERR_INVALIDADDRESS', $email);
+
+			$app->close(0);
+		}
+
 		// Does the email belong to a Super User?
 		$userId = self::isSuperUserByEmail($email);
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -57,11 +57,11 @@ defined('_JEXEC') or die('Restricted access');
 		if($data->key=='folder' && !hikashop_level(2)){
 			echo hikashop_getUpgradeLink('business');
 		}elseif($data->key=='vm' && !$this->vm){
-			echo '<small style="color:red">VirtueMart has not been found in the database</small>';
+			echo '<small style="color:red">'.JText::sprintf('HAS_NOT_BEEN_FOUND', 'VirtueMart').'</small>';
 		}elseif($data->key=='mijo' && !$this->mijo){
-			echo '<small style="color:red">Mjoshop has not been found in the database</small>';
+			echo '<small style="color:red">'.JText::sprintf('HAS_NOT_BEEN_FOUND', 'Mjoshop').'</small>';
 		}elseif($data->key=='redshop' && !$this->reds){
-			echo '<small style="color:red">Redshop has not been found in the database</small>';
+			echo '<small style="color:red">'.JText::sprintf('HAS_NOT_BEEN_FOUND', 'Redshop').'</small>';
 		}else{
 			if(in_array($data->key,array('file','textarea','folder','vm','mijo','redshop','openc'))) include(dirname(__FILE__).DS.$data->key.'.php');
 			else echo $data->data;
