@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -83,7 +83,8 @@ if(invalid_field)
 
 	$title = '';
 	if($this->options['display_method'] == 0) {
-		$title = !empty($this->options['registration_guest']) ? 'LOGIN_OR_GUEST' : 'LOGIN_OR_REGISTER_ACCOUNT';
+		if(!empty($this->options['show_login']))
+			$title = !empty($this->options['registration_guest']) ? 'LOGIN_OR_GUEST' : 'LOGIN_OR_REGISTER_ACCOUNT';
 	} else {
 		if(!empty($this->options['show_login']) && ($this->options['registration_registration'] || $this->options['registration_simplified'] || $this->options['registration_password']) && $this->options['registration_guest'])
 			$title = 'LOGIN_OR_REGISTER_ACCOUNT_OR_GUEST';

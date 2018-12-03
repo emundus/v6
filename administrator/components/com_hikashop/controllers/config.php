@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -518,7 +518,7 @@ function setVisible(value) {
 		$mail->altbody .= "\n"."\n"."\n".$bodyEmail;
 		$mail->html=0;
 		jimport('joomla.filesystem.file');
-		$path = JPath::clean(JLanguage::getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini');
+		$path = JPath::clean(hikashop_getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini');
 		$result = parse_ini_file($path);
 		if(!$result){
 			hikashop_display('There is an parsing error in your language file. So the file could not be sent. Please activate the "debug language" setting of the Joomla configuration and look at the debug information at the bottom of the page. It will tell you on which line of the file you have a problem.', 'success');
@@ -555,7 +555,7 @@ function setVisible(value) {
 		$content = hikaInput::get()->getRaw('content', '');
 		$content_override = hikaInput::get()->getRaw('content_override', '');
 
-		$folder = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides';
+		$folder = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides';
 		jimport('joomla.filesystem.folder');
 		if(!JFolder::exists($folder)) {
 			JFolder::create($folder);
@@ -575,7 +575,7 @@ function setVisible(value) {
 		if(empty($content))
 			return;
 
-		$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';
+		$path = hikashop_getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';
 		if(!JPath::check($path)) {
 			hikashop_display(JText::sprintf('FAIL_SAVE','invalid filename'),'error');
 			return false;

@@ -145,6 +145,8 @@ akeeba.fef.dropdown = function(selector)
             }
 
 			this.className = newClass;
+
+			event.preventDefault();
 		});
 
 		// Loop through all section > a elements in the NAV
@@ -191,6 +193,8 @@ akeeba.fef.dropdown = function(selector)
 
 				// Add the “current” class to the current link
 				this.className += ' current';
+
+				event.preventDefault();
 			});
 		});
     });

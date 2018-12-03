@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,7 +39,7 @@ class OrderViewOrder extends hikashopView {
 		$menu	= $menus->getActive();
 		$show_page_heading = true;
 		$params = null;
-		if(!empty($menu)) {
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
 			$params = $menu->getParams();
 			$show_page_heading = $params->get('show_page_heading');
 		}
@@ -48,7 +48,7 @@ class OrderViewOrder extends hikashopView {
 			if(!empty($com_menus))
 				$show_page_heading = $com_menus->get('show_page_heading');
 		}
-		if(!empty($menu) && $menu->link == 'index.php?option=com_hikashop&view=order&layout=listing') {
+		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->link == 'index.php?option=com_hikashop&view=order&layout=listing') {
 			if($show_page_heading)
 				$this->title = $params->get('page_heading');
 			hikashop_setPageTitle($menu->title);
@@ -127,10 +127,12 @@ class OrderViewOrder extends hikashopView {
 
 		$address_data = array();
 		$address_html = array();
-		foreach($rows as $row) {
-			if((empty($row->order_shipping_method) && empty($row->order_shipping_id)) || empty($row->order_shipping_address_id))
-				continue;
-			$address_data[(int)$row->order_shipping_address_id] = (int)$row->order_shipping_address_id;
+		if(!empty($rows)) {
+			foreach($rows as $row) {
+				if((empty($row->order_shipping_method) && empty($row->order_shipping_id)) || empty($row->order_shipping_address_id))
+					continue;
+				$address_data[(int)$row->order_shipping_address_id] = (int)$row->order_shipping_address_id;
+			}
 		}
 		if(!empty($address_data)) {
 			$query = ' SELECT * FROM ' . hikashop_table('address') . ' WHERE address_id IN (' . implode(',', $address_data) . ')';
@@ -152,10 +154,12 @@ class OrderViewOrder extends hikashopView {
 
 		if(hikashop_level(1) && $config->get('allow_payment_button', 1)) {
 			$unpaid_statuses = explode(',', $config->get('order_unpaid_statuses', 'created'));
-			foreach($rows as &$order) {
-				if(in_array($order->order_status, $unpaid_statuses)) {
-					$order->show_payment_button = true;
-					$this->action_column = true;
+			if(!empty($rows)) {
+				foreach($rows as &$order) {
+					if(in_array($order->order_status, $unpaid_statuses)) {
+						$order->show_payment_button = true;
+						$this->action_column = true;
+					}
 				}
 			}
 			unset($order);
@@ -172,7 +176,7 @@ class OrderViewOrder extends hikashopView {
 		}
 
 		$cancellable_order_status = explode(',', trim($config->get('cancellable_order_status', ''), ', '));
-		if(!empty($cancellable_order_status)) {
+		if(!empty($cancellable_order_status) && !empty($rows)) {
 			foreach($rows as &$order) {
 				if(in_array($order->order_status, $cancellable_order_status)) {
 					$order->show_cancel_button = true;
@@ -186,8 +190,10 @@ class OrderViewOrder extends hikashopView {
 			$this->action_column = true;
 		}
 
-		$first_row = reset($rows);
-		$this->order_products( (int)$first_row->order_id );
+		if(!empty($rows)) {
+			$first_row = reset($rows);
+			$this->order_products( (int)$first_row->order_id );
+		}
 
 		$this->assignRef('rows', $rows);
 
@@ -314,7 +320,7 @@ class OrderViewOrder extends hikashopView {
 			$pay = array(
 				'icon' => 'pay',
 				'name' => JText::_('PAY_NOW'),
-				'url' => hikashop_completeLink($url),
+				'url' => $url,
 				'fa' => array('html' => '<i class="far fa-credit-card"></i>')
 			);
 			$toolbar_array['pay'] = $pay;

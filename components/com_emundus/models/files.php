@@ -2288,7 +2288,7 @@ where 1 order by ga.fnum asc, g.title';
         }
 
         if ($pas !=0 )
-            $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
+            $query .= ' LIMIT ' . $pas . ' OFFSET ' . $start;
 
 /*echo str_replace("#_", "jos", $query);
 die();*/

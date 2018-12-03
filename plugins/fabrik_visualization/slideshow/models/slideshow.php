@@ -186,6 +186,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		 */
 		//$slideshow_viz_file .= $slideElement->isJoin() ? '' : '_raw';
 		$slideshow_viz_file_raw = $slideshow_viz_file . '_raw';
+		$slideshow_viz_file_id = $slideshow_viz_file . '_id';
 
 		$slideshow_viz_caption = $params->get('slideshow_viz_caption', '');
 
@@ -209,16 +210,28 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 				}
 				else
 				{
-					$picData = $pic->$slideshow_viz_file;
+					$picData = $pic->$slideshow_viz_file_id;
 				}
 
-				$picData = str_replace("\\", "/", $picData);
+				if (FabrikWorker::isJSON($picData))
+				{
+					$picData = json_decode($picData);
 
-                // just in case ...
-                if (!JFile::exists(JPATH_SITE . $picData))
-                {
-                    continue;
-                }
+					if (is_array($picData))
+					{
+						$picData = array_pop($picData);
+					}
+
+					if (is_object($picData) && isset($picData->file))
+					{
+						$picData = $picData->file;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				$picData = str_replace("\\", "/", $picData);
 
 				$pic_opts = array();
 
@@ -226,6 +239,10 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 				{
 					// Force it to a string for json_encode
 					$pic_opts['caption'] = $pic->$slideshow_viz_caption . ' ';
+				}
+				else
+				{
+					$pic_opts['caption'] = '';
 				}
 
 
@@ -237,6 +254,13 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 				{
 					$tmp = json_decode($path);
 					$k = $tmp == false ? $path : $tmp[0];
+
+					// just in case ...
+					if (!$slideElement->getStorage()->exists($k))
+					{
+						continue;
+					}
+
 					$pic_opts['href'] = $slideElement->getStorage()->getFileUrl($k, 0);
 					$this->addThumbOpts($pic_opts);
 
@@ -248,7 +272,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 			}
 		}
 
-		$this->totalPics = count($js_opts);
+		$this->totalPics = count((array)$js_opts);
 
 		return $js_opts;
 	}
@@ -330,7 +354,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		$use_thumbs = $params->get('slideshow_viz_thumbnails', 0);
 		$use_captions = $params->get('slideshow_viz_caption', '') == '' ? false : true;
 		$opts = new stdClass;
-		$opts->slideshow_data = $slideshow_data = $this->getImageJSData();
+		//$opts->slideshow_data = $slideshow_data = $this->getImageJSData();
 		$opts->id = $viz->id;
 		$opts->html_id = $html_id = 'slideshow_viz_' . $viz->id;
 		$opts->slideshow_type = (int) $params->get('slideshow_viz_type', 1);

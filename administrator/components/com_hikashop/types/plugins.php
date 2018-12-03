@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -65,7 +65,11 @@ class hikashopPluginsType{
 					continue;
 
 				$plugin = hikashop_import('hikashop'.$this->type, $method->shipping_type);
-				if($plugin && method_exists($plugin, 'shippingMethods')) {
+				if(!$plugin) {
+					$unset[] = $k;
+					continue;
+				}
+				if(method_exists($plugin, 'shippingMethods')) {
 					$methods = $plugin->shippingMethods($method);
 					if(is_array($methods) && !empty($methods)) {
 						$unset[] = $k;
@@ -78,8 +82,6 @@ class hikashopPluginsType{
 					} else {
 						$unset[] = $k;
 					}
-				} else {
-					$unset[] = $k;
 				}
 			}
 			foreach($unset as $k) {

@@ -803,6 +803,7 @@ class FabrikViewFormBase extends FabrikView
 		$showMaxRepeats = array();
 		$minMaxErrMsg   = array();
 		$numRepeatEls   = array();
+		$noDataMsg      = array();
 
 		foreach ($this->groups as $g)
 		{
@@ -811,7 +812,8 @@ class FabrikViewFormBase extends FabrikView
 			$minRepeat[$g->id]      = $g->minRepeat;
 			$numRepeatEls[$g->id]   = FabrikString::safeColNameToArrayKey($g->numRepeatElement);
 			$showMaxRepeats[$g->id] = $g->showMaxRepeats;
-			$minMaxErrMsg[$g->id]   = $g->minMaxErrMsg;
+			$minMaxErrMsg[$g->id]   = JText::_($g->minMaxErrMsg);
+			$noDataMsg[$g->id]      = JText::_($g->noDataMsg);
 		}
 
 		$opts->hiddenGroup    = $hidden;
@@ -820,6 +822,7 @@ class FabrikViewFormBase extends FabrikView
 		$opts->showMaxRepeats = $showMaxRepeats;
 		$opts->minMaxErrMsg   = $minMaxErrMsg;
 		$opts->numRepeatEls   = $numRepeatEls;
+		$opts->noDataMsg      = $noDataMsg;
 
 		// $$$ hugh adding these so calc element can easily find joined and repeated join groups
 		// when it needs to add observe events ... don't ask ... LOL!
@@ -929,6 +932,15 @@ class FabrikViewFormBase extends FabrikView
 		$fields[]  = '<input type="hidden" name="fabrik_ajax" value="' . (int) $model->isAjax() . '" />';
 		$fields[]  = '<input type="hidden" name="package" value="' . $this->app->getUserState('com_fabrik.package', 'fabrik') . '" />';
 		$fields[]  = '<input type="hidden" name="packageId" value="' . $model->packageId . '" />';
+
+		if ($model->noData)
+		{
+			$fields[] = '<input type="hidden" name="nodata" value="1"" />';
+		}
+		else
+		{
+			$fields[] = '<input type="hidden" name="nodata" value="0" />';
+		}
 
 		/*
 		if ($input->get('fabrikdebug', '') === '2')
@@ -1159,7 +1171,7 @@ class FabrikViewFormBase extends FabrikView
 			$form->prevButton = '';
 		}
 
-		// $$$ hugh - hide actions section is we're printing, or if not actions selected
+		// $$$ hugh - hide actions section if we're printing or format=PDF, or if not actions selected
 		$noButtons = (
 			empty($form->nextButton)
 			&& empty($form->prevButton)
@@ -1173,7 +1185,7 @@ class FabrikViewFormBase extends FabrikView
 			&& empty($form->customButtons)
 		);
 
-		$this->hasActions = ($input->get('print', '0') == '1' || $noButtons) ? false : true;
+		$this->hasActions = ($input->get('print', '0') == '1' || $input->get('format') === 'pdf' || $noButtons) ? false : true;
 
 		$format   = $model->isAjax() ? 'raw' : 'html';
 		$fields[] = '<input type="hidden" name="format" value="' . $format . '" />';
@@ -1215,6 +1227,12 @@ class FabrikViewFormBase extends FabrikView
 			// Used for validations
 			$fields[] = '<input type="hidden" name="fabrik_repeat_group[' . $group->id . ']" value="' . $c . '" id="fabrik_repeat_group_'
 				. $group->id . '_counter" />';
+
+			// Used for validations
+			$added = $input->get('fabrik_repeat_group_added', array(), 'array');
+			$added = ArrayHelper::getValue($added, $group->id, '0');
+			$fields[] = '<input type="hidden" name="fabrik_repeat_group_added[' . $group->id . ']" value="' . $added . '" id="fabrik_repeat_group_'
+				. $group->id . '_added" />';
 		}
 
 		// $$$ hugh - testing social_profile_hash stuff

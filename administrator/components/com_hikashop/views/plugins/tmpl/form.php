@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -348,7 +348,7 @@ function hika_payment_algorithm(el) {
 							array(
 								'delete' => true,
 								'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
-								'zone_types' => array('country' => 'COUNTRY', 'shipping' => 'SHIPPING'),
+								'zone_types' => array('country' => 'COUNTRY', 'ship' => 'SHIPPING'),
 							)
 						);
 						?>

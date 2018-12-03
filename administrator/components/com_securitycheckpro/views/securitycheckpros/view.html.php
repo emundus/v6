@@ -42,7 +42,7 @@ if ( $update_database_plugin_exists ) {
 	$plugin_id = $model->get_plugin_id(1);
 	$last_update = $model->get_last_update();	
 } else {
-	$last_update = 'Aug 29 2018';
+	$last_update = 'Nov 19 2018';
 }
 
 // Filtro por tipo de extensión

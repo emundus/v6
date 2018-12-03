@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -562,7 +562,7 @@ class hikashopStatisticsClass extends hikashopClass {
 	}
 
 	public function getDates($mode, $base = 0) {
-		$now = explode('-', date('m-d-Y'), 3);
+		$now = explode('-', hikashop_getDate(time(),'m-d-Y'), 3);
 		$ret = array('start' => 0, 'end' => -1);
 
 		if(strpos($mode, ':') !== false) {
@@ -579,57 +579,57 @@ class hikashopStatisticsClass extends hikashopClass {
 				$ret['end'] = -1;
 				break;
 			case 'this.year':
-				$ret['start'] = mktime(0, 0, 0, 1, 1, $now[2]) + $this->timeoffset;
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['start'] = gmmktime(0, 0, 0, 1, 1, $now[2]) - $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				break;
 			case 'this.month':
-				$ret['start'] = mktime(0, 0, 0, $now[0], 1, $now[2]) + $this->timeoffset;
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['start'] = gmmktime(0, 0, 0, $now[0], 1, $now[2]) - $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				break;
 			case 'this.week':
-				$ret['start'] = mktime(0, 0, 0, $now[0], $now[1], $now[2]) - (date('N')-1)*24*3600 + $this->timeoffset;
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['start'] = gmmktime(0, 0, 0, $now[0], $now[1], $now[2]) - (date('N')-1)*24*3600 - $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				break;
 			case 'this.day':
-				$ret['start'] = mktime(0, 0, 0, $now[0], $now[1], $now[2]) + $this->timeoffset;
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['start'] = gmmktime(0, 0, 0, $now[0], $now[1], $now[2]) - $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				break;
 			case 'past.year':
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				$ret['start'] = strtotime('-1 year', $ret['end'])+1;
 				break;
 			case 'past.month':
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				$ret['start'] = strtotime('-1 month', $ret['end'])+1;
 				break;
 			case 'past.month-1':
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				$ret['end'] = strtotime('-1 month', $ret['end'])+1;
 				$ret['start'] = strtotime('-1 month', $ret['end'])+1;
 				break;
 			case 'past.week':
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, $now[0], $now[1], $now[2]) - $this->timeoffset;
 				$ret['start'] = strtotime('-1 week', $ret['end'])+1;
 				break;
 			case 'past.day':
-				$ret['end'] = mktime(23, 59, 59, $now[0], $now[1], $now[2]) + $this->timeoffset;
-				$ret['start'] = strtotime('-1 day', $ret['end'])+1;
+				$ret['end'] = time() - $this->timeoffset;
+				$ret['start'] = $ret['end'] - 24*3600;
 				break;
 			case 'previous.year':
-				$ret['start'] = mktime(0, 0, 0, 1, 1, (int)$now[2]-1) + $this->timeoffset;
-				$ret['end'] = mktime(23, 59, 59, 12, 31, (int)$now[2]-1) + $this->timeoffset;
+				$ret['start'] = gmmktime(0, 0, 0, 1, 1, (int)$now[2]-1) - $this->timeoffset;
+				$ret['end'] = gmmktime(23, 59, 59, 12, 31, (int)$now[2]-1) - $this->timeoffset;
 				break;
 			case 'previous.month':
-				$ret['end'] = mktime(0, 0, 0, $now[0], 1, $now[2]) - 1 + $this->timeoffset;
+				$ret['end'] = gmmktime(0, 0, 0, $now[0], 1, $now[2]) - 1 - $this->timeoffset;
 				$ret['start'] = strtotime('-1 month', $ret['end']) + 1;
 				break;
 			case 'previous.week':
-				$ret['end'] = mktime(0, 0, 0, $now[0], $now[1], $now[2]) - (date('N')-1)*24*3600 - 1 + $this->timeoffset;
+				$ret['end'] = gmmktime(0, 0, 0, $now[0], $now[1], $now[2]) - (date('N')-1)*24*3600 - 1 - $this->timeoffset;
 				$ret['start'] = strtotime('-1 week', $ret['end']) + 1;
 				break;
 			case 'previous.day':
-				$ret['end'] = mktime(0, 0, 0, $now[0], $now[1], $now[2]) - (date('N')-1)*24*3600 - 1 + $this->timeoffset;
-				$ret['start'] = strtotime('-1 day', $ret['end']) + 1;
+				$ret['end'] = gmmktime(0, 0, 0, $now[0], $now[1], $now[2]) - $this->timeoffset;
+				$ret['start'] = $ret['end'] - 24*3600;
 				break;
 			default:
 				$manualProcess = true;

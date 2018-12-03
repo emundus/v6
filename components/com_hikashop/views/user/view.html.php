@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,16 +67,24 @@ class userViewUser extends HikaShopView {
 
 		$menus	= $app->getMenu();
 		$menu	= $menus->getActive();
-		$params = $menu->getParams();
-		$show_page_heading = $params->get('show_page_heading');
+		$show_page_heading = true;
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
+			$params = $menu->getParams();
+			$show_page_heading = $params->get('show_page_heading');
+		}
 		if(is_null($show_page_heading)) {
 			$com_menus = JComponentHelper::getParams('com_menus');
 			$show_page_heading = $com_menus->get('show_page_heading');
 		}
-		if($show_page_heading) {
-			$this->title = $params->get('page_heading');
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
+			if($show_page_heading)
+				$this->title = $params->get('page_heading');
+			hikashop_setPageTitle($menu->title);
+		} else {
+			if($show_page_heading)
+				$this->title = JText::_('CUSTOMER_ACCOUNT');
+			hikashop_setPageTitle('CUSTOMER_ACCOUNT');
 		}
-		hikashop_setPageTitle($menu->title);
 
 		$pathway = $app->getPathway();
 		$items = $pathway->getPathway();

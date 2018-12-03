@@ -23,7 +23,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '4.0.0';
+	var $version = '4.0.1';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -517,12 +517,12 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 
 			jimport('joomla.filesystem.file');
 			jimport('joomla.filesystem.folder');
-			$lng_override_folder = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides';
+			$lng_override_folder = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides';
 			if(JFolder::exists($lng_override_folder)) {
 				$lngFiles = JFolder::files($lng_override_folder);
 				if(!empty($lngFiles)) {
 					foreach($lngFiles as $lngfile) {
-						$content = JFile::read($lng_override_folder.DS.$lngfile);
+						$content = file_get_contents($lng_override_folder.DS.$lngfile);
 						if(!empty($content) && strpos($content, 'PLEASE_ACCEPT_TERMS_BEFORE_FINISHING_ORDER="') !== false) {
 							$content = preg_replace('#PLEASE_ACCEPT_TERMS_BEFORE_FINISHING_ORDER="(.*)"#', 'PLEASE_ACCEPT_TERMS_BEFORE_FINISHING_ORDER="\1"'."\r\n".'PLEASE_ACCEPT_TERMS="\1"', $content);
 							JFile::write($lng_override_folder.DS.$lngfile, $content);
@@ -688,11 +688,6 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$this->db->setQuery($query);
 			try{$this->db->execute();}catch(Exception $e){}
 
-			$query = 'UPDATE `#__hikashop_config` SET config_value = 1 '.
-					' WHERE config_namekey IN (\'checkout_legacy\', \'add_to_cart_legacy\',\'legacy_widgets\')';
-			$this->db->setQuery($query);
-			try{$this->db->execute();}catch(Exception $e){}
-
 			$hikashopEmails = array(
 				'order_admin_notification',
 				'order_status_notification',
@@ -780,6 +775,17 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$this->databaseHelper->addColumns('cart_product', array(
 				"`cart_product_ref_price` decimal(17,5) DEFAULT NULL",
 			));
+		}
+		if(version_compare($this->fromVersion, '4.0.1', '<')) {
+			$this->databaseHelper->addColumns('shipping_price', array(
+				"`shipping_blocked` tinyint(3) unsigned NOT NULL DEFAULT '0'",
+			));
+
+			$query = 'UPDATE `#__hikashop_shipping_price` SET shipping_price_value = 0, shipping_fee_value = 0, shipping_blocked = 1 '.
+					' WHERE shipping_price_value = -1 OR shipping_fee_value = -1';
+
+			$this->db->setQuery($query);
+			try{$this->db->execute();}catch(Exception $e){}
 		}
 	}
 

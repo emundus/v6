@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,11 +13,11 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 ?>
 <div>
 	<div style="float:right">
-		<button class="btn btn-success" onclick="return window.productMgr.addVariants(this, <?php echo (int)$this->product->product_id; ?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>add.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_ADD_VARIANTS'); ?></button>
+		<button class="btn btn-success" onclick="return window.productMgr.addVariants(this, <?php echo (int)$this->product->product_id; ?>);"><i class="fa fa-plus"></i> <?php echo JText::_('HIKA_ADD_VARIANTS'); ?></button>
 	</div>
 	<div id="hikashop_variant_bundle_toolbar" style="display:none;">
-		<button class="btn btn-danger" onclick="return window.productMgr.deleteVariants(this, <?php echo (int)$this->product->product_id; ?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_DELETE'); ?></button>
-		<button class="btn btn-info" onclick="return window.productMgr.duplicateVariants(this, <?php echo (int)$this->product->product_id; ?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>copy.png" alt="" style="vertical-align:middle;"/> <?php echo JText::_('HIKA_DUPLICATE'); ?></button>
+		<button class="btn btn-danger" onclick="return window.productMgr.deleteVariants(this, <?php echo (int)$this->product->product_id; ?>);"><i class="fa fa-times"></i> <?php echo JText::_('HIKA_DELETE'); ?></button>
+		<button class="btn btn-info" onclick="return window.productMgr.duplicateVariants(this, <?php echo (int)$this->product->product_id; ?>);"><i class="fa fa-copy"></i> <?php echo JText::_('HIKA_DUPLICATE'); ?></button>
 	</div>
 	<div style="clear:both"></div>
 </div>
@@ -61,7 +61,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 			<td style="text-align:center">
 				<input onchange="window.productMgr.checkVariant(this, <?php echo $variant->product_id; ?>);" type="checkbox" id="hikashop_product_variant_checkbox_<?php echo $variant->product_id; ?>" value="<?php echo $variant->product_id; ?>"/>
 			</td>
-			<td style="text-align:center"><a href="#edit:<?php echo $variant->product_id; ?>" onclick="return window.productMgr.editVariant(<?php echo $variant->product_id; ?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt="<?php echo JText::_('HIKA_EDIT'); ?>"/></a></td>
+			<td style="text-align:center"><a href="#edit:<?php echo $variant->product_id; ?>" onclick="return window.productMgr.editVariant(<?php echo $variant->product_id; ?>);"><i class="fas fa-pen"></i></a></td>
 <?php
 		$cpt = 0;
 		foreach($this->product->characteristics as $characteristic) {

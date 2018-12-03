@@ -777,14 +777,16 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 		
+		$dynamic_blacklist = $this->pro_plugin->getValue('dynamic_blacklist',1,'pro_plugin');
+		
 		// Chequeamos si la IP tiene un formato válido
 		$ip_valid = filter_var($attack_ip, FILTER_VALIDATE_IP);
 		
 		// Sanitizamos la entrada
 		$attack_ip = $db->escape($attack_ip);
 				
-		// Validamos si el valor devuelto es una dirección IP válida
-		if ( (!empty($attack_ip)) && ($ip_valid) ) {
+		// Validamos si el valor devuelto es una dirección IP válida y la lista negra dinámica está habilitada
+		if ( (!empty($attack_ip)) && ($ip_valid) && ($dynamic_blacklist) ) {
 			try {				
 				$query = "INSERT INTO `#__securitycheckpro_dynamic_blacklist` (`ip`, `timeattempt`) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE `timeattempt` = NOW(), `counter` = `counter` + 1;";
 				

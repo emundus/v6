@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ echo $this->toolbarHelper->process($this->toolbar, $this->title);
 <div id="hikashop_user_addresses_default">
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
-	<dl class="hika_options large">
+	<dl class="hika_options large hikashop_default_billing_address">
 		<dt><label for="hikashop_default_billing_address_selector"><?php echo JText::_('HIKASHOP_SELECT_DEFAULT_BILLING_ADDRESS'); ?></label></dt>
 		<dd><?php
 			$current = 0;
@@ -47,7 +47,7 @@ echo $this->toolbarHelper->process($this->toolbar, $this->title);
 			echo JHTML::_('select.genericlist', $values, 'data[user][default_billing]', 'class="hikashop_default_address_dropdown" onchange="window.addressMgr.setDefault(this, \'billing\');"', 'value', 'text', $current, 'hikashop_default_billing_address_selector');
 		?></dd>
 	</dl>
-	<dl class="hika_options large">
+	<dl class="hika_options large hikashop_default_shipping_address">
 		<dt><label for="hikashop_default_shipping_address_selector"><?php echo JText::_('HIKASHOP_SELECT_DEFAULT_SHIPPING_ADDRESS'); ?></label></dt>
 		<dd><?php
 			$current = 0;
@@ -83,7 +83,7 @@ echo $this->toolbarHelper->process($this->toolbar, $this->title);
 if(!empty($this->two_columns)) {
 ?>
 <div class="hk-row-fluid">
-	<div class="hkc-md-6">
+	<div class="hkc-md-6 hikashop_billing_addresses">
 		<h3><?php echo JText::_('HIKASHOP_BILLING_ADDRESSES'); ?></h3>
 <?php
 }
@@ -109,7 +109,7 @@ if(!empty($this->two_columns)) {
 			<a class="hikabtn hikabtn-success" href="#newAddress" onclick="return window.addressMgr.new('billing');"><i class="fa fa-plus"></i> <?php echo JText::_('HIKASHOP_NEW_BILLING_ADDRESS'); ?></a>
 		</div>
 	</div>
-	<div class="hkc-md-6">
+	<div class="hkc-md-6 hikashop_shipping_addresses">
 		<h3><?php echo JText::_('HIKASHOP_SHIPPING_ADDRESSES'); ?></h3>
 <?php
 	foreach($this->addresses as $address) {

@@ -619,7 +619,7 @@ class EmundusModelStats extends JModelLegacy {
         $query  = $db->getQuery(true);
 
         $query
-            ->select($db->quoteName('*'))
+            ->select('*')
             ->from($db->quoteName('#__emundus_stats_files_graph'));
 
         $db->setQuery($query);

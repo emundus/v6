@@ -343,11 +343,11 @@ public function GetConfigApplied(){
 			$this->ConfigApplied['optimal_expiration_time'] = 1;
 		}
 		/* 'compress-content' habilitado? */
-		if ( stripos($rules_applied,"RewriteCond %{HTTP_HOST} !^www\. [NC]") ) {
+		if ( stripos($rules_applied,"<IfModule mod_deflate.c>") ) {
 			$this->ConfigApplied['compress_content'] = 1;
 		}
 		/* 'redirect non-www to www' habilitado? */
-		if ( stripos($rules_applied,"<IfModule mod_deflate.c>") ) {
+		if ( stripos($rules_applied,"RewriteCond %{HTTP_HOST} !^www\. [NC]") ) {
 			$this->ConfigApplied['redirect_to_www'] = 1;
 		}
 		
@@ -729,14 +729,27 @@ public function protect()
 	/* Comprobamos si hay que redirigir las peticiones no www a www */
 	if ( $this->getValue("redirect_to_www") ) {
 		
-			$rules .= PHP_EOL . "## Begin Securitycheck Pro Redirect non-www to www";
-			$rules .= PHP_EOL . "RewriteCond %{HTTP_HOST} !^www\. [NC]";
-			$rules .= PHP_EOL . "RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]";
-			/*$rules .= PHP_EOL . "RewriteCond %{HTTP_HOST} !^www\.";
-			$rules .= PHP_EOL . "RewriteCond %{HTTPS}s on(s)|offs()";
-			$rules .= PHP_EOL . "RewriteRule ^ http%1://www.%{HTTP_HOST}%{REQUEST_URI} [NE,L,R]";*/
-			$rules .= PHP_EOL . "## End Securitycheck Pro Redirect non-www to www" . PHP_EOL;
-		
+		$isSecure = false;
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+			$isSecure = true;
+		}
+		elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on') {
+			$isSecure = true;
+		}
+		$REQUEST_PROTOCOL = $isSecure ? 'https' : 'http';
+				
+		$str_to_insert = "RewriteEngine On" . PHP_EOL;
+		$str_to_insert .= PHP_EOL . "## Securitycheck Pro Redirect non-www to www";
+		$str_to_insert .= PHP_EOL . "RewriteCond %{HTTP_HOST} !^www\. [NC]";
+		if ( $isSecure ) {
+			$str_to_insert .= PHP_EOL . "RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]";
+		} else {
+			$str_to_insert .= PHP_EOL . "RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]";
+		}
+		$str_to_insert .= PHP_EOL . "## Securitycheck Pro Redirect non-www to www" . PHP_EOL;
+									
+		$rules = str_replace("RewriteEngine On", $str_to_insert, $rules);
+			
 	}
 	
 	// Añadimos la parte final (si es necesario)
