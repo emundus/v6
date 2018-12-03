@@ -357,6 +357,9 @@ function processSelectedFiles(fileInput) {
 
     if($(rowId).find(".em-added-file"))
         $(rowId).find(".em-added-file").remove();
+    
+    if($(rowId).find(".not-allowed"))
+        $(rowId).find(".not-allowed").remove();
 
     allowedDocuments = allowedDocuments.split(';');
 
@@ -373,6 +376,7 @@ function processSelectedFiles(fileInput) {
             } else {
                 $(rowId).find(".em_send_uploaded_file").attr('disabled', 'disabled');
                 fileParagraphe.addClass('not-allowed');
+                fileParagraphe.removeClass('em-added-file');
                 fileParagraphe.innerHTML = "<?php echo JText::_('DOCUMENT_NOT_ALLOWED')?>";
             }
            rowId.append(fileParagraphe);
@@ -387,7 +391,7 @@ function processSelectedFiles(fileInput) {
 
 <style>
     .not-allowed {
-        color: red !important;
+        color: red;
         font-weight: bold;
     }
 </style>
