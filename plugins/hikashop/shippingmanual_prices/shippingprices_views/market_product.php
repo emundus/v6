@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -66,11 +66,11 @@ foreach($shippings as &$shipping) {
 	if(!empty($shipping->shipping_price_value) || !empty($shipping->shipping_fee_value)) {
 		if($shipping->shipping_price_min_quantity < 1)
 			$shipping->shipping_price_min_quantity = 1;
-		if($shipping->shipping_price_value < 0 || $shipping->shipping_fee_value < 0) {
+		if(isset($shipping->shipping_blocked) && $shipping->shipping_blocked) {
 			$blocked_checked = 'checked="checked"';
 			$attribute = 'readonly="readonly"';
-			$shipping->shipping_price_value = -1;
-			$shipping->shipping_fee_value = -1;
+			$shipping->shipping_price_value = 0;
+			$shipping->shipping_fee_value = 0;
 		}else{
 			$blocked_checked = '';
 			$attribute = '';
@@ -81,7 +81,7 @@ foreach($shippings as &$shipping) {
 			'</td><td><input style="width:auto;" type="text" name="shipping_prices['.$product_id.']['.$i.'][qty]" value="'.$shipping->shipping_price_min_quantity.'" size="3"/></td>'.
 			'<td style="text-align:center"><input style="width:auto;" type="text" id="shipping_prices_value_'.$product_id.'_'.$i.'" '.$attribute.' name="shipping_prices['.$product_id.']['.$i.'][value]" value="'.$shipping->shipping_price_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
 			'<td style="text-align:center"><input style="width:auto;" type="text" id="shipping_prices_fee_'.$product_id.'_'.$i.'" '.$attribute.' name="shipping_prices['.$product_id.']['.$i.'][fee]" value="'.$shipping->shipping_fee_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
-			'<td><input type="checkbox" onchange="hikashop_shippingprice.block('.$product_id.','.$i.', this);" '.$blocked_checked.'/></td>'.
+			'<td><input type="checkbox" name="shipping_prices['.$product_id.']['.$i.'][blocked]" onchange="hikashop_shippingprice.block('.$product_id.','.$i.', this);" '.$blocked_checked.'/></td>'.
 			'<td class="hk_center">'.
 			'<a href="#" onclick="return hikashop_shippingprice.remLine(this);" title="'.JText::_('HIKA_DELETE').'"><i class="fas fa-trash"></i></a>'.
 			'</td></tr>';
@@ -96,7 +96,7 @@ foreach($shippings as &$shipping) {
 			<td><input style="width:auto;" type="text" name="{field_qty}" value="" size="3"/></td>
 			<td style="text-align:center"><input style="width:auto;" id="shipping_prices_value_<?php echo $product_id; ?>_{cpt}" type="text" name="{field_value}" value="" size="7"/> {currency}</td>
 			<td style="text-align:center"><input style="width:auto;" id="shipping_prices_fee_<?php echo $product_id; ?>_{cpt}" type="text" name="{field_fee}" value="" size="7"/> {currency}</td>
-			<td><input type="checkbox" onchange="hikashop_shippingprice.block(<?php echo $product_id; ?>,{cpt}, this);" /></td>
+			<td><input type="checkbox" name="{field_blocked}" onchange="hikashop_shippingprice.block(<?php echo $product_id; ?>,{cpt}, this);" /></td>
 			<td class="hk_center"><a href="#" onclick="return hikashop_shippingprice.remLine(this);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i></a></td>
 		</tr>
 	</tbody>
@@ -119,6 +119,7 @@ var hikashop_shippingprice = {
 				field_qty: "shipping_prices["+pid+"]["+this.cpt[pid]+"][qty]",
 				field_fee: "shipping_prices["+pid+"]["+this.cpt[pid]+"][fee]",
 				field_value: "shipping_prices["+pid+"]["+this.cpt[pid]+"][value]",
+				field_blocked: "shipping_prices["+pid+"]["+this.cpt[pid]+"][blocked]",
 				shipping_id: id,
 				name: name,
 				currency: currency
@@ -158,14 +159,10 @@ var hikashop_shippingprice = {
 			return false;
 		if(el.checked) {
 			elValue.setAttribute("readonly", "readonly");
-			elValue.value= "-1";
 			elFee.setAttribute("readonly", "readonly");
-			elFee.value= "-1";
 		} else {
 			elValue.removeAttribute("readonly", "readonly");
-			elValue.value= "";
 			elFee.removeAttribute("readonly", "readonly");
-			elFee.value= "";
 		}
 		return false;
 	}

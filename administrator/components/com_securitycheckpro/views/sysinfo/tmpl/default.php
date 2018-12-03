@@ -445,7 +445,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 											<li class="list-group-item list-group-item-primary"><?php echo JText::_( 'COM_SECURITYCHECKPRO_TWO_FACTOR_ENABLED_LABEL' ); ?></li>
 											<li class="list-group-item">
 												<?php 
-													if ( $this->system_info['twofactor_enabled'] > 1 ) {
+													if ( $this->system_info['twofactor_enabled'] >= 1 ) {
 														echo "<span class=\"badge badge-success\">OK</span>";
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";

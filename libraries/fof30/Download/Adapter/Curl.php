@@ -91,19 +91,47 @@ class Curl extends AbstractAdapter implements DownloadInterface
 			$params = array();
 		}
 
+		$patched_accept_encoding = false;
+
 		// Work around LiteSpeed sending compressed output under HTTP/2 when no encoding was requested
 		// See https://github.com/joomla/joomla-cms/issues/21423#issuecomment-410941000
-		if (!array_key_exists(CURLOPT_ACCEPT_ENCODING, $params))
+		if (defined('CURLOPT_ACCEPT_ENCODING'))
 		{
-			$params[CURLOPT_ACCEPT_ENCODING] = 'identity';
+			if (!array_key_exists(CURLOPT_ACCEPT_ENCODING, $params))
+			{
+				$params[CURLOPT_ACCEPT_ENCODING] = 'identity';
+			}
+
+			$patched_accept_encoding = true;
 		}
 
 		if (!empty($params))
 		{
 			foreach ($params as $k => $v)
 			{
+				// I couldn't patch the accept encoding header (missing constant), so I'll check if we manually set it
+				if (!$patched_accept_encoding && $k == CURLOPT_HTTPHEADER)
+				{
+					foreach ($v as $custom_header)
+					{
+						// Ok, we explicitly set the Accept-Encoding header, so we consider it patched
+						if (stripos($custom_header, 'Accept-Encoding') !== false)
+						{
+							$patched_accept_encoding = true;
+						}
+					}
+				}
+
 				@curl_setopt($ch, $k, $v);
 			}
+		}
+
+		// Accept encoding wasn't patched, let's manually do that
+		if (!$patched_accept_encoding)
+		{
+			@curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept-Encoding: identity'));
+
+			$patched_accept_encoding = true;
 		}
 
 		$result = curl_exec($ch);

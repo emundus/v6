@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -767,14 +767,18 @@ class hikashopCartClass extends hikashopClass {
 		if($cart->cart_type == 'wishlist' && !empty($cart->user_id) && (empty($this->user) || $cart->user_id != $this->user->user_id)) {
 			$userClass = hikashop_get('class.user');
 			$user = $userClass->get($cart->user_id);
-			$cart->user = new stdClass();
-			$cart->user->user_id = (int)$user->user_id;
-			$cart->user->user_cms_id = (int)$user->user_cms_id;
-			$cart->user->user_email = $user->user_email;
-			if(!empty($user->username))
-				$cart->user->username = $user->username;
-			if(!empty($user->email))
-				$cart->user->email = $user->email;
+			if(!empty($user)) {
+				$cart->user = new stdClass();
+				$cart->user->user_id = (int)$user->user_id;
+				$cart->user->user_cms_id = (int)$user->user_cms_id;
+				$cart->user->user_email = $user->user_email;
+				if(!empty($user->username))
+					$cart->user->username = $user->username;
+				if(!empty($user->email))
+					$cart->user->email = $user->email;
+			}else {
+				$cart->user_id = 0;
+			}
 		}
 
 		if(empty($cart->cart_products)) {
@@ -2528,7 +2532,6 @@ class hikashopCartClass extends hikashopClass {
 				$product['data']->product_name = trim($product['data']->parent_product_name .' '. $product['data']->product_name);
 		}
 		unset($product);
-
 		unset($b_ids);
 
 		foreach($products as $k => &$product) {

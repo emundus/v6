@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,7 +58,7 @@ if(isset($this->edit) && $this->edit === true) {
 
 	foreach($this->fields as $fieldname => $field) {
 ?>
-	<dl id="hikashop_user_address_<?php echo $this->address->address_id; ?>_<?php echo $fieldname;?>" class="hika_options">
+	<dl id="hikashop_address_<?php echo $fieldname; ?>" class="hika_options">
 		<dt class="hikashop_user_address_<?php echo $fieldname;?>"><label><?php
 			echo $this->fieldsClass->trans($field->field_realname);
 			if($field->field_required)

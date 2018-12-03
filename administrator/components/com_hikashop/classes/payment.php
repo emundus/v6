@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -234,7 +234,14 @@ class hikashopPaymentClass extends hikashopClass {
 		}
 
 		if(empty($usable_methods)) {
-			$errors[] = JText::_('NO_PAYMENT_METHODS_FOUND');
+			$message = 'NO_PAYMENT_METHODS_FOUND';
+			if(!empty($order->paymentOptions['recurring']) && empty($order->paymentOptions['recurring']['optional']))
+				$message = 'NO_RECURRING_PAYMENT_METHODS_FOUND';
+			elseif(!empty($order->paymentOptions['term']))
+				$message = 'NO_PAYMENT_METHODS_FOUND_SUPPORTING_AUTHORIZE_CAPTURE_MODE';
+			elseif(!empty($order->paymentOptions['refund']))
+				$message = 'NO_PAYMENT_METHODS_FOUND_SUPPORTING_REFUND_MODE';
+			$errors[] = JText::_($message);
 			$this->errors = $errors;
 			$usable_methods = false;
 			return $usable_methods;

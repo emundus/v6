@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,9 +9,9 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
-$catalogue_mode = $this->config->get('catalogue', false);
+$enable_cart = !$this->config->get('catalogue', false) && $this->params->get('add_to_cart');
 $enable_wishlist = (hikashop_level(1) && $this->config->get('enable_wishlist', 1) && $this->params->get('add_to_wishlist', 0) && (!$this->config->get('hide_wishlist_guest', 1) || hikashop_loadUser() != null));
-if($catalogue_mode && !$enable_wishlist)
+if(!$enable_cart && !$enable_wishlist)
 	return;
 
 $classical_url = 'product&task=updatecart&add=1&product_id='.$this->row->product_id;
@@ -45,7 +45,7 @@ $end_date = (int)(@$this->row->product_sale_end || empty($this->element->main)) 
 $product_available = ($end_date <= 0 || $end_date >= $now) && ($start_date <= 0 || $start_date < $now);
 
 
-$add_to_cart = !$catalogue_mode && $in_stock && (!$is_free || $display_free_cart) && $product_available;
+$add_to_cart = $enable_cart && $in_stock && (!$is_free || $display_free_cart) && $product_available;
 $add_to_wishlist = $enable_wishlist && (!$is_free || $display_free_wishlist);
 $extra_div_name = $this->params->get('extra_div_name', '');
 

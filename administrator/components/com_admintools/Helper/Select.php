@@ -107,7 +107,7 @@ class Select
 			'tmpl', 'template', 'muashield', 'csrfshield',
 			'geoblocking', 'rfishield', 'dfishield', 'uploadshield',
 			'httpbl', 'loginfailure', 'external', 'awayschedule', 'admindir',
-			'nonewadmins', 'nonewfrontendadmins', 'phpshield', '404shield'
+			'nonewadmins', 'nonewfrontendadmins', 'phpshield', '404shield', 'wafblacklist'
 		);
 
 		foreach ($reasons as $reason)

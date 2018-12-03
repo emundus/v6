@@ -2,12 +2,12 @@
 <extension version="2.5" type="plugin" group="system" method="upgrade">
     <name>System - Gantry 4</name>
     <author>RocketTheme, LLC</author>
-    <creationDate>September 24, 2018</creationDate>
+    <creationDate>October 26, 2018</creationDate>
     <copyright>(C) 2005 - 2018 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <version>4.1.36</version>
+    <version>4.1.37</version>
     <description>Gantry 4 system plugin. Needs to be enabled at all times.</description>
     <files>
         <filename plugin="gantry">gantry.php</filename>

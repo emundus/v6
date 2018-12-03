@@ -666,25 +666,8 @@ class PlgFabrik_Element extends FabrikPlugin
 					$data           = '<span>' . $data . '</span>';
 
 					// See if data has an <a> tag
-					if (class_exists('DOMDocument'))
-					{
-						$html = new DOMDocument;
-						/**
-						 * The loadXML() chokes if data has & in it.  But we can't htmlspecialchar() it, as that removes
-						 * the HTML markup we're looking for.  So we need to ONLY change &'s which aren't already part of
-						 * any HTML entities which may be in the data.  So use a negative lookahead regex, which finds & followed
-						 * by anything except non-space the ;.  Then after doing the loadXML, we have to turn the &amp;s back in
-						 * to &, to avoid double encoding 'cos we're going to do an htmpsepecialchars() on $data in a few lines.
-						 *
-						 * It also chokes if the data already contains any HTML entities which XML doesn't like, like &eacute;,
-						 * so first we need to do an html_entity_decode() to get rid of those!
-						 */
-						$data = html_entity_decode($data);
-						$data = preg_replace('/&(?!\S+;)/', '&amp;', $data);
-						$html->loadXML($data);
-						$data = str_replace('&amp;', '&', $data);
-						$as   = $html->getElementsBytagName('a');
-					}
+					$html = FabrikHelperHTML::loadDOMDocument($data);
+					$as   = $html->getElementsBytagName('a');
 
 					if ($params->get('icon_hovertext', true))
 					{
@@ -692,7 +675,7 @@ class PlgFabrik_Element extends FabrikPlugin
 						$aHref  = '#';
 						$target = '';
 
-						if (class_exists('DOMDocument') && $as->length)
+						if ($as->length)
 						{
 							// Data already has an <a href="foo"> lets get that for use in hover text
 							$a      = $as->item(0);
@@ -722,7 +705,7 @@ class PlgFabrik_Element extends FabrikPlugin
 						 * After ages dicking around with a regex to do this, decided to use DOMDocument instead!
 						 */
 
-						if (class_exists('DOMDocument') && $as->length)
+						if ($as->length)
 						{
 							$img = $html->createElement('img');
 							$src = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true, array('forceImage' => true));
@@ -1046,6 +1029,15 @@ class PlgFabrik_Element extends FabrikPlugin
 				}
 			}
 		}
+		else if ($this->access->$key && $view == 'form')
+		{
+			$formModel = $this->getFormModel();
+			$pluginManager = FabrikWorker::getPluginManager();
+			if (in_array(false, $pluginManager->runPlugins('onElementCanView', $formModel, 'form', $this)))
+			{
+				$this->access->view = false;
+			}
+		}
 
 		return $this->access->$key;
 	}
@@ -1253,7 +1245,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function getValidationWatchElements($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
-		$ar = array('id' => $id, 'triggerEvent' => 'blur');
+		$ar = array('id' => $id, 'triggerEvent' => $this->getChangeEvent());
 
 		return array($ar);
 	}
@@ -2463,7 +2455,9 @@ class PlgFabrik_Element extends FabrikPlugin
 			// $$$ rob changed from span wrapper to div wrapper as element's content may contain divs which give html error
 
 			// Placeholder to be updated by ajax code
-			$v = html_entity_decode($this->getROElement($data, $repeatCounter));
+			// @TODO the entity decode causes problems on RO with tooltips
+			$v = $this->getROElement($data, $repeatCounter);
+			$v = html_entity_decode($v);
 			//$v = $v == '' ? '&nbsp;' : $v;
 
 			return '<div class="fabrikElementReadOnly" id="' . $htmlId . '">' . $v . '</div>';
@@ -2709,6 +2703,9 @@ class PlgFabrik_Element extends FabrikPlugin
 					break;
 				case '5' :
 					$type = 'url';
+					break;
+				case '6' :
+					$type = 'number';
 					break;
 				default :
 					$type = 'text';
@@ -3698,7 +3695,7 @@ class PlgFabrik_Element extends FabrikPlugin
 					}
 				}
 
-				if (FabrikWorker::isJSON($rows[$j]->value))
+				if (FabrikWorker::isJSON($rows[$j]->value, false))
 				{
 					// $$$ rob 01/10/2012 - if not unset then you could get json values in standard dd filter (checkbox)
 					unset($rows[$j]);

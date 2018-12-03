@@ -473,7 +473,7 @@ if ( empty($this->files_status) ) {
 								<div>
 									<span class="badge" style="background-color: #66ADDD; padding: 10px 10px 10px 10px;"><?php echo JText::_('COM_SECURITYCHECKPRO_FILEINTEGRITY_CHECKED_FILES');?></span>
 								</div>
-								<div class="table-responsive" style="overflow-x: scroll; margin-top: 10px;">
+								<div class="table-responsive" style="overflow-x: auto; margin-top: 10px;">
 									<table id="filesintegritystatus_table" class="table table-bordered table-hover">
 									<thead>
 										<tr>

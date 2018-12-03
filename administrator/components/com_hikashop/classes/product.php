@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -368,7 +368,7 @@ class hikashopProductClass extends hikashopClass{
 		if(!hikashop_acl('product/edit/manufacturer'))
 			unset($product->product_manufacturer_id);
 		else
-			$product->product_manufacturer_id = (int) $product->product_manufacturer_id;
+			$product->product_manufacturer_id = (int) @$product->product_manufacturer_id;
 		if(!hikashop_acl('product/edit/pagetitle')) { unset($product->product_page_title); }
 		if(!hikashop_acl('product/edit/url')) { unset($product->product_url); }
 		if(!hikashop_acl('product/edit/metadescription')) { unset($product->product_meta_description); }
@@ -380,7 +380,7 @@ class hikashopProductClass extends hikashopClass{
 		if(!hikashop_acl('product/edit/warehouse'))
 			unset($product->product_warehouse_id);
 		else
-			$product->product_warehouse_id = (int) $product->product_warehouse_id;
+			$product->product_warehouse_id = (int) @$product->product_warehouse_id;
 		if(!hikashop_acl('product/edit/tax')) { unset($product->product_tax_id); }
 
 		if(!hikashop_acl('product/edit/weight')) {

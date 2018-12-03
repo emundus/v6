@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -145,7 +145,7 @@ if($this->invoice_type == 'order') {
 	}
 	if($this->invoice_type == 'order' && !empty($this->action_column)) {
 		$colspan++;
-		echo '<th class="hikashop_order_item_actions_title title titletoggle">' . JText::_('ACTIONS') . '</th>';
+		echo '<th class="hikashop_order_item_actions_title title titletoggle">' . JText::_('HIKASHOP_ACTIONS') . '</th>';
 	}
 ?>
 								<th class="hikashop_order_item_price_title title"><?php
@@ -330,7 +330,7 @@ if($this->invoice_type == 'order') {
 <?php		}
 		}
 		if($this->invoice_type == 'order' && !empty($this->action_column)) {
-			echo '<td data-title="' . JText::_('ACTIONS') . '" class="hikashop_order_item_actions_value">';
+			echo '<td data-title="' . JText::_('HIKASHOP_ACTIONS') . '" class="hikashop_order_item_actions_value">';
 			if(!empty($product->actions)) {
 				if(count($product->actions) == 1) {
 					$d = reset($product->actions);

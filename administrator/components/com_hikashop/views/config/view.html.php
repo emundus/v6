@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -461,20 +461,20 @@ function registrationAvailable(value, checked) {
 		}
 		$file = new stdClass();
 		$file->name = $code;
-		$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';
+		$path = hikashop_getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';
 		$file->path = $path;
 		jimport('joomla.filesystem.file');
 		$showLatest = true;
 		$loadLatest = false;
 		if(JFile::exists($path)){
-			$file->content = JFile::read($path);
+			$file->content = file_get_contents($path);
 			if(empty($file->content)){
 				hikashop_display('File not found : '.$path,'error');
 			}
 		}else{
 			$loadLatest = true;
 			hikashop_display(JText::_('HIKASHOP_LOAD_ENGLISH_1').'<br/>'.JText::_('LOAD_ENGLISH_2').'<br/>'.JText::_('LOAD_ENGLISH_3'),'info');
-			$file->content = JFile::read(JLanguage::getLanguagePath(JPATH_ROOT).DS.'en-GB'.DS.'en-GB.com_hikashop.ini');
+			$file->content = file_get_contents(hikashop_getLanguagePath(JPATH_ROOT).DS.'en-GB'.DS.'en-GB.com_hikashop.ini');
 		}
 		if($loadLatest OR hikaInput::get()->getString('task') == 'latest'){
 			$doc = JFactory::getDocument();
@@ -482,9 +482,9 @@ function registrationAvailable(value, checked) {
 			$showLatest = false;
 		}elseif(hikaInput::get()->getString('task') == 'save') $showLatest = false;
 		$override_content = '';
-		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$code.'.override.ini';
+		$override_path = hikashop_getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$code.'.override.ini';
 		if(JFile::exists($override_path)){
-			$override_content = JFile::read($override_path);
+			$override_content = file_get_contents($override_path);
 		}
 		$this->assignRef('override_content',$override_content);
 		$this->assignRef('showLatest',$showLatest);

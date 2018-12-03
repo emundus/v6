@@ -11,6 +11,8 @@ defined('_JEXEC') or die();
 jimport('joomla.html.pagination');
 jimport('joomla.filesystem.file');
 
+JLoader::register('SecuritycheckproModel', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php');
+
 /**
 * Modelo Securitycheck
 */
@@ -50,7 +52,8 @@ function filter_data($array_data,&$pagination)
 		
 	}
 	$pagination = new JPagination($this->total, $upper_limit, $lower_limit);
-	sort($array_data,SORT_NUMERIC);
+	//sort($array_data,SORT_NUMERIC);
+	natsort($array_data);
 	return ($array_data);
 }
 
@@ -406,11 +409,20 @@ function import_blacklist()
 		$insert = false;
 		// Leemos el contenido del fichero
 		$file_content = file_get_contents($tmp_dest);
-		// Chequeamos si el fichero contiene sólo números
-		if ( preg_match("/[a-z]/i",$file_content) ) {
-			JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_FORMAT'));
-			return false;
+		$file_content = filter_var($file_content, FILTER_SANITIZE_SPECIAL_CHARS);
+		// Transformamos el contenido el array para validar las IPS
+		$ip_to_validate = explode(",",$file_content);
+		$valid = true;
+		
+		// Chequeamos si las IPs son válidas
+		foreach($ip_to_validate as $ip) {
+			$ip_valid = filter_var($ip,FILTER_VALIDATE_IP);
+			if (!$ip_valid) {				
+				JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_FORMAT'));
+				return false;
+			}
 		}
+		
 		$db = JFactory::getDBO();
 						
 		// Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
@@ -520,11 +532,20 @@ function import_whitelist()
 		$insert = false;
 		// Leemos el contenido del fichero
 		$file_content = file_get_contents($tmp_dest);
-		// Chequeamos si el fichero contiene sólo números
-		if ( preg_match("/[a-z]/i",$file_content) ) {
-			JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_FORMAT'));
-			return false;
+		$file_content = filter_var($file_content, FILTER_SANITIZE_SPECIAL_CHARS);
+		// Transformamos el contenido el array para validar las IPS
+		$ip_to_validate = explode(",",$file_content);
+		$valid = true;
+		
+		// Chequeamos si las IPs son válidas
+		foreach($ip_to_validate as $ip) {
+			$ip_valid = filter_var($ip,FILTER_VALIDATE_IP);
+			if (!$ip_valid) {				
+				JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_FORMAT'));
+				return false;
+			}
 		}
+		
 		$db = JFactory::getDBO();
 						
 		// Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'

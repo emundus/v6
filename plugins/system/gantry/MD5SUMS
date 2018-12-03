@@ -1,7 +1,7 @@
 fields/debuglink.php	f58eb295d940ae3c1ad67798c452a801
 fields/debuglink/download.php	68489d882b3293e38252d764f7f75f88
 fields/debuglink/includes/application.php	13daa5bcd8e0243c5fe609e3ffb3e7ac
-gantry.php	32e006f3bc3b6c6b2358f6dd15cc186a
+gantry.php	57f8367c6b72bdcf52ebd7f20e8448e7
 overrides/3.0/2.5/mod_finder/default.php	4b1c37a8a8210d76586e8686591ea9b7
 overrides/3.0/2.5/com_content/categories/default.php	52376420d076cba95f39fe3d972abce0
 overrides/3.0/2.5/com_content/categories/default_items.php	3f172e4f6009e84b1d3c19376d196bb3
@@ -268,5 +268,5 @@ overrides/3.2/2.5/mod_articles_categories/default_items.php	4d59d672c548755069a9
 overrides/3.2/2.5/mod_custom/default.php	1ad3c1f217e8ae3aa52e16c06969ad90
 language/en-GB/en-GB.plg_system_gantry.ini	a46e79d587e1dc6fca23d48211010d80
 functions.php	450a311c349519d2149e6410fc734072
-gantry.xml	d058e31ce97673c22484cf0d69ce6e00
+gantry.xml	6d325f4dd2d3a01f2a52cb36fdc22dc1
 MD5SUMS	d41d8cd98f00b204e9800998ecf8427e

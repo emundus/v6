@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1496,18 +1496,7 @@ class checkoutLegacyController extends hikashopController {
 			$orderProduct = new stdClass();
 			$orderProduct->product_id = $product->product_id;
 			$orderProduct->order_product_quantity = $product->cart_product_quantity;
-
-			if(empty($product->cart_product_option_parent_id)) {
-				$text = $product->product_name;
-			} elseif(!empty($optionElement->variant_name)) {
-				$text = $product->variant_name;
-			} elseif(empty($product->characteristics_text)) {
-				$text = $product->product_name;
-			} else {
-				$text = $product->characteristics_text;
-			}
-
-			$orderProduct->order_product_name = $text;
+			$orderProduct->order_product_name = $product->product_name;
 			$orderProduct->cart_product_id = $product->cart_product_id;
 			$orderProduct->cart_product_option_parent_id = $product->cart_product_option_parent_id;
 			$orderProduct->order_product_code = $product->product_code;

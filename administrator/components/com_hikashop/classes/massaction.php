@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -315,30 +315,31 @@ class hikashopMassactionClass extends hikashopClass{
 							foreach($elements as &$element){
 								$cpt = 1;
 								if(!isset($element->order_product)){continue;}
-								if(!isset($element->order_full_tax)){
+								if(!isset($element->order_full_tax)) {
 									$element->order_full_tax = new stdClass();
 									$element->order_full_tax->value = 0;
 									$types['order_full_tax'] = new stdClass();
 									$types['order_full_tax']->type = 'price';
+
+									if(!isset($element->order_shipping_tax->value)){
+										$tmpValue = (int)$element->order_shipping_tax;
+										$element->order_shipping_tax = new stdClass();
+										$element->order_shipping_tax->value = $tmpValue;
+									}
+									if(!isset($element->order_payment_tax->value)){
+										$tmpValue = (int)$element->order_payment_tax;
+										$element->order_payment_tax = new stdClass();
+										$element->order_payment_tax->value = $tmpValue;
+									}
+									if(!isset($element->order_discount_tax->value)){
+										$tmpValue = (int)$element->order_discount_tax;
+										$element->order_discount_tax = new stdClass();
+										$element->order_discount_tax->value = $tmpValue;
+									}
+									$element->order_full_tax->value += (int)$element->order_shipping_tax->value + (int)$element->order_payment_tax->value - (int)$element->order_discount_tax->value;
+									$element->order_full_tax->currency = $element->order_currency_id;
 								}
 
-								if(!isset($element->order_shipping_tax->value)){
-									$tmpValue = (int)$element->order_shipping_tax;
-									$element->order_shipping_tax = new stdClass();
-									$element->order_shipping_tax->value = $tmpValue;
-								}
-								if(!isset($element->order_payment_tax->value)){
-									$tmpValue = (int)$element->order_payment_tax;
-									$element->order_payment_tax = new stdClass();
-									$element->order_payment_tax->value = $tmpValue;
-								}
-								if(!isset($element->order_discount_tax->value)){
-									$tmpValue = (int)$element->order_discount_tax;
-									$element->order_discount_tax = new stdClass();
-									$element->order_discount_tax->value = $tmpValue;
-								}
-								$element->order_full_tax->value += (int)$element->order_shipping_tax->value + (int)$element->order_payment_tax->value - (int)$element->order_discount_tax->value;
-								$element->order_full_tax->currency = $element->order_currency_id;
 								foreach($element->order_product as $product){
 									if(isset($product->order_product_quantity) && isset($product->order_product_tax)){
 										$element->order_full_tax->value+=round($product->order_product_quantity*$product->order_product_tax,2);
@@ -2645,7 +2646,7 @@ class HikaShopQuery {
 	var $select = array('product.*');
 	var $start = 0;
 	var $value = 500;
-	var $ordering = '';
+	var $ordering = array();
 	var $direction = '';
 
 	function __construct() {

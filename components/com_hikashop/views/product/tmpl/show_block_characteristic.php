@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,7 +40,7 @@ if(!empty($this->element->main->characteristics)) {
 				?></th>
 <?php }
 	if($this->config->get('show_code')) { $columns++; ?>
-				<th class="hikashop_product_code_title hikashop_variants_table_th"><?php
+				<th class="hikashop_product_code title hikashop_variants_table_th"><?php
 					echo JText::_( 'PRODUCT_CODE' );
 				?></th>
 <?php }

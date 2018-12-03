@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -70,7 +70,7 @@ class addressViewAddress extends HikaShopView {
 		$this->toolbar = array();
 		$show_page_heading = true;
 		$params = null;
-		if(!empty($menu)) {
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
 			$params = $menu->getParams();
 			$show_page_heading = $params->get('show_page_heading');
 		}
@@ -79,7 +79,7 @@ class addressViewAddress extends HikaShopView {
 			if(!empty($com_menus))
 				$show_page_heading = $com_menus->get('show_page_heading');
 		}
-		if(!empty($menu) && $menu->link == 'index.php?option=com_hikashop&view=address&layout=listing') {
+		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->link == 'index.php?option=com_hikashop&view=address&layout=listing') {
 			if($show_page_heading)
 				$this->title = $params->get('page_heading');
 			hikashop_setPageTitle($menu->title);

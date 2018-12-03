@@ -1,6 +1,6 @@
 <?php
 /**
- * @version        4.1.36 September 24, 2018
+ * @version        4.1.37 October 26, 2018
  * @author         RocketTheme http://www.rockettheme.com
  * @copyright      Copyright (C) 2007 - 2018 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only

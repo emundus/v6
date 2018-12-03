@@ -248,10 +248,7 @@ function __construct($config = array()) {
 	$this->get_log_filename("filepermissions_log");
 	$this->get_log_filename("fileintegrity_log");
 	$this->get_log_filename("filemalware_log");
-	
-	
-	//kk	
-	
+		
 	if( (!empty($stack)) && (isset($stack['filename'])) ) {
 		$this->filemanager_name = $stack['filename'];
 	}
@@ -1997,7 +1994,7 @@ $jamssFileNames = array(
 						$length = strlen($content);
 						$number_of_spaces = substr_count($content,' ');
 						$number_of_new_lines = substr_count($content, PHP_EOL);
-						if ( (($number_of_spaces/$length) < 0.001 ) || (($number_of_new_lines/$length) < 0.001) ) {
+						if ( ( (($number_of_spaces/$length) < 0.001 ) && (($number_of_spaces/$length) > 0 ) ) || ( (($number_of_new_lines/$length) < 0.001) && (($number_of_new_lines/$length) > 0 ) ) ) {
 							// Update the variable to stop looking for more malware patterns
 							$malware_found = true;
 							$pattern[1] = "Obfuscated file";

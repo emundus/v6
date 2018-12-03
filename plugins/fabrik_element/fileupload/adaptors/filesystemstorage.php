@@ -186,8 +186,14 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function cleanName($filename, $repeatCounter)
 	{
-		// Replace any non-alphanumeric chars (except _ and - and .) with _
-		$filename = preg_replace('#[^a-zA-Z0-9_\-\.]#', '_', $filename);
+		$params = $this->getParams();
+
+		if ($params->get('fu_clean_filename', '1') === '1')
+		{
+			// Replace any non-alphanumeric chars (except _ and - and .) with _
+			$filename = preg_replace('#[^a-zA-Z0-9_\-\.]#', '_', $filename);
+		}
+
 		$this->randomizeName($filename);
 
 		return $filename;
@@ -283,6 +289,38 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	public function read($filepath)
 	{
 		return file_get_contents($filepath);
+	}
+
+	/**
+	 * Stream a file
+	 *
+	 * @param   string  $filepath  file path
+	 * @param   int     $chunkSize  chunk size
+	 *
+	 * @return  bool
+	 */
+
+	public function stream($filepath, $chunkSize = 1024 * 1024)
+	{
+		$buffer = '';
+		$handle = fopen($filepath, 'rb');
+
+		if ($handle === false)
+		{
+			return false;
+		}
+
+		while (!feof($handle))
+		{
+			$buffer = fread($handle, $chunkSize);
+			echo $buffer;
+			ob_flush();
+			flush();
+		}
+
+		fclose($handle);
+
+		return true;
 	}
 
 	/**

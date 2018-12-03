@@ -987,14 +987,14 @@ function get_subscriptions_status() {
 	} else {
 		if ( function_exists('curl_init') ) {
 			// Obtenemos la respuesta de cada url
-			$this->getxml_response("scp",$downloadid);
+			$this->get_response("scp",$downloadid);
 			if ($update_database_plugin_exists) {
-				$this->getxml_response("update",$downloadid);
+				$this->get_response("update",$downloadid);
 			} else {
 				$mainframe->setUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' ));
 			}
 			if ($trackactions_plugin_exists) {
-				$this->getxml_response("trackactions",$downloadid);
+				$this->get_response("trackactions",$downloadid);
 			} else {
 				$mainframe->setUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' ));
 			}
@@ -1007,105 +1007,65 @@ function get_subscriptions_status() {
 	}	
 }
 
-function getxml_response($product,$downloadid) {
+function get_response($product,$downloadid) {
 	
 	$mainframe = JFactory::getApplication();
 	
-	$xml = false;
+	$endpoint = "https://securitycheck.protegetuordenador.com/status.php";	
+	$plan_id = 0;
 	
+		
 	// Url que contendrá el fichero xml, que a su vez contendrá la url de acceso al elemento
 	if ($product == "update") {				
-		$xmlfile = "https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro_update_database.xml";		
+		$plan_id = 14;
 	} else 	if ($product == "scp") {
-		$xmlfile = "https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro.xml";		
-	}else 	if ($product == "trackactions") {
-		$xmlfile = "https://securitycheck.protegetuordenador.com/update/updates_trackactions.xml";	
+		$plan_id = 12;	
+	} else 	if ($product == "trackactions") {
+		$plan_id = 17;
 	}
 							
-	// Url con la que hemos de contactar para ver el estado de la subscripción
-	$url = '';
-					
-	// Leemos el contenido del archivo xml 
-	$ch = curl_init($xmlfile);
+	// Establecemos el valor de las variables que se incorporarán a la url	
+	$params = array('dlid' => $downloadid, 'plan_id' => $plan_id);	
+	$url = $endpoint . '?' . http_build_query($params);
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
-	curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 	curl_setopt($ch, CURLOPT_FAILONERROR, true);				
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	@curl_setopt($ch, CURLOPT_CAINFO, SCP_CACERT_PEM);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 					
-	$xmlresponse = curl_exec($ch);	
-					
+	$response = curl_exec($ch);	
+	
+	// Si el campo obtenido no es numérico salimos
+	if ( !is_numeric($response) ) {
+		return;		
+	}	
+						
 	// Si el resultado de la petición es 'false' no podemos hacer nada
-	if($xmlresponse === false) {
+	if($response === false) {		
 				
 	} else {
-		// Leemos el contenido del archivo xml
-		$xml = simplexml_load_string($xmlresponse);						
-	}
-	// Comprobamos que hemos leido el archivo xml (esta variable será FALSE, por ejemplo, si no puede conectar con el servidor)
-	if ( $xml ) {				
-				
-		$max = count($xml);
-		// Obtenemos la versión de Joomla del servidor
-		$jversion = explode(".",JVERSION);
-		$jversion = $jversion[0];
-				
-		// Y la comparamos con todos los elementos del archivo xml hasta dar con el que tiene la versión de Joomla del servidor
-		for ($i=0; $i < $max; $i++) {
-			$platform = $xml->update[$i]->targetplatform['version']->__toString();
-			$platform = explode(".",$platform);
-			$platform = $platform[0];
-			if ( version_compare($jversion, $platform, 'eq') ) {
-				$url =  $xml->update[$i]->downloads->downloadurl->__toString();	
-				break;
-			}					
-		}
-		
-		if ( !empty($url) ) {
-			// Añadimos el 'download id' a la url
-			$url .= "?dlid=" . $downloadid;
-												
-			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
-			curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-			curl_setopt($ch, CURLOPT_FAILONERROR, true);				
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			@curl_setopt($ch, CURLOPT_CAINFO, SCP_CACERT_PEM);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-					
-			$xmlresponse = curl_exec($ch);
-										
-			// Si el resultado de la petición es 'false' obtenemos el error para ver qué está pasando
-			if($xmlresponse === false) {
-				$message = curl_error($ch);
-				$result = false;
-				$response = strpos($message,"403");					
-				if ($response !== false ) {						
-					// Error 403: la subscripción ha expirado (o la IP está bloqueada por mí)
-					/* Establecemos la variable correspondiente a 'Expired' */						
-					if ($product == "update") {
-						$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
-					} else if ($product == "scp") {
-						$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
-					} else if ($product == "trackactions") {
-						$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
-					}
-				} 
-			} else {
-				/* Hemos contactado y el xml es válido; establecemos la variable correspondiente a 'Active' */
-				if ($product == "update") {
-					$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
-				} else if ($product == "scp") {
-					$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
-				} else if ($product == "trackactions") {
-					$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
-				}
+		if ( $response == "5" ) {
+			/* Hemos contactado y el código devuelto es '5'; establecemos la variable correspondiente a 'Active' */
+			if ($product == "update") {
+				$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
+			} else if ($product == "scp") {
+				$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
+			} else if ($product == "trackactions") {
+				$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
 			}
-		} else {
-		} 
+		} else if ( $response == "4" ) {
+			/* Hemos contactado y el código devuelto es '4'; establecemos la variable correspondiente a 'Expired' */
+			if ($product == "update") {
+				$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
+			} else if ($product == "scp") {
+				$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
+			} else if ($product == "trackactions") {
+				$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
+			}
+		}
 	}
 		
 	// Cerramos el manejador

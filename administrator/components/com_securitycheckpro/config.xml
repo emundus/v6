@@ -119,10 +119,10 @@
 			<option value="Hashes">Hashes</option>			
 		</field>
 		<field name="timeline" type="list" default="7" label="COM_SECURITYCHECKPRO_CONFIG_TIMELINE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_TIMELINE_DESCRIPTION">
-			<option value="1">1</option>
-			<option value="7">7</option>
-			<option value="30">30</option>
-			<option value="10000">10000</option>
+			<option value="1">COM_SECURITYCHECKPRO_YESTERDAY</option>
+			<option value="7">COM_SECURITYCHECKPRO_A_WEEK_AGO</option>
+			<option value="30">COM_SECURITYCHECKPRO_A_MONTH_AGO</option>
+			<option value="10000">COM_SECURITYCHECKPRO_ANYTIME</option>
 		</field>
 		<field name="log_files_stored" type="text" default="5" size="3" label="COM_SECURITYCHECKPRO_CONFIG_LOG_FILES_STORED_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_LOG_FILES_STORED_DESCRIPTION" />
 	</fieldset>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.0
+ * @version	4.0.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,7 +67,7 @@ class hikashopConfigClass extends hikashopClass{
 			$configObject = get_object_vars($configObject);
 
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter =& JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
 
 		foreach($configObject as $namekey => $value){
 			if($namekey == 'configClassInit')
@@ -164,12 +164,12 @@ class hikashopConfigClass extends hikashopClass{
 			$path = HIKASHOP_ROOT . 'templates' . DS . $defaultemplate . DS . 'html' . DS . 'com_hikashop' . DS . 'address' . DS . 'address_template.php';
 			jimport('joomla.filesystem.file');
 			if(JFile::exists($path))
-				$file = JFile::read($path);
+				$file = file_get_contents($path);
 		}
 		if(empty($file)){
 			$path = HIKASHOP_FRONT . 'views' . DS . 'address' . DS . 'tmpl' . DS . 'address_template.php';
 			if(JFile::exists($path))
-				$file = JFile::read($path);
+				$file = file_get_contents($path);
 		}
 
 		if(empty($file))
