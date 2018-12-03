@@ -360,9 +360,7 @@ function processSelectedFiles(fileInput) {
     
     if($(rowId).find(".not-allowed"))
         $(rowId).find(".not-allowed").remove();
-
-    if($(rowId).find(".not-allowed"))
-        $(rowId).find(".not-allowed").remove();
+    
 
     allowedDocuments = allowedDocuments.split(';');
 
