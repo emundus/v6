@@ -73,7 +73,7 @@ if ($this->show_info_panel) :
                 </legend>
                 <p class="description">'.$attachment->description .'</p>
                 <div class="table-responsive">
-                <table id="'.$attachment->id .'" class="table">';
+                <table id="'.$attachment->id .'" class="table" style="visibility: visible; display: block;">';
 
             if ($attachment->nb>0)
                     foreach($attachment->liste as $item) {
@@ -360,6 +360,7 @@ function processSelectedFiles(fileInput) {
     
     if($(rowId).find(".not-allowed"))
         $(rowId).find(".not-allowed").remove();
+    
 
     allowedDocuments = allowedDocuments.split(';');
 

@@ -39,8 +39,8 @@ class EmundusViewCampaign extends JViewLegacy {
         $user = JFactory::getUser();
 
         if ($user->guest) {
-            $eMcampaign = new EmundusModelCampaign();
-            $data = $eMcampaign->getTeachingUnity();
+            $m_campaign = new EmundusModelCampaign();
+            $data = $m_campaign->getTeachingUnity();
 
             echo json_encode($data);
         }
