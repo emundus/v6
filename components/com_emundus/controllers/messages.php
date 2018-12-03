@@ -218,7 +218,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_from_sys_name = $config->get('fromname');
 
         $fnums  = explode(',',$jinput->post->get('recipients', null, null));
-        $bcc    = (bool)$jinput->post->get('Bcc', false, null);
+        $bcc    = $jinput->post->getString('Bcc', false);
 
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
@@ -287,7 +287,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
-            if ($bcc)
+            if ($bcc === 'true')
                 $mailer->addBCC($user->email);
 
             // Files uploaded from the frontend.
