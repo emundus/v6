@@ -121,6 +121,11 @@ label {
     font-weight: bold !important;
 }
 
+.opt label {
+    color: black !important;
+    font-size: 11px;
+}
+
 .btn {
     display: inline-block !important;
     margin-bottom: 0px !important;
