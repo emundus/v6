@@ -119,6 +119,9 @@ label {
     color: #9EA4AB !important;
     margin-bottom: 5px !important;
     font-weight: bold !important;
+	font-size: 11px !important;
+	line-height: 14px !important;
+	color: #000 !important;
 }
 
 .opt label {
