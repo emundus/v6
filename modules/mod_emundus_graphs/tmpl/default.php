@@ -265,14 +265,17 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     }
     */
     function setColorGradient(num_steps) {
+
         var colorArray = [];
         // colors needs to be in rgb(red, green, blue)
         var start_red = 185;
         var start_green = 43;
         var start_blue = 39;
+
         var end_red = 21;
         var end_green = 101;
         var end_blue = 192;
+
         var current_red = start_red;
         var current_green = start_green;
         var current_blue = start_blue;
@@ -280,15 +283,16 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         var green_diff = end_green - start_green;
         var blue_diff = end_blue - start_blue;
 
-        var red_step = parseInt(red_diff/num_steps) ;
-        var green_step = parseInt(green_diff/num_steps);
-        var blue_step = parseInt(blue_diff/num_steps);
-        while (current_red != end_red && current_green != end_green && current_blue != end_blue) {
+        var red_step = (red_diff/num_steps) ;
+        var green_step = (green_diff/num_steps);
+        var blue_step = (blue_diff/num_steps);
+        while (current_red > end_red && current_green < end_green && current_blue < end_blue) {
             current_red += red_step;
             current_green += green_step;
             current_blue += blue_step;
-            colorArray.push('rgb(' + current_red + ',' + current_green + ',' + current_blue + ')');
+            colorArray.push('rgb(' + parseInt(current_red) + ',' + parseInt(current_green) + ',' + parseInt(current_blue) + ')');
         }
+
         return colorArray;
     }
 
@@ -481,6 +485,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         });
         elem.height = 400;
     }
+
+
+
     // Account function uses 2 ajax functions, consultation and candidate
     function afficheOffres(periode) {
         jQuery.ajax({
@@ -935,7 +942,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         var value = jQuery(this).val();
         var valuePeriodecompte = jQuery('.periodeCompte').val();
         afficheComptes(value, valuePeriodecompte);
-        countType(value);
     });
     jQuery('.periodeCompte').on('change', function() {
         var value = jQuery('.compte').val();

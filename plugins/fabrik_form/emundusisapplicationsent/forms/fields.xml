@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusisapplicationsent" label="PLG_FABRIK_FORM_EMUNDUSISAPPLICATIONSENT_FIELDS">
+			<field name="applicationsent_status" type="field" default="0" description="PLG_FABRIK_FORM_EMUNDUSISAPPLICATIONSENT_STATUS_DESC" label="PLG_FABRIK_FORM_EMUNDUSISAPPLICATIONSENT_STATUS_LABEL" />
+		</fieldset>
+	</fields>
+</form>
