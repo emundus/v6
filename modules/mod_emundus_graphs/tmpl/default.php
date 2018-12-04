@@ -935,7 +935,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         var value = jQuery(this).val();
         var valuePeriodecompte = jQuery('.periodeCompte').val();
         afficheComptes(value, valuePeriodecompte);
-        countType(value);
     });
     jQuery('.periodeCompte').on('change', function() {
         var value = jQuery('.compte').val();
