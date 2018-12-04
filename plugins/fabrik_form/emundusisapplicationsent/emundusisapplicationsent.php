@@ -118,7 +118,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 			$reload++;
 
 			$is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->end_date)) ? true : false;
-			$is_app_sent = (@$user->status != $this->getParam('applicationsent_status', 0)) ? true : false;
+			$is_app_sent = in_array(@$user->status, explode(',', $this->getParam('applicationsent_status', 0)));
 			$can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
