@@ -16,7 +16,7 @@ if ($this->show_info_panel) :
             <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
                 <h3><?php echo $this->title; ?></h3>
                 <?php
-                    if ($this->sent && count($this->result) == 0)
+                    if ($this->sent && (is_array($this->result) && count($this->result) == 0))
                         echo '<h3>'.JText::_('APPLICATION_SENT').'</h3>';
                     else
                         echo $this->text;
