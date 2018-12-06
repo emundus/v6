@@ -68,6 +68,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
     $title = $this->data['jos_emundus_setup_teaching_unity___label_raw'];
 
+    $video = $this->data['jos_emundus_setup_programmes___video_raw'];
+
     $document = JFactory::getDocument();
     $document->setTitle($title);
     $document->setDescription(substr(html_entity_decode(strip_tags(html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']))), 0, 200));
@@ -450,6 +452,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
         var options = document.getElementById("formation-options");
         options.appendChild(document.getElementById("em-formation-options"));
+        <?php if(!empty($video)):?>
+            var video = '<iframe width="560" height="315" src="<?php echo $video; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+
+            jQuery('.em-category-search-module').prepend(video);
+        <?php endif; ?>
+
 
     });
 

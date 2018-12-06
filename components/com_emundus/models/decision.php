@@ -968,8 +968,10 @@ class EmundusModelDecision extends JModelList
 			$sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
 			$and = ' OR ';
 		} else {
-			$sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
-			$and = ' AND ';
+			if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
+	            $sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
+	            $and = ' AND ';
+	        }
 		}
 		$sql_fnum = '';
 		if(count($this->fnum_assoc)>0)

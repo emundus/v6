@@ -1,5 +1,5 @@
 <?php
-defined( '_JEXEC' ) or die();
+defined('_JEXEC') or die();
 /**
  * @version 1: final_grade.php 89 2015-06-15 Benjamin Rivalland
  * @package Fabrik
@@ -13,15 +13,21 @@ defined( '_JEXEC' ) or die();
  * @description Validation finale du dossier de candidature
  */
 
-$db 		= JFactory::getDBO();
-$jinput 	= JFactory::getApplication()->input;
+$db = JFactory::getDBO();
+$jinput	= JFactory::getApplication()->input->post;
 
-$sid 	= $jinput->get('jos_emundus_final_grade___student_id');
-$fnum 	= $jinput->get('jos_emundus_final_grade___fnum');
-$status = $jinput->get('jos_emundus_final_grade___final_grade', null, 'ARRAY');
+$fnum = $jinput->get('jos_emundus_final_grade___fnum');
+$status = $jinput->get('jos_emundus_final_grade___final_grade')[0];
 
-if(!empty($status[0])){
-	$query = 'UPDATE #__emundus_campaign_candidature SET status='.$status[0].' WHERE fnum like '. $db->Quote($fnum).' AND applicant_id='.$sid;
+if (!empty($status)) {
+
+	jimport('joomla.log.log');
+	JLog::addLogger(['text_file' => 'com_emundus.finalGrade.php'], JLog::ALL, ['com_emundus']);
+
+	$query = $db->getQuery(true);
+	$query->update($db->quoteName('#__emundus_campaign_candidature'))
+			->set($db->quoteName('status').' = '.$status)
+			->where($db->quoteName('fnum').' LIKE '.$db->quote('fnum'));
 
 	try {
 	
@@ -29,7 +35,6 @@ if(!empty($status[0])){
 		$db->execute();
 	
 	} catch(Exception $e) {
-	    throw $e;
+		JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	}
 }
-?>
