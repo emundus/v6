@@ -2837,8 +2837,11 @@ die();*/
      * @return mixed
      * @throws Exception
      */
-    public function getValueFabrikByIds($idFabrik)
-    {
+    public function getValueFabrikByIds($idFabrik) {
+
+    	if (empty($idFabrik))
+    		return [];
+
         $dbo = $this->getDbo();
         $select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
                     from jos_fabrik_elements as jfe
