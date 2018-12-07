@@ -88,7 +88,7 @@ class PlgFabrik_FormEmundussetprofile extends plgFabrik_Form {
 		$status = $this->getParam('status');
 		$profile = $this->getParam('profile');
 
-		if (empty($status) || empty($profile))
+		if (($status !== '0' && empty($status)) || empty($profile))
 			return false;
 
 		$session = JFactory::getSession();
