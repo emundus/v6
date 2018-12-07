@@ -713,7 +713,11 @@ class EmundusModelApplication extends JModelList
 
                                         $params = json_decode($elements[$j]->params);
                                         $index = array_search($r_elt, $params->sub_options->sub_values);
-                                        $elt = $params->sub_options->sub_labels[$index];
+                                        if (strlen($index) > 0) {
+                                            $elt = JText::_$params->sub_options->sub_labels[$index]);
+                                        } else {
+                                            $elt = "";
+                                        }
 
                                     } else $elt = $r_elt;
 
@@ -815,7 +819,11 @@ class EmundusModelApplication extends JModelList
 
                                 $params = json_decode($element->params);
                                 $index  = array_search($element->content, $params->sub_options->sub_values);
-                                $elt    = $params->sub_options->sub_labels[$index];
+                                if (strlen($index) > 0) {
+                                    $elt = JText::_$params->sub_options->sub_labels[$index]);
+                                } else {
+                                    $elt = "";
+                                }
 
                             } else $elt = $element->content;
 
@@ -1063,7 +1071,11 @@ class EmundusModelApplication extends JModelList
 
                                             elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                $elt = $params->sub_options->sub_labels[$index];
+                                                if (strlen($index) > 0) {
+                                                    $elt = JText::_$params->sub_options->sub_labels[$index]);
+                                                } else {
+                                                    $elt = "";
+                                                }
                                             }
 
                                             else {
@@ -1161,7 +1173,11 @@ class EmundusModelApplication extends JModelList
                                     elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
                                         $params = json_decode($element->params);
                                         $index = array_search($element->content, $params->sub_options->sub_values);
-                                        $elt = $params->sub_options->sub_labels[$index];
+                                        if (strlen($index) > 0) {
+                                            $elt = JText::_$params->sub_options->sub_labels[$index]);
+                                        } else {
+                                            $elt = "";
+                                        }
                                     }
                                     else
                                         $elt = $element->content;
@@ -1496,7 +1512,11 @@ class EmundusModelApplication extends JModelList
 
                                             elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                                if (strlen($index) > 0) {
+                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                                } else {
+                                                    $elt = "";
+                                                }
                                             }
 
                                             else $elt = JText::_($r_elt);
@@ -1605,7 +1625,11 @@ class EmundusModelApplication extends JModelList
                                                 elseif ($elements[$j]->plugin=='dropdown' || @$iteme->elements[$j]=='radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                                    if (strlen($index) > 0) {
+                                                        $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                                    } else {
+                                                        $elt = "";
+                                                    }
                                                 }
 
                                                 else $elt = JText::_($r_elt);
@@ -1725,7 +1749,11 @@ class EmundusModelApplication extends JModelList
 
                                         elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
-                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            if (strlen($index) > 0) {
+                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            } else {
+                                                $elt = "";
+                                            }
                                         }
 
                                         else
@@ -1882,7 +1910,11 @@ td {
                                         elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
                                             $params = json_decode($elements[$j]->params);
                                             $index = array_search($r_elt, $params->sub_options->sub_values);
-                                            $elt = $params->sub_options->sub_labels[$index];
+                                            if (strlen($index) > 0) {
+                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            } else {
+                                                $elt = "";
+                                            }
                                         }
                                         else
                                             $elt = $r_elt;
@@ -1945,7 +1977,11 @@ td {
                                     elseif($element->plugin=='dropdown' || $iteme->element=='radiobutton') {
                                         $params = json_decode($element->params);
                                         $index = array_search($element->content, $params->sub_options->sub_values);
-                                        $elt = $params->sub_options->sub_labels[$index];
+                                        if (strlen($index) > 0) {
+                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                        } else {
+                                            $elt = "";
+                                        }
                                     }
                                     else
                                         $elt = $element->content;
