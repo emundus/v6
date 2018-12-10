@@ -27,7 +27,7 @@ if (!empty($status)) {
 	$query = $db->getQuery(true);
 	$query->update($db->quoteName('#__emundus_campaign_candidature'))
 			->set($db->quoteName('status').' = '.$status)
-			->where($db->quoteName('fnum').' LIKE '.$db->quote('fnum'));
+			->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
 
 	try {
 	
