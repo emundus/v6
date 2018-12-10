@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <extension xmlns="http://www.joomla.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" client="site" method="upgrade" type="component" version="2.5" xsi:schemaLocation="http://www.joomla.org extension.xsd ">
 	<name>com_emundus</name>
-	<creationDate>August 2015</creationDate>
+	<creationDate>August 2018</creationDate>
 	<author>Benjamin Rivalland</author>
-	<copyright>Copyright (C) 2015 emundus.fr - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2018 emundus.fr - All rights reserved.</copyright>
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>6.1</version>
+	<version>6.9.1</version>
 	<description>Online application component for Joomla!.</description>
 
 	<files folder="site">
