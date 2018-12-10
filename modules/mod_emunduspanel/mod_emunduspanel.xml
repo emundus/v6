@@ -143,6 +143,10 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
+				<field name="showmenu" type="radio" default="true" label="MOD_EMUNDUSPANEL_SHOW_MENU_LABEL" description="MOD_EMUNDUSPANEL_SHOW_MENU_DESC">
+					<option value="false">JNo</option>
+					<option value="true">JYes</option>
+				</field>
 			</fieldset>
 		</fields>
 	</config>
