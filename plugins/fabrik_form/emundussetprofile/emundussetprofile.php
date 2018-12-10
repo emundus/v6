@@ -94,7 +94,7 @@ class PlgFabrik_FormEmundussetprofile extends plgFabrik_Form {
 		$session = JFactory::getSession();
 		$current_user = $session->get('emundusUser');
 
-		if (!empty($current_user->fnum) && $current_user->status == $status && $current_user->profile != $profile) {
+		if (!empty($current_user->fnum) && ($current_user->status == $status || in_array($current_user->status, explode(',' , $status))) && $current_user->profile != $profile) {
 
 			$db = JFactory::getDBO();
 			$query = $db->getQuery(true);
