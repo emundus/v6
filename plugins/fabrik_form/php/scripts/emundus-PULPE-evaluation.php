@@ -19,7 +19,7 @@ JLog::addLogger(['text_file' => 'com_emundus.evaluation.php'], JLog::ALL, ['com_
 $db	= JFactory::getDbo();
 $jinput = JFactory::getApplication()->input;
 $fnum = $jinput->post->get('jos_emundus_evaluations___fnum');
-$status = $jinput->post->get('jos_emundus_evaluations___status');
+$status = $jinput->post->get('jos_emundus_evaluations___status')[0];
 
 
 try {

@@ -19,7 +19,7 @@ $active = ($form->error != '') ? '' : ' fabrikHide';
 
 if ($this->params->get('show_page_heading', 1)) : ?>
 	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
-		<?php echo $this->escape($this->params->get('page_heading')); ?>
+		<h1><?php $title = explode('-', $form->label); echo !empty($title[1])?$title[1]:$title[0]; ?></h1>
 	</div>
 <?php
 endif;

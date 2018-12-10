@@ -47,6 +47,7 @@ $show_title = $params->get('show_title', 'My Form');
 $text = $params->get($user_menutype, '');
 $img = $params->get($user_menutype.'_img', '');
 $is_text = $params->get($user_menutype.'_text', '');
+$show_menu = $params->get('showmenu', true);
 $img = explode(',',$img);
 $col = 0;
 $t__ = '';
