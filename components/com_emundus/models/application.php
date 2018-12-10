@@ -1130,10 +1130,11 @@ class EmundusModelApplication extends JModelList
                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                         if ($params->database_join_display_type == 'checkbox'){
+                                            $parent_id = strlen($element->content_id)>0?$element->content_id:0;
                                             $query =
                                             'SELECT `id`, GROUP_CONCAT(' . $element->name . ', ", ") as ' . $element->name . '
                                                     FROM `' . $itemt->db_table_name . '_repeat_' . $element->name . '`
-                                                    WHERE parent_id=' . $element->content_id . ' GROUP BY parent_id';
+                                                    WHERE parent_id=' . $parent_id . ' GROUP BY parent_id';
                                             try {
                                                 $this->_db->setQuery($query);
                                                 $res = $this->_db->loadRow();
@@ -1699,10 +1700,11 @@ class EmundusModelApplication extends JModelList
                                             $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                             if ($params->database_join_display_type == 'checkbox') {
+                                                $parent_id = strlen($element->content_id)>0?$element->content_id:0;
                                                 $query =
                                                     'SELECT `id`, GROUP_CONCAT(' . $element->name . ', ", ") as ' . $element->name . '
                                                             FROM `' . $itemt->db_table_name . '_repeat_' . $element->name . '`
-                                                            WHERE parent_id=' . $element->content_id . ' GROUP BY parent_id';
+                                                            WHERE parent_id=' . $parent_id . ' GROUP BY parent_id';
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadRow();
