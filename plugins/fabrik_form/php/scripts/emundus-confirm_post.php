@@ -90,7 +90,6 @@ try {
 } catch (Exception $e) {
     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 }
-
 $student->candidature_posted = 1;
 
 // Send emails defined in trigger
@@ -168,7 +167,13 @@ if ($export_pdf == 1) {
         if (!empty($export_path)) {
             $export_path = preg_replace($tags['patterns'], $tags['replacements'], $export_path);
             $export_path = $m_emails->setTagsFabrik($export_path, array($fnum));
+
+            // Sanitize and build filename.
+            $export_path = strtr(utf8_decode($export_path), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+	        $export_path = strtolower($export_path);
+	        $export_path = preg_replace('`\s`', '-', $export_path);
             $directories = explode('/', $export_path);
+            
             $d = '';
             foreach ($directories as $dir) {
                 $d .= $dir.'/';
@@ -183,7 +188,7 @@ if ($export_pdf == 1) {
             copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS.$export_path.$application_form_name.".pdf");
         }
         if (file_exists(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf"))
-                    unlink(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
+            unlink(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
         copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
     }
 }
