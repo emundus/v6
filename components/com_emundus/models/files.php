@@ -2218,7 +2218,7 @@ where 1 order by ga.fnum asc, g.title';
                         } else {
                             $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
-                            $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
                                 FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                                 LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
@@ -2228,7 +2228,7 @@ where 1 order by ga.fnum asc, g.title';
                         $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
                     } else {
                         $query .= ', (
-                                    SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
+                                    SELECT GROUP_CONCAT(DISTINCT('.$elt->table_join.'.'.$elt->element_name.') SEPARATOR ", ")
                                     FROM '.$elt->table_join.'
                                     WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
                                   ) AS '. $elt->table_join.'___'.$elt->element_name;
@@ -2266,10 +2266,20 @@ where 1 order by ga.fnum asc, g.title';
                     } else {
                         $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
-                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                        $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
                             FROM '.$element_attribs->join_db_name.' as t
                             WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
                     }
+                }
+                elseif ($elt->element_plugin == 'cascadingdropdown') {
+	                $element_attribs = json_decode($elt->element_attribs);
+	                $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
+	                $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->tab_name.'.'.$elt->element_name;
+	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->cascadingdropdown_label_concat).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
+
+	                $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
+                            FROM '.$from.' as t
+                            WHERE t.'.$where.')';
                 }
 
                 $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
@@ -2284,8 +2294,7 @@ where 1 order by ga.fnum asc, g.title';
 
         $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
 
-        $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
-        if (!$hasAccessEval) {
+        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id)) {
             $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
         }
 

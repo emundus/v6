@@ -949,7 +949,7 @@ input.btnhov {
 }
 
 .component-content .need_missing_fac {
-	background-image: url(../images/icones/publish_x-grey.png);
+	background-image: url(../images/icones/incomplete-optional.png);
 	background-repeat: no-repeat;
 	background-position: left center;
 	padding: 0 0 0 20px;
@@ -957,7 +957,7 @@ input.btnhov {
 }
 
 .component-content .need_missing {
-	background-image: url(../images/icones/publish_x.png);
+	background-image: url(../images/icones/incomplete.png);
 	background-repeat: no-repeat;
 	background-position: left center;
 	padding: 0 0 0 20px;
