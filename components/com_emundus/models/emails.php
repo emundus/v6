@@ -579,6 +579,12 @@ class EmundusModelEmails extends JModelList
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                     }
                 }
+                
+                if ($elt['plugin'] == 'cascadingdropdown') {
+                	foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+		                $fabrikValues[$elt['id']][$fnum]['val'] = $this->getCddLabel($elt, $val['val']);
+	                }
+                }
             }
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
@@ -598,6 +604,33 @@ class EmundusModelEmails extends JModelList
     }
 
 
+	/**
+	 * Gets the label of a CascadingDropdown element based on the value.
+	 *
+	 * @param $elt array the cascadingdropdown element.
+	 * @param $val string the value of the element to be used for retrieving the label.
+	 */
+	private function getCddLabel($elt, $val) {
+		$attribs = json_decode($elt['params']);
+		$id = $attribs->cascadingdropdown_id;
+		$r1 = explode('___', $id);
+		$label = $attribs->cascadingdropdown_label;
+		$r2 = explode('___', $label);
+		$select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
+		
+		$query = $this->_db->getQuery(true);
+		$query->select($select)
+			->from($this->_db->quoteName($r2[0]))
+			->where($this->_db->quoteName($r1[1]).' LIKE '.$this->_db->quote($val));
+		$this->_db->setQuery($query);
+		
+		try {
+			return $this->_db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting cascadingdropdown label in model/emails/getCddLabel at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return $val;
+		}
+	}
 
     /**
      * Find all variables like ${var} in string.
