@@ -2304,7 +2304,6 @@ where 1 order by ga.fnum asc, g.title';
 /*echo str_replace("#_", "jos", $query);
 die();*/
         try {
-        	echo '<pre>'; var_dump($query); echo '</pre>'; die;
             $db->setQuery($query);
             return $db->loadAssocList();
         } catch (Exception $e) {
