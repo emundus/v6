@@ -173,7 +173,7 @@ if ($export_pdf == 1) {
 	        $export_path = strtolower($export_path);
 	        $export_path = preg_replace('`\s`', '-', $export_path);
             $directories = explode('/', $export_path);
-            
+
             $d = '';
             foreach ($directories as $dir) {
                 $d .= $dir.'/';

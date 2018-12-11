@@ -241,7 +241,13 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 				if (!empty($export_path)) {
 					$export_path = preg_replace($tags['patterns'], $tags['replacements'], $export_path);
 					$export_path = $m_emails->setTagsFabrik($export_path, array($fnum));
+
+					// Sanitize and build filename.
+					$export_path = strtr(utf8_decode($export_path), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+					$export_path = strtolower($export_path);
+					$export_path = preg_replace('`\s`', '-', $export_path);
 					$directories = explode('/', $export_path);
+					
 					$d = '';
 					foreach ($directories as $dir) {
 						$d .= $dir.'/';
