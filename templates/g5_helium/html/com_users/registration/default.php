@@ -234,7 +234,7 @@ if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($c
                             <tr class="em-control-group">
                                 <td class="em-label">
                                     <?php echo $field->label; ?>
-                                    <?php if (!$field->required && $field->type !== 'Spacer') : ?>
+                                    <?php if (!empty($field->required) && $field->type !== 'Spacer') : ?>
                                         <span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
                                     <?php endif; ?>
                                 </td>
