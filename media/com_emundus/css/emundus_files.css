@@ -119,6 +119,7 @@ label {
     color: #9EA4AB !important;
     margin-bottom: 5px !important;
     font-weight: bold !important;
+    display: inline;
 }
 
 .opt label {

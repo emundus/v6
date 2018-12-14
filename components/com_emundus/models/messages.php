@@ -194,7 +194,7 @@ class EmundusModelMessages extends JModelList {
     /**
      * Gets a message template.
      *
-     * @param Int The ID of the email.
+     * @param Mixed The ID or label of the email.
      * @param Bool Whether or not to also get the candidate file attachments linked to this template, this is an option use for compatibility because some DBs may not have this table.
      * @param Bool Whether or not to also get the letter attachments linked to this template.
      * @return Object The email we seek, false if none is found.
@@ -223,7 +223,11 @@ class EmundusModelMessages extends JModelList {
         if ($letterAttachments)
             $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
 
-        $query->where($db->quoteName('e.id').' = '.$id);
+        // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
+		if (is_numeric($id))
+            $query->where($db->quoteName('e.id').' = '.$id);
+		else
+			$query->where($db->quoteName('e.lbl').' LIKE '.$db->quote($id));
 
         try {
 

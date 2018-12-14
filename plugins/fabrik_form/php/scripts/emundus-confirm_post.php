@@ -172,6 +172,7 @@ if ($export_pdf == 1) {
             $export_path = strtr(utf8_decode($export_path), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
 	        $export_path = strtolower($export_path);
 	        $export_path = preg_replace('`\s`', '-', $export_path);
+	        $export_path = str_replace(',', '', $export_path);
             $directories = explode('/', $export_path);
 
             $d = '';

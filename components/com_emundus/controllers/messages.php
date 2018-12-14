@@ -459,7 +459,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
-	    if(!empty($attachments) && is_array($attachments))
+	    if (!empty($attachments) && is_array($attachments))
 	        $toAttach = $attachments;
 	    else
 	        $toAttach[] = $attachments;
@@ -594,6 +594,94 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    return true;
 	    }
     }
+
+	/** The generic function used for sending emails outside of emundus.
+	 *
+	 * @param String $email_address
+	 * @param Mixed $email If a numeric ID is provided, use that, if a string is provided, get the email with that label.
+	 * @param null $post
+	 * @param array $attachments
+	 *
+	 * @return bool
+	 */
+	function sendEmailNoFnum($email_address, $email, $post = null, $attachments = []) {
+
+		$m_messages = new EmundusModelMessages();
+
+		$user   = JFactory::getUser();
+		$config = JFactory::getConfig();
+
+		$template = $m_messages->getEmail($email);
+
+		// Get default mail sender info
+		$mail_from_sys = $config->get('mailfrom');
+		$mail_from_sys_name = $config->get('fromname');
+
+		// If no mail sender info is provided, we use the system global config.
+		$mail_from_name = $user->name;
+		$mail_from      = $template->emailfrom;
+
+		// If the email sender has the same domain as the system sender address.
+		if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+			$mail_from_address = $mail_from;
+		else {
+			$mail_from_address = $mail_from_sys;
+			$mail_from_name = $mail_from_sys_name;
+		}
+
+		// Set sender
+		$sender = [
+			$mail_from_address,
+			$mail_from_name
+		];
+
+		if (!empty($attachments) && is_array($attachments))
+			$toAttach = $attachments;
+		else
+			$toAttach[] = $attachments;
+
+		// In case no post value is supplied
+		if (empty($post)) {
+			$post = [
+				'SITE_URL'      => JURI::base(),
+				'USER_EMAIL'    => $email_address
+			];
+		}
+
+		// Handle [] in post keys.
+		$keys = [];
+		foreach (array_keys($post) as $key) {
+			$keys[] = '/\['.$key.'\]/';
+		}
+
+		// Tags are replaced with their corresponding values using the PHP preg_replace function.
+		$subject = preg_replace($keys, $post, $template->subject);
+		$body = preg_replace($keys, $post, $template->message);
+		if ($template != false)
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+
+		// Configure email sender
+		$mailer = JFactory::getMailer();
+		$mailer->setSender($sender);
+		$mailer->addReplyTo($mail_from, $mail_from_name);
+		$mailer->addRecipient($email_address);
+		$mailer->setSubject($subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
+
+		if (!empty($toAttach))
+			$mailer->addAttachment($toAttach);
+
+		// Send and log the email.
+		$send = $mailer->Send();
+		if ($send !== true) {
+			JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 
 /////// chat functions
