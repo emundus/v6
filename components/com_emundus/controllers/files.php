@@ -2599,8 +2599,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 $res->status = false;
                 $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE_FROM_HTML_TEMPLATE");
                 echo json_encode($res);
-
                 break;
+
             case 3:
                 // template DOCX
                 require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
@@ -2616,17 +2616,17 @@ class EmundusControllerFiles extends JControllerLegacy
                     $setupTags = array();
                     foreach ($tags as $i => $val) {
                         $tag = strip_tags($val);
-                        if(is_numeric($tag))
+                        if (is_numeric($tag))
                             $idFabrik[] = $tag;
                         else
                             $setupTags[] = $tag;
                     }
 
-                    if (!empty($idFabrik))
-                        $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
-                    else
-                    	$fabrikElts = array();
-
+                    if (!empty($idFabrik)) {
+	                    $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
+                    } else {
+	                    $fabrikElts = array();
+                    }
 
                     $fabrikValues = array();
                     foreach ($fabrikElts as $elt) {
@@ -2638,19 +2638,24 @@ class EmundusControllerFiles extends JControllerLegacy
                         if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                             $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
                         } else {
-                            if ($isDate)
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                            else
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                            if ($isDate) {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                            } else {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                            }
                         }
 
                         if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
-                            foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                if($elt['plugin'] == "checkbox")
-                                    $val = json_decode($val['val']);
-                                else
-                                    $val = explode(',', $val['val']);
-                                if (count($val) > 0) {
+
+                        	foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+
+                            	if ($elt['plugin'] == "checkbox") {
+	                                $val = json_decode($val['val']);
+                                } else {
+	                                $val = explode(',', $val['val']);
+                                }
+
+                            	if (count($val) > 0) {
                                     foreach ($val as $k => $v) {
                                         $index = array_search(trim($v),$params->sub_options->sub_values);
                                         $val[$k] = $params->sub_options->sub_labels[$index];
@@ -2659,9 +2664,11 @@ class EmundusControllerFiles extends JControllerLegacy
                                 } else {
                                     $fabrikValues[$elt['id']][$fnum]['val'] = "";
                                 }
-                            }
-                        }
-                        elseif ($elt['plugin'] == "birthday") {
+
+                        	}
+
+                        } elseif ($elt['plugin'] == "birthday") {
+
                             foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                 $val = explode(',', $val['val']);
                                 foreach ($val as $k => $v) {
@@ -2669,25 +2676,30 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
                                 $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                             }
-                        } else {
-                            if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin)
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
-                            else
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
-                        }
 
+                        } else {
+                            if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
+                            } else {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                            }
+                        }
                     }
+
                     foreach ($fnumsArray as $fnum) {
-                        $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
-                        if (isset($fnumsInfos[$fnum])) {
+
+                    	$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
+
+                    	if (isset($fnumsInfos[$fnum])) {
                             foreach ($setupTags as $tag) {
                                 $val = "";
                                 $lowerTag = strtolower($tag);
-                                if (array_key_exists($lowerTag, $const))
-                                    $preprocess->setValue($tag, $const[$lowerTag]);
-                                elseif (!empty(@$fnumsInfos[$fnum][$lowerTag]))
-                                    $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
-                                else {
+
+                                if (array_key_exists($lowerTag, $const)) {
+	                                $preprocess->setValue($tag, $const[$lowerTag]);
+                                } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
+	                                $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
+                                } else {
                                     $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], null, $fnum, '');
                                     $i = 0;
                                     foreach ($tags['patterns'] as $key => $value) {
