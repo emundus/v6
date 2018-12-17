@@ -173,6 +173,9 @@ class plgUserEmundus_registration_email extends JPlugin {
 		// Compile the user activated notification mail values.
 		$config = JFactory::getConfig();
 
+		// Get a SEF friendly URL or else sites with SEF return 404.
+		// WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
+		// TODO: Possibly use JRoute to make this work without needing a menu item?
 		if (JFactory::getConfig()->get('sef') == 0)
 			$activation_url = $baseURL.'/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
 		else
