@@ -187,7 +187,8 @@ class plgUserEmundus_registration_email extends JPlugin {
 			'SITE_NAME'     => $config->get('sitename'),
 			'ACTIVATION_URL' => $activation_url,
 			'BASE_URL'      => $baseURL,
-			'USER_LOGIN'    => $data['username']
+			'USER_LOGIN'    => $data['username'],
+			'USER_PASSWORD' => $data['password_clear']
 		];
 
 		// Send the email.
