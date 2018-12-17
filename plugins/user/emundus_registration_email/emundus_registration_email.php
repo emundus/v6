@@ -173,11 +173,16 @@ class plgUserEmundus_registration_email extends JPlugin {
 		// Compile the user activated notification mail values.
 		$config = JFactory::getConfig();
 
+		if (JFactory::getConfig()->get('sef') == 0)
+			$activation_url = $baseURL.'/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
+		else
+			$activation_url = $baseURL.'/activation?emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
+
 		$post = [
 			'USER_NAME'     => $data['name'],
 			'USER_EMAIL'    => $data['email'],
 			'SITE_NAME'     => $config->get('sitename'),
-			'ACTIVATION_URL' => $baseURL.'/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1',
+			'ACTIVATION_URL' => $activation_url,
 			'BASE_URL'      => $baseURL,
 			'USER_LOGIN'    => $data['username']
 		];
