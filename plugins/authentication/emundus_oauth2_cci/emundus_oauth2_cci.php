@@ -95,16 +95,18 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 					if ($user->get('block') || $user->get('activation')) {
 						$response->status = JAuthentication::STATUS_FAILURE;
 						$response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
-						return;
+						return false;
 					}
 				}
 
+				return true;
 			} catch (Exception $e) {
 				// log error.
 				$response->status = JAuthentication::STATUS_FAILURE;
 				return false;
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -147,6 +149,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$options = array();
 		$options['token']  = $result;
 		$options['provider'] = 'cciconnect';
+		$options['remember'] = true;
 
 		$app = JFactory::getApplication();
 
