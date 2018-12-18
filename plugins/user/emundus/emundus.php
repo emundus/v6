@@ -258,12 +258,11 @@ class plgUserEmundus extends JPlugin
 			        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
 
 			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
-			        $pass = bin2hex(openssl_random_pseudo_bytes(4));
-			        $password = array('password' => $pass, 'password2' => $pass);
+
+			        $password = array('password' => $user['password'], 'password2' => $user['password']);
 			        $o_user->bind($password);
 			        $o_user->save();
-			        $user['password'] = $pass;
-			        unset($pass, $password);
+			        unset($password);
 
 			        JPluginHelper::importPlugin('authentication');
 			        $dispatcher = JEventDispatcher::getInstance();
