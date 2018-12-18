@@ -265,6 +265,14 @@ class plgUserEmundus extends JPlugin
 			        $user['password'] = $pass;
 			        unset($pass, $password);
 
+			        // Set the user table instance to not block the user.
+			        $table = JTable::getInstance('user', 'JTable');
+			        $table->load(JFactory::getUser()->id);
+			        $table->block = 0;
+			        if (!$table->store()) {
+				        throw new RuntimeException($table->getError());
+			        }
+
 			        JPluginHelper::importPlugin('authentication');
 			        $dispatcher = JEventDispatcher::getInstance();
 			        $dispatcher->trigger('onOAuthAfterRegister', $user);
