@@ -813,10 +813,8 @@ class EmundusModelFiles extends JModelLegacy
             $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
             $and = ' OR ';
         } else {
-            if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
-                $sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
-                $and = ' AND ';
-            }
+            $sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
+            $and = ' AND ';
         }
         $sql_fnum = '';
         if (count($this->fnum_assoc)>0)
@@ -1171,7 +1169,6 @@ class EmundusModelFiles extends JModelLegacy
             $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
         
         $q = $this->_buildWhere($lastTab);
-        
         if (!empty($leftJoin))
             $query .= $leftJoin;
         $query .= $q['join'];
@@ -1180,7 +1177,6 @@ class EmundusModelFiles extends JModelLegacy
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-        
         $dbo->setQuery($query);
         try
         {
@@ -3107,7 +3103,7 @@ die();*/
             $query = $db->getQuery(true);
 
             $query
-                ->select('t.*')
+            ->select('t.*, c.id AS cid')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
