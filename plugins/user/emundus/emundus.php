@@ -234,8 +234,7 @@ class plgUserEmundus extends JPlugin
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
             $previous_url = base64_decode($return_url['return']);
             if (empty($previous_url)) {
-                $return_url = $jinput->POST->getVar('return');
-                $previous_url = base64_decode($return_url);
+                $previous_url = base64_decode($jinput->POST->getVar('return'));
             }
 	        if (empty($previous_url)) {
 		        $previous_url = base64_decode($return_url['redirect']);
