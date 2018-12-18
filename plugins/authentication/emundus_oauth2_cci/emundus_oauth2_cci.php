@@ -142,10 +142,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$result = $oauth2->authenticate();
 
 		// We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
-		$credentials = [
-			'username' => 'temporary_username',
-			'pass' => bin2hex(openssl_random_pseudo_bytes(4))
-		];
+		$credentials = ['username' => 'temporary_username'];
 
 		// Adding the token to the login options allows Joomla to use it for logging in.
 		$options = [
