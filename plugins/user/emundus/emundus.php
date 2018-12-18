@@ -237,6 +237,9 @@ class plgUserEmundus extends JPlugin
                 $return_url = $jinput->POST->getVar('return');
                 $previous_url = base64_decode($return_url);
             }
+	        if (empty($previous_url)) {
+		        $previous_url = base64_decode($return_url['redirect']);
+	        }
         } else {
             $previous_url = base64_decode($redirect);
         }
