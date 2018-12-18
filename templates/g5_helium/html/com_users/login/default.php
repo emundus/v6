@@ -18,8 +18,8 @@ if (!empty($cookieLogin) || $this->user->get('guest'))
     $this->course   = $jinput->get->get('course');
     $this->redirect   = $jinput->get->getBase64('redirect');
 
-    if (!empty($this->redirect) && $this->user->get('guest'))
-        $app->redirect(JRoute::_($redirecturl));
+    if (!empty($this->redirect) && !$this->user->get('guest'))
+        $app->redirect(JRoute::_($this->redirect));
 	// The user is not logged in or needs to provide a password.
 	echo $this->loadTemplate('login');
 }
