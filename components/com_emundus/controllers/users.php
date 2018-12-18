@@ -24,40 +24,41 @@ jimport('joomla.application.component.controller');
 class EmundusControllerUsers extends JControllerLegacy {
 	private $_user = null;
 	private $_db = null;
-	private $_userModel = null;
+	private $m_user = null;
 
-	public function __construct($config = array()){
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+	public function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
-		$this->_user = JFactory::getSession()->get('emundusUser');
-		$this->_db = JFactory::getDBO();
-		$this->_userModel = new EmundusModelUsers();
+		$this->_user  = JFactory::getSession()->get('emundusUser');
+		$this->_db    = JFactory::getDBO();
+		$this->m_user = new EmundusModelUsers();
 
 		parent::__construct($config);
 	}
 
+
 	public function display($cachable = false, $urlparams = false)  {
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
+		if (!JRequest::getCmd( 'view' )) {
 			$default = 'users';
 			JRequest::setVar('view', $default );
 		}
+
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 			parent::display();
-		else echo JText::_('ACCESS_DENIED');
+		else
+			echo JText::_('ACCESS_DENIED');
     }
+
+
+
 	public function adduser() {
 
 		// add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
 		$current_user = JFactory::getUser();
-		//$db = JFactory::getDBO();
 
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
 			echo json_encode((object)array('status' => false, 'uid' => $current_user->id, 'msg' => JText::_('ACCESS_DENIED')));
@@ -79,11 +80,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$campaigns 	 = $jinput->post->get('campaigns', null, 'string');
 		$news		 = $jinput->post->get('newsletter', null, 'string');
 		$ldap		 = $jinput->post->get('ldap', 0, null);
-		//var_dump($dataexploit);
 
 		// If we are creating a new user from the LDAP system, he does not have a password.
 		if ($ldap == 0)
-			$password 	= JUserHelper::genRandomPassword();
+			$password = JUserHelper::genRandomPassword();
+
 		$user = clone(JFactory::getUser(0));
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
@@ -95,15 +96,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 
-		$user->name=$name;
-		$user->username=$username;
-		$user->email=$email;
+		$user->name = $name;
+		$user->username = $username;
+		$user->email = $email;
 		if ($ldap == 0)
-			$user->password=md5($password);
-		$user->registerDate=date('Y-m-d H:i:s');
-		$user->lastvisitDate=date('Y-m-d H:i:s');
+			$user->password = md5($password);
+		$user->registerDate = date('Y-m-d H:i:s');
+		$user->lastvisitDate = date('Y-m-d H:i:s');
 		$user->groups = array($jgr);
-		$user->block=0;
+		$user->block = 0;
 
 		$other_param['firstname'] 		= $firstname;
 		$other_param['lastname'] 		= $lastname;
@@ -133,9 +134,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 			echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 
 		// Envoi de la confirmation de création de compte par email
-		/*
-         * @var EmundusModelEmails $m_emails
-		 *  */
 		$m_emails = $this->getModel('emails');
 
 		// If we are creating an ldap account, we need to send a different email.
@@ -146,8 +144,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$mailer = JFactory::getMailer();
 		if ($ldap == 0) {
-			$post 	= array('PASSWORD' => $password);
-			$tags 	= $m_emails->setTags($user->id, $post, null, $password);
+			$post = array('PASSWORD' => $password);
+			$tags = $m_emails->setTags($user->id, $post, null, $password);
 		} else {
 			$tags = $m_emails->setTags($user->id, array(), null, null);
 		}
@@ -183,16 +181,18 @@ class EmundusControllerUsers extends JControllerLegacy {
         try {
 			$send = $mailer->Send();
 
-			if ($send === false){
+			if ($send === false) {
 				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.email');
 			} else {
-				$message = array(
-					'user_id_from' => $current_user->id,
-					'user_id_to' => $uid,
-					'subject' => $email->subject,
-					'message' => $body
-				);
-				$m_emails->logEmail($message);
+				if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
+					$message = array(
+						'user_id_from' => $current_user->id,
+						'user_id_to' => $uid,
+						'subject' => $email->subject,
+						'message' => $body
+					);
+					$m_emails->logEmail($message);
+				}
 			}
 
 		} catch (Exception $e) {
@@ -208,7 +208,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
 	public function delincomplete() {
-		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
@@ -219,36 +219,33 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
 	public function delrefused() {
-		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
 
 		$this->_db->setQuery('SELECT student_id FROM #__emundus_final_grade WHERE Final_grade=2 AND type_grade ="candidature"');
-		$users = $this->_db->loadResultArray();
 		$this->delusers($this->_db->loadResultArray());
 	}
 
-	public function delnonevaluated() { /* ----------------- */
-		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+	public function delnonevaluated() {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
 
 		$this->_db->setQuery('SELECT u.id FROM #__users AS u LEFT JOIN #__emundus_final_grade AS efg ON u.id=efg.student_id WHERE u.usertype = "Registered" AND efg.student_id IS NULL');
-		$users = $this->_db->loadResultArray();
 		$this->delusers($this->_db->loadResultArray());
 	}
 
 	public function archive() {
-		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$itemid=JFactory::getApplication()->getMenu()->getActive()->id;
+		$itemid = JFactory::getApplication()->getMenu()->getActive()->id;
 
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		if(!empty($ids)) {
+		if (!empty($ids)) {
 			foreach ($ids as $id) {
 				$query = 'UPDATE #__emundus_users SET profile=999 WHERE user_id='.$id;
 				$this->_db->setQuery($query);
@@ -261,29 +258,26 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 
-	public function lastSavedFilter(){
-
+	public function lastSavedFilter() {
 		$query="SELECT MAX(id) FROM #__emundus_filters";
 		$this->_db->setQuery( $query );
-		$result=$this->_db->loadResult();
+		$result = $this->_db->loadResult();
 		echo $result;
 	}
 
-	public function getConstraintsFilter(){
+	public function getConstraintsFilter() {
 		$filter_id = JRequest::getVar('filter_id', null, 'POST', 'none',0);
 
-		$query="SELECT constraints FROM #__emundus_filters WHERE id=".$filter_id;
-		// echo $query;
+		$query = "SELECT constraints FROM #__emundus_filters WHERE id=".$filter_id;
 		$this->_db->setQuery( $query );
-		$result=$this->_db->loadResult();
-		echo $result;
+		echo $this->_db->loadResult();
 	}
 
 	////// EXPORT SELECTED XLS ///////////////////
-	public function export_selected_xls(){
+	public function export_selected_xls() {
 	     $cids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		 $page= JRequest::getVar('limitstart',0,'get');
-		 if(!empty($cids)){
+		 if (!empty($cids)) {
 		 	$this->export_to_xls($cids);
 		} else {
 			$this->setRedirect("index.php?option=com_emundus&view=users&limitstart=".$page,JText::_("NO_ITEM_SELECTED"),'error');
@@ -291,7 +285,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
    ////// EXPORT ALL XLS ///////////////////
-	public function export_account_to_xls($reqids=array(),$el=array()) {
+	public function export_account_to_xls($reqids = array(), $el = array()) {
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
 		export_xls($cid, array());
@@ -299,12 +293,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function export_zip() {
 		require_once('libraries/emundus/zip.php');
-		$db	= JFactory::getDBO();
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		JArrayHelper::toInteger( $cid, 0 );
+		JArrayHelper::toInteger($cid, 0);
 
 		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
@@ -315,7 +308,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function addsession(){
+	public function addsession() {
 		global $option;
 		$select_filter = JRequest::getVar('select_id', null, 'GET', 'none',0);
 		$mainframe = JFactory::getApplication();
@@ -324,10 +317,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 
 	/////////////Nouvelle Gestion /////////////////
-
-
-	public function clear()
-	{
+	public function clear() {
 		@EmundusHelperFiles::clear();
 		echo json_encode((object)(array('status' => true)));
 		exit;
@@ -378,8 +368,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 	}
 
-	public function loadfilters()
-	{
+	public function loadfilters() {
 		try {
 
 			$jinput = JFactory::getApplication()->input;
@@ -446,21 +435,21 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user_id = $current_user->id;
 
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$name 	= JRequest::getVar('name', null, 'POST', 'none',0);
+		$name = JRequest::getVar('name', null, 'POST', 'none',0);
 
-		$filt_params 	= JFactory::getSession()->get('filt_params');
-		$adv_params 	= JFactory::getSession()->get('adv_cols');
-		$constraints 	= array('filter'=>$filt_params, 'col'=>$adv_params);
+		$filt_params = JFactory::getSession()->get('filt_params');
+		$adv_params = JFactory::getSession()->get('adv_cols');
+		$constraints = array('filter'=>$filt_params, 'col'=>$adv_params);
 
 		$constraints = json_encode($constraints);
 
-		if(empty($itemid))
+		if (empty($itemid))
 			$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 
 		$time_date = (date('Y-m-d H:i:s'));
 
 		$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$this->_db->quote($constraints).",".$itemid.")";
-		$this->_db->setQuery( $query );
+		$this->_db->setQuery($query);
 
 		try {
 
@@ -482,10 +471,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$filter_id = $jinput->getInt('id', null);
 
 		$query="DELETE FROM #__emundus_filters WHERE id=".$filter_id;
-		$this->_db->setQuery( $query );
-		$result=$this->_db->Query();
+		$this->_db->setQuery($query);
+		$result = $this->_db->Query();
 
-		if ($result!=1) {
+		if ($result != 1) {
 			echo json_encode((object)(array('status' => false)));
 			exit;
 		} else {
@@ -526,7 +515,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function changeblock() {
 		$user = JFactory::getUser();
-		//temid=JFactory::getApplication()->getMenu()->getActive()->id;
+
 		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
@@ -563,7 +552,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$groups = $jinput->getString('groups', null);
 		$m_users = new EmundusModelUsers();
 
-		if ($users === 'all' ) {
+		if ($users === 'all') {
 			$us = $m_users->getUsers();
 			$users = array();
 			foreach ($us as $u) {
@@ -578,11 +567,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 		if ($res === true) {
 			$res = true;
 			$msg = JText::_('USERS_AFFECTED_SUCCESS');
-		} elseif($res === 0)
+		} elseif ($res === 0) {
 			$msg = JText::_('NO_GROUP_AFFECTED');
-		else
+		} else {
 			$msg = JText::_('AN_ERROR_OCCURED');
-
+		}
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -640,7 +629,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 	public function deleteusers() {
 
 		$jinput = JFactory::getApplication()->input;
-		$app        = JFactory::getApplication();
 
 		$users = $jinput->getString('users', null);
 		$m_users = new EmundusModelUsers();
@@ -665,18 +653,20 @@ class EmundusControllerUsers extends JControllerLegacy {
 					$m_users->changeBlock(array($user),1);
 					$users_id .= $user." ,";
 					$res = false;
-				}else  $u->delete();
+				} else
+					$u->delete();
 
 			}
 		}
-		if($users_id != "")
+		if ($users_id != "")
 			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
-		echo json_encode((object)array('status' => $res, 'msg' => $msg));
+		echo
+			json_encode((object)array('status' => $res, 'msg' => $msg));
 
 		exit;
 	}
 
-    public function sendpasswd(){
+    public function sendpasswd() {
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
         $current_user = JFactory::getUser();
@@ -705,14 +695,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
             $post = array();
             $tags = $emails->setTags($uid, $post, null, $passwd);
-/*
-            $from = $email->emailfrom;
-            $from_id = $current_user->id;
-            $fromname =$email->name;
-            $to = $recipient->email;
-            $subject = $email->subject;
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-*/
+
             $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
             $from_id = $current_user->id;
             $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
@@ -720,7 +703,6 @@ class EmundusControllerUsers extends JControllerLegacy {
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
             $body = $emails->setTagsFabrik($body);
-
 
             $app = JFactory::getApplication();
 	        $email_from_sys = $app->getCfg('mailfrom');
@@ -768,7 +750,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         exit;
     }
 	// Edit actions rights for group
-	public function setgrouprights(){
+	public function setgrouprights() {
 		$current_user = JFactory::getUser();
         $msg ='';
 
@@ -815,6 +797,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		if (is_array($return->users)) {
 			foreach ($return->users as $user) {
 
+				// TODO: Implement getting the user photo.
 				if (!empty($user['jpegPhoto']))
 					$user['jpegPhoto'] = null;
 
