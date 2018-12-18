@@ -10,8 +10,9 @@
 defined('_JEXEC') or die;
 
 $cookieLogin = $this->user->get('cookieLogin');
+$app = JFactory::getApplication();
 $jinput = JFactory::getApplication()->input;
-$redirect = $jinput->get->getBase64('redirect');
+$redirect = base64_decode($jinput->get->getBase64('redirect'));
 if (!empty($cookieLogin) || $this->user->get('guest'))
 {
     // Get campaign ID and course from url

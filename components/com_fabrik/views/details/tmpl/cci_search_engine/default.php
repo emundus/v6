@@ -268,7 +268,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             ?>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
-                                    <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$session['code'].'&cid='.$session['cid']); ?>
+                                    <?php $formUrl = base64_encode('/index.php?option=com_fabrik&view=form&formid=102&course='.$session['code'].'&cid='.$session['cid']); ?>
 
                                     <div class="em-option-buttons">
                                         <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
