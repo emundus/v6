@@ -97,7 +97,7 @@
 			<option value="1">JYES</option>
 			<option value="2">COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_ALLOW_ALL</option>
 		</field>
-		<field name="scholarship_document_id" menu="hide" type="text" label="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID" description="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID_DESC"></field>
+		<field name="scholarship_document_id" menu="hide" type="text" label="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID" description="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID_DESC"/>
 		<field name="copy_application_form" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM" description="COM_EMUNDUS_COPY_APPLICATION_FORM_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -117,10 +117,10 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"></field>
-		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"></field>
-		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"></field>
-		<field name="application_form_name" type="text" default="application_form_pdf" size="6" label="COM_EMUNDUS_CANDIDACY_FILE_NAME" description="COM_EMUNDUS_CANDIDACY_FILE_NAME_DESC"></field>
+		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
+		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
+		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
+		<field name="application_form_name" type="text" default="application_form_pdf" size="6" label="COM_EMUNDUS_CANDIDACY_FILE_NAME" description="COM_EMUNDUS_CANDIDACY_FILE_NAME_DESC"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
@@ -218,5 +218,9 @@
 		</field>
 		<field name="ldapFilters" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_DESC" />
 		<field name="ldapElements" type="text" required="false" label="COM_EMUNDUS_LDAP_ELEMENTS_LABEL" description="COM_EMUNDUS_LDAP_ELEMENTS_DESC" default="uid, mail, givenName, sn, telephoneNumber" />
+		<field name="logUserEmail" type="list" menu="hide" default="0" label="COM_EMUNDUS_LOG_USER_EMAIL" description="COM_EMUNDUS_LOG_USER_EMAIL_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 </config>
