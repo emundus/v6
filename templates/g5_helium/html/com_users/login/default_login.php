@@ -11,7 +11,11 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
+$app = JFactory::getApplication();
+$redirecturl = $app->input->get('redirect', '', 'WORD');
 
+if (!empty($redirecturl) && !JFactory::getUser()->guest)
+    $app->redirect(JRoute::_($redirecturl));
 ?>
 <div class="login<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
