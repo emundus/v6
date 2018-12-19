@@ -41,8 +41,26 @@ echo $description;
                 <div class="col-md-2 main-page-file-progress">
                     <div class="main-page-file-progress-label">
 
-                        <span class="label label-<?php echo $application->class; ?>">
-                            <?php echo $application->value; ?>
+                        <span class="label label-dates">
+                            <?php
+                                setlocale(LC_ALL, 'fr_FR.utf8');
+                                $start_day = date('d',strtotime($applications['date_start']));
+                                $end_day = date('d',strtotime($applications['date_end']));
+                                $start_month = date('m',strtotime($applications['date_start']));
+                                $end_month = date('m',strtotime($applications['date_end']));
+                                $start_year = date('y',strtotime($applications['date_start']));
+                                $end_year = date('y',strtotime($applications['date_end']));
+
+
+                                if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
+                                    echo strftime('%e',strtotime($applications['date_start'])) . " " . strftime('%B',strtotime($applications['date_end'])) . " " . date('Y',strtotime($applications['date_end']));
+                                elseif ($start_month == $end_month && $start_year == $end_year)
+                                    echo strftime('%e',strtotime($applications['date_start'])) . " au " . strftime('%e',strtotime($applications['date_end'])) . " " . strftime('%B',strtotime($applications['date_end'])) . " " . date('Y',strtotime($applications['date_end']));
+                                elseif ($start_month != $end_month && $start_year == $end_year)
+                                    echo strftime('%e',strtotime($applications['date_start'])) . " " . strftime('%B',strtotime($applications['date_start'])) . " au " . strftime('%e',strtotime($applications['date_end'])) . " " . strftime('%B',strtotime($applications['date_end'])) . " " . date('Y',strtotime($applications['date_end']));
+                                elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                                    echo strftime('%e',strtotime($applications['date_start'])) . " " . strftime('%B',strtotime($applications['date_start'])) . " " . date('Y',strtotime($applications['date_start'])) . " au " . strftime('%e',strtotime($applications['date_end'])) . " " . strftime('%B',strtotime($applications['date_end'])) . " " . date('Y',strtotime($applications['date_end']));
+                            ?>
                         </span>
                     </div>
                 </div>
