@@ -28,7 +28,7 @@ echo $description;
         </div>
 
         <?php foreach($applications as $application) : ?>
-            <div class="row" id="row<?php echo $application->fnum; ?>">
+            <div class="row application" id="row<?php echo $application->fnum; ?>">
                 <div class="col-md-6 main-page-application-title">
                     <p class="">
                         <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
@@ -76,6 +76,7 @@ echo $description;
             </div>
             <hr>
         <?php endforeach;  ?>
+        <ul id="pagin"></ul>
     </div>
 <?php else :
     echo JText::_('NO_FILE');
@@ -83,6 +84,40 @@ echo $description;
 <?php endif; ?>
 
 <script type="text/javascript">
+
+
+    var applications = <?php echo json_encode($applications); ?>;
+
+    //Pagination
+    pageSize = 3;
+
+    var pageCount =  applications.length / pageSize;
+
+    if (pageCount > 1) {
+        for (var i = 0 ; i<pageCount;i++) {
+            jQuery("#pagin").append('<li><p>'+(i+1)+'</p></li> ');
+        }
+    }
+
+    jQuery("#pagin li").first().find("p").addClass("current");
+    showPage = function(page) {
+        jQuery(".application").hide();
+        jQuery(".application").each(function(n) {
+            if (n >= pageSize * (page - 1) && n < pageSize * page)
+                jQuery(this).show();
+        });
+    };
+
+    showPage(1);
+
+    jQuery("#pagin li p").click(function() {
+        jQuery("#pagin li p").removeClass("current");
+        jQuery(this).addClass("current");
+        showPage(parseInt(jQuery(this).text()))
+    });
+
+
+
     function deletefile(fnum){
         if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
             document.location.href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='); ?>"+fnum;
