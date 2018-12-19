@@ -3131,7 +3131,7 @@ die();*/
             $query
                 ->select('esc.session_code')
                 ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-                ->leftJoin($db->quoteName('#__emundus_campaigns_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
                 ->where($db->quoteName('esc.training') . 'LIKE' . $db->quoteName($program))
                 ->and($db->quoteName('ecc.applicant_id') . ' = ' . $current_user);
 
