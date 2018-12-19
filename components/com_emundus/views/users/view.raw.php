@@ -29,9 +29,7 @@ class EmundusViewUsers extends JViewLegacy
 	function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
@@ -58,8 +56,7 @@ class EmundusViewUsers extends JViewLegacy
 		parent::__construct($config);
 	}
 
-	private function _loadData()
-	{
+	private function _loadData() {
 		$m_users = new EmundusModelUsers();
         $m_users->filts_details = $this->filts_details;
 		$users = $m_users->getUsers();
@@ -87,17 +84,14 @@ class EmundusViewUsers extends JViewLegacy
         $this->assignRef('filters', $filters);
 	}
 
-	private function _loadUserForm()
-	{
+	private function _loadUserForm() {
 		$m_users = new EmundusModelUsers();
 		$edit = JFactory::getApplication()->input->getInt('edit', null);
 
-		if ($edit == 1)
-		{
+		if ($edit == 1) {
 			$uid = JFactory::getApplication()->input->getInt('user', null);
 			$user  = $m_users->getUserInfos($uid);
-			
-			
+
 			$uGroups = $m_users->getUserGroups($uid);
 			$uCamps = $m_users->getUserCampaigns($uid);
 			$uOprofiles = $m_users->getUserOprofiles($uid);
@@ -106,7 +100,6 @@ class EmundusViewUsers extends JViewLegacy
 			$this->assignRef('uGroups', $uGroups);
 			$this->assignRef('uCamps', $uCamps);
 			$this->assignRef('uOprofiles', $uOprofiles);
-
 		}
 		$this->assignRef('edit', $edit);
 
@@ -114,6 +107,7 @@ class EmundusViewUsers extends JViewLegacy
     		$profiles = $m_users->getProfilesByIDs($this->filts_details['profile_users']);
 		else
             $profiles = $m_users->getProfiles();
+
 		$this->assignRef('profiles', $profiles);
 
 		$groups = $m_users->getGroups();
@@ -131,43 +125,38 @@ class EmundusViewUsers extends JViewLegacy
 		$this->assignRef('ldapElements', $ldapElements);
 	}
 
-	private function _loadGroupForm()
-	{
-		//$model = new EmundusModelFiles();
+	private function _loadGroupForm() {
 		$m_users = new EmundusModelUsers();
 		$actions = $m_users->getActions();
 		$prog = $m_users->getProgramme();
 		$this->assignRef('actions', $actions);
 		$this->assignRef('progs', $prog);
 	}
-	private function _loadAffectForm()
-	{
+
+	private function _loadAffectForm() {
 		$m_users = new EmundusModelUsers();
 		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
 	}
-	private function _loadRightsForm()
-	{
+
+	private function _loadRightsForm() {
 		$m_users = new EmundusModelUsers();
 		$uid = JFactory::getApplication()->input->getInt('user', null);
 		$groups = $m_users->getUserGroups($uid);
 		$g = array();
-		foreach($groups as $key => $label)
-		{
+		foreach ($groups as $key => $label) {
 			$g[$key]['label'] = $label;
 			$g[$key]['progs'] = $m_users->getGroupProgs($key);
 			$g[$key]['acl'] = $m_users->getGroupsAcl($key);
-
 		}
 		//$acl = $m_users->getUserACL($uid);
 
 		$this->assignRef('groups', $g);
 	}
 
-	function display($tpl = null)
-	{
+	function display($tpl = null) {
 
-		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 			die("ACCESS_DENIED");
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
@@ -195,8 +184,6 @@ class EmundusViewUsers extends JViewLegacy
 				$menu = JFactory::getApplication()->getMenu();
 				$current_menu  = $menu->getActive();
 				$params = $menu->getParams($current_menu->id);
-
-				//$mfiles = $this->getModel('Users');
 
 				$items = EmundusHelperFiles::getMenuList($params);
 				$actions = EmundusHelperFiles::getActionsACL();
@@ -226,7 +213,6 @@ class EmundusViewUsers extends JViewLegacy
 
 		$itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 		$this->assignRef('itemId', $itemId);
-
 
 		parent::display($tpl);
 	}
