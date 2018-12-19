@@ -22,15 +22,23 @@ $doc = JFactory::getDocument();
 $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
-
-if(empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
+if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
     JFactory::getApplication()->redirect("/rechercher");
 
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
 $applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___code_raw']);
+
+if (!$user->guest) {
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
+	$m_programme = new EmundusModelProgramme();
+	$is_favorite = $m_programme->isFavorite($this->data['jos_emundus_setup_programmes___id_raw'], $user->id);
+}
+
+
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -83,7 +91,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     </div>
 
     <div class="g-block size-95">
-        <h1><?php echo $title; ?></h1>
+        <h1><?php echo $title; ?>
+            <?php if (!$user->guest) :?>
+                <?php if ($is_favorite) :?>
+                    <i class="fas fa-star em-star-button" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                <?php else :?>
+                    <i class="far fa-star em-star-button" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                <?php endif; ?>
+            <?php endif; ?>
+        </h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
             <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
@@ -549,16 +565,63 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     alert(result.msg);
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR) {
                 console.log(jqXHR.responseText);
             }
         });
     }
 
+    <?php if (!$user->guest) :?>
+    function favorite(programme_id) {
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=programme&task=favorite',
+            data: {
+                programme_id: programme_id,
+                user_id: <?php echo $user->id; ?>
+            },
+            success: function(result) {
+                result = JSON.parse(result);
+                if (result.status) {
+                    document.getElementById('em-favorite').classList.replace('far','fas');
+                    document.getElementById('em-favorite').setAttribute('onclick', 'unfavorite('+programme_id+')');
+                } else {
+                    document.getElementById('em-favorite').style.color = '#d91e18';
+                }
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+
+    function unfavorite(programme_id) {
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=programme&task=unfavorite',
+            data: {
+                programme_id: programme_id,
+                user_id: <?php echo $user->id; ?>
+            },
+            success: function(result) {
+                result = JSON.parse(result);
+                if (result.status) {
+                    document.getElementById('em-favorite').classList.replace('fas','far');
+                    document.getElementById('em-favorite').setAttribute('onclick', 'favorite('+programme_id+')');
+                } else {
+                    document.getElementById('em-favorite').style.color = '#d91e18';
+                }
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+    <?php endif; ?>
+
 </script>
   <!--  <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php //echo $API; ?>&callback=initMap"></script> -->
-
-
 
 <?php
 echo $this->pluginbottom;
