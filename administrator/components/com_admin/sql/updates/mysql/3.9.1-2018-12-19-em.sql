@@ -8,7 +8,7 @@ CREATE TABLE `jos_emundus_favorite_programmes` (
                                                  `id` int(11) NOT NULL,
                                                  `user_id` int(11) NOT NULL,
                                                  `programme_id` int(11) NOT NULL,
-                                                 `date_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                                 `date_time` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
