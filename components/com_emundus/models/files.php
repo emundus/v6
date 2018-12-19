@@ -3096,8 +3096,7 @@ die();*/
      */
 
     public function programSessions($program) {
-        try
-        {
+        try {
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
@@ -3110,13 +3109,34 @@ die();*/
                 ->where($db->quoteName('p.id') . ' = ' . $program .
                     ' AND ' . $db->quoteName('t.published') . ' = ' . 1 .
                     ' AND ' . $db->quoteName('t.date_start') . ' >= ' . date("Y-m-d"))
-                ->order('date_start ASC');;
+                ->order('date_start ASC');
 
             $db->setQuery($query);
             return $db->loadAssocList() ;
         }
         catch(Exception $e)
         {
+            echo $e->getMessage();
+        }
+    }
+
+    public function getAppliedSessions($program) {
+        try {
+            $db = JFactory::getDbo();
+
+            $query = $db->getQuery(true);
+
+            $query
+                ->select('t.session_code')
+                ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
+                ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
+                ->where($db->quoteName('p.training') . 'LIKE' . $db->quoteName($program)) ;
+
+            $db->setQuery($query);
+            return $db->loadAssocList() ;
+        }
+        catch(Exception $e) {
             echo $e->getMessage();
         }
     }

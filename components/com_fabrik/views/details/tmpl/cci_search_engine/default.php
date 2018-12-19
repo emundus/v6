@@ -30,6 +30,7 @@ if(empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
+$applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___training_raw']);
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -268,13 +269,23 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             ?>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
-                                    <?php $formUrl = base64_encode('/index.php?option=com_fabrik&view=form&formid=102&course='.$session['code'].'&cid='.$session['cid']); ?>
 
-                                    <div class="em-option-buttons">
-                                        <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
-                                        <?php $register_url = "connexion?course=".$session['code']."&cid=".$session['cid']."&redirect=".$formUrl; ?>
-                                        <a href="<?php echo $register_url; ?>" class="em-option-login">s'inscrire</a>
-                                    </div>
+                                    <?php if (in_array($session['session_code'], $applied)) :?>
+                                        <div class="em-option-buttons">
+                                            <button class="em-option-complet" disabled>Vous êtes déjà inscrit</button>
+                                        </div>
+                                    <?php else: ?>
+
+                                        <?php $formUrl = base64_encode('/index.php?option=com_fabrik&view=form&formid=102&course='.$session['code'].'&cid='.$session['cid']); ?>
+
+                                        <div class="em-option-buttons">
+                                            <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
+                                            <?php $register_url = "connexion?course=".$session['code']."&cid=".$session['cid']."&redirect=".$formUrl; ?>
+                                            <a href="<?php echo $register_url; ?>" class="em-option-login">s'inscrire</a>
+                                        </div>
+
+                                    <?php endif; ?>
+
                                 <?php else: ?>
                                     <div class="em-option-buttons">
                                         <button class="em-option-complet" disabled>Complet</button>

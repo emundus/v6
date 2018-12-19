@@ -15,10 +15,10 @@ echo $description;
     <div class="<?php echo $moduleclass_sfx ?>">
 
         <div class="row" id="em-applications">
-            <div class="col-md-8">
+            <div class="col-md-6">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <strong>Session réservée</strong>
             </div>
 
@@ -29,7 +29,7 @@ echo $description;
 
         <?php foreach($applications as $application) : ?>
             <div class="row" id="row<?php echo $application->fnum; ?>">
-                <div class="col-md-8 main-page-application-title">
+                <div class="col-md-6 main-page-application-title">
                     <p class="">
                         <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
                             <?php
@@ -38,7 +38,7 @@ echo $description;
                         </a>
                 </div>
 
-                <div class="col-md-2 main-page-file-progress">
+                <div class="col-md-4 main-page-file-progress">
                     <div class="main-page-file-progress-label">
 
                             <?php
@@ -50,7 +50,7 @@ echo $description;
                                 $start_year = date('y',strtotime($application->date_start));
                                 $end_year = date('y',strtotime($application->date_end));
 
-    
+
                                 if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
                                     echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
                                 elseif ($start_month == $end_month && $start_year == $end_year)
