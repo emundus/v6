@@ -74,7 +74,6 @@ echo $description;
 
 
             </div>
-            <hr>
         <?php endforeach;  ?>
         <ul id="pagin"></ul>
     </div>
@@ -91,7 +90,7 @@ echo $description;
     //Pagination
     pageSize = 3;
 
-    var pageCount =  applications.length / pageSize;
+    var pageCount =  Object.keys(applications).length / pageSize;
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
