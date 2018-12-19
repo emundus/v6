@@ -30,7 +30,7 @@ if(empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
-$applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___training_raw']);
+$applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___code_raw']);
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';

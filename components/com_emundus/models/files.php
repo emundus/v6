@@ -3122,16 +3122,22 @@ die();*/
 
     public function getAppliedSessions($program) {
         try {
+            $current_user = JFactory::getUser();
+
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
 
             $query
-                ->select('t.session_code')
-                ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
-                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
-                ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
-                ->where($db->quoteName('p.training') . 'LIKE' . $db->quoteName($program)) ;
+                ->select('esc.session_code')
+                ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                ->leftJoin($db->quoteName('#__emundus_campaigns_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+                ->where($db->quoteName('esc.training') . 'LIKE' . $db->quoteName($program))
+                ->and($db->quoteName('ecc.applicant_id') . ' = ' . $current_user);
+
+
+
+
 
             $db->setQuery($query);
             return $db->loadAssocList() ;
