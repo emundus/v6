@@ -35,14 +35,8 @@ class modemundusApplicationsHelper
 		$query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class ';
 
 		// CCI-RS layout needs to get the start and end date of each application
-		if($layout == '_:ccirs') {
-            $query .= ', t.date_start as date_start, t.date_end as date_end';
-
-            $query .= ' FROM #__emundus_campaign_candidature AS ecc
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
-					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status 
-					LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code ';
-        }
+		if ($layout == '_:ccirs')
+            $query .= ', t.date_start as date_start, t.date_end as date_end ';
 
 		// Hesam layout needs to get the title from the information about the project.
 		if ($has_table)
@@ -51,6 +45,9 @@ class modemundusApplicationsHelper
 		$query .= ' FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status ';
+
+		if ($layout == '_:ccirs')
+            $query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code ';
 
 		if ($has_table)
 			$query .= ' LEFT JOIN #__emundus_projet AS pro ON pro.fnum=ecc.fnum ';
