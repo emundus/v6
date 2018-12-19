@@ -3140,7 +3140,7 @@ die();*/
 
 
             $db->setQuery($query);
-            return $db->loadAssocList() ;
+            return $db->loadColumn() ;
         }
         catch(Exception $e) {
             echo $e->getMessage();
