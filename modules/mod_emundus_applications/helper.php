@@ -36,7 +36,7 @@ class modemundusApplicationsHelper
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs')
-            $query .= ', t.date_start as date_start, t.date_end as date_end ';
+            $query .= ', t.date_start as date_start, t.date_end as date_end, p.id as pid ';
 
 		// Hesam layout needs to get the title from the information about the project.
 		if ($has_table)
@@ -47,7 +47,8 @@ class modemundusApplicationsHelper
 					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status ';
 
 		if ($layout == '_:ccirs')
-            $query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code ';
+            $query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code 
+                        LEFT JOIN #__emundus_setup_programmes AS p ON p.code = esc.training';
 
 		if ($has_table)
 			$query .= ' LEFT JOIN #__emundus_projet AS pro ON pro.fnum=ecc.fnum ';
