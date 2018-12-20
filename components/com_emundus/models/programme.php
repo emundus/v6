@@ -336,4 +336,71 @@ class EmundusModelProgramme extends JModelList {
 		}
 	}
 
+
+	/**
+	 * Get's the upcoming sessions of the user's favorite programs.
+	 *
+	 * @param null $user_id
+	 *
+	 * @return mixed
+	 */
+	public function getUpcomingFavorites($user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		if (empty($user_id))
+			return false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select(['t.*', $db->quoteName('c.id','cid'), $db->quoteName('p.id', 'pid'), $db->quoteName('p.url')])
+			->from($db->quoteName('#__emundus_favorite_programmes','f'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON '.$db->quoteName('p.id').' = '.$db->quoteName('f.programme_id'))
+			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity','t').' ON '.$db->quoteName('t.code').' LIKE '.$db->quoteName('p.code'))
+			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->quoteName('c.session_code').' LIKE '.$db->quoteName('t.session_code'))
+			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('t.published').'= 1 AND '.$db->quoteName('t.date_start').' >= NOW()')
+			->order($db->quoteName('t.date_start').' ASC');
+		$db->setQuery($query);
+
+		try {
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+
+	/**
+	 * Get's the user's favorite programs.
+	 *
+	 * @param null $user_id
+	 *
+	 * @return mixed
+	 */
+	public function getFavorites($user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		if (empty($user_id))
+			return false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select(['p.*', $db->quoteName('t.label', 'title')])
+			->from($db->quoteName('#__emundus_favorite_programmes','f'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON '.$db->quoteName('p.id').' = '.$db->quoteName('f.programme_id'))
+			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't').' ON '.$db->quoteName('t.code').' LIKE '.$db->quoteName('p.code'))
+			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('p.published').'= 1')
+			->group($db->quoteName('p.id'));
+		$db->setQuery($query);
+
+		try {
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
 }

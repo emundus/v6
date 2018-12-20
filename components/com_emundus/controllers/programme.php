@@ -144,7 +144,6 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
 	    echo json_encode($result);
 	    exit;
-
     }
 
 
@@ -174,7 +173,6 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
 		echo json_encode($result);
 		exit;
-
 	}
 
 }
