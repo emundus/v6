@@ -30,17 +30,11 @@ echo $description;
         <?php foreach($applications as $application) : ?>
             <div class="row application" id="row<?php echo $application->fnum; ?>">
                 <div class="col-md-6 main-page-application-title">
-                    <p class="">
-                        <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
-                            <?php
-                            echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label;
-                            ?>
-                        </a>
+                        <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_fabrik&view=details&formid=296&rowid='. $application->pid.'&Itemid=2844'); ?>" ><?php echo $application->label; ?></a>
                 </div>
 
                 <div class="col-md-4 main-page-file-progress">
                     <div class="main-page-file-progress-label">
-
                             <?php
                                 setlocale(LC_ALL, 'fr_FR.utf8');
                                 $start_day = date('d',strtotime($application->date_start));
@@ -65,7 +59,6 @@ echo $description;
 
                 <div class="col-md-2 main-page-file-progress">
                     <div class="main-page-file-progress-label">
-
                         <span class="label label-<?php echo $application->class; ?>">
                             <?php echo $application->value; ?>
                         </span>
