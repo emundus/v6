@@ -36,7 +36,7 @@ class modemundusApplicationsHelper
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs')
-            $query .= ', t.date_start as date_start, t.date_end as date_end, p.id as pid ';
+            $query .= ', t.date_start as date_start, t.date_end as date_end, p.id as pid, p.url as url ';
 
 		// Hesam layout needs to get the title from the information about the project.
 		if ($has_table)
