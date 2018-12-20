@@ -23,12 +23,6 @@ echo $description;
 
 <?php if (!empty($favorites)) :?>
     <div class="<?php echo $moduleclass_sfx ?>">
-        <div class="row" id="em-favorites">
-            <div class="col-md-12">
-                Formation envisagée
-            </div>
-        </div>
-
 		<?php foreach ($favorites as $favorite) : ?>
             <div class="row favorite" id="row<?php echo $favorite->id; ?>">
                 <div class="col-md-9 main-page-favorite-title">
