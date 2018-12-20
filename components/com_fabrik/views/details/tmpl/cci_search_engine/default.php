@@ -19,14 +19,11 @@ $doc = JFactory::getDocument();
 //$eMConfig   = JComponentHelper::getParams('com_fabrik');
 //$API        = $eMConfig->get("google_api_key", null, "string");
 
-$doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
-$doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
-$doc->addStyleSheet(DS.'media'.DS.'com_emundus'.DS.'lib'.DS.'iconate'.DS.'css'.DS.'iconate.min.css');
-$doc->addScript(DS.'media'.DS.'com_emundus'.DS.'lib'.DS.'iconate'.DS.'js'.DS.'iconate.min.js');
-
 if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
     JFactory::getApplication()->redirect("/rechercher");
 
+$doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
+$doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -38,6 +35,8 @@ if (!$user->guest) {
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
 	$m_programme = new EmundusModelProgramme();
 	$is_favorite = $m_programme->isFavorite($this->data['jos_emundus_setup_programmes___id_raw'], $user->id);
+	$doc->addStyleSheet(DS.'media'.DS.'com_emundus'.DS.'lib'.DS.'iconate'.DS.'css'.DS.'iconate.min.css');
+	$doc->addScript(DS.'media'.DS.'com_emundus'.DS.'lib'.DS.'iconate'.DS.'js'.DS.'iconate.min.js');
 }
 
 
@@ -96,11 +95,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     .em-star-button.fas {
         color: #f5e653;
     }
-
-    .em-star-button.fas:hover,
-    .em-star-button.fas:active {
-        color: unset;
-    }
 </style>
 
 <!-- Title -->
@@ -113,9 +107,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $title; ?>
             <?php if (!$user->guest) :?>
                 <?php if ($is_favorite) :?>
-                    <i class="fas fa-star em-star-button" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                    <i class="fas fa-star em-star-button" rel="tooltip" title="Cliquez ici pour marquer cette formation comme une formation envisagée" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php else :?>
-                    <i class="far fa-star em-star-button" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                    <i class="far fa-star em-star-button" rel="tooltip" title="Cliquez ici pour marquer cette formation comme une formation envisagée" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php endif; ?>
             <?php endif; ?>
         </h1>
@@ -532,6 +526,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     }
 
     <?php if (!$user->guest) :?>
+
+    jQuery(document).ready(function () {
+        jQuery("[rel=tooltip]").tooltip();
+    });
+
+
     function favorite(programme_id) {
         jQuery.ajax({
             type: 'POST',
