@@ -35,8 +35,8 @@
 						name="outro"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
 						default=""
-						label="MOD_EMUNDUS_DESCRIPTION"
-						description="MOD_EMUNDUS_DESCRIPTION_DESC">
+						label="MOD_EMUNDUS_OUTRO"
+						description="MOD_EMUNDUS_OUTRO_DESC">
 				</field>
 			</fieldset>
 			<fieldset
