@@ -84,6 +84,23 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $document->setDescription(substr(html_entity_decode(strip_tags(html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']))), 0, 200));
 ?>
 
+<style>
+    .em-star-button {
+        cursor: pointer;
+    }
+
+    .em-star-button:hover,
+    .em-star-button:active,
+    .em-star-button.fas {
+        color: #f5e653;
+    }
+
+    .em-star-button.fas:hover,
+    .em-star-button.fas:active {
+        color: unset;
+    }
+</style>
+
 <!-- Title -->
 <!-- TODO: Get categories from cci and make div  before the title -->
     <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
@@ -521,6 +538,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 programme_id: programme_id,
                 user_id: <?php echo $user->id; ?>
             },
+            beforeSend: function() {
+                document.getElementById('em-favorite').classList.add('fa-spin');
+                setTimeout(function(){
+                    document.getElementById('em-favorite').classList.remove('fa-spin');
+                }, 800);
+            },
             success: function(result) {
                 result = JSON.parse(result);
                 if (result.status) {
@@ -544,6 +567,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             data: {
                 programme_id: programme_id,
                 user_id: <?php echo $user->id; ?>
+            },
+            beforeSend: function() {
+                document.getElementById('em-favorite').classList.add('fa-spin');
+                setTimeout(function(){
+                    document.getElementById('em-favorite').classList.remove('fa-spin');
+                }, 800);
             },
             success: function(result) {
                 result = JSON.parse(result);
