@@ -9,9 +9,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-// Include the latest functions only once
-require_once dirname(__FILE__).'/helper.php';
-
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
 //$document->addStyleSheet( 'https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css' );
