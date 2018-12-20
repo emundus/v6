@@ -21,6 +21,8 @@ $doc = JFactory::getDocument();
 
 $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
+$doc->addStyleSheet(DS.'media'.DS.'com_emundus'.DS.'lib'.DS.'iconate'.DS.'css'.DS.'iconate.min.css');
+$doc->addScript(DS.'media'.DS.'com_emundus'.DS.'lib'.DS.'iconate'.DS.'js'.DS.'iconate.min.js');
 
 if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
     JFactory::getApplication()->redirect("/rechercher");
@@ -540,13 +542,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             },
             beforeSend: function() {
                 document.getElementById('em-favorite').classList.add('fa-spin');
-                setTimeout(function(){
+                setTimeout(function() {
                     document.getElementById('em-favorite').classList.remove('fa-spin');
                 }, 800);
             },
             success: function(result) {
                 result = JSON.parse(result);
                 if (result.status) {
+                    iconate(document.getElementById('em-favorite'), {
+                        from: 'fa-star',
+                        to: 'fa-star',
+                        animation: 'tada'
+                    });
                     document.getElementById('em-favorite').classList.replace('far','fas');
                     document.getElementById('em-favorite').setAttribute('onclick', 'unfavorite('+programme_id+')');
                 } else {
@@ -577,6 +584,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             success: function(result) {
                 result = JSON.parse(result);
                 if (result.status) {
+                    iconate(document.getElementById('em-favorite'), {
+                        from: 'fa-star',
+                        to: 'fa-star',
+                        animation: 'tada'
+                    });
                     document.getElementById('em-favorite').classList.replace('fas','far');
                     document.getElementById('em-favorite').setAttribute('onclick', 'favorite('+programme_id+')');
                 } else {
