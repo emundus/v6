@@ -66,7 +66,7 @@ echo $description;
                 </div>
             </div>
         <?php endforeach;  ?>
-        <ul id="pagin"></ul>
+        <ul id="list-pagin"></ul>
     </div>
 <?php else :
     echo JText::_('NO_FILE');
@@ -85,11 +85,11 @@ echo $description;
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#pagin").append('<li><p>'+(i+1)+'</p></li> ');
+            jQuery("#list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#pagin li").first().find("p").addClass("current");
+    jQuery("#list-pagin li").first().find("p").addClass("current");
     showPage = function(page) {
         jQuery(".application").hide();
         jQuery(".application").each(function(n) {
@@ -100,8 +100,8 @@ echo $description;
 
     showPage(1);
 
-    jQuery("#pagin li p").click(function() {
-        jQuery("#pagin li p").removeClass("current");
+    jQuery("#list-pagin li p").click(function() {
+        jQuery("#list-pagin li p").removeClass("current");
         jQuery(this).addClass("current");
         showPage(parseInt(jQuery(this).text()))
     });
@@ -118,18 +118,18 @@ echo $description;
 
 <style>
 
-    #pagin {
+    #list-pagin {
         display: block;
         float: right;
     }
 
-    #pagin li {
+    #list-pagin li {
         width: 30px;
         cursor: pointer;
         display: inline-block;
     }
 
-    #pagin p {
+    #list-pagin p {
         font-size: 18px;
         text-align: center;
     }

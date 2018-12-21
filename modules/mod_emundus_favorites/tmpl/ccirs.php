@@ -39,7 +39,7 @@ echo $description;
                 </div>
             </div>
 		<?php endforeach;  ?>
-        <ul id="pagin"></ul>
+        <ul id="fav-pagin"></ul>
     </div>
 <?php else :
 	echo JText::_('NO_FAVORITES');
@@ -60,11 +60,11 @@ endif; ?>
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#pagin").append('<li><p>'+(i+1)+'</p></li> ');
+            jQuery("#fav-pagin").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#pagin li").first().find("p").addClass("current");
+    jQuery("#fav-pagin li").first().find("p").addClass("current");
     showPage = function(page) {
         jQuery(".favorite").hide();
         jQuery(".favorite").each(function(n) {
@@ -75,8 +75,8 @@ endif; ?>
 
     showPage(1);
 
-    jQuery("#pagin li p").click(function() {
-        jQuery("#pagin li p").removeClass("current");
+    jQuery("#fav-pagin li p").click(function() {
+        jQuery("#fav-pagin li p").removeClass("current");
         jQuery(this).addClass("current");
         showPage(parseInt(jQuery(this).text()))
     });
@@ -108,18 +108,18 @@ endif; ?>
 
 <style>
 
-    #pagin {
+    #fav-pagin {
         display: block;
         float: right;
     }
 
-    #pagin li {
+    #fav-pagin li {
         width: 30px;
         cursor: pointer;
         display: inline-block;
     }
 
-    #pagin p {
+    #fav-pagin p {
         font-size: 18px;
         text-align: center;
     }
