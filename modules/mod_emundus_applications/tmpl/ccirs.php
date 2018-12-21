@@ -64,8 +64,6 @@ echo $description;
                         </span>
                     </div>
                 </div>
-
-
             </div>
         <?php endforeach;  ?>
         <ul id="pagin"></ul>
@@ -117,3 +115,28 @@ echo $description;
     }
 
 </script>
+
+<style>
+
+    #pagin {
+        display: block;
+        float: right;
+    }
+
+    #pagin li {
+        width: 30px;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    #pagin p {
+        font-size: 18px;
+        text-align: center;
+    }
+
+    p.current {
+        border: 1px solid;
+        padding: 0px 8px;
+    }
+
+</style>
