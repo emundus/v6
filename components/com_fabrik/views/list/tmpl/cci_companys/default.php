@@ -52,12 +52,10 @@ echo $this->table->intro;
         endforeach;
 
 
-
         $data = array();
         $i = 0;
         $rows = $this->rows[0];
         if (!empty($rows)) {
-
             foreach ($rows as $k => $v) {
                 foreach ($this->headings as $key => $val) {
                     $raw = $key.'_raw';
@@ -65,13 +63,18 @@ echo $this->table->intro;
                     if (array_key_exists($raw, $v->data)) {
                         $data[$i][$val] = $v->data->$raw;
                     }
+
                 }
                 if (array_key_exists('fabrik_view_url', $v->data)) {
                     $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
                 }
+                if (array_key_exists('fabrik_actions', $v->data)) {
+                    $data[$i]['fabrik_actions'] = $v->data->fabrik_actions;
+                }
                 $i = $i + 1;
             }
         }
+
         ?>
 
 
@@ -87,13 +90,13 @@ echo $this->table->intro;
                                 <div class="article-title" style="background-color: #e2e2cf;">
                                     <h4><?php echo $d["Raison sociale"]; ?></h4>
                                     <div class="accordion-icons" style="float:right;">
-                                        <a href="<?php echo $d['fabrik_view_url'].'&task=form.view'; ?>"><i class="far fa-eye"></i></a>
+                                        <?php echo $d['fabrik_actions']; ?>
                                     </div>
                                 </div>
 
                                 <div class="accordion-content" style="background-color: #f3f3ec;">
                                     <?php foreach ($d as $k => $v) { ?>
-                                        <?php if($k != 'fabrik_view_url') :?>
+                                        <?php if($k != 'fabrik_view_url' & $k != 'fabrik_actions') :?>
                                             <?php if(strpos($k, 'Title') == true) :?>
                                                 <div class="em-group-title">
                                                     <span><?php echo str_replace('Title-', '',$k); ?></span>
@@ -104,8 +107,6 @@ echo $this->table->intro;
                                                     <div class="em-element-value" style="background-color: white"><?php echo $v; ?></div>
                                                 </div>
                                             <?php endif; ?>
-                                        <?php else :?>
-
                                         <?php endif;?>
                                     <?php } ?>
                                 </div>
@@ -193,6 +194,8 @@ endif;
         document.getElementById('listform_315_mod_fabrik_list_211').after(document.querySelector(".addbutton"));
         document.querySelector(".fabrikButtonsContainer").hide();
     });
+
+
 </script>
 
 
@@ -222,8 +225,7 @@ endif;
     }
 
     .accordion-container .article-title h4:hover i:before,
-    .accordion-container .article-title h4:hover i:active,
-    .accordion-container .content-entry.open i {
+    .accordion-container .article-title h4:hover i:active {
         color: white;
     }
 
@@ -241,6 +243,11 @@ endif;
 
     .accordion-icons i:before {
         font-size: 30px;
+    }
+
+    .article-icons a {
+        background-image: none;
+        background-color: transparent;
     }
 
     .accordion-content {
