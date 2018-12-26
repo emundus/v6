@@ -35,8 +35,6 @@ if ($this->showTitle == 1) : ?>
 endif;
 
 
-if ($this->hasButtons)
-    echo $this->loadTemplate('buttons');
 
 // Intro outside of form to allow for other lists/forms to be injected.
 echo $this->table->intro;
@@ -56,6 +54,7 @@ echo $this->table->intro;
         $i = 0;
         $rows = $this->rows[0];
         if (!empty($rows)) {
+
             foreach ($rows as $k => $v) {
                 foreach ($this->headings as $key => $val) {
                     $raw = $key.'_raw';
@@ -85,10 +84,14 @@ echo $this->table->intro;
                 <?php
                     $gCounter = 0;
                     foreach ($data as $d) { ?>
-                        <div id="accordion" class="accordion-container">
+                        <div id="accordion" class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                             <div class="content-entry">
-                                <div class="article-title" style="background-color: #e2e2cf;">
-                                    <h4><?php echo $d["Raison sociale"]; ?></h4>
+                                <div class="article-title article-title-<?php echo $this->table->renderid; ?>" style="background-color: #e2e2cf;">
+                                    <?php if(!empty($d["Raison sociale"])) :?>
+                                        <h4><?php echo $d["Raison sociale"]; ?></h4>
+                                    <?php elseif (!empty($d["lastname"]) && !empty($d["firstname"])) :?>
+                                        <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
+                                    <?php endif; ?>
                                     <div class="accordion-icons" style="float:right;">
                                         <?php echo $d['fabrik_actions']; ?>
                                     </div>
@@ -96,7 +99,7 @@ echo $this->table->intro;
 
                                 <div class="accordion-content" style="background-color: #f3f3ec;">
                                     <?php foreach ($d as $k => $v) { ?>
-                                        <?php if($k != 'fabrik_view_url' & $k != 'fabrik_actions') :?>
+                                        <?php if($k != 'fabrik_view_url' && $k != 'fabrik_actions') :?>
                                             <?php if(strpos($k, 'Title') == true) :?>
                                                 <div class="em-group-title">
                                                     <span><?php echo str_replace('Title-', '',$k); ?></span>
@@ -117,10 +120,12 @@ echo $this->table->intro;
         </div>
 
     </div>
-    <ul id="list-pagin"></ul>
+    <ul id="list-pagin-<?php echo $this->table->renderid; ?>" class="list-pagin"></ul>
 </form>
 
 <?php
+if ($this->hasButtons)
+    echo $this->loadTemplate('buttons');
 echo $this->table->outro;
 if ($pageClass !== '') :
     echo '</div>';
@@ -130,70 +135,66 @@ endif;
 
 <script>
 
-    var data = <?php echo json_encode($data); ?>;
+    var data = <?php echo sizeof($data); ?>;
 
     //Pagination
-    pageSize = 2;
+    pageSize = 3;
 
-    var pageCount =  Object.keys(data).length / pageSize;
+    var pageCount =  data / pageSize;
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
+            jQuery("#list-pagin-<?php echo $this->table->renderid; ?>").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#list-pagin li").first().find("p").addClass("current");
-    showPage = function(page) {
-        console.log(data);
-        jQuery(".accordion-container").hide();
-        jQuery(".accordion-container").each(function(n) {
+    jQuery("#list-pagin-<?php echo $this->table->renderid; ?> li").first().find("p").addClass("current");
+    showPage<?php echo $this->table->renderid; ?>  = function(page) {
+        jQuery(".accordion-container-<?php echo $this->table->renderid; ?>").hide();
+        jQuery(".accordion-container-<?php echo $this->table->renderid; ?>").each(function(n) {
             if (n >= pageSize * (page - 1) && n < pageSize * page)
                 jQuery(this).show();
         });
     };
 
-    showPage(1);
+    showPage<?php echo $this->table->renderid; ?> (1);
 
-    jQuery("#list-pagin li p").click(function() {
-        jQuery("#list-pagin li p").removeClass("current");
+    jQuery("#list-pagin-<?php echo $this->table->renderid; ?> li p").click(function() {
+        jQuery("#list-pagin-<?php echo $this->table->renderid; ?> li p").removeClass("current");
         jQuery(this).addClass("current");
-        showPage(parseInt(jQuery(this).text()))
+        showPage<?php echo $this->table->renderid; ?> (parseInt(jQuery(this).text()))
     });
 
 
-
+// accordion
     jQuery(function() {
         var Accordion = function(el, multiple) {
             this.el = el || {};
             this.multiple = multiple || false;
 
-            var links = this.el.find('.article-title');
+            var links = this.el.find('.article-title-<?php echo $this->table->renderid; ?>');
             links.on('click', {
                 el: this.el,
                 multiple: this.multiple
             }, this.dropdown)
-        }
+        };
 
         Accordion.prototype.dropdown = function(e) {
             var $el = e.data.el;
+
             $this = jQuery(this),
-                $next = $this.next();
+            $next = $this.next();
 
             $next.slideToggle();
             $this.parent().toggleClass('open');
 
             if (!e.data.multiple) {
                 $el.find('.accordion-content').not($next).slideUp().parent().removeClass('open');
-            };
-        }
-        var accordion = new Accordion(jQuery('.accordion-container'), false);
+            }
+        };
+        var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
     });
 
-    jQuery(document).ready(function() {
-        document.getElementById('listform_315_mod_fabrik_list_211').after(document.querySelector(".addbutton"));
-        document.querySelector(".fabrikButtonsContainer").hide();
-    });
 
 
 </script>
@@ -262,18 +263,18 @@ endif;
     }
 
 
-    #list-pagin {
+    .list-pagin {
         display: block;
         float: right;
     }
 
-    #list-pagin li {
+    .list-pagin li {
         width: 30px;
         cursor: pointer;
         display: inline-block;
     }
 
-    #list-pagin p {
+    .list-pagin p {
         font-size: 18px;
         text-align: center;
     }
