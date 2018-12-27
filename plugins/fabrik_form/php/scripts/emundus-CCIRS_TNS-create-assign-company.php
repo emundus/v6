@@ -43,14 +43,13 @@ try {
     JLog::add('Error in script/CCIRS-create-assign-company getting company by siret at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 }
 
-// TODO: Add more columns, because there probably are more.
 // If the company wasn't found, make a new one.
-if (!empty($company_id)) {
+if (empty($company_id)) {
 
 	$query->clear()
 		->insert($db->quoteName('#__emundus_entreprise'))
-		->columns($db->quoteName(['siret', 'raison_sociale']))
-		->values($db->quote($siret).', '.$db->quote($fabrikFormData['raison_sociale']));
+		->columns($db->quoteName(['siret', 'raison_sociale', 'opco', 'date_time', 'user', 'civility', 'nom', 'prenom']))
+		->values($db->quote($siret).', '.$db->quote($fabrikFormData['raison_sociale']).', '.$db->quoteName($fabrikFormData['opco']).', NOW(), '.$user_id.', '.$db->quote($fabrikFormData['civility']).', '.$db->quote($fabrikFormData['lastname']).', '.$db->quote($fabrikFormData['firstname']));
 
 	try {
 
@@ -68,7 +67,7 @@ if (!empty($company_id)) {
 $query->clear()
 	->select($db->quoteName('id'))
 	->from($db->quoteName('#__emundus_user_entreprise'))
-	->where($db->quoteName('cid').' = '.$company_id.' AND '.$db->quoteName('uid').' = '.$user_id);
+	->where($db->quoteName('cid').' = '.$company_id.' AND '.$db->quoteName('user').' = '.$user_id);
 
 try {
 
@@ -85,7 +84,7 @@ if (empty($link)) {
 
 	$query->clear()
 		->insert($db->quoteName('#__emundus_user_entreprise'))
-		->columns($db->quoteName(['cid', 'uid', 'profile']))
+		->columns($db->quoteName(['cid', 'user', 'profile']))
 		->values($db->quote($company_id).', '.$db->quote($user_id).', '.$db->quote('1002'));
 
 	try {
