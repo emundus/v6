@@ -49,12 +49,10 @@ echo $this->table->intro;
 
         endforeach;
 
-
         $data = array();
         $i = 0;
         $rows = $this->rows[0];
         if (!empty($rows)) {
-
             foreach ($rows as $k => $v) {
                 foreach ($this->headings as $key => $val) {
                     $raw = $key.'_raw';
@@ -64,12 +62,18 @@ echo $this->table->intro;
                     }
 
                 }
-                if (array_key_exists('fabrik_view_url', $v->data)) {
-                    $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+
+                if (array_key_exists('fabrik_edit_url', $v->data)) {
+                    $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
                 }
-                if (array_key_exists('fabrik_actions', $v->data)) {
-                    $data[$i]['fabrik_actions'] = $v->data->fabrik_actions;
+                if (array_key_exists('id', $v)) {
+                    $data[$i]['row_id'] = $v->id;
                 }
+                if (array_key_exists('jos_emundus_users___user_id_raw', $v->data)) {
+                    
+                    $data[$i]['id'] = $v->data->jos_emundus_users___user_id_raw;
+                }
+
                 $i = $i + 1;
             }
         }
@@ -84,35 +88,34 @@ echo $this->table->intro;
                 <?php
                     $gCounter = 0;
                     foreach ($data as $d) { ?>
-                        <div id="accordion" class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
-                            <div class="content-entry">
-                                <div class="article-title article-title-<?php echo $this->table->renderid; ?>" style="background-color: #e2e2cf;">
-                                    <?php if(!empty($d["Raison sociale"])) :?>
-                                        <h4><?php echo $d["Raison sociale"]; ?></h4>
-                                    <?php elseif (!empty($d["lastname"]) && !empty($d["firstname"])) :?>
-                                        <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
-                                    <?php endif; ?>
-                                    <div class="accordion-icons" style="float:right;">
-                                        <?php echo $d['fabrik_actions']; ?>
-                                    </div>
+                        <div id="<?php echo  $d['id']; ?>" class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
+                            <div class="article-title article-title-<?php echo $this->table->renderid; ?>" style="background-color: #e2e2cf;">
+                                <?php if(!empty($d["Raison sociale"])) :?>
+                                    <h4><?php echo $d["Raison sociale"]; ?></h4>
+                                <?php elseif (!empty($d["lastname"]) && !empty($d["firstname"])) :?>
+                                    <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
+                                <?php endif; ?>
+                                <div class="accordion-icons" style="float:right;">
+                                    <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
+                                    <div style="display: inline" id="delete-row-<?php echo  $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo  $d['id']; ?>"><i class="fas fa-times"></i></div>
                                 </div>
+                            </div>
 
-                                <div class="accordion-content" style="background-color: #f3f3ec;">
-                                    <?php foreach ($d as $k => $v) { ?>
-                                        <?php if($k != 'fabrik_view_url' && $k != 'fabrik_actions') :?>
-                                            <?php if(strpos($k, 'Title') == true) :?>
-                                                <div class="em-group-title">
-                                                    <span><?php echo str_replace('Title-', '',$k); ?></span>
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="em-element <?php echo str_replace(' ','-', $k);?>">
-                                                    <div class="em-element-label"><?php echo $k; ?></div>
-                                                    <div class="em-element-value" style="background-color: white"><?php echo $v; ?></div>
-                                                </div>
-                                            <?php endif; ?>
-                                        <?php endif;?>
-                                    <?php } ?>
-                                </div>
+                            <div class="accordion-content" style="background-color: #f3f3ec;">
+                                <?php foreach ($d as $k => $v) { ?>
+                                    <?php if($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id') :?>
+                                        <?php if(strpos($k, 'Title') == true) :?>
+                                            <div class="em-group-title">
+                                                <span><?php echo str_replace('Title-', '',$k); ?></span>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="em-element <?php echo str_replace(' ','-', $k);?>">
+                                                <div class="em-element-label"><?php echo $k; ?></div>
+                                                <div class="em-element-value" style="background-color: white"><?php echo $v; ?></div>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endif;?>
+                                <?php } ?>
                             </div>
                         </div>
                 <?php } ?>
@@ -195,7 +198,23 @@ endif;
         var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
     });
 
-
+    jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
+        e.stopPropagation();
+        jQuery.ajax({
+            type: "post",
+            url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
+            dataType: 'json',
+            data : ({id: jQuery(this).data("id")}),
+            success: function(result) {
+                if(result.status) {
+                    location.reload();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    });
 
 </script>
 
@@ -221,7 +240,7 @@ endif;
 
     .accordion-container .article-title h4:hover,
     .accordion-container .article-title h4:active,
-    .accordion-container .content-entry.open .article-title {
+    .accordion-container.open .article-title {
         color: white;
     }
 
