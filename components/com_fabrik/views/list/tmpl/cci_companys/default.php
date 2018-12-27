@@ -62,7 +62,9 @@ echo $this->table->intro;
                     }
 
                 }
-
+                if (array_key_exists('__pk_val', $v->data)) {
+                    $data[$i]['__pk_val'] = $v->data->__pk_val;
+                }
                 if (array_key_exists('fabrik_edit_url', $v->data)) {
                     $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
                 }
@@ -97,13 +99,13 @@ echo $this->table->intro;
                                 <?php endif; ?>
                                 <div class="accordion-icons" style="float:right;">
                                     <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
-                                    <div style="display: inline" id="delete-row-<?php echo  $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo  $d['id']; ?>"><i class="fas fa-times"></i></div>
+                                    <div style="display: inline" id="delete-row-<?php echo  $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo  $d['__pk_val']; ?>"><i class="fas fa-times"></i></div>
                                 </div>
                             </div>
 
                             <div class="accordion-content" style="background-color: #f3f3ec;">
                                 <?php foreach ($d as $k => $v) { ?>
-                                    <?php if($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id') :?>
+                                    <?php if($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id') :?>
                                         <?php if(strpos($k, 'Title') == true) :?>
                                             <div class="em-group-title">
                                                 <span><?php echo str_replace('Title-', '',$k); ?></span>
