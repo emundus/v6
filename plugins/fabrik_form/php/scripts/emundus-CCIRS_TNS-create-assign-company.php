@@ -27,7 +27,7 @@ if ($fabrikFormData['vous_etes'] != 3)
 // Get the siret for the company, this is used as a primary key to find it.
 $siret = $fabrikFormData['siret_raw'];
 
-$user_id = $fabrikFormData['user'];
+$user_id = $fabrikFormData['user_id'];
 
 // Using the institution IDs we can get the groups attached to it.
 $query->select($db->quoteName('id'))
@@ -49,7 +49,7 @@ if (empty($company_id)) {
 	$query->clear()
 		->insert($db->quoteName('#__emundus_entreprise'))
 		->columns($db->quoteName(['siret', 'raison_sociale', 'opco', 'date_time', 'user', 'civility', 'nom', 'prenom']))
-		->values($db->quote($siret).', '.$db->quote($fabrikFormData['raison_sociale']).', '.$db->quoteName($fabrikFormData['opco']).', NOW(), '.$user_id.', '.$db->quote($fabrikFormData['civility']).', '.$db->quote($fabrikFormData['lastname']).', '.$db->quote($fabrikFormData['firstname']));
+		->values($db->quote($siret).', '.$db->quote($fabrikFormData['raison_sociale']).', '.$db->quote($fabrikFormData['opco']).', NOW(), '.$user_id.', '.$db->quote($fabrikFormData['civility_raw']).', '.$db->quote($fabrikFormData['lastname']).', '.$db->quote($fabrikFormData['firstname']));
 
 	try {
 
