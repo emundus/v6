@@ -49,7 +49,7 @@ if (empty($company_id)) {
 	$query->clear()
 		->insert($db->quoteName('#__emundus_entreprise'))
 		->columns($db->quoteName(['siret', 'raison_sociale', 'opco', 'date_time', 'user', 'civility', 'nom', 'prenom']))
-		->values($db->quote($siret).', '.$db->quote($fabrikFormData['raison_sociale']).', '.$db->quote($fabrikFormData['opco']).', NOW(), '.$user_id.', '.$db->quote($fabrikFormData['civility_raw']).', '.$db->quote($fabrikFormData['lastname']).', '.$db->quote($fabrikFormData['firstname']));
+		->values($db->quote($siret).', '.$db->quote($fabrikFormData['raison_sociale']).', '.$db->quote($fabrikFormData['opco']).', NOW(), '.$user_id.', '.$db->quote($fabrikFormData['civility'][0]).', '.$db->quote($fabrikFormData['lastname']).', '.$db->quote($fabrikFormData['firstname']));
 
 	try {
 
@@ -59,6 +59,7 @@ if (empty($company_id)) {
 
 	} catch (Exception $e) {
 		JLog::add('Error in script/CCIRS-create-assign-company inserting company at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		return false;
 	}
 
 }
