@@ -10,7 +10,7 @@ defined('_JEXEC') or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Create a company and asssign 
+ * @description Create a company and asssign the user to ir as DRH.
  */
 
 $db = JFactory::getDBO();
@@ -43,7 +43,6 @@ try {
     JLog::add('Error in script/CCIRS-create-assign-company getting company by siret at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 }
 
-// TODO: Check all column names.
 // TODO: Add more columns, because there probably are more.
 // If the company wasn't found, make a new one.
 if (!empty($company_id)) {
