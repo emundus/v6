@@ -28,7 +28,7 @@ class EmundusControllerFormations extends JControllerLegacy {
     public function __construct(array $config = array()) {
 
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'foramations.php');
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formations.php');
 
         // Load class variables
         $this->user = JFactory::getSession()->get('emundusUser');
