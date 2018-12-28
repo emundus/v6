@@ -38,9 +38,14 @@
 						label="MOD_EMUNDUS_OUTRO"
 						description="MOD_EMUNDUS_OUTRO_DESC">
 				</field>
+				<field
+						name="signupURL"
+						type="text"
+						label="MOD_EMUNDUS_FAVORITES_SIGNUPURL"
+					   	description="MOD_EMUNDUS_FAVORITES_SIGNUPURL_DESC"
+					   	default="list-group" />
 			</fieldset>
-			<fieldset
-				name="advanced">
+			<fieldset name="advanced">
 				<field
 					name="layout"
 					type="modulelayout"
