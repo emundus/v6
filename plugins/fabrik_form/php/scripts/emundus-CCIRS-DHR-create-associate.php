@@ -27,7 +27,7 @@ if (empty($user)) {
     $redirect = true;
     $emailQuery = $db->getQuery(true);
     $emailQuery
-        ->select($db->quoteName('user_id'))
+        ->select($db->quoteName('id'))
         ->from($db->quoteName('#__users'))
         ->where($db->quoteName('email') . ' LIKE "'.$email.'"');
 
@@ -36,7 +36,7 @@ if (empty($user)) {
         $user = $db->loadResult();
     }
     catch (Exception $e) {
-        JLog::add('Error in plugin at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+        JLog::add('Error in plugin at query : '.$emailQuery->__toString(), JLog::ERROR, 'com_emundus');
     }
 
 
@@ -65,7 +65,7 @@ try {
         ->values(implode(',', $values));
     $db->setQuery($query);
     $db->execute();
-    
+
     if ($redirect) {
         $mainframe->redirect('/mon-espace-decideur-rh');
     }
