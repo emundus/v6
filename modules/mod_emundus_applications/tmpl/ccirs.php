@@ -28,7 +28,7 @@ echo $description;
         </div>
 
         <?php foreach($applications as $application) : ?>
-            <div class="row application" id="row<?php echo $application->fnum; ?>">
+            <div class="row application" id="row-<?php echo $application->fnum; ?>">
                 <div class="col-md-6 main-page-application-title">
                         <a href="<?php echo JRoute::_(JURI::base().'formation?rowid='. $application->pid.'-'.str_replace('.html', '', $application->url)); ?>" ><?php echo $application->label; ?></a>
                 </div>
@@ -66,7 +66,7 @@ echo $description;
                 </div>
             </div>
         <?php endforeach;  ?>
-        <ul id="list-pagin"></ul>
+        <ul id="list-pagin-application"></ul>
     </div>
 <?php else :
     echo JText::_('NO_FILE');
@@ -85,11 +85,11 @@ echo $description;
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
+            jQuery("#list-pagin-application").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#list-pagin li").first().find("p").addClass("current");
+    jQuery("#list-pagin-application li").first().find("p").addClass("current");
     showPage = function(page) {
         jQuery(".application").hide();
         jQuery(".application").each(function(n) {
@@ -100,14 +100,14 @@ echo $description;
 
     showPage(1);
 
-    jQuery("#list-pagin li p").click(function() {
-        jQuery("#list-pagin li p").removeClass("current");
+    jQuery("#list-pagin-application li p").click(function() {
+        jQuery("#list-pagin-application li p").removeClass("current");
         jQuery(this).addClass("current");
         showPage(parseInt(jQuery(this).text()))
     });
 
 
-
+//TODO do the delete if we need to
     function deletefile(fnum){
         if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
             document.location.href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='); ?>"+fnum;
