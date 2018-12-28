@@ -11,7 +11,12 @@ defined('_JEXEC') or die('Restricted access');
 
 class EmundusModelFormations extends JModelLegacy {
 
-    public function checkHR($cid, $user = null, $profile = 1002) {
+	public function __construct(array $config = array()) {
+		JLog::addLogger(array('text_file' => 'com_emundus.emundus-formations.php'), JLog::ALL, array('com_emundus'));
+		parent::__construct($config);
+	}
+
+	public function checkHR($cid, $user = null, $profile = 1002) {
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
@@ -24,16 +29,14 @@ class EmundusModelFormations extends JModelLegacy {
         try {
             return  $db->loadResult();
         } catch(Exception $e) {
-            JLog::add('Error getting stats on number of relations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error checking HR at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
         }
 
     }
 
     public function deleteCompany($id) {
-        $user = JFactory::getSession()->get('emundusUser')->id;
-
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query = $db->getQuery(true);
 
         $query
             -> delete($db->quoteName('#__emundus_entreprise'))
@@ -44,9 +47,8 @@ class EmundusModelFormations extends JModelLegacy {
         try {
             $db->execute();
         } catch(Exception $e) {
-            JLog::add('Error getting stats on number of relations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error deleting company at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
         }
-
 
     }
 
@@ -74,10 +76,64 @@ class EmundusModelFormations extends JModelLegacy {
             $db->execute();
 
         } catch(Exception $e) {
-            JLog::add('Error getting stats on number of relations at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error deleting associate at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
         }
 
-
     }
+
+
+	/**
+	 * @param      $user_hr Int The user who is supposedly a DRH
+	 * @param null $user_intern Int The user who is supposedly an intern._
+	 * @param int  $profile Int The profile which determines if a user is DRH.
+	 *
+	 * @return Bool
+	 */
+	public function checkHRUser($user_hr, $user_intern = null, $profile = 1002) {
+
+		$db = JFactory::getDbo();
+
+		$query = 'SELECT '.$db->quoteName('user')
+			.' FROM '.$db->quoteName('#__emundus_user_entreprise')
+			.' WHERE '.$db->quoteName('cid').' IN (
+				  SELECT'.$db->quoteName('cid').' FROM '.$db->quoteName('#__emundus_user_entreprise')
+				.'WHERE '.$db->quoteName('user').' = '.$user_hr.' AND '.$db->quoteName('profile').' = '.$profile
+			.')';
+		$db->setQuery($query);
+
+		try {
+			return in_array($user_intern, $db->loadColumn());
+		} catch(Exception $e) {
+			JLog::add('Error checking if we are DHR of user at m/formation in query: '.$query, JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+	}
+
+
+	/**
+	 * @param      $user Int The user who we are checking.
+	 * @param      $company Int The company the user may be in._
+	 *
+	 * @return Bool
+	 */
+	public function checkCompanyUser($user, $company) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('#__emundus_user_entreprise'))
+			->where($db->quoteName('user').' = '.$user.' AND '.$db->quoteName('cid').' = '.$company);
+		$db->setQuery($query);
+
+		try {
+			return !empty($db->loadResult());
+		} catch(Exception $e) {
+			JLog::add('Error checking if user is in a company at m/formation in query: '.$query, JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+	}
 
 }
