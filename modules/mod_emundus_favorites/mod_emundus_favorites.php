@@ -36,6 +36,3 @@ $m_programme = new EmundusModelProgramme();
 $favorites = $m_programme->getFavorites($user->id);
 
 require JModuleHelper::getLayoutPath('mod_emundus_favorites', $layout);
-
-
-

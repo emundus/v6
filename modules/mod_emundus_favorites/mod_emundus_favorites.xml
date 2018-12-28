@@ -43,7 +43,7 @@
 						type="text"
 						label="MOD_EMUNDUS_FAVORITES_SIGNUPURL"
 					   	description="MOD_EMUNDUS_FAVORITES_SIGNUPURL_DESC"
-					   	default="list-group" />
+				/>
 			</fieldset>
 			<fieldset name="advanced">
 				<field
