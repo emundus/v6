@@ -123,7 +123,7 @@ foreach ($users as $user) {
 		$m_formations = new EmundusModelFormations();
 
 		// Check that the user is in a company that we can add fnums to.
-		if (!$m_formations->checkHRUser($current_user->id, $user)) {
+		if (!$m_formations->checkHRUser($current_user->id, $user_id)) {
 			JLog::add('User: '.$current_user->id.' does not have the rights to add this user: '.$user_id, JLog::ERROR, 'com_emundus');
 			JError::raiseError(400, 'You do not have the rights to register this user.');
 			continue;
@@ -131,7 +131,7 @@ foreach ($users as $user) {
 
 
 		// Check that the user is in the company we are adding the fnum for.
-		if (!$m_formations->checkCompanyUser($user, $company_id)) {
+		if (!$m_formations->checkCompanyUser($user_id, $company_id)) {
 			JLog::add('User: '.$user_id.' is not in the company: '.$company_id, JLog::ERROR, 'com_emundus');
 			JError::raiseError(400, 'The user is not a part of the company you are adding for.');
 			continue;
