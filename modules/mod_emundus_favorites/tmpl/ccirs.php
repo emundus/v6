@@ -65,7 +65,7 @@ endif; ?>
     }
 
     jQuery("#fav-pagin li").first().find("p").addClass("current");
-    showPage = function(page) {
+    showPageFav = function(page) {
         jQuery(".favorite").hide();
         jQuery(".favorite").each(function(n) {
             if (n >= pageSize * (page - 1) && n < pageSize * page)
@@ -73,12 +73,12 @@ endif; ?>
         });
     };
 
-    showPage(1);
+    showPageFav(1);
 
     jQuery("#fav-pagin li p").click(function() {
         jQuery("#fav-pagin li p").removeClass("current");
         jQuery(this).addClass("current");
-        showPage(parseInt(jQuery(this).text()))
+        showPageFav(parseInt(jQuery(this).text()))
     });
 
 

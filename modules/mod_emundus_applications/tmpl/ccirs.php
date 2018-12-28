@@ -118,18 +118,18 @@ echo $description;
 
 <style>
 
-    #list-pagin {
+    #list-pagin-application {
         display: block;
         float: right;
     }
 
-    #list-pagin li {
+    #list-pagin-application li {
         width: 30px;
         cursor: pointer;
         display: inline-block;
     }
 
-    #list-pagin p {
+    #list-pagin-application p {
         font-size: 18px;
         text-align: center;
     }
