@@ -16,10 +16,9 @@ JLog::addLogger(array('text_file' => 'com_emundus.HRcreateassociate.php'), JLog:
 $current_user = JFactory::getSession()->get('emundusUser');
 $email = $formModel->getElementData('jos_emundus_users___email');
 $user = $formModel->getElementData('jos_emundus_entreprise___user');
-$cid = $formModel->getElementData('jos_emundus_users___company_id');
+$cid = $formModel->getElementData('jos_emundus_users___company_id')[0];
 
 $mainframe = JFactory::getApplication();
-
 
 if (empty($current_user))
     return false;
@@ -28,9 +27,10 @@ require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'format
 $m_formations = new EmundusModelFormations();
 
 // Check that the user is in the company
-if (!$m_formations->checkCompanyUser($user, $company_id)) {
-    JLog::add('User: '.$user_id.' is not in the company: '.$company_id, JLog::ERROR, 'com_emundus');
-    return false;
+if ($m_formations->checkCompanyUser($user, $cid)) {
+    JLog::add('User: '.$user_id.' is not in the company: '.$cid, JLog::ERROR, 'com_emundus');
+    $mainframe->enqueueMessage('L\'utilisateur fait déjà parti de cette entreprise.', 'error');
+    $mainframe->redirect('/mon-espace-decideur-rh');
 }
 
 
