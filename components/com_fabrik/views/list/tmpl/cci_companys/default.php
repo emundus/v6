@@ -94,8 +94,10 @@ echo $this->table->intro;
                             <div class="article-title article-title-<?php echo $this->table->renderid; ?>" style="background-color: #e2e2cf;">
                                 <?php if(!empty($d["Raison sociale"])) :?>
                                     <h4><?php echo $d["Raison sociale"]; ?></h4>
-                                <?php elseif ((!empty($d["lastname"]) && !empty($d["firstname"])) || (!empty($d["Nom"]) && !empty($d["Prénom"]))) :?>
+                                <?php elseif ((!empty($d["lastname"]) && !empty($d["firstname"]))) :?>
                                     <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
+                                <?php elseif (!empty($d["Nom"]) && !empty($d["Prénom"])) :?>
+                                    <h4><?php echo $d["Nom"]. " " .$d["Prénom"]; ?></h4>
                                 <?php endif; ?>
                                 <div class="accordion-icons" style="float:right;">
                                     <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
