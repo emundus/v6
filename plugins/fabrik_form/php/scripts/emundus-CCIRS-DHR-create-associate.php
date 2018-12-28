@@ -15,13 +15,30 @@ JLog::addLogger(array('text_file' => 'com_emundus.HRcreateassociate.php'), JLog:
 
 $current_user = JFactory::getSession()->get('emundusUser');
 $email = $formModel->getElementData('jos_emundus_users___email');
-$user = $formModel->getElementData('jos_emundus_entreprise___user');
+$user = $formModel->getElementData('jos_emundus_users___user_id');
 $cid = $formModel->getElementData('jos_emundus_users___company_id')[0];
 
 $mainframe = JFactory::getApplication();
-
 if (empty($current_user))
     return false;
+
+if (empty($user)) {
+    $emailQuery = $db->getQuery(true);
+    $emailQuery
+        ->select($db->quoteName('user_id'))
+        ->from($db->quoteName('#__emundus_users'))
+        ->where($db->quoteName('email') . ' LIKE "'.$email.'"');
+
+    try {
+        $db->setQuery($emailQuery);
+        $user = $db->loadResult();
+    }
+    catch (Exception $e) {
+        JLog::add('Error in plugin at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+    }
+
+
+}
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
 $m_formations = new EmundusModelFormations();
