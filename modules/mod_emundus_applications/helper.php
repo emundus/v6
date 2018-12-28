@@ -9,11 +9,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class modemundusApplicationsHelper
-{
+class modemundusApplicationsHelper {
+
 	// get users sorted by activation date
-	static function getApplications($layout)
-	{
+	static function getApplications($layout) {
 		$user = JFactory::getUser();
 		$db	= JFactory::getDbo();
 
@@ -35,42 +34,45 @@ class modemundusApplicationsHelper
 		$query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class ';
 
 		// CCI-RS layout needs to get the start and end date of each application
-		if ($layout == '_:ccirs')
-            $query .= ', t.date_start as date_start, t.date_end as date_end, p.id as pid, p.url as url ';
+		if ($layout == '_:ccirs') {
+			$query .= ', t.date_start as date_start, t.date_end as date_end, p.id as pid, p.url as url ';
+		}
 
 		// Hesam layout needs to get the title from the information about the project.
-		if ($has_table)
+		if ($has_table) {
 			$query .= ', pro.titre ';
+		}
 
 		$query .= ' FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status ';
 
-		if ($layout == '_:ccirs')
-            $query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code 
+		if ($layout == '_:ccirs') {
+			$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code 
                         LEFT JOIN #__emundus_setup_programmes AS p ON p.code = esc.training';
+		}
 
-		if ($has_table)
+		if ($has_table) {
 			$query .= ' LEFT JOIN #__emundus_projet AS pro ON pro.fnum=ecc.fnum ';
+		}
 
 		$query .= ' WHERE ecc.applicant_id ='.$user->id.'
 					ORDER BY esc.end_date DESC';
-//echo str_replace('#_', 'jos', $query);
+
 		$db->setQuery($query);
 		$result = $db->loadObjectList('fnum');
 		return (array) $result;
 	}
 
-	// get poll id ofthe appllicant
-	static function getPoll()
-	{
+	// get poll id of the appllicant
+	static function getPoll() {
 		$user 	= JFactory::getUser();
 		$db		= JFactory::getDbo();
 
 		$query = 'SELECT id
 					FROM #__emundus_survey AS es
 					WHERE es.user ='.$user->id;
-//echo str_replace('#_', 'jos', $query);
+
 		$db->setQuery($query);
 		$id = $db->loadResult();
 		return $id>0?$id:0;
@@ -95,10 +97,7 @@ class modemundusApplicationsHelper
 
 			$db->setQuery($query);
 
-			if ($db->loadResult() > 0)
-				return true;
-			else
-				return false;
+			return $db->loadResult() > 0;
 
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
@@ -126,15 +125,35 @@ class modemundusApplicationsHelper
 
 			$db->setQuery($query);
 
-			if ($db->loadResult() > 0)
-				return true;
-			else
-				return false;
+			return $db->loadResult() > 0;
 
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
 		}
+	}
+
+	public function getDrhApplications() {
+		$user = JFactory::getUser();
+		$db	= JFactory::getDbo();
+
+		$query = $db->getQuery(true);
+		$query->select(['ecc.*', 'esc.*', $db->quoteName('ess.step'), $db->quoteName('ess.value'), $db->quoteName('ess.class')])
+			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+			->leftJoin($db->quoteName('#__emundus_setup_status','ess').' ON '.$db->quoteName('ess.step').' = '.$db->quoteName('ecc.status'))
+			->where($db->quoteName('ecc.applicant_id').' IN (
+				SELECT '.$db->quoteName('user').'
+				FROM '.$db->quoteName('#__emundus_user_entreprise','eu').' WHERE '.$db->quoteName('eu.cid').' IN (
+					SELECT '.$db->quoteName('eu.cid').' 
+					FROM '.$db->quoteName('#__emundus_user_entreprise','euu').' WHERE '.$db->quoteName('euu.user').' = '.$user->id.' AND '.$db->quoteName('euu.profile').' = 1002 
+					)
+				)')
+			->group([$db->quoteName('esc.id')])
+			->order($db->quoteName('ecc.end_date').' DESC');
+
+		$db->setQuery($query);
+		return $db->loadAssocList('fnum');
 	}
 
 
