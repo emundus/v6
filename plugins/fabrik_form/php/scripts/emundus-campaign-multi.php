@@ -15,6 +15,7 @@ defined('_JEXEC') or die();
 
 $db = JFactory::getDBO();
 $current_user = JFactory::getUser();
+$application = Jfactory::getApplication();
 
 $campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
 $company_id = $data['jos_emundus_campaign_candidature___company_id_raw'][0];
@@ -46,18 +47,21 @@ foreach ($users as $user) {
 	$user_id = $user[0];
 
 	// Don't allow the same user to be signed up twice.
-	if (in_array($user_id, $users_registered))
+	if (in_array($user_id, $users_registered)) {
 		continue;
+	}
 	
 	$users_registered[] = $user_id;
 
+	$continue = false;
 	switch ($applicant_can_renew) {
 
 	    // Cannot create new campaigns at all.
 	    case 0:
 	        JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
-	        JError::raiseError(400, 'User already has a file open and cannot have multiple.');
-	        exit;
+	        $application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
+	        $continue = true;
+	        break;
 
 		// If the applicant can only have one file per campaign.
 		case 2:
@@ -77,8 +81,8 @@ foreach ($users as $user) {
 	            $db->setQuery($query);
 				if (!in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus');
-	                JError::raiseError(400, 'User already has a file for this campaign.');
-	                exit;
+					$application->enqueueMessage('User already has a file for this campaign.', 'error');
+	                $continue = true;
 				}
 
 			} catch (Exception $e) {
@@ -106,14 +110,16 @@ foreach ($users as $user) {
 	            $db->setQuery($query);
 				if (!in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus');
-	                JError::raiseError(400, 'User already has a file for this year.');
-	                exit;
+					$application->enqueueMessage('User already has a file for this year.', 'error');
+	                $continue = true;
 				}
 
 			} catch (Exception $e) {
 				JLog::add('plugin/emundus_campaign SQL error at query :'.$query, JLog::ERROR, 'com_emundus');
 			}
+			break;
 
+		default:
 			break;
 	}
 
@@ -125,7 +131,7 @@ foreach ($users as $user) {
 		// Check that the user is in a company that we can add fnums to.
 		if (!$m_formations->checkHRUser($current_user->id, $user_id)) {
 			JLog::add('User: '.$current_user->id.' does not have the rights to add this user: '.$user_id, JLog::ERROR, 'com_emundus');
-			JError::raiseError(400, 'You do not have the rights to register this user.');
+			$application->enqueueMessage('You do not have the rights to register this user.', 'error');
 			continue;
 		}
 
@@ -133,7 +139,7 @@ foreach ($users as $user) {
 		// Check that the user is in the company we are adding the fnum for.
 		if (!$m_formations->checkCompanyUser($user_id, $company_id)) {
 			JLog::add('User: '.$user_id.' is not in the company: '.$company_id, JLog::ERROR, 'com_emundus');
-			JError::raiseError(400, 'The user is not a part of the company you are adding for.');
+			$application->enqueueMessage('The user is not a part of the company you are adding for.', 'error');
 			continue;
 		}
 	}
@@ -143,10 +149,11 @@ foreach ($users as $user) {
 	$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
 
 
-	if (!empty($company_id))
+	if (!empty($company_id)) {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum).', '.$company_id;
-	else
+	} else {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum);
+	}
 
 	// Insert data in #__emundus_users_profiles
 	$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user_id.','.$profile.')';
@@ -162,8 +169,9 @@ foreach ($users as $user) {
 
 // Prepare query used for multiline insert.
 $columns = ['applicant_id', 'user_id', 'campaign_id', 'fnum'];
-if (!empty($company_id))
+if (!empty($company_id)) {
 	$columns[] = 'company_id';
+}
 
 // Insert rows into the CC table.
 $query = $db->getQuery(true);
