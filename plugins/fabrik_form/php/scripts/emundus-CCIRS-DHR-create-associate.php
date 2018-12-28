@@ -22,7 +22,9 @@ $mainframe = JFactory::getApplication();
 if (empty($current_user))
     return false;
 
+$redirect = false;
 if (empty($user)) {
+    $redirect = true;
     $emailQuery = $db->getQuery(true);
     $emailQuery
         ->select($db->quoteName('user_id'))
@@ -64,15 +66,7 @@ try {
     $db->setQuery($query);
     $db->execute();
 
-
-    $query->clear()
-        ->select($db->quoteName('eu.id'))
-        ->from($db->quoteName('#__emundus_users'), 'eu')
-        ->where($db->quoteName('eu.email') . ' LIKE "'.$email.'"');
-
-    $db->setQuery($query);
-
-    if (!empty($db->loadResult())) {
+    if ($redirect) {
         $mainframe->redirect('/mon-espace-decideur-rh');
     }
     
