@@ -28,7 +28,7 @@ if (empty($user)) {
     $emailQuery = $db->getQuery(true);
     $emailQuery
         ->select($db->quoteName('user_id'))
-        ->from($db->quoteName('#__emundus_users'))
+        ->from($db->quoteName('#__users'))
         ->where($db->quoteName('email') . ' LIKE "'.$email.'"');
 
     try {
@@ -65,7 +65,7 @@ try {
         ->values(implode(',', $values));
     $db->setQuery($query);
     $db->execute();
-
+    
     if ($redirect) {
         $mainframe->redirect('/mon-espace-decideur-rh');
     }
