@@ -39,10 +39,17 @@ try {
 
 // Prepare insertion of data (it is not done via the Fabrik form, we do it manually to handle repeat groups multiplying the data set).
 $values = [];
+$users_registered = [];
 
 foreach ($users as $user) {
 
 	$user_id = $user[0];
+
+	// Don't allow the same user to be signed up twice.
+	if (in_array($user_id, $users_registered))
+		continue;
+	
+	$users_registered[] = $user_id;
 
 	switch ($applicant_can_renew) {
 
