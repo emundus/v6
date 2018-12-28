@@ -161,7 +161,7 @@ foreach ($users as $user) {
 }
 
 // Prepare query used for multiline insert.
-$columns = ['applicant_id', 'user', 'campaign_id', 'fnum'];
+$columns = ['applicant_id', 'user_id', 'campaign_id', 'fnum'];
 if (!empty($company_id))
 	$columns[] = 'company_id';
 
