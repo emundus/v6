@@ -38,7 +38,10 @@ class EmundusViewFiles extends JViewLegacy
     	// put it in com_emundus/emundus.php
 		//JHTML::stylesheet("media/com_emundus/lib/chosen/chosen.min.css");
 
-	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
+		$app = JFactory::getApplication();
+
+	    $this->itemId = $app->input->getInt('Itemid', null);
+	    $this->cfnum = $app->input->getString('cfnum', null);
 
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
