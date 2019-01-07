@@ -54,9 +54,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$m_application 	= new EmundusModelApplication;
 	$m_files 		= new EmundusModelFiles;
 
-	$fnumInfos = $m_files->getFnumInfos($user->fnum);
+	$paid = null;
 	if ($application_fee == 1) {
-
+		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 		$paid_orders = $m_application->getHikashopOrder($fnumInfos);
 		$paid = is_array($paid_orders) && count($paid_orders) > 0?1:0;
 		if ($paid == 0) {
