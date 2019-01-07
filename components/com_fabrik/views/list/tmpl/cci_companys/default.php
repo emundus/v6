@@ -92,12 +92,22 @@ echo $this->table->intro;
                     foreach ($data as $d) { ?>
                         <div class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                             <div class="article-title article-title-<?php echo $this->table->renderid; ?>" style="background-color: #e2e2cf;">
-                                <?php if(!empty($d["Raison sociale"])) :?>
-                                    <h4><?php echo $d["Raison sociale"]; ?></h4>
-                                <?php elseif ((!empty($d["lastname"]) && !empty($d["firstname"]))) :?>
-                                    <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
-                                <?php elseif (!empty($d["Nom"]) && !empty($d["Prénom"])) :?>
-                                    <h4><?php echo $d["Nom"]. " " .$d["Prénom"]; ?></h4>
+                                <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
+                                    <?php if(!empty($d["Raison sociale"])) :?>
+                                        <h4><?php echo $d["Raison sociale"]; ?></h4>
+                                    <?php endif; ?>
+                                <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
+                                    <?php if ((!empty($d["lastname"]) && !empty($d["firstname"]))) :?>
+                                        <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
+                                        <?php if(!empty($d['user_id'])) :?>
+                                            <div class="em-inscrire-col"><a href="/mon-espace-decideur-rh/inscrire-des-collaborateurs?user=<?php echo $d['user_id']; ?>">inscrire à une formation</a></div>
+                                        <?php endif; ?>
+                                    <?php elseif (!empty($d["Nom"]) && !empty($d["Prénom"])) :?>
+                                        <h4><?php echo $d["Nom"]. " " .$d["Prénom"]; ?></h4>
+                                        <?php if(!empty($d['user_id'])) :?>
+                                            <div class="em-inscrire-col"><a href="/mon-espace-decideur-rh/inscrire-des-collaborateurs?user=<?php echo $d['user_id']; ?>">inscrire à une formation</a></div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                                 <div class="accordion-icons" style="float:right;">
                                     <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
