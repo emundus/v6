@@ -85,7 +85,7 @@ echo $this->table->intro;
                     $gCounter = 0;
                     foreach ($data as $d) { ?>
                         <div class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
-                            <div class="article-title article-title-<?php echo $this->table->renderid; ?>" style="background-color: #e2e2cf;">
+                            <div class="article-title article-title-<?php echo $this->table->renderid; ?>">
                                 <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
                                     <?php if(!empty($d["Raison sociale"])) :?>
                                         <h4><?php echo $d["Raison sociale"]; ?></h4>
@@ -103,13 +103,13 @@ echo $this->table->intro;
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 <?php endif; ?>
-                                <div class="accordion-icons" style="float:right;">
+                                <div class="accordion-icons">
                                     <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
                                     <div style="display: inline" id="delete-row-<?php echo  $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo  $d['id']; ?>"><i class="fas fa-times"></i></div>
                                 </div>
                             </div>
 
-                            <div class="accordion-content" style="background-color: #f3f3ec;">
+                            <div class="accordion-content">
                                 <?php foreach ($d as $k => $v) { ?>
                                     <?php if($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id') :?>
                                         <?php if(strpos($k, 'Title') == true) :?>
@@ -119,7 +119,7 @@ echo $this->table->intro;
                                         <?php else: ?>
                                             <div class="em-element <?php echo str_replace(' ','-', $k);?>">
                                                 <div class="em-element-label"><?php echo $k; ?></div>
-                                                <div class="em-element-value" style="background-color: white"><?php echo $v; ?></div>
+                                                <div class="em-element-value"><?php echo $v; ?></div>
                                             </div>
                                         <?php endif; ?>
                                     <?php endif;?>
