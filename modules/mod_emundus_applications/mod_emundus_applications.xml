@@ -112,6 +112,12 @@
 					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_DOCUMENTS"
 					description=""
 					default="#EA5012" />
+				<field
+						name="cc_list_url"
+						type="text"
+						label="MOD_EMUNDUS_CC_LIST_URL"
+						description=""
+						default="index.php" />
 			</fieldset>
 			<fieldset
 				name="advanced">

@@ -2,30 +2,17 @@
 /**
  * @package   Joomla.Site
  * @subpackage  eMundus
- * @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
+ * @copyright Copyright (C) 2019 emundus.fr. All rights reserved.
  * @license   GNU General Public License version 2 or later; see LICENSE.txt
  */
+
 // no direct access
 defined('_JEXEC') or die;
-//var_dump($user->fnums); echo "<hr>"; var_dump($applications);
 echo $description;
 ?>
 
 <?php if (!empty($applications)) : ?>
     <div class="<?php echo $moduleclass_sfx ?>">
-
-        <div class="row" id="em-applications">
-            <div class="col-md-6">
-            </div>
-
-            <div class="col-md-4">
-                <strong>Session réservée</strong>
-            </div>
-
-            <div class="col-md-2">
-                <strong><?php echo JText::_('STATUS'); ?></strong>
-            </div>
-        </div>
 
         <?php foreach ($applications as $application) :?>
             <div class="row application" id="row-<?php echo $application->fnum; ?>">
@@ -35,33 +22,36 @@ echo $description;
 
                 <div class="col-md-4 main-page-file-progress">
                     <div class="main-page-file-progress-label">
-                            <?php
-                                setlocale(LC_ALL, 'fr_FR.utf8');
-                                $start_day = date('d',strtotime($application->date_start));
-                                $end_day = date('d',strtotime($application->date_end));
-                                $start_month = date('m',strtotime($application->date_start));
-                                $end_month = date('m',strtotime($application->date_end));
-                                $start_year = date('y',strtotime($application->date_start));
-                                $end_year = date('y',strtotime($application->date_end));
+                        <?php
+                            setlocale(LC_ALL, 'fr_FR.utf8');
+                            $start_day = date('d',strtotime($application->date_start));
+                            $end_day = date('d',strtotime($application->date_end));
+                            $start_month = date('m',strtotime($application->date_start));
+                            $end_month = date('m',strtotime($application->date_end));
+                            $start_year = date('y',strtotime($application->date_start));
+                            $end_year = date('y',strtotime($application->date_end));
 
 
-                                if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
-                                    echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
-                                elseif ($start_month == $end_month && $start_year == $end_year)
-                                    echo strftime('%e',strtotime($application->date_start)) . " au " . strftime('%e',strtotime($application->date_end)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
-                                elseif ($start_month != $end_month && $start_year == $end_year)
-                                    echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_start)) . " au " . strftime('%e',strtotime($application->date_end)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
-                                elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
-                                    echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_start)) . " " . date('Y',strtotime($application->date_start)) . " au " . strftime('%e',strtotime($application->date_end)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
-                            ?>
+                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
+                                echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
+                            } elseif ($start_month == $end_month && $start_year == $end_year) {
+                                echo strftime('%e',strtotime($application->date_start)) . " au " . strftime('%e',strtotime($application->date_end)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
+                            } elseif ($start_month != $end_month && $start_year == $end_year) {
+                                echo strftime('%e', strtotime($application->date_start)) . " " . strftime('%B', strtotime($application->date_start)) . " au " . strftime('%e', strtotime($application->date_end)) . " " . strftime('%B', strtotime($application->date_end)) . " " . date('Y', strtotime($application->date_end));
+                            } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
+                                echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_start)) . " " . date('Y',strtotime($application->date_start)) . " au " . strftime('%e',strtotime($application->date_end)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
+                            }
+                        ?>
                     </div>
                 </div>
 
                 <div class="col-md-2 main-page-file-progress">
                     <div class="main-page-file-progress-label">
-                        <span class="label label-<?php echo $application->class; ?>">
-                            <?php echo $application->value; ?>
-                        </span>
+                        <a href="<?php echo $cc_list_url; ?>">
+                            <span class="label label-<?php echo $application->class; ?>">
+                                <?php echo $application->value; ?>
+                            </span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -70,8 +60,7 @@ echo $description;
     </div>
 <?php else :
     echo JText::_('NO_FILE');
-    ?>
-<?php endif; ?>
+endif; ?>
 
 <script type="text/javascript">
 
@@ -107,8 +96,8 @@ echo $description;
     });
 
 
-//TODO do the delete if we need to
-    function deletefile(fnum){
+    //TODO do the delete if we need to
+    function deletefile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
             document.location.href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='); ?>"+fnum;
         }
