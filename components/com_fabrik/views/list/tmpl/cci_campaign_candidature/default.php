@@ -206,7 +206,7 @@ echo $this->table->intro;
 
                         <hr>
                         <div class="em-button-add-candidate">
-                            <a href="<?php echo $d['fabrik_edit_url'].'?session='.$d['jos_emundus_setup_teaching_unity___id_raw']; ?>">Ajouter un collaborateur</a>
+                            <a href="<?php echo $d['fabrik_edit_url'].'?session='.$d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>">Ajouter un collaborateur</a>
                         </div>
                         <hr>
 
