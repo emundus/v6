@@ -47,6 +47,7 @@ echo $this->table->intro;
         $i = 0;
         $rows = $this->rows[0];
         if (!empty($rows)) {
+
             foreach ($rows as $k => $v) {
                 foreach ($this->headings as $key => $val) {
                     $raw = $key.'_raw';
@@ -60,7 +61,10 @@ echo $this->table->intro;
                     $data[$i]['id'] = $v->data->__pk_val;
                 }
                 if (array_key_exists('fabrik_edit_url', $v->data)) {
-                    $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
+                    if(!empty($v->data->fabrik_edit)) {
+                        $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
+                    }
+
                 }
                 if (array_key_exists('id', $v)) {
                     $data[$i]['row_id'] = $v->id;
@@ -73,6 +77,7 @@ echo $this->table->intro;
                 $i = $i + 1;
             }
         }
+        
 
         ?>
 
@@ -104,7 +109,9 @@ echo $this->table->intro;
                                     <?php endif; ?>
                                 <?php endif; ?>
                                 <div class="accordion-icons">
-                                    <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
+                                    <?php if($d['fabrik_edit_url']) :?>
+                                        <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
+                                    <?php endif; ?>
                                     <div style="display: inline" id="delete-row-<?php echo  $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo  $d['id']; ?>"><i class="fas fa-times"></i></div>
                                 </div>
                             </div>
