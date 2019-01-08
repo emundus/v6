@@ -25,12 +25,12 @@ echo $description;
     <div class="<?php echo $moduleclass_sfx ?>">
 		<?php foreach ($favorites as $favorite) : ?>
             <div class="row favorite" id="row<?php echo $favorite->id; ?>">
-                <div class="col-md-9 main-page-favorite-title">
+                <div class="col-md-8 main-page-favorite-title">
                     <a href="<?php echo JRoute::_(JURI::base().'formation?rowid='. $favorite->id.'-'.str_replace('.html', '', $favorite->url)); ?>" ><?php echo $favorite->title; ?></a>
                 </div>
 
-                <div class="col-md-2 main-page-file-progress">
-                    <div class="main-page-file-progress-label">
+                <div class="col-md-3 main-page-file-progress">
+                    <div class="em-button-add-candidate">
                         <?php
                         $signupURL = $params->get('signupURL');
                         
