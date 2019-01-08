@@ -27,12 +27,6 @@ if ($this->params->get('show_page_heading')) :
     echo '<h1>' . $this->params->get('page_heading') . '</h1>';
 endif;
 
-if ($this->showTitle == 1) : ?>
-    <div class="page-header">
-        <h1><?php echo $this->table->label;?></h1>
-    </div>
-<?php
-endif;
 
 
 
@@ -291,7 +285,7 @@ endif;
 
 
     .accordion-container {
-        width: 90%;
+        width: 100%;
         margin-bottom: 5px;
     }
 
