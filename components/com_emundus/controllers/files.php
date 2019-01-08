@@ -949,6 +949,25 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+	/**
+	 *
+	 */
+	public function removefile() {
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->post->getString('fnum', null);
+
+		$m_files = $this->getModel('Files');
+		if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $fnum)) {
+			$res = $m_files->deleteFile($fnum);
+		} else {
+			$res = false;
+		}
+
+		$result = array('status' => $res);
+		echo json_encode((object)$result);
+		exit;
+	}
+
     /**
      *
      */

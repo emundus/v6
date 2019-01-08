@@ -136,4 +136,75 @@ class EmundusModelFormations extends JModelLegacy {
 
 	}
 
+	/** Gets all applicants to a session in which the user is a DRH of the company they are signed up as.
+	 *
+	 * @param      $campaign
+	 * @param null $user
+	 *
+	 * @return bool|mixed
+	 */
+	public function getApplicantsInSessionForDRH($campaign, $user = null) {
+
+		if ($user == null) {
+			$user = JFactory::getUser()->id;
+		}
+
+		if ($user == null) {
+			return false;
+		}
+
+		$companies = $this->getCompaniesDRH($user);
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select([$db->quoteName('e.raison_sociale', 'company'), $db->quoteName('u.birthday'), $db->quoteName('u.civility'), $db->quoteName('u.firstname'), $db->quoteName('u.lastname'), $db->quoteName('cc.fnum')])
+			->from($db->quoteName('#__emundus_users','u'))
+			->leftJoin($db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$db->quoteName('cc.applicant_id').' = '.$db->quoteName('u.user_id'))
+			->leftJoin($db->quoteName('#__emundus_entreprise','e').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('cc.company_id'))
+			->where($db->quoteName('cc.campaign_id').' = '.$campaign.' AND '.$db->quoteName('cc.company_id').' IN ('.implode(',', $companies).')');
+		$db->setQuery($query);
+
+		try {
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting sessions for DRH at m/formation in query: '.$query, JLog::ERROR, 'com_emundus');
+			return null;
+		}
+
+	}
+
+
+	/**
+	 * @param null $user_id
+	 *
+	 * @return bool
+	 */
+	public function getCompaniesDRH($user_id = null) {
+
+		if ($user_id == null) {
+			$user_id = JFactory::getUser()->id;
+		}
+
+		if ($user_id == null) {
+			return false;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('cid'))
+			->from($db->quoteName('#__emundus_user_entreprise'))
+			->where($db->quoteName('user').' = '.$user_id.' AND '.$db->quoteName('profile').' = 1002');
+		$db->setQuery($query);
+
+		try {
+			return $db->loadColumn();
+		} catch (Exception $e) {
+			JLog::add('Error getting user companies at m/formation in query: '.$query, JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+	}
+
 }

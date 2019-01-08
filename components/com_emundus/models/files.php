@@ -3068,20 +3068,16 @@ die();*/
      * @param $fnum
      * @return bool|mixed
      */
-    public function deleteFile($fnum)
-    {
-        try
-        {
+    public function deleteFile($fnum) {
+        try {
             $db = JFactory::getDbo();
 
             $query = 'DELETE FROM #__emundus_campaign_candidature
                         WHERE fnum like '.$db->Quote($fnum);
 
             $db->setQuery($query);
-            return $db->query() ;
-        }
-        catch(Exception $e)
-        {
+            return $db->query();
+        } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
