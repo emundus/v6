@@ -15,31 +15,31 @@ echo $description;
     <div class="<?php echo $moduleclass_sfx ?>">
 
         <?php foreach ($applications as $application) :?>
-            <div class="row application" id="row-<?php echo $application->fnum; ?>">
+            <div class="row application" id="row-<?php echo $application['fnum']; ?>">
                 <div class="col-md-6 main-page-application-title">
-                        <a href="<?php echo JRoute::_(JURI::base().'formation?rowid='. $application->pid.'-'.str_replace('.html', '', $application->url)); ?>" ><?php echo $application->label; ?></a>
+                        <a href="<?php echo JRoute::_(JURI::base().'formation?rowid='. $application['pid'].'-'.str_replace('.html', '', $application['url'])); ?>" ><?php echo $application['label']; ?></a>
                 </div>
 
                 <div class="col-md-4 main-page-file-progress">
                     <div class="main-page-file-progress-label">
                         <?php
                             setlocale(LC_ALL, 'fr_FR.utf8');
-                            $start_day = date('d',strtotime($application->date_start));
-                            $end_day = date('d',strtotime($application->date_end));
-                            $start_month = date('m',strtotime($application->date_start));
-                            $end_month = date('m',strtotime($application->date_end));
-                            $start_year = date('y',strtotime($application->date_start));
-                            $end_year = date('y',strtotime($application->date_end));
+                            $start_day = date('d',strtotime($application['date_start']));
+                            $end_day = date('d',strtotime($application['date_end']));
+                            $start_month = date('m',strtotime($application['date_start']));
+                            $end_month = date('m',strtotime($application['date_end']));
+                            $start_year = date('y',strtotime($application['date_start']));
+                            $end_year = date('y',strtotime($application['date_end']));
 
 
                             if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
-                                echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
+                                echo strftime('%e',strtotime($application['date_start'])) . " " . strftime('%B',strtotime($application['date_end'])) . " " . date('Y',strtotime($application['date_end']));
                             } elseif ($start_month == $end_month && $start_year == $end_year) {
-                                echo strftime('%e',strtotime($application->date_start)) . " au " . strftime('%e',strtotime($application->date_end)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
+                                echo strftime('%e',strtotime($application['date_start'])) . " au " . strftime('%e',strtotime($application['date_start'])) . " " . strftime('%B',strtotime($application['date_end'])) . " " . date('Y',strtotime($application['date_end']));
                             } elseif ($start_month != $end_month && $start_year == $end_year) {
-                                echo strftime('%e', strtotime($application->date_start)) . " " . strftime('%B', strtotime($application->date_start)) . " au " . strftime('%e', strtotime($application->date_end)) . " " . strftime('%B', strtotime($application->date_end)) . " " . date('Y', strtotime($application->date_end));
+                                echo strftime('%e', strtotime($application['date_start'])) . " " . strftime('%B', strtotime($application['date_start'])) . " au " . strftime('%e', strtotime($application['date_end'])) . " " . strftime('%B', strtotime($application['date_end'])) . " " . date('Y', strtotime($application['date_end']));
                             } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
-                                echo strftime('%e',strtotime($application->date_start)) . " " . strftime('%B',strtotime($application->date_start)) . " " . date('Y',strtotime($application->date_start)) . " au " . strftime('%e',strtotime($application->date_end)) . " " . strftime('%B',strtotime($application->date_end)) . " " . date('Y',strtotime($application->date_end));
+                                echo strftime('%e',strtotime($application['date_start'])) . " " . strftime('%B',strtotime($application['date_start'])) . " " . date('Y',strtotime($application['date_start'])) . " au " . strftime('%e',strtotime($application['date_end'])) . " " . strftime('%B',strtotime($application['date_end'])) . " " . date('Y',strtotime($application['date_end']));
                             }
                         ?>
                     </div>
@@ -48,8 +48,8 @@ echo $description;
                 <div class="col-md-2 main-page-file-progress">
                     <div class="main-page-file-progress-label">
                         <a href="<?php echo $cc_list_url; ?>">
-                            <span class="label label-<?php echo $application->class; ?>">
-                                <?php echo $application->value; ?>
+                            <span class="label label-<?php echo $application['class']; ?>">
+                                <?php echo $application['value']; ?>
                             </span>
                         </a>
                     </div>

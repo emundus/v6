@@ -150,7 +150,7 @@ class modemundusApplicationsHelper {
 					)
 				)')
 			->group([$db->quoteName('esc.id')])
-			->order($db->quoteName('ecc.end_date').' DESC');
+			->order($db->quoteName('ecc.date_submitted').' DESC');
 
 		$db->setQuery($query);
 		return $db->loadAssocList('fnum');
