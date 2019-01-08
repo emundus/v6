@@ -133,7 +133,7 @@ class modemundusApplicationsHelper {
 		}
 	}
 
-	public function getDrhApplications() {
+	static function getDrhApplications() {
 		$user = JFactory::getUser();
 		$db	= JFactory::getDbo();
 
