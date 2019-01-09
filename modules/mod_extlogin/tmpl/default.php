@@ -53,8 +53,8 @@ if($type == 'logout') : ?>
 	
 	<?php if(JPluginHelper::isEnabled('system', 'remember')) : ?>
 		<!-- <input type="checkbox" name="remember" class="inputbox" value="yes" alt="Remember Me" /> -->
-	<?php endif; 
-		if ($usersConfig->get('allowUserRegistration')) { ?>
+	<?php endif;
+		if ($usersConfig->get('allowUserRegistration') && $params->get('registration')) { ?>
             <span class="register-button">
                 <button value="register" name="register" type="button" title="<?php echo JText::_('REGISTER'); ?>" onclick="location.href='index.php?option=com_users&view=registration'"><?php echo JText::_( 'REGISTER' ); ?></button>
             </span><?php
@@ -65,7 +65,7 @@ if($type == 'logout') : ?>
 		
 		if ($params->get('lost_password') ) { ?>
 			<span class="lostpassword">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_users&view=reset' ); ?>" title="<?php echo JText::_('FORGOT_PASSWORD'); ?>"></a>
+				<a href="<?php echo JRoute::_( 'index.php?option=com_users&view=reset' ); ?>" title="<?php echo JText::_('FORGOT_PASSWORD'); ?>"><?php echo JText::_('FORGOT_PASSWORD'); ?></a>
 			</span><?php 
 		} 
 		if ( $params->get('lost_username')) { ?>
