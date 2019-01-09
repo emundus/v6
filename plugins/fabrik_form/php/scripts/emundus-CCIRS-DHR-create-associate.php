@@ -49,8 +49,8 @@ if ($m_formations->checkCompanyUser($user, $cid)) {
     $mainframe->redirect('/mon-espace-decideur-rh');
 }
 
-$columns = array('user', 'cid', 'profile');
-$values = array($user, $cid, '1001');
+$columns = array('user', 'cid', 'profile', 'position');
+$values = array($user, $cid, '1001', $formModel->getElementData('jos_emundus_users___position'));
 
 $query = $db->getQuery(true);
 $query
