@@ -20,8 +20,9 @@ jimport('joomla.log.log');
 JLog::addLogger(array('text_file' => 'com_emundus.createassigncompany.php'), JLog::ALL, array('com_emundus'));
 
 
-if ($fabrikFormData['vous_etes'] != 3)
+if ($fabrikFormData['vous_etes'] != 3) {
 	return false;
+}
 
 
 // Get the siret for the company, this is used as a primary key to find it.
@@ -85,8 +86,8 @@ if (empty($link)) {
 
 	$query->clear()
 		->insert($db->quoteName('#__emundus_user_entreprise'))
-		->columns($db->quoteName(['cid', 'user', 'profile']))
-		->values($db->quote($company_id).', '.$db->quote($user_id).', '.$db->quote('1002'));
+		->columns($db->quoteName(['cid', 'user', 'profile', 'position']))
+		->values($db->quote($company_id).', '.$db->quote($user_id).', '.$db->quote('1002').', '.$db->quote('TNS'));
 
 	try {
 
