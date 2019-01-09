@@ -227,20 +227,23 @@ endif;
 
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
         e.stopPropagation();
-        jQuery.ajax({
-            type: "post",
-            url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
-            dataType: 'json',
-            data : ({id: jQuery(this).data("id")}),
-            success: function(result) {
-                if(result.status) {
-                    location.reload();
+
+        if(confirm("Confirme pour effacer") == true) {
+            jQuery.ajax({
+                type: "post",
+                url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
+                dataType: 'json',
+                data : ({id: jQuery(this).data("id")}),
+                success: function(result) {
+                    if(result.status) {
+                        location.reload();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR.responseText);
-            }
-        });
+            });
+        }
     });
 
 </script>
