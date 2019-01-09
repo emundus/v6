@@ -3074,8 +3074,9 @@ class EmundusControllerFiles extends JControllerLegacy
     	$filename = DS.'images'.DS.'product_pdf'.DS.'formation-'.$product_code.'.pdf';
 
     	// PDF is rebuilt every time, this is because the information on the PDF probably changes ofter.
-    	if (file_exists(JPATH_BASE.$filename))
+    	if (file_exists(JPATH_BASE.$filename)) {
     		unlink(JPATH_BASE.$filename);
+        }
 
     	// The PDF template is saved in the Joomla backoffice as an article.
 		$article = $h_export->getArticle(58);
@@ -3135,10 +3136,11 @@ class EmundusControllerFiles extends JControllerLegacy
 		$sessions .= '</ul>';
 
 	    $partner = str_replace(' ', '-', trim(strtolower($product[0]['partner'])));
-		if (!empty($partner))
+		if (!empty($partner)) {
 			$partner = '<img src="images/custom/ccirs/partenaires/'.$partner.'.png" height="30">';
-		else
+		} else {
 			$partner = '';
+		}
 
         // Build the variables found in the article.
         $daysWord = (intval($product[0]['days']) > 1)?'jours':'jour';
@@ -3158,7 +3160,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
 		    '/{PEDAGOGIE}/' => $product[0]['pedagogie'],
 		    '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">CPF</h2><p style="padding-left: 30px;">code CPF : '.$product[0]['cpf'].' </p>':'',
-		    '/{EVALUATION}/' => $product[0]['evaluation']
+		    '/{EVALUATION}/' => nl2br($product[0]['evaluation'])
 	    ];
 
 	    $export_date = strftime('%e')." ".strftime('%B')." ".date('Y');
