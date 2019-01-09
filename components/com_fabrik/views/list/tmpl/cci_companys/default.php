@@ -84,7 +84,11 @@ echo $this->table->intro;
 
         <div class="g-block size-100">
             <?php if ($this->navigation->total < 1) :?>
-                <h2>Vous n'avez pas d'entreprises</h2>
+                <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
+                    <h2>Vous n'avez pas d'entreprises</h2>
+                <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
+                    <h2>Vous n'avez pas de collaborateurs</h2>
+                <?php endif; ?>
             <?php else: ?>
                 <?php
                     $gCounter = 0;
@@ -110,7 +114,7 @@ echo $this->table->intro;
                                 <?php endif; ?>
                                 <div class="accordion-icons">
                                     <?php if($d['fabrik_edit_url']) :?>
-                                        <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="far fa-eye"></i></a>
+                                        <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
                                     <?php endif; ?>
                                     <div style="display: inline" id="delete-row-<?php echo  $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo  $d['id']; ?>"><i class="fas fa-times"></i></div>
                                 </div>
