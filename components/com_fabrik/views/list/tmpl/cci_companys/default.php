@@ -217,6 +217,14 @@ endif;
         var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
     });
 
+    jQuery(document).ready(function(){
+        if(jQuery(this).find('.accordion-container-<?php echo $this->table->renderid; ?>').size() > 0 ) {
+            var first = document.querySelectorAll('.accordion-container-<?php echo $this->table->renderid; ?>')[0];
+            jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
+            first.classList.add('open');
+        }
+    });
+
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
         e.stopPropagation();
         jQuery.ajax({
