@@ -228,7 +228,7 @@ endif;
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
         e.stopPropagation();
 
-        if(confirm("Confirme pour effacer") == true) {
+        if(confirm("Êtes vous sûr(e) de vouloir effacer ?") == true) {
             jQuery.ajax({
                 type: "post",
                 url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
