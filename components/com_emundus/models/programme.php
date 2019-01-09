@@ -394,7 +394,7 @@ class EmundusModelProgramme extends JModelList {
 			->from($db->quoteName('#__emundus_favorite_programmes','f'))
 			->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON '.$db->quoteName('p.id').' = '.$db->quoteName('f.programme_id'))
 			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't').' ON '.$db->quoteName('t.code').' LIKE '.$db->quoteName('p.code'))
-			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('p.published').'= 1 AND '.$db->quoteName('t.date_end').' < NOW() AND '.$db->quoteName('t.published').'= 1')
+			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('p.published').'= 1 AND '.$db->quoteName('t.date_end').' > NOW() AND '.$db->quoteName('t.published').'= 1')
 			->group($db->quoteName('p.id'));
 		$db->setQuery($query);
 
