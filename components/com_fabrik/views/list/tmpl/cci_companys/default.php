@@ -60,17 +60,13 @@ echo $this->table->intro;
                 if (array_key_exists('__pk_val', $v->data)) {
                     $data[$i]['id'] = $v->data->__pk_val;
                 }
-                if (array_key_exists('fabrik_edit_url', $v->data)) {
-                    if(!empty($v->data->fabrik_edit)) {
-                        $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
-                    }
-
+                if (array_key_exists('fabrik_edit_url', $v->data) && !empty($v->data->fabrik_edit)) {
+                    $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
                 }
                 if (array_key_exists('id', $v)) {
                     $data[$i]['row_id'] = $v->id;
                 }
                 if (array_key_exists('jos_emundus_users___user_id_raw', $v->data)) {
-                    
                     $data[$i]['id'] = $v->data->jos_emundus_users___user_id_raw;
                 }
 
@@ -95,22 +91,21 @@ echo $this->table->intro;
                     foreach ($data as $d) { ?>
                         <div class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                             <div class="article-title article-title-<?php echo $this->table->renderid; ?>">
-                                <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
-                                    <?php if(!empty($d["Raison sociale"])) :?>
+                                <?php if ($this->table->db_table_name == 'jos_emundus_entreprise') :?>
+                                    <?php if (!empty($d["Raison sociale"])) :?>
                                         <h4><?php echo $d["Raison sociale"]; ?></h4>
                                     <?php endif; ?>
                                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
-                                    <?php if ((!empty($d["lastname"]) && !empty($d["firstname"]))) :?>
+
+                                    <?php if (!empty($d["lastname"]) && !empty($d["firstname"])) :?>
                                         <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
-                                        <?php if(!empty($d['user_id'])) :?>
-                                            <div class="em-inscrire-col"><a href="/mon-espace-decideur-rh/inscrire-des-collaborateurs?user=<?php echo $d['user_id']; ?>">inscrire à une formation</a></div>
-                                        <?php endif; ?>
                                     <?php elseif (!empty($d["Nom"]) && !empty($d["Prénom"])) :?>
                                         <h4><?php echo $d["Nom"]. " " .$d["Prénom"]; ?></h4>
-                                        <?php if(!empty($d['user_id'])) :?>
-                                            <div class="em-inscrire-col"><a href="/mon-espace-decideur-rh/inscrire-des-collaborateurs?user=<?php echo $d['user_id']; ?>">inscrire à une formation</a></div>
-                                        <?php endif; ?>
                                     <?php endif; ?>
+
+	                                <?php if (!empty($d['user_id'])) :?>
+                                        <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $d['user_id']; ?>">inscrire à une formation</a></div>
+	                                <?php endif; ?>
                                 <?php endif; ?>
                                 <div class="accordion-icons">
                                     <?php if($d['fabrik_edit_url']) :?>
@@ -122,8 +117,8 @@ echo $this->table->intro;
 
                             <div class="accordion-content">
                                 <?php foreach ($d as $k => $v) { ?>
-                                    <?php if($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id') :?>
-                                        <?php if(strpos($k, 'Title') == true) :?>
+                                    <?php if ($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id') :?>
+                                        <?php if (strpos($k, 'Title')) :?>
                                             <div class="em-group-title">
                                                 <span><?php echo str_replace('Title-', '',$k); ?></span>
                                             </div>

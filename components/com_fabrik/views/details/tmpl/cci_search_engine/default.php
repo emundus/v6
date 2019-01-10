@@ -98,7 +98,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 </style>
 
 <!-- Title -->
-<!-- TODO: Get categories from cci and make div  before the title -->
     <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
         <a href="rechercher?category=<?php echo $this->data['jos_emundus_setup_thematiques___title_raw'];?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
     </div>
@@ -114,7 +113,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             <?php endif; ?>
         </h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
-            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
+            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) { echo "code CPF : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; } ?></p>
     </div>
 
         <div class="em-details g-block size-95 em-details-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
@@ -126,10 +125,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div class="em-days">
                     <p id="days">
                         <?php
-                        if (floatval($days) > 1)
+                        if (floatval($days) > 1) {
                             echo $days." jours";
-                        elseif (floatval($days) == 1)
+                        } elseif (floatval($days) == 1) {
                             echo $days." jour";
+                        }
                         ?>
                     </p>
                 </div>
@@ -270,14 +270,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             $end_year = date('y',strtotime($session['date_end']));
 
 
-                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
+                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            elseif ($start_month == $end_month && $start_year == $end_year)
+                            } elseif ($start_month == $end_month && $start_year == $end_year) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            elseif ($start_month != $end_month && $start_year == $end_year)
+                            } elseif ($start_month != $end_month && $start_year == $end_year) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                            } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                            }
                             ?>
                             </b>
                             <p><?php echo $town ;?></p>
@@ -285,16 +286,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                 <p>
                                     <?php
                                         $TTC = floatval($session['price'])+(floatval($session['price'])*floatval($session['tax_rate']));
-                                        if (!empty($session['tax_rate']))
-                                            echo $TTC . " € TTC" ;
-                                        else
-                                            echo intval($session['price']) . " € net" ;
+                                        if (!empty($session['tax_rate'])) {
+	                                        echo $TTC . " € TTC";
+                                        } else {
+	                                        echo intval($session['price']) . " € net";
+                                        }
                                     ?>
                                 </p>
 
                             <?php
-                            if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
-                                echo "<p class='places'>dernières places disponibles</p>";
+                            if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0) {
+	                            echo "<p class='places'>dernières places disponibles</p>";
+                            }
                             ?>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
@@ -305,7 +308,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                         </div>
                                     <?php else: ?>
 
-                                        <?php $formUrl = base64_encode('/index.php?option=com_fabrik&view=form&formid=102&course='.$session['code'].'&cid='.$session['cid']); ?>
+                                        <?php $formUrl = base64_encode('/inscrire-des-collaborateurs?session='.$session['session_code']); ?>
 
                                         <div class="em-option-buttons">
                                             <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
