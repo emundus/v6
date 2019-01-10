@@ -65,7 +65,7 @@ class EmundusControllerFormations extends JControllerLegacy {
         $m_formations = new EmundusModelFormations();
 
         echo json_encode((object)[
-            'status' => $m_formations->deleteAssociate($id, $cid, $this->user->id,)
+            'status' => $m_formations->deleteAssociate($id, $cid, $this->user->id)
         ]);
         exit;
 
