@@ -108,10 +108,10 @@ echo $this->table->intro;
 	                                <?php endif; ?>
                                 <?php endif; ?>
                                 <div class="accordion-icons">
-                                    <?php if($d['fabrik_edit_url']) :?>
+                                    <?php if ($d['fabrik_edit_url']) :?>
                                         <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
                                     <?php endif; ?>
-                                    <div style="display: inline" id="delete-row-<?php echo  $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo  $d['id']; ?>"><i class="fas fa-times"></i></div>
+                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?> <?php if (!empty($d['user_id'])) { echo "data-cid= ".$d['cid']; } ?>"><i class="fas fa-times"></i></div>
                                 </div>
                             </div>
 
@@ -223,14 +223,19 @@ endif;
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
         e.stopPropagation();
 
-        if(confirm("Êtes vous sûr(e) de vouloir effacer ?") == true) {
+        if (confirm("Êtes vous sûr(e) de vouloir effacer ?") == true) {
             jQuery.ajax({
                 type: "post",
                 url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
                 dataType: 'json',
-                data : ({id: jQuery(this).data("id")}),
+                data : ({
+                    id: jQuery(this).data("id"),
+                    <?php if (!empty($d['user_id'])) :?>
+                    cid: jQuery(this).data("cid"),
+                    <?php endif; ?>
+                }),
                 success: function(result) {
-                    if(result.status) {
+                    if (result.status) {
                         location.reload();
                     }
                 },
