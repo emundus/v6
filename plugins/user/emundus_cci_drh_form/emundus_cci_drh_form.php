@@ -63,6 +63,7 @@ class plgUserEmundus_cci_drh_form extends JPlugin {
 				$table = JTable::getInstance('user', 'JTable');
 				$table->load($user['id']);
 				$table->params = $params->toString();
+				$table->store();
 			}
 
 		}
