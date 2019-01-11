@@ -12,52 +12,12 @@ class plgUserEmundus_cci_drh_form extends JPlugin {
 	
 	function _construct(& $subject, $config) {
 		parent::__construct($subject, $config);
-
-		$this->loadLanguage();
-		$user = JFactory::getUser();
-
-		if (!$user->guest) {
-
-			// need to load fresh instance
-			$table = JTable::getInstance('user', 'JTable');
-			$table->load($user->id);
-
-			// Reidrect the user if the param is present.
-			$user_params = new JRegistry($table->params);
-			if ($user_params->get('needs_company', 'false') == "true") {
-				$application = JFactory::getApplication();
-				$application->enqueueMessage('Afin de pouvoir continuer en tant que Décideur RH, vous devez déclarer votre entreprise.');
-				$application->redirect($this->params->get('url', null));
-			}
-		}
-
 	}
-	
-	function onLoginUser($user, $option) {
-		$this->afterLogin($user, $option);
-	}
-	
-	//in J1.7 this event is called
-	function onUserLogin($user,$option) {
-		$this->afterLogin($user, $option);
-	}
-	
-	function afterLogin($user, $option) {
 
-		$username  = JRequest::getVar('username');
-		$userid    = JUserHelper::getUserId($username);
-
-		// For Guest, do nothing and just return, let joomla handle it
-		if (!$userid) {
-			return;
-		}
-
-		$current_user = JFactory::getUser($userid);
- 		$lastvisitdate = $current_user->lastvisitDate;
-		$block		   = $current_user->block;
+	public function onUserAfterSave($user, $isnew, $result, $error) {
 
  		// Check for first login
-		if ($lastvisitdate == "0000-00-00 00:00:00" && $block == 0) {
+		if ($isnew) {
 
 			// Check of the user is DRH.
 			$db = JFactory::getDbo();
@@ -65,7 +25,7 @@ class plgUserEmundus_cci_drh_form extends JPlugin {
 
 			$query->select($db->quoteName('profile'))
 				->from($db->quoteName('#__emundus_users'))
-				->where($db->quoteName('user_id').' = '.$userid);
+				->where($db->quoteName('user_id').' = '.$user['id']);
 			$db->setQuery($query);
 
 			try {
@@ -80,7 +40,7 @@ class plgUserEmundus_cci_drh_form extends JPlugin {
 				$query->clear()
 					->select($db->quoteName('id'))
 					->from($db->quoteName('#__emundus_user_entreprise'))
-					->where($db->quoteName('user').' = '.$userid.' AND '.$db->quoteName('profile').' = 1002');
+					->where($db->quoteName('user').' = '.$user['id'].' AND '.$db->quoteName('profile').' = 1002');
 				$db->setQuery($query);
 
 				try {
@@ -91,6 +51,8 @@ class plgUserEmundus_cci_drh_form extends JPlugin {
 					return;
 				}
 
+				$current_user = JFactory::getUser($user['id']);
+
 				// Set the user param to notify him of the fact that he needs a company.
 				$current_user->setParam('needs_company', 'true');
 
@@ -99,7 +61,7 @@ class plgUserEmundus_cci_drh_form extends JPlugin {
 
 				// Set the user table instance to include the new token.
 				$table = JTable::getInstance('user', 'JTable');
-				$table->load($userid);
+				$table->load($user['id']);
 				$table->params = $params->toString();
 			}
 

@@ -10,10 +10,5 @@
 		<filename plugin="emundus_cci_drh_form">emundus_cci_drh_form.php</filename>
 	</files>
 	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field name="url" type="field" default="index.php" label="URL to redirect to" description="The URL to redirect the user to if they have no company." />
-			</fieldset>
-		</fields>
 	</config>
 </extension>

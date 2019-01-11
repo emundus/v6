@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="3.8.13" type="plugin" group="system" method="upgrade">
+    <name>System - routing to form if user param is false</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>January 2019</creationDate>
+    <copyright>Copyright (C) 2019 eMundus All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>emundus.fr</authorUrl>
+    <version>3.9.1</version>
+    <description>Redirects a user to a specific URL if he a param in the user object is false.</description>
+    <files>
+        <filename plugin="user_param_redirect">user_param_redirect.php</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="url" type="field" default="index.php" label="URL to redirect to" description="The URL to redirect the user to if they have no company." />
+                <field name="user_param" type="field" label="User parameter name" description="The params of the user, if the params is TRUE then the user will be redirected, this param is probably added to the user object by another plugin." />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
