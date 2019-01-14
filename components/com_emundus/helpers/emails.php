@@ -364,7 +364,7 @@ class EmundusHelperEmails
 	{
 		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl like '.$db->Quote($lbl);
-		$db->>setQuery( $query );
+		$db->setQuery($query);
 		return $db->loadObject();
 	}
 
@@ -372,7 +372,7 @@ class EmundusHelperEmails
 	{
 		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__emundus_setup_emails WHERE type IN ('.$db->Quote($type).') AND published=1';
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		return $db->loadObjectList();
 	}
 
@@ -583,7 +583,7 @@ class EmundusHelperEmails
 			$campaigns_id[] = intval($params[1]);
 		}
 
-		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
+		$captcha	= 1;
 
 		$from 		= JRequest::getVar( 'mail_from', null, 'post' );
 		$from_id	= JRequest::getVar( 'mail_from_id', null, 'post' );
