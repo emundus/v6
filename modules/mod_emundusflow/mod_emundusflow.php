@@ -41,7 +41,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	// module params
 	$show_programme = $params->get('show_programme', 1);
 	$show_deadline  = $params->get('show_deadline', 0);
-	$offset = JFactory::getConfig()->get('offset');
+    $layout = $params->get('layout', 'default');
+    $offset = JFactory::getConfig()->get('offset');
 
 	// eMundus params
 	$params_emundus 		= JComponentHelper::getParams('com_emundus');
@@ -114,5 +115,5 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	}
 
 
-	require(JModuleHelper::getLayoutPath('mod_emundusflow'));
+	require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }
