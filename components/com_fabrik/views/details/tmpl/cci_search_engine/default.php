@@ -23,7 +23,7 @@ $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
 
-if(empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
+if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
     JFactory::getApplication()->redirect("/rechercher");
 
 
@@ -452,12 +452,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
         var options = document.getElementById("formation-options");
         options.appendChild(document.getElementById("em-formation-options"));
-        <?php if(!empty($video)):?>
-            var video = '<iframe width="560" height="315" src="<?php echo $video; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
 
+        <?php if (!empty($video)) :?>
+            var video = '<h4>Conseil de pro</h4><iframe width="560" height="315" src="<?php echo $video; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             jQuery('.em-category-search-module').prepend(video);
         <?php endif; ?>
-
 
     });
 

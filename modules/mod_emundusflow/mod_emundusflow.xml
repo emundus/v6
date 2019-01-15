@@ -13,6 +13,7 @@
 		<filename module="mod_emundusflow">mod_emundusflow.php</filename>
 		<filename module="mod_emundusflow">index.html</filename>
 		<filename module="mod_emundusflow">tmpl/default.php</filename>
+		<filename module="mod_emundusflow">tmpl/esiea.php</filename>
 		<filename module="mod_emundusflow">tmpl/index.html</filename>
 		<filename module="mod_emundusflow">style/index.html</filename>
 		<filename module="mod_emundusflow">style/emundus.css</filename>
@@ -51,6 +52,9 @@
 					<option
 						value="0">JHIDE</option>
 				</field>
+
+				<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+
 			</fieldset>
 		</fields>
 	</config>

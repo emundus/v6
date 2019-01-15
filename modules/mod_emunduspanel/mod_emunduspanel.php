@@ -54,6 +54,8 @@ $t__ = '';
 $i = 1;
 $module_title = '';
 
+$link = "index.php";
+
 if (is_array($text) && !empty($text)) {
 	foreach ($text as $t) {
 		if(count($text) != $i)

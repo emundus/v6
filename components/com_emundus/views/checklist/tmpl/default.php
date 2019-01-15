@@ -30,7 +30,7 @@ $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->end_date)) ? t
 $is_app_sent         = (@$user->status != 0)? true : false;
 
 $block_upload = true;
-if (!$is_dead_line_passed || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
+if ((!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
     $block_upload = false;
 }
 
@@ -104,7 +104,7 @@ if ($this->show_info_panel) : ?>
                     $div .= JText::_('CANT_VIEW') ;
                     }
                     $div .= '&nbsp;-&nbsp;' ;
-                    if($item->can_be_deleted==1) {
+                    if($item->can_be_deleted==1 && !$block_upload) {
                     $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
                     }
                     else {
