@@ -12,6 +12,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+$doc = JFactory::getDocument();
+$doc->addStyleSheet( 'media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css' );
+
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';

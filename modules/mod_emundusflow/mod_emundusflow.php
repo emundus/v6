@@ -41,7 +41,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	// module params
 	$show_programme = $params->get('show_programme', 1);
 	$show_deadline  = $params->get('show_deadline', 0);
-	$offset = JFactory::getConfig()->get('offset');
+    $layout = $params->get('layout', 'default');
+    $offset = JFactory::getConfig()->get('offset');
 
 	// eMundus params
 	$params_emundus 		= JComponentHelper::getParams('com_emundus');
@@ -54,9 +55,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$m_application 	= new EmundusModelApplication;
 	$m_files 		= new EmundusModelFiles;
 
-	$fnumInfos = $m_files->getFnumInfos($user->fnum);
+	$paid = null;
 	if ($application_fee == 1) {
-
+		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 		$paid_orders = $m_application->getHikashopOrder($fnumInfos);
 		$paid = is_array($paid_orders) && count($paid_orders) > 0?1:0;
 		if ($paid == 0) {
@@ -114,5 +115,5 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	}
 
 
-	require(JModuleHelper::getLayoutPath('mod_emundusflow'));
+	require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }
