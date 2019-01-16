@@ -59,8 +59,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	if ($application_fee == 1) {
 		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 		$paid_orders = $m_application->getHikashopOrder($fnumInfos);
-		$paid = is_array($paid_orders) && count($paid_orders) > 0?1:0;
-		if ($paid == 0) {
+		$paid = !empty($paid_orders);
+		if (!$paid) {
 
 			$sentOrder = $m_application->getHikashopOrder($fnumInfos, true);
 
