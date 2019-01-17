@@ -59,11 +59,17 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 		// If the file name is not in the following format : table___element; mark column as bad.
 		$column = explode("___", preg_replace('/[^\PC\s]/u', '', $column));
 		if (count($column) !== 2) {
+
+			// Special columns such as the campaign ID can be inserted.
+			if ($column[0] = 'campaign') {
+				$campaign_column = $column_number;
+			}
+
 			$bad_columns[] = $column_number;
 			continue;
 		}
 		
-		$table =  $column[0];
+		$table = $column[0];
 		$element = $column[1];
 		
 		// Test the existence of the table and the fnum column.
@@ -113,7 +119,12 @@ $parsed_data = [];
 while (($data = fgetcsv($handle, 0, ';')) !== false) {
 	
 	foreach ($data as $column_number => $column) {
-		
+
+		if ($column_number == $campaign_column) {
+			$campaign_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+			continue;
+		}
+
 		if (in_array($column_number, $bad_columns)) {
 			continue;
 		}
@@ -157,9 +168,14 @@ $ldap_params = new JRegistry($ldap_plugin->params);
 $ldap = new JLDAP($ldap_params);
 
 // Handle parsed data insertion
-foreach ($parsed_data as $insert_row) {
+foreach ($parsed_data as $row_id => $insert_row) {
 
 	$fnum = $insert_row['jos_emundus_campaign_candidature']['fnum'];
+
+	// We can pass the campaign ID in the XLS if we need.
+	if (!empty($campaign_row[$row_id]) && is_numeric($campaign_row[$row_id])) {
+		$campaign = $campaign_row[$row_id];
+	}
 
 	// We need a user
 	if (!empty($insert_row['jos_emundus_users']['user_id'])) {
