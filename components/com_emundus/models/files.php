@@ -1515,26 +1515,27 @@ if (JFactory::getUser()->id == 63)
      */
     public function getEvalGroups()
     {
-        try
-        {
+        try {
             $db = $this->getDbo();
+
             $query = 'select * from #__emundus_setup_groups where 1';
             $db->setQuery($query);
+
             $evalGroups['groups'] = $db->loadAssocList();
-            $query = 'SELECT eu.user_id, CONCAT( eu.firstname, " ", eu.lastname ) as name
+
+            $query = 'SELECT DISTINCT (eu.user_id), CONCAT( eu.firstname, " ", eu.lastname ) as name
                         FROM #__emundus_users AS eu
                         LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
                         LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
                         WHERE eu.profile !=1
                         AND esp.published !=1';
-//echo str_replace('#_', 'jos', $query);
             $db->setQuery($query);
-            $evalGroups['users'] = $db->loadAssocList();
-            return $evalGroups;
 
+            $evalGroups['users'] = $db->loadAssocList();
+            
+            return $evalGroups;
         }
-        catch(Exception $e)
-        {
+        catch(Exception $e) {
             throw $e;
         }
     }
