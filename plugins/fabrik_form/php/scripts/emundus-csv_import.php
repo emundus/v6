@@ -52,8 +52,8 @@ $query = $db->getQuery(true);
 $checked_tables = [];
 
 $row = 0;
-if (($data = fgetcsv($handle, 1000, ';')) !== false) {
-	
+if (($data = fgetcsv($handle, 0, ';')) !== false) {
+
 	foreach ($data as $column_number => $column) {
 
 		// If the file name is not in the following format : table___element; mark column as bad.
@@ -110,7 +110,7 @@ if (($data = fgetcsv($handle, 1000, ';')) !== false) {
 
 $parsed_data = [];
 
-while (($data = fgetcsv($handle, 1000, ';')) !== false) {
+while (($data = fgetcsv($handle, 0, ';')) !== false) {
 	
 	foreach ($data as $column_number => $column) {
 		
