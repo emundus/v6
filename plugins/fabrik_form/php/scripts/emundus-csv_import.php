@@ -51,6 +51,8 @@ $db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $checked_tables = [];
 
+$profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
+
 $row = 0;
 if (($data = fgetcsv($handle, 0, ';')) !== false) {
 
@@ -126,6 +128,25 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 
 		if ($column_number == $campaign_column) {
 			$campaign_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+
+			// If we have no profile, we must get the associated one using the campaign.
+			if (empty($profile)) {
+
+				$query->clear()
+					->select($db->quoteName('profile_id'))
+					->from($db->quoteName('#__emundus_setup_campaigns'))
+					->where($db->quoteName('id').' = '.preg_replace('/[^\PC\s]/u', '', $column));
+				$db->setQuery($query);
+
+				try {
+					$profile_row[$row] = $db->loadResult();
+				} catch (Exception $e) {
+					JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus');
+					continue;
+				}
+
+			}
+
 			continue;
 		} elseif ($column_number == $status_column) {
 			$status_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
@@ -160,7 +181,6 @@ if (empty($parsed_data)) {
 }
 
 $campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
-$profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
 $status = 0;
 $email_from_sys = $app->getCfg('mailfrom');
 
@@ -187,6 +207,24 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	if (!empty($status_row[$row_id]) && is_numeric($status_row[$row_id])) {
 		$status = $status_row[$row_id];
+	}
+
+	if (!empty($profile_row[$row_id]) && is_numeric($status_row[$row_id])) {
+		$profile = $profile_row[$row_id];
+	} elseif (empty($profile)) {
+
+		$query->clear()
+			->select($db->quoteName('profile_id'))
+			->from($db->quoteName('#__emundus_setup_campaigns'))
+			->where($db->quoteName('id').' = '.$campaign);
+		$db->setQuery($query);
+
+		try {
+			$profile_row[$row] = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus');
+			continue;
+		}
 	}
 
 	// We need a user
