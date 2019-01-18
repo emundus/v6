@@ -65,6 +65,10 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 				$campaign_column = $column_number;
 			}
 
+			if ($column[0] = 'status') {
+				$status_column = $column_number;
+			}
+
 			$bad_columns[] = $column_number;
 			continue;
 		}
@@ -123,6 +127,9 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 		if ($column_number == $campaign_column) {
 			$campaign_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 			continue;
+		} elseif ($column_number == $status_column) {
+			$status_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+			continue;
 		}
 
 		if (in_array($column_number, $bad_columns)) {
@@ -154,6 +161,7 @@ if (empty($parsed_data)) {
 
 $campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
 $profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
+$status = 0;
 $email_from_sys = $app->getCfg('mailfrom');
 
 // if we have the LDAP param active, we can look for one here.
@@ -175,6 +183,10 @@ foreach ($parsed_data as $row_id => $insert_row) {
 	// We can pass the campaign ID in the XLS if we need.
 	if (!empty($campaign_row[$row_id]) && is_numeric($campaign_row[$row_id])) {
 		$campaign = $campaign_row[$row_id];
+	}
+
+	if (!empty($status_row[$row_id]) && is_numeric($status_row[$row_id])) {
+		$status = $status_row[$row_id];
 	}
 
 	// We need a user
@@ -394,8 +406,8 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$fnum = date('YmdHis').str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user, 7, '0', STR_PAD_LEFT);
 		$query->clear()
 			->insert($db->quoteName('#__emundus_campaign_candidature'))
-			->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum']))
-			->values($user.', '.JFactory::getUser()->id.', '.$campaign.', '.$db->quote($fnum));
+			->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum', 'status']))
+			->values($user.', '.JFactory::getUser()->id.', '.$campaign.', '.$db->quote($fnum).', '.$status);
 		$db->setQuery($query);
 
 		try {
