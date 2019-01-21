@@ -1763,8 +1763,11 @@ class EmundusModelApplication extends JModelList
 
                                         else
                                             $elt = JText::_($element->content);
-                                        //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
-                                        $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
+                                        
+                                        if ($element->plugin == 'textarea')
+                                            $forms .= '<tr><td colspan="2" style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span> <br>'.JText::_($elt).'</td></tr>';
+                                        else
+                                            $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
 
                                     }
                                 }elseif(empty($element->content)){
