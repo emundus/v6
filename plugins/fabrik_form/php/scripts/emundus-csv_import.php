@@ -63,11 +63,11 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 		if (count($column) !== 2) {
 
 			// Special columns such as the campaign ID can be inserted.
-			if ($column[0] = 'campaign') {
+			if ($column[0] == 'campaign') {
 				$campaign_column = $column_number;
 			}
 
-			if ($column[0] = 'status') {
+			if ($column[0] == 'status') {
 				$status_column = $column_number;
 			}
 
@@ -126,7 +126,7 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 	
 	foreach ($data as $column_number => $column) {
 
-		if ($column_number == $campaign_column) {
+		if ($column_number === $campaign_column) {
 			$campaign_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 
 			// If we have no profile, we must get the associated one using the campaign.
@@ -148,7 +148,7 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 			}
 
 			continue;
-		} elseif ($column_number == $status_column) {
+		} elseif ($column_number === $status_column) {
 			$status_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 			continue;
 		}
