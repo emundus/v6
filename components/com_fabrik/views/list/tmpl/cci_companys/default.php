@@ -111,7 +111,7 @@ echo $this->table->intro;
                                     <?php if ($d['fabrik_edit_url']) :?>
                                         <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
                                     <?php endif; ?>
-                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo "data-cid= \"".$d['cid']."\""; } ?>"><i class="fas fa-times"></i></div>
+                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo "data-cid= \"".$d['cid']."\""; } ?>"><i class="fas fa-trash-alt"></i></div>
                                 </div>
                             </div>
 
