@@ -51,6 +51,8 @@ $db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $checked_tables = [];
 
+$profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
+
 $row = 0;
 if (($data = fgetcsv($handle, 0, ';')) !== false) {
 
@@ -61,11 +63,11 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 		if (count($column) !== 2) {
 
 			// Special columns such as the campaign ID can be inserted.
-			if ($column[0] = 'campaign') {
+			if ($column[0] == 'campaign') {
 				$campaign_column = $column_number;
 			}
 
-			if ($column[0] = 'status') {
+			if ($column[0] == 'status') {
 				$status_column = $column_number;
 			}
 
@@ -124,10 +126,29 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 	
 	foreach ($data as $column_number => $column) {
 
-		if ($column_number == $campaign_column) {
+		if ($column_number === $campaign_column) {
 			$campaign_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+
+			// If we have no profile, we must get the associated one using the campaign.
+			if (empty($profile)) {
+
+				$query->clear()
+					->select($db->quoteName('profile_id'))
+					->from($db->quoteName('#__emundus_setup_campaigns'))
+					->where($db->quoteName('id').' = '.preg_replace('/[^\PC\s]/u', '', $column));
+				$db->setQuery($query);
+
+				try {
+					$profile_row[$row] = $db->loadResult();
+				} catch (Exception $e) {
+					JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus');
+					continue;
+				}
+
+			}
+
 			continue;
-		} elseif ($column_number == $status_column) {
+		} elseif ($column_number === $status_column) {
 			$status_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 			continue;
 		}
@@ -160,7 +181,6 @@ if (empty($parsed_data)) {
 }
 
 $campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
-$profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
 $status = 0;
 $email_from_sys = $app->getCfg('mailfrom');
 
@@ -187,6 +207,24 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	if (!empty($status_row[$row_id]) && is_numeric($status_row[$row_id])) {
 		$status = $status_row[$row_id];
+	}
+
+	if (!empty($profile_row[$row_id]) && is_numeric($status_row[$row_id])) {
+		$profile = $profile_row[$row_id];
+	} elseif (empty($profile)) {
+
+		$query->clear()
+			->select($db->quoteName('profile_id'))
+			->from($db->quoteName('#__emundus_setup_campaigns'))
+			->where($db->quoteName('id').' = '.$campaign);
+		$db->setQuery($query);
+
+		try {
+			$profile_row[$row] = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus');
+			continue;
+		}
 	}
 
 	// We need a user
@@ -328,57 +366,60 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$m_emails = new EmundusModelEmails();
 
 		// If we are creating an ldap account, we need to send a different email.
+		// If we are creating an ldap account, we need to send a different email.
 		if ($ldap_user) {
-
 			$email = $m_emails->getEmail('new_ldap_account');
-			$tags = $m_emails->setTags($user->id, array(), null, null);
+		} else {
+			$email = $m_emails->getEmail('new_account');
+		}
 
-			$mailer = JFactory::getMailer();
-			$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-			$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-			$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-			$body = $m_emails->setTagsFabrik($body);
+		$tags = $m_emails->setTags($user->id, array(), null, null);
 
-			// If the email sender has the same domain as the system sender address.
-			if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-				$mail_from_address = $email->emailfrom;
+		$mailer = JFactory::getMailer();
+		$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+		$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+		$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+		$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+		$body = $m_emails->setTagsFabrik($body);
+
+		// If the email sender has the same domain as the system sender address.
+		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+			$mail_from_address = $email->emailfrom;
+		} else {
+			$mail_from_address = $email_from_sys;
+		}
+
+		$sender = [
+			$mail_from_address,
+			$fromname
+		];
+
+		$mailer->setSender($sender);
+		$mailer->addReplyTo($email->emailfrom, $email->name);
+		$mailer->addRecipient($user->email);
+		$mailer->setSubject($email->subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
+
+		try {
+			$send = $mailer->Send();
+
+			if ($send === false) {
+				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus');
 			} else {
-				$mail_from_address = $email_from_sys;
-			}
-
-			$sender = [
-				$mail_from_address,
-				$fromname
-			];
-
-			$mailer->setSender($sender);
-			$mailer->addReplyTo($email->emailfrom, $email->name);
-			$mailer->addRecipient($user->email);
-			$mailer->setSubject($email->subject);
-			$mailer->isHTML(true);
-			$mailer->Encoding = 'base64';
-			$mailer->setBody($body);
-
-			try {
-				$send = $mailer->Send();
-
-				if ($send === false) {
-					JLog::add('No email configuration!', JLog::ERROR, 'com_emundus');
-				} else {
-					if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
-						$message = array(
-							'user_id_to' => $uid,
-							'subject' => $email->subject,
-							'message' => $body
-						);
-						$m_emails->logEmail($message);
-					}
+				if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
+					$message = array(
+						'user_id_to' => $uid,
+						'subject' => $email->subject,
+						'message' => $body
+					);
+					$m_emails->logEmail($message);
 				}
-
-			} catch (Exception $e) {
-				JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus');
 			}
+
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus');
 		}
 
 		$user = $user->id;
