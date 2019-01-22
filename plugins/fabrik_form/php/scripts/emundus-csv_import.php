@@ -368,18 +368,11 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		// If we are creating an ldap account, we need to send a different email.
 		if ($ldap_user) {
 			$email = $m_emails->getEmail('new_ldap_account');
+			$tags = $m_emails->setTags($user->id, null, null, null);
 		} else {
 			$email = $m_emails->getEmail('new_account');
+			$tags = $m_emails->setTags($user->id, null, null, $password);
 		}
-
-		$post = [];
-		if (!$ldap_user) {
-			$post = [
-				'PASSWORD' => $password
-			];
-		}
-
-		$tags = $m_emails->setTags($user->id, $post, null, null);
 
 		$mailer = JFactory::getMailer();
 		$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
