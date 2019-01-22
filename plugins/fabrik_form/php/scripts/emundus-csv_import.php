@@ -366,14 +366,20 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$m_emails = new EmundusModelEmails();
 
 		// If we are creating an ldap account, we need to send a different email.
-		// If we are creating an ldap account, we need to send a different email.
 		if ($ldap_user) {
 			$email = $m_emails->getEmail('new_ldap_account');
 		} else {
 			$email = $m_emails->getEmail('new_account');
 		}
 
-		$tags = $m_emails->setTags($user->id, array(), null, null);
+		$post = [];
+		if (!$ldap_user) {
+			$post = [
+				'PASSWORD' => $password
+			];
+		}
+
+		$tags = $m_emails->setTags($user->id, $post, null, null);
 
 		$mailer = JFactory::getMailer();
 		$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
@@ -381,6 +387,10 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
 		$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 		$body = $m_emails->setTagsFabrik($body);
+
+		if (!empty($template->Template)) {
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+		}
 
 		// If the email sender has the same domain as the system sender address.
 		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
