@@ -381,8 +381,8 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 		$body = $m_emails->setTagsFabrik($body);
 
-		if (!empty($template->Template)) {
-			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+		if (!empty($email->Template)) {
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
 		}
 
 		// If the email sender has the same domain as the system sender address.
