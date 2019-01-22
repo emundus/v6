@@ -366,57 +366,60 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$m_emails = new EmundusModelEmails();
 
 		// If we are creating an ldap account, we need to send a different email.
+		// If we are creating an ldap account, we need to send a different email.
 		if ($ldap_user) {
-
 			$email = $m_emails->getEmail('new_ldap_account');
-			$tags = $m_emails->setTags($user->id, array(), null, null);
+		} else {
+			$email = $m_emails->getEmail('new_account');
+		}
 
-			$mailer = JFactory::getMailer();
-			$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-			$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-			$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-			$body = $m_emails->setTagsFabrik($body);
+		$tags = $m_emails->setTags($user->id, array(), null, null);
 
-			// If the email sender has the same domain as the system sender address.
-			if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-				$mail_from_address = $email->emailfrom;
+		$mailer = JFactory::getMailer();
+		$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+		$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+		$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+		$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+		$body = $m_emails->setTagsFabrik($body);
+
+		// If the email sender has the same domain as the system sender address.
+		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+			$mail_from_address = $email->emailfrom;
+		} else {
+			$mail_from_address = $email_from_sys;
+		}
+
+		$sender = [
+			$mail_from_address,
+			$fromname
+		];
+
+		$mailer->setSender($sender);
+		$mailer->addReplyTo($email->emailfrom, $email->name);
+		$mailer->addRecipient($user->email);
+		$mailer->setSubject($email->subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
+
+		try {
+			$send = $mailer->Send();
+
+			if ($send === false) {
+				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus');
 			} else {
-				$mail_from_address = $email_from_sys;
-			}
-
-			$sender = [
-				$mail_from_address,
-				$fromname
-			];
-
-			$mailer->setSender($sender);
-			$mailer->addReplyTo($email->emailfrom, $email->name);
-			$mailer->addRecipient($user->email);
-			$mailer->setSubject($email->subject);
-			$mailer->isHTML(true);
-			$mailer->Encoding = 'base64';
-			$mailer->setBody($body);
-
-			try {
-				$send = $mailer->Send();
-
-				if ($send === false) {
-					JLog::add('No email configuration!', JLog::ERROR, 'com_emundus');
-				} else {
-					if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
-						$message = array(
-							'user_id_to' => $uid,
-							'subject' => $email->subject,
-							'message' => $body
-						);
-						$m_emails->logEmail($message);
-					}
+				if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
+					$message = array(
+						'user_id_to' => $uid,
+						'subject' => $email->subject,
+						'message' => $body
+					);
+					$m_emails->logEmail($message);
 				}
-
-			} catch (Exception $e) {
-				JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus');
 			}
+
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus');
 		}
 
 		$user = $user->id;
