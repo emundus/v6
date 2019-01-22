@@ -535,15 +535,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$summary = '';
 
 		if (!empty($totals['user'])) {
-			$summary .= 'Added '.$totals['user'].' new users. \n';
+			$summary .= 'Added '.$totals['user'].' new users. <br>';
 		}
 
 		if (!empty($totals['ldap'])) {
-			$summary .= 'Added '.$totals['ldap'].' users found in the LDAP system. \n';
+			$summary .= 'Added '.$totals['ldap'].' users found in the LDAP system. <br>';
 		}
 
 		if (!empty($totals['fnum'])) {
-			$summary .= 'Added '.$totals['fnum'].' new candidacy files. \n';
+			$summary .= 'Added '.$totals['fnum'].' new candidacy files. <br>';
 		}
 
 		if (!empty($totals['write'])) {
