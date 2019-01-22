@@ -195,6 +195,13 @@ $ldap_elements  = explode(',', $emundus_params->get('ldapElements'));
 $ldap_params = new JRegistry($ldap_plugin->params);
 $ldap = new JLDAP($ldap_params);
 
+$totals = [
+	'ldap' => 0,
+	'user' => 0,
+	'fnum' => 0,
+	'write' => 0
+];
+
 // Handle parsed data insertion
 foreach ($parsed_data as $row_id => $insert_row) {
 
@@ -367,9 +374,11 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 		// If we are creating an ldap account, we need to send a different email.
 		if ($ldap_user) {
+			$totals['ldap']++;
 			$email = $m_emails->getEmail('new_ldap_account');
 			$tags = $m_emails->setTags($user->id, null, null, null);
 		} else {
+			$totals['user']++;
 			$email = $m_emails->getEmail('new_account');
 			$tags = $m_emails->setTags($user->id, null, null, $password);
 		}
@@ -456,6 +465,8 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 		try {
 			$db->execute();
+			$totals['fnum']++;
+			$totals['write']++;
 			JLog::add(' --- INSERTED CC :'.$fnum.' FOR USER : '.$user, JLog::INFO, 'com_emundus');
 		} catch (Exception $e) {
 			JLog::add('ERROR: Could not build fnum for user at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -509,11 +520,36 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 		try {
 			$db->execute();
+			$totals['write']++;
 			JLog::add(' --- INSERTED ROW :'.$db->insertid().' AT TABLE : '.$table_name, JLog::INFO, 'com_emundus');
 		} catch (Exception $e) {
 			JLog::add('ERROR inserting data in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		}
 
+	}
+
+	if (!empty($totals)) {
+
+		$totals['write'] += ((2*$totals['user']) + (2*$totals['ldap']));
+
+		$summary = '';
+
+		if (!empty($totals['user'])) {
+			$summary .= 'Added '.$totals['user'].' new users. \n';
+		}
+
+		if (!empty($totals['ldap'])) {
+			$summary .= 'Added '.$totals['ldap'].' users found in the LDAP system. \n';
+		}
+
+		if (!empty($totals['fnum'])) {
+			$summary .= 'Added '.$totals['fnum'].' new candidacy files. \n';
+		}
+
+		if (!empty($totals['write'])) {
+			$summary .= 'Wrote '.$totals['write'].' lines.';
+		}
+		$app->enqueueMessage($summary, 'info');
 	}
 
 
