@@ -216,7 +216,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$status = $status_row[$row_id];
 	}
 
-	if (!empty($profile_row[$row_id]) && is_numeric($status_row[$row_id])) {
+	if (!empty($profile_row[$row_id]) && is_numeric($profile_row[$row_id])) {
 		$profile = $profile_row[$row_id];
 	} elseif (empty($profile)) {
 
@@ -528,34 +528,33 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	}
 
-	if (!empty($totals)) {
-
-		$totals['write'] += ((2*$totals['user']) + (2*$totals['ldap']));
-
-		$summary = '';
-
-		if (!empty($totals['user'])) {
-			$summary .= 'Added '.$totals['user'].' new users. <br>';
-		}
-
-		if (!empty($totals['ldap'])) {
-			$summary .= 'Added '.$totals['ldap'].' users found in the LDAP system. <br>';
-		}
-
-		if (!empty($totals['fnum'])) {
-			$summary .= 'Added '.$totals['fnum'].' new candidacy files. <br>';
-		}
-
-		if (!empty($totals['write'])) {
-			$summary .= 'Wrote '.$totals['write'].' lines.';
-		}
-		$app->enqueueMessage($summary, 'info');
-	}
-
-
 	// TODO: Support repeat groups.
 
 }
 
+
+if (!empty($totals)) {
+
+	$totals['write'] += ((2*$totals['user']) + (2*$totals['ldap']));
+
+	$summary = '';
+
+	if (!empty($totals['user'])) {
+		$summary .= 'Added '.$totals['user'].' new users. <br>';
+	}
+
+	if (!empty($totals['ldap'])) {
+		$summary .= 'Added '.$totals['ldap'].' users found in the LDAP system. <br>';
+	}
+
+	if (!empty($totals['fnum'])) {
+		$summary .= 'Added '.$totals['fnum'].' new candidacy files. <br>';
+	}
+
+	if (!empty($totals['write'])) {
+		$summary .= 'Wrote '.$totals['write'].' lines.';
+	}
+	$app->enqueueMessage($summary, 'info');
+}
 
 return true;
