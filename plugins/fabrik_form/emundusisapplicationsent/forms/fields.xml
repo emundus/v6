@@ -3,6 +3,7 @@
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-form-emundusisapplicationsent" label="PLG_FABRIK_FORM_EMUNDUSISAPPLICATIONSENT_FIELDS">
 			<field name="applicationsent_status" type="field" default="0" description="PLG_FABRIK_FORM_EMUNDUSISAPPLICATIONSENT_STATUS_DESC" label="PLG_FABRIK_FORM_EMUNDUSISAPPLICATIONSENT_STATUS_LABEL" />
+			<field name="admission" type="field" default="0" description="IS_ADMISSION" label="Is Admission" />
 		</fieldset>
 	</fields>
 </form>
