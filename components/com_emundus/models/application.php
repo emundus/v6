@@ -2435,10 +2435,23 @@ td {
      * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
      * If $sent is sent to true, the function will search for orders with a status of 'created' and offline paiement methode
      * @param $fnumInfos $sent
+     * @param bool $sent
+     * @param bool $admission
      * @return bool|mixed
      */
-    public function getHikashopOrder($fnumInfos, $sent=false)
+    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false)
     {
+        if($admission) {
+            $startDate = $fnumInfos['admission_start_date'];
+            $endDate = $fnumInfos['admission_end_date'];
+        }
+        else {
+            $startDate = $fnumInfos['start_date'];
+            $endDate = $fnumInfos['end_date'];
+        }
+
+
+        
         $dbo = $this->getDbo();
 
         if ($sent) {
@@ -2448,8 +2461,8 @@ td {
                 LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
                 WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
                 AND ho.order_status like "created" AND (ho.order_payment_method like "banktransfer" OR ho.order_payment_method like "check")
-                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                AND ho.order_created >= '.strtotime($startDate).'
+                AND ho.order_created <= '.strtotime($endDate).'
                 ORDER BY ho.order_created desc';
 
         } else {
@@ -2459,8 +2472,8 @@ td {
                 LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
                 WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
                 AND ho.order_status like "confirmed"
-                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                AND ho.order_created >= '.strtotime($startDate).'
+                AND ho.order_created <= '.strtotime($endDate).'
                 ORDER BY ho.order_created desc';
         }
 
@@ -2481,7 +2494,16 @@ td {
      * @param $fnumInfos
      * @return bool|mixed
      */
-    public function getHikashopCancelledOrders($fnumInfos) {
+    public function getHikashopCancelledOrders($fnumInfos, $admission = false) {
+
+        if($admission) {
+            $startDate = $fnumInfos['admission_start_date'];
+            $endDate = $fnumInfos['admission_end_date'];
+        }
+        else {
+            $startDate = $fnumInfos['start_date'];
+            $endDate = $fnumInfos['end_date'];
+        }
 
         $db = $this->getDBo();
 
@@ -2492,8 +2514,8 @@ td {
                 LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
                 WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
                 AND ho.order_status like "canceled"
-                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+                AND ho.order_created >= '.strtotime($startDate).'
+                AND ho.order_created <= '.strtotime($endDate);
 
             $db->setQuery($query);
             return $db->loadObject();

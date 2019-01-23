@@ -564,7 +564,6 @@ class EmundusModelProfile extends JModelList
 
 			// If the user is admitted then we fill the session with information about the admitted file
 			// regardeless of the current campaign
-
 			$emundusSession->fnum               	= $campaign["fnum"];
 			$emundusSession->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
 			$emundusSession->campaign_id        	= $campaign["id"];
@@ -579,6 +578,8 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->end_date               = $profile["end_date"];
 			$emundusSession->candidature_start      = $profile["start_date"];
 			$emundusSession->candidature_end        = $profile["end_date"];
+            $emundusSession->admission_start      = $profile["admission_start_date"];
+            $emundusSession->admission_end        = $profile["admission_end_date"];
 			$emundusSession->candidature_posted     = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
 			$emundusSession->schoolyear             = $profile["year"];
 			$emundusSession->code                   = $profile["training"];
