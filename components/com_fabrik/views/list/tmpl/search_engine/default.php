@@ -98,7 +98,7 @@ echo $this->table->intro;
 						<?php if (!empty($data)) :?>
                             <thead>
                             <tr>
-                                <td><h3>RESULTAT DE LA RECHERCHE</h3></td>
+                                <td><h3>RÉSULTAT DE LA RECHERCHE</h3></td>
                             </tr>
                             </thead>
                             <tfoot>
@@ -113,7 +113,7 @@ echo $this->table->intro;
                         <tbody>
 						<?php if (empty($data)) :?>
                             <div>
-                                <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond</p>
+                                <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
                                 <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
                             </div>
 						<?php endif;
@@ -191,7 +191,7 @@ echo $this->table->intro;
                     </table>
 					<?php if (!empty($data)) :?>
                         <div>
-                            <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond</p>
+                            <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
                             <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
                         </div>
 					<?php endif; ?>

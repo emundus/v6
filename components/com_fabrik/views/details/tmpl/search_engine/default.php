@@ -125,7 +125,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 </div>
 
 <div class="em-offre">
-    <h1 class="em-offre-title"> Le Sujet </h1>
+    <h1 class="em-offre-title">Le Sujet </h1>
 
     <!-- THEMES -->
     <div class="em-offre-themes">
@@ -212,9 +212,9 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                         <div class="modal-body">
                             <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>
                             <?php if (!empty($offers)) :?>
-                                <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>
+                                <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>
                                 <select id="em-join-offer">
-                                    <option value="">Je ne souhaite pas joindre mes offres</option>
+                                    <option value="">Je ne souhaite pas joindre mes offres.</option>
                                     <?php foreach ($offers as $offer) :?>
                                         <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
                                     <?php endforeach; ?>
@@ -284,7 +284,6 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         <?php endif; ?>
 
         </div>
-
     </div>
 </div>
 
@@ -341,7 +340,6 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                 if (result.status) {
 
                     // When we successfully change the status, we simply dynamically change the button.
-
                     if (action == 'contact')
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
                     else if (action == 'retry')
@@ -401,10 +399,10 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 		                                                <?php endforeach; ?>
                         '                            </select>' +
 		                                            <?php endif; ?>
-                        '                       <textarea class="em-contact-message" placeholder="Ajouter un méssage (facultatif)"></textarea>'+
+                        '                       <textarea class="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>'+
                         '                    </div>' +
                         '                    <div class="modal-footer">' +
-                        '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Evoyer la demande de contact</button>' +
+                        '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Envoyer la demande de contact</button>' +
                         '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
                         '                    </div>' +
                         '                </div>' +
