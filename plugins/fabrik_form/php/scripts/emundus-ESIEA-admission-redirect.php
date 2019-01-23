@@ -32,7 +32,7 @@ $jinput = $app->input;
 $fnum = $jinput->get->get('rowid', null);
 
 $formId = 316;
-$itemId = 2839;
+$itemId = 2841;
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $id_applicants 			 = $eMConfig->get('id_applicants', '0');
@@ -47,7 +47,7 @@ if (!empty($fnum)) {
 
         if(@$user->fnums[$fnum]->submitted =="1" && @$user->fnums[$fnum]->published =="1" && @$user->fnums[$fnum]->cancelled =="0" && in_array($user->status, $status)  && $admissionDate >= $admissionDateBegin && $admissionDate <= $admissionDateEnd) {
             
-            $user->profile = 1012;
+            $user->profile = "1012";
             $session->set('emundusUser', $user);
 
             $user->profile_label = "Inscription à l'ESIEA";
