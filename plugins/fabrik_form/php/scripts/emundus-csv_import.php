@@ -195,6 +195,13 @@ $ldap_elements  = explode(',', $emundus_params->get('ldapElements'));
 $ldap_params = new JRegistry($ldap_plugin->params);
 $ldap = new JLDAP($ldap_params);
 
+$totals = [
+	'ldap' => 0,
+	'user' => 0,
+	'fnum' => 0,
+	'write' => 0
+];
+
 // Handle parsed data insertion
 foreach ($parsed_data as $row_id => $insert_row) {
 
@@ -209,7 +216,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$status = $status_row[$row_id];
 	}
 
-	if (!empty($profile_row[$row_id]) && is_numeric($status_row[$row_id])) {
+	if (!empty($profile_row[$row_id]) && is_numeric($profile_row[$row_id])) {
 		$profile = $profile_row[$row_id];
 	} elseif (empty($profile)) {
 
@@ -366,14 +373,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$m_emails = new EmundusModelEmails();
 
 		// If we are creating an ldap account, we need to send a different email.
-		// If we are creating an ldap account, we need to send a different email.
 		if ($ldap_user) {
+			$totals['ldap']++;
 			$email = $m_emails->getEmail('new_ldap_account');
+			$tags = $m_emails->setTags($user->id, null, null, null);
 		} else {
+			$totals['user']++;
 			$email = $m_emails->getEmail('new_account');
+			$tags = $m_emails->setTags($user->id, null, null, $password);
 		}
-
-		$tags = $m_emails->setTags($user->id, array(), null, null);
 
 		$mailer = JFactory::getMailer();
 		$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
@@ -381,6 +389,10 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
 		$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 		$body = $m_emails->setTagsFabrik($body);
+
+		if (!empty($email->Template)) {
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
+		}
 
 		// If the email sender has the same domain as the system sender address.
 		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
@@ -453,6 +465,8 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 		try {
 			$db->execute();
+			$totals['fnum']++;
+			$totals['write']++;
 			JLog::add(' --- INSERTED CC :'.$fnum.' FOR USER : '.$user, JLog::INFO, 'com_emundus');
 		} catch (Exception $e) {
 			JLog::add('ERROR: Could not build fnum for user at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -506,6 +520,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 		try {
 			$db->execute();
+			$totals['write']++;
 			JLog::add(' --- INSERTED ROW :'.$db->insertid().' AT TABLE : '.$table_name, JLog::INFO, 'com_emundus');
 		} catch (Exception $e) {
 			JLog::add('ERROR inserting data in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -513,10 +528,33 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	}
 
-
 	// TODO: Support repeat groups.
 
 }
 
+
+if (!empty($totals)) {
+
+	$totals['write'] += ((2*$totals['user']) + (2*$totals['ldap']));
+
+	$summary = '';
+
+	if (!empty($totals['user'])) {
+		$summary .= 'Added '.$totals['user'].' new users. <br>';
+	}
+
+	if (!empty($totals['ldap'])) {
+		$summary .= 'Added '.$totals['ldap'].' users found in the LDAP system. <br>';
+	}
+
+	if (!empty($totals['fnum'])) {
+		$summary .= 'Added '.$totals['fnum'].' new candidacy files. <br>';
+	}
+
+	if (!empty($totals['write'])) {
+		$summary .= 'Wrote '.$totals['write'].' lines.';
+	}
+	$app->enqueueMessage($summary, 'info');
+}
 
 return true;
