@@ -67,12 +67,12 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
                 <div class="content">
                     <?php if (!isset($sentOrder) || $sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check') :?>
                         <?php if (isset($scholarship) && $scholarship) :?>
-                            <div class="description"> <?php echo JText::_('HAS_SCHOLARSHIP'); ?> </div>
+                            <div class="description <?php echo ($admission)?'admission':''; ?>"> <?php echo ($admission)?'':JText::_('HAS_SCHOLARSHIP'); ?> </div>
                         <?php else: ?>
-                            <div class="description <?php echo ($paid>0)?'paid':'not-paid'; ?>"> <?php echo ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
+                            <div class="description <?php echo ($paid>0)?'paid':'not-paid'; echo ($admission)?'admission':''; ?>"> <?php echo ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
                         <?php endif; ?>
                     <?php else :?>
-                        <div class="description <?php echo ($paid>0)?'paid':'paid-card'; ?>"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('PAID_VIA_CARD'); ?> </div>
+                        <div class="description <?php echo ($paid>0)?'paid':'paid-card'; echo ($admission)?'admission':'';?>"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('PAID_VIA_CARD'); ?> </div>
                     <?php endif; ?>
                     <div class="description"> <?php echo  ($paid==0 && !empty($sentOrder) && ($sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check'))?JText::_('AWAITING_PAYMENT'):'' ?> </div>
                     <div class="description">
