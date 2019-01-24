@@ -190,7 +190,7 @@ echo $this->table->intro;
 						<?php endif ?>
                     </table>
 					<?php if (!empty($data)) :?>
-                        <div>
+                        <div class="em-search-engine-foot">
                             <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
                             <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
                         </div>
