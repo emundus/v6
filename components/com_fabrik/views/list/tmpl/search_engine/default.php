@@ -25,6 +25,8 @@ function jsonDecode($val) {
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+$user = JFactory::getSession()->get('emundusUser');
+
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;
@@ -39,7 +41,10 @@ if ($this->params->get('show_page_heading')) :?>
 
 <?php if ($this->showTitle == 1) : ?>
     <div class="page-header">
-        <h1><?php echo $this->table->label;?></h1>
+        <h1>Vous êtes un <?php echo $user->profile_label;?></h1>
+        <div class="em-page-header-description">
+            <p style="padding: 1rem; background-color: #e9e9e9; text-align: justify;"><span style="font-size: 14pt;"><span style="text-decoration: underline;">Sur cette page, vous pouvez consulter les offres déjà en ligne</span>. Vous pouvez préciser votre demande par type d'acteur recherché, par région, département et thématique souhaités grâce aux filtres ci-dessous. Cliquez sur l'intitulé de l'annonce qui vous intéresse pour la découvrir en détail et pouvoir contacter son auteur (dit aussi "déposant").<br /><br />Vous n'avez pas trouvez ce que vous cherchiez ? Déposez l'annonce qui vous correspond en <a href="https://hesam.emundus.fr/index.php?option=com_fabrik&amp;view=form&amp;formid=102">proposant une offre</a>. </span><span style="font-size: 14pt;"></span><br /><br /><span style="font-size: 14pt;"><span style="text-decoration: underline;">Vous souhaitez en savoir plus avant de vous lancer</span> ? Découvrez les récits d'expérience et astuces d'une <a href="https://hesam.emundus.fr/index.php?option=com_content&amp;view=article&amp;id=122:francoise-ramel-un-chercheur-nous-permet-de-formuler-des-desirs-des-besoins-mais-aussi-des-solutions&amp;catid=101">conseillère municipale de Pontivy</a> ou d'un <a href="https://hesam.emundus.fr/1000-doctorants/les-temoignages/58-boris-chevrot">doctorant d'une communauté de communes de Bourgogne</a> dans la rubrique <a href="https://hesam.emundus.fr/1000-doctorants/les-temoignages">Témoignages</a> de cette plateforme. Dans la rubrique <a href="https://hesam.emundus.fr/1000-doctorants/boite-a-outils">Boîte à outils</a></span><span style="font-size: 14pt;">, des articles sont régulièrement déposés pour rendre toujours plus clair et plus simple le programme. A la moindre question, consultez la <a href="https://hesam.emundus.fr/vos-questions">Foire aux questions</a> ou écrivez-nous à</span><span style="font-size: 14pt;"> <a href="mailto:1000docs@hesam.eu">1000docs@hesam.eu</a> </span><strong><span style="font-size: 14pt;"><br /></span></strong></p>
+        </div>
     </div>
 <?php endif;
 
@@ -190,7 +195,7 @@ echo $this->table->intro;
 						<?php endif ?>
                     </table>
 					<?php if (!empty($data)) :?>
-                        <div>
+                        <div class="em-search-engine-foot">
                             <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
                             <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
                         </div>
