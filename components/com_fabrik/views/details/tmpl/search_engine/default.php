@@ -52,6 +52,8 @@ $departments= $this->data['data_departements___departement_nom_raw'];
 $chercheur 	= strtolower($this->data['jos_emundus_setup_profiles___label_raw'][0]);
 $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+$m_cifre = new EmundusModelCifre();
 
 ?>
 <!-- Title -->
@@ -61,15 +63,13 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
 <div class="em-offre-meta">
     <p>Sujet déposé le <strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
-    <p>Par un <strong class="em-highlight"><?php echo $chercheur; ?></strong></p>
 </div>
 
 <!-- Author -->
 <div class="em-offre-author">
-    <h1 class="em-offre-title"> Le déposant </h1>
-    <div class="em-offre-subtitle">Profil du déposant</div>
+    <h1 class="em-offre-title">Profil du déposant</h1>
     <div class="em-offre-author-profile">
-        <strong>Nom : </strong><div class="em-offre-author-name"><?php echo $author->name; ?></div>
+        <div class="em-offre-author-name"><strong>Type : </strong><?php echo $chercheur; ?></div>
     </div>
 
     <?php
@@ -77,15 +77,22 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
     //// Profile 1006 : Futur doctorant = display no special information.
     //// Profile 1007 : Researcher = display information about his lab.
     //// Profile 1008 : Municipality = display information about the organization.
-    if ($profile == '1007') :?>
-        <?php
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-        $m_cifre = new EmundusModelCifre();
-        $laboratoire = $m_cifre->getUserLaboratory($author->id);
-        ?>
+
+    if ($profile == '1006') :?>
+
+    <div class="em-offre-inst">
+        <div class="em-offre-institution">
+            <strong>Parcours : </strong>
+            <?php $master = $m_cifre->getUserMasters($author->id); ?>
+            <?php echo $master->master_2_intitule.' - '.$master->master_2_etablissement.' ('.$master->master_2_annee.')'; ?>
+        </div>
+    </div>
+
+    <?php elseif ($profile == '1007') :?>
+        <?php $laboratoire = $m_cifre->getUserLaboratory($author->id); ?>
         <div class="em-offre-inst">
-            <strong>Laboratoire :</strong>
             <div class="em-offre-institution">
+                <strong>Laboratoire : </strong>
                 <?php
                 if (!empty($laboratoire->website)) {
                     $parse = parse_url($laboratoire->website, PHP_URL_SCHEME) === null ? 'http://' . $laboratoire->website: $laboratoire->website;
@@ -101,13 +108,11 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
     <?php elseif ($profile == '1008') :?>
         <?php
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-        $m_cifre = new EmundusModelCifre();
         $institution = $m_cifre->getUserInstitution($author->id);
         ?>
         <div class="em-offre-inst">
-            <strong>Structure :</strong>
             <div class="em-offre-institution">
+                <strong>Territoire : </strong>
                 <?php
                 if (!empty($institution->website)) {
                     $parse = parse_url($institution->website, PHP_URL_SCHEME) === null ? 'http://' . $institution->website: $institution->website;
@@ -121,10 +126,18 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         </div>
         <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
     <?php endif; ?>
+
+    <div class="em-offre-limit-date">
+        <strong>Date de disponibilité : </strong> <?php echo $this->data['jos_emundus_projet___limit_date']; ?>
+    </div>
 </div>
 
 <div class="em-offre">
     <h1 class="em-offre-title">Le Sujet </h1>
+
+    <p class="em-offre-subject-title">
+		<strong>Titre : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
+    </p>
 
     <!-- THEMES -->
     <div class="em-offre-themes">
@@ -135,7 +148,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 	<?php if ($profile == '1006') :?>
         <!-- Project context -->
         <p class="em-offre-contexte">
-            <div class="em-offre-subtitle">Contexte : </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
+            <div class="em-offre-subtitle">Enjeu et actualité du sujet : </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
         </p>
     <?php endif; ?>
 
