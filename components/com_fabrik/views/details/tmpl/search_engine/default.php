@@ -288,6 +288,11 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
     </div>
 </div>
 
+<div class="em-modal-sending-emails" id="em-modal-sending-emails">
+    <div id="em-sending-email-caption">Envoi en cours ...</div>
+    <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
+</div>
+
 <script>
 
     function actionButton(action) {
@@ -298,6 +303,8 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         };
 
         if (action == 'contact') {
+
+            jQuery('#em-modal-sending-emails').css('display', 'block');
             if (document.getElementById('em-join-offer') != null) {
                 // Get the offer selected from the dropdown by the user.
                 var linkedOffer = document.getElementById('em-join-offer').value;
@@ -338,6 +345,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
             },
             success: function(result) {
+                jQuery('#em-modal-sending-emails').css('display', 'none');
                 if (result.status) {
 
                     // When we successfully change the status, we simply dynamically change the button.
@@ -355,6 +363,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                 }
             },
             error: function(jqXHR) {
+                jQuery('#em-modal-sending-emails').css('display', 'none');
                 console.log(jqXHR.responseText);
             }
         });
