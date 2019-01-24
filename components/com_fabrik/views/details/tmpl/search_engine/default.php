@@ -342,19 +342,20 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                     jQuery('.modal-backdrop').remove();
                 }
 
-
             },
             success: function(result) {
                 jQuery('#em-modal-sending-emails').css('display', 'none');
                 if (result.status) {
 
                     // When we successfully change the status, we simply dynamically change the button.
-                    if (action == 'contact')
-                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
-                    else if (action == 'retry')
+                    if (action == 'contact') {
+                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button> ' +
+                            ' <button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
+                    } else if (action == 'retry') {
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > Message envoyé </button>');
-                    else if (action == 'reply')
+                    } else if (action == 'reply') {
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"> Couper contact </button>');
+                    }
 
                 } else {
                     var actionText = document.getElementById('em-action-text');
