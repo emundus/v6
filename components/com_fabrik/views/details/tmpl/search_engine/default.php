@@ -65,7 +65,6 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 </div>
 
 <!-- Author -->
-<!-- TODO: Add more information, not just the author's name but also something more like 'la communauté de communes de :' -->
 <div class="em-offre-author">
     <h1 class="em-offre-title"> Le déposant </h1>
     <div class="em-offre-subtitle">Profil du déposant</div>
@@ -125,7 +124,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 </div>
 
 <div class="em-offre">
-    <h1 class="em-offre-title"> Le Sujet </h1>
+    <h1 class="em-offre-title">Le Sujet </h1>
 
     <!-- THEMES -->
     <div class="em-offre-themes">
@@ -164,10 +163,12 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
 <!-- Contact information -->
 <div class="em-offre-contact">
+    <!--
     <h1 class="em-contact-title"> Contact </h1>
     <p class="em-contact-item"><strong>Nom : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_nom_raw'][0])?$this->data['jos_emundus_projet___contact_nom_raw'][0]:'Aucun nom renseigné'; ?></p>
     <p class="em-contact-item"><strong>Mail : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_mail_raw'][0])?$this->data['jos_emundus_projet___contact_mail_raw'][0]:'Aucun mail renseingé'; ?></p>
     <p class="em-contact-item"><strong>Tel : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_tel_raw'][0])?$this->data['jos_emundus_projet___contact_tel_raw'][0]:'Aucun numéro renseigné'; ?></p>
+    ->
 
     <?php
     // Log the action of opening the persons form.
@@ -196,7 +197,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
             <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
 
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">
+            <button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal" data-target="#contactModal">
                 Entrer en contact
             </button>
 
@@ -212,9 +213,9 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                         <div class="modal-body">
                             <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>
                             <?php if (!empty($offers)) :?>
-                                <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>
+                                <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>
                                 <select id="em-join-offer">
-                                    <option value="">Je ne souhaite pas joindre mes offres</option>
+                                    <option value="">Je ne souhaite pas joindre mes offres.</option>
                                     <?php foreach ($offers as $offer) :?>
                                         <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
                                     <?php endforeach; ?>
@@ -284,8 +285,12 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         <?php endif; ?>
 
         </div>
-
     </div>
+</div>
+
+<div class="em-modal-sending-emails" id="em-modal-sending-emails">
+    <div id="em-sending-email-caption">Envoi en cours ...</div>
+    <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
 </div>
 
 <script>
@@ -298,6 +303,8 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         };
 
         if (action == 'contact') {
+
+            jQuery('#em-modal-sending-emails').css('display', 'block');
             if (document.getElementById('em-join-offer') != null) {
                 // Get the offer selected from the dropdown by the user.
                 var linkedOffer = document.getElementById('em-join-offer').value;
@@ -338,10 +345,10 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
             },
             success: function(result) {
+                jQuery('#em-modal-sending-emails').css('display', 'none');
                 if (result.status) {
 
                     // When we successfully change the status, we simply dynamically change the button.
-
                     if (action == 'contact')
                         jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
                     else if (action == 'retry')
@@ -356,6 +363,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
                 }
             },
             error: function(jqXHR) {
+                jQuery('#em-modal-sending-emails').css('display', 'none');
                 console.log(jqXHR.responseText);
             }
         });
@@ -379,7 +387,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
                     // Dynamically change the button back to the state of not having a link.
                     jQuery('#em-search-item-action-button').html('' +
-                        '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">' +
+                        '<button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal" data-target="#contactModal">' +
                         '        Entrer en contact' +
                         '        </button>' +
                         '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
@@ -401,10 +409,10 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 		                                                <?php endforeach; ?>
                         '                            </select>' +
 		                                            <?php endif; ?>
-                        '                       <textarea class="em-contact-message" placeholder="Ajouter un méssage (facultatif)"></textarea>'+
+                        '                       <textarea class="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>'+
                         '                    </div>' +
                         '                    <div class="modal-footer">' +
-                        '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Evoyer la demande de contact</button>' +
+                        '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Envoyer la demande de contact</button>' +
                         '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
                         '                    </div>' +
                         '                </div>' +
