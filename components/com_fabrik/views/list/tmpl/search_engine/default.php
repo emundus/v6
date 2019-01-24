@@ -98,7 +98,7 @@ echo $this->table->intro;
 						<?php if (!empty($data)) :?>
                             <thead>
                             <tr>
-                                <td><h3>RÉSULTAT DE LA RECHERCHE</h3></td>
+                                <td><h3>RÉSULTATS DE LA RECHERCHE</h3></td>
                             </tr>
                             </thead>
                             <tfoot>
