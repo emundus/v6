@@ -65,7 +65,6 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 </div>
 
 <!-- Author -->
-<!-- TODO: Add more information, not just the author's name but also something more like 'la communauté de communes de :' -->
 <div class="em-offre-author">
     <h1 class="em-offre-title"> Le déposant </h1>
     <div class="em-offre-subtitle">Profil du déposant</div>
@@ -164,10 +163,12 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
 <!-- Contact information -->
 <div class="em-offre-contact">
+    <!--
     <h1 class="em-contact-title"> Contact </h1>
     <p class="em-contact-item"><strong>Nom : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_nom_raw'][0])?$this->data['jos_emundus_projet___contact_nom_raw'][0]:'Aucun nom renseigné'; ?></p>
     <p class="em-contact-item"><strong>Mail : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_mail_raw'][0])?$this->data['jos_emundus_projet___contact_mail_raw'][0]:'Aucun mail renseingé'; ?></p>
     <p class="em-contact-item"><strong>Tel : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_tel_raw'][0])?$this->data['jos_emundus_projet___contact_tel_raw'][0]:'Aucun numéro renseigné'; ?></p>
+    ->
 
     <?php
     // Log the action of opening the persons form.
@@ -196,7 +197,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
             <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
 
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">
+            <button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal" data-target="#contactModal">
                 Entrer en contact
             </button>
 
@@ -377,7 +378,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
                     // Dynamically change the button back to the state of not having a link.
                     jQuery('#em-search-item-action-button').html('' +
-                        '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">' +
+                        '<button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal" data-target="#contactModal">' +
                         '        Entrer en contact' +
                         '        </button>' +
                         '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
