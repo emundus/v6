@@ -128,7 +128,7 @@ $m_cifre = new EmundusModelCifre();
     <?php endif; ?>
 
     <div class="em-offre-limit-date">
-        <strong>Date de disponibilité : </strong> <?php echo $this->data['jos_emundus_projet___limit_date']; ?>
+        <strong>Date de disponibilité : </strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
     </div>
 </div>
 

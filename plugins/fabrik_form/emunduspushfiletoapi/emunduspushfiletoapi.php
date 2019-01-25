@@ -141,6 +141,19 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			$fnumInfos = $m_profile->getFnumDetails($fnum);
 			$admissionForm = $m_files->getAdmissionFormidByFnum($fnum);
 
+			$query = $db->getQuery(true);
+			$query->select([$db->quoteName('firstname','jos_emundus_users___firstname'), $db->quoteName('lastname','jos_emundus_users___lastname'), $db->quoteName('email','jos_emundus_users___email'), $db->quoteName('civility','jos_emundus_users___civility'), $db->quoteName('mobile_phone','jos_emundus_users___mobile_phone')])
+				->from($db->quoteName('#__emundus_users'))
+				->where($db->quoteName('user_id').' = '.$fnumInfos['applicant_id']);
+
+			try {
+				$db->setQuery($query);
+				$data = $db->loadAssocList();
+			} catch (Exception $e) {
+				throw new $e->getMessage();
+			}
+
+
 			// Get all forms for the file.
 			$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
@@ -169,7 +182,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			$query->select([$db->quoteName('fbtables.id', 'table_id'), $db->quoteName('fbtables.form_id'), $db->quoteName('fbforms.label'), $db->quoteName('fbtables.db_table_name')])
 				->from($db->quoteName('#__fabrik_lists', 'fbtables'))
 				->leftJoin($db->quoteName('#__fabrik_forms', 'fbforms').' ON '.$db->quoteName('fbforms.id').' = '.$db->quoteName('fbtables.form_id'))
-				->where($db->quoteName('fbtables.id').' = '.$admissionForm);
+				->where($db->quoteName('fbforms.id').' = '.$admissionForm);
 
 			try {
 				$db->setQuery($query);
@@ -224,6 +237,10 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 									elseif ($element->plugin == 'checkbox') {
 										$elt = implode(", ", json_decode (@$element->content));
+									}
+
+									elseif ($element->plugin == 'fileupload') {
+										continue;
 									}
 
 									else {
@@ -292,6 +309,10 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 												$elt = implode(", ", json_decode (@$r_elt));
 											}
 
+											elseif ($elements[$j]->plugin == 'fileupload') {
+												continue;
+											}
+
 											else {
 												$elt = $r_elt;
 											}
@@ -326,6 +347,9 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 									}
 									elseif ($element->plugin == 'checkbox') {
 										$elt = implode(", ", json_decode (@$element->content));
+									}
+									elseif ($element->plugin == 'fileupload') {
+										continue;
 									}
 									else {
 										$elt = $element->content;
