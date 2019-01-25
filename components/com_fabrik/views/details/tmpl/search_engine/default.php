@@ -187,7 +187,7 @@ $m_cifre = new EmundusModelCifre();
     // Log the action of opening the persons form.
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
     EmundusModelLogs::log($user->id, $author->id, $fnum, 33, 'r', 'COM_EMUNDUS_LOGS_OPEN_OFFER');
-    
+
     if ((isset($this->data['Status']) && $this->data['Status'][0] == 2) || (isset($this->data['jos_emundus_campaign_candidature___status']) && $this->data['jos_emundus_campaign_candidature___status'][0] == 2)) {
 	    $status = 2;
     } else {
@@ -287,6 +287,24 @@ $m_cifre = new EmundusModelCifre();
                                     <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Cliquez ici pour sauvegarder</a>
                                 </span>
 
+                                <?php else :?>
+
+                                <hr>
+                                <!-- Upload a file from computer -->
+                                <div id="em-attachment-list">
+                                    <div id="doc-upload_file">
+                                        <h4 id="em-filename">Ajouter un document à joindre (facultatif)</h4>
+                                        <label for="em-doc_to_upload">
+                                            <input type="file" id="em-doc_to_upload">
+                                        </label>
+                                    </div>
+
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="docAddFile();">Cliquez ici pour sauvegarder</a>
+                                    </span>
+                                </div>
+                                <hr>
+
                                 <?php endif; ?>
                             </div>
                             <div class="modal-footer">
@@ -360,6 +378,10 @@ $m_cifre = new EmundusModelCifre();
                 var ML = jQuery('#lm-upload_file').find('.hidden').text();
                 if (ML != null && ML != '' && typeof ML != 'undefined')
                     data.ML = ML;
+
+                var DOC = jQuery('#doc-upload_file').find('.hidden').text();
+                if (DOC != null && DOC != '' && typeof DOC != 'undefined')
+                    data.DOC = DOC;
 
                 data.bcc = jQuery('#em-bcc-me').prop('checked');
 
@@ -447,8 +469,53 @@ $m_cifre = new EmundusModelCifre();
                                                             <?php endforeach; ?>
                             '                            </select>' +
                                                         <?php endif; ?>
-                            '                       <textarea class="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>'+
-                            '                    </div>' +
+                            '                       <textarea class="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>' +
+                            '                       <span class="input-group-btn">'+
+'                                                       <label for="em-bcc-me">M\'envoyer une copie de ce message sur mon adresse mail.</label>'+
+'                                                       <input type="checkbox" class="em-checkbox em-bcc-me" name="em-bcc-me" id="em-bcc-me">'+
+'                                                   </span>'+
+                                                    <?php if ($user->profile == '1006') :?>
+'                                                       <hr>'+
+'                                                       <!-- Upload a file from computer -->'+
+'                                                       <div id="em-attachment-list">'+
+'                                                           <div id="cv-upload_file">'+
+'                                                               <h4 id="em-filename">Ajouter votre CV</h4>'+
+'                                                               <label for="em-cv_to_upload">'+
+'                                                                   <input type="file" id="em-cv_to_upload">'+
+'                                                               </label>'+
+'                                                           </div>'+
+'                                                           <span class="input-group-btn">'+
+'                                                               <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Cliquez ici pour sauvegarder</a>'+
+'                                                           </span>'+
+'                                                           <hr>'+
+'                                                           <!-- Upload a file from computer -->'+
+'                                                           <div id="lm-upload_file">'+
+'                                                               <h4 id="em-filename">Ajouter votre lettre de motivation</h4>'+
+'                                                               <label for="em-lm_to_upload">'+
+'                                                                   <input type="file" id="em-lm_to_upload">'+
+'                                                               </label>'+
+'                                                           </div>'+
+'                                                       </div>'+
+'                                                       <span class="input-group-btn">'+
+'                                                           <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Cliquez ici pour sauvegarder</a>'+
+'                                                       </span>'+
+                                                    <?php else :?>
+'                                                       <hr>'+
+'                                                       <!-- Upload a file from computer -->'+
+'                                                       <div id="em-attachment-list">'+
+'                                                           <div id="doc-upload_file">'+
+'                                                               <h4 id="em-filename">Ajouter un document à joindre (facultatif)</h4>'+
+'                                                               <label for="em-doc_to_upload">'+
+'                                                                   <input type="file" id="em-doc_to_upload">'+
+'                                                               </label>'+
+'                                                           </div>'+
+'                                                           <span class="input-group-btn">'+
+'                                                               <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="docAddFile();">Cliquez ici pour sauvegarder</a>'+
+'                                                           </span>'+
+'                                                       </div>'+
+'                                                       <hr>'+
+                                                    <?php endif; ?>
+                            '                    </div>'+
                             '                    <div class="modal-footer">' +
                             '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Envoyer la demande de contact</button>' +
                             '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
@@ -478,6 +545,18 @@ $m_cifre = new EmundusModelCifre();
 
             // Verification of style size and type can be done here.
             uploadcv.doUpload();
+        }
+
+        // Add file to the list being attached.
+        function docAddFile() {
+
+            // We need to get the file uploaded by the user.
+            var doc = jQuery("#em-doc_to_upload")[0].files[0];
+            var docId = jQuery("#doc-upload_file");
+            var uploaddoc = new Upload(doc, docId);
+
+            // Verification of style size and type can be done here.
+            uploaddoc.doUpload();
         }
 
         // Add file to the list being attached.
