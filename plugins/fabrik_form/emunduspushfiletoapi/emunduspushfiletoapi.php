@@ -155,6 +155,19 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			}
 
 
+			$query->clear()->select([$db->quoteName('cc.fnum','jos_emundus_campaign_candidature___fnum'), 'SUM('.$db->quoteName('cc.status,2').') AS jos_emundus_campaign_candidature___status', $db->quoteName('c.training','jos_emundus_campaign_candidature___level'), $db->quoteName('c.year','jos_emundus_campaign_candidature___year')])
+				->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+				->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$data = array_merge($data, $db->loadAssoc());
+			} catch (Exception $e) {
+				throw new $e->getMessage();
+			}
+
+
 			// Get all forms for the file.
 			$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
@@ -208,7 +221,6 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 					$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                                 FROM #__fabrik_elements fe
                                 WHERE fe.published=1 AND
-                                      fe.hidden=0 AND
                                       fe.group_id = "'.$group->group_id.'"
                                 ORDER BY fe.ordering';
 					$db->setQuery($query);
@@ -326,6 +338,11 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 						} else {
 							foreach ($elements as &$element) {
 								if (!empty($element->label) && $element->label != ' ') {
+
+									if ($element->name == "user" || $element->name == "id" || $element->name == "fnum") {
+										continue;
+									}
+
 									$query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$fnumInfos['applicant_id'].' AND fnum like '.$this->_db->Quote($fnum);
 									$db->setQuery($query);
 									$res = $db->loadRow();
