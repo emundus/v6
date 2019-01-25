@@ -209,11 +209,47 @@ echo $this->table->intro;
 
 <script>
     jQuery(document).ready(function(){
-        jQuery('select.fabrik_filter[multiple]').prepend('<option value>Toutes les régions</option>');
+        jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
+        jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
+
         jQuery('select.fabrik_filter[multiple]').chosen({
             placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
             placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
             no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
-        });
+        })
     });
+
+
+function selectAllRegions() {
+    if(jQuery('.chosen-toggle-region').hasClass('select')) {
+        jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-region').addClass('deselect');
+        jQuery('.chosen-toggle-region').removeClass('select');
+        jQuery('.chosen-toggle-region').text("Désélectionnez toutes les régions");
+    }
+    else if(jQuery('.chosen-toggle-region').hasClass('deselect')) {
+        jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-region').addClass('select');
+        jQuery('.chosen-toggle-region').removeClass('deselect');
+        jQuery('.chosen-toggle-region').text("Sélectionnez toutes les régions");
+    }
+
+}
+function selectAllDepartments() {
+    if(jQuery('.chosen-toggle-department').hasClass('select')) {
+        jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-department').addClass('deselect');
+        jQuery('.chosen-toggle-department').removeClass('select');
+        jQuery('.chosen-toggle-department').text("Désélectionnez toutes les départements");
+    }
+    else if(jQuery('.chosen-toggle-department').hasClass('deselect')) {
+        jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-department').addClass('select');
+        jQuery('.chosen-toggle-department').removeClass('deselect');
+        jQuery('.chosen-toggle-department').text("Sélectionnez toutes les départements");
+    }
+}
+
+
+
 </script>
