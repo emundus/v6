@@ -155,7 +155,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			}
 
 
-			$query->clear()->select([$db->quoteName('cc.fnum','jos_emundus_campaign_candidature___fnum'), 'SUM('.$db->quoteName('cc.status,2').') AS jos_emundus_campaign_candidature___status', $db->quoteName('c.training','jos_emundus_campaign_candidature___level'), $db->quoteName('c.year','jos_emundus_campaign_candidature___year')])
+			$query->clear()->select([$db->quoteName('cc.fnum','jos_emundus_campaign_candidature___fnum'), 'SUM('.$db->quoteName('cc.status+2').') AS jos_emundus_campaign_candidature___status', $db->quoteName('c.training','jos_emundus_campaign_candidature___level'), $db->quoteName('c.year','jos_emundus_campaign_candidature___year')])
 				->from($db->quoteName('#__emundus_campaign_candidature','cc'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
 				->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
@@ -339,7 +339,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 							foreach ($elements as &$element) {
 								if (!empty($element->label) && $element->label != ' ') {
 
-									if ($element->name == "user" || $element->name == "id" || $element->name == "fnum") {
+									if ($element->name == "user" || $element->name == "id" || $element->name == "fnum" || $element->name == "time_date" || $element->name == "date_time") {
 										continue;
 									}
 

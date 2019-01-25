@@ -109,15 +109,20 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$message = $jinput->post->getString('message', '');
 		$cv = $jinput->post->getPath('CV', null);
 		$ml = $jinput->post->getPath('ML', null);
+		$bcc = $jinput->post->getString('bcc', 'false') === 'true';
 
-		// check if the files are on the serveur
-        if (file_exists(JPATH_BASE.DS.$cv))
-            $toAttach[] = JPATH_BASE.DS.$cv;
-        if (file_exists(JPATH_BASE.DS.$ml))
+		// check if the files are on the server
+        if (file_exists(JPATH_BASE.DS.$cv)) {
+	        $toAttach[] = JPATH_BASE.DS.$cv;
+        }
+
+        if (file_exists(JPATH_BASE.DS.$ml)) {
             $toAttach[] = JPATH_BASE.DS.$ml;
+        }
 
-		if (!empty($message))
+		if (!empty($message)) {
 			$message = "Message de l'utilisateur : ".$message;
+		}
 
 		// If there is an entry in the contact table then that means we already have a link with this person
 		if (!empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
@@ -165,8 +170,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 				$email_to_send = 71;
 			}
-
-			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post, $toAttach)]);
+			
+			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post, $toAttach, $bcc)]);
 			exit;
 
 		} else {
@@ -215,7 +220,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
 		exit;
-
 	}
 
 	/**

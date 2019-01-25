@@ -405,14 +405,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	/** The generic function used for sending emails.
 	 *
-	 * @param      $fnum
-	 * @param      $email_id
-	 * @param null $post
-	 * @param null $attachments
-     *
+	 * @param       $fnum
+	 * @param       $email_id
+	 * @param null  $post
+	 * @param array $attachments
+	 * @param bool  $bcc
+	 *
 	 * @return bool
 	 */
-    function sendEmail($fnum, $email_id, $post = null, $attachments = []) {
+    function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false) {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
@@ -444,9 +445,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mail_from      = $template->emailfrom;
 
 	    // If the email sender has the same domain as the system sender address.
-	    if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+	    if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 		    $mail_from_address = $mail_from;
-	    else {
+	    } else {
 		    $mail_from_address = $mail_from_sys;
 		    $mail_from_name = $mail_from_sys_name;
 	    }
@@ -459,12 +460,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
-	    if (!empty($attachments) && is_array($attachments))
+	    if (!empty($attachments) && is_array($attachments)) {
 	        $toAttach = $attachments;
-	    else
-	        $toAttach[] = $attachments;
-
-
+	    } else {
+		    $toAttach[] = $attachments;
+	    }
 
 	    // In case no post value is supplied
 	    if (empty($post)) {
@@ -485,11 +485,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    // Tags are replaced with their corresponding values using the PHP preg_replace function.
 	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 	    $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
-	    if ($template != false)
+	    if ($template != false) {
 		    $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+	    }
 
 	    // Configure email sender
 	    $mailer = JFactory::getMailer();
+	    if ($bcc) {
+		    $mailer->addBCC($user->email);
+	    }
 	    $mailer->setSender($sender);
 	    $mailer->addReplyTo($mail_from, $mail_from_name);
 	    $mailer->addRecipient($fnum['email']);
