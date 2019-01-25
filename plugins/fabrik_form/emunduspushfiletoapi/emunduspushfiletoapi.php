@@ -339,7 +339,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 							foreach ($elements as &$element) {
 								if (!empty($element->label) && $element->label != ' ') {
 
-									if ($element->name == "user" || $element->name == "id" || $element->name == "fnum") {
+									if ($element->name == "user" || $element->name == "id" || $element->name == "fnum" || $element->name == "time_date" || $element->name == "date_time") {
 										continue;
 									}
 
