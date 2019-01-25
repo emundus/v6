@@ -142,13 +142,14 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			$admissionForm = $m_files->getAdmissionFormidByFnum($fnum);
 
 			$query = $db->getQuery(true);
-			$query->select([$db->quoteName('firstname','jos_emundus_users___firstname'), $db->quoteName('lastname','jos_emundus_users___lastname'), $db->quoteName('email','jos_emundus_users___email'), $db->quoteName('civility','jos_emundus_users___civility'), $db->quoteName('mobile_phone','jos_emundus_users___mobile_phone')])
-				->from($db->quoteName('#__emundus_users'))
+			$query->select([$db->quoteName('eu.firstname','jos_emundus_users___firstname'), $db->quoteName('eu.lastname','jos_emundus_users___lastname'), $db->quoteName('u.email','jos_emundus_users___email'), $db->quoteName('eu.civility','jos_emundus_users___civility'), $db->quoteName('eu.mobile_phone','jos_emundus_users___mobile_phone')])
+				->from($db->quoteName('#__emundus_users','eu'))
+				->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('eu.user_id'))
 				->where($db->quoteName('user_id').' = '.$fnumInfos['applicant_id']);
 
 			try {
 				$db->setQuery($query);
-				$data = $db->loadAssocList();
+				$data = $db->loadAssoc();
 			} catch (Exception $e) {
 				throw new $e->getMessage();
 			}
