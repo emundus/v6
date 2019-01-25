@@ -236,6 +236,11 @@ $m_cifre = new EmundusModelCifre();
                             <?php endif; ?>
                             <textarea id="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>
 
+                            <span class="input-group-btn">
+                                <label for="em-bcc-me">M'envoyer une copie de ce message sur mon adresse mail.</label>
+                                <input type="checkbox" class="em-checkbox em-bcc-me" name="em-bcc-me" id="em-bcc-me">
+                            </span>
+
                             <?php if ($user->profile == '1006') :?>
                             <hr>
                             <!-- Upload a file from computer -->
@@ -247,7 +252,7 @@ $m_cifre = new EmundusModelCifre();
                                     </label>
                                 </div>
 
-                                <span class="input-group-btn">
+                            <span class="input-group-btn">
 							    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Cliquez ici pour sauvegarder</a>
 						    </span>
                             <hr>
@@ -338,6 +343,8 @@ $m_cifre = new EmundusModelCifre();
             var ML = jQuery('#lm-upload_file').find('.hidden').text();
             if (ML != null && ML != '' && typeof ML != 'undefined')
                 data.ML = ML;
+
+            data.bcc = jQuery('#em-bcc-me').prop('checked');
 
         }
 
