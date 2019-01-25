@@ -137,7 +137,22 @@ echo $this->table->intro;
 								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
 
 							$themes = jsonDecode($d['data_thematics___thematic_raw']);
+							if (is_array($themes)) {
+								if (sizeof($themes) > 4) {
+									$themes = implode('</div> - <div class="em-highlight">', array_slice($themes, 0, 4)).' ... ';
+								} else {
+									$themes = implode('</div> - <div class="em-highlight">', $themes);
+								}
+							}
+
 							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
+							if (is_array($departments)) {
+							    if (sizeof($departments) > 8) {
+								    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
+                                } else {
+								    $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                }
+                            }
 
 							?>
                             <tr>
@@ -154,7 +169,7 @@ echo $this->table->intro;
                                             <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?is_array($themes)?implode('</div> - <div class="em-highlight">', $themes):$themes:'Aucune thématique'; ?></div>
                                         </div>
                                         <div class="em-search-engine-departments">
-                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?is_array($departments)?implode('</div> - <div class="em-highlight">', $departments):$departments:'Aucun département'; ?></div>
+                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?$departments:'Aucun département'; ?></div>
                                         </div>
 										<?php if (JFactory::getUser()->guest) :?>
                                             <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
