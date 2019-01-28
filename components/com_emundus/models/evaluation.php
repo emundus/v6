@@ -294,11 +294,12 @@ class EmundusModelEvaluation extends JModelList
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
+		$view = $jinput->getString('view', null);
 		//$elements = array();
         if ($session->has('filt_params'))
         {
             $filt_params = $session->get('filt_params');
-            if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
+            if ($view != 'export_select_columns' && is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
                 foreach (array_unique($filt_params['programme']) as $value) {
 					$groups = $this->getGroupsEvalByProgramme($value);
                     if (empty($groups)) {
