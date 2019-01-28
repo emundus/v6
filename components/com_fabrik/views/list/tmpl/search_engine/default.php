@@ -116,9 +116,9 @@ echo $this->table->intro;
 
                         <tbody>
 						<?php if (empty($data)) :?>
-                            <div>
-                                <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                                <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
+                            <div class="em-search-not-found">
+                                <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
+                                <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
                             </div>
 						<?php endif;
 
@@ -193,14 +193,14 @@ echo $this->table->intro;
                             </tfoot>
 						<?php endif ?>
                     </table>
-					<?php if (!empty($data)) :?>
-                        <div>
-                            <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                            <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
-                        </div>
-					<?php endif; ?>
-                </div>
 
+                </div>
+                <?php if (!empty($data)) :?>
+                    <div class="em-search-not-found">
+                        <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
+                        <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
+                    </div>
+                <?php endif; ?>
 				<?php print_r($this->hiddenFields);?>
             </div>
         </form>
