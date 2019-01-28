@@ -136,12 +136,33 @@ echo $this->table->intro;
 								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
 
 							$themes = jsonDecode($d['data_thematics___thematic_raw']);
+							if (is_array($themes)) {
+								if (sizeof($themes) > 4) {
+									$themes = implode('</div> - <div class="em-highlight">', array_slice($themes, 0, 4)).' ... ';
+								} else {
+									$themes = implode('</div> - <div class="em-highlight">', $themes);
+								}
+							}
+
 							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
+							if (is_array($departments)) {
+							    if (sizeof($departments) > 8) {
+								    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
+                                } else {
+								    $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                }
+                            }
+
+							if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
+								$status = 2;
+							} else {
+							    $status = 1;
+                            }
 
 							?>
                             <tr>
                                 <td>
-                                    <div class="em-search-engine-div-data">
+                                    <div class="em-search-engine-div-data <?php echo ($status === 2)?'em-closed-offer':''; ?>">
                                         <div class="em-search-engine-result-title"><?php echo $d['jos_emundus_projet___titre']; ?></div>
                                         <div class="em-search-engine-deposant">
                                             <i class="fa fa-user"></i> <strong>Déposant : </strong> <?php echo strtolower($d['jos_emundus_setup_profiles___label']); ?>
@@ -150,15 +171,15 @@ echo $this->table->intro;
                                             <i class="fa fa-users"></i> <strong>Projet adressé à : &nbsp;</strong><?php echo strtolower(implode( '&#32;-&#32;', $cherches)); ?>
                                         </div>
                                         <div class="em-search-engine-thematics">
-                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?is_array($themes)?implode('</div> - <div class="em-highlight">', $themes):$themes:'Aucune thématique'; ?></div>
+                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?$themes:'Aucune thématique'; ?></div>
                                         </div>
                                         <div class="em-search-engine-departments">
-                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?is_array($departments)?implode('</div> - <div class="em-highlight">', $departments):$departments:'Aucun département'; ?></div>
+                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?$departments:'Aucun département'; ?></div>
                                         </div>
 										<?php if (JFactory::getUser()->guest) :?>
-                                            <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return=' . base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
+                                            <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return='.base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
 										<?php else :?>
-                                            <div class='em-search-engine-details'><a href="<?php echo $d['fabrik_view_url']; ?>">Consultez l'offre</a></div>
+                                            <div class='em-search-engine-details <?php echo ($status === 2)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><a href="<?php echo $d['fabrik_view_url']; ?>"><?php echo ($status === 2)?'Offre clôturée':'Consultez l\'offre'; ?></a></div>
 										<?php endif; ?>
                                     </div>
                                 </td>
@@ -193,7 +214,6 @@ echo $this->table->intro;
                             </tfoot>
 						<?php endif ?>
                     </table>
-
                 </div>
                 <?php if (!empty($data)) :?>
                     <div class="em-search-not-found">

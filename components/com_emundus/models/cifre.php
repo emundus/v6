@@ -315,6 +315,40 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+
+	/**
+	 * Gets the Masters information linked to the user passed in the params or the currently logged in user if not.
+	 *
+	 * @param $user_id Int The user ID of the person to check the MsC.
+	 * @return Mixed
+	 */
+	function getUserMasters($user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		// First step is to get the user in question and make sure his profile is correct.
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('profile').', '.$this->db->quoteName('master_2_intitule').', '.$this->db->quoteName('master_2_etablissement').', '.$this->db->quoteName('master_2_annee'))
+			->from($this->db->quoteName('#__emundus_users'))
+			->where('user_id = '.$user_id);
+		$this->db->setQuery($query);
+		try {
+
+			$master = $this->db->loadObject();
+
+			// Do not continue if the user is not a PhD.
+			if ($master->profile != '1006')
+				return false;
+			else
+				return $master;
+
+		} catch (Exception $e) {
+			JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
 	/**
 	 * Gets the institution information linked to the user passed in the params or the currently logged in user if not.
 	 *

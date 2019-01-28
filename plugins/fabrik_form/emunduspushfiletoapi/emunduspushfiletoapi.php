@@ -141,6 +141,33 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			$fnumInfos = $m_profile->getFnumDetails($fnum);
 			$admissionForm = $m_files->getAdmissionFormidByFnum($fnum);
 
+			$query = $db->getQuery(true);
+			$query->select([$db->quoteName('eu.firstname','jos_emundus_users___firstname'), $db->quoteName('eu.lastname','jos_emundus_users___lastname'), $db->quoteName('u.email','jos_emundus_users___email'), $db->quoteName('eu.civility','jos_emundus_users___civility'), $db->quoteName('eu.mobile_phone','jos_emundus_users___mobile_phone')])
+				->from($db->quoteName('#__emundus_users','eu'))
+				->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('eu.user_id'))
+				->where($db->quoteName('user_id').' = '.$fnumInfos['applicant_id']);
+
+			try {
+				$db->setQuery($query);
+				$data = $db->loadAssoc();
+			} catch (Exception $e) {
+				throw new $e->getMessage();
+			}
+
+
+			$query->clear()->select([$db->quoteName('cc.fnum','jos_emundus_campaign_candidature___fnum'), 'SUM('.$db->quoteName('cc.status+2').') AS jos_emundus_campaign_candidature___status', $db->quoteName('c.training','jos_emundus_campaign_candidature___level'), $db->quoteName('c.year','jos_emundus_campaign_candidature___year')])
+				->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+				->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$data = array_merge($data, $db->loadAssoc());
+			} catch (Exception $e) {
+				throw new $e->getMessage();
+			}
+
+
 			// Get all forms for the file.
 			$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
@@ -169,7 +196,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			$query->select([$db->quoteName('fbtables.id', 'table_id'), $db->quoteName('fbtables.form_id'), $db->quoteName('fbforms.label'), $db->quoteName('fbtables.db_table_name')])
 				->from($db->quoteName('#__fabrik_lists', 'fbtables'))
 				->leftJoin($db->quoteName('#__fabrik_forms', 'fbforms').' ON '.$db->quoteName('fbforms.id').' = '.$db->quoteName('fbtables.form_id'))
-				->where($db->quoteName('fbtables.id').' = '.$admissionForm);
+				->where($db->quoteName('fbforms.id').' = '.$admissionForm);
 
 			try {
 				$db->setQuery($query);
@@ -194,7 +221,6 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 					$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                                 FROM #__fabrik_elements fe
                                 WHERE fe.published=1 AND
-                                      fe.hidden=0 AND
                                       fe.group_id = "'.$group->group_id.'"
                                 ORDER BY fe.ordering';
 					$db->setQuery($query);
@@ -224,6 +250,10 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 									elseif ($element->plugin == 'checkbox') {
 										$elt = implode(", ", json_decode (@$element->content));
+									}
+
+									elseif ($element->plugin == 'fileupload') {
+										continue;
 									}
 
 									else {
@@ -292,6 +322,10 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 												$elt = implode(", ", json_decode (@$r_elt));
 											}
 
+											elseif ($elements[$j]->plugin == 'fileupload') {
+												continue;
+											}
+
 											else {
 												$elt = $r_elt;
 											}
@@ -304,6 +338,11 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 						} else {
 							foreach ($elements as &$element) {
 								if (!empty($element->label) && $element->label != ' ') {
+
+									if ($element->name == "user" || $element->name == "id" || $element->name == "fnum" || $element->name == "time_date" || $element->name == "date_time") {
+										continue;
+									}
+
 									$query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$fnumInfos['applicant_id'].' AND fnum like '.$this->_db->Quote($fnum);
 									$db->setQuery($query);
 									$res = $db->loadRow();
@@ -326,6 +365,9 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 									}
 									elseif ($element->plugin == 'checkbox') {
 										$elt = implode(", ", json_decode (@$element->content));
+									}
+									elseif ($element->plugin == 'fileupload') {
+										continue;
 									}
 									else {
 										$elt = $element->content;
