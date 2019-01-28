@@ -65,6 +65,12 @@ $uri = JUri::getInstance();
                             </a>
                         <?php endif; ?>
                     </div>
+
+                    <div class="col-md-12 em-bottom-space em-interested">
+                        <?php if (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) > 0) :?>
+                            <p><?php echo modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum); ?> personnes sont intéressées par cette offre.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
 

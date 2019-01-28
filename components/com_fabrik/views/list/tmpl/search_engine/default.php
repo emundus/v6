@@ -41,7 +41,7 @@ if ($this->params->get('show_page_heading')) :?>
 
 <?php if ($this->showTitle == 1) : ?>
     <div class="page-header">
-        <h1>Vous êtes un <?php echo $user->profile_label;?></h1>
+        <h1 class="em-page-header-title">Vous êtes un <?php echo $user->profile_label;?></h1>
         <div class="em-page-header-description">
             <p style="padding: 1rem; background-color: #e9e9e9; text-align: justify;"><span style="font-size: 14pt;"><span style="text-decoration: underline;">Sur cette page, vous pouvez consulter les offres déjà en ligne</span>. Vous pouvez préciser votre demande par type d'acteur recherché, par région, département et thématique souhaités grâce aux filtres ci-dessous. Cliquez sur l'intitulé de l'annonce qui vous intéresse pour la découvrir en détail et pouvoir contacter son auteur (dit aussi "déposant").<br /><br />Vous n'avez pas trouvez ce que vous cherchiez ? Déposez l'annonce qui vous correspond en <a href="https://hesam.emundus.fr/index.php?option=com_fabrik&amp;view=form&amp;formid=102">proposant une offre</a>. </span><span style="font-size: 14pt;"></span><br /><br /><span style="font-size: 14pt;"><span style="text-decoration: underline;">Vous souhaitez en savoir plus avant de vous lancer</span> ? Découvrez les récits d'expérience et astuces d'une <a href="https://hesam.emundus.fr/index.php?option=com_content&amp;view=article&amp;id=122:francoise-ramel-un-chercheur-nous-permet-de-formuler-des-desirs-des-besoins-mais-aussi-des-solutions&amp;catid=101">conseillère municipale de Pontivy</a> ou d'un <a href="https://hesam.emundus.fr/1000-doctorants/les-temoignages/58-boris-chevrot">doctorant d'une communauté de communes de Bourgogne</a> dans la rubrique <a href="https://hesam.emundus.fr/1000-doctorants/les-temoignages">Témoignages</a> de cette plateforme. Dans la rubrique <a href="https://hesam.emundus.fr/1000-doctorants/boite-a-outils">Boîte à outils</a></span><span style="font-size: 14pt;">, des articles sont régulièrement déposés pour rendre toujours plus clair et plus simple le programme. A la moindre question, consultez la <a href="https://hesam.emundus.fr/vos-questions">Foire aux questions</a> ou écrivez-nous à</span><span style="font-size: 14pt;"> <a href="mailto:1000docs@hesam.eu">1000docs@hesam.eu</a> </span><strong><span style="font-size: 14pt;"><br /></span></strong></p>
         </div>
@@ -98,7 +98,6 @@ echo $this->table->intro;
                 </div>
 
                 <div class="em-search-engine-data">
-
                     <table>
 						<?php if (!empty($data)) :?>
                             <thead>
@@ -117,9 +116,9 @@ echo $this->table->intro;
 
                         <tbody>
 						<?php if (empty($data)) :?>
-                            <div>
-                                <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                                <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
+                            <div class="em-search-not-found">
+                                <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
+                                <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
                             </div>
 						<?php endif;
 
@@ -215,14 +214,13 @@ echo $this->table->intro;
                             </tfoot>
 						<?php endif ?>
                     </table>
-					<?php if (!empty($data)) :?>
-                        <div class="em-search-engine-foot">
-                            <p>Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                            <p><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
-                        </div>
-					<?php endif; ?>
                 </div>
-
+                <?php if (!empty($data)) :?>
+                    <div class="em-search-not-found">
+                        <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
+                        <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
+                    </div>
+                <?php endif; ?>
 				<?php print_r($this->hiddenFields);?>
             </div>
         </form>
@@ -231,10 +229,47 @@ echo $this->table->intro;
 
 <script>
     jQuery(document).ready(function(){
+        jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
+        jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
+
         jQuery('select.fabrik_filter[multiple]').chosen({
             placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
             placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
             no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
-        });
+        })
     });
+
+
+function selectAllRegions() {
+    if(jQuery('.chosen-toggle-region').hasClass('select')) {
+        jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-region').addClass('deselect');
+        jQuery('.chosen-toggle-region').removeClass('select');
+        jQuery('.chosen-toggle-region').text("Désélectionnez toutes les régions");
+    }
+    else if(jQuery('.chosen-toggle-region').hasClass('deselect')) {
+        jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-region').addClass('select');
+        jQuery('.chosen-toggle-region').removeClass('deselect');
+        jQuery('.chosen-toggle-region').text("Sélectionnez toutes les régions");
+    }
+
+}
+function selectAllDepartments() {
+    if(jQuery('.chosen-toggle-department').hasClass('select')) {
+        jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-department').addClass('deselect');
+        jQuery('.chosen-toggle-department').removeClass('select');
+        jQuery('.chosen-toggle-department').text("Désélectionnez toutes les départements");
+    }
+    else if(jQuery('.chosen-toggle-department').hasClass('deselect')) {
+        jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
+        jQuery('.chosen-toggle-department').addClass('select');
+        jQuery('.chosen-toggle-department').removeClass('deselect');
+        jQuery('.chosen-toggle-department').text("Sélectionnez toutes les départements");
+    }
+}
+
+
+
 </script>

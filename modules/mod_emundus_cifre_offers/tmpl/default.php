@@ -45,6 +45,9 @@ defined('_JEXEC') or die;
                                     <button type="button" class="btn btn-primary" onclick="breakUp('breakup', '<?php echo $offer->link_id; ?>')">
                                         <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?>
                                     </button>
+                                    <div class="em-chat-link" id="em-chat-link-<?php echo $offer->link_id; ?>">
+                                        <a href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $offer->user_from ?>"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_TALK_TO'); ?></a>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                             <?php if (!empty($offer->offer_from)) :?>
@@ -92,6 +95,9 @@ defined('_JEXEC') or die;
                                     <button type="button" class="btn btn-primary" onclick="breakUp('breakup', '<?php echo $offer->link_id; ?>')">
                                         <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?>
                                     </button>
+                                    <div class="em-chat-link" id="em-chat-link-<?php echo $offer->link_id; ?>">
+                                        <a href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $offer->user_from ?>"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_TALK_TO'); ?></a>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                             <?php if (!empty($offer->offer_from)) :?>
