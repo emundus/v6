@@ -906,25 +906,6 @@ class EmundusHelperList{
 	** @param	string	$elements	list of Fabrik element comma separated.
 	** @return	array	Array of Fabrik element params.
 	*/
-	function getElementsDetailsByName($elements) {
-		$db = JFactory::getDBO();
-		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin, element.ordering, element.hidden, element.published,
-				element.params AS params, element.params, tab.group_by AS tab_group_by
-				FROM #__fabrik_elements element
-				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				WHERE element.name IN ('.$elements.') ORDER BY element.ordering';
-		$db->setQuery($query);
-//echo str_replace("#_", "jos", $query);
-		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
-	}
-
-	/*
-	** @description	Get Fabrik elements detail from elements Fabrik name
-	** @param	string	$elements	list of Fabrik element comma separated.
-	** @return	array	Array of Fabrik element params.
-	*/
 	function getElementsDetailsByFullName($fullname) {
 		$tab = explode("__", $fullname);
 		$db = JFactory::getDBO();

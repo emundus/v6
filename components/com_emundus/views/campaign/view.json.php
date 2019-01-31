@@ -44,7 +44,7 @@ class EmundusViewCampaign extends JViewLegacy {
             $m_campaign = new EmundusModelCampaign();
             $data = $m_campaign->getTeachingUnity();
 
-            foreach ($data as $row) {
+            foreach ($data as $key => $row) {
 
                 // Process city name
                 $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($row->location_city))));
@@ -64,9 +64,9 @@ class EmundusViewCampaign extends JViewLegacy {
                 // Process tax.
                 $row->prix_ttc = empty($row->tax_rate);
 
+	            $data[$key] = $row;
+
             }
-            
-            
 
             echo json_encode($data);
         }
