@@ -45,7 +45,7 @@ if (!empty($fnum)) {
         $admissionDateBegin = date('Y-m-d', strtotime(@$user->fnums[$fnum]->admission_start_date));
         $admissionDateEnd = date('Y-m-d', strtotime(@$user->fnums[$fnum]->admission_end_date));
 
-        if (@$user->fnums[$fnum]->submitted =="1" && @$user->fnums[$fnum]->published =="1" && @$user->fnums[$fnum]->cancelled =="0" && in_array($user->status, $status)  && $admissionDate >= $admissionDateBegin && $admissionDate <= $admissionDateEnd) {
+        if (@$user->fnums[$fnum]->published =="1" && @$user->fnums[$fnum]->cancelled =="0" && in_array($user->status, $status)  && $admissionDate >= $admissionDateBegin && $admissionDate <= $admissionDateEnd) {
 
             $user->profile = "1012";
             $user->profile_label = "Inscription à l'ESIEA";
