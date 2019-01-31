@@ -20,7 +20,7 @@ class PlgSystemUser_param_redirect extends JPlugin {
 		$this->loadLanguage();
 		$user = JFactory::getUser();
 
-		if (!$user->guest) {
+		if (!$user->guest && parse_url(JUri::current())['path'] != $this->params->get('url')) {
 
 			// need to load fresh instance
 			$table = JTable::getInstance('user', 'JTable');
