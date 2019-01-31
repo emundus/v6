@@ -251,32 +251,29 @@ $m_cifre = new EmundusModelCifre();
                                         <?php endforeach; ?>
                                     </select>
                                 <?php endif; ?>
-                                <textarea id="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>
+                            <textarea id="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>
 
-                                <span class="input-group-btn">
-                                    <label for="em-bcc-me">M'envoyer une copie de ce message sur mon adresse mail.</label>
-                                    <input type="checkbox" class="em-checkbox em-bcc-me" name="em-bcc-me" id="em-bcc-me">
-                                </span>
-
-                                <?php if ($user->profile == '1006') :?>
-                                <hr>
+                            <?php if ($user->profile == '1006') :?>
+                            <hr>
+                                <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                            <hr>
                                 <!-- Upload a file from computer -->
                                 <div id="em-attachment-list">
                                     <div id="cv-upload_file">
                                         <h4 id="em-filename">Ajouter votre CV</h4>
-                                        <label for="em-cv_to_upload">
+                                        <label for="em-cv_to_upload" id="em-cv_to_upload_label">
                                             <input type="file" id="em-cv_to_upload">
                                         </label>
                                     </div>
 
                                 <span class="input-group-btn">
-                                    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Cliquez ici pour sauvegarder</a>
+                                    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Joindre</a>
                                 </span>
                                 <hr>
                                     <!-- Upload a file from computer -->
                                     <div id="lm-upload_file">
                                         <h4 id="em-filename">Ajouter votre lettre de motivation</h4>
-                                        <label for="em-lm_to_upload">
+                                        <label for="em-lm_to_upload" id="em-lm_to_upload_label">
                                             <input type="file" id="em-lm_to_upload">
                                         </label>
                                     </div>
@@ -284,7 +281,7 @@ $m_cifre = new EmundusModelCifre();
 
 
                                 <span class="input-group-btn">
-                                    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Cliquez ici pour sauvegarder</a>
+                                    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Joindre</a>
                                 </span>
 
                                 <?php else :?>
@@ -293,14 +290,15 @@ $m_cifre = new EmundusModelCifre();
                                 <!-- Upload a file from computer -->
                                 <div id="em-attachment-list">
                                     <div id="doc-upload_file">
-                                        <h4 id="em-filename">Ajouter un document à joindre (facultatif)</h4>
-                                        <label for="em-doc_to_upload">
+                                        <h4 id="em-filename">Ajouter un document (facultatif)</h4>
+                                        <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                                        <label for="em-doc_to_upload" id="em-doc_to_upload_label">
                                             <input type="file" id="em-doc_to_upload">
                                         </label>
                                     </div>
 
                                     <span class="input-group-btn">
-                                        <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="docAddFile();">Cliquez ici pour sauvegarder</a>
+                                        <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="docAddFile();">Joindre</a>
                                     </span>
                                 </div>
                                 <hr>
