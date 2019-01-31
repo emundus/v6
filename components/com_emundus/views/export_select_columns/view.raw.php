@@ -78,7 +78,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
 
         if ($form == "decision")
-            $elements = $m_decision->getDecisionElementsName(0, 0);
+            $elements = $m_decision->getDecisionElementsName(0, 0, $code);
             //$elements = $m_admission->getAdmissionElementsName(0, 0, $code);
         elseif ($form == "admission")
             $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
