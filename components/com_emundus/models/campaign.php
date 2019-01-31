@@ -424,8 +424,10 @@ class EmundusModelCampaign extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('*')
-            ->from($db->quoteName('#__emundus_setup_teaching_unity'));
+        $query->select(['tu.*', 'p.prerequisite', 'p.audience', 'p.objectives', 'p.content', 'p.manager_firstname', 'p.manager_lastname' , 'p.pedagogie', 't.label AS thematique', 'p.id AS row_id'])
+			->from($db->quoteName('#__emundus_setup_teaching_unity', 'tu'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p').' ON '.$db->quoteName('tu.code').' LIKE '.$db->quoteName('p.code'))
+			->leftJoin($db->quoteName('#__emundus_setup_thematiques', 't').' ON '.$db->quoteName('t.id').' = '.$db->quoteName('p.programmes'));
 
         try {
             $db->setQuery($query);
