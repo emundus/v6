@@ -210,7 +210,7 @@ $m_cifre = new EmundusModelCifre();
 
             <div class="em-search-item-action">
                 <div id="em-search-item-action-button">
-                    <button type="button" class="btn btn-default" disabled>Offre déposé par vous-mème</button>
+                    <button type="button" class="btn btn-default" disabled>Offre déposée par vous-même</button>
                 </div>
             </div>
 
