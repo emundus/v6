@@ -196,6 +196,26 @@ $m_cifre = new EmundusModelCifre();
             </div>
         </div>
 
+    <?php elseif ($this->data['jos_emundus_campaign_candidature___applicant_id'] == JFactory::getUser()->id) :?>
+
+        <?php if ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3)) :?>
+
+            <div class="em-search-item-action">
+                <div id="em-search-item-action-button">
+                    <button type="button" class="btn btn-default" disabled>Offre en attente de validation</button>
+                </div>
+            </div>
+
+        <?php else :?>
+
+            <div class="em-search-item-action">
+                <div id="em-search-item-action-button">
+                    <button type="button" class="btn btn-default" disabled>Offre déposé par vous-mème</button>
+                </div>
+            </div>
+
+        <?php endif; ?>
+
     <?php else :?>
 
     <?php
@@ -255,7 +275,7 @@ $m_cifre = new EmundusModelCifre();
                                 <div id="em-attachment-list">
                                     <div id="cv-upload_file">
                                         <h4 id="em-filename">Ajouter votre CV</h4>
-                                        <label for="em-cv_to_upload" id="em-cv_to_upload_label">
+                                        <label for="em-cv_to_upload" accept="application/pdf" id="em-cv_to_upload_label">
                                             <input type="file" id="em-cv_to_upload">
                                         </label>
                                     </div>
@@ -268,7 +288,7 @@ $m_cifre = new EmundusModelCifre();
                                     <div id="lm-upload_file">
                                         <h4 id="em-filename">Ajouter votre lettre de motivation</h4>
                                         <label for="em-lm_to_upload" id="em-lm_to_upload_label">
-                                            <input type="file" id="em-lm_to_upload">
+                                            <input type="file" accept="application/pdf" id="em-lm_to_upload">
                                         </label>
                                     </div>
                                 </div>
@@ -292,7 +312,7 @@ $m_cifre = new EmundusModelCifre();
                                     </div>
 
                                     <span class="input-group-btn">
-                                        <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="docAddFile();">Joindre</a>
+                                        <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton" style="top:13px;" onClick="docAddFile();">Joindre</a>
                                     </span>
                                 </div>
                                 <hr>
@@ -473,7 +493,7 @@ $m_cifre = new EmundusModelCifre();
 '                                                           <div id="cv-upload_file">'+
 '                                                               <h4 id="em-filename">Ajouter votre CV</h4>'+
 '                                                               <label for="em-cv_to_upload">'+
-'                                                                   <input type="file" id="em-cv_to_upload">'+
+'                                                                   <input type="file" accept="application/pdf" id="em-cv_to_upload">'+
 '                                                               </label>'+
 '                                                           </div>'+
 '                                                           <span class="input-group-btn">'+
@@ -484,7 +504,7 @@ $m_cifre = new EmundusModelCifre();
 '                                                           <div id="lm-upload_file">'+
 '                                                               <h4 id="em-filename">Ajouter votre lettre de motivation</h4>'+
 '                                                               <label for="em-lm_to_upload">'+
-'                                                                   <input type="file" id="em-lm_to_upload">'+
+'                                                                   <input type="file" accept="application/pdf" id="em-lm_to_upload">'+
 '                                                               </label>'+
 '                                                           </div>'+
 '                                                       </div>'+
@@ -498,7 +518,7 @@ $m_cifre = new EmundusModelCifre();
 '                                                           <div id="doc-upload_file">'+
 '                                                               <h4 id="em-filename">Ajouter un document à joindre (facultatif)</h4>'+
 '                                                               <label for="em-doc_to_upload">'+
-'                                                                   <input type="file" id="em-doc_to_upload">'+
+'                                                                   <input type="file" accept="application/pdf" id="em-doc_to_upload">'+
 '                                                               </label>'+
 '                                                           </div>'+
 '                                                           <span class="input-group-btn">'+
@@ -583,9 +603,15 @@ $m_cifre = new EmundusModelCifre();
             var that = this;
             var formData = new FormData();
 
+            if (this.getType() != 'application/pdf') {
+                alert("Type de document non permis. Veuillez uniquement envoyer des fichiers au format PDF.");
+                return false;
+            }
+
             // add assoc key values, this will be posts values
             formData.append("file", this.file, this.getName());
             formData.append("upload_file", true);
+            formData.append('filetype', 'pdf');
 
             jQuery.ajax({
                 type: "POST",
