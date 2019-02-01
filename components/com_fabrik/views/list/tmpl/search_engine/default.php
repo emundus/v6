@@ -182,7 +182,7 @@ echo $this->table->intro;
 										<?php else :?>
                                             <div class='em-search-engine-details <?php echo ($status === 2)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><a href="<?php echo $d['fabrik_view_url']; ?>"><?php echo ($status === 2)?'Offre clôturée':'Consultez l\'offre'; ?></a></div>
 
-											<?php if ($d['jos_emundus_campaign_candidature___applicant_id'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
+											<?php if ($d['jos_emundus_campaign_candidature___applicant_id_raw'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
                                                 <div class="em-float-left em-offer-not-published"><span class="label label-darkyellow">Offre en attente de validation</span></div>
 											<?php endif; ?>
 										<?php endif; ?>

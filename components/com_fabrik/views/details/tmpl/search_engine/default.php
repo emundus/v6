@@ -196,7 +196,7 @@ $m_cifre = new EmundusModelCifre();
             </div>
         </div>
 
-    <?php elseif ($this->data['jos_emundus_campaign_candidature___applicant_id'] == JFactory::getUser()->id) :?>
+    <?php elseif ($this->data['jos_emundus_campaign_candidature___applicant_id'][0] == JFactory::getUser()->id) :?>
 
         <?php if ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3)) :?>
 
