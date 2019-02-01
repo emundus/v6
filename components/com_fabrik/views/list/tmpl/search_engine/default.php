@@ -154,7 +154,7 @@ echo $this->table->intro;
                                 }
                             }
 
-							if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)  || (strtotime($d['jos_emundus_projet___limit_date'][0]) < time())) {
+							if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
 								$status = 2;
 							} else {
 							    $status = 1;
