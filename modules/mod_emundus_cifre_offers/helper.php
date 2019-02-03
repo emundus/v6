@@ -41,6 +41,7 @@ class modEmundusCifreOffersHelper {
 		foreach ($contactRequests->to as $request) {
 			if (!empty($request->fnum_from)) {
 				$request->offer_from = $this->m_cifre->getOffer($request->fnum_from);
+				$request->profile = $request->profile;
 			}
 		}
 
@@ -49,6 +50,7 @@ class modEmundusCifreOffersHelper {
 		foreach ($contactRequests->from as $request) {
 			if (!empty($request->fnum_from)) {
 				$request->offer_from = $this->m_cifre->getOffer($request->fnum_from);
+				$request->profile = $request->profile;
 			}
 		}
 

@@ -116,9 +116,11 @@ class EmundusModelCifre extends JModelList {
 		$query = $this->db->getQuery(true);
 
 		$query
-			->select($this->db->quoteName(['cc.fnum','p.titre']))
+			->select($this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cc.fnum'), $this->db->quoteName('p.titre'))
 			->from($this->db->quoteName('#__emundus_campaign_candidature','cc'))
 			->join('LEFT', $this->db->quoteName('#__emundus_projet', 'p') . ' ON (' . $this->db->quoteName('p.fnum') . ' = ' . $this->db->quoteName('cc.fnum') . ')')
+			->join('LEFT', $this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
+			->join('LEFT', $this->db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON (' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eu.profile') . ')')
 			->where($this->db->quoteName('cc.user_id') . ' = '.$user_id . ' AND ' . $this->db->quoteName('cc.status') . ' = 1');
 
 			$this->db->setQuery($query);
@@ -142,10 +144,13 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 		$query
-			->select([$this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->select([$this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
 			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('r.fnum'))
+			->join('LEFT', $this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
+			->join('LEFT', $this->db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON (' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eu.profile') . ')')
 			->where($this->db->quoteName('cl.user_to').' = ' . $user);
 
 		$this->db->setQuery($query);
@@ -169,10 +174,13 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 		$query
-			->select([$this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->select([$this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
 			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('r.fnum'))
+			->join('LEFT', $this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
+			->join('LEFT', $this->db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON (' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eu.profile') . ')')
 			->where($this->db->quoteName('cl.user_from').' = ' . $user);
 
 		$this->db->setQuery($query);
