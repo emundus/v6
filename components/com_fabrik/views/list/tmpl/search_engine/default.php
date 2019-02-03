@@ -220,12 +220,14 @@ echo $this->table->intro;
 						<?php endif ?>
                     </table>
                 </div>
-                <?php if (!empty($data)) :?>
-                    <div class="em-search-not-found">
-                        <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                        <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
-                    </div>
+                
+                <?php if($user->id != 0) : ?>
+                <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
+                    <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
+                    <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                </a>
                 <?php endif; ?>
+
 				<?php print_r($this->hiddenFields);?>
             </div>
         </form>
