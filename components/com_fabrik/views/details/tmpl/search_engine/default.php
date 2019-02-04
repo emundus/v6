@@ -700,6 +700,8 @@ $m_cifre = new EmundusModelCifre();
             formData.append("file", this.file, this.getName());
             formData.append("upload_file", true);
             formData.append('filetype', 'pdf');
+            formData.append('user', <?php echo $user->id; ?>);
+            formData.append('fnum', '<?php echo $fnum; ?>');
 
             jQuery.ajax({
                 type: "POST",
