@@ -186,6 +186,7 @@ echo $this->table->intro;
                                 <div class="em-candidate-details">
                                     <div class="em-candidate-title">Collaborateur(s) inscrit(s)</div>
                                     <?php foreach ($m_formations->getApplicantsInSessionForDRH($d['jos_emundus_setup_campaigns___id_raw']) as $applicant) :?>
+                                        <hr class="em-separator">
                                         <div class="row-fluid">
                                             <div class="em-candidate-name"><?php echo ($applicant->civility=='Male'?'M':'Mme').'. '.$applicant->firstname.' '.$applicant->lastname; ?></div>
                                             <?php if ($d['jos_emundus_setup_status___step_raw'] == 0) :?>
@@ -221,7 +222,6 @@ echo $this->table->intro;
                             </div>
                         </div>
 
-                    <hr class="em-separator">
                     <?php endforeach; ?>
 
                     <tfoot>
