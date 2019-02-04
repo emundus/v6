@@ -147,6 +147,7 @@ echo $this->table->intro;
 
 							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
 							if (is_array($departments)) {
+                                $departments = array_unique($departments);
 							    if (sizeof($departments) > 8) {
 								    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
                                 } else {
