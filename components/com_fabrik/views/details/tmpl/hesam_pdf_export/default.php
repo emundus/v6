@@ -176,18 +176,21 @@ try {
         </div>
 
     </div>
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006') : ?>
 
-    <div class="em-pdf-element">
+        <div class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p>Enjeu et actualité du sujet</p>
+            <div class="em-pdf-element-label">
+                <p>Enjeu et actualité du sujet</p>
+            </div>
+
+            <div class="em-pdf-element-value">
+                <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
+            </div>
+
         </div>
 
-        <div class="em-pdf-element-value">
-            <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
-        </div>
-
-    </div>
+    <?php endif; ?>
 
 
     <div class="em-pdf-element">
@@ -202,18 +205,22 @@ try {
 
     </div>
 
-    <div class="em-pdf-element">
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006') : ?>
 
-        <div class="em-pdf-element-label">
-            <p>Méthodologie proposée</p>
+        <div class="em-pdf-element">
+
+            <div class="em-pdf-element-label">
+                <p>Méthodologie proposée</p>
+            </div>
+
+            <div class="em-pdf-element-value">
+                <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
+            </div>
+
         </div>
 
-        <div class="em-pdf-element-value">
-            <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
-        </div>
-
-    </div>
-
+    <?php endif; ?>
+    
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
