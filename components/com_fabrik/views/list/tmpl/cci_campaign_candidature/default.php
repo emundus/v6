@@ -30,20 +30,20 @@ function jsonDecode($val) {
 }
 
 
-if ($pageClass !== '') :
-	echo '<div class="' . $pageClass . '">';
-endif;
+if ($pageClass !== '') :?>
+	<div class="<?php echo $pageClass; ?>">
+<?php endif;
 
-if ($this->tablePicker != '') : ?>
+if ($this->tablePicker != '') :?>
     <div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
 <?php
 endif;
 
-if ($this->params->get('show_page_heading')) :
-	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
-endif;
+if ($this->params->get('show_page_heading')) : ?>
+	<h1><?php echo $this->params->get('page_heading'); ?></h1>
+<?php endif;
 
-if ($this->showTitle == 1) : ?>
+if ($this->showTitle == 1) :?>
     <div class="page-header">
         <h1><?php echo $this->table->label;?></h1>
     </div>
@@ -56,7 +56,7 @@ echo $this->table->intro;
 
 <div class="main">
     <div class="form">
-        <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+        <form class="fabrikForm form-search" action="<?php echo $this->table->action; ?>" method="post" id="<?php echo $this->formid; ?>" name="fabrikList">
 
 			<?php
 			if ($this->hasButtons) {
@@ -105,7 +105,6 @@ echo $this->table->intro;
                 <div class="em-search-engine-data">
 
                     <?php foreach ($data as $d) :?>
-
                         <?php
                             $days = jsonDecode($d['jos_emundus_setup_teaching_unity___days_raw']);
                             if (is_array($days)) {
@@ -118,9 +117,9 @@ echo $this->table->intro;
                         ?>
 
                         <div class="em-result">
-                            <div class="em-top-details">
+                            <div class="em-top-details accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                                 <div class="g-block size-50 em-formation-title">
-                                    <?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?>
+                                    <h2><?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?></h2>
                                 </div>
                                 <div class="g-block size-50 em-status">
                                     <span class="label label-<?php echo $d['jos_emundus_setup_status___class_raw']; ?>">
@@ -129,7 +128,7 @@ echo $this->table->intro;
                                 </div>
                             </div>
 
-                            <div class="em-bottom-details">
+                            <div class="em-bottom-details accordion-content">
                                 <div class="row-fluid">
                                     <div class="em-day-details g-block size-50">
                                         <?php
@@ -251,9 +250,8 @@ echo $this->table->intro;
                             <?php endforeach; ?>
 
                         </tr>
-                        </tfoot>
-                    <?php endif; ?>
-                </table>
+                    </tfoot>
+                <?php endif; ?>
             </div>
 
         <?php print_r($this->hiddenFields);?>
@@ -262,28 +260,59 @@ echo $this->table->intro;
 </div>
 
     <script>
+        // accordion
+        jQuery(function() {
+            var Accordion = function(el, multiple) {
+                this.el = el || {};
+                this.multiple = multiple || false;
+
+                var links = this.el.find('.article-title-<?php echo $this->table->renderid; ?>');
+                links.on('click', {
+                    el: this.el,
+                    multiple: this.multiple
+                }, this.dropdown)
+            };
+
+            Accordion.prototype.dropdown = function(e) {
+                var $el = e.data.el;
+
+                $this = jQuery(this),
+                    $next = $this.next();
+
+                $next.slideToggle();
+                $this.parent().toggleClass('open');
+
+                if (!e.data.multiple) {
+                    $el.find('.accordion-content').not($next).slideUp().parent().removeClass('open');
+                }
+            };
+            var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
+        });
+
+
         function deleteApplication(fnum) {
 
-            jQuery.ajax({
-               type: 'POST',
-                dataType: 'json',
-                url: 'index.php?option=com_emundus&controller=files&task=removefile',
-                data: ({
-                     fnum: fnum
-                }),
-                success: function (result) {
-                    if (result.status) {
-                        window.location.reload();
-                    } else {
+            if (confirm("Êtes vous sûr(e) de vouloir effacer ?") == true) {
+                jQuery.ajax({
+                   type: 'POST',
+                    dataType: 'json',
+                    url: 'index.php?option=com_emundus&controller=files&task=removefile',
+                    data: ({
+                         fnum: fnum
+                    }),
+                    success: function (result) {
+                        if (result.status) {
+                            window.location.reload();
+                        } else {
+                            // TODO: Display error.
+                        }
+                    },
+                    error: function(jqXHR) {
+                        console.log(jqXHR.responseText);
                         // TODO: Display error.
                     }
-                },
-                error: function(jqXHR) {
-                    console.log(jqXHR.responseText);
-                    // TODO: Display error.
-                }
-            });
-
+                });
+            }
         }
     </script>
 </div>
