@@ -41,8 +41,30 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <?php endif;
 
 
+$db = JFactory::getDBO();
+
+$query = $db->getquery('true');
+// Get all uploaded files
+$query
+    ->select($db->quoteName(array('eup.filename', 'sa.value')))
+    ->from($db->quoteName('#__emundus_uploads', 'eup'))
+    ->join('LEFT', $db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON (' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('eup.attachment_id') . ')')
+    ->where($db->quoteName('fnum') . ' LIKE "' . $this->data['jos_emundus_recherche___fnum_raw'] . '" AND eup.can_be_viewed = 1');
+
+$db->setQuery($query);
+
+try {
+    $files = $db->loadAssocList();
+} catch (Exection $e) {
+    echo "<pre>";
+    var_dump($query->__toString());
+    echo "</pre>";
+    die();
+}
+
+
 echo $this->plugintop;
-echo $this->loadTemplate('buttons');
+
 echo $this->loadTemplate('relateddata');
 
 
@@ -63,6 +85,7 @@ $m_cifre = new EmundusModelCifre();
 
 <div class="em-offre-meta">
     <p>Sujet déposé le <strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
+    <?php echo $this->loadTemplate('buttons'); ?>
 </div>
 
 <!-- Author -->
@@ -133,7 +156,7 @@ $m_cifre = new EmundusModelCifre();
 </div>
 
 <div class="em-offre">
-    <h1 class="em-offre-title">Le Sujet </h1>
+    <h1 class="em-offre-title">Le Projet </h1>
 
     <p class="em-offre-subject-title">
 		<strong>Titre : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
@@ -142,7 +165,13 @@ $m_cifre = new EmundusModelCifre();
     <!-- THEMES -->
     <div class="em-offre-themes">
         <div class="em-offre-subtitle">Thématiques identifiées :</div>
-        <strong class="em-highlight"> <?php echo is_array($this->data['data_thematics___thematic_raw'])?implode('</strong>; <strong class="em-highlight">', $this->data['data_thematics___thematic_raw']):$this->data['data_thematics___thematic_raw']; ?></strong>
+        <strong class="em-highlight"> <?php echo !empty($this->data['data_thematics___thematic_raw'])?is_array($this->data['data_thematics___thematic_raw'])?implode('</strong>; <strong class="em-highlight">', $this->data['data_thematics___thematic_raw']):$this->data['data_thematics___thematic_raw']:'<strong class="em-highlight">Aucune thématique</strong>'; ?></strong>
+    </div>
+
+    <!-- DISCIPLINES -->
+    <div class="em-offre-disciplines">
+        <div class="em-offre-subtitle">Disciplines sollicitées :</div>
+        <strong class="em-highlight"> <?php echo !empty($this->data['em_discipline___disciplines_raw'])?is_array($this->data['em_discipline___disciplines_raw'])?implode('</strong>; <strong class="em-highlight">', $this->data['em_discipline___disciplines_raw']):$this->data['em_discipline___disciplines_raw']:'<strong class="em-highlight">Aucune discipline</strong>'; ?></strong>
     </div>
 
 	<?php if ($profile == '1006') :?>
@@ -155,7 +184,7 @@ $m_cifre = new EmundusModelCifre();
     <!-- Project question -->
     <?php
         if ($profile == '1006')
-            $questionText = 'Grande question posée :';
+            $questionText = 'Problématique :';
         elseif ($profile == '1007')
             $questionText = 'Problématique de recherche :';
         elseif ($profile == '1008')
@@ -173,6 +202,65 @@ $m_cifre = new EmundusModelCifre();
 	<?php endif; ?>
 
 </div>
+
+<div class="em-partenaires">
+    <h1 class="em-partenaires-title">Les partenaires recherchés </h1>
+
+    <?php if ($profile != '1006') :?>
+        <!-- Have futur docs -->
+        <p class="em-partenaires-futur-doc">
+            <strong>Un future doctorant : </strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
+        </p>
+
+        <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno_raw"] == 0) : ?>
+            <p class="em-partenaires-futur-doc-name">
+                <strong>Nom et prénom du future doctorant : <strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
+            </p>
+        <?php endif; ?>
+
+    <?php endif; ?>
+
+    <p class="em-partenaires-equipe-recherche">
+        <strong>Une équipe de recherche : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?>
+    </p>
+
+    <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0) : ?>
+        <p class="em-partenaires-equipe-recherche-name">
+            <strong>Nom de l'équipe partenaire : </strong><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?>
+        </p>
+    <?php endif; ?>
+
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
+        <p class="em-partenaires-acteur">
+            <strong>Un acteur public ou associatif : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
+        </p>
+
+        <p class="em-partenaires-acteur-type">
+            <strong>Type : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?>
+        </p>
+
+        <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0) : ?>
+            <p class="em-partenaires-acteur-type">
+                <strong>Nom du partenaire : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
+            </p>
+        <?php endif; ?>
+    <?php endif; ?>
+
+</div>
+
+<?php if (!empty($files)) : ?>
+    <div class="em-attached-files">
+        <h1 class="em-attached-title">Pièces jointes à l'annonce</h1>
+
+        <?php foreach ($files as $file) : ?>
+
+            <p class="em-attached-element">
+                <div class="em-partenaires-subtitle"><?php echo $file["value"].' : '; ?></div><a target="_blank" href="<?php echo JPATH_BASE.DS.'images'.DS.'emundus'.DS.$this->data["jos_emundus_campaign_candidature___applicant_id"][0].DS.$file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
+            </p>
+
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
 
 <!-- Contact information -->
 <div class="em-offre-contact">
