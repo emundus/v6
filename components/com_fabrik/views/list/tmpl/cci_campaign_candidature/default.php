@@ -116,10 +116,10 @@ echo $this->table->intro;
                             }
                         ?>
 
-                        <div class="em-result">
-                            <div class="em-top-details accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
+                        <div class="em-result accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
+                            <div class="em-top-details">
                                 <div class="g-block size-50 em-formation-title">
-                                    <h2 class="article-title article-title-<?php echo $this->table->renderid; ?>"><?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?></h2>
+                                    <h2 class="article-title article-title-<?php echo $this->table->renderid; ?>"><?php echo "<a href='".$d['fabrik_view_url'].'?rowid='.$d['jos_emundus_setup_programmes___id_raw'];"' >".$title."</a>"; ?></h2>
                                 </div>
                                 <div class="g-block size-50 em-status">
                                     <span class="label label-<?php echo $d['jos_emundus_setup_status___class_raw']; ?>">
