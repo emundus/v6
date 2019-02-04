@@ -119,7 +119,7 @@ echo $this->table->intro;
                         <div class="em-result">
                             <div class="em-top-details accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                                 <div class="g-block size-50 em-formation-title">
-                                    <h2><?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?></h2>
+                                    <h2 class="article-title article-title-<?php echo $this->table->renderid; ?>"><?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?></h2>
                                 </div>
                                 <div class="g-block size-50 em-status">
                                     <span class="label label-<?php echo $d['jos_emundus_setup_status___class_raw']; ?>">
@@ -276,8 +276,8 @@ echo $this->table->intro;
             Accordion.prototype.dropdown = function(e) {
                 var $el = e.data.el;
 
-                $this = jQuery(this),
-                    $next = $this.next();
+                $this = jQuery(this);
+                $next = $this.next();
 
                 $next.slideToggle();
                 $this.parent().toggleClass('open');
