@@ -203,12 +203,12 @@ class EmundusModelCifre extends JModelList {
 	 * @param null $fnum_from String The optional fnum of the offer the person contacting may want to put forward.
 	 * @return Boolean
 	 */
-	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null) {
+	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null, $message = null, $motivation  = null,$cv  = null, $doc  = null) {
 
 		$query = $this->db->getQuery(true);
 
-		$columns = ['user_to', 'user_from', 'fnum_to', 'state'];
-		$values = [$user_to, $user_from, $this->db->quote($fnum_to), 1];
+		$columns = ['user_to', 'user_from', 'fnum_to', 'state', 'message', 'motivation', 'cv', 'document'];
+		$values = [$user_to, $user_from, $this->db->quote($fnum_to), 1, $this->db->quote($message), $this->db->quote($motivation), $this->db->quote($cv), $this->db->quote($doc)];
 
 		if (!empty($fnum_from)) {
 			$columns[] = 'fnum_from';
