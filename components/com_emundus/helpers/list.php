@@ -867,6 +867,26 @@ class EmundusHelperList{
 	** @param	string	$elements	list of Fabrik element comma separated.
 	** @return	array	Array of Fabrik element params.
 	*/
+	function getElementsDetailsByID($elements) {
+		$db = JFactory::getDBO();
+		$query = 'SELECT concat_ws("_",tab.db_table_name,element.name) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.ordering, element.hidden, element.published, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
+				groupe.id AS group_id, groupe.label AS group_label, element.params AS params, element.params, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, tab.group_by AS tab_group_by
+				FROM #__fabrik_elements element
+				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+				WHERE element.id IN ('.$elements.')';
+//echo str_replace("#_", "jos", $query); 
+		$db->setQuery($query);
+
+		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
+	}
+
+	/*
+	** @description	Get Fabrik elements detail from List Fabrik name
+	** @param	string	$elements	list of Fabrik element comma separated.
+	** @return	array	Array of Fabrik element params.
+	*/
 	function getElementsDetails($elements) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin, element.ordering, element.hidden, element.published,
@@ -877,26 +897,7 @@ class EmundusHelperList{
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id';
 		$query .= ' WHERE concat_ws(".", tab.db_table_name, element.name) IN ('.$elements.')';
 		$db->setQuery($query);
-//echo str_replace("#_", "jos", $query);
-		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
-	}
 
-	/*
-	** @description	Get Fabrik elements detail from elements Fabrik ID
-	** @param	string	$elements	list of Fabrik element comma separated.
-	** @return	array	Array of Fabrik element params.
-	*/
-	function getElementsDetailsByID($elements) {
-		$db = JFactory::getDBO();
-		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
-				element.params AS params, element.params, tab.group_by AS tab_group_by
-				FROM #__fabrik_elements element
-				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				WHERE element.id IN ('.$elements.')';
-		$db->setQuery($query);
-//echo str_replace("#_", "jos", $query);
 		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
 	}
 

@@ -273,52 +273,47 @@ class EmundusModelAdmission extends JModelList
      * Get list of admission elements
      * @param 	  int displayed in Fabrik List ; yes=1
      * @param 	  int hidden from Fabrik List ; yes=1
+     * @param 	  array code get elements from Decision form defined for programme list
      * @return    string list of Fabrik element ID used in admission form
      **/
     public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
+		$view = $jinput->getString('view', null);
 
-        if ($session->has('filt_params')) {
+        $elements = array();
+
+        if ($session->has('filt_params'))
+        {
 
             $filt_params = $session->get('filt_params');
-            if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
+            
+            if ( $view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
+            	$programmes = array_unique($filt_params['programme']);
+            elseif(!empty($code))
+            	$programmes = array_unique($code);
+            else
+            	return array();
 
-				foreach (array_unique($filt_params['programme']) as $value) {
-                    $groups = $this->getGroupsApplicantAdmissionByProgramme($value);
-                    if (empty($groups)) {
-                        $admission_elt_list = array();
-                    } else {
-						$admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (count($admission_elt_list)>0) {
-                            foreach ($admission_elt_list as $ael) {
-                                if (isset($ael->element_id) && !empty($ael->element_id))
-                                    $elements[] = $h_list->getElementsDetailsByID($ael->element_id)[0];
-                            }
+            foreach ($programmes as $value) { 
+                $groups = $this->getGroupsApplicantAdmissionByProgramme($value);
+                
+                if (empty($groups)) {
+                    $admission_elt_list = array();
+                } else {
+                    $admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                    
+                    if (count($admission_elt_list)>0) {
+                        foreach ($admission_elt_list as $ael) {
+                            if(isset($ael->element_id) && !empty($ael->element_id))
+                                $elements[] = $h_list->getElementsDetailsByID($ael->element_id)[0];
                         }
                     }
                 }
-
-            }else{
-				if(!empty($code)){
-					foreach ($code as $value) {
-						$groups = $this->getGroupsApplicantAdmissionByProgramme($value);
-						if (empty($groups)) {
-							$admission_elt_list = array();
-						} else {
-							$admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-							if (count($admission_elt_list)>0) {
-								foreach ($admission_elt_list as $ael) {
-									if (isset($ael->element_id) && !empty($ael->element_id))
-										$elements[] = $h_list->getElementsDetailsByID($ael->element_id)[0];
-								}
-							}
-						}
-					}
-				}
-			}
+            }
         }
-        return @$elements;
+
+        return $elements;
     }
 
 

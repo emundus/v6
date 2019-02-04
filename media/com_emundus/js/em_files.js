@@ -2230,7 +2230,7 @@ $(document).ready(function() {
                                                             dataType:'json',
                                                             success: function(result) {
 
-                                                                var item='<option value="0" selected>Select an option</option>';
+                                                                var item='<option value="0" selected>' + Joomla.JText._('PLEASE_SELECT') + '</option>';
 
                                                                 for (var d in result.elts) {
 

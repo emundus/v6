@@ -283,8 +283,9 @@ class EmundusModelEvaluation extends JModelList
 
 	/**
      * Get list of evaluation elements
-     * @param 	  show_in_list_summary int show item defined as displayed in Fabrik List ; yes=1
-     * @param 	  hidden int show item defined as hidden in Fabrik List  ; yes=1
+     * @param 	  int show_in_list_summary get elements displayed in Fabrik List ; yes=1
+     * @param 	  int hidden get hidden elements ; yes=1
+     * @param 	  array code get elements from Decision form defined for programme list
      * @return    string list of Fabrik element ID used in evaluation form
      **/
     public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array())
@@ -294,50 +295,43 @@ class EmundusModelEvaluation extends JModelList
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
-		//$elements = array();
+        $view = $jinput->getString('view', null);
+
+        $elements = array();
+
         if ($session->has('filt_params'))
         {
+
             $filt_params = $session->get('filt_params');
-            if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
-                foreach (array_unique($filt_params['programme']) as $value) {
-					$groups = $this->getGroupsEvalByProgramme($value);
-                    if (empty($groups)) {
-                        $eval_elt_list = array();
-                    } else {
-						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-						//var_dump($eval_elt_list);die;
-                        if (count($eval_elt_list)>0) {
-                            foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
-                            }
+            
+            if ( $view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
+            	$programmes = array_unique($filt_params['programme']);
+            elseif(!empty($code))
+            	$programmes = array_unique($code);
+            else
+            	return array();
+
+            foreach ($programmes as $value) { 
+                $groups = $this->getGroupsEvalByProgramme($value);
+                
+                if (empty($groups)) {
+                    $eval_elt_list = array();
+                } else {
+                    $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                    
+                    if (count($eval_elt_list)>0) {
+                        foreach ($eval_elt_list as $eel) {
+                            if(isset($eel->element_id) && !empty($eel->element_id))
+                                $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
                         }
                     }
-				}
-				//var_dump($elements);
-				
-            }else{
-				if(!empty($code)){
-					foreach ($code as $value) {
-						$groups = $this->getGroupsEvalByProgramme($value);
-						if (empty($groups)) {
-							$eval_elt_list = array();
-						} else {
-							$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-							if (count($eval_elt_list)>0) {
-								foreach ($eval_elt_list as $eel) {
-									if(isset($eel->element_id) && !empty($eel->element_id))
-										$elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	
-        return @$elements;
+                }
+            }
+        }
+
+        return $elements;
     }
+
     /**
      * Get list of ALL evaluation element
      * @param 	  int displayed in Fabrik List ; yes=1

@@ -227,42 +227,55 @@ class EmundusModelDecision extends JModelList
 	}
 
 
-    /**
+   /**
      * Get list of decision elements
-     * @param 	  int displayed in Fabrik List ; yes=1
-     * @return    string list of Fabrik element ID used in evaluation form
+     * @param 	  int show_in_list_summary get elements displayed in Fabrik List ; yes=1
+     * @param 	  int hidden get hidden elements ; yes=1
+     * @param 	  array code get elements from Decision form defined for programme list
+     * @return    string list of Fabrik element ID used in decision form
      **/
-    public function getDecisionElementsName($show_in_list_summary=1, $hidden=0)
+    public function getDecisionElementsName($show_in_list_summary=1, $hidden=0, $code = array())
     {
         $session = JFactory::getSession();
+        $h_list = new EmundusHelperList;
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
+        $view = $jinput->getString('view', null);
+
+        $elements = array();
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
-            //$element_id = array();
+
             $filt_params = $session->get('filt_params');
-            if (is_array(@$filt_params['programme'])) {
-                foreach ($filt_params['programme'] as $value) {
-                    $groups = $this->getGroupsDecisionByProgramme($value);
-                    if (empty($groups)) {
-                        $eval_elt_list = array();
-                    } else {
-                        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (count($eval_elt_list)>0) {
-                            foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements[] = EmundusHelperList::getElementsDetailsByID($eel->element_id)[0];
-                            }
+            
+            if ( $view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
+            	$programmes = $filt_params['programme'];
+            elseif(!empty($code))
+            	$programmes = $code;
+            else
+            	return array();
+
+            foreach ($programmes as $value) { 
+                $groups = $this->getGroupsDecisionByProgramme($value);
+                
+                if (empty($groups)) {
+                    $eval_elt_list = array();
+                } else {
+                    $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                    
+                    if (count($eval_elt_list)>0) {
+                        foreach ($eval_elt_list as $eel) {
+                            if(isset($eel->element_id) && !empty($eel->element_id))
+                                $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
                         }
                     }
                 }
             }
         }
-//die(var_dump($elements_id));
-        return @$elements;
+
+        return $elements;
     }
 
 

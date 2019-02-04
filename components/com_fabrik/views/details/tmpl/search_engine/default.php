@@ -52,6 +52,8 @@ $departments= $this->data['data_departements___departement_nom_raw'];
 $chercheur 	= strtolower($this->data['jos_emundus_setup_profiles___label_raw'][0]);
 $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+$m_cifre = new EmundusModelCifre();
 
 ?>
 <!-- Title -->
@@ -61,16 +63,13 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
 <div class="em-offre-meta">
     <p>Sujet déposé le <strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
-    <p>Par un <strong class="em-highlight"><?php echo $chercheur; ?></strong></p>
 </div>
 
 <!-- Author -->
-<!-- TODO: Add more information, not just the author's name but also something more like 'la communauté de communes de :' -->
 <div class="em-offre-author">
-    <h1 class="em-offre-title"> Le déposant </h1>
-    <div class="em-offre-subtitle">Profil du déposant</div>
+    <h1 class="em-offre-title">Profil du déposant</h1>
     <div class="em-offre-author-profile">
-        <strong>Nom : </strong><div class="em-offre-author-name"><?php echo $author->name; ?></div>
+        <div class="em-offre-author-name"><strong>Type : </strong><?php echo $chercheur; ?></div>
     </div>
 
     <?php
@@ -78,15 +77,22 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
     //// Profile 1006 : Futur doctorant = display no special information.
     //// Profile 1007 : Researcher = display information about his lab.
     //// Profile 1008 : Municipality = display information about the organization.
-    if ($profile == '1007') :?>
-        <?php
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-        $m_cifre = new EmundusModelCifre();
-        $laboratoire = $m_cifre->getUserLaboratory($author->id);
-        ?>
+
+    if ($profile == '1006') :?>
+
+    <div class="em-offre-inst">
+        <div class="em-offre-institution">
+            <strong>Parcours : </strong>
+            <?php $master = $m_cifre->getUserMasters($author->id); ?>
+            <?php echo $master->master_2_intitule.' - '.$master->master_2_etablissement.' ('.$master->master_2_annee.')'; ?>
+        </div>
+    </div>
+
+    <?php elseif ($profile == '1007') :?>
+        <?php $laboratoire = $m_cifre->getUserLaboratory($author->id); ?>
         <div class="em-offre-inst">
-            <strong>Laboratoire :</strong>
             <div class="em-offre-institution">
+                <strong>Laboratoire : </strong>
                 <?php
                 if (!empty($laboratoire->website)) {
                     $parse = parse_url($laboratoire->website, PHP_URL_SCHEME) === null ? 'http://' . $laboratoire->website: $laboratoire->website;
@@ -102,13 +108,11 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
     <?php elseif ($profile == '1008') :?>
         <?php
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-        $m_cifre = new EmundusModelCifre();
         $institution = $m_cifre->getUserInstitution($author->id);
         ?>
         <div class="em-offre-inst">
-            <strong>Structure :</strong>
             <div class="em-offre-institution">
+                <strong>Territoire : </strong>
                 <?php
                 if (!empty($institution->website)) {
                     $parse = parse_url($institution->website, PHP_URL_SCHEME) === null ? 'http://' . $institution->website: $institution->website;
@@ -122,10 +126,18 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
         </div>
         <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
     <?php endif; ?>
+
+    <div class="em-offre-limit-date">
+        <strong>Date de disponibilité : </strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
+    </div>
 </div>
 
 <div class="em-offre">
-    <h1 class="em-offre-title"> Le Sujet </h1>
+    <h1 class="em-offre-title">Le Sujet </h1>
+
+    <p class="em-offre-subject-title">
+		<strong>Titre : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
+    </p>
 
     <!-- THEMES -->
     <div class="em-offre-themes">
@@ -136,7 +148,7 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 	<?php if ($profile == '1006') :?>
         <!-- Project context -->
         <p class="em-offre-contexte">
-            <div class="em-offre-subtitle">Contexte : </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
+            <div class="em-offre-subtitle">Enjeu et actualité du sujet : </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
         </p>
     <?php endif; ?>
 
@@ -164,367 +176,499 @@ $profile    = $this->data['jos_emundus_setup_profiles___id_raw'][0];
 
 <!-- Contact information -->
 <div class="em-offre-contact">
-    <h1 class="em-contact-title"> Contact </h1>
-    <p class="em-contact-item"><strong>Nom : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_nom_raw'][0])?$this->data['jos_emundus_projet___contact_nom_raw'][0]:'Aucun nom renseigné'; ?></p>
-    <p class="em-contact-item"><strong>Mail : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_mail_raw'][0])?$this->data['jos_emundus_projet___contact_mail_raw'][0]:'Aucun mail renseingé'; ?></p>
-    <p class="em-contact-item"><strong>Tel : </strong><?php echo !empty($this->data['jos_emundus_projet___contact_tel_raw'][0])?$this->data['jos_emundus_projet___contact_tel_raw'][0]:'Aucun numéro renseigné'; ?></p>
 
     <?php
     // Log the action of opening the persons form.
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
     EmundusModelLogs::log($user->id, $author->id, $fnum, 33, 'r', 'COM_EMUNDUS_LOGS_OPEN_OFFER');
 
-    // Action button types:
-    // // NO BUTTON : if the offer belongs to the user.
-    // // ENTREZ EN CONTACT : If the user has not already contacted.
-    // // REPONDRE : If the user has already been contacted for this offer but has not answered.
-    // // RELANCE : If the user has contacted but not been answered yet.
-    // // BREAK UP : If the user is collaborating with the other.
-    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'cifre.php');
-    $c_ciffe = new EmundusControllerCifre();
-    $action_button = $c_ciffe->getActionButton($fnum);
-    ?>
+    if ((isset($this->data['Status']) && $this->data['Status'][0] == 2) || (isset($this->data['jos_emundus_campaign_candidature___status']) && $this->data['jos_emundus_campaign_candidature___status'][0] == 2)) {
+	    $status = 2;
+    } else {
+	    $status = 1;
+    }
 
-    <!-- Button used for matching with the offer -->
-    <div class="em-search-item-action">
+    if ($status === 2) :?>
 
-        <span class="alert alert-danger hidden" id="em-action-text"></span>
+        <div class="em-search-item-action">
+            <div id="em-search-item-action-button">
+                <button type="button" class="btn btn-default" disabled > Offre clôturée </button>
+            </div>
+        </div>
 
-        <div id="em-search-item-action-button">
+    <?php elseif ($this->data['jos_emundus_campaign_candidature___applicant_id'] == JFactory::getUser()->id) :?>
 
-        <?php if ($action_button == 'contact') :?>
+        <?php if ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3)) :?>
 
-            <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
+            <div class="em-search-item-action">
+                <div id="em-search-item-action-button">
+                    <button type="button" class="btn btn-default" disabled>Offre en attente de validation</button>
+                </div>
+            </div>
 
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">
-                Entrer en contact
-            </button>
+        <?php else :?>
 
-            <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Demande de contact</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>
-                            <?php if (!empty($offers)) :?>
-                                <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>
-                                <select id="em-join-offer">
-                                    <option value="">Je ne souhaite pas joindre mes offres</option>
-                                    <?php foreach ($offers as $offer) :?>
-                                        <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            <?php endif; ?>
+            <div class="em-search-item-action">
+                <div id="em-search-item-action-button">
+                    <button type="button" class="btn btn-default" disabled>Offre déposé par vous-mème</button>
+                </div>
+            </div>
+
+        <?php endif; ?>
+
+    <?php else :?>
+
+    <?php
+        // Action button types:
+        // // NO BUTTON : if the offer belongs to the user.
+        // // ENTREZ EN CONTACT : If the user has not already contacted.
+        // // REPONDRE : If the user has already been contacted for this offer but has not answered.
+        // // RELANCE : If the user has contacted but not been answered yet.
+        // // BREAK UP : If the user is collaborating with the other.
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'cifre.php');
+        $c_ciffe = new EmundusControllerCifre();
+        $action_button = $c_ciffe->getActionButton($fnum);
+        ?>
+
+        <!-- Button used for matching with the offer -->
+        <div class="em-search-item-action">
+
+            <span class="alert alert-danger hidden" id="em-action-text"></span>
+
+            <div id="em-search-item-action-button">
+
+            <?php if ($action_button == 'contact') :?>
+
+                <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
+
+                <button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal" data-target="#contactModal">
+                    Entrer en contact
+                </button>
+
+                <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Demande de contact</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>
+                                <?php if (!empty($offers)) :?>
+                                    <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>
+                                    <select id="em-join-offer">
+                                        <option value="">Je ne souhaite pas joindre mes offres.</option>
+                                        <?php foreach ($offers as $offer) :?>
+                                            <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php endif; ?>
                             <textarea id="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>
 
                             <?php if ($user->profile == '1006') :?>
                             <hr>
-                            <!-- Upload a file from computer -->
-                            <div id="em-attachment-list">
-                                <div id="cv-upload_file">
-                                    <h4 id="em-filename">Ajouter votre CV</h4>
-                                    <label for="em-cv_to_upload">
-                                        <input type="file" id="em-cv_to_upload">
-                                    </label>
-                                </div>
-
-                                <span class="input-group-btn">
-							    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Cliquez ici pour sauvegarder</a>
-						    </span>
+                                <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
                             <hr>
                                 <!-- Upload a file from computer -->
-                                <div id="lm-upload_file">
-                                    <h4 id="em-filename">Ajouter votre lettre de motivation</h4>
-                                    <label for="em-lm_to_upload">
-                                        <input type="file" id="em-lm_to_upload">
-                                    </label>
+                                <div id="em-attachment-list">
+                                    <div id="cv-upload_file">
+                                        <h4 id="em-filename">Ajouter votre CV</h4>
+                                        <label for="em-cv_to_upload" accept="application/pdf" id="em-cv_to_upload_label">
+                                            <input type="file" id="em-cv_to_upload">
+                                        </label>
+                                    </div>
+
+                                <span class="input-group-btn">
+                                    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Joindre</a>
+                                </span>
+                                <hr>
+                                    <!-- Upload a file from computer -->
+                                    <div id="lm-upload_file">
+                                        <h4 id="em-filename">Ajouter votre lettre de motivation</h4>
+                                        <label for="em-lm_to_upload" id="em-lm_to_upload_label">
+                                            <input type="file" accept="application/pdf" id="em-lm_to_upload">
+                                        </label>
+                                    </div>
                                 </div>
+
+
+                                <span class="input-group-btn">
+                                    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Joindre</a>
+                                </span>
+
+                                <?php else :?>
+
+                                <hr>
+                                <!-- Upload a file from computer -->
+                                <div id="em-attachment-list">
+                                    <div id="doc-upload_file">
+                                        <h4 id="em-filename">Ajouter un document (facultatif)</h4>
+                                        <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                                        <label for="em-doc_to_upload" id="em-doc_to_upload_label">
+                                            <input type="file" id="em-doc_to_upload">
+                                        </label>
+                                    </div>
+
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton" style="top:13px;" onClick="docAddFile();">Joindre</a>
+                                    </span>
+                                </div>
+                                <hr>
+
+                                <?php endif; ?>
                             </div>
-
-
-                            <span class="input-group-btn">
-							    <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Cliquez ici pour sauvegarder</a>
-						    </span>
-
-                            <?php endif; ?>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton('contact')">Envoyer la demande de contact</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton('contact')">Envoyer la demande de contact</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+            <?php elseif ($action_button == 'reply') :?>
+                <button type="button" class="btn btn-primary" onclick="actionButton('reply')">
+                    Répondre
+                </button>
+                <button type="button" class="btn btn-primary" onclick="breakUp('ignore')">
+                    Ignorer
+                </button>
+
+            <?php elseif ($action_button == 'retry') :?>
+                <button type="button" class="btn btn-primary" onclick="actionButton('retry')">
+                    Relancer
+                </button>
+                <button type="button" class="btn btn-primary" onclick="breakUp('cancel')">
+                    Annuler la demande
+                </button>
+
+            <?php elseif ($action_button == 'breakup') :?>
+                <button type="button" class="btn btn-primary" onclick="breakUp('breakup')">
+                    Couper contact
+                </button>
+            <?php endif; ?>
+
             </div>
-
-        <?php elseif ($action_button == 'reply') :?>
-            <button type="button" class="btn btn-primary" onclick="actionButton('reply')">
-                Répondre
-            </button>
-            <button type="button" class="btn btn-primary" onclick="breakUp('ignore')">
-                Ignorer
-            </button>
-
-        <?php elseif ($action_button == 'retry') :?>
-            <button type="button" class="btn btn-primary" onclick="actionButton('retry')">
-                Relancer
-            </button>
-            <button type="button" class="btn btn-primary" onclick="breakUp('cancel')">
-                Annuler la demande
-            </button>
-
-        <?php elseif ($action_button == 'breakup') :?>
-            <button type="button" class="btn btn-primary" onclick="breakUp('breakup')">
-                Couper contact
-            </button>
-        <?php endif; ?>
-
         </div>
-
     </div>
-</div>
 
-<script>
+    <div class="em-modal-sending-emails" id="em-modal-sending-emails">
+        <div id="em-sending-email-caption">Envoi en cours ...</div>
+        <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
+    </div>
 
-    function actionButton(action) {
+    <script>
 
-        var fnum = '<?php echo $fnum; ?>';
-        var data = {
-            fnum : fnum
-        };
+        function actionButton(action) {
 
-        if (action == 'contact') {
-            if (document.getElementById('em-join-offer') != null) {
-                // Get the offer selected from the dropdown by the user.
-                var linkedOffer = document.getElementById('em-join-offer').value;
-                if (linkedOffer != null && linkedOffer != '' && typeof linkedOffer != 'undefined')
-                    data.linkedOffer = linkedOffer;
+            var fnum = '<?php echo $fnum; ?>';
+            var data = {
+                fnum : fnum
+            };
+
+            if (action == 'contact') {
+
+                jQuery('#em-modal-sending-emails').css('display', 'block');
+                if (document.getElementById('em-join-offer') != null) {
+                    // Get the offer selected from the dropdown by the user.
+                    var linkedOffer = document.getElementById('em-join-offer').value;
+                    if (linkedOffer != null && linkedOffer != '' && typeof linkedOffer != 'undefined')
+                        data.linkedOffer = linkedOffer;
+
+                }
+
+                // Get the attached message if there is one.
+                var message = document.getElementById('em-contact-message').value;
+                if (message != null && message != '' && typeof message != 'undefined')
+                    data.message = message;
+
+                var CV = jQuery('#cv-upload_file').find('.hidden').text();
+                if (CV != null && CV != '' && typeof CV != 'undefined')
+                    data.CV = CV;
+
+                var ML = jQuery('#lm-upload_file').find('.hidden').text();
+                if (ML != null && ML != '' && typeof ML != 'undefined')
+                    data.ML = ML;
+
+                var DOC = jQuery('#doc-upload_file').find('.hidden').text();
+                if (DOC != null && DOC != '' && typeof DOC != 'undefined')
+                    data.DOC = DOC;
+
+                data.bcc = jQuery('#em-bcc-me').prop('checked');
 
             }
 
-            // Get the attached message if there is one.
-            var message = document.getElementById('em-contact-message').value;
-            if (message != null && message != '' && typeof message != 'undefined')
-                data.message = message;
+            jQuery.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: 'index.php?option=com_emundus&controller=cifre&task='+action,
+                data: data,
+                beforeSend: function () {
+                    jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
 
-            var CV = jQuery('#cv-upload_file').find('.hidden').text();
-            if (CV != null && CV != '' && typeof CV != 'undefined')
-                data.CV = CV;
+                    if (action == 'contact') {
+                        jQuery('#contactModal').modal('hide');
+                        jQuery('body').removeClass('modal-open');
+                        jQuery('.modal-backdrop').remove();
+                    }
 
-            var ML = jQuery('#lm-upload_file').find('.hidden').text();
-            if (ML != null && ML != '' && typeof ML != 'undefined')
-                data.ML = ML;
+                },
+                success: function(result) {
+                    jQuery('#em-modal-sending-emails').css('display', 'none');
+                    if (result.status) {
 
+                        // When we successfully change the status, we simply dynamically change the button.
+                        if (action == 'contact') {
+                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button> ' +
+                                ' <button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
+                        } else if (action == 'retry') {
+                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > Message envoyé </button>');
+                        } else if (action == 'reply') {
+                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"> Couper contact </button>');
+                        }
+
+                    } else {
+                        var actionText = document.getElementById('em-action-text');
+                        actionText.classList.remove('hidden');
+                        actionText.innerHTML = result.msg;
+                    }
+                },
+                error: function(jqXHR) {
+                    jQuery('#em-modal-sending-emails').css('display', 'none');
+                    console.log(jqXHR.responseText);
+                }
+            });
         }
 
-        jQuery.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'index.php?option=com_emundus&controller=cifre&task='+action,
-            data: data,
-            beforeSend: function () {
-                jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
+        function breakUp(action) {
+            var data = {
+                fnum : '<?php echo $fnum; ?>'
+            };
 
-                if (action == 'contact') {
-                    jQuery('#contactModal').modal('hide');
-                    jQuery('body').removeClass('modal-open');
-                    jQuery('.modal-backdrop').remove();
+            jQuery.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: 'index.php?option=com_emundus&controller=cifre&task=breakup&action='+action,
+                data: data,
+                beforeSend: function () {
+                    jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
+                },
+                success: function(result) {
+                    if (result.status) {
+
+                        // Dynamically change the button back to the state of not having a link.
+                        jQuery('#em-search-item-action-button').html('' +
+                            '<button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal" data-target="#contactModal">' +
+                            '        Entrer en contact' +
+                            '        </button>' +
+                            '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
+                            '            <div class="modal-dialog" role="document">' +
+                            '                <div class="modal-content">' +
+                            '                    <div class="modal-header">' +
+                            '                        <h5 class="modal-title">Demande de contact</h5>' +
+                            '                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                            '                            <span aria-hidden="true">&times;</span>' +
+                            '                        </button>' +
+                            '                    </div>' +
+                            '                    <div class="modal-body">' +
+                            '                        <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>' +
+                                                        <?php if (!empty($offers)) :?>
+                            '                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>' +
+                            '                            <select id="em-join-offer">' +
+                                                            <?php foreach ($offers as $offer) :?>
+                            '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
+                                                            <?php endforeach; ?>
+                            '                            </select>' +
+                                                        <?php endif; ?>
+                            '                       <textarea class="em-contact-message" placeholder="Ajouter un message (facultatif)"></textarea>' +
+                            '                       <span class="input-group-btn">'+
+'                                                       <label for="em-bcc-me">M\'envoyer une copie de ce message sur mon adresse mail.</label>'+
+'                                                       <input type="checkbox" class="em-checkbox em-bcc-me" name="em-bcc-me" id="em-bcc-me">'+
+'                                                   </span>'+
+                                                    <?php if ($user->profile == '1006') :?>
+'                                                       <hr>'+
+'                                                       <!-- Upload a file from computer -->'+
+'                                                       <div id="em-attachment-list">'+
+'                                                           <div id="cv-upload_file">'+
+'                                                               <h4 id="em-filename">Ajouter votre CV</h4>'+
+'                                                               <label for="em-cv_to_upload">'+
+'                                                                   <input type="file" accept="application/pdf" id="em-cv_to_upload">'+
+'                                                               </label>'+
+'                                                           </div>'+
+'                                                           <span class="input-group-btn">'+
+'                                                               <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="cvAddFile();">Cliquez ici pour sauvegarder</a>'+
+'                                                           </span>'+
+'                                                           <hr>'+
+'                                                           <!-- Upload a file from computer -->'+
+'                                                           <div id="lm-upload_file">'+
+'                                                               <h4 id="em-filename">Ajouter votre lettre de motivation</h4>'+
+'                                                               <label for="em-lm_to_upload">'+
+'                                                                   <input type="file" accept="application/pdf" id="em-lm_to_upload">'+
+'                                                               </label>'+
+'                                                           </div>'+
+'                                                       </div>'+
+'                                                       <span class="input-group-btn">'+
+'                                                           <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="lmAddFile();">Cliquez ici pour sauvegarder</a>'+
+'                                                       </span>'+
+                                                    <?php else :?>
+'                                                       <hr>'+
+'                                                       <!-- Upload a file from computer -->'+
+'                                                       <div id="em-attachment-list">'+
+'                                                           <div id="doc-upload_file">'+
+'                                                               <h4 id="em-filename">Ajouter un document à joindre (facultatif)</h4>'+
+'                                                               <label for="em-doc_to_upload">'+
+'                                                                   <input type="file" accept="application/pdf" id="em-doc_to_upload">'+
+'                                                               </label>'+
+'                                                           </div>'+
+'                                                           <span class="input-group-btn">'+
+'                                                               <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;" onClick="docAddFile();">Cliquez ici pour sauvegarder</a>'+
+'                                                           </span>'+
+'                                                       </div>'+
+'                                                       <hr>'+
+                                                    <?php endif; ?>
+                            '                    </div>'+
+                            '                    <div class="modal-footer">' +
+                            '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Envoyer la demande de contact</button>' +
+                            '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
+                            '                    </div>' +
+                            '                </div>' +
+                            '            </div>');
+
+                    } else {
+                        var actionText = document.getElementById('em-action-text');
+                        actionText.classList.remove('hidden');
+                        actionText.innerHTML = result.msg;
+                    }
+                },
+                error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
                 }
-
-
-            },
-            success: function(result) {
-                if (result.status) {
-
-                    // When we successfully change the status, we simply dynamically change the button.
-
-                    if (action == 'contact')
-                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button><button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
-                    else if (action == 'retry')
-                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > Message envoyé </button>');
-                    else if (action == 'reply')
-                        jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"> Couper contact </button>');
-
-                } else {
-                    var actionText = document.getElementById('em-action-text');
-                    actionText.classList.remove('hidden');
-                    actionText.innerHTML = result.msg;
-                }
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
-    }
-
-    function breakUp(action) {
-        var data = {
-            fnum : '<?php echo $fnum; ?>'
-        };
-
-        jQuery.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'index.php?option=com_emundus&controller=cifre&task=breakup&action='+action,
-            data: data,
-            beforeSend: function () {
-                jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
-            },
-            success: function(result) {
-                if (result.status) {
-
-                    // Dynamically change the button back to the state of not having a link.
-                    jQuery('#em-search-item-action-button').html('' +
-                        '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#contactModal">' +
-                        '        Entrer en contact' +
-                        '        </button>' +
-                        '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
-                        '            <div class="modal-dialog" role="document">' +
-                        '                <div class="modal-content">' +
-                        '                    <div class="modal-header">' +
-                        '                        <h5 class="modal-title">Demande de contact</h5>' +
-                        '                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                        '                            <span aria-hidden="true">&times;</span>' +
-                        '                        </button>' +
-                        '                    </div>' +
-                        '                    <div class="modal-body">' +
-                        '                        <p>Veuillez confirmer que vous souhaitez contacter le créateur de cette offre.</p>' +
-		                                            <?php if (!empty($offers)) :?>
-                        '                            <p>Si vous le souhaitez: vous pouvez joindre une de vos offres.</p>' +
-                        '                            <select id="em-join-offer">' +
-		                                                <?php foreach ($offers as $offer) :?>
-                        '                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
-		                                                <?php endforeach; ?>
-                        '                            </select>' +
-		                                            <?php endif; ?>
-                        '                       <textarea class="em-contact-message" placeholder="Ajouter un méssage (facultatif)"></textarea>'+
-                        '                    </div>' +
-                        '                    <div class="modal-footer">' +
-                        '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Evoyer la demande de contact</button>' +
-                        '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
-                        '                    </div>' +
-                        '                </div>' +
-                        '            </div>');
-
-                } else {
-                    var actionText = document.getElementById('em-action-text');
-                    actionText.classList.remove('hidden');
-                    actionText.innerHTML = result.msg;
-                }
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
-    }
-
-    // Add file to the list being attached.
-    function cvAddFile() {
-        // We need to get the file uploaded by the user.
-
-        var cv = jQuery("#em-cv_to_upload")[0].files[0];
-        var cvId = jQuery("#cv-upload_file");
-        var uploadcv = new Upload(cv, cvId);
-
-        // Verification of style size and type can be done here.
-        uploadcv.doUpload();
-    }
-
-    // Add file to the list being attached.
-    function lmAddFile() {
-        // We need to get the file uploaded by the user.
-        var lm = jQuery("#em-lm_to_upload")[0].files[0];
-        var lmId = jQuery("#lm-upload_file");
-        var uploadlm = new Upload(lm, lmId);
-
-        // Verification of style size and type can be done here.
-        uploadlm.doUpload();
-    }
-
-    // Helper function for uploading a file via AJAX.
-    var Upload = function (file, id) {
-        this.file = file;
-        this.id = id;
-    };
-
-    Upload.prototype.getType = function() {
-        return this.file.type;
-    };
-    Upload.prototype.getSize = function() {
-        return this.file.size;
-    };
-    Upload.prototype.getName = function() {
-        return this.file.name;
-    };
-
-    Upload.prototype.doUpload = function () {
-
-        var that = this;
-        var formData = new FormData();
-
-        // add assoc key values, this will be posts values
-        formData.append("file", this.file, this.getName());
-        formData.append("upload_file", true);
-
-        jQuery.ajax({
-            type: "POST",
-            url: "index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
-            xhr: function () {
-                var myXhr = jQuery.ajaxSettings.xhr();
-                if (myXhr.upload) {
-                    myXhr.upload.addEventListener('progress', that.progressHandling, false);
-                }
-                return myXhr;
-            },
-            success: function (data) {
-                data = JSON.parse(data);
-                if (data.status) {
-                    jQuery(that.id).find('.list-group-item').remove();
-                    jQuery(that.id).append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><i class="fa fa-times"></i></span></li>');
-                } else {
-                    jQuery(that.id).append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
-                }
-            },
-            error: function (error) {
-                // handle error
-                this.id.append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
-            },
-            async: true,
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            timeout: 60000
-        });
-    };
-
-
-    function removeAttachment(element) {
-
-        element = jQuery(element);
-
-        if (element.parent().hasClass('candidate_file')) {
-
-            // Remove 'disabled' attr from select options.
-            jQuery('#em-select_candidate_file option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
-
-        } else if (element.parent().hasClass('setup_letters')) {
-
-            // Remove 'disabled' attr from select options.
-            jQuery('#em-select_setup_letters option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
-
+            });
         }
 
-        jQuery(element).parent().remove();
-    }
+        // Add file to the list being attached.
+        function cvAddFile() {
+            // We need to get the file uploaded by the user.
 
-</script>
+            var cv = jQuery("#em-cv_to_upload")[0].files[0];
+            var cvId = jQuery("#cv-upload_file");
+            var uploadcv = new Upload(cv, cvId);
 
-<?php
+            // Verification of style size and type can be done here.
+            uploadcv.doUpload();
+        }
+
+        // Add file to the list being attached.
+        function docAddFile() {
+
+            // We need to get the file uploaded by the user.
+            var doc = jQuery("#em-doc_to_upload")[0].files[0];
+            var docId = jQuery("#doc-upload_file");
+            var uploaddoc = new Upload(doc, docId);
+
+            // Verification of style size and type can be done here.
+            uploaddoc.doUpload();
+        }
+
+        // Add file to the list being attached.
+        function lmAddFile() {
+            // We need to get the file uploaded by the user.
+            var lm = jQuery("#em-lm_to_upload")[0].files[0];
+            var lmId = jQuery("#lm-upload_file");
+            var uploadlm = new Upload(lm, lmId);
+
+            // Verification of style size and type can be done here.
+            uploadlm.doUpload();
+        }
+
+        // Helper function for uploading a file via AJAX.
+        var Upload = function (file, id) {
+            this.file = file;
+            this.id = id;
+        };
+
+        Upload.prototype.getType = function() {
+            return this.file.type;
+        };
+        Upload.prototype.getSize = function() {
+            return this.file.size;
+        };
+        Upload.prototype.getName = function() {
+            return this.file.name;
+        };
+
+        Upload.prototype.doUpload = function () {
+
+            var that = this;
+            var formData = new FormData();
+
+            if (this.getType() != 'application/pdf') {
+                alert("Type de document non permis. Veuillez uniquement envoyer des fichiers au format PDF.");
+                return false;
+            }
+
+            // add assoc key values, this will be posts values
+            formData.append("file", this.file, this.getName());
+            formData.append("upload_file", true);
+            formData.append('filetype', 'pdf');
+
+            jQuery.ajax({
+                type: "POST",
+                url: "index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
+                xhr: function () {
+                    var myXhr = jQuery.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.addEventListener('progress', that.progressHandling, false);
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (data.status) {
+                        jQuery(that.id).find('.list-group-item').remove();
+                        jQuery(that.id).append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><i class="fa fa-times"></i></span></li>');
+                    } else {
+                        jQuery(that.id).append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+                    }
+                },
+                error: function (error) {
+                    // handle error
+                    this.id.append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                timeout: 60000
+            });
+        };
+
+
+        function removeAttachment(element) {
+
+            element = jQuery(element);
+
+            if (element.parent().hasClass('candidate_file')) {
+
+                // Remove 'disabled' attr from select options.
+                jQuery('#em-select_candidate_file option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+
+            } else if (element.parent().hasClass('setup_letters')) {
+
+                // Remove 'disabled' attr from select options.
+                jQuery('#em-select_setup_letters option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+
+            }
+
+            jQuery(element).parent().remove();
+        }
+
+    </script>
+
+    <?php endif;
+
 echo $this->pluginbottom;
 echo $this->loadTemplate('actions');
 echo '</div>';
