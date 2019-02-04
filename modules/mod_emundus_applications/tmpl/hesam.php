@@ -14,7 +14,6 @@ echo $description;
 $uri = JUri::getInstance();
 ?>
 
-
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
     <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus"></span> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
@@ -22,7 +21,7 @@ $uri = JUri::getInstance();
 
 <?php if (!empty($applications)) : ?>
     <div class="em-hesam-applications">
-		<?php foreach ($applications as $application) : ?>
+        <?php foreach ($applications as $application) : ?>
             <div class="col-md-4 em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
 
                 <div class="em-hesam-application-card-details">
@@ -67,17 +66,21 @@ $uri = JUri::getInstance();
                     </div>
 
                     <div class="col-md-12 em-bottom-space em-interested">
-                        <?php if (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) > 0) :?>
+                        <?php if (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) == 1) :?>
+                            <p>Une personne est intéressée par cette offre.</p>
+                        <?php elseif (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) > 1) :?>
                             <p><?php echo modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum); ?> personnes sont intéressées par cette offre.</p>
                         <?php endif; ?>
                     </div>
                 </div>
 
-
             </div>
-		<?php endforeach;  ?>
+        <?php endforeach;  ?>
     </div>
-<?php else : echo JText::_('NO_FILE'); ?>
+<?php else : ?>
+    <span class="em-no-file-found">
+        <?php echo JText::_('NO_FILE'); ?>
+    </span>
 <?php endif; ?>
 
 
