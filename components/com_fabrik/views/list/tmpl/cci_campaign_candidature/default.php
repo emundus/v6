@@ -201,22 +201,22 @@ echo $this->table->intro;
                                         <hr>
                                     <?php endforeach; ?>
                                 </div>
-                            </div>
 
-                            <hr>
-                            <div class="em-button-add-candidate">
-                                <a href="<?php echo $d['fabrik_edit_url'].'?session='.$d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>">Ajouter un collaborateur</a>
-                            </div>
-                            <hr>
+                                <hr>
+                                <div class="em-button-add-candidate">
+                                    <a href="<?php echo $d['fabrik_edit_url'].'?session='.$d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>">Ajouter un collaborateur</a>
+                                </div>
+                                <hr>
 
-                            <!-- TODO: If the status is a certain step, don't show this (cancelled, + maybe other steps) -->
-                            <div class="em-payment-details">
-                                <div class="em-payment-title">Facturation à venir</div>
-                                <div class="row-fluid">
-                                    <div class="em-price">Prix unitaire : <?php echo $d['jos_emundus_setup_teaching_unity___price_raw']; ?> €</div>
-                                    <!-- TODO: Display total facturé (net de taxe) FROM GESCOF? -->
-                                    <!-- TODO: Display financeur -->
-                                    <!-- TODO: Display dates of billing and echeance FROM GESCOF? -->
+                                <!-- TODO: If the status is a certain step, don't show this (cancelled, + maybe other steps) -->
+                                <div class="em-payment-details">
+                                    <div class="em-payment-title">Facturation à venir</div>
+                                    <div class="row-fluid">
+                                        <div class="em-price">Prix unitaire : <?php echo $d['jos_emundus_setup_teaching_unity___price_raw']; ?> €</div>
+                                        <!-- TODO: Display total facturé (net de taxe) FROM GESCOF? -->
+                                        <!-- TODO: Display financeur -->
+                                        <!-- TODO: Display dates of billing and echeance FROM GESCOF? -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
