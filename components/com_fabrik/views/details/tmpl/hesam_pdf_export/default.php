@@ -43,7 +43,7 @@ $query
     ->select($db->quoteName(array('eup.filename', 'sa.value')))
     ->from($db->quoteName('#__emundus_uploads', 'eup'))
     ->join('LEFT', $db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON (' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('eup.attachment_id') . ')')
-    ->where($db->quoteName('fnum') . ' LIKE "' . $this->data['jos_emundus_recherche___fnum_raw'] . '"');
+    ->where($db->quoteName('fnum') . ' LIKE "' . $this->data['jos_emundus_recherche___fnum_raw'] . '" AND eup.can_be_viewed = 1');
 
 $db->setQuery($query);
 
@@ -220,7 +220,7 @@ try {
         </div>
 
     <?php endif; ?>
-    
+
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
