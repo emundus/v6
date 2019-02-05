@@ -179,6 +179,14 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 				$email_to_send = 71;
 			}
+
+            // Send a chat message to the user in order to start a conversation thread.
+            $m_messages = new EmundusModelMessages();
+
+            if(!$m_messages->sendMessage($fnum['applicant_id'],'<p>' . $this->user->name .' '. JText::_('COM_EMUNDUS_CIFRE_DEMANDE_CONTACT_MESSAGE') . '</p>', $this->user->id)) {
+                echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
+                exit;
+            }
 			
 			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post, $toAttach, $bcc)]);
 			exit;
