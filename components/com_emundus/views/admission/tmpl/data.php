@@ -36,7 +36,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<?php if($kl == 'check'): ?>
 											<label for="em-check-all">
 												<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-												<span>#</span>
+												<span><?php echo JText::_('COM_EMUNDUS_CHECK_ALL')?></span>
 											</label>
 											<label class="em-hide em-check-all-all" for="em-check-all-all">
 												<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
