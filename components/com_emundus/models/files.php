@@ -1840,26 +1840,50 @@ if (JFactory::getUser()->id == 63)
      * @param $state
      * @return bool|mixed
      */
-    public function updateState($fnums, $state)
-    {
-        try
-        {
-            $db = $this->getDbo();
-            foreach ($fnums as $fnum)
-            {
-                $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
+    public function updateState($fnums, $state) {
+
+	    $db = $this->getDbo();
+
+	    $query = $db->getQuery(true);
+	    $query->select($db->quoteName('profile'))
+		    ->from($db->quoteName('#__emundus_setup_status'))
+		    ->where($db->quoteName('step').' = '.$state);
+	    $db->setQuery($query);
+
+	    try {
+	    	$profile = $db->loadResult();
+	    } catch (Exception $e) {
+	    	$profile = null;
+	    }
+
+    	try {
+
+            foreach ($fnums as $fnum) {
+
+            	$query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
                 $db->setQuery($query);
                 $res = $db->execute();
+
+                if (!empty($profile)) {
+
+                	$query = $db->getQuery(true);
+                	$query->update($db->quoteName('#__emundus_users'))
+		                ->set($db->quoteName('profile').' = '.$profile)
+		                ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+                	$db->execute();
+
+                }
+
             }
             return $res;
-        }
-        catch (Exception $e)
-        {
+
+    	} catch (Exception $e) {
+
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
-        }
 
+    	}
     }
     /**
      * @param $fnums
