@@ -1642,6 +1642,20 @@ if (JFactory::getUser()->id == 63)
 			$db->setQuery($query);
 			$admissionInfo->form_id = $db->loadresult();
 
+			// Getting the Item ID of the application form in order to redirect correctly.
+	        $query = $db->getQuery(true);
+	        $query->select($db->quoteName('id'))
+		        ->from($db->quoteName('#__menu', 'm'))
+                ->leftJoin($db->quoteName('#__emundus_setup_profile', 'sp').' ON '.$db->quoteName('m.menutype').' LIKE '.$db->quoteName('sp.menutype'))
+                ->where($db->quoteName('sp.id').' = 8 AND '.$db->quoteName('m.link').' LIKE '.$db->quote('index.php?option=com_fabrik&view=form&formid='.$admissionInfo->form_id).' AND '.$db->quoteName('m.published').' = 1');
+	        $db->setQuery($query);
+	        $admissionInfo->item_id = $db->loadResult();
+
+	        // This is for retrocompatibility with OLAGE.
+	        if (empty($admissionInfo->item_id)) {
+		        $admissionInfo->item_id = '2720';
+	        }
+
 			return $admissionInfo;
 
 		} catch (Exception $e) {
