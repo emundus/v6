@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 ?>
 
 <div class="em-contact-request-module">
-
     <?php if (!empty($offers->to)) :?>
         <span class="em-contact-request col-md-12">
             <div class="em-highlight"><?php echo count($offers->to) > 1 ?JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFERS'):JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFER'); ?></div>
@@ -59,6 +58,9 @@ defined('_JEXEC') or die;
                                 <div class="em-contact-request-linked-offer"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_LINKED_OFFER'); ?></div>
                                 <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
                             <?php endif; ?>
+                            <div>
+                                <a href="/demande/details/314/<?php echo $offer->link_id;?>?format=pdf">Voir les détails de la demande</a>
+                            </div>
                         </div>
                     </div>
                     <span class="alert alert-danger hidden" id="em-action-text-<?php echo $offer->link_id; ?>"></span>
@@ -124,6 +126,7 @@ defined('_JEXEC') or die;
     <?php endif; ?>
 
     <script>
+
         function reply(id) {
 
             jQuery.ajax({

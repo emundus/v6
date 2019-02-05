@@ -112,6 +112,11 @@
 					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_DOCUMENTS"
 					description=""
 					default="#EA5012" />
+				<field
+						name="admission_status"
+						type="text"
+						label="MOD_EMUNDUS_ADMISSION_STATUS"
+						description="MOD_EMUNDUS_ADMISSION_STATUS_DESC" />
 			</fieldset>
 			<fieldset
 				name="advanced">

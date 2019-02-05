@@ -91,7 +91,7 @@ $m_cifre = new EmundusModelCifre();
         <p>Sujet déposé le <strong
                     class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong>
         </p>
-        <?php echo $this->loadTemplate('buttons'); ?>
+
     </div>
 
     <!-- Author -->
@@ -167,7 +167,7 @@ $m_cifre = new EmundusModelCifre();
     </div>
 
     <div class="em-offre">
-        <h1 class="em-offre-title">Le Projet </h1>
+        <h1 class="em-offre-title">Le projet </h1>
 
         <p class="em-offre-subject-title">
             <strong>Titre : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
@@ -222,7 +222,7 @@ $m_cifre = new EmundusModelCifre();
         <?php if ($profile != '1006') : ?>
             <!-- Have futur docs -->
             <p class="em-partenaires-futur-doc">
-                <strong>Un future doctorant
+                <strong>Un futur doctorant
                     : </strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
             </p>
 
@@ -390,12 +390,27 @@ $m_cifre = new EmundusModelCifre();
                                                        id="em-cv_to_upload_label">
                                                     <input type="file" id="em-cv_to_upload">
                                                 </label>
+                                                <span className="file-name" id="cv-file-name"></span>
                                             </div>
 
                                             <span class="input-group-btn">
                                     <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;"
                                        onClick="cvAddFile();">Joindre</a>
                                 </span>
+
+                                <div id="doc-upload_file">
+                                                <h4 id="em-filename">Ajouter un document (facultatif)</h4>
+                                                <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                                                <label for="em-doc_to_upload" id="em-doc_to_upload_label">
+                                                    <input type="file" id="em-doc_to_upload">
+                                                </label>
+                                                <span className="file-name" id="other-doc-file-name"></span>
+                                            </div>
+
+                                            <span class="input-group-btn">
+                                        <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"
+                                           style="top:13px;" onClick="docAddFile();">Joindre</a>
+                                    </span>
 
                                     <?php else : ?>
 
@@ -420,14 +435,13 @@ $m_cifre = new EmundusModelCifre();
                                                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">
                                                     <input type="file" id="em-doc_to_upload">
                                                 </label>
+                                                <span className="file-name" id="other-doc-file-name"></span>
                                             </div>
 
                                             <span class="input-group-btn">
                                         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"
                                            style="top:13px;" onClick="docAddFile();">Joindre</a>
                                     </span>
-                                        </div>
-                                        <hr>
 
                                     <?php endif; ?>
                                 </div>
@@ -466,6 +480,7 @@ $m_cifre = new EmundusModelCifre();
 
             </div>
         </div>
+                <?php echo $this->loadTemplate('buttons'); ?>
     </div>
 
     <div class="em-modal-sending-emails" id="em-modal-sending-emails">
@@ -474,6 +489,15 @@ $m_cifre = new EmundusModelCifre();
     </div>
 
     <script>
+
+
+        jQuery('#em-doc_to_upload').on('change',function(evt) {
+            jQuery('#other-doc-file-name').html(evt.target.files[0].name);
+          });
+
+        jQuery('#cv_to_upload').on('change',function(evt) {
+            jQuery('#cv-file-name').html(evt.target.files[0].name);
+          });
 
         function actionButton(action) {
 
@@ -618,12 +642,27 @@ $m_cifre = new EmundusModelCifre();
                            '                            id="em-cv_to_upload_label">' +
                            '                         <input type="file" id="em-cv_to_upload">' +
                            '                    </label>' +
+                            '                   <span className="file-name" id="cv-file-name"></span>' +
                             '                </div>' +
 
                              '               <span class="input-group-btn">' +
                              '       <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;"' +
                             '           onClick="cvAddFile();">Joindre</a>' +
                               '  </span>' +
+
+                         '   <div id="doc-upload_file">' +
+                        '                 <h4 id="em-filename">Ajouter un document (facultatif)</h4>' +
+                        '                 <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
+                        '                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">' +
+                        '                     <input type="file" id="em-doc_to_upload">' +
+                        '                 </label>' +
+                        '                   <span className="file-name" id="other-doc-file-name"></span>' +
+                        '             </div>' +
+
+                        '             <span class="input-group-btn">' +
+                        '         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"' +
+                        '            style="top:13px;" onClick="docAddFile();">Joindre</a>' +
+                        '     </span>' +
 
                                     <?php else : ?>
 
@@ -647,14 +686,13 @@ $m_cifre = new EmundusModelCifre();
                                '                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">' +
                                '                     <input type="file" id="em-doc_to_upload">' +
                                '                 </label>' +
+                               '                   <span className="file-name" id="other-doc-file-name"></span>' +
                                '             </div>' +
 
                                '             <span class="input-group-btn">' +
                                '         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"' +
                                '            style="top:13px;" onClick="docAddFile();">Joindre</a>' +
                                '     </span>' +
-                               '         </div>' +
-                                '        <hr>' +
 
                                     <?php endif; ?>
                             '                    </div>' +

@@ -15,6 +15,10 @@ defined('_JEXEC') or die('Restricted access');
 $form = $this->form;
 $model = $this->getModel();
 
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+
+$m_users = new EmundusModelUsers();
+
 if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
         <?php echo $this->escape($this->params->get('page_heading')); ?>
@@ -38,6 +42,8 @@ echo $this->loadTemplate('relateddata');
 $db = JFactory::getDBO();
 
 $query = $db->getquery('true');
+$user_to = $m_users->getUserById($this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0]);
+
 // Get all uploaded files
 $query
     ->select($db->quoteName(array('eup.filename', 'sa.value')))
@@ -112,7 +118,19 @@ try {
     <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
          width="252" height="90">
     <div class="em-pdf-title-div">
-        <h3>Récapitulatif de l'annonce déposé sur <a href="<?php echo JPATH_SITE; ?>"><?php echo JPATH_SITE; ?></a></h3>
+        <h3>Récapitulatif de l'annonce déposé sur <a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
+    </div>
+
+    <div class="em-pdf-element">
+
+        <div class="em-pdf-element-label">
+            <p>Numéro de dossier</p>
+        </div>
+
+        <div class="em-pdf-element-value">
+            <p><?php echo $this->data["jos_emundus_campaign_candidature___fnum_raw"][0]; ?></p>
+        </div>
+
     </div>
 
     <div class="em-pdf-element">
@@ -145,7 +163,66 @@ try {
         </div>
 
     </div>
+    <div class="em-pdf-element">
 
+        <div class="em-pdf-element-label">
+            <p>Civlité</p>
+        </div>
+
+        <div class="em-pdf-element-value">
+            <p><?php echo ($user_to[0]->gender == "M") ? "Monsieur" : "Madame"; ?></p>
+        </div>
+
+    </div>
+
+    <div class="em-pdf-element">
+
+        <div class="em-pdf-element-label">
+            <p>Nom</p>
+        </div>
+
+        <div class="em-pdf-element-value">
+            <p><?php echo ucfirst($user_to[0]->lastname); ?></p>
+        </div>
+
+    </div>
+
+    <div class="em-pdf-element">
+
+        <div class="em-pdf-element-label">
+            <p>Prénom</p>
+        </div>
+
+        <div class="em-pdf-element-value">
+            <p><?php echo ucfirst($user_to[0]->firstname); ?></p>
+        </div>
+
+    </div>
+
+    <div class="em-pdf-element">
+
+        <div class="em-pdf-element-label">
+            <p>Email</p>
+        </div>
+
+        <div class="em-pdf-element-value">
+            <p><a href="mailto:<?php echo $user_to[0]->email; ?>"><?php echo $user_to[0]->email; ?></a></p>
+        </div>
+
+    </div>
+    <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) ?>
+    <div class="em-pdf-element">
+
+        <div class="em-pdf-element-label">
+            <p>Tél</p>
+        </div>
+        <div class="em-pdf-element-value">
+            <p><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
+        </div>
+
+    </div>
+
+    <?php if (!empty($this->data['jos_emundus_projet___limit_date_raw'][0])) :?>
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
@@ -157,6 +234,7 @@ try {
         </div>
 
     </div>
+    <?php endif; ?>
 
 </div>
 
@@ -176,7 +254,7 @@ try {
         </div>
 
     </div>
-    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006') : ?>
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006' && !empty($this->data["jos_emundus_projet___contexte_raw"][0])) : ?>
 
         <div class="em-pdf-element">
 
@@ -193,57 +271,67 @@ try {
     <?php endif; ?>
 
 
-    <div class="em-pdf-element">
+    <?php if (!empty($this->data['jos_emundus_projet___question_raw'][0])) :?>
+        <div class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p>Problématique</p>
+            <div class="em-pdf-element-label">
+                <p>Problématique</p>
+            </div>
+
+            <div class="em-pdf-element-value">
+                <p><?php echo $this->data["jos_emundus_projet___question_raw"][0]; ?></p>
+            </div>
+
         </div>
-
-        <div class="em-pdf-element-value">
-            <p><?php echo $this->data["jos_emundus_projet___question_raw"][0]; ?></p>
-        </div>
-
-    </div>
+    <?php endif; ?>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006') : ?>
+
+        <?php if (!empty($this->data['jos_emundus_projet___methodologie_raw'][0])) :?>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Méthodologie proposée</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
+                </div>
+
+            </div>
+
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if (!empty($this->data['data_thematics___thematic_raw'][0])) :?>
 
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Méthodologie proposée</p>
+                <p>Thématiques associées</p>
             </div>
 
             <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
+                <p><?php echo implode(", ", $this->data["data_thematics___thematic_raw"]); ?></p>
             </div>
 
         </div>
 
     <?php endif; ?>
 
-    <div class="em-pdf-element">
+    <?php if (!empty($this->data["em_discipline___disciplines_raw"])) :?>
+        <div class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p>Thématiques associées</p>
+            <div class="em-pdf-element-label">
+                <p>Disciplines sollicitées</p>
+            </div>
+
+            <div class="em-pdf-element-value">
+                <p><?php echo is_array($this->data["em_discipline___disciplines_raw"]) ? implode(', ', $this->data["em_discipline___disciplines_raw"]) : $this->data["em_discipline___disciplines_raw"]; ?></p>
+            </div>
+
         </div>
-
-        <div class="em-pdf-element-value">
-            <p><?php echo implode(", ", $this->data["data_thematics___thematic_raw"]); ?></p>
-        </div>
-
-    </div>
-
-    <div class="em-pdf-element">
-
-        <div class="em-pdf-element-label">
-            <p>Disciplines sollicitées</p>
-        </div>
-
-        <div class="em-pdf-element-value">
-            <p><?php echo is_array($this->data["em_discipline___disciplines_raw"]) ? implode(', ', $this->data["em_discipline___disciplines_raw"]) : $this->data["em_discipline___disciplines_raw"]; ?></p>
-        </div>
-
-    </div>
+    <?php endif; ?>
 
 </div>
 
@@ -267,7 +355,8 @@ try {
 
         </div>
 
-        <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno"] == 0) : ?>
+
+        <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___futur_doctorant_nom_raw"]) && !empty($this->data["jos_emundus_recherche___futur_doctorant_prenom_raw"])) : ?>
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
@@ -284,6 +373,7 @@ try {
 
     <?php endif; ?>
 
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1007') :?>
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
@@ -296,20 +386,50 @@ try {
 
     </div>
 
+        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire_raw"])) : ?>
+            <div class="em-pdf-element">
 
-    <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0) : ?>
+                <div class="em-pdf-element-label">
+                    <p>Nom de l'équipe partenaire</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?></p>
+                </div>
+
+            </div>
+        <?php endif; ?>
+
+    <?php else :?>
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Nom de l'équipe partenaire</p>
+                <p>Une équipe de recherche</p>
             </div>
 
             <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?></p>
+                <p><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?></p>
             </div>
 
         </div>
+
+        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"])) : ?>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Nom de l'équipe partenaire</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche"]; ?></p>
+                </div>
+
+            </div>
+        <?php endif; ?>
+
     <?php endif; ?>
+
+
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
         <div class="em-pdf-element">
@@ -324,19 +444,25 @@ try {
 
         </div>
 
-        <div class="em-pdf-element">
-
-            <div class="em-pdf-element-label">
-                <p>Type</p>
-            </div>
-
-            <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?></p>
-            </div>
-
-        </div>
-
         <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0) : ?>
+
+            <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_type_raw"])) : ?>
+                <div class="em-pdf-element">
+
+                    <div class="em-pdf-element-label">
+                        <p>Type</p>
+                    </div>
+
+                    <div class="em-pdf-element-value">
+                        <p><?php echo $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?></p>
+                    </div>
+
+                </div>
+
+            <?php endif; ?>
+
+            <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"])) : ?>
+
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
@@ -348,6 +474,7 @@ try {
                 </div>
 
             </div>
+            <?php endif; ?>
         <?php endif; ?>
     <?php endif; ?>
 </div>
@@ -375,4 +502,9 @@ try {
 
     <?php endif; ?>
 
+</div>
+
+
+<div>
+    <a href="javascript:history.go(-1)">Retour</a>
 </div>
