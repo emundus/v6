@@ -106,7 +106,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$jinput = $application->input;
 		$fnum = $jinput->post->get('fnum', null);
 		$linkedOffer = $jinput->post->get('linkedOffer', null);
-		$message = $jinput->post->getString('message', '');
+		$message = $jinput->post->getString('message', null);
+		$motivation = $jinput->post->getString('motivation', null);
 		$cv = $jinput->post->getPath('CV', null);
 		$ml = $jinput->post->getPath('ML', null);
 		$doc = $jinput->post->getPath('DOC', null);
@@ -126,7 +127,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 		}
 		
 		if (!empty($message)) {
-			$message = "Message de l'utilisateur : ".$message;
+			$mailMessage = "Message de l'utilisateur : ".$message;
+		}
+		if (!empty($motivation)) {
+            $mailMotivation = "Motivation de l'utilisateur : ".$motivation;
 		}
 
 		// If there is an entry in the contact table then that means we already have a link with this person
@@ -139,7 +143,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 		EmundusModelLogs::log($this->user->id, (int)substr($fnum, -7), $fnum, 32, 'c', 'COM_EMUNDUS_LOGS_CONTACT_REQUEST');
 
 		// Add the contact request into the DB.
-		if ($this->m_cifre->createContactRequest((int)substr($fnum, -7), $this->user->id, $fnum, $linkedOffer)) {
+		if ($this->m_cifre->createContactRequest((int)substr($fnum, -7), $this->user->id, $fnum, $linkedOffer, $message, $motivation, $cv, $doc)) {
 
 			// Get additional info for the fnums such as the user email.
 			$fnum = $this->m_files->getFnumInfos($fnum);
@@ -159,7 +163,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_NAME' => $offerInformation->titre,
 					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>",
-					'OFFER_MESSAGE' => $message
+					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 72;
@@ -170,7 +174,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'USER_NAME' => $this->user->name,
 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_NAME' => $offerInformation->titre,
-					'OFFER_MESSAGE' => $message
+					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 71;

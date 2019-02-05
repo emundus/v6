@@ -147,6 +147,7 @@ echo $this->table->intro;
 
 							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
 							if (is_array($departments)) {
+                                $departments = array_unique($departments);
 							    if (sizeof($departments) > 8) {
 								    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
                                 } else {
@@ -182,7 +183,7 @@ echo $this->table->intro;
 										<?php else :?>
                                             <div class='em-search-engine-details <?php echo ($status === 2)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><a href="<?php echo $d['fabrik_view_url']; ?>"><?php echo ($status === 2)?'Offre clôturée':'Consultez l\'offre'; ?></a></div>
 
-											<?php if ($d['jos_emundus_campaign_candidature___applicant_id'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
+											<?php if ($d['jos_emundus_campaign_candidature___applicant_id_raw'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
                                                 <div class="em-float-left em-offer-not-published"><span class="label label-darkyellow">Offre en attente de validation</span></div>
 											<?php endif; ?>
 										<?php endif; ?>
@@ -220,12 +221,14 @@ echo $this->table->intro;
 						<?php endif ?>
                     </table>
                 </div>
-                <?php if (!empty($data)) :?>
-                    <div class="em-search-not-found">
-                        <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                        <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
-                    </div>
+                
+                <?php if($user->id != 0) : ?>
+                <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
+                    <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
+                    <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                </a>
                 <?php endif; ?>
+
 				<?php print_r($this->hiddenFields);?>
             </div>
         </form>

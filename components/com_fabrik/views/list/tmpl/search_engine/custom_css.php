@@ -122,5 +122,79 @@ p {
 .main {
 	display:inline-flex;
 }
+
+/* SCSS Add new */
+.em-search-not-found-btn {
+    border-radius: 4px;
+    border: 2px solid #bb0e29;
+    color: #bb0e29;
+    display: inline-block;
+    margin: 0 .25em;
+    overflow: hidden;
+    padding: 24px 60px 24px 16px;
+    position: relative;
+    text-decoration: none;
+    line-height: 1;
+    .em-search-not-found-btn-content {
+        font-size: 1em;
+        line-height: 1.2;
+        padding: 0 26px;
+        position: relative;
+        right: 0;
+        transition: right 300ms ease;
+        display: block;
+        text-align: left;
+    }
+    .em-search-not-found-icon {
+        border-left: 1px solid #bb0e29;
+        position: absolute;
+        right: 0;
+        text-align: center;
+        top: 50%;
+        transition: all 300ms ease;
+        transform: translateY(-50%);
+        width: 58px;
+        height: 70%;
+        i {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+    &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        background-color: #bb0e29;
+        opacity: 0;
+        transition: opacity 300ms ease;
+    }
+    &:hover {
+        .em-search-not-found-btn-content {
+            right: 100%;
+        }
+        .em-search-not-found-icon {
+            border-left: 0;
+            font-size: 1.8em;
+            width: 100%;
+        }
+        &:after {
+            opacity: .2;
+        }
+    }
+    &.btn-alt-color {
+        border-color: salmon;
+        color: salmon;
+        .em-search-not-found-icon {
+            border-left-color: salmon;
+        }
+        &:after {
+            background-color: salmon;
+        }
+    }
+}
 /* END - Your CSS styling ends here */
 EOT;

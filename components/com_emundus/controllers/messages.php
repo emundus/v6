@@ -109,6 +109,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Get the file sent via AJAX POST
         $file = $jinput->files->get('file');
 
+        // Get the user sent via AJAX POST
+        $user = $jinput->post->get('user');
+
+        // Get the user sent via AJAX POST
+        $fnum = $jinput->post->get('fnum');
+
         // Check if an error is present
 	    if (!isset($file['error']) || is_array($file['error'])) {
 		    echo json_encode(['status' => false]);
@@ -137,10 +143,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])){
 		    exit("You cannot upload this type of file.");
 	    }
-
         // Check if the message attachments directory exists.
-        if (!is_dir('tmp'.DS.'messageattachments')) {
-            mkdir('tmp'.DS.'messageattachments', 0777, true);
+        if (!is_dir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum)) {
+            mkdir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum, 0777, true);
         }
 
         // Sanitize filename.
@@ -148,8 +153,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
 
         // Move the uploaded file to the server directory.
-        $target = 'tmp'.DS.'messageattachments'.DS.$file['name'];
+        $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
 
+        
         if (file_exists($target)) {
 	        unlink($target);
         }
