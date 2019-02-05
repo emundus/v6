@@ -59,7 +59,7 @@ defined('_JEXEC') or die;
                                 <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
                             <?php endif; ?>
                             <div>
-                                <a href="/demande/details/314/<?php echo $offer->link_id;?>?format=pdf">Voir détails de la demande</a>
+                                <a href="/demande/details/314/<?php echo $offer->link_id;?>?format=pdf">Voir les détails de la demande</a>
                             </div>
                         </div>
                     </div>
