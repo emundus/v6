@@ -553,6 +553,9 @@ class EmundusModelProfile extends JModelList
 
 				if (!empty($admissionInfo)) {
 					$campaign = $this->getCampaignInfoByFnum($admissionInfo->fnum);
+					if (empty($campaign['fnum'])) {
+						$campaign['fnum'] = $admissionInfo->fnum;
+					}
 					$profile = $this->getProfileByCampaign($campaign["id"]);
 				}
 
