@@ -50,8 +50,12 @@ if (!empty($fnum)) {
             $user->profile = "1012";
             $user->profile_label = "Inscription à l'ESIEA";
             $user->menutype = "menu-profile1012";
-            $session->set('emundusUser', $user);
 
+            if (!in_array('1012',$user->emProfiles)) {
+	            $user->emProfiles[] = '1012';
+            }
+            
+            $session->set('emundusUser', $user);
             $app->redirect("index.php?option=com_fabrik&view=form&formid=".$formId."&Itemid=".$itemId."&usekey=fnum&rowid=".$fnum."&r=0");
         }
 
