@@ -50,6 +50,7 @@ $show_progress_documents 	= $params->get('show_progress_documents', 0);
 $show_progress_color 		= $params->get('show_progress_color', '#EA5012');
 $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
+$admission_status           = explode(',', $params->get('admission_status'));
 
 // We send the layout as a param because Hesam needs different information.
 $applications = modemundusApplicationsHelper::getApplications($layout);
