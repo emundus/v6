@@ -116,7 +116,7 @@ class EmundusModelCifre extends JModelList {
 		$query = $this->db->getQuery(true);
 
 		$query
-			->select($this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cc.fnum'), $this->db->quoteName('p.titre'))
+			->select(array($this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cc.fnum'), $this->db->quoteName('p.titre')))
 			->from($this->db->quoteName('#__emundus_campaign_candidature','cc'))
 			->join('LEFT', $this->db->quoteName('#__emundus_projet', 'p') . ' ON (' . $this->db->quoteName('p.fnum') . ' = ' . $this->db->quoteName('cc.fnum') . ')')
 			->join('LEFT', $this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
@@ -124,7 +124,6 @@ class EmundusModelCifre extends JModelList {
 			->where($this->db->quoteName('cc.user_id') . ' = '.$user_id . ' AND ' . $this->db->quoteName('cc.status') . ' = 1');
 
 			$this->db->setQuery($query);
-
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
@@ -207,8 +206,8 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 
-		$columns = ['user_to', 'user_from', 'fnum_to', 'state', 'message', 'motivation', 'cv', 'document'];
-		$values = [$user_to, $user_from, $this->db->quote($fnum_to), 1, $this->db->quote($message), $this->db->quote($motivation), $this->db->quote($cv), $this->db->quote($doc)];
+		$columns = ['user_to', 'user_from', 'fnum_to','time_date_created', 'state', 'message', 'motivation', 'cv', 'document'];
+		$values = [$user_to, $user_from, $this->db->quote($fnum_to), 'NOW()', 1, $this->db->quote($message), $this->db->quote($motivation), $this->db->quote($cv), $this->db->quote($doc)];
 
 		if (!empty($fnum_from)) {
 			$columns[] = 'fnum_from';

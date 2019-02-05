@@ -494,7 +494,7 @@ try {
                 </div>
 
                 <div class="em-pdf-element-value">
-                    <p><?php echo $file["filename"]; ?></p>
+                    <p><a target="_blank" href="<?php echo JURI::root().'images'.DS.'emundus'.DS.'files'.DS.$this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0].DS.$this->data["jos_emundus_cifre_links___document_raw"];?>"><?php echo $file["filename"]; ?></a></p>
                 </div>
 
             </div>
@@ -506,5 +506,6 @@ try {
 
 
 <div>
-    <a href="javascript:history.go(-1)">Retour</a>
+    <a href="#" onclick="history.go(-1)">Retour</a>
+
 </div>

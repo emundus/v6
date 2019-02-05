@@ -275,7 +275,7 @@ $m_cifre = new EmundusModelCifre();
 
             <p class="em-attached-element">
             <div class="em-partenaires-subtitle"><?php echo $file["value"] . ' : '; ?></div><a target="_blank"
-                                                                                               href="<?php echo JPATH_BASE . DS . 'images' . DS . 'emundus' . DS . $this->data["jos_emundus_campaign_candidature___applicant_id"][0] . DS . $file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
+                                                                                               href="<?php echo JURI::root() . DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $this->data["jos_emundus_campaign_candidature___applicant_id"][0] . DS . $file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
             </p>
 
         <?php endforeach; ?>
