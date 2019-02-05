@@ -207,6 +207,9 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	$fnum = $insert_row['jos_emundus_campaign_candidature']['fnum'];
 
+	// Clear any potential user ID from previous iteration.
+	unset($user);
+
 	// We can pass the campaign ID in the XLS if we need.
 	if (!empty($campaign_row[$row_id]) && is_numeric($campaign_row[$row_id])) {
 		$campaign = $campaign_row[$row_id];
@@ -259,8 +262,6 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	} else {
 
-		// Clear any potential user ID from previous iteration.
-		unset($user);
 		if (!empty($fnum)) {
 			$user = (int)substr($fnum, -7);
 		}
@@ -435,6 +436,14 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		}
 
 		$user = $user->id;
+	} else {
+
+		// Check if the user has not been activated.
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($userId);
+		$table->block = 0;
+		$table->store();
+
 	}
 
 	// If the user has no fnum, get the one made by the user creation code.
