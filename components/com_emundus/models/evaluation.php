@@ -285,7 +285,7 @@ class EmundusModelEvaluation extends JModelList
      * Get list of evaluation elements
      * @param 	  int show_in_list_summary get elements displayed in Fabrik List ; yes=1
      * @param 	  int hidden get hidden elements ; yes=1
-     * @param 	  array code get elements from Decision form defined for programme list
+     * @param 	  array code get elements from Evaluation form defined for programme list
      * @return    string list of Fabrik element ID used in evaluation form
      **/
     public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array())
@@ -304,10 +304,10 @@ class EmundusModelEvaluation extends JModelList
 
             $filt_params = $session->get('filt_params');
             
-            if ( $view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
-            	$programmes = array_unique($filt_params['programme']);
-            elseif(!empty($code))
+            if(!empty($code))
             	$programmes = array_unique($code);
+            elseif ( $filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
+            	$programmes = array_unique($filt_params['programme']);
             else
             	return array();
 

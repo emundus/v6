@@ -1622,6 +1622,17 @@ if (JFactory::getUser()->id == 63)
             $db->setQuery($query);
             $admissionInfo = $db->loadObject();
 
+            if (empty($admissionInfo)) {
+            	$query = $db->getQuery(true);
+            	$query->select($db->quoteName('fnum'))
+		            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+		            ->leftJoin($db->quoteName('#__emundus_setup_status', 'ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
+		            ->where($db->quoteName('cc.applicant_id').' = '.$sid.' AND '.$db->quoteName('ss.profile').' = 8')
+	                ->order($db->quoteName('cc.date_time').' DESC');
+	            $db->setQuery($query);
+	            $admissionInfo->fnum = $db->loadResult();
+            }
+
 			$query = "SELECT form_id FROM #__fabrik_formgroup as fg
 				LEFT JOIN #__emundus_setup_programmes AS sp ON sp.fabrik_applicant_admission_group_id = fg.group_id
 				LEFT JOIN #__emundus_setup_campaigns AS sc ON sc.training LIKE sp.code

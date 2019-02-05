@@ -1870,6 +1870,7 @@ if (JFactory::getUser()->id == 63)
                 	$query->update($db->quoteName('#__emundus_users'))
 		                ->set($db->quoteName('profile').' = '.$profile)
 		                ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+                	$db->setQuery($query);
                 	$db->execute();
 
                 }
