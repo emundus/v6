@@ -539,7 +539,6 @@ class EmundusModelProfile extends JModelList
 			
 			// If the profile number is 8 that means he has been admitted
 			// This means that regardless of his other applications he must be considered admitted
-			
 			if ($profile['profile'] != 8) {
 				
 					$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
@@ -558,9 +557,6 @@ class EmundusModelProfile extends JModelList
 				}
 
 			}
-			
-			/*if ((empty($campaign["id"]) || !isset($campaign["id"])) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));*/
 
 			// If the user is admitted then we fill the session with information about the admitted file
 			// regardeless of the current campaign
@@ -595,8 +591,9 @@ class EmundusModelProfile extends JModelList
 
 		$session->set('emundusUser', $emundusSession);
 
-		if (isset($admissionInfo))
-			$app->redirect("index.php?option=com_fabrik&view=form&formid=".$admissionInfo->form_id."&Itemid=2720&usekey=fnum&rowid=".$campaign['fnum']);
+		if (isset($admissionInfo)) {
+			$app->redirect("index.php?option=com_fabrik&view=form&formid=".$admissionInfo->form_id."&Itemid='.$admissionInfo->item_id.'&usekey=fnum&rowid=".$campaign['fnum']);
+		}
 	}
 
 
@@ -669,5 +666,3 @@ class EmundusModelProfile extends JModelList
 		return $emundus_user;
 	}
 }
-
-?>
