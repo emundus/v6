@@ -222,6 +222,8 @@ try {
 
     </div>
 
+    <?php endif; ?>
+
     <?php if (!empty($this->data['jos_emundus_projet___limit_date_raw'][0])) :?>
     <div class="em-pdf-element">
 
