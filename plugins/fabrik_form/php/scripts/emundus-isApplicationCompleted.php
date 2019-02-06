@@ -57,7 +57,9 @@ if ($jinput->get('view') == 'form') {
 		// If he hasn't, no discount for him. If he has, exit to regular procedure.
 		if (!empty($uploaded_document) && !$pay_scholarship) {
 			return;
-		} elseif (empty($uploaded_document)) {
+		}
+
+		if (empty($uploaded_document)) {
 			$scholarship_document_id = null;
 		}
 
