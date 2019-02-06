@@ -51,10 +51,17 @@ if (!empty($fnum)) {
             $user->profile_label = "Inscription à l'ESIEA";
             $user->menutype = "menu-profile1012";
 
-            if (!in_array('1012',$user->emProfiles)) {
-	            $user->emProfiles[] = '1012';
+            $insert = true;
+            foreach ($user->emProfiles as $p) {
+            	if ($p->id == $user->profile) {
+            		$insert = false;
+	            }
             }
-            
+
+            if ($insert) {
+	            $user->emProfiles[] = (object)['id' => $user->profile, 'label' => $user->profile_label];
+            }
+
             $session->set('emundusUser', $user);
             $app->redirect("index.php?option=com_fabrik&view=form&formid=".$formId."&Itemid=".$itemId."&usekey=fnum&rowid=".$fnum."&r=0");
         }
