@@ -52,11 +52,14 @@ if ($jinput->get('view') == 'form') {
 			JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
 		}
 
+		$pay_scholarship = $params->get('pay_scholarship', 0);
+
 		// If he hasn't, no discount for him. If he has, exit to regular procedure.
-		if ($uploaded_document == 0)
-			$scholarship_document_id = NULL;
-		else
+		if (!empty($uploaded_document) && !$pay_scholarship) {
 			return;
+		} elseif (empty($uploaded_document)) {
+			$scholarship_document_id = null;
+		}
 
 	}
 
