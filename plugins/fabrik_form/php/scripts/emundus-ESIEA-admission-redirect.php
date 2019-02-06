@@ -39,33 +39,29 @@ $id_applicants 			 = $eMConfig->get('id_applicants', '0');
 $applicants 			 = explode(',',$id_applicants);
 
 
-if (!empty($fnum)) {
-    if ($fnum == @$user->fnum) {
-        $admissionDate = date('Y-m-d');
-        $admissionDateBegin = date('Y-m-d', strtotime(@$user->fnums[$fnum]->admission_start_date));
-        $admissionDateEnd = date('Y-m-d', strtotime(@$user->fnums[$fnum]->admission_end_date));
+if (!empty($fnum) && $fnum == @$user->fnum) {
+    $admissionDate = date('Y-m-d');
+    $admissionDateBegin = date('Y-m-d', strtotime(@$user->fnums[$fnum]->admission_start_date));
+    $admissionDateEnd = date('Y-m-d', strtotime(@$user->fnums[$fnum]->admission_end_date));
 
-        if (@$user->fnums[$fnum]->published =="1" && @$user->fnums[$fnum]->cancelled =="0" && in_array($user->status, $status)  && $admissionDate >= $admissionDateBegin && $admissionDate <= $admissionDateEnd) {
+    if (@$user->fnums[$fnum]->published =="1" && @$user->fnums[$fnum]->cancelled =="0" && in_array($user->status, $status)  && $admissionDate >= $admissionDateBegin && $admissionDate <= $admissionDateEnd) {
 
-            $user->profile = "1012";
-            $user->profile_label = "Inscription à l'ESIEA";
-            $user->menutype = "menu-profile1012";
+        $user->profile = "1012";
+        $user->profile_label = "Inscription à l'ESIEA";
+        $user->menutype = "menu-profile1012";
 
-            $insert = true;
-            foreach ($user->emProfiles as $p) {
-            	if ($p->id == $user->profile) {
-            		$insert = false;
-	            }
+        $insert = true;
+        foreach ($user->emProfiles as $p) {
+            if ($p->id == $user->profile) {
+                $insert = false;
             }
-
-            if ($insert) {
-	            $user->emProfiles[] = (object)['id' => $user->profile, 'label' => $user->profile_label];
-            }
-
-            $session->set('emundusUser', $user);
-            $app->redirect("index.php?option=com_fabrik&view=form&formid=".$formId."&Itemid=".$itemId."&usekey=fnum&rowid=".$fnum."&r=0");
         }
 
-    }
+        if ($insert) {
+            $user->emProfiles[] = (object)['id' => $user->profile, 'label' => $user->profile_label];
+        }
 
+        $session->set('emundusUser', $user);
+        $app->redirect("index.php?option=com_fabrik&view=form&formid=".$formId."&Itemid=".$itemId."&usekey=fnum&rowid=".$fnum."&r=0");
+    }
 }
