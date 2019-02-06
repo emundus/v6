@@ -1073,8 +1073,7 @@ class EmundusModelEvaluation extends JModelList
 		if (count($this->fnum_assoc) > 0)
 			$sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 
-		if (!empty($sql_code) && !empty($sql_fnum))
-			$query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+		$query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
 
 		return $query;
 	}
