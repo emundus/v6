@@ -88,20 +88,6 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="application_fee" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICATION_FEES" description="COM_EMUNDUS_APPLICATION_FEES_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-		<field name="accept_created_payments" menu="hide" type="list" default="0" label="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS" description="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-			<option value="2">COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_ALLOW_ALL</option>
-		</field>
-		<field name="scholarship_document_id" menu="hide" type="text" label="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID" description="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID_DESC"/>
-		<field name="pay_scholarship" menu="hide" type="list" default="0" label="COM_EMUNDUS_PAY_SCHOLARSHIP" description="COM_EMUNDUS_PAY_SCHOLARSHIP_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
 		<field name="copy_application_form" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM" description="COM_EMUNDUS_COPY_APPLICATION_FORM_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -116,6 +102,29 @@
 			<option value="1">JYES</option>
 		</field>
 	</fieldset>
+
+	<fieldset label="COM_EMUNDUS_PAYMENT" name="payment" description="COM_EMUNDUS_PAYMENT_DESC">
+		<field name="application_fee" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICATION_FEES" description="COM_EMUNDUS_APPLICATION_FEES_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="accept_created_payments" menu="hide" type="list" default="0" label="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS" description="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			<option value="2">COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_ALLOW_ALL</option>
+		</field>
+		<field name="status_after_payment" menu="hide" type="text" default="1" label="COM_EMUNDUS_STATUS_AFTER_PAYMENT" description="COM_EMUNDUS_STATUS_AFTER_PAYMENT_DESC" />
+		<field name="redirect_after_payment" menu="hide" type="list" default="0" label="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT" description="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT_DESC" >
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="scholarship_document_id" menu="hide" type="text" label="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID" description="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID_DESC"/>
+		<field name="pay_scholarship" menu="hide" type="list" default="0" label="COM_EMUNDUS_PAY_SCHOLARSHIP" description="COM_EMUNDUS_PAY_SCHOLARSHIP_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_EXPORTS" name="exports" description="COM_EMUNDUS_EXPORTS_DESC">
 		<field name="export_application_pdf" type="radio" default="0" label="COM_EMUNDUS_EXPORT_APPLICATION" description="COM_EMUNDUS_EXPORT_APPLICATION_DESC">
 			<option value="0">JNO</option>

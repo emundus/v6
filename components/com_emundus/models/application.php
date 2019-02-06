@@ -2770,14 +2770,22 @@ $q=2;
         return true;
     }
 
-    /**
-     * Duplicate all documents (files)
-     * @param $fnum             String     the fnum of application file
-     * @param $applicant        Object     the applicant user ID
-     * @return bool
-     */
-    public function sendApplication($fnum, $applicant, $param=array()) {
+	/**
+	 * Duplicate all documents (files)
+	 *
+	 * @param       $fnum             String     the fnum of application file
+	 * @param       $applicant        Object     the applicant user ID
+	 * @param array $param
+	 * @param int   $status
+	 *
+	 * @return bool
+	 */
+    public function sendApplication($fnum, $applicant, $param = array(), $status = 1) {
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+
+        if ($status == '-1') {
+        	$status = $applicant->status;
+        }
 
         $db = JFactory::getDBO();
         try {
@@ -2785,23 +2793,24 @@ $q=2;
             $query = 'SELECT id
                         FROM #__emundus_declaration
                         WHERE fnum  like '.$db->Quote($fnum);
-            $db->setQuery( $query );
+            $db->setQuery($query);
             $db->execute();
             $id = $db->loadResult();
 
             $today = date('Y-m-d h:i:s');
 
-            if ($id > 0)
+            if ($id > 0) {
                 $query = 'UPDATE #__emundus_declaration SET time_date='.$db->quote($today). ', user='.$applicant->id.' WHERE id='.$id;
-            else
+            } else {
                 $query = 'INSERT INTO #__emundus_declaration (time_date, user, fnum, type_mail)
                                 VALUE ('.$db->quote($today). ', '.$applicant->id.', '.$db->Quote($fnum).', "paid_validation")';
+            }
 
-            $db->setQuery( $query );
+            $db->setQuery($query);
             $db->execute();
 
             // Insert data in #__emundus_campaign_candidature
-            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
+            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status='.$status.' WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
             $db->setQuery($query);
             $db->execute();
 
@@ -2810,7 +2819,7 @@ $q=2;
             $step = 1;
             $code = array($applicant->code);
             $to_applicant = '0,1';
-            $trigger_emails = $m_emails->sendEmailTrigger($step, $code, $to_applicant, $applicant);
+            $m_emails->sendEmailTrigger($step, $code, $to_applicant, $applicant);
 
         } catch (Exception $e) {
             // catch any database errors.
