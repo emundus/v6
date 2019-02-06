@@ -543,7 +543,7 @@ class EmundusModelProfile extends JModelList
 				
 					$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
 					
-					if (!empty($campaign)){
+					if (!empty($campaign)) {
 						$profile = $this->getProfileByCampaign($campaign["id"]);
 					}
 				
@@ -551,9 +551,15 @@ class EmundusModelProfile extends JModelList
 
 				$admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
 
-				if (!empty($admissionInfo)) {
+				if (!empty($admissionInfo->fnum)) {
 					$campaign = $this->getCampaignInfoByFnum($admissionInfo->fnum);
 					$profile = $this->getProfileByCampaign($campaign["id"]);
+				} else {
+					$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
+
+					if (!empty($campaign)) {
+						$profile = $this->getProfileByCampaign($campaign["id"]);
+					}
 				}
 
 			}

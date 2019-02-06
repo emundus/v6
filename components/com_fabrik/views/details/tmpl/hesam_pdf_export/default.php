@@ -210,7 +210,7 @@ try {
         </div>
 
     </div>
-    <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) ?>
+    <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) :?>
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
