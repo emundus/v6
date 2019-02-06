@@ -1068,6 +1068,7 @@ class EmundusModelEvaluation extends JModelList
 	            $and = ' AND ';
 	        }
 		}
+		$sql_fnum = '';
 
 		if (count($this->fnum_assoc) > 0) {
 			$sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
