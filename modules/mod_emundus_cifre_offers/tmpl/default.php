@@ -121,6 +121,7 @@ defined('_JEXEC') or die;
                         </div>
                     </div>
                 </div>
+                </div>
             <?php endforeach; ?>
         </span>
     <?php endif; ?>
