@@ -125,18 +125,15 @@ echo $description;
     </div>
 <?php else :
     echo JText::_('NO_FILE');
+    echo '<hr>';
 endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-    <a class="btn btn-success"
-       href="<?php echo JURI::base(); ?>index.php?option=com_emundus&view=renew_application"><span
-                class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
-    <hr>
+    <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
 
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>
-    <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog"
-         aria-labelledby="em-modal-form" aria-hidden="true">
+    <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-form" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -166,5 +163,4 @@ endif; ?>
             document.location.href = "<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=deletefile&fnum='); ?>" + fnum;
         }
     }
-
 </script>
