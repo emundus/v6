@@ -1068,12 +1068,17 @@ class EmundusModelEvaluation extends JModelList
 	            $and = ' AND ';
 	        }
 		}
-		$sql_fnum = '';
 
-		if (count($this->fnum_assoc) > 0)
+		if (count($this->fnum_assoc) > 0) {
 			$sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+		}
 
 		$query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+
+		// In case we have no associated files, show nothing.
+		if (count($this->fnum_assoc) == 0 && empty($filt_menu['programme'])) {
+			$query['q'] .= 'AND 1 = 2';
+		}
 
 		return $query;
 	}
@@ -1153,7 +1158,7 @@ class EmundusModelEvaluation extends JModelList
                     if (!in_array('jos_users', $tableAlias))
                         $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
                     $q['users'] = true;
-                    
+
                     $fnum = $fnum + 1;
                 }
             }
