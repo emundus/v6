@@ -15,7 +15,6 @@ defined('_JEXEC') or die('Restricted access');
 class EmundusModelCifre extends JModelList {
 
 	// Initialize class variables.
-	var $user = null;
 	var $db = null;
 
 	public function __construct(array $config = array()) {
@@ -23,7 +22,6 @@ class EmundusModelCifre extends JModelList {
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 		// Load class variables
-		$this->user = JFactory::getSession()->get('emundusUser');
 		$this->db = JFactory::getDbo();
 
 		parent::__construct($config);
@@ -50,8 +48,9 @@ class EmundusModelCifre extends JModelList {
 			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		}
 
-		if (!empty($state))
+		if (!empty($state)) {
 			return $state;
+		}
 
 		// If a link was not found, we need to look the other way, the link could have been formed in the other direction.
 		$query = $this->db->getQuery(true);
@@ -70,10 +69,11 @@ class EmundusModelCifre extends JModelList {
 
 		// If the state is 1, that means that the OTHER person has contacted the current user.
 		// Therefore we return -1 to indicate that a contact request exists but in the other direction.
-		if ($state == 1)
+		if ($state == 1) {
 			return -1;
-		else
+		} else {
 			return $state;
+		}
 
 	}
 
@@ -83,12 +83,12 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getOffer($fnum) {
 
-		if (empty($fnum))
+		if (empty($fnum)) {
 			return false;
+		}
 
 		$query = $this->db->getQuery(true);
-		$query
-			->select(['p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+		$query->select(['p.*', $this->db->quoteName('r.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_projet','p'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('r.fnum'))
 			->where($this->db->quoteName('p.fnum').' LIKE "' . $fnum . '"');
@@ -109,14 +109,14 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getOffersByUser($user_id, $fnum = null) {
 		
-		if (empty($fnum))
+		if (empty($fnum)) {
 			return false;
+		}
 		
 		// This is custom code, we need to make this able to work for everyone.
 		$query = $this->db->getQuery(true);
 
-		$query
-			->select(array($this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cc.fnum'), $this->db->quoteName('p.titre')))
+		$query->select(array($this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cc.fnum'), $this->db->quoteName('p.titre')))
 			->from($this->db->quoteName('#__emundus_campaign_candidature','cc'))
 			->join('LEFT', $this->db->quoteName('#__emundus_projet', 'p') . ' ON (' . $this->db->quoteName('p.fnum') . ' = ' . $this->db->quoteName('cc.fnum') . ')')
 			->join('LEFT', $this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
@@ -138,12 +138,12 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getContactToUser($user) {
 
-		if (empty($user))
+		if (empty($user)) {
 			return false;
+		}
 
 		$query = $this->db->getQuery(true);
-		$query
-			->select([$this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+		$query->select([$this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
 			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
@@ -168,12 +168,12 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getContactFromUser($user) {
 
-		if (empty($user))
+		if (empty($user)) {
 			return false;
+		}
 
 		$query = $this->db->getQuery(true);
-		$query
-			->select([$this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+		$query->select([$this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cl.id','link_id'), 'cl.*', 'p.*', $this->db->quoteName('r.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
 			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
@@ -202,7 +202,7 @@ class EmundusModelCifre extends JModelList {
 	 * @param null $fnum_from String The optional fnum of the offer the person contacting may want to put forward.
 	 * @return Boolean
 	 */
-	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null, $message = null, $motivation  = null,$cv  = null, $doc  = null) {
+	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null, $message = null, $motivation  = null, $cv  = null, $doc  = null) {
 
 		$query = $this->db->getQuery(true);
 
@@ -292,8 +292,9 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getUserLaboratory($user_id = null) {
 
-		if (empty($user_id))
+		if (empty($user_id)) {
 			$user_id = JFactory::getUser()->id;
+		}
 
 		// First step is to get the user in question and make sure his profile is correct.
 		$query = $this->db->getQuery(true);
@@ -307,12 +308,12 @@ class EmundusModelCifre extends JModelList {
 		}
 
 		// Do not continue if the user is not a researcher.
-		if ($user->profile != '1007')
+		if ($user->profile != '1007') {
 			return false;
+		}
 
 		// Get the lab details from the DB.
-		$query = $this->db->getQuery(true);
-		$query->select('*')->from($this->db->quoteName('em_laboratoire'))->where('id = '.$user->laboratoire);
+		$query->clear()->select('*')->from($this->db->quoteName('em_laboratoire'))->where('id = '.$user->laboratoire);
 		$this->db->setQuery($query);
 		try {
 			return $this->db->loadObject();
@@ -322,26 +323,6 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
-    function getDoctorale($labId = null) {
-        if (empty($user_id))
-            $user_id = JFactory::getUser()->id;
-
-        // First step is to get the user in question and make sure his profile is correct.
-        $query = $this->db->getQuery(true);
-        $query
-            ->select('*')
-            ->from($this->db->quoteName('em_ecole_doctorale'))
-            ->where($this->db->quoteName('laboratoire_id') . ' = ' . $labId);
-
-        $this->db->setQuery($query);
-        try {
-            return $this->db->loadResult();
-        } catch (Exception $e) {
-            JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
     /**
 	 * Gets the Masters information linked to the user passed in the params or the currently logged in user if not.
 	 *
@@ -350,8 +331,9 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getUserMasters($user_id = null) {
 
-		if (empty($user_id))
+		if (empty($user_id)) {
 			$user_id = JFactory::getUser()->id;
+		}
 
 		// First step is to get the user in question and make sure his profile is correct.
 		$query = $this->db->getQuery(true);
@@ -364,10 +346,11 @@ class EmundusModelCifre extends JModelList {
 			$master = $this->db->loadObject();
 
 			// Do not continue if the user is not a PhD.
-			if ($master->profile != '1006')
+			if ($master->profile != '1006') {
 				return false;
-			else
+			} else {
 				return $master;
+			}
 
 		} catch (Exception $e) {
 			JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -375,14 +358,19 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+	/**
+	 * Gets the title of the user's doctoral school.
+	 * @param null $id
+	 *
+	 * @return bool
+	 */
     function getDoctorale($id = null) {
 
-        // First step is to get the user in question and make sure his profile is correct.
         $query = $this->db->getQuery(true);
         $query->select($this->db->quoteName('label'))->from($this->db->quoteName('em_ecole_doctorale'))->where('id = '.$id);
         $this->db->setQuery($query);
         try {
-            $this->db->loadResult();
+            return $this->db->loadResult();
         } catch (Exception $e) {
             JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
@@ -397,8 +385,9 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getUserInstitution($user_id = null) {
 
-		if (empty($user_id))
+		if (empty($user_id)) {
 			$user_id = JFactory::getUser()->id;
+		}
 
 		// First step is to get the user in question and make sure his profile is correct.
 		$query = $this->db->getQuery(true);
@@ -412,12 +401,12 @@ class EmundusModelCifre extends JModelList {
 		}
 
 		// Do not continue if the user is not linked to a municipality.
-		if ($user->profile != '1008')
+		if ($user->profile != '1008') {
 			return false;
+		}
 
 		// Get the lab details from the DB.
-		$query = $this->db->getQuery(true);
-		$query->select('*')->from($this->db->quoteName('em_municipalitees'))->where('id = '.$user->nom_de_structure);
+		$query->clear()->select('*')->from($this->db->quoteName('em_municipalitees'))->where('id = '.$user->nom_de_structure);
 		$this->db->setQuery($query);
 		try {
 			return $this->db->loadObject();
@@ -436,12 +425,10 @@ class EmundusModelCifre extends JModelList {
 	public function getLinkByID($id) {
 
 		$query = $this->db->getQuery(true);
-		$query
-			->select('*')
+		$query->select('*')
 			->from($this->db->quoteName('#__emundus_cifre_links'))
 			->where($this->db->quoteName('id').'='.$id);
 		$this->db->setQuery($query);
-
 
 		try {
 			return $this->db->loadObject();
@@ -464,8 +451,7 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 
-		$query
-			->update($this->db->quoteName('#__emundus_cifre_links'))
+		$query->update($this->db->quoteName('#__emundus_cifre_links'))
 			->set([$this->db->quoteName('state').' = '.$state])
 			->where([$this->db->quoteName('id').'='.$id]);
 		$this->db->setQuery($query);
@@ -489,13 +475,13 @@ class EmundusModelCifre extends JModelList {
 	 */
 	public function getSuggestions($user_id, $user_profile) {
 
-		if (empty($user_id) || empty($user_profile))
+		if (empty($user_id) || empty($user_profile)) {
 			return false;
+		}
 
 		// Using the information about the users location or thematics that he has chosen.
 		$query = $this->db->getQuery(true);
-		$query
-			->select($this->db->quoteName('dep.department'))
+		$query->select($this->db->quoteName('dep.department'))
 			->from($this->db->quoteName('#__emundus_users', 'eu'))
 			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat', 'eur').' ON '.$this->db->quoteName('eur.parent_id').' = '.$this->db->quoteName('eu.id'))
 			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('eur.id'))
@@ -524,12 +510,13 @@ class EmundusModelCifre extends JModelList {
 
 		// Dynamically build a WHERE based on information about the user.
 		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cl.user_to').' != '.$user_id.' AND '.$this->db->quoteName('cl.user_from').' != '.$user_id;
-		if ($user_profile == 1006)
+		if ($user_profile == 1006) {
 			$fallbackWhere .= ' AND '.$this->db->quoteName('er.futur_doctorant_yesno').' = 1 ';
-		elseif ($user_profile == 1007)
+		} elseif ($user_profile == 1007) {
 			$fallbackWhere .= ' AND ('.$this->db->quoteName('er.equipe_recherche_direction_yesno').' = 1 OR '.$this->db->quoteName('er.equipe_recherche_codirection_yesno').' = 1) ';
-		elseif ($user_profile == 1008)
+		} elseif ($user_profile == 1008) {
 			$fallbackWhere .= ' AND '.$this->db->quoteName('er.acteur_publique_yesno').' = 1 ';
+		}
 
 		// Dynamically add a WHERE clause that can allow for the retrieval of offers, this where can change if not enough results are loaded.
 		$thematicsOrLocations = '';
@@ -553,8 +540,7 @@ class EmundusModelCifre extends JModelList {
 		$where = $fallbackWhere.' '.$thematicsOrLocations;
 
 		$query = $this->db->getQuery(true);
-		$query
-			->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+		$query->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 			->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
@@ -596,8 +582,7 @@ class EmundusModelCifre extends JModelList {
 
 			// Same query except we are using JUST the fallback where, this means that we are getting more results but less related to the user's situation.
 			$query = $this->db->getQuery(true);
-			$query
-				->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+			$query->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
 				->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
