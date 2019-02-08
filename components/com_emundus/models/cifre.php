@@ -322,8 +322,27 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+    function getDoctorale($labId = null) {
+        if (empty($user_id))
+            $user_id = JFactory::getUser()->id;
 
-	/**
+        // First step is to get the user in question and make sure his profile is correct.
+        $query = $this->db->getQuery(true);
+        $query
+            ->select('*')
+            ->from($this->db->quoteName('em_ecole_doctorale'))
+            ->where($this->db->quoteName('laboratoire_id') . ' = ' . $labId);
+
+        $this->db->setQuery($query);
+        try {
+            return $this->db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    /**
 	 * Gets the Masters information linked to the user passed in the params or the currently logged in user if not.
 	 *
 	 * @param $user_id Int The user ID of the person to check the MsC.
@@ -355,6 +374,20 @@ class EmundusModelCifre extends JModelList {
 			return false;
 		}
 	}
+
+    function getDoctorale($id = null) {
+
+        // First step is to get the user in question and make sure his profile is correct.
+        $query = $this->db->getQuery(true);
+        $query->select($this->db->quoteName('label'))->from($this->db->quoteName('em_ecole_doctorale'))->where('id = '.$id);
+        $this->db->setQuery($query);
+        try {
+            $this->db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
 	/**
 	 * Gets the institution information linked to the user passed in the params or the currently logged in user if not.
