@@ -117,37 +117,33 @@ echo $this->table->intro;
                         <?php endif; ?>
 
                         <tbody>
-                        <?php if (empty($data)) :?>
-                            <div class="em-search-not-found">
-                                <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                                <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
-                            </div>
-                        <?php endif;
 
-                        $gCounter = 0;
-                        foreach ($data as $d) {
+						<?php
 
-                            $cherches = [];
-                            if ($d['jos_emundus_recherche___futur_doctorant_yesno'] == 'oui')
-                                $cherches[] = $this->headings['jos_emundus_recherche___futur_doctorant_yesno'];
-                            if ($d['jos_emundus_recherche___acteur_public_yesno'] == 'oui')
-                                $cherches[] = $this->headings['jos_emundus_recherche___acteur_public_yesno'];
-                            if ($d['jos_emundus_recherche___equipe_de_recherche_direction_yesno'] == 'oui')
-                                $cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_direction_yesno'];
-                            if ($d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'] == 'oui')
-                                $cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
+						$gCounter = 0;
+						foreach ($data as $d) {
 
-                            $themes = jsonDecode($d['data_thematics___thematic_raw']);
-                            if (is_array($themes)) {
-                                if (sizeof($themes) > 4) {
-                                    $themes = implode('</div> - <div class="em-highlight">', array_slice($themes, 0, 4)).' ... ';
-                                } else {
-                                    $themes = implode('</div> - <div class="em-highlight">', $themes);
-                                }
-                            }
+							$cherches = [];
+							if ($d['jos_emundus_recherche___futur_doctorant_yesno'] == 'oui')
+								$cherches[] = $this->headings['jos_emundus_recherche___futur_doctorant_yesno'];
+							if ($d['jos_emundus_recherche___acteur_public_yesno'] == 'oui')
+								$cherches[] = $this->headings['jos_emundus_recherche___acteur_public_yesno'];
+							if ($d['jos_emundus_recherche___equipe_de_recherche_direction_yesno'] == 'oui')
+								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_direction_yesno'];
+							if ($d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'] == 'oui')
+								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
 
-                            $departments = jsonDecode($d['data_departements___departement_nom_raw']);
-                            if (is_array($departments)) {
+							$themes = jsonDecode($d['data_thematics___thematic_raw']);
+							if (is_array($themes)) {
+								if (sizeof($themes) > 4) {
+									$themes = implode('</div> - <div class="em-highlight">', array_slice($themes, 0, 4)).' ... ';
+								} else {
+									$themes = implode('</div> - <div class="em-highlight">', $themes);
+								}
+							}
+
+							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
+							if (is_array($departments)) {
                                 $departments = array_unique($departments);
                                 if (sizeof($departments) > 8) {
                                     $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';

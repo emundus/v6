@@ -8,15 +8,27 @@
 
 // No direct access.
 defined('_JEXEC') or die;
-
+$notif = 0;
 // Note. It is important to remove spaces between elements.
 ?>
 
 
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="messageDropdown" style="float: right;">
+
     <div class="em-message-dropdown-button" id="messageDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <i class="big circular envelope outline icon" id="messageDropdownIcon"></i>
+        <?php if(!empty($message_contacts)) :?>
+
+            <?php foreach ($message_contacts as $message_notif) :?>
+                <?php if ($message_notif->state == '1')
+                    $notif= $notif+1;
+                ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if($notif > 0) :?>
+            <div id="new-message-notif"><?php echo $notif; ?></div>
+        <?php endif; ?>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="em-message-list">
         <?php if(empty($message_contacts)) :?>

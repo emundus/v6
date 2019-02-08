@@ -375,6 +375,20 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+    function getDoctorale($id = null) {
+
+        // First step is to get the user in question and make sure his profile is correct.
+        $query = $this->db->getQuery(true);
+        $query->select($this->db->quoteName('label'))->from($this->db->quoteName('em_ecole_doctorale'))->where('id = '.$id);
+        $this->db->setQuery($query);
+        try {
+            $this->db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
 	/**
 	 * Gets the institution information linked to the user passed in the params or the currently logged in user if not.
 	 *
