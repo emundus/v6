@@ -59,7 +59,7 @@ $notif = 0;
 
             <?php if ($message_contact->user_id_from == $user->id) :?>
                 <li id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
-                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_from ; ?>">
+                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_to ; ?>">
                     <?php if ($message_contact->photo_to == null) :?>
                         <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_to) ?>"></div>
                     <?php endif; ?>

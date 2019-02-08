@@ -8,6 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -18,7 +19,7 @@ $doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
 
 
 function jsonDecode($val) {
-	return (!empty(json_decode($val)))?json_decode($val):$val;
+    return (!empty(json_decode($val)))?json_decode($val):$val;
 }
 
 
@@ -28,7 +29,7 @@ $pageClass = $this->params->get('pageclass_sfx', '');
 $user = JFactory::getSession()->get('emundusUser');
 
 if ($pageClass !== '') :
-	echo '<div class="' . $pageClass . '">';
+    echo '<div class="' . $pageClass . '">';
 endif;
 
 if ($this->tablePicker != '') : ?>
@@ -57,63 +58,63 @@ echo $this->table->intro;
     <div class="form">
         <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
 
-			<?php
-			if ($this->hasButtons)
-				echo $this->loadTemplate('buttons');
-			?>
+            <?php
+            if ($this->hasButtons)
+                echo $this->loadTemplate('buttons');
+            ?>
 
             <div class="fabrikDataContainer">
 
-				<?php foreach ($this->pluginBeforeList as $c) {
-					echo $c;
-				}
+                <?php foreach ($this->pluginBeforeList as $c) {
+                    echo $c;
+                }
 
 
-				$data = array();
-				$i = 0;
-				if (!empty($this->rows[0])) {
-					foreach ($this->rows[0] as $k => $v) {
-						foreach ($this->headings as $key => $val) {
-							$raw = $key.'_raw';
-							if (array_key_exists($key, $v->data)) {
-								if (strcasecmp($v->data->$key, "1") == 0)
-									$data[$i][$val] = $v->data->$key;
-								else {
-									$data[$i][$key] = $v->data->$key;
-									$data[$i][$raw] = $v->data->$raw;
-								}
-							}
-						}
-						if (array_key_exists('fabrik_view_url', $v->data)) {
-							$data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
-						}
-						$i = $i + 1;
-					}
-				} ?>
+                $data = array();
+                $i = 0;
+                if (!empty($this->rows[0])) {
+                    foreach ($this->rows[0] as $k => $v) {
+                        foreach ($this->headings as $key => $val) {
+                            $raw = $key.'_raw';
+                            if (array_key_exists($key, $v->data)) {
+                                if (strcasecmp($v->data->$key, "1") == 0)
+                                    $data[$i][$val] = $v->data->$key;
+                                else {
+                                    $data[$i][$key] = $v->data->$key;
+                                    $data[$i][$raw] = $v->data->$raw;
+                                }
+                            }
+                        }
+                        if (array_key_exists('fabrik_view_url', $v->data)) {
+                            $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                        }
+                        $i = $i + 1;
+                    }
+                } ?>
 
                 <div class="em-search-engine-filters">
-					<?php if ($this->showFilters && $this->bootShowFilters)
-						echo $this->layoutFilters();
-					?>
+                    <?php if ($this->showFilters && $this->bootShowFilters)
+                        echo $this->layoutFilters();
+                    ?>
                 </div>
 
                 <div class="em-search-engine-data">
 
                     <table>
-						<?php if (!empty($data)) :?>
+                        <?php if (!empty($data)) :?>
                             <thead>
                             <tr>
                                 <td><h3>RÉSULTATS DE LA RECHERCHE</h3></td>
                             </tr>
                             </thead>
                             <tfoot>
-                                <tr class="fabrik___heading">
-                                    <td colspan="<?php echo count($this->headings);?>">
-                                        <?php echo $this->nav;?>
-                                    </td>
-                                </tr>
+                            <tr class="fabrik___heading">
+                                <td colspan="<?php echo count($this->headings);?>">
+                                    <?php echo $this->nav;?>
+                                </td>
+                            </tr>
                             </tfoot>
-						<?php endif; ?>
+                        <?php endif; ?>
 
                         <tbody>
 
@@ -144,20 +145,20 @@ echo $this->table->intro;
 							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
 							if (is_array($departments)) {
                                 $departments = array_unique($departments);
-							    if (sizeof($departments) > 8) {
-								    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
+                                if (sizeof($departments) > 8) {
+                                    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
                                 } else {
-								    $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                    $departments = implode('</div> - <div class="em-highlight">', $departments);
                                 }
                             }
 
-							if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
-								$status = 2;
-							} else {
-							    $status = 1;
+                            if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
+                                $status = 2;
+                            } else {
+                                $status = 1;
                             }
 
-							?>
+                            ?>
                             <tr>
                                 <td>
                                     <div class="em-search-engine-div-data <?php echo ($status === 2)?'em-closed-offer':''; ?>">
@@ -165,67 +166,69 @@ echo $this->table->intro;
                                         <div class="em-search-engine-deposant">
                                             <i class="fa fa-user"></i> <strong>Déposant : </strong> <?php echo strtolower($d['jos_emundus_setup_profiles___label']); ?>
                                         </div>
-                                        <div class="em-search-engine-addressed">
-                                            <i class="fa fa-users"></i> <strong>Projet adressé à : &nbsp;</strong><?php echo strtolower(implode( '&#32;-&#32;', $cherches)); ?>
-                                        </div>
+                                        <?php if (!empty($cherches)) :?>
+                                            <div class="em-search-engine-addressed">
+                                                <i class="fa fa-users"></i> <strong>Projet adressé à : &nbsp;</strong><?php echo strtolower(implode( '&#32;-&#32;', $cherches)); ?>
+                                            </div>
+                                        <?php endif; ?>
                                         <div class="em-search-engine-thematics">
                                             <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?$themes:'Aucune thématique'; ?></div>
                                         </div>
                                         <div class="em-search-engine-departments">
                                             <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?$departments:'Aucun département'; ?></div>
                                         </div>
-										<?php if (JFactory::getUser()->guest) :?>
+                                        <?php if (JFactory::getUser()->guest) :?>
                                             <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return='.base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
-										<?php else :?>
+                                        <?php else :?>
                                             <div class='em-search-engine-details <?php echo ($status === 2)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><a href="<?php echo $d['fabrik_view_url']; ?>"><?php echo ($status === 2)?'Offre clôturée':'Consultez l\'offre'; ?></a></div>
 
-											<?php if ($d['jos_emundus_campaign_candidature___applicant_id_raw'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
+                                            <?php if ($d['jos_emundus_campaign_candidature___applicant_id_raw'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
                                                 <div class="em-float-left em-offer-not-published"><span class="label label-darkyellow">Offre en attente de validation</span></div>
-											<?php endif; ?>
-										<?php endif; ?>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
-							<?php
-							unset($cherches);
-							unset($themes);
-							$gCounter++;
-						}
-						?>
+                            <?php
+                            unset($cherches);
+                            unset($themes);
+                            $gCounter++;
+                        }
+                        ?>
 
                         </tbody>
 
-						<?php if ($this->hasCalculations) : ?>
+                        <?php if ($this->hasCalculations) : ?>
                             <tfoot>
                             <tr class="fabrik_calculations">
 
-								<?php foreach ($this->headings as $key => $heading) :
-									$h = $this->headingClass[$key];
-									$style = empty($h['style']) ? '' : 'style="' . $h['style'] . '"'; ?>
+                                <?php foreach ($this->headings as $key => $heading) :
+                                    $h = $this->headingClass[$key];
+                                    $style = empty($h['style']) ? '' : 'style="' . $h['style'] . '"'; ?>
                                     <td class="<?php echo $h['class']?>" <?php echo $style?>>
-										<?php
-										$cal = $this->calculations[$key];
-										echo array_key_exists($groupedBy, $cal->grouped) ? $cal->grouped[$groupedBy] : $cal->calc;
-										?>
+                                        <?php
+                                        $cal = $this->calculations[$key];
+                                        echo array_key_exists($groupedBy, $cal->grouped) ? $cal->grouped[$groupedBy] : $cal->calc;
+                                        ?>
                                     </td>
-								<?php
-								endforeach;
-								?>
+                                <?php
+                                endforeach;
+                                ?>
 
                             </tr>
                             </tfoot>
-						<?php endif ?>
+                        <?php endif ?>
                     </table>
                 </div>
-                
+
                 <?php if($user->id != 0) : ?>
-                <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
-                    <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
-                    <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
-                </a>
+                    <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
+                        <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
+                        <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                    </a>
                 <?php endif; ?>
 
-				<?php print_r($this->hiddenFields);?>
+                <?php print_r($this->hiddenFields);?>
             </div>
         </form>
     </div>
@@ -244,35 +247,35 @@ echo $this->table->intro;
     });
 
 
-function selectAllRegions() {
-    if(jQuery('.chosen-toggle-region').hasClass('select')) {
-        jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
-        jQuery('.chosen-toggle-region').addClass('deselect');
-        jQuery('.chosen-toggle-region').removeClass('select');
-        jQuery('.chosen-toggle-region').text("Désélectionnez toutes les régions");
-    }
-    else if(jQuery('.chosen-toggle-region').hasClass('deselect')) {
-        jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
-        jQuery('.chosen-toggle-region').addClass('select');
-        jQuery('.chosen-toggle-region').removeClass('deselect');
-        jQuery('.chosen-toggle-region').text("Sélectionnez toutes les régions");
-    }
+    function selectAllRegions() {
+        if(jQuery('.chosen-toggle-region').hasClass('select')) {
+            jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+            jQuery('.chosen-toggle-region').addClass('deselect');
+            jQuery('.chosen-toggle-region').removeClass('select');
+            jQuery('.chosen-toggle-region').text("Désélectionnez toutes les régions");
+        }
+        else if(jQuery('.chosen-toggle-region').hasClass('deselect')) {
+            jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+            jQuery('.chosen-toggle-region').addClass('select');
+            jQuery('.chosen-toggle-region').removeClass('deselect');
+            jQuery('.chosen-toggle-region').text("Sélectionnez toutes les régions");
+        }
 
-}
-function selectAllDepartments() {
-    if(jQuery('.chosen-toggle-department').hasClass('select')) {
-        jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
-        jQuery('.chosen-toggle-department').addClass('deselect');
-        jQuery('.chosen-toggle-department').removeClass('select');
-        jQuery('.chosen-toggle-department').text("Désélectionnez toutes les départements");
     }
-    else if(jQuery('.chosen-toggle-department').hasClass('deselect')) {
-        jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
-        jQuery('.chosen-toggle-department').addClass('select');
-        jQuery('.chosen-toggle-department').removeClass('deselect');
-        jQuery('.chosen-toggle-department').text("Sélectionnez toutes les départements");
+    function selectAllDepartments() {
+        if(jQuery('.chosen-toggle-department').hasClass('select')) {
+            jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
+            jQuery('.chosen-toggle-department').addClass('deselect');
+            jQuery('.chosen-toggle-department').removeClass('select');
+            jQuery('.chosen-toggle-department').text("Désélectionnez toutes les départements");
+        }
+        else if(jQuery('.chosen-toggle-department').hasClass('deselect')) {
+            jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
+            jQuery('.chosen-toggle-department').addClass('select');
+            jQuery('.chosen-toggle-department').removeClass('deselect');
+            jQuery('.chosen-toggle-department').text("Sélectionnez toutes les départements");
+        }
     }
-}
 
 
 

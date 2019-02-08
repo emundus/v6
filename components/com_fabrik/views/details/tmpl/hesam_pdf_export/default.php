@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
-
+// PDF EXPORT
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -59,12 +59,14 @@ $db->setQuery($query);
 
 try {
     $files = $db->loadAssocList();
+    $query->clear();
 } catch (Exection $e) {
     echo "<pre>";
     var_dump($query->__toString());
     echo "</pre>";
     die();
 }
+
 
 
 function getDepartment($dept)
@@ -88,7 +90,6 @@ function getDepartment($dept)
         die();
     }
 }
-
 ?>
 
 
@@ -191,6 +192,7 @@ function getDepartment($dept)
 
     </div>
 
+
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
         <div class="em-pdf-element">
 
@@ -228,6 +230,7 @@ function getDepartment($dept)
 
         </div>
 
+
     <?php else: ?>
 
         <?php
@@ -257,6 +260,7 @@ function getDepartment($dept)
         </div>
 
     </div>
+
     <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) : ?>
         <div class="em-pdf-element">
 
@@ -288,8 +292,8 @@ function getDepartment($dept)
             </div>
 
         </div>
+    <?php endif; ?>
 
-            <?php endif; ?>
 
         <?php $ecoleDoctorale = $m_cifre->getDoctorale($laboratoire->id); ?>
 
@@ -340,21 +344,29 @@ function getDepartment($dept)
         </div>
 
     </div>
-    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006' && !empty($this->data["jos_emundus_projet___contexte_raw"][0])) : ?>
 
-        <div class="em-pdf-element">
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006') : ?>
 
-            <div class="em-pdf-element-label">
-                <p>Enjeu et actualité du sujet</p>
+        <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Enjeu et actualité du sujet</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
+                </div>
+
             </div>
+        <?php endif; ?>
 
-            <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
-            </div>
+        <?php if (!empty($this->data['jos_emundus_projet___question_raw'][0])) :?>
+            <div class="em-pdf-element">
 
-        </div>
-
-    <?php endif; ?>
+                <div class="em-pdf-element-label">
+                    <p>Problématique</p>
+                </div>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && !empty($this->data["jos_emundus_projet___contexte_raw"][0])) : ?>
 
@@ -388,12 +400,27 @@ function getDepartment($dept)
                 <p><?php echo $questionText; ?></p>
             </div>
 
-            <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_projet___question_raw"][0]; ?></p>
-            </div>
+        <?php endif; ?>
 
-        </div>
-    <?php endif; ?>
+
+    <?php elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008') :?>
+
+        <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Territoire</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
+                </div>
+
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($this->data['jos_emundus_projet___question_raw'][0])) :?>
+            <div class="em-pdf-element">
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1007') : ?>
 
@@ -410,6 +437,21 @@ function getDepartment($dept)
 
             </div>
 
+        <?php endif; ?>
+
+    <?php elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007') :?>
+        <?php if (!empty($this->data["jos_emundus_projet___question"][0])) :?>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Problématique de recherche</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo implode(", ", $this->data["jos_emundus_projet___question"][0]); ?></p>
+                </div>
+
+            </div>
         <?php endif; ?>
     <?php endif; ?>
 
@@ -442,6 +484,7 @@ function getDepartment($dept)
 
         </div>
     <?php endif; ?>
+
 
     <div class="em-pdf-element">
 
@@ -535,7 +578,7 @@ function getDepartment($dept)
                 </div>
 
                 <div class="em-pdf-element-value">
-                    <p><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?></p>
+                    <p><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire_raw"]; ?></p>
                 </div>
 
             </div>
@@ -554,7 +597,7 @@ function getDepartment($dept)
 
         </div>
 
-        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"])) : ?>
+        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"])) : ?>
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
@@ -562,7 +605,7 @@ function getDepartment($dept)
                 </div>
 
                 <div class="em-pdf-element-value">
-                    <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche"]; ?></p>
+                    <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"]; ?></p>
                 </div>
 
             </div>
@@ -652,5 +695,4 @@ function getDepartment($dept)
 
 <div>
     <a onclick="history.go(-1)">Retour</a>
-
 </div>
