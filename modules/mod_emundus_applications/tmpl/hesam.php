@@ -67,9 +67,9 @@ $uri = JUri::getInstance();
 
                     <div class="col-md-12 em-bottom-space em-interested">
                         <?php if (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) == 1) :?>
-                            <p>Une personne est intéressée par cette offre.</p>
+                            <p><?php echo JText::_('MOD_EMUNDUS_ONE_PERSON'); ?></p>
                         <?php elseif (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) > 1) :?>
-                            <p><?php echo modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum); ?> personnes sont intéressées par cette offre.</p>
+                            <p><?php echo modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum); ?><?php echo JText::_('MOD_EMUNDUS_MORE_ONE_PERSON'); ?></p>
                         <?php endif; ?>
                     </div>
                 </div>

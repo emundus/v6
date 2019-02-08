@@ -116,12 +116,8 @@ echo $this->table->intro;
 						<?php endif; ?>
 
                         <tbody>
-						<?php if (empty($data)) :?>
-                            <div class="em-search-not-found">
-                                <p class="em-search-not-found-text">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.</p>
-                                <p class="em-search-not-found-link"><a href="/?option=com_fabrik&view=form&formid=102">Proposez une offre</a></p>
-                            </div>
-						<?php endif;
+
+						<?php
 
 						$gCounter = 0;
 						foreach ($data as $d) {

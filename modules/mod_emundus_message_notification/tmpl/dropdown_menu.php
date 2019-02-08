@@ -21,7 +21,7 @@ $notif = 0;
         <?php if(!empty($message_contacts)) :?>
 
             <?php foreach ($message_contacts as $message_notif) :?>
-                <?php if ($message_notif->state == '1') 
+                <?php if ($message_notif->state == '1')
                     $notif= $notif+1;
                 ?>
             <?php endforeach; ?>
