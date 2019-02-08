@@ -34,7 +34,7 @@ $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
 $active = ($form->error != '') ? '' : ' fabrikHide';
 
-if ($this->params->get('show_page_heading', 1)) : ?>
+if ($this->params->get('show_page_heading', 1)) :?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
         <?php echo $this->escape($this->params->get('page_heading')); ?>
     </div>
@@ -45,8 +45,7 @@ $db = JFactory::getDBO();
 
 $query = $db->getquery('true');
 // Get all uploaded files
-$query
-    ->select($db->quoteName(array('eup.filename', 'sa.value')))
+$query->select($db->quoteName(array('eup.filename', 'sa.value')))
     ->from($db->quoteName('#__emundus_uploads', 'eup'))
     ->join('LEFT', $db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON (' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('eup.attachment_id') . ')')
     ->where($db->quoteName('fnum') . ' LIKE "' . $this->data['jos_emundus_recherche___fnum_raw'] . '" AND eup.can_be_viewed = 1');
@@ -56,7 +55,7 @@ $db->setQuery($query);
 try {
     $files = $db->loadAssocList();
     $query->clear();
-} catch (Exection $e) {
+} catch (Exception $e) {
     echo "<pre>";
     var_dump($query->__toString());
     echo "</pre>";
@@ -76,7 +75,7 @@ function getDepartment($dept) {
     $db->setQuery($query);
     try {
         return $db->loadResult();
-    } catch (Exection $e) {
+    } catch (Exception $e) {
         echo "<pre>";
         var_dump($query->__toString());
         echo "</pre>";
@@ -111,9 +110,7 @@ $m_cifre = new EmundusModelCifre();
     </p>
 
     <div class="em-offre-meta">
-        <p>Sujet déposé le <strong
-                    class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong>
-        </p>
+        <p>Sujet déposé le <strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
 
     </div>
 
@@ -157,9 +154,7 @@ $m_cifre = new EmundusModelCifre();
                     ?>
                 </div>
             </div>
-            <a class="btn btn-default"
-               href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez
-                ici pour plus d'information</a>
+            <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
       
                 <?php if (!empty($author->titre_ecole_doctorale)) :?>
                     <div class="em-offre-ecole">
@@ -188,13 +183,11 @@ $m_cifre = new EmundusModelCifre();
                 </div>
             </div>
             <a class="btn btn-default"
-               href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus
-                d'informations</a>
+               href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
         <?php endif; ?>
 
         <div class="em-offre-limit-date">
-            <strong>Date de disponibilité
-                : </strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
+            <strong>Date de disponibilité : </strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
         </div>
     </div>
 
@@ -220,8 +213,8 @@ $m_cifre = new EmundusModelCifre();
         <?php if ($profile == '1006') : ?>
             <!-- Project context -->
             <p class="em-offre-contexte">
-            <div class="em-offre-subtitle">Enjeu et actualité du sujet :
-            </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
+                <div class="em-offre-subtitle">Enjeu et actualité du sujet :
+                </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
             </p>
 
     <?php elseif ($profile == '1008') : ?>
@@ -281,14 +274,12 @@ $m_cifre = new EmundusModelCifre();
         <?php if ($profile != '1006') : ?>
             <!-- Have futur docs -->
             <p class="em-partenaires-futur-doc">
-                <strong>Un futur doctorant
-                    : </strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
+                <strong>Un futur doctorant : </strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
             </p>
 
             <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-futur-doc-name">
-                    <strong>Nom et prénom du future doctorant :
-                        <strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
+                    <strong>Nom et prénom du future doctorant :</strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
                 </p>
             <?php endif; ?>
 
@@ -296,25 +287,21 @@ $m_cifre = new EmundusModelCifre();
 
         <?php if ($profile == '1007') :?>
             <p class="em-partenaires-equipe-recherche">
-                <strong>Une équipe de recherche
-                    : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?>
+                <strong>Une équipe de recherche : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?>
             </p>
             <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-equipe-recherche-name">
-                    <strong>Nom de l'équipe partenaire
-                        : </strong><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?>
+                    <strong>Nom de l'équipe partenaire : </strong><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?>
                 </p>
             <?php endif; ?>
 
         <?php else: ?>
             <p class="em-partenaires-equipe-recherche">
-                <strong>Une équipe de recherche
-                    : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?>
+                <strong>Une équipe de recherche : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?>
             </p>
             <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-equipe-recherche-name">
-                    <strong>Nom de l'équipe partenaire
-                        : </strong><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?>
+                    <strong>Nom de l'équipe partenaire : </strong><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?>
                 </p>
             <?php endif; ?>
         <?php endif; ?>
@@ -323,8 +310,7 @@ $m_cifre = new EmundusModelCifre();
 
         <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
             <p class="em-partenaires-acteur">
-                <strong>Un acteur public ou associatif
-                    : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
+                <strong>Un acteur public ou associatif : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
             </p>
 
             <p class="em-partenaires-acteur-type">
@@ -333,8 +319,7 @@ $m_cifre = new EmundusModelCifre();
 
             <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-acteur-type">
-                    <strong>Nom du partenaire
-                        : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
+                    <strong>Nom du partenaire : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
                 </p>
             <?php endif; ?>
         <?php endif; ?>
@@ -348,8 +333,7 @@ $m_cifre = new EmundusModelCifre();
         <?php foreach ($files as $file) : ?>
 
             <p class="em-attached-element">
-            <div class="em-partenaires-subtitle"><?php echo $file["value"] . ' : '; ?></div><a target="_blank"
-                                                                                               href="<?php echo JURI::root() . DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $this->data["jos_emundus_campaign_candidature___applicant_id"][0] . DS . $file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
+            <div class="em-partenaires-subtitle"><?php echo $file["value"] . ' : '; ?></div><a target="_blank" href="<?php echo JURI::root() . DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $this->data["jos_emundus_campaign_candidature___applicant_id"][0] . DS . $file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
             </p>
 
         <?php endforeach; ?>
