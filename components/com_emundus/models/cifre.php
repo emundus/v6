@@ -364,7 +364,7 @@ class EmundusModelCifre extends JModelList {
 	 *
 	 * @return bool
 	 */
-    function getDoctorale($uid = null) {
+    function getDoctorale($user_id = null) {
 
         if (empty($user_id)) {
             $user_id = JFactory::getUser()->id;
