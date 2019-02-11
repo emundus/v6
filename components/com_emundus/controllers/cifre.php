@@ -181,8 +181,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 
             // Send a chat message to the user in order to start a conversation thread.
             $m_messages = new EmundusModelMessages();
-
-			if(!$m_messages->sendMessage($fnum['applicant_id'],'<p>' . $this->user->name .' '. JText::_('COM_EMUNDUS_CIFRE_DEMANDE_CONTACT_MESSAGE') . '<a href="'.JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offerInformation->search_engine_page).'">'.$offerInformation->titre.'</a></p>', $this->user->id)) {
+            $link = !empty($linkedOffer) ? ' avec leur offre "<a href="'.JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$linkedOffer->search_engine_page).'">'.$linkedOffer->titre.'</a>"' : '';
+			if(!$m_messages->sendMessage($fnum['applicant_id'],'<p>' . $this->user->name .' '. JText::_('COM_EMUNDUS_CIFRE_DEMANDE_CONTACT_MESSAGE') . '"<a href="'.JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offerInformation->search_engine_page).'">'.$offerInformation->titre.'</a>"'.$link.'</p>', $this->user->id)) {
                 echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
                 exit;
             }
@@ -722,4 +722,25 @@ class EmundusControllerCifre extends JControllerLegacy {
 			exit;
 		}
 	}
+
+	public function getdepartmentsbyregion() {
+        try {
+            $application = JFactory::getApplication();
+        } catch (Exception $e) {
+            JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
+            echo json_encode((object) ['status' => false, 'msg' => 'Internal server error']);
+            exit;
+        }
+
+        $jinput = $application->input;
+        $id = $jinput->post->get('id', null);
+
+        $this->m_cifre->getDepartmentsByRegion($id);
+
+
+
+
+
+
+    }
 }
