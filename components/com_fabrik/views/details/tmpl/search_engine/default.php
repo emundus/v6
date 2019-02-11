@@ -49,7 +49,6 @@ if ($this->params->get('show_page_heading', 1)) :?>
     </div>
 <?php endif;
 
-
 $db = JFactory::getDBO();
 
 $query = $db->getquery('true');
@@ -71,6 +70,8 @@ try {
     die();
 }
 
+
+// GET project Departments
 function getDepartment($dept) {
     $db = JFactory::getDBO();
 
@@ -91,6 +92,86 @@ function getDepartment($dept) {
         die();
     }
 }
+
+// GET the autor's Regions
+function getAuthorRegions($uid) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dr.name'))
+        ->from($db->quoteName('#__emundus_users', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('ur.region'))
+        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+//GET the autor's Departments
+function getAuthorDepartments($uid) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dd.departement_nom'))
+        ->from($db->quoteName('#__emundus_users', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_users_597_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+//GET the project disciplines
+function getProjectDisciplines($fnum) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('d.disciplines'))
+        ->from($db->quoteName('#__emundus_projet', 'ep'))
+        ->leftJoin($db->quoteName('#__emundus_projet_621_repeat', 'pr'). ' ON '.$db->quoteName('pr.parent_id') . ' = ' . $db->quoteName('ep.id'))
+        ->leftJoin($db->quoteName('em_discipline', 'd'). ' ON '.$db->quoteName('d.id') . ' = ' . $db->quoteName('pr.disciplines'))
+        ->where($db->quoteName('ep.fnum') . ' LIKE "' . $fnum. '"');
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
 
 
 
@@ -164,14 +245,18 @@ $m_cifre = new EmundusModelCifre();
                 </div>
             </div>
             <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
-      
-                <?php if (!empty($author->titre_ecole_doctorale)) :?>
+
+
+            <?php $ecole_doc = $m_cifre->getDoctorale($author->id); ?>
+                <?php if (!empty($ecole_doc)) :?>
                     <div class="em-offre-ecole">
                         <div class="em-offre-ecole-doctorale">
-                            <strong>École doctorale : </strong><?php echo $author->titre_ecole_doctorale; ?>
+                            <strong>École doctorale : </strong><?php echo $ecole_doc; ?>
                         </div>
                     </div>
                 <?php endif; ?>
+
+
 
         <?php elseif ($profile == '1008') : ?>
             <?php
@@ -193,6 +278,20 @@ $m_cifre = new EmundusModelCifre();
             </div>
             <a class="btn btn-default"
                href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
+
+            <div class="em-inst-region">
+                <strong>Régions : </strong>
+                <?php
+                    echo !empty(getAuthorRegions($author->id)) ? implode(', ', array_column(getAuthorRegions($author->id), 'name')) : "Aucune Région.";
+                ?>
+            </div>
+
+            <div class="em-inst-region">
+                <strong>Départements : </strong>
+                <?php
+                    echo !empty(getAuthorDepartments($author->id)) ? implode(', ', array_column(getAuthorDepartments($author->id), 'departement_nom')) : "Aucun département.";
+                    ?>
+            </div>
         <?php endif; ?>
 
         <div class="em-offre-limit-date">
@@ -215,23 +314,24 @@ $m_cifre = new EmundusModelCifre();
 
         <!-- DISCIPLINES -->
         <div class="em-offre-disciplines">
+
             <div class="em-offre-subtitle">Disciplines sollicitées :</div>
-            <strong class="em-highlight"> <?php echo !empty($this->data['em_discipline___disciplines_raw']) ? is_array($this->data['em_discipline___disciplines_raw']) ? implode('</strong>; <strong class="em-highlight">', $this->data['em_discipline___disciplines_raw']) : $this->data['em_discipline___disciplines_raw'] : '<strong class="em-highlight">Aucune discipline</strong>'; ?></strong>
+            <strong class="em-highlight"><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', array_column(getProjectDisciplines($fnum), 'disciplines')) : "Aucune discipline."; ?> </strong>
         </div>
 
-        <?php if ($profile == '1006') : ?>
+        <?php if ($profile != '1008') : ?>
             <!-- Project context -->
             <p class="em-offre-contexte">
                 <div class="em-offre-subtitle">Enjeu et actualité du sujet :
                 </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
             </p>
 
-    <?php elseif ($profile == '1008') : ?>
-        <!-- Project context -->
-        <p class="em-offre-contexte">
-        <div class="em-offre-subtitle">Territoire :
-        </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
-        </p>
+        <?php else : ?>
+            <!-- Project context -->
+            <p class="em-offre-contexte">
+            <div class="em-offre-subtitle">Territoire :
+            </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
+            </p>
         <?php endif; ?>
 
 
@@ -251,43 +351,44 @@ $m_cifre = new EmundusModelCifre();
         <div class="em-offre-subtitle"><?php echo $questionText; ?></div><?php echo $this->data['jos_emundus_projet___question_raw'][0]; ?>
         </p>
 
-        <?php if ($profile != '1007') : ?>
             <!-- Project methodology -->
             <p class="em-offre-methodologie">
             <div class="em-offre-subtitle">Méthodologie proposée :
             </div><?php echo $this->data['jos_emundus_projet___methodologie_raw'][0]; ?>
             </p>
-        <?php endif; ?>
 
-        <div class="em-regions">
-            <strong>Régions : </strong>
-                <?php
-                    if(!empty($regions))
-                        echo implode(', ', $regions);
-                    else
-                        echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+        <?php if ($profile != '1008') :?>
+            <div class="em-regions">
+                <strong>Régions : </strong>
+                    <?php
+                        if(!empty($regions))
+                            echo implode(', ', $regions);
+                        else
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
 
-                ?>
-        </div>
+                    ?>
+            </div>
 
-        <div class="em-departments">
-            <strong>Départements : </strong>
-                <?php
-                    if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
-                        $departmentArray= array();
-                        foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
-                        {
-                            $departmentArray[] = getDepartment($dep);
+            <div class="em-departments">
+                <strong>Départements : </strong>
+                    <?php
+                        if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
+                            $departmentArray= array();
+                            foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
+                            {
+                                $departmentArray[] = getDepartment($dep);
+                            }
+
+                            echo implode(', ', $departmentArray);
                         }
-
-                        echo implode(', ', $departmentArray);
-                    }
-                    else {
-                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
-                    }
-                ?>
-        </div>
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                        }
+                    ?>
+            </div>
+        <?php endif; ?>
     </div>
+
 
     <div class="em-partenaires">
         <h1 class="em-partenaires-title">Les partenaires recherchés </h1>
@@ -308,7 +409,7 @@ $m_cifre = new EmundusModelCifre();
 
         <?php if ($profile == '1007') :?>
             <p class="em-partenaires-equipe-recherche">
-                <strong>Une équipe de recherche : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?>
+                <strong>Une équipe de recherche pour co-direction ou co-encadrement : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?>
             </p>
             <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-equipe-recherche-name">
