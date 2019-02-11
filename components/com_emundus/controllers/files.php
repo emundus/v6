@@ -2560,11 +2560,14 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+	/** Generate a new document from the many templates.
+	 * @throws Exception
+	 */
     public function generatedoc() {
         $jinput = JFactory::getApplication()->input;
-        $fnums  = $jinput->getString('fnums', "");
-        $code   = $jinput->getString('code', "");
-        $idTmpl = $jinput->getString('id_tmpl', "");
+        $fnums  = $jinput->post->getString('fnums', "");
+        $code   = $jinput->post->getString('code', "");
+        $idTmpl = $jinput->post->getString('id_tmpl', "");
 
         $fnumsArray = explode(",", $fnums);
 
@@ -2580,22 +2583,20 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $res = new stdClass();
         $res->status = true;
-        $res->files = array();
+        $res->files = [];
         $fnumsInfos = $m_files->getFnumsTagsInfos($fnumsArray);
 
         switch ($tmpl[0]['template_type']) {
-            case 1:
+
+        	case 1:
                 //Simple FILE
                 $res->status = false;
                 $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
                 echo json_encode($res);
                 break;
+
             case 2:
                 //Generate PDF
-                /*if (!empty($tmpl[0]['attachment_id'])) {
-                    require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-                    $files = letter_pdf($user->id, $tmpl[0]['status'], $tmpl[0]['training'], 0, 0);
-                }*/
                 $res->status = false;
                 $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE_FROM_HTML_TEMPLATE");
                 echo json_encode($res);
@@ -2604,22 +2605,21 @@ class EmundusControllerFiles extends JControllerLegacy
             case 3:
                 // template DOCX
                 require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
-                //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php
 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
                 try {
                     $phpWord = new \PhpOffice\PhpWord\PhpWord();
                     $preprocess = $phpWord->loadTemplate(JPATH_BASE.$tmpl[0]['file']);
-                    //$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
                     $tags = $preprocess->getVariables();
                     $idFabrik = array();
                     $setupTags = array();
                     foreach ($tags as $i => $val) {
                         $tag = strip_tags($val);
-                        if (is_numeric($tag))
-                            $idFabrik[] = $tag;
-                        else
-                            $setupTags[] = $tag;
+                        if (is_numeric($tag)) {
+	                        $idFabrik[] = $tag;
+                        } else {
+	                        $setupTags[] = $tag;
+                        }
                     }
 
                     if (!empty($idFabrik)) {
@@ -2709,13 +2709,6 @@ class EmundusControllerFiles extends JControllerLegacy
                                         }
                                         $i++;
                                     }
-                                    // Add HTML to a tag value is not possible....
-                                    /*$phpWord = new \PhpOffice\PhpWord\PhpWord();
-                                    $section = $phpWord->addSection();
-                                    $preprocessHtml = new \PhpOffice\PhpWord\Shared\Html;
-                                    $preprocessHtml->addHtml($section, $val);*/
-
-                                    //$val = HTMLtoOpenXML::getInstance()->fromHTML(str_replace("<br />","<br>", stripslashes($val)));
                                     $preprocess->setValue($tag, htmlspecialchars($val));
                                 }
                             }
@@ -2723,8 +2716,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 if (isset($fabrikValues[$id][$fnum])) {
                                     $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
                                     $preprocess->setValue($id, $value);
-                                }
-                                else {
+                                } else {
                                     $preprocess->setValue($id, '');
                                 }
                             }
@@ -2745,8 +2737,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         unset($preprocess);
                     }
                     echo json_encode($res);
-                }
-                catch(Exception $e) {
+                
+                } catch(Exception $e) {
                     $res->status = false;
                     $res->msg = JText::_("AN_ERROR_OCURRED").':'. $e->getMessage();
                     echo json_encode($res);
