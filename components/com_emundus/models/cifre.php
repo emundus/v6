@@ -364,11 +364,16 @@ class EmundusModelCifre extends JModelList {
 	 *
 	 * @return bool
 	 */
-    function getDoctorale($id = null) {
+    function getDoctorale($uid = null) {
+
+        if (empty($user_id)) {
+            $user_id = JFactory::getUser()->id;
+        }
 
         $query = $this->db->getQuery(true);
-        $query->select($this->db->quoteName('label'))->from($this->db->quoteName('em_ecole_doctorale'))->where('id = '.$id);
+        $query->select($this->db->quoteName('titre_ecole_doctorale'))->from($this->db->quoteName('#__emundus_users'))->where('user_id = '.$user_id);
         $this->db->setQuery($query);
+
         try {
             return $this->db->loadResult();
         } catch (Exception $e) {
@@ -609,4 +614,23 @@ class EmundusModelCifre extends JModelList {
 		shuffle($results);
 		return $results;
 	}
+
+	public function getDepartmentsByRegion($id) {
+
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select(array($this->db->quoteName('departement_id'), $this->db->quoteName('departement_nom')))
+            ->from($this->db->quoteName('data_departements'))
+            ->where($this->db->quoteName('region_id') . " = " . $id);
+
+        $this->db->setQuery($query);
+
+        try {
+            return $this->db->loadObject();
+        } catch (Exception $e) {
+            JLog::add('Error getting cifre suggestions in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+        }
+	}
+
 }
