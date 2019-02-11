@@ -12,6 +12,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+
+$lang = JFactory::getLanguage();
+$extension = 'com_emundus';
+$base_dir = JPATH_SITE . '/components/com_emundus';
+$language_tag =& JFactory::getLanguage()->getTag();
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
+
+
 // If we are not logged in: we cannot access this page and so we are redirected to the login page.
 $user = JFactory::getUser();
 
@@ -110,13 +119,13 @@ $m_cifre = new EmundusModelCifre();
     </p>
 
     <div class="em-offre-meta">
-        <p>Sujet déposé le <strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
+        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_SUBJECT_DEPOT'); ?><strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
 
     </div>
 
     <!-- Author -->
     <div class="em-offre-author">
-        <h1 class="em-offre-title">Profil du déposant</h1>
+        <h1 class="em-offre-title"><?php echo JText::_('COM_EMUNDUS_FABRIK_SUBJECT_PROFILE'); ?></h1>
         <div class="em-offre-author-profile">
             <div class="em-offre-author-name"><strong>Type : </strong><?php echo $chercheur; ?></div>
         </div>
@@ -251,19 +260,31 @@ $m_cifre = new EmundusModelCifre();
         <?php endif; ?>
 
         <div class="em-regions">
-            <strong>Régions : </strong><?php if(!empty($regions)) echo implode(', ', $regions); ?>
+            <strong>Régions : </strong>
+                <?php
+                    if(!empty($regions))
+                        echo implode(', ', $regions);
+                    else
+                        echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+
+                ?>
         </div>
 
         <div class="em-departments">
             <strong>Départements : </strong>
                 <?php
-                    $departmentArray= array();
-                    foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
-                    {
-                        $departmentArray[] = getDepartment($dep);
-                    }
+                    if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
+                        $departmentArray= array();
+                        foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
+                        {
+                            $departmentArray[] = getDepartment($dep);
+                        }
 
-                    echo implode(', ', $departmentArray);
+                        echo implode(', ', $departmentArray);
+                    }
+                    else {
+                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                    }
                 ?>
         </div>
     </div>
@@ -591,10 +612,6 @@ if ($status === 2) :?>
                 if (CV != null && CV != '' && typeof CV != 'undefined')
                     data.CV = CV;
 
-                var ML = jQuery('#lm-upload_file').find('.hidden').text();
-                if (ML != null && ML != '' && typeof ML != 'undefined')
-                    data.ML = ML;
-
                 var DOC = jQuery('#doc-upload_file').find('.hidden').text();
                 if (DOC != null && DOC != '' && typeof DOC != 'undefined')
                     data.DOC = DOC;
@@ -731,7 +748,7 @@ if ($status === 2) :?>
                             '              <select id="em-join-offer">' +
                             '                  <option value="">Je ne souhaite pas joindre mes offres.</option>' +
                             <?php foreach ($offers as $offer) : ?>
-                            '                      <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
+                            '                      <option value="<?php echo $offer->fnum; ?>"><?php echo str_replace("'", "\\'", $offer->titre); ?></option>' +
                             <?php endforeach; ?>
                             '              </select>' +
                             <?php endif; ?>
@@ -797,17 +814,6 @@ if ($status === 2) :?>
             uploaddoc.doUpload();
         }
 
-        // Add file to the list being attached.
-        function lmAddFile() {
-            // We need to get the file uploaded by the user.
-            var lm = jQuery("#em-lm_to_upload")[0].files[0];
-            var lmId = jQuery("#lm-upload_file");
-            var uploadlm = new Upload(lm, lmId);
-
-            // Verification of style size and type can be done here.
-            uploadlm.doUpload();
-        }
-
         // Helper function for uploading a file via AJAX.
         var Upload = function (file, id) {
             this.file = file;
@@ -825,7 +831,6 @@ if ($status === 2) :?>
         };
 
         Upload.prototype.doUpload = function () {
-
             var that = this;
             var formData = new FormData();
 

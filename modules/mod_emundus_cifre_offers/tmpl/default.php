@@ -8,9 +8,15 @@
 
 // No direct access.
 defined('_JEXEC') or die;
+
 ?>
 
 <div class="em-contact-request-module">
+    <?php if (empty($offers->to) &&empty($offers->from)) :?>
+    <span class="em-contact-request col-md-12">
+            <div class="em-highlight"><?php echo JText::_('MOD_EMUNDUS_CIFRE_NO_OFFERS'); ?></div>
+    </span>
+    <?php endif; ?>
     <?php if (!empty($offers->to)) :?>
         <span class="em-contact-request col-md-12">
             <div class="em-highlight"><?php echo count($offers->to) > 1 ?JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFERS'):JText::_('MOD_EMUNDUS_CIFRE_OFFERS_RECIEVED_OFFER'); ?></div>
@@ -27,7 +33,7 @@ defined('_JEXEC') or die;
                                     <span class="em-contact-request-offer">
                                         <strong>
                                         <?php if (!empty($offer->titre)) :?>
-                                            <?php echo '"'.$offer->titre.'"'; ?>
+                                            "<a href=href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>"><?php echo $offer->titre; ?></a>"
                                         <?php else: ?>
                                             <?php echo '"'.JText::_('NO_TITLE').'"'; ?>
                                         <?php endif; ?>
