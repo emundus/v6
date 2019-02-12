@@ -79,7 +79,7 @@ echo <<<EOT
         border-bottom: 1px solid;
         display: block;
         width: 745px;
-	padding: 6px;
+	    margin: 10px 0px;
     }
     .em-pdf-element-label {
         vertical-align: top;

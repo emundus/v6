@@ -15,6 +15,13 @@ defined('_JEXEC') or die('Restricted access');
 $form = $this->form;
 $model = $this->getModel();
 
+$lang = JFactory::getLanguage();
+$extension = 'com_emundus';
+$base_dir = JPATH_SITE . '/components/com_emundus';
+$language_tag =& JFactory::getLanguage()->getTag();
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
+
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 $m_users = new EmundusModelUsers();
 
@@ -181,7 +188,7 @@ function getDepartment($dept) {
 
     <?php else: ?>
 
-        <?php $institution = $m_cifre->getUserInstitution($author->id); ?>
+        <?php $institution = $m_cifre->getUserInstitution($user_to[0]->user_id);?>
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
@@ -189,7 +196,7 @@ function getDepartment($dept) {
             </div>
 
             <div class="em-pdf-element-value">
-                <p><?php echo $institution; ?></p>
+                <p><?php echo $institution->nom_de_structure; ?></p>
             </div>
 
         </div>
@@ -321,12 +328,12 @@ function getDepartment($dept) {
 
     <?php if (!empty($this->data['jos_emundus_projet___question_raw'][0])) :?>
         <?php
-        if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006')
-            $questionText = 'Problématique :';
-        elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007')
-            $questionText = 'Problématique :';
-        elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008')
-            $questionText = 'Grand défi :';
+            if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006')
+                $questionText = 'Problématique :';
+            elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007')
+                $questionText = 'Problématique :';
+            elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008')
+                $questionText = 'Grand défi :';
         ?>
         <div class="em-pdf-element">
 
@@ -338,23 +345,24 @@ function getDepartment($dept) {
                 <p><?php echo $this->data["jos_emundus_projet___question_raw"][0]; ?></p>
             </div>
 
+        </div>
     <?php endif; ?>
 
 
-        <?php if (!empty($this->data['jos_emundus_projet___methodologie_raw'][0])) : ?>
-            <div class="em-pdf-element">
+    <?php if (!empty($this->data['jos_emundus_projet___methodologie_raw'][0])) : ?>
+        <div class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
-                    <p>Méthodologie proposée</p>
-                </div>
-
-                <div class="em-pdf-element-value">
-                    <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
-                </div>
-
+            <div class="em-pdf-element-label">
+                <p>Méthodologie proposée</p>
             </div>
 
-        <?php endif; ?>
+            <div class="em-pdf-element-value">
+                <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
+            </div>
+
+        </div>
+
+    <?php endif; ?>
 
 
 
@@ -396,7 +404,7 @@ function getDepartment($dept) {
         </div>
 
         <div class="em-pdf-element-value">
-            <p><?php if (!empty($regions)) {echo implode(', ', $regions);} ?></p>
+            <p><?php echo !empty($regions) ? implode(', ', $regions) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS'); ?></p>
         </div>
 
     </div>
@@ -409,11 +417,17 @@ function getDepartment($dept) {
 
         <div class="em-pdf-element-value">
             <p><?php
+                if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
                 $departmentArray = array();
                 foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep) {
                     $departmentArray[] = getDepartment($dep);
                 }
-                echo implode(', ', $departmentArray); ?>
+                echo implode(', ', $departmentArray);
+                }
+                else {
+                    echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                }
+                ?>
             </p>
         </div>
 
@@ -591,5 +605,3 @@ function getDepartment($dept) {
     <?php endif; ?>
 
 </div>
-
-    <button onclick="history.go(-1);">Go back</button>
