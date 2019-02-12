@@ -282,14 +282,14 @@ $m_cifre = new EmundusModelCifre();
             <div class="em-inst-region">
                 <strong>Régions : </strong>
                 <?php
-                    echo !empty(getAuthorRegions($author->id)) ? implode(', ', array_column(getAuthorRegions($author->id), 'name')) : "Aucune Région.";
+                    echo !empty(getAuthorRegions($author->id)) ? implode(', ', array_column(getAuthorRegions($author->id), 'name')) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
                 ?>
             </div>
 
             <div class="em-inst-region">
                 <strong>Départements : </strong>
                 <?php
-                    echo !empty(getAuthorDepartments($author->id)) ? implode(', ', array_column(getAuthorDepartments($author->id), 'departement_nom')) : "Aucun département.";
+                    echo !empty(getAuthorDepartments($author->id)) ? implode(', ', array_column(getAuthorDepartments($author->id), 'departement_nom')) : JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
                     ?>
             </div>
         <?php endif; ?>
