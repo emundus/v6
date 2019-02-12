@@ -51,9 +51,11 @@ echo $this->loadTemplate('relateddata');
 $regions = $this->data['data_regions___name_raw'];
 
 $db = JFactory::getDBO();
+$user = JFactory::getSession()->get('emundusUser');
 
 $query = $db->getquery('true');
 $user_to = $m_users->getUserById($this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0]);
+
 
 // Get all uploaded files
 $query->select($db->quoteName(array('eup.filename', 'sa.value')))
@@ -104,17 +106,19 @@ function getDepartment($dept) {
         <h3>Récapitulatif de l'annonce déposé sur <a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
     </div>
 
-    <div class="em-pdf-element">
+    <?php if($user == $user_to) :?>
+        <div class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p>Numéro de dossier</p>
+            <div class="em-pdf-element-label">
+                <p>Numéro de dossier</p>
+            </div>
+
+            <div class="em-pdf-element-value">
+                <p><?php echo $this->data["jos_emundus_campaign_candidature___fnum_raw"][0]; ?></p>
+            </div>
+
         </div>
-
-        <div class="em-pdf-element-value">
-            <p><?php echo $this->data["jos_emundus_campaign_candidature___fnum_raw"][0]; ?></p>
-        </div>
-
-    </div>
+    <?php endif; ?>
 
     <div class="em-pdf-element">
 
@@ -149,43 +153,42 @@ function getDepartment($dept) {
 
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
-        <div class="em-pdf-element">
+        <?php if($user == $user_to) :?>
+            <div class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
-                <p>Civlité</p>
+                <div class="em-pdf-element-label">
+                    <p>Civlité</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo ($user_to[0]->gender == "M") ? "Monsieur" : "Madame"; ?></p>
+                </div>
+
             </div>
 
-            <div class="em-pdf-element-value">
-                <p><?php echo ($user_to[0]->gender == "M") ? "Monsieur" : "Madame"; ?></p>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Nom</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo ucfirst($user_to[0]->lastname); ?></p>
+                </div>
+
             </div>
 
-        </div>
+            <div class="em-pdf-element">
 
-        <div class="em-pdf-element">
+                <div class="em-pdf-element-label">
+                    <p>Prénom</p>
+                </div>
 
-            <div class="em-pdf-element-label">
-                <p>Nom</p>
+                <div class="em-pdf-element-value">
+                    <p><?php echo ucfirst($user_to[0]->firstname); ?></p>
+                </div>
             </div>
-
-            <div class="em-pdf-element-value">
-                <p><?php echo ucfirst($user_to[0]->lastname); ?></p>
-            </div>
-
-        </div>
-
-        <div class="em-pdf-element">
-
-            <div class="em-pdf-element-label">
-                <p>Prénom</p>
-            </div>
-
-            <div class="em-pdf-element-value">
-                <p><?php echo ucfirst($user_to[0]->firstname); ?></p>
-            </div>
-
-        </div>
-
-
+        <?php endif; ?>
     <?php else: ?>
 
         <?php $institution = $m_cifre->getUserInstitution($user_to[0]->user_id);?>
@@ -202,29 +205,31 @@ function getDepartment($dept) {
         </div>
     <?php endif; ?>
 
-    <div class="em-pdf-element">
-
-        <div class="em-pdf-element-label">
-            <p>Email</p>
-        </div>
-
-        <div class="em-pdf-element-value">
-            <p><a href="mailto:<?php echo $user_to[0]->email; ?>"><?php echo $user_to[0]->email; ?></a></p>
-        </div>
-
-    </div>
-
-    <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) : ?>
+    <?php if($user == $user_to) :?>
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Tél</p>
+                <p>Email</p>
             </div>
+
             <div class="em-pdf-element-value">
-                <p><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
+                <p><a href="mailto:<?php echo $user_to[0]->email; ?>"><?php echo $user_to[0]->email; ?></a></p>
             </div>
 
         </div>
+
+        <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) : ?>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Tél</p>
+                </div>
+                <div class="em-pdf-element-value">
+                    <p><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
+                </div>
+
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007') : ?>
@@ -457,6 +462,7 @@ function getDepartment($dept) {
 
 
         <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___futur_doctorant_nom_raw"]) && !empty($this->data["jos_emundus_recherche___futur_doctorant_prenom_raw"])) : ?>
+            <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user == $user_to) :?>
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
@@ -468,16 +474,17 @@ function getDepartment($dept) {
                 </div>
 
             </div>
+            <?php endif; ?>
         <?php endif; ?>
 
 
     <?php endif; ?>
 
-    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1007') : ?>
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007') : ?>
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Une équipe de recherche pour codirection</p>
+                <p>Une équipe de recherche</p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -487,6 +494,7 @@ function getDepartment($dept) {
         </div>
 
         <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire_raw"])) : ?>
+
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
@@ -504,7 +512,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Une équipe de recherche pour direction</p>
+                <p>Une équipe de recherche</p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -514,17 +522,19 @@ function getDepartment($dept) {
         </div>
 
         <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"])) : ?>
-            <div class="em-pdf-element">
+            <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user == $user_to) :?>
+                <div class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
-                    <p>Nom de l'équipe partenaire</p>
+                    <div class="em-pdf-element-label">
+                        <p>Nom de l'équipe partenaire</p>
+                    </div>
+
+                    <div class="em-pdf-element-value">
+                        <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"]; ?></p>
+                    </div>
+
                 </div>
-
-                <div class="em-pdf-element-value">
-                    <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"]; ?></p>
-                </div>
-
-            </div>
+            <?php endif; ?>
         <?php endif; ?>
 
     <?php endif; ?>
@@ -544,7 +554,7 @@ function getDepartment($dept) {
 
         </div>
 
-        <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0) : ?>
+        <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0 && $user == $user_to) : ?>
 
             <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_type_raw"])) : ?>
                 <div class="em-pdf-element">
