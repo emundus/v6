@@ -2560,11 +2560,14 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+	/** Generate a new document from the many templates.
+	 * @throws Exception
+	 */
     public function generatedoc() {
         $jinput = JFactory::getApplication()->input;
-        $fnums  = $jinput->getString('fnums', "");
-        $code   = $jinput->getString('code', "");
-        $idTmpl = $jinput->getString('id_tmpl', "");
+        $fnums  = $jinput->post->getString('fnums', "");
+        $code   = $jinput->post->getString('code', "");
+        $idTmpl = $jinput->post->getString('id_tmpl', "");
 
         $fnumsArray = explode(",", $fnums);
 
@@ -2580,22 +2583,20 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $res = new stdClass();
         $res->status = true;
-        $res->files = array();
+        $res->files = [];
         $fnumsInfos = $m_files->getFnumsTagsInfos($fnumsArray);
 
         switch ($tmpl[0]['template_type']) {
-            case 1:
+
+        	case 1:
                 //Simple FILE
                 $res->status = false;
                 $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
                 echo json_encode($res);
                 break;
+
             case 2:
                 //Generate PDF
-                /*if (!empty($tmpl[0]['attachment_id'])) {
-                    require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-                    $files = letter_pdf($user->id, $tmpl[0]['status'], $tmpl[0]['training'], 0, 0);
-                }*/
                 $res->status = false;
                 $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE_FROM_HTML_TEMPLATE");
                 echo json_encode($res);
@@ -2604,22 +2605,25 @@ class EmundusControllerFiles extends JControllerLegacy
             case 3:
                 // template DOCX
                 require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
-                //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php
 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+
+                // Special tags which require a bit more work.
+	            $special = ['user_dob_age', 'evaluation_radar'];
+
                 try {
                     $phpWord = new \PhpOffice\PhpWord\PhpWord();
                     $preprocess = $phpWord->loadTemplate(JPATH_BASE.$tmpl[0]['file']);
-                    //$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
                     $tags = $preprocess->getVariables();
                     $idFabrik = array();
                     $setupTags = array();
                     foreach ($tags as $i => $val) {
                         $tag = strip_tags($val);
-                        if (is_numeric($tag))
-                            $idFabrik[] = $tag;
-                        else
-                            $setupTags[] = $tag;
+                        if (is_numeric($tag)) {
+	                        $idFabrik[] = $tag;
+                        } else {
+	                        $setupTags[] = $tag;
+                        }
                     }
 
                     if (!empty($idFabrik)) {
@@ -2689,33 +2693,55 @@ class EmundusControllerFiles extends JControllerLegacy
                     foreach ($fnumsArray as $fnum) {
 
                     	$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
-
                     	if (isset($fnumsInfos[$fnum])) {
                             foreach ($setupTags as $tag) {
                                 $val = "";
                                 $lowerTag = strtolower($tag);
 
                                 if (array_key_exists($lowerTag, $const)) {
+
 	                                $preprocess->setValue($tag, $const[$lowerTag]);
+
+                                } elseif (in_array($lowerTag, $special)) {
+
+                                	// Each tag has it's own logic requiring special work.
+                                	switch ($lowerTag) {
+
+                                		// dd-mm-YYYY (YY)
+		                                case 'user_dob_age':
+											$birthday = $m_files->getBirthdate($fnum, 'd/m/Y', true);
+											$preprocess->setValue($tag, $birthday->date.' ('.$birthday->age.')');
+		                                	break;
+
+	                                    // This is a special radar style element of the evaluation values.
+		                                case 'evaluation_radar':
+		                                	$preprocess->setValue($tag, '');
+
+		                                	// The code below cannot work as of right now, objects cannot be inserted in a template file being parsed.
+		                                    // TODO: Retry doing this when a new version of PHPOffice is available.
+		                                	/*$evaluation = $m_evalutaion->getScore($fnum);
+			                                $section = $phpWord->addSection();
+			                                $section->addChart('radar', array_keys($evaluation), $evaluation);
+			                                $section->addTextBreak();*/
+		                                	break;
+
+		                                default:
+			                                $preprocess->setValue($tag, '');
+		                                break;
+	                                }
+
                                 } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
-	                                $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
+                                	$preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
                                 } else {
-                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], null, $fnum, '');
+                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                     $i = 0;
-                                    foreach ($tags['patterns'] as $key => $value) {
+                                    foreach ($tags['patterns'] as $value) {
                                         if ($value == $tag) {
                                             $val = $tags['replacements'][$i];
                                             break;
                                         }
                                         $i++;
                                     }
-                                    // Add HTML to a tag value is not possible....
-                                    /*$phpWord = new \PhpOffice\PhpWord\PhpWord();
-                                    $section = $phpWord->addSection();
-                                    $preprocessHtml = new \PhpOffice\PhpWord\Shared\Html;
-                                    $preprocessHtml->addHtml($section, $val);*/
-
-                                    //$val = HTMLtoOpenXML::getInstance()->fromHTML(str_replace("<br />","<br>", stripslashes($val)));
                                     $preprocess->setValue($tag, htmlspecialchars($val));
                                 }
                             }
@@ -2723,8 +2749,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 if (isset($fabrikValues[$id][$fnum])) {
                                     $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
                                     $preprocess->setValue($id, $value);
-                                }
-                                else {
+                                } else {
                                     $preprocess->setValue($id, '');
                                 }
                             }
@@ -2745,8 +2770,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         unset($preprocess);
                     }
                     echo json_encode($res);
-                }
-                catch(Exception $e) {
+                
+                } catch(Exception $e) {
                     $res->status = false;
                     $res->msg = JText::_("AN_ERROR_OCURRED").':'. $e->getMessage();
                     echo json_encode($res);
@@ -2857,7 +2882,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 unlink($fn);
             }
         }
-        $pdf->Output($path, 'I');
+	    ob_end_clean();
+	    $pdf->Output($path, 'I');
         exit;
     }
 

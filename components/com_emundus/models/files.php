@@ -3151,4 +3151,42 @@ die();*/
         }
     }
 
+
+	/**
+	 * Gets the user's birthdate.
+	 *
+	 * @param null   $fnum The file number to get the birth date from.
+	 * @param string $format See php.net/date
+	 * @param bool   $age If true then we also return the current age.
+	 *
+	 * @return null
+	 */
+    public function getBirthdate($fnum = null, $format = 'd-m-Y', $age = false) {
+
+    	$db = JFactory::getDbo();
+    	$query = $db->getQuery(true);
+
+    	$query->select($db->quoteName('birth_date'))->from($db->quoteName('#__emundus_personal_detail'))->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+    	$db->setQuery($query);
+
+    	try {
+    		$datetime = new DateTime($db->loadResult());
+    		if (!$age) {
+			    $birthdate = $datetime->format($format);
+		    } else {
+
+    			$birthdate = new stdClass();
+			    $birthdate->date = $datetime->format($format);
+
+			    $now = new DateTime();
+			    $interval = $now->diff($datetime);
+			    $birthdate->age = $interval->y;
+		    }
+	    } catch (Exception $e) {
+    		return null;
+	    }
+
+	    return $birthdate;
+    }
+
 }

@@ -104,9 +104,8 @@ function getDepartment($dept) {
          width="252" height="90">
     <div class="em-pdf-title-div">
         <h3>Récapitulatif de l'annonce déposé sur <a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
-    </div>
+    </div><?php if($user->id == $user_to[0]->user_id) :?>
 
-    <?php if($user == $user_to) :?>
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
@@ -153,7 +152,7 @@ function getDepartment($dept) {
 
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
-        <?php if($user == $user_to) :?>
+        <?php if($user->id == $user_to[0]->user_id) :?>
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
@@ -205,7 +204,7 @@ function getDepartment($dept) {
         </div>
     <?php endif; ?>
 
-    <?php if($user == $user_to) :?>
+    <?php if($user->id == $user_to[0]->user_id) :?>
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
@@ -462,7 +461,7 @@ function getDepartment($dept) {
 
 
         <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___futur_doctorant_nom_raw"]) && !empty($this->data["jos_emundus_recherche___futur_doctorant_prenom_raw"])) : ?>
-            <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user == $user_to) :?>
+            <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user->id == $user_to[0]->user_id) :?>
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
@@ -522,7 +521,7 @@ function getDepartment($dept) {
         </div>
 
         <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"])) : ?>
-            <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user == $user_to) :?>
+            <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user->id == $user_to[0]->user_id) :?>
                 <div class="em-pdf-element">
 
                     <div class="em-pdf-element-label">
@@ -554,7 +553,7 @@ function getDepartment($dept) {
 
         </div>
 
-        <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0 && $user == $user_to) : ?>
+        <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0 && $user->id == $user_to[0]->user_id) : ?>
 
             <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_type_raw"])) : ?>
                 <div class="em-pdf-element">

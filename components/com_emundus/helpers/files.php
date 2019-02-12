@@ -1515,14 +1515,15 @@ class EmundusHelperFiles
 
             $hidden = $types['adv_filter'] != 'hidden' ? false : true;
             $elements = $h_files->getElements();
-            
+
+            $search_nb = !empty($search)?count($search):0;
             $adv_filter = '<div class="em_filters em-filter" id="em_adv_filters">
 								<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>
 								<div>
 									<button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button>
 								</div>
 								<br/>
-								<input type="hidden" value="'.count($search).'" id="nb-adv-filter" />
+								<input type="hidden" value="'.$search_nb.'" id="nb-adv-filter" />
 								<div id="advanced-filters" class="form-group">';
 
             if (!empty($search)) {
