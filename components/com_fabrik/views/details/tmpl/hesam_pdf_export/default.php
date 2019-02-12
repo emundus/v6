@@ -90,52 +90,6 @@ function getDepartment($dept) {
 ?>
 
 
-<style>
-    .fabrikForm.fabrikDetails {
-        display: block;
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .em-pdf-group {
-        margin-bottom: 35px;
-    }
-
-    .em-pdf-title-div {
-        background-color: #e9E9E9;
-        border-top: 1px solid;
-        border-bottom: 1px solid;
-    }
-
-    .em-pdf-title-div h3 {
-        margin: 0px 0px 0px 10px;
-    }
-
-    .em-pdf-element {
-        font-size: 16px;
-        border-bottom: 1px solid;
-        display: inline-block;
-        width: 100%;
-    }
-
-    .em-pdf-element-label {
-        float: left;
-        display: inline-block;
-        width: 35%;
-        font-weight: bold;
-    }
-
-    .em-pdf-element-label p {
-        margin: 0px 0px 0px 10px;
-    }
-
-    .em-pdf-element-value {
-        display: inline-block;
-        width: 64%;
-    }
-</style>
-
 <div class="em-pdf-group">
     <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
          width="252" height="90">
@@ -316,7 +270,7 @@ function getDepartment($dept) {
 
 </div>
 
-<div class="em-pdf-group">
+<div class="em-pdf-group breaker">
     <div class="em-pdf-title-div">
         <h3>Le projet</h3>
     </div>
@@ -333,12 +287,27 @@ function getDepartment($dept) {
 
     </div>
 
-    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006') :?>
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') :?>
         <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
                     <p>Enjeu et actualité du sujet</p>
+                </div>
+
+                <div class="em-pdf-element-value">
+                    <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
+                </div>
+
+            </div>
+        <?php endif; ?>
+    <?php else :?>
+
+        <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
+            <div class="em-pdf-element">
+
+                <div class="em-pdf-element-label">
+                    <p>Territoire</p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -372,25 +341,6 @@ function getDepartment($dept) {
     <?php endif; ?>
 
 
-    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008') :?>
-
-        <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
-            <div class="em-pdf-element">
-
-                <div class="em-pdf-element-label">
-                    <p>Territoire</p>
-                </div>
-
-                <div class="em-pdf-element-value">
-                    <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
-                </div>
-
-            </div>
-        <?php endif; ?>
-    <?php endif; ?>
-
-    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1007') : ?>
-
         <?php if (!empty($this->data['jos_emundus_projet___methodologie_raw'][0])) : ?>
             <div class="em-pdf-element">
 
@@ -406,21 +356,7 @@ function getDepartment($dept) {
 
         <?php endif; ?>
 
-    <?php elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007') :?>
-        <?php if (!empty($this->data["jos_emundus_projet___question"][0])) :?>
-            <div class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
-                    <p>Problématique de recherche</p>
-                </div>
-
-                <div class="em-pdf-element-value">
-                    <p><?php echo implode(", ", $this->data["jos_emundus_projet___question"][0]); ?></p>
-                </div>
-
-            </div>
-        <?php endif; ?>
-    <?php endif; ?>
 
     <?php if (!empty($this->data['data_thematics___thematic_raw'][0])) : ?>
 
@@ -485,7 +421,7 @@ function getDepartment($dept) {
 
 </div>
 
-<div class="em-pdf-group">
+<div class="em-pdf-group breaker">
 
     <div class="em-pdf-title-div">
         <h3>Les partenaires recherchés</h3>
@@ -630,7 +566,7 @@ function getDepartment($dept) {
     <?php endif; ?>
 </div>
 
-<div class="em-pdf-group">
+<div class="em-pdf-group breaker">
     <?php if (!empty($files)) : ?>
         <div class="em-pdf-title-div">
             <h3>Pièces jointes à l'annonce</h3>
@@ -656,7 +592,4 @@ function getDepartment($dept) {
 
 </div>
 
-
-<div>
-    <a onclick="history.go(-1)">Retour</a>
-</div>
+    <button onclick="history.go(-1);">Go back</button>
