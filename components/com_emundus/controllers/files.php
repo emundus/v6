@@ -2607,6 +2607,10 @@ class EmundusControllerFiles extends JControllerLegacy
                 require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+
+                // Special tags which require a bit more work.
+	            $special = ['user_dob_age', 'evaluation_radar'];
+
                 try {
                     $phpWord = new \PhpOffice\PhpWord\PhpWord();
                     $preprocess = $phpWord->loadTemplate(JPATH_BASE.$tmpl[0]['file']);
@@ -2689,20 +2693,49 @@ class EmundusControllerFiles extends JControllerLegacy
                     foreach ($fnumsArray as $fnum) {
 
                     	$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
-
                     	if (isset($fnumsInfos[$fnum])) {
                             foreach ($setupTags as $tag) {
                                 $val = "";
                                 $lowerTag = strtolower($tag);
 
                                 if (array_key_exists($lowerTag, $const)) {
+
 	                                $preprocess->setValue($tag, $const[$lowerTag]);
+
+                                } elseif (in_array($lowerTag, $special)) {
+
+                                	// Each tag has it's own logic requiring special work.
+                                	switch ($lowerTag) {
+
+                                		// dd-mm-YYYY (YY)
+		                                case 'user_dob_age':
+											$birthday = $m_files->getBirthdate($fnum, 'd/m/Y', true);
+											$preprocess->setValue($tag, $birthday->date.' ('.$birthday->age.')');
+		                                	break;
+
+	                                    // This is a special radar style element of the evaluation values.
+		                                case 'evaluation_radar':
+		                                	$preprocess->setValue($tag, '');
+
+		                                	// The code below cannot work as of right now, objects cannot be inserted in a template file being parsed.
+		                                    // TODO: Retry doing this when a new version of PHPOffice is available.
+		                                	/*$evaluation = $m_evalutaion->getScore($fnum);
+			                                $section = $phpWord->addSection();
+			                                $section->addChart('radar', array_keys($evaluation), $evaluation);
+			                                $section->addTextBreak();*/
+		                                	break;
+
+		                                default:
+			                                $preprocess->setValue($tag, '');
+		                                break;
+	                                }
+
                                 } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
-	                                $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
+                                	$preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
                                 } else {
-                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], null, $fnum, '');
+                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                     $i = 0;
-                                    foreach ($tags['patterns'] as $key => $value) {
+                                    foreach ($tags['patterns'] as $value) {
                                         if ($value == $tag) {
                                             $val = $tags['replacements'][$i];
                                             break;
@@ -2849,7 +2882,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 unlink($fn);
             }
         }
-        $pdf->Output($path, 'I');
+	    ob_end_clean();
+	    $pdf->Output($path, 'I');
         exit;
     }
 
