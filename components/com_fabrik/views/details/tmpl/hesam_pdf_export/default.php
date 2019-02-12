@@ -479,35 +479,7 @@ function getDepartment($dept) {
 
     <?php endif; ?>
 
-    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007') : ?>
-        <div class="em-pdf-element">
-
-            <div class="em-pdf-element-label">
-                <p>Une équipe de recherche</p>
-            </div>
-
-            <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?></p>
-            </div>
-
-        </div>
-
-        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire_raw"])) : ?>
-
-            <div class="em-pdf-element">
-
-                <div class="em-pdf-element-label">
-                    <p>Nom de l'équipe partenaire</p>
-                </div>
-
-                <div class="em-pdf-element-value">
-                    <p><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire_raw"]; ?></p>
-                </div>
-
-            </div>
-        <?php endif; ?>
-
-    <?php else : ?>
+    <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1007') : ?>
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">

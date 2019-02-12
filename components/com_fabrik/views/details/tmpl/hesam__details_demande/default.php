@@ -124,53 +124,6 @@ try {
 ?>
 
 
-<style>
-    .fabrikForm.fabrikDetails {
-        display: block;
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .em-pdf-group {
-        margin-bottom: 35px;
-    }
-
-    .em-pdf-title-div {
-        background-color: #e9E9E9;
-        border-top: 1px solid;
-        border-bottom: 1px solid;
-    }
-
-    .em-pdf-title-div h3 {
-        margin: 0px 0px 0px 10px;
-    }
-
-    .em-pdf-element {
-        font-size: 16px;
-        border-bottom: 1px solid;
-        display: inline-block;
-        width: 100%;
-    }
-
-    .em-pdf-element-label {
-        float: left;
-        display: inline-block;
-        width: 35%;
-        font-weight: bold;
-    }
-
-    .em-pdf-element-label p {
-        margin: 0px 0px 0px 10px;
-    }
-
-    .em-pdf-element-value {
-        display: inline-block;
-        width: 64%;
-    }
-
-
-</style>
 
 <div class="em-pdf-group">
     <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
@@ -312,7 +265,7 @@ try {
 
 <div class="em-pdf-group">
     <div class="em-pdf-title-div">
-        <h3>Demandeur de l'annonce</h3>
+        <h3>Personne demandant la mise en relation</h3>
     </div>
 
     <div class="em-pdf-element">
@@ -474,6 +427,3 @@ try {
     <?php endif; ?>
 </div>
 
-<div>
-    <a href="javascript:history.go(-1)">Retour</a>
-</div>

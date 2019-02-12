@@ -279,19 +279,7 @@ $m_cifre = new EmundusModelCifre();
             <a class="btn btn-default"
                href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
 
-            <div class="em-inst-region">
-                <strong>Régions : </strong>
-                <?php
-                    echo !empty(getAuthorRegions($author->id)) ? implode(', ', array_column(getAuthorRegions($author->id), 'name')) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
-                ?>
-            </div>
 
-            <div class="em-inst-region">
-                <strong>Départements : </strong>
-                <?php
-                    echo !empty(getAuthorDepartments($author->id)) ? implode(', ', array_column(getAuthorDepartments($author->id), 'departement_nom')) : JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
-                    ?>
-            </div>
         <?php endif; ?>
 
         <div class="em-offre-limit-date">
@@ -357,7 +345,7 @@ $m_cifre = new EmundusModelCifre();
             </div><?php echo $this->data['jos_emundus_projet___methodologie_raw'][0]; ?>
             </p>
 
-        <?php if ($profile != '1008') :?>
+
             <div class="em-regions">
                 <strong>Régions : </strong>
                     <?php
@@ -386,7 +374,7 @@ $m_cifre = new EmundusModelCifre();
                         }
                     ?>
             </div>
-        <?php endif; ?>
+
     </div>
 
 
@@ -401,23 +389,13 @@ $m_cifre = new EmundusModelCifre();
 
             <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-futur-doc-name">
-                    <strong>Nom et prénom du future doctorant :</strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
+                    <strong>Nom et prénom du futur doctorant :</strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
                 </p>
             <?php endif; ?>
 
         <?php endif; ?>
 
-        <?php if ($profile == '1007') :?>
-            <p class="em-partenaires-equipe-recherche">
-                <strong>Une équipe de recherche pour co-direction ou co-encadrement : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?>
-            </p>
-            <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0) : ?>
-                <p class="em-partenaires-equipe-recherche-name">
-                    <strong>Nom de l'équipe partenaire : </strong><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?>
-                </p>
-            <?php endif; ?>
-
-        <?php else: ?>
+        <?php if ($profile != '1007') :?>
             <p class="em-partenaires-equipe-recherche">
                 <strong>Une équipe de recherche : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?>
             </p>
