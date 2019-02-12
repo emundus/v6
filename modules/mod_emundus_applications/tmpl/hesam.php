@@ -18,8 +18,8 @@ $uri = JUri::getInstance();
     <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus"></span> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
 
-
 <?php if (!empty($applications)) : ?>
+
     <div class="em-hesam-applications">
         <?php foreach ($applications as $application) : ?>
             <div class="col-md-4 em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
@@ -46,7 +46,7 @@ $uri = JUri::getInstance();
                             <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
                         <?php endif; ?>
 
-                        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'les-offres/consultez-les-offres/details/299/'. modemundusApplicationsHelper::getSearchEngineId($application->fnum) .'?format=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i></a>
 
                         <?php if ($application->status != 3) : ?>
                             <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
