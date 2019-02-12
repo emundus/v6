@@ -29,7 +29,7 @@ $uri = JUri::getInstance();
                         <span class="label label-<?php echo $application->class; ?>"><?php echo $application->value; ?></span>
                     </div>
 
-                    <div class="col-md-12 em-bottom-space">
+                    <div class="row em-bottom-space">
                         <?php if (!empty($application->titre)) :?>
                             <?php echo ($application->fnum == $user->fnum)?'<b>'.$application->titre.'</b>':$application->titre; ?>
                         <?php else: ?>
@@ -37,7 +37,7 @@ $uri = JUri::getInstance();
                         <?php endif; ?>
                     </div>
 
-                    <div class="col-md-12 em-bottom-space">
+                    <div class="row em-bottom-space">
                         <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode(JUri::getInstance()->getPath())); ?>"  role="button">
                             <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
                         </a>
@@ -53,7 +53,7 @@ $uri = JUri::getInstance();
                         <?php endif; ?>
                     </div>
 
-                    <div class="col-md-12 em-bottom-space">
+                    <div class="row em-bottom-space">
                         <?php if ($application->status == 1) : ?>
                             <a class="btn btn-success btn-xs em-cloturer" onClick="completefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('COMPLETE_APPLICATION'); ?>">
                                 <i class="check icon"></i> <?php echo JText::_('COMPLETE_APPLICATION'); ?>
@@ -65,7 +65,7 @@ $uri = JUri::getInstance();
                         <?php endif; ?>
                     </div>
 
-                    <div class="col-md-12 em-bottom-space em-interested">
+                    <div class="row em-bottom-space em-interested">
                         <?php if (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) == 1) :?>
                             <p><?php echo JText::_('MOD_EMUNDUS_ONE_PERSON'); ?></p>
                         <?php elseif (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) > 1) :?>
