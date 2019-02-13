@@ -572,7 +572,7 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->campaign_id        	= $campaign["id"];
 			$emundusSession->status             	= @$campaign["status"];
 			$emundusSession->candidature_incomplete = ($campaign['status']==0)?0:1;
-			$emundusSession->profile             	= $profile["profile_id"];
+			$emundusSession->profile             	= !empty($profile["profile_id"]) ? $profile["profile_id"] : $profile["profile"];
 			$emundusSession->profile_label          = $profile["label"];
 			$emundusSession->menutype               = $profile["menutype"];
 			$emundusSession->university_id          = null;

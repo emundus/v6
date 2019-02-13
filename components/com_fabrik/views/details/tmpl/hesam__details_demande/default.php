@@ -129,12 +129,12 @@ try {
     <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
          width="252" height="90">
     <div class="em-pdf-title-div">
-        <h3>Récapitulatif de la demande de mise en relation sur <a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
+        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_RECAP_DEMANDE'); ?><a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
     </div>
 
     <div class="em-pdf-element">
         <div class="em-pdf-element-label">
-            <p>Le projet</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -145,7 +145,7 @@ try {
     <?php if(!empty($this->data["jos_emundus_cifre_links___time_date_created"])) :?>
     <div class="em-pdf-element">
         <div class="em-pdf-element-label">
-            <p>Date de premier contact</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FIRST_CONTACT_DATE'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -157,7 +157,7 @@ try {
     <?php if(!empty($this->data["jos_emundus_cifre_links___state_raw"])) :?>
         <div class="em-pdf-element">
             <div class="em-pdf-element-label">
-                <p>Etat</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_CONTACT_STATUS'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -169,7 +169,7 @@ try {
     <?php if(!empty($this->data["jos_emundus_cifre_links___time_date_modified"]) && $this->data["jos_emundus_cifre_links___state_raw"] =="2") :?>
     <div class="em-pdf-element">
         <div class="em-pdf-element-label">
-            <p>Date de mise en relation</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_MISE_EN_RELATION_DATE'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -182,13 +182,13 @@ try {
 
 <div class="em-pdf-group">
     <div class="em-pdf-title-div">
-        <h3>Auteur de l'annonce</h3>
+        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR'); ?></h3>
     </div>
 
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Type</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_TYPE'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -200,7 +200,7 @@ try {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Civilité</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_CIVILITY'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -212,7 +212,7 @@ try {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Nom</p>
+            <p><?php echo JText::_('LAST_NAME'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -224,7 +224,7 @@ try {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Prénom</p>
+            <p><?php echo JText::_('FIRST_NAME'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -237,7 +237,7 @@ try {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Email</p>
+            <p><?php echo JText::_('EMAIL_FORM'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -251,7 +251,7 @@ try {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Numéro à contacter</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_NUMBER'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -265,13 +265,13 @@ try {
 
 <div class="em-pdf-group">
     <div class="em-pdf-title-div">
-        <h3>Personne demandant la mise en relation</h3>
+        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_DEMANDEUR'); ?></h3>
     </div>
 
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Type</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_TYPE'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -283,7 +283,7 @@ try {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Civilité</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_CIVILITY'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -295,7 +295,7 @@ try {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Nom</p>
+            <p><?php echo JText::_('LAST_NAME'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -307,7 +307,7 @@ try {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Prénom</p>
+            <p><?php echo JText::_('FIRST_NAME'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -320,7 +320,7 @@ try {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Email</p>
+                <p><?php echo JText::_('EMAIL_FORM'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -334,7 +334,7 @@ try {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Offre jointe</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_JOINT_OFFER'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -351,7 +351,7 @@ try {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Présentation en quoi ce projet est en adéquation avec ce que vous faites ou souhaitez faire dans votre structure</p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_JOINT_TEXT'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -367,7 +367,7 @@ try {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Pourquoi ce projet vous semble-t-il intéressant et la structure que vous contactez pertinente pour le traiter ? Quelles orientations méthodologiques et disciplinaires envisagez-vous ?</p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK__FUTURE_DOC_JOINT_TEXT1'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -381,7 +381,7 @@ try {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Pourquoi souhaitez-vous faire une thèse Cifre ? En quoi ce projet est-il en adéquation avec votre parcours académique et professionnel (ce que vous avez fait avant, ce que vous souhaitez faire après) ? </p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK__FUTURE_DOC_JOINT_TEXT2'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -397,12 +397,12 @@ try {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>CV</p>
+                <p><?php echo JText::_('COM_EMUNDUS_CV'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
                 <p>
-                    <a target="_blank" href="<?php echo JURI::root().$this->data["jos_emundus_cifre_links___cv_raw"];?>">CV</a>
+                    <a target="_blank" href="<?php echo JURI::root().$this->data["jos_emundus_cifre_links___cv_raw"];?>"><?php echo JText::_('COM_EMUNDUS_CV'); ?></a>
                 </p>
             </div>
 
@@ -415,7 +415,7 @@ try {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Document lié</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK__LINKED_DOC'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">

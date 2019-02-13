@@ -103,13 +103,15 @@ function getDepartment($dept) {
     <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
          width="252" height="90">
     <div class="em-pdf-title-div">
-        <h3>Récapitulatif de l'annonce déposé sur <a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
-    </div><?php if($user->id == $user_to[0]->user_id) :?>
+        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_RECAP'); ?><a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
+    </div>
+
+    <?php if($user->id == $user_to[0]->user_id) :?>
 
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Numéro de dossier</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -122,7 +124,7 @@ function getDepartment($dept) {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Date de dépôt du dossier</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -135,13 +137,13 @@ function getDepartment($dept) {
 
 <div class="em-pdf-group">
     <div class="em-pdf-title-div">
-        <h3>Auteur de l'annonce</h3>
+        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR'); ?></h3>
     </div>
 
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Type</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_TYPE'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -156,7 +158,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Civlité</p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_CIVILITY'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -168,7 +170,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Nom</p>
+                    <p><?php echo JText::_('LAST_NAME'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -180,7 +182,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Prénom</p>
+                    <p><?php echo JText::_('FIRST_NAME'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -194,7 +196,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Nom</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_INSTITUTE_NAME'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -208,7 +210,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Email</p>
+                <p><?php echo JText::_('EMAIL_FORM'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -221,7 +223,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Tél</p>
+                    <p><?php echo JText::_('TELEPHONENUMBER'); ?></p>
                 </div>
                 <div class="em-pdf-element-value">
                     <p><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
@@ -238,7 +240,7 @@ function getDepartment($dept) {
                 <div class="em-pdf-element">
 
                     <div class="em-pdf-element-label">
-                        <p>Nom de l'unité de recherche</p>
+                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_RESEARCH_UNIT'); ?></p>
                     </div>
 
                     <div class="em-pdf-element-value">
@@ -254,7 +256,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>École doctorale</p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_SCHOOL'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -269,7 +271,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Date de disponibilité</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DISPO_DATE'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -283,13 +285,13 @@ function getDepartment($dept) {
 
 <div class="em-pdf-group breaker">
     <div class="em-pdf-title-div">
-        <h3>Le projet</h3>
+        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></h3>
     </div>
 
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Titre</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_NAME'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -303,7 +305,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Enjeu et actualité du sujet</p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_ENJEU'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -318,7 +320,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Territoire</p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_TERRITOIRE'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -333,11 +335,11 @@ function getDepartment($dept) {
     <?php if (!empty($this->data['jos_emundus_projet___question_raw'][0])) :?>
         <?php
             if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006')
-                $questionText = 'Problématique :';
+                $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_FUTURE_DOC');
             elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007')
-                $questionText = 'Problématique :';
+                $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_CHERCHEUR');
             elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008')
-                $questionText = 'Grand défi :';
+                $questionText = JText::_('COM_EMUNDUS_FABRIK_GRAND_DEFI');
         ?>
         <div class="em-pdf-element">
 
@@ -357,7 +359,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Méthodologie proposée</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_METHODOLOGIE'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -375,7 +377,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Thématiques associées</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_THEMES'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -390,7 +392,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Disciplines sollicitées</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DISCIPLINES'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -404,7 +406,7 @@ function getDepartment($dept) {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Régions</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_REGIONS'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -416,7 +418,7 @@ function getDepartment($dept) {
     <div class="em-pdf-element">
 
         <div class="em-pdf-element-label">
-            <p>Départements</p>
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></p>
         </div>
 
         <div class="em-pdf-element-value">
@@ -442,7 +444,7 @@ function getDepartment($dept) {
 <div class="em-pdf-group breaker">
 
     <div class="em-pdf-title-div">
-        <h3>Les partenaires recherchés</h3>
+        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PARTENAIRES'); ?></h3>
     </div>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1006') : ?>
@@ -450,7 +452,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Un futur doctorant</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -465,7 +467,7 @@ function getDepartment($dept) {
             <div class="em-pdf-element">
 
                 <div class="em-pdf-element-label">
-                    <p>Nom et prénom du futur doctorant</p>
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC_NAME'); ?></p>
                 </div>
 
                 <div class="em-pdf-element-value">
@@ -483,7 +485,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Une équipe de recherche</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -497,7 +499,7 @@ function getDepartment($dept) {
                 <div class="em-pdf-element">
 
                     <div class="em-pdf-element-label">
-                        <p>Nom de l'équipe partenaire</p>
+                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE_NAME'); ?></p>
                     </div>
 
                     <div class="em-pdf-element-value">
@@ -516,7 +518,7 @@ function getDepartment($dept) {
         <div class="em-pdf-element">
 
             <div class="em-pdf-element-label">
-                <p>Un acteur public ou associatif</p>
+                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB'); ?></p>
             </div>
 
             <div class="em-pdf-element-value">
@@ -531,7 +533,7 @@ function getDepartment($dept) {
                 <div class="em-pdf-element">
 
                     <div class="em-pdf-element-label">
-                        <p>Type</p>
+                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_TYPE'); ?></p>
                     </div>
 
                     <div class="em-pdf-element-value">
@@ -546,7 +548,7 @@ function getDepartment($dept) {
                 <div class="em-pdf-element">
 
                     <div class="em-pdf-element-label">
-                        <p>Nom du partenaire</p>
+                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_NAME'); ?></p>
                     </div>
 
                     <div class="em-pdf-element-value">
@@ -564,7 +566,7 @@ function getDepartment($dept) {
 <div class="em-pdf-group breaker">
     <?php if (!empty($files)) : ?>
         <div class="em-pdf-title-div">
-            <h3>Pièces jointes à l'annonce</h3>
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_ATTACHED_FILES'); ?></h3>
         </div>
 
         <?php foreach ($files as $file) : ?>

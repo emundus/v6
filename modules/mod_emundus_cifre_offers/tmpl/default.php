@@ -33,7 +33,7 @@ defined('_JEXEC') or die;
                                     <span class="em-contact-request-offer">
                                         <strong>
                                         <?php if (!empty($offer->titre)) :?>
-                                            "<a href=href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>"><?php echo $offer->titre; ?></a>"
+                                            "<a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>"><?php echo $offer->titre; ?></a>"
                                         <?php else: ?>
                                             <?php echo '"'.JText::_('NO_TITLE').'"'; ?>
                                         <?php endif; ?>
