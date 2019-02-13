@@ -428,7 +428,7 @@ function getDepartment($dept) {
                 foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep) {
                     $departmentArray[] = getDepartment($dep);
                 }
-                echo implode(', ', $departmentArray);
+                echo implode(', ', array_unique($departmentArray));
                 }
                 else {
                     echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
@@ -588,3 +588,5 @@ function getDepartment($dept) {
     <?php endif; ?>
 
 </div>
+
+<button onclick="window.history.back();" >Retour</button>
