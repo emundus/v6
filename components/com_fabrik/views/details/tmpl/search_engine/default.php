@@ -12,6 +12,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+
+$lang = JFactory::getLanguage();
+$extension = 'com_emundus';
+$base_dir = JPATH_SITE . '/components/com_emundus';
+$language_tag =& JFactory::getLanguage()->getTag();
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
+
+
 // If we are not logged in: we cannot access this page and so we are redirected to the login page.
 $user = JFactory::getUser();
 
@@ -34,19 +43,17 @@ $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
 $active = ($form->error != '') ? '' : ' fabrikHide';
 
-if ($this->params->get('show_page_heading', 1)) : ?>
+if ($this->params->get('show_page_heading', 1)) :?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
         <?php echo $this->escape($this->params->get('page_heading')); ?>
     </div>
 <?php endif;
 
-
 $db = JFactory::getDBO();
 
 $query = $db->getquery('true');
 // Get all uploaded files
-$query
-    ->select($db->quoteName(array('eup.filename', 'sa.value')))
+$query->select($db->quoteName(array('eup.filename', 'sa.value')))
     ->from($db->quoteName('#__emundus_uploads', 'eup'))
     ->join('LEFT', $db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON (' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('eup.attachment_id') . ')')
     ->where($db->quoteName('fnum') . ' LIKE "' . $this->data['jos_emundus_recherche___fnum_raw'] . '" AND eup.can_be_viewed = 1');
@@ -55,12 +62,117 @@ $db->setQuery($query);
 
 try {
     $files = $db->loadAssocList();
-} catch (Exection $e) {
+    $query->clear();
+} catch (Exception $e) {
     echo "<pre>";
     var_dump($query->__toString());
     echo "</pre>";
     die();
 }
+
+
+// GET project Departments
+function getDepartment($dept) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('departement_nom'))
+        ->from($db->quoteName('data_departements'))
+        ->where($db->quoteName('departement_id') . ' = ' . $dept);
+
+    $db->setQuery($query);
+    try {
+        return $db->loadResult();
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+// GET the autor's Regions
+function getAuthorRegions($uid) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dr.name'))
+        ->from($db->quoteName('#__emundus_users', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('ur.region'))
+        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+//GET the autor's Departments
+function getAuthorDepartments($uid) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dd.departement_nom'))
+        ->from($db->quoteName('#__emundus_users', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_users_597_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+//GET the project disciplines
+function getProjectDisciplines($fnum) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('d.disciplines'))
+        ->from($db->quoteName('#__emundus_projet', 'ep'))
+        ->leftJoin($db->quoteName('#__emundus_projet_621_repeat', 'pr'). ' ON '.$db->quoteName('pr.parent_id') . ' = ' . $db->quoteName('ep.id'))
+        ->leftJoin($db->quoteName('em_discipline', 'd'). ' ON '.$db->quoteName('d.id') . ' = ' . $db->quoteName('pr.disciplines'))
+        ->where($db->quoteName('ep.fnum') . ' LIKE "' . $fnum. '"');
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+
 
 
 echo $this->plugintop;
@@ -88,15 +200,13 @@ $m_cifre = new EmundusModelCifre();
     </p>
 
     <div class="em-offre-meta">
-        <p>Sujet déposé le <strong
-                    class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong>
-        </p>
-        <?php echo $this->loadTemplate('buttons'); ?>
+        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_SUBJECT_DEPOT'); ?><strong class="em-highlight"><?php echo date('d/m/Y', strtotime($fnumInfos['date_submitted'])); ?></strong></p>
+
     </div>
 
     <!-- Author -->
     <div class="em-offre-author">
-        <h1 class="em-offre-title">Profil du déposant</h1>
+        <h1 class="em-offre-title"><?php echo JText::_('COM_EMUNDUS_FABRIK_SUBJECT_PROFILE'); ?></h1>
         <div class="em-offre-author-profile">
             <div class="em-offre-author-name"><strong>Type : </strong><?php echo $chercheur; ?></div>
         </div>
@@ -121,7 +231,7 @@ $m_cifre = new EmundusModelCifre();
             <?php $laboratoire = $m_cifre->getUserLaboratory($author->id); ?>
             <div class="em-offre-inst">
                 <div class="em-offre-institution">
-                    <strong>Laboratoire : </strong>
+                    <strong>Nom de l'unité de recherche : </strong>
                     <?php
                     if (!empty($laboratoire->website)) {
                         $parse = parse_url($laboratoire->website, PHP_URL_SCHEME) === null ? 'http://' . $laboratoire->website : $laboratoire->website;
@@ -134,16 +244,27 @@ $m_cifre = new EmundusModelCifre();
                     ?>
                 </div>
             </div>
-            <a class="btn btn-default"
-               href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez
-                ici pour plus d'information</a>
+            <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
+
+
+            <?php $ecole_doc = $m_cifre->getDoctorale($author->id); ?>
+                <?php if (!empty($ecole_doc)) :?>
+                    <div class="em-offre-ecole">
+                        <div class="em-offre-ecole-doctorale">
+                            <strong>École doctorale : </strong><?php echo $ecole_doc; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+
+
         <?php elseif ($profile == '1008') : ?>
             <?php
             $institution = $m_cifre->getUserInstitution($author->id);
             ?>
             <div class="em-offre-inst">
                 <div class="em-offre-institution">
-                    <strong>Territoire : </strong>
+                    <strong>Nom : </strong>
                     <?php
                     if (!empty($institution->website)) {
                         $parse = parse_url($institution->website, PHP_URL_SCHEME) === null ? 'http://' . $institution->website : $institution->website;
@@ -156,18 +277,18 @@ $m_cifre = new EmundusModelCifre();
                 </div>
             </div>
             <a class="btn btn-default"
-               href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus
-                d'informations</a>
+               href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
+
+
         <?php endif; ?>
 
         <div class="em-offre-limit-date">
-            <strong>Date de disponibilité
-                : </strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
+            <strong>Date de disponibilité : </strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
         </div>
     </div>
 
     <div class="em-offre">
-        <h1 class="em-offre-title">Le Projet </h1>
+        <h1 class="em-offre-title">Le projet </h1>
 
         <p class="em-offre-subject-title">
             <strong>Titre : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
@@ -181,24 +302,36 @@ $m_cifre = new EmundusModelCifre();
 
         <!-- DISCIPLINES -->
         <div class="em-offre-disciplines">
+
             <div class="em-offre-subtitle">Disciplines sollicitées :</div>
-            <strong class="em-highlight"> <?php echo !empty($this->data['em_discipline___disciplines_raw']) ? is_array($this->data['em_discipline___disciplines_raw']) ? implode('</strong>; <strong class="em-highlight">', $this->data['em_discipline___disciplines_raw']) : $this->data['em_discipline___disciplines_raw'] : '<strong class="em-highlight">Aucune discipline</strong>'; ?></strong>
+            <strong class="em-highlight"><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', array_column(getProjectDisciplines($fnum), 'disciplines')) : "Aucune discipline."; ?> </strong>
         </div>
 
-        <?php if ($profile == '1006') : ?>
+        <?php if ($profile != '1008') : ?>
             <!-- Project context -->
             <p class="em-offre-contexte">
-            <div class="em-offre-subtitle">Enjeu et actualité du sujet :
+                <div class="em-offre-subtitle">Enjeu et actualité du sujet :
+                </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
+            </p>
+
+        <?php else : ?>
+            <!-- Project context -->
+            <p class="em-offre-contexte">
+            <div class="em-offre-subtitle">Territoire :
             </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
             </p>
         <?php endif; ?>
+
+
+
+
 
         <!-- Project question -->
         <?php
         if ($profile == '1006')
             $questionText = 'Problématique :';
         elseif ($profile == '1007')
-            $questionText = 'Problématique de recherche :';
+            $questionText = 'Problématique :';
         elseif ($profile == '1008')
             $questionText = 'Grand défi :';
         ?>
@@ -206,15 +339,44 @@ $m_cifre = new EmundusModelCifre();
         <div class="em-offre-subtitle"><?php echo $questionText; ?></div><?php echo $this->data['jos_emundus_projet___question_raw'][0]; ?>
         </p>
 
-        <?php if ($profile == '1006') : ?>
             <!-- Project methodology -->
             <p class="em-offre-methodologie">
             <div class="em-offre-subtitle">Méthodologie proposée :
             </div><?php echo $this->data['jos_emundus_projet___methodologie_raw'][0]; ?>
             </p>
-        <?php endif; ?>
+
+
+            <div class="em-regions">
+                <strong>Régions : </strong>
+                    <?php
+                        if(!empty($regions))
+                            echo implode(', ', $regions);
+                        else
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+
+                    ?>
+            </div>
+
+            <div class="em-departments">
+                <strong>Départements : </strong>
+                    <?php
+                        if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
+                            $departmentArray= array();
+                            foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
+                            {
+                                $departmentArray[] = getDepartment($dep);
+                            }
+
+                            echo implode(', ', $departmentArray);
+                        }
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                        }
+                    ?>
+            </div>
 
     </div>
+
 
     <div class="em-partenaires">
         <h1 class="em-partenaires-title">Les partenaires recherchés </h1>
@@ -222,35 +384,33 @@ $m_cifre = new EmundusModelCifre();
         <?php if ($profile != '1006') : ?>
             <!-- Have futur docs -->
             <p class="em-partenaires-futur-doc">
-                <strong>Un future doctorant
-                    : </strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
+                <strong>Un futur doctorant : </strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
             </p>
 
             <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-futur-doc-name">
-                    <strong>Nom et prénom du future doctorant :
-                        <strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
+                    <strong>Nom et prénom du futur doctorant :</strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
                 </p>
             <?php endif; ?>
 
         <?php endif; ?>
 
-        <p class="em-partenaires-equipe-recherche">
-            <strong>Une équipe de recherche
-                : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno"]; ?>
-        </p>
-
-        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_codirection_yesno_raw"] == 0) : ?>
-            <p class="em-partenaires-equipe-recherche-name">
-                <strong>Nom de l'équipe partenaire
-                    : </strong><?php echo $this->data["jos_emundus_recherche___equipe_codirection_nom_du_laboratoire"]; ?>
+        <?php if ($profile != '1007') :?>
+            <p class="em-partenaires-equipe-recherche">
+                <strong>Une équipe de recherche : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?>
             </p>
+            <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno_raw"] == 0) : ?>
+                <p class="em-partenaires-equipe-recherche-name">
+                    <strong>Nom de l'équipe partenaire : </strong><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?>
+                </p>
+            <?php endif; ?>
         <?php endif; ?>
+
+
 
         <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
             <p class="em-partenaires-acteur">
-                <strong>Un acteur public ou associatif
-                    : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
+                <strong>Un acteur public ou associatif : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
             </p>
 
             <p class="em-partenaires-acteur-type">
@@ -259,8 +419,7 @@ $m_cifre = new EmundusModelCifre();
 
             <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-acteur-type">
-                    <strong>Nom du partenaire
-                        : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
+                    <strong>Nom du partenaire : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
                 </p>
             <?php endif; ?>
         <?php endif; ?>
@@ -274,8 +433,7 @@ $m_cifre = new EmundusModelCifre();
         <?php foreach ($files as $file) : ?>
 
             <p class="em-attached-element">
-            <div class="em-partenaires-subtitle"><?php echo $file["value"] . ' : '; ?></div><a target="_blank"
-                                                                                               href="<?php echo JPATH_BASE . DS . 'images' . DS . 'emundus' . DS . $this->data["jos_emundus_campaign_candidature___applicant_id"][0] . DS . $file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
+            <div class="em-partenaires-subtitle"><?php echo $file["value"] . ' : '; ?></div><a target="_blank" href="<?php echo JURI::root() . DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $this->data["jos_emundus_campaign_candidature___applicant_id"][0] . DS . $file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
             </p>
 
         <?php endforeach; ?>
@@ -285,162 +443,176 @@ $m_cifre = new EmundusModelCifre();
     <!-- Contact information -->
     <div class="em-offre-contact">
 
-        <?php
-        // Log the action of opening the persons form.
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-        EmundusModelLogs::log($user->id, $author->id, $fnum, 33, 'r', 'COM_EMUNDUS_LOGS_OPEN_OFFER');
+<?php
+// Log the action of opening the persons form.
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+EmundusModelLogs::log($user->id, $author->id, $fnum, 33, 'r', 'COM_EMUNDUS_LOGS_OPEN_OFFER');
 
-        if ((isset($this->data['Status']) && $this->data['Status'][0] == 2) || (isset($this->data['jos_emundus_campaign_candidature___status']) && $this->data['jos_emundus_campaign_candidature___status'][0] == 2)) {
-            $status = 2;
-        } else {
-            $status = 1;
-        }
+if ((isset($this->data['Status']) && $this->data['Status'][0] == 2) || (isset($this->data['jos_emundus_campaign_candidature___status']) && $this->data['jos_emundus_campaign_candidature___status'][0] == 2)) {
+    $status = 2;
+} else {
+    $status = 1;
+}
 
-        if ($status === 2) :?>
+if ($status === 2) :?>
 
-            <div class="em-search-item-action">
-                <div id="em-search-item-action-button">
-                    <button type="button" class="btn btn-default" disabled> Offre clôturée</button>
-                </div>
-            </div>
+    <div class="em-search-item-action">
+        <div id="em-search-item-action-button">
+            <button type="button" class="btn btn-default" disabled> Offre clôturée</button>
+        </div>
+    </div>
 
-        <?php elseif ($this->data['jos_emundus_campaign_candidature___applicant_id'][0] == JFactory::getUser()->id) : ?>
+<?php elseif ($this->data['jos_emundus_campaign_candidature___applicant_id'][0] == JFactory::getUser()->id) : ?>
 
-            <?php if ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3)) : ?>
+    <?php if ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3)) : ?>
 
-                <div class="em-search-item-action">
-                    <div id="em-search-item-action-button">
-                        <button type="button" class="btn btn-default" disabled>Offre en attente de validation</button>
-                    </div>
-                </div>
-
-            <?php else : ?>
-
-                <div class="em-search-item-action">
-                    <div id="em-search-item-action-button">
-                        <button type="button" class="btn btn-default" disabled>Offre déposée par vous-même</button>
-                    </div>
-                </div>
-
-            <?php endif; ?>
-
-        <?php else : ?>
-
-        <?php
-        // Action button types:
-        // // NO BUTTON : if the offer belongs to the user.
-        // // ENTREZ EN CONTACT : If the user has not already contacted.
-        // // REPONDRE : If the user has already been contacted for this offer but has not answered.
-        // // RELANCE : If the user has contacted but not been answered yet.
-        // // BREAK UP : If the user is collaborating with the other.
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'cifre.php');
-        $c_ciffe = new EmundusControllerCifre();
-        $action_button = $c_ciffe->getActionButton($fnum);
-        ?>
-
-        <!-- Button used for matching with the offer -->
         <div class="em-search-item-action">
-
-            <span class="alert alert-danger hidden" id="em-action-text"></span>
-
             <div id="em-search-item-action-button">
+                <button type="button" class="btn btn-default" disabled>Offre en attente de validation</button>
+            </div>
+        </div>
 
-                <?php if ($action_button == 'contact') : ?>
+    <?php else : ?>
 
-                    <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
+        <div class="em-search-item-action">
+            <div id="em-search-item-action-button">
+                <button type="button" class="btn btn-default" disabled>Offre déposée par vous-même</button>
+            </div>
+        </div>
 
-                    <button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal"
-                            data-target="#contactModal">
-                        Entrer en contact
-                    </button>
+    <?php endif; ?>
 
-                    <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Demande de contact</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
+<?php else : ?>
 
-                                    <?php if ($user->profile == '1006') : ?>
-                                        <p>Pourquoi ce projet vous semble-t-il intéressant et la structure que vous contactez pertinente pour le traiter ? Quelles orientations méthodologiques et disciplinaires envisagez-vous ?</p>
-                                            <textarea id="em-contact-message" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
-                                        <p>Pourquoi souhaitez-vous faire une thèse Cifre ? En quoi ce projet est-il en adéquation avec votre parcours académique et professionnel (ce que vous avez fait avant, ce que vous souhaitez faire après) ? </p>
-                                            <textarea id="em-contact-motivation" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
-                                        <?php if (!empty($offers)) : ?>
-                                            <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>
-                                            <select id="em-join-offer">
-                                                <option value="">Je ne souhaite pas joindre mes offres.</option>
-                                                <?php foreach ($offers as $offer) : ?>
-                                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        <?php endif; ?>
+    <?php
+    // Action button types:
+    // // NO BUTTON : if the offer belongs to the user.
+    // // ENTREZ EN CONTACT : If the user has not already contacted.
+    // // REPONDRE : If the user has already been contacted for this offer but has not answered.
+    // // RELANCE : If the user has contacted but not been answered yet.
+    // // BREAK UP : If the user is collaborating with the other.
+    require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'cifre.php');
+    $c_ciffe = new EmundusControllerCifre();
+    $action_button = $c_ciffe->getActionButton($fnum);
+    ?>
 
-                                        <hr>
-                                        <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
-                                        <!-- Upload a file from computer -->
-                                        <div id="em-attachment-list">
-                                            <div id="cv-upload_file">
-                                                <h4 id="em-filename">Ajoutez votre CV au format .pdf (obligatoire)</h4>
-                                                <label for="em-cv_to_upload" accept="application/pdf"
-                                                       id="em-cv_to_upload_label">
-                                                    <input type="file" id="em-cv_to_upload">
-                                                </label>
-                                            </div>
+    <!-- Button used for matching with the offer -->
+    <div class="em-search-item-action">
 
-                                            <span class="input-group-btn">
+    <span class="alert alert-danger hidden" id="em-action-text"></span>
+
+    <div id="em-search-item-action-button">
+
+        <?php if ($action_button == 'contact') : ?>
+
+    <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
+
+        <button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal"
+                data-target="#contactModal">
+            Entrer en contact
+        </button>
+
+        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Demande de contact</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <?php if ($user->profile == '1006') : ?>
+                        <p>Pourquoi ce projet vous semble-t-il intéressant et la structure que vous contactez pertinente pour le traiter ? Quelles orientations méthodologiques et disciplinaires envisagez-vous ?</p>
+                        <textarea id="em-contact-message" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
+                        <p>Pourquoi souhaitez-vous faire une thèse Cifre ? En quoi ce projet est-il en adéquation avec votre parcours académique et professionnel (ce que vous avez fait avant, ce que vous souhaitez faire après) ? </p>
+                        <textarea id="em-contact-motivation" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
+                        <?php if (!empty($offers)) : ?>
+                            <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>
+                            <select id="em-join-offer">
+                                <option value="">Je ne souhaite pas joindre mes offres.</option>
+                                <?php foreach ($offers as $offer) : ?>
+                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php endif; ?>
+
+                        <hr>
+                        <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                        <!-- Upload a file from computer -->
+                        <div id="em-attachment-list">
+                            <div id="cv-upload_file">
+                                <h4 id="em-filename">Ajoutez votre CV au format .pdf (obligatoire)</h4>
+                                <label for="em-cv_to_upload" accept="application/pdf"
+                                       id="em-cv_to_upload_label">
+                                    <input type="file" id="em-cv_to_upload">
+                                </label>
+                                <span className="file-name" id="cv-file-name"></span>
+                            </div>
+
+                            <span class="input-group-btn">
                                     <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;"
                                        onClick="cvAddFile();">Joindre</a>
                                 </span>
 
-                                    <?php else : ?>
+                            <div id="doc-upload_file">
+                                <h4 id="em-filename">Ajouter un document (facultatif)</h4>
+                                <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                                <label for="em-doc_to_upload" id="em-doc_to_upload_label">
+                                    <input type="file" id="em-doc_to_upload">
+                                </label>
+                                <span className="file-name" id="other-doc-file-name"></span>
+                            </div>
 
-                                        <p>Présentez-vous et expliquez en quoi ce projet et la personne que vous contactez sont en adéquation avec ce que vous faites ou souhaitez faire dans votre structure.</p>
-                                        <textarea id="em-contact-message" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>
-                                        <?php if (!empty($offers)) : ?>
-                                            <p>Vous pouvez joindre une annonce que vous avez publiée sur la plateforme (facultatif).</p>
-                                            <select id="em-join-offer">
-                                                <option value="">Je ne souhaite pas joindre mes offres.</option>
-                                                <?php foreach ($offers as $offer) : ?>
-                                                    <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        <?php endif; ?>
-
-                                        <hr>
-                                        <!-- Upload a file from computer -->
-                                        <div id="em-attachment-list">
-                                            <div id="doc-upload_file">
-                                                <h4 id="em-filename">Ajouter un document (facultatif)</h4>
-                                                <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
-                                                <label for="em-doc_to_upload" id="em-doc_to_upload_label">
-                                                    <input type="file" id="em-doc_to_upload">
-                                                </label>
-                                            </div>
-
-                                            <span class="input-group-btn">
+                            <span class="input-group-btn">
                                         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"
                                            style="top:13px;" onClick="docAddFile();">Joindre</a>
                                     </span>
-                                        </div>
-                                        <hr>
 
-                                    <?php endif; ?>
+                            <?php else : ?>
+
+                            <p>Présentez-vous et expliquez en quoi ce projet et la personne que vous contactez sont en adéquation avec ce que vous faites ou souhaitez faire dans votre structure.</p>
+                            <textarea id="em-contact-message" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>
+                            <?php if (!empty($offers)) : ?>
+                                <p>Vous pouvez joindre une annonce que vous avez publiée sur la plateforme (facultatif).</p>
+                                <select id="em-join-offer">
+                                    <option value="">Je ne souhaite pas joindre mes offres.</option>
+                                    <?php foreach ($offers as $offer) : ?>
+                                        <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php endif; ?>
+
+                            <hr>
+                            <!-- Upload a file from computer -->
+                            <div id="em-attachment-list">
+                                <div id="doc-upload_file">
+                                    <h4 id="em-filename">Ajouter un document (facultatif)</h4>
+                                    <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                                    <label for="em-doc_to_upload" id="em-doc_to_upload_label">
+                                        <input type="file" id="em-doc_to_upload">
+                                    </label>
+                                    <span className="file-name" id="other-doc-file-name"></span>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary" data-dismiss="modal"
-                                            onclick="actionButton('contact')">Envoyer la demande de contact
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler
-                                    </button>
-                                </div>
+
+                                <span class="input-group-btn">
+                                        <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"
+                                           style="top:13px;" onClick="docAddFile();">Joindre</a>
+                                    </span>
+
+                                <?php endif; ?>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal"
+                                        onclick="actionButton('contact')">Envoyer la demande de contact
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler
+                                </button>
                             </div>
                         </div>
                     </div>
+                </div>
 
                 <?php elseif ($action_button == 'reply') : ?>
                     <button type="button" class="btn btn-primary" onclick="actionButton('reply')">
@@ -466,6 +638,7 @@ $m_cifre = new EmundusModelCifre();
 
             </div>
         </div>
+        <?php echo $this->loadTemplate('buttons'); ?>
     </div>
 
     <div class="em-modal-sending-emails" id="em-modal-sending-emails">
@@ -474,6 +647,15 @@ $m_cifre = new EmundusModelCifre();
     </div>
 
     <script>
+
+
+        jQuery('#em-doc_to_upload').on('change',function(evt) {
+            jQuery('#other-doc-file-name').html(evt.target.files[0].name);
+        });
+
+        jQuery('#cv_to_upload').on('change',function(evt) {
+            jQuery('#cv-file-name').html(evt.target.files[0].name);
+        });
 
         function actionButton(action) {
 
@@ -508,10 +690,6 @@ $m_cifre = new EmundusModelCifre();
                 var CV = jQuery('#cv-upload_file').find('.hidden').text();
                 if (CV != null && CV != '' && typeof CV != 'undefined')
                     data.CV = CV;
-
-                var ML = jQuery('#lm-upload_file').find('.hidden').text();
-                if (ML != null && ML != '' && typeof ML != 'undefined')
-                    data.ML = ML;
 
                 var DOC = jQuery('#doc-upload_file').find('.hidden').text();
                 if (DOC != null && DOC != '' && typeof DOC != 'undefined')
@@ -594,69 +772,83 @@ $m_cifre = new EmundusModelCifre();
                             '                        </button>' +
                             '                    </div>' +
                             '                    <div class="modal-body">' +
-                           <?php if ($user->profile == '1006') : ?>
+                            <?php if ($user->profile == '1006') : ?>
                             '             <p>Pourquoi ce projet vous semble-t-il intéressant et la structure que vous contactez pertinente pour le traiter ? Quelles orientations méthodologiques et disciplinaires envisagez-vous ?</p>' +
                             '                <textarea id="em-contact-message" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>' +
                             '            <p>Pourquoi souhaitez-vous faire une thèse Cifre ? En quoi ce projet est-il en adéquation avec votre parcours académique et professionnel (ce que vous avez fait avant, ce que vous souhaitez faire après) ? </p>' +
                             '                <textarea id="em-contact-motivation" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>' +
-                                        <?php if (!empty($offers)) : ?>
-                           '                 <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>' +
-                           '                 <select id="em-join-offer">' +
-                           '                     <option value="">Je ne souhaite pas joindre mes offres.</option>' +
-                                                <?php foreach ($offers as $offer) : ?>
-                           '                         <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
-                                                <?php endforeach; ?>
+                            <?php if (!empty($offers)) : ?>
+                            '                 <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>' +
+                            '                 <select id="em-join-offer">' +
+                            '                     <option value="">Je ne souhaite pas joindre mes offres.</option>' +
+                            <?php foreach ($offers as $offer) : ?>
+                            '                         <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
+                            <?php endforeach; ?>
                             '                </select>' +
-                                        <?php endif; ?>
+                            <?php endif; ?>
 
                             '            <hr>' +
                             '            <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
                             '            <div id="em-attachment-list">' +
                             '                <div id="cv-upload_file">' +
                             '                    <h4 id="em-filename">Ajoutez votre CV au format .pdf (obligatoire)</h4>' +
-                           '                     <label for="em-cv_to_upload" accept="application/pdf"' +
-                           '                            id="em-cv_to_upload_label">' +
-                           '                         <input type="file" id="em-cv_to_upload">' +
-                           '                    </label>' +
+                            '                     <label for="em-cv_to_upload" accept="application/pdf"' +
+                            '                            id="em-cv_to_upload_label">' +
+                            '                         <input type="file" id="em-cv_to_upload">' +
+                            '                    </label>' +
+                            '                   <span className="file-name" id="cv-file-name"></span>' +
                             '                </div>' +
 
-                             '               <span class="input-group-btn">' +
-                             '       <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;"' +
+                            '               <span class="input-group-btn">' +
+                            '       <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;"' +
                             '           onClick="cvAddFile();">Joindre</a>' +
-                              '  </span>' +
+                            '  </span>' +
 
-                                    <?php else : ?>
+                            '   <div id="doc-upload_file">' +
+                            '                 <h4 id="em-filename">Ajouter un document (facultatif)</h4>' +
+                            '                 <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
+                            '                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">' +
+                            '                     <input type="file" id="em-doc_to_upload">' +
+                            '                 </label>' +
+                            '                   <span className="file-name" id="other-doc-file-name"></span>' +
+                            '             </div>' +
 
-                              '          <p>Présentez-vous et expliquez en quoi ce projet et la personne que vous contactez sont en adéquation avec ce que vous faites ou souhaitez faire dans votre structure.</p>' +
-                              '          <textarea id="em-contact-message" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>' +
-                                        <?php if (!empty($offers)) : ?>
-                              '              <p>Vous pouvez joindre une annonce que vous avez publiée sur la plateforme (facultatif).</p>' +
-                              '              <select id="em-join-offer">' +
-                              '                  <option value="">Je ne souhaite pas joindre mes offres.</option>' +
-                                                <?php foreach ($offers as $offer) : ?>
-                              '                      <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
-                                                <?php endforeach; ?>
-                              '              </select>' +
-                                        <?php endif; ?>
+                            '             <span class="input-group-btn">' +
+                            '         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"' +
+                            '            style="top:13px;" onClick="docAddFile();">Joindre</a>' +
+                            '     </span>' +
 
-                               '         <hr>' +
-                               '         <div id="em-attachment-list">' +
-                               '             <div id="doc-upload_file">' +
-                               '                 <h4 id="em-filename">Ajouter un document (facultatif)</h4>' +
-                               '                 <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
-                               '                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">' +
-                               '                     <input type="file" id="em-doc_to_upload">' +
-                               '                 </label>' +
-                               '             </div>' +
+                            <?php else : ?>
 
-                               '             <span class="input-group-btn">' +
-                               '         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"' +
-                               '            style="top:13px;" onClick="docAddFile();">Joindre</a>' +
-                               '     </span>' +
-                               '         </div>' +
-                                '        <hr>' +
+                            '          <p>Présentez-vous et expliquez en quoi ce projet et la personne que vous contactez sont en adéquation avec ce que vous faites ou souhaitez faire dans votre structure.</p>' +
+                            '          <textarea id="em-contact-message" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>' +
+                            <?php if (!empty($offers)) : ?>
+                            '              <p>Vous pouvez joindre une annonce que vous avez publiée sur la plateforme (facultatif).</p>' +
+                            '              <select id="em-join-offer">' +
+                            '                  <option value="">Je ne souhaite pas joindre mes offres.</option>' +
+                            <?php foreach ($offers as $offer) : ?>
+                            '                      <option value="<?php echo $offer->fnum; ?>"><?php echo str_replace("'", "\\'", $offer->titre); ?></option>' +
+                            <?php endforeach; ?>
+                            '              </select>' +
+                            <?php endif; ?>
 
-                                    <?php endif; ?>
+                            '         <hr>' +
+                            '         <div id="em-attachment-list">' +
+                            '             <div id="doc-upload_file">' +
+                            '                 <h4 id="em-filename">Ajouter un document (facultatif)</h4>' +
+                            '                 <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
+                            '                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">' +
+                            '                     <input type="file" id="em-doc_to_upload">' +
+                            '                 </label>' +
+                            '                   <span className="file-name" id="other-doc-file-name"></span>' +
+                            '             </div>' +
+
+                            '             <span class="input-group-btn">' +
+                            '         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"' +
+                            '            style="top:13px;" onClick="docAddFile();">Joindre</a>' +
+                            '     </span>' +
+
+                            <?php endif; ?>
                             '                    </div>' +
                             '                    <div class="modal-footer">' +
                             '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Envoyer la demande de contact</button>' +
@@ -701,17 +893,6 @@ $m_cifre = new EmundusModelCifre();
             uploaddoc.doUpload();
         }
 
-        // Add file to the list being attached.
-        function lmAddFile() {
-            // We need to get the file uploaded by the user.
-            var lm = jQuery("#em-lm_to_upload")[0].files[0];
-            var lmId = jQuery("#lm-upload_file");
-            var uploadlm = new Upload(lm, lmId);
-
-            // Verification of style size and type can be done here.
-            uploadlm.doUpload();
-        }
-
         // Helper function for uploading a file via AJAX.
         var Upload = function (file, id) {
             this.file = file;
@@ -729,7 +910,6 @@ $m_cifre = new EmundusModelCifre();
         };
 
         Upload.prototype.doUpload = function () {
-
             var that = this;
             var formData = new FormData();
 

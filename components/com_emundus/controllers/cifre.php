@@ -37,7 +37,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-
 		// Load class variables
 		$this->user = JFactory::getSession()->get('emundusUser');
 		$this->m_cifre = new EmundusModelCifre();
@@ -57,8 +56,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 	public function getActionButton($fnum) {
 
 		// If the user is looking at his own cifre offer, no button.
-		if (empty($fnum) || $this->user->id == (int)substr($fnum, -7))
+		if (empty($fnum) || $this->user->id == (int)substr($fnum, -7)) {
 			return false;
+		}
 
 		// The contact status is the 'level' of link they have together.
 		// // -1 = user has already been contacted by the other.
@@ -67,15 +67,15 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$contact_status = $this->m_cifre->getContactStatus($this->user->id, $fnum);
 
 		// The actions of the button are dependent on the different conditions.
-		if ($contact_status == -1)
+		if ($contact_status == -1) {
 			return 'reply';
-		elseif ($contact_status == 1)
+		} elseif ($contact_status == 1) {
 			return 'retry';
-		elseif ($contact_status == 2)
+		} elseif ($contact_status == 2) {
 			return 'breakup';
-		else
+		} else {
 			return 'contact';
-
+		}
 	}
 
 	/**
@@ -155,14 +155,13 @@ class EmundusControllerCifre extends JControllerLegacy {
 			if (!empty($linkedOffer)) {
 				
 				$linkedOffer = $this->m_cifre->getOffer($linkedOffer);
-				$url = JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$linkedOffer->search_engine_page);
 				$post = [
 					'USER_NAME' => $this->user->name,
 					'LINKED_OFFER_FNUM' => $linkedOffer->fnum,
 					'LINKED_OFFER_NAME' => $linkedOffer->titre,
 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_NAME' => $offerInformation->titre,
-					'LINKED_OFFER_ID' => "<a href ='" . $url . "'>Voir offre</a>",
+					'LINKED_OFFER_ID' => $linkedOffer->search_engine_page,
 					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
 				];
 
@@ -179,6 +178,14 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 				$email_to_send = 71;
 			}
+
+            // Send a chat message to the user in order to start a conversation thread.
+            $m_messages = new EmundusModelMessages();
+            $link = !empty($linkedOffer) ? JText::_('COM_EMUNDUS_CIFRE_DEMANDE_CONTACT_MESSAGE_LINK').'"<a href="'.JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$linkedOffer->search_engine_page).'">'.$linkedOffer->titre.'</a>"' : '';
+			if(!$m_messages->sendMessage($fnum['applicant_id'],'<p>' . $this->user->name .' '. JText::_('COM_EMUNDUS_CIFRE_DEMANDE_CONTACT_MESSAGE') . '"<a href="'.JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offerInformation->search_engine_page).'">'.$offerInformation->titre.'</a>"'.$link.'</p>', $this->user->id)) {
+                echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
+                exit;
+            }
 			
 			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post, $toAttach, $bcc)]);
 			exit;
@@ -715,4 +722,25 @@ class EmundusControllerCifre extends JControllerLegacy {
 			exit;
 		}
 	}
+
+	public function getdepartmentsbyregion() {
+        try {
+            $application = JFactory::getApplication();
+        } catch (Exception $e) {
+            JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
+            echo json_encode((object) ['status' => false, 'msg' => 'Internal server error']);
+            exit;
+        }
+
+        $jinput = $application->input;
+        $id = $jinput->post->get('id', null);
+
+        $this->m_cifre->getDepartmentsByRegion($id);
+
+
+
+
+
+
+    }
 }

@@ -8,15 +8,27 @@
 
 // No direct access.
 defined('_JEXEC') or die;
-
+$notif = 0;
 // Note. It is important to remove spaces between elements.
 ?>
 
 
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="messageDropdown" style="float: right;">
+
     <div class="em-message-dropdown-button" id="messageDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <i class="big circular envelope outline icon" id="messageDropdownIcon"></i>
+        <?php if(!empty($message_contacts)) :?>
+
+            <?php foreach ($message_contacts as $message_notif) :?>
+                <?php if ($message_notif->state == '1')
+                    $notif= $notif+1;
+                ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if($notif > 0) :?>
+            <div id="new-message-notif"><?php echo $notif; ?></div>
+        <?php endif; ?>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="em-message-list">
         <?php if(empty($message_contacts)) :?>
@@ -47,7 +59,7 @@ defined('_JEXEC') or die;
 
             <?php if ($message_contact->user_id_from == $user->id) :?>
                 <li id="em-contact-<?php echo $message_contact->user_id_to ; ?>">
-                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_from ; ?>">
+                    <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_to ; ?>">
                     <?php if ($message_contact->photo_to == null) :?>
                         <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_to) ?>"></div>
                     <?php endif; ?>

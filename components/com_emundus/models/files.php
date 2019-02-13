@@ -1840,26 +1840,51 @@ if (JFactory::getUser()->id == 63)
      * @param $state
      * @return bool|mixed
      */
-    public function updateState($fnums, $state)
-    {
-        try
-        {
-            $db = $this->getDbo();
-            foreach ($fnums as $fnum)
-            {
-                $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
+    public function updateState($fnums, $state) {
+
+	    $db = $this->getDbo();
+
+	    $query = $db->getQuery(true);
+	    $query->select($db->quoteName('profile'))
+		    ->from($db->quoteName('#__emundus_setup_status'))
+		    ->where($db->quoteName('step').' = '.$state);
+	    $db->setQuery($query);
+
+	    try {
+	    	$profile = $db->loadResult();
+	    } catch (Exception $e) {
+	    	$profile = null;
+	    }
+
+    	try {
+
+            foreach ($fnums as $fnum) {
+
+            	$query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
                 $db->setQuery($query);
                 $res = $db->execute();
+
+                if (!empty($profile)) {
+
+                	$query = $db->getQuery(true);
+                	$query->update($db->quoteName('#__emundus_users'))
+		                ->set($db->quoteName('profile').' = '.$profile)
+		                ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+                	$db->setQuery($query);
+                	$db->execute();
+
+                }
+
             }
             return $res;
-        }
-        catch (Exception $e)
-        {
+
+    	} catch (Exception $e) {
+
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
-        }
 
+    	}
     }
     /**
      * @param $fnums
@@ -3124,6 +3149,44 @@ die();*/
         {
             echo $e->getMessage();
         }
+    }
+
+
+	/**
+	 * Gets the user's birthdate.
+	 *
+	 * @param null   $fnum The file number to get the birth date from.
+	 * @param string $format See php.net/date
+	 * @param bool   $age If true then we also return the current age.
+	 *
+	 * @return null
+	 */
+    public function getBirthdate($fnum = null, $format = 'd-m-Y', $age = false) {
+
+    	$db = JFactory::getDbo();
+    	$query = $db->getQuery(true);
+
+    	$query->select($db->quoteName('birth_date'))->from($db->quoteName('#__emundus_personal_detail'))->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+    	$db->setQuery($query);
+
+    	try {
+    		$datetime = new DateTime($db->loadResult());
+    		if (!$age) {
+			    $birthdate = $datetime->format($format);
+		    } else {
+
+    			$birthdate = new stdClass();
+			    $birthdate->date = $datetime->format($format);
+
+			    $now = new DateTime();
+			    $interval = $now->diff($datetime);
+			    $birthdate->age = $interval->y;
+		    }
+	    } catch (Exception $e) {
+    		return null;
+	    }
+
+	    return $birthdate;
     }
 
 }

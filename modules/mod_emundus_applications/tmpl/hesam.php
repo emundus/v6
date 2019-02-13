@@ -18,8 +18,8 @@ $uri = JUri::getInstance();
     <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus"></span> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
 
-
 <?php if (!empty($applications)) : ?>
+
     <div class="em-hesam-applications">
         <?php foreach ($applications as $application) : ?>
             <div class="col-md-4 em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
@@ -46,9 +46,9 @@ $uri = JUri::getInstance();
                             <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
                         <?php endif; ?>
 
-                        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'les-offres/consultez-les-offres/details/299/'. modemundusApplicationsHelper::getSearchEngineId($application->fnum) .'?format=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i></a>
 
-                        <?php if ($application->status <= 1) : ?>
+                        <?php if ($application->status != 3) : ?>
                             <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                         <?php endif; ?>
                     </div>
@@ -67,9 +67,9 @@ $uri = JUri::getInstance();
 
                     <div class="col-md-12 em-bottom-space em-interested">
                         <?php if (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) == 1) :?>
-                            <p>Une personne est intéressée par cette offre.</p>
+                            <p><?php echo JText::_('MOD_EMUNDUS_ONE_PERSON'); ?></p>
                         <?php elseif (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) > 1) :?>
-                            <p><?php echo modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum); ?> personnes sont intéressées par cette offre.</p>
+                            <p><?php echo modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum); ?><?php echo JText::_('MOD_EMUNDUS_MORE_ONE_PERSON'); ?></p>
                         <?php endif; ?>
                     </div>
                 </div>

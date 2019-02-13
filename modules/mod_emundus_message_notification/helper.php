@@ -56,17 +56,20 @@ class modEmundusMessageNotificationHelper {
                 LEFT JOIN jos_emundus_uploads uploadTo ON uploadTo.user_id = user_to.id AND uploadTo.attachment_id = 10
                 LEFT JOIN jos_emundus_uploads uploadFrom ON uploadFrom.user_id = user_from.id AND uploadFrom.attachment_id = 10
               
-                where (jos_messages.folder_id = 2) 
-                AND(least(`user_id_from`, `user_id_to`), greatest(`user_id_from`, `user_id_to`), `date_time`)       
+                 
+                WHERE(least(`user_id_from`, `user_id_to`), greatest(`user_id_from`, `user_id_to`), `date_time`)       
                 in 
                 (
                     select 
                        least(`user_id_from`, `user_id_to`) as x, greatest(`user_id_from`, `user_id_to`) as y, 
                        max(`date_time`) as msg_time
                     from jos_messages 
+                    WHERE (jos_messages.folder_id = 2)
+                    AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
                     group by x, y
                 )
                 AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
+                AND (jos_messages.folder_id = 2)
                 ORDER BY jos_messages.date_time DESC 
                 LIMIT 50";
 
