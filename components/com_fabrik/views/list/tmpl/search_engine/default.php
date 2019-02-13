@@ -182,7 +182,12 @@ function getActeurDepartments($fnum) {
 
 							else {
 							    $departments =  array_unique(array_column(getActeurDepartments($d["jos_emundus_recherche___fnum_raw"]), 'departement_nom'));
-                                $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
+                                if (sizeof($departments) > 8) {
+                                    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)) . ' ... ';
+                                }
+                                else {
+                                    $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                }
                             }
 
 
