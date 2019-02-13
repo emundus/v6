@@ -130,7 +130,7 @@ try {
 ?>
 
 
-
+<button onclick="window.history.back();" >Retour</button>
 <div class="em-pdf-group">
     <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
          width="252" height="90">
@@ -239,33 +239,7 @@ try {
 
     </div>
 
-    <?php if(!empty($user_to[0]->email)) :?>
-    <div class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p><?php echo JText::_('EMAIL_FORM'); ?></p>
-        </div>
-
-        <div class="em-pdf-element-value">
-            <p><a href="mailto:<?php echo $user_to[0]->email; ?>"><?php echo $user_to[0]->email; ?></a></p>
-        </div>
-
-    </div>
-    <?php endif; ?>
-
-    <?php if (!empty($telephone)) :?>
-        <div class="em-pdf-element">
-
-            <div class="em-pdf-element-label">
-                <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_NUMBER'); ?></p>
-            </div>
-
-            <div class="em-pdf-element-value">
-                <p><?php echo $telephone; ?></p>
-            </div>
-
-        </div>
-    <?php endif; ?>
 
 </div>
 
@@ -321,20 +295,6 @@ try {
         </div>
 
     </div>
-
-    <?php if(!empty($user_from[0]->email)) :?>
-        <div class="em-pdf-element">
-
-            <div class="em-pdf-element-label">
-                <p><?php echo JText::_('EMAIL_FORM'); ?></p>
-            </div>
-
-            <div class="em-pdf-element-value">
-                <p><a href="mailto:<?php echo $user_from[0]->email; ?>"><?php echo $user_from[0]->email; ?></a></p>
-            </div>
-
-        </div>
-    <?php endif; ?>
 
     <?php if (!empty($this->data["jos_emundus_cifre_links___fnum_from_raw"])) :?>
         <div class="em-pdf-element">
@@ -433,4 +393,3 @@ try {
     <?php endif; ?>
 </div>
 
-<button onclick="window.history.back();" >Retour</button>

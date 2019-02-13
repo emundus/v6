@@ -153,7 +153,7 @@ function getActeurDepartments($fnum) {
 }
 ?>
 
-
+<button onclick="window.history.back();" >Retour</button>
 <div class="em-pdf-group">
     <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
          width="252" height="90">
@@ -466,20 +466,25 @@ function getActeurDepartments($fnum) {
 
         <div class="em-pdf-element-value">
             <p>
-                <?php 
-                    if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
-                        echo !empty($regions) ? implode(', ', array_unique($regions)) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
-                    }
-                    else {
-                        $regions = getActeurRegions($fnum);
-                        if (array_filter(array_column($regions, 'name'))) {
-                            echo implode(', ', array_unique(array_column($regions, 'name')));
+                <?php
+                    if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                        if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
+                            echo !empty($regions) ? implode(', ', array_unique($regions)) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
                         }
                         else {
-                            echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                            $regions = getActeurRegions($fnum);
+                            if (array_filter(array_column($regions, 'name'))) {
+                                echo implode(', ', array_unique(array_column($regions, 'name')));
+                            }
+                            else {
+                                echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                            }
                         }
                     }
-                        
+                    else {
+                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
+                    }
+
                 ?>
             </p>
         </div>
@@ -494,28 +499,32 @@ function getActeurDepartments($fnum) {
 
         <div class="em-pdf-element-value">
             <p><?php
-                if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
-                    if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
-                        $departmentArray = array();
-                        foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep) {
-                            $departmentArray[] = getDepartment($dep);
+                if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                    if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
+                        if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
+                            $departmentArray = array();
+                            foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep) {
+                                $departmentArray[] = getDepartment($dep);
+                            }
+                            echo implode(', ', array_unique($departmentArray));
                         }
-                        echo implode(', ', array_unique($departmentArray));
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                        }
                     }
                     else {
-                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                        $departments = getActeurDepartments($fnum);
+                        if (array_filter(array_column($departments, 'departement_nom'))) {
+                            echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
+                        }
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                        }
                     }
                 }
                 else {
-                    $departments = getActeurDepartments($fnum);
-                    if (array_filter(array_column($departments, 'departement_nom'))) {
-                        echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
-                    }
-                    else {
-                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
-                    }
+                    echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
                 }
-
                 ?>
             </p>
         </div>
@@ -672,4 +681,3 @@ function getActeurDepartments($fnum) {
 
 </div>
 
-<button onclick="window.history.back();" >Retour</button>

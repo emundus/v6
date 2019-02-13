@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 $lang = JFactory::getLanguage();
 $extension = 'com_emundus';
 $base_dir = JPATH_SITE . '/components/com_emundus';
-$language_tag =& JFactory::getLanguage()->getTag();
+$language_tag = "fr-FR";
 $reload = true;
 $lang->load($extension, $base_dir, $language_tag, $reload);
 
@@ -345,23 +345,26 @@ $m_cifre = new EmundusModelCifre();
             <div class="em-regions">
                 <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_REGIONS'); ?></strong>
                     <?php
-                        if($profile != '1008') {
-                            if(!empty($regions))
-                                echo implode(', ', array_unique($regions));
-                            else
-                                echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
-                        }
-                        else {
-                            $regions = getActeurRegions($fnum);
-                            if (array_filter(array_column($regions, 'name'))) {
-                                echo implode(', ', array_unique(array_column($regions, 'name')));
+                        if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                            if($profile != '1008') {
+                                if(!empty($regions))
+                                    echo implode(', ', array_unique($regions));
+                                else
+                                    echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
                             }
                             else {
-                                echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                                $regions = getActeurRegions($fnum);
+                                if (array_filter(array_column($regions, 'name'))) {
+                                    echo implode(', ', array_unique(array_column($regions, 'name')));
+                                }
+                                else {
+                                    echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                                }
                             }
                         }
-
-
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
+                        }
 
                     ?>
             </div>
@@ -370,31 +373,43 @@ $m_cifre = new EmundusModelCifre();
             <div class="em-departments">
                 <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
                     <?php
-                        if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
-                            $departmentArray= array();
-                            foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
-                            {
-                                $departmentArray[] = getDepartment($dep);
-                            }
+                        if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                            if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
+                                $departmentArray= array();
+                                foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
+                                {
+                                    $departmentArray[] = getDepartment($dep);
+                                }
 
-                            echo implode(', ', array_unique($departmentArray) );
+                                echo implode(', ', array_unique($departmentArray) );
+                            }
+                            else {
+                                echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                            }
                         }
                         else {
-                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                            echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
                         }
+
                     ?>
             </div>
             <?php else :?>
                 <div class="em-departments">
                     <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
                     <?php
-                    $departments = getActeurDepartments($fnum);
-                    if (array_filter(array_column($departments, 'departement_nom'))) {
-                        echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
+                    if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                        $departments = getActeurDepartments($fnum);
+                        if (array_filter(array_column($departments, 'departement_nom'))) {
+                            echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
+                        }
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                        }
                     }
                     else {
-                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
                     }
+
                     ?>
                 </div>
             <?php endif; ?>
@@ -910,11 +925,12 @@ if ($status === 2) :?>
 
             // Verification of style size and type can be done here.
             uploadcv.doUpload();
+            jQuery('#cv-file-name').empty();
         }
 
         // Add file to the list being attached.
         function docAddFile() {
-
+            console.log("hello");
             // We need to get the file uploaded by the user.
             var doc = jQuery("#em-doc_to_upload")[0].files[0];
             var docId = jQuery("#doc-upload_file");
@@ -922,6 +938,7 @@ if ($status === 2) :?>
 
             // Verification of style size and type can be done here.
             uploaddoc.doUpload();
+            jQuery('#other-doc-file-name').empty();
         }
 
         // Helper function for uploading a file via AJAX.
@@ -977,6 +994,7 @@ if ($status === 2) :?>
                     } else {
                         jQuery(that.id).append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
                     }
+
                 },
                 error: function (error) {
                     // handle error

@@ -55,6 +55,25 @@ echo <<<EOT
         display: block;
         width: 750px;
 }
+
+button {
+    font-size: 0.8rem !important;
+    line-height: 0.15;
+    letter-spacing: 0.1rem !important;
+    text-transform: uppercase !important;
+    background: #bb0e29 !important;
+    color: #fff !important;
+    border: 1px solid transparent !important;
+    border-radius: 0rem !important;
+    margin: 0 0 0.5rem 0 !important;
+    padding: 1rem 1.5rem !important;
+    vertical-align: middle !important;
+    text-shadow: none !important;
+    position: fixed;
+      top: 0;
+      left: 0;
+}
+
     .em-pdf-group {
     	right: 0;
     	top: 0;
@@ -133,6 +152,12 @@ echo <<<EOT
         display: block !important;
         width: 100% !important;
     }
+}
+
+@media print {
+  button {
+    display: none;
+  }
 }
     
 /* END - Your CSS styling ends here */
