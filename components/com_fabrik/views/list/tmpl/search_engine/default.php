@@ -114,7 +114,9 @@ function getActeurDepartments($fnum) {
                                     $data[$i][$val] = $v->data->$key;
                                 else {
                                     $data[$i][$key] = $v->data->$key;
-                                    $data[$i][$raw] = $v->data->$raw;
+                                    if (array_key_exists($raw, $v->data)) {
+                                        $data[$i][$raw] = $v->data->$raw;
+                                    }
                                 }
                             }
                         }
@@ -198,14 +200,14 @@ function getActeurDepartments($fnum) {
                                         $departments = implode('</div> - <div class="em-highlight">', $departments);
                                     }
                                 }
-
+                            }
 
                                 if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
                                     $status = 2;
                                 } else {
                                     $status = 1;
                                 }
-                            }
+
 
 
                             ?>
