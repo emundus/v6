@@ -22,6 +22,12 @@ function jsonDecode($val) {
     return (!empty(json_decode($val)))?json_decode($val):$val;
 }
 
+$lang = JFactory::getLanguage();
+$extension = 'com_emundus';
+$base_dir = JPATH_SITE . '/components/com_emundus';
+$language_tag = "fr-FR";
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
 
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
@@ -56,6 +62,7 @@ echo $this->table->intro;
 function getActeurDepartments($fnum) {
     $db = JFactory::getDBO();
 
+    
     $query = $db->getquery('true');
 
     $query
@@ -116,7 +123,8 @@ function getActeurDepartments($fnum) {
                         }
                         $i = $i + 1;
                     }
-                } ?>
+                }
+                ?>
 
                 <div class="em-search-engine-filters">
                     <?php if ($this->showFilters && $this->bootShowFilters)
@@ -168,34 +176,37 @@ function getActeurDepartments($fnum) {
 								}
 							}
 
-							if ($d["jos_emundus_setup_profiles___id_raw"] != "1008") {
-                                $departments = jsonDecode($d['data_departements___departement_nom_raw']);
-                                if (is_array($departments)) {
-                                    $departments = array_unique($departments);
+                            if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                                if ($d["jos_emundus_setup_profiles___id_raw"] != "1008") {
+                                    $departments = jsonDecode($d['data_departements___departement_nom_raw']);
+                                    if (is_array($departments)) {
+                                        $departments = array_unique($departments);
+                                        if (sizeof($departments) > 8) {
+                                            $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
+                                        } else {
+                                            $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                        }
+                                    }
+                                }
+
+                                else {
+                                    $departments =  array_unique(array_column(getActeurDepartments($d["jos_emundus_recherche___fnum_raw"]), 'departement_nom'));
                                     if (sizeof($departments) > 8) {
-                                        $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
-                                    } else {
+                                        $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)) . ' ... ';
+                                    }
+                                    else {
                                         $departments = implode('</div> - <div class="em-highlight">', $departments);
                                     }
                                 }
-                            }
 
-							else {
-							    $departments =  array_unique(array_column(getActeurDepartments($d["jos_emundus_recherche___fnum_raw"]), 'departement_nom'));
-                                if (sizeof($departments) > 8) {
-                                    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)) . ' ... ';
-                                }
-                                else {
-                                    $departments = implode('</div> - <div class="em-highlight">', $departments);
+
+                                if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
+                                    $status = 2;
+                                } else {
+                                    $status = 1;
                                 }
                             }
 
-
-                            if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
-                                $status = 2;
-                            } else {
-                                $status = 1;
-                            }
 
                             ?>
                             <tr>
@@ -216,7 +227,14 @@ function getActeurDepartments($fnum) {
                                         <div class="em-search-engine-departments">
                                             <strong>Département(s)</strong> :
                                             <div class="em-highlight">
-                                                <?php echo $departments?$departments:'Aucun département'; ?>
+                                                <?php
+                                                    if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "oui") {
+                                                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
+                                                    }
+                                                    else {
+                                                        echo $departments ? $departments : 'Aucun département';
+                                                    }
+                                                ?>
                                             </div>
                                         </div>
                                         <?php if (JFactory::getUser()->guest) :?>
