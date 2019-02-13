@@ -472,7 +472,12 @@ function getActeurDepartments($fnum) {
                     }
                     else {
                         $regions = getActeurRegions($fnum);
-                        echo !empty($regions) ? implode(', ', array_unique(array_column(getActeurRegions($fnum), 'name'))) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                        if (array_filter(array_column($regions, 'name'))) {
+                            echo implode(', ', array_unique(array_column($regions, 'name')));
+                        }
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                        }
                     }
                         
                 ?>
@@ -502,8 +507,9 @@ function getActeurDepartments($fnum) {
                     }
                 }
                 else {
-                    if (!empty(getActeurDepartments($fnum))) {
-                        echo implode(', ', array_unique(array_column(getActeurDepartments($fnum), 'departement_nom')));
+                    $departments = getActeurDepartments($fnum);
+                    if (array_filter(array_column($departments, 'departement_nom'))) {
+                        echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
                     }
                     else {
                         echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');

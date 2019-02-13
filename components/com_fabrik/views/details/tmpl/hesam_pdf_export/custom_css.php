@@ -94,6 +94,47 @@ echo <<<EOT
         width: 495px;
 	margin-top: 5px;
     }
+    .em-pdf-title-div a {
+    font-size: 20px !important;
+    color: #bb0E29 !important;
+}
+.fabrikForm.fabrikDetails {
+    display: block !important;
+    width: 850px !important;
+}
+.em-pdf-element {
+    font-size: 16px !important;
+    border-bottom: 1px solid !important;
+    display: block !important;
+    width: auto !important;
+    margin: 10px 0px !important;
+}
+.em-pdf-element-label {
+    vertical-align: top !important;
+    display: inline-block !important;
+    width: 29% !important;
+    font-weight: bold !important;
+}
+.em-pdf-element-value {
+    display: inline-block !important;
+    width: 70% !important;
+    margin-top: 0px !important;
+}
+
+@media only screen and (min-width: 769px) and (max-width:850px) {
+    .fabrikForm.fabrikDetails {
+        display: block !important;
+        width: 750px !important;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .fabrikForm.fabrikDetails {
+        display: block !important;
+        width: 100% !important;
+    }
+}
+    
 /* END - Your CSS styling ends here */
 
 EOT;
