@@ -18,7 +18,7 @@ $model = $this->getModel();
 $lang = JFactory::getLanguage();
 $extension = 'com_emundus';
 $base_dir = JPATH_SITE . '/components/com_emundus';
-$language_tag =& JFactory::getLanguage()->getTag();
+$language_tag = "fr-FR";
 $reload = true;
 $lang->load($extension, $base_dir, $language_tag, $reload);
 

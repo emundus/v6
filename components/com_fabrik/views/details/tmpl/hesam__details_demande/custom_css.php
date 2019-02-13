@@ -54,7 +54,6 @@ echo <<<EOT
 .fabrikForm.fabrikDetails {
         display: block;
         width: 750px;
-	margin-left: -15px;
 }
     .em-pdf-group {
     	right: 0;

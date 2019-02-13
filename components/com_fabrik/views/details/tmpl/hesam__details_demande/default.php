@@ -15,6 +15,12 @@ defined('_JEXEC') or die('Restricted access');
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
 $m_users = new EmundusModelUsers();
+$lang = JFactory::getLanguage();
+$extension = 'com_emundus';
+$base_dir = JPATH_SITE . '/components/com_emundus';
+$language_tag = "fr-FR";
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
 
 
 $form = $this->form;
@@ -427,3 +433,4 @@ try {
     <?php endif; ?>
 </div>
 
+<button onclick="window.history.back();" >Retour</button>
