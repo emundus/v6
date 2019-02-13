@@ -18,10 +18,11 @@ $model = $this->getModel();
 $lang = JFactory::getLanguage();
 $extension = 'com_emundus';
 $base_dir = JPATH_SITE . '/components/com_emundus';
-$language_tag =& JFactory::getLanguage()->getTag();
+$language_tag = "fr-FR";
 $reload = true;
 $lang->load($extension, $base_dir, $language_tag, $reload);
 
+$fnum = $this->data["jos_emundus_recherche___fnum_raw"];
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 $m_users = new EmundusModelUsers();
 
@@ -89,6 +90,60 @@ function getDepartment($dept) {
     $db->setQuery($query);
     try {
         return $db->loadResult();
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+
+// GET the acteur public Regions
+function getActeurRegions($fnum) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dr.name'))
+        ->from($db->quoteName('#__emundus_recherche', 'er'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
+        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
+        ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+//GET the acteur public Departments
+function getActeurDepartments($fnum) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dd.departement_nom'))
+        ->from($db->quoteName('#__emundus_recherche', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
     } catch (Exception $e) {
         echo "<pre>";
         var_dump($query->__toString());
@@ -410,7 +465,18 @@ function getDepartment($dept) {
         </div>
 
         <div class="em-pdf-element-value">
-            <p><?php echo !empty($regions) ? implode(', ', $regions) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS'); ?></p>
+            <p>
+                <?php 
+                    if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
+                        echo !empty($regions) ? implode(', ', array_unique($regions)) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                    }
+                    else {
+                        $regions = getActeurRegions($fnum);
+                        echo !empty($regions) ? implode(', ', array_unique(array_column(getActeurRegions($fnum), 'name'))) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                    }
+                        
+                ?>
+            </p>
         </div>
 
     </div>
@@ -423,16 +489,27 @@ function getDepartment($dept) {
 
         <div class="em-pdf-element-value">
             <p><?php
-                if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
-                $departmentArray = array();
-                foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep) {
-                    $departmentArray[] = getDepartment($dep);
-                }
-                echo implode(', ', array_unique($departmentArray));
+                if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
+                    if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
+                        $departmentArray = array();
+                        foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep) {
+                            $departmentArray[] = getDepartment($dep);
+                        }
+                        echo implode(', ', array_unique($departmentArray));
+                    }
+                    else {
+                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                    }
                 }
                 else {
-                    echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                    if (!empty(getActeurDepartments($fnum))) {
+                        echo implode(', ', array_unique(array_column(getActeurDepartments($fnum), 'departement_nom')));
+                    }
+                    else {
+                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                    }
                 }
+
                 ?>
             </p>
         </div>
@@ -494,7 +571,7 @@ function getDepartment($dept) {
 
         </div>
 
-        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"])) : ?>
+        <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"])) : ?>
             <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user->id == $user_to[0]->user_id) :?>
                 <div class="em-pdf-element">
 
@@ -503,7 +580,7 @@ function getDepartment($dept) {
                     </div>
 
                     <div class="em-pdf-element-value">
-                        <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_nom_du_laboratoire_raw"]; ?></p>
+                        <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?></p>
                     </div>
 
                 </div>

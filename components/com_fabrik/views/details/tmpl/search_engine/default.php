@@ -93,18 +93,18 @@ function getDepartment($dept) {
     }
 }
 
-// GET the autor's Regions
-function getAuthorRegions($uid) {
+// GET the acteur public Regions
+function getActeurRegions($fnum) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
     $query
         ->select($db->quoteName('dr.name'))
-        ->from($db->quoteName('#__emundus_users', 'u'))
-        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
-        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('ur.region'))
-        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+        ->from($db->quoteName('#__emundus_recherche', 'er'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
+        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
+        ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
 
     $db->setQuery($query);
     try {
@@ -119,19 +119,19 @@ function getAuthorRegions($uid) {
     }
 }
 
-//GET the autor's Departments
-function getAuthorDepartments($uid) {
+//GET the acteur public Departments
+function getActeurDepartments($fnum) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
     $query
         ->select($db->quoteName('dd.departement_nom'))
-        ->from($db->quoteName('#__emundus_users', 'u'))
-        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
-        ->leftJoin($db->quoteName('#__emundus_users_597_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->from($db->quoteName('#__emundus_recherche', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
         ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
-        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
 
     $db->setQuery($query);
     try {
@@ -177,7 +177,6 @@ echo $this->plugintop;
 
 echo $this->loadTemplate('relateddata');
 
-
 $region = "";
 $department = "";
 $chercheur = "";
@@ -192,6 +191,9 @@ require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models'
 $m_cifre = new EmundusModelCifre();
 
 ?>
+
+
+
     <!-- Title -->
     <p class="em-offre-title">
         <?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
@@ -242,8 +244,6 @@ $m_cifre = new EmundusModelCifre();
                     ?>
                 </div>
             </div>
-            <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>"><?php echo JText::_('COM_EMUNDUS_CLICK_HERE_INFO'); ?></a>
-
 
             <?php $ecole_doc = $m_cifre->getDoctorale($author->id); ?>
                 <?php if (!empty($ecole_doc)) :?>
@@ -274,8 +274,6 @@ $m_cifre = new EmundusModelCifre();
                     ?>
                 </div>
             </div>
-            <a class="btn btn-default"
-               href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>"><?php echo JText::_('COM_EMUNDUS_CLICK_HERE_INFO'); ?></a>
 
 
         <?php endif; ?>
@@ -289,7 +287,7 @@ $m_cifre = new EmundusModelCifre();
         <h1 class="em-offre-title"><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></h1>
 
         <p class="em-offre-subject-title">
-            <strong>Titre : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
+            <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_NAME'); ?></strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
         </p>
 
         <!-- THEMES -->
@@ -347,14 +345,23 @@ $m_cifre = new EmundusModelCifre();
             <div class="em-regions">
                 <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_REGIONS'); ?></strong>
                     <?php
-                        if(!empty($regions))
-                            echo implode(', ', $regions);
-                        else
-                            echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                        if($profile != '1008') {
+                            if(!empty($regions))
+                                echo implode(', ', array_unique($regions));
+                            else
+                                echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                        }
+                        else {
+                            $regions = getActeurRegions($fnum);
+                            echo !empty($regions) ? implode(', ', array_unique(array_column(getActeurRegions($fnum), 'name'))) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                        }
+
+
 
                     ?>
             </div>
 
+            <?php if ($profile != '1008') :?>
             <div class="em-departments">
                 <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
                     <?php
@@ -365,13 +372,26 @@ $m_cifre = new EmundusModelCifre();
                                 $departmentArray[] = getDepartment($dep);
                             }
 
-                            echo implode(', ', $departmentArray);
+                            echo implode(', ', array_unique($departmentArray) );
                         }
                         else {
                             echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
                         }
                     ?>
             </div>
+            <?php else :?>
+                <div class="em-departments">
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
+                    <?php
+                    if (!empty(getActeurDepartments($fnum))) {
+                        echo implode(', ', array_unique(array_column(getActeurDepartments($fnum), 'departement_nom')));
+                    }
+                    else {
+                        echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                    }
+                    ?>
+                </div>
+            <?php endif; ?>
 
     </div>
 
@@ -537,7 +557,7 @@ if ($status === 2) :?>
                         <?php endif; ?>
 
                         <hr>
-                        <span class="em-upload-explain-text"><?php echo JText::_('COM_EMUNDUS_CIFRE_JOIN_CV'); ?></span>
+                        <span class="em-upload-explain-text"><?php echo JText::_('COM_EMUNDUS_CIFRE_SELECT_FILE'); ?></span>
                         <!-- Upload a file from computer -->
                         <div id="em-attachment-list">
                             <div id="cv-upload_file">
@@ -644,14 +664,16 @@ if ($status === 2) :?>
         <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
     </div>
 
-    <script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+        <script>
 
 
         jQuery('#em-doc_to_upload').on('change',function(evt) {
             jQuery('#other-doc-file-name').html(evt.target.files[0].name);
         });
 
-        jQuery('#cv_to_upload').on('change',function(evt) {
+        jQuery('#em-cv_to_upload').on('change',function(evt) {
             jQuery('#cv-file-name').html(evt.target.files[0].name);
         });
 
@@ -714,6 +736,11 @@ if ($status === 2) :?>
                 },
                 success: function (result) {
                     jQuery('#em-modal-sending-emails').css('display', 'none');
+                    Swal.fire(
+                        '<?php echo JText::_("COM_EMUNDUS_CIFRE_SENT"); ?>',
+                        '',
+                        'success'
+                    )
                     if (result.status) {
 
                         // When we successfully change the status, we simply dynamically change the button.
@@ -912,7 +939,10 @@ if ($status === 2) :?>
             var formData = new FormData();
 
             if (this.getType() != 'application/pdf') {
-                alert("<?php echo JText::_('COM_EMUNDUS_CIFRE_ALERT_PDF'); ?>");
+                Swal.fire({
+                    type: 'error',
+                    title: '<?php echo JText::_("COM_EMUNDUS_CIFRE_ALERT_PDF"); ?>'
+                })
                 return false;
             }
 
