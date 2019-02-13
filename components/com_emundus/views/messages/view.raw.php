@@ -53,10 +53,8 @@ class EmundusViewMessages extends JViewLegacy {
         if ($tmpl == 'chat') {
             $this->getMessages = $m_messages->loadMessages($id);
             $this->user_id = $current_user->id;
-        }
-        elseif ($tmpl == 'default') {
+        } elseif ($tmpl == 'default') {
             $this->message_contacts = $m_messages->getContacts();
-            echo '<pre>'; var_dump($this->message_contacts); echo '</pre>'; die;
             $this->user_id = $current_user->id;
             $this->user_name = $current_user->name;
             parent::display($tpl);

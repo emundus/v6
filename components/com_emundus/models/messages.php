@@ -688,7 +688,7 @@ class EmundusModelMessages extends JModelList {
 	        ->order($db->quoteName('date_time').' ASC')
             ->setLimit('100');
         try {
-
+            
             $db->setQuery($query);
             return $db->loadObjectList();
 
@@ -742,5 +742,29 @@ class EmundusModelMessages extends JModelList {
             JLog::add('Error sending message at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
+    }
+
+
+    public function deleteSystemMessages($user1, $user2) {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+
+        $query->delete($db->quoteName('#__messages'))
+            ->where('(('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')) AND '.$db->quoteName('folder_id').' = 3 ');
+
+        try {
+
+            $db->setQuery($query);
+            $db->execute();
+            return true;
+
+        } catch (Exception $e) {
+            JLog::add('Error deleting messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        } 
+
+
     }
 }
