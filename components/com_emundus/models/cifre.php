@@ -196,10 +196,15 @@ class EmundusModelCifre extends JModelList {
 	 * Create contact offer.
 	 * This creates the link in the database between a user and a cifre offer. Has option of joining one of their offers along as well.
 	 *
-	 * @param $user_to Int The user who created the offer being contacted.
-	 * @param $user_from Int The user who is contacting the other.
-	 * @param $fnum_to String The fnum of the offer being contacted.
+	 * @param      $user_to   Int The user who created the offer being contacted.
+	 * @param      $user_from Int The user who is contacting the other.
+	 * @param      $fnum_to   String The fnum of the offer being contacted.
 	 * @param null $fnum_from String The optional fnum of the offer the person contacting may want to put forward.
+	 * @param null $message
+	 * @param null $motivation
+	 * @param null $cv
+	 * @param null $doc
+	 *
 	 * @return Boolean
 	 */
 	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null, $message = null, $motivation  = null, $cv  = null, $doc  = null) {
@@ -225,6 +230,25 @@ class EmundusModelCifre extends JModelList {
 			return true;
 		} catch (Exception $e) {
 			JLog::add('Error adding cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+
+	function getContactRequestID($user_to, $user_from, $fnum_to) {
+
+		$query = $this->db->getQuery(true);
+
+
+		$query->select($this->db->quoteName('id'))
+			->from($this->db->quoteName('#__emundus_cifre_links'))
+			->where($this->db->quoteName('user_to').' = '.$user_to.' AND '.$this->db->quoteName('user_from').' = '.$user_from.' AND '.$this->db->quoteName('fnum_to').' LIKE '.$this->db->quote($fnum_to));
+		$this->db->setQuery($query);
+
+		try {
+			return $this->db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
