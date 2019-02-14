@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $lastId = $this->message_contacts[0]->message_id;
 $id = JFactory::getApplication()->input->get->get('chatid',null);
-if(empty($id)) {
+if (empty($id)) {
     if ($this->message_contacts[0]->user_id_to == $this->user_id)
         $id = $this->message_contacts[0]->user_id_from;
     else

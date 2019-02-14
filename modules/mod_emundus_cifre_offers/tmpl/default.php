@@ -44,8 +44,8 @@ defined('_JEXEC') or die;
                                 <a href="/demande/details/314/<?php echo $offer->link_id;?>?format=pdf"><?php echo JText::_('MOD_EMUNDUS_CIFRE_SEE_DETAILS'); ?></a>
                             </div>
                                 <div class="em-chat-link" id="em-chat-link-<?php echo $offer->link_id; ?>">
-                                        <a href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $offer->user_from ?>"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_TALK_TO'); ?></a>
-                                    </div>
+                                    <a href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $offer->user_from ?>"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_TALK_TO'); ?></a>
+                                </div>
                                 <?php if (!empty($offer->offer_from)) :?>
                                     <div class="em-contact-request-linked-offer"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_LINKED_OFFER'); ?></div>
                                     <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
@@ -142,10 +142,10 @@ defined('_JEXEC') or die;
                 dataType: 'json',
                 url: 'index.php?option=com_emundus&controller=cifre&task=replybyid',
                 data: { id : id },
-                beforeSend: function () {
+                beforeSend: () => {
                     jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled> ... </button>');
                 },
-                success: function(result) {
+                success: result => {
                     if (result.status) {
                         // When we successfully change the status, we simply dynamically change the button.
                         jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-primary" onclick="breakUp(\'breakup\','+id+')"> <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?> </button>');
@@ -155,7 +155,7 @@ defined('_JEXEC') or die;
                         actionText.innerHTML = result.msg;
                     }
                 },
-                error: function(jqXHR) {
+                error: jqXHR => {
                     console.log(jqXHR.responseText);
                 }
             });
@@ -169,10 +169,10 @@ defined('_JEXEC') or die;
                 dataType: 'json',
                 url: 'index.php?option=com_emundus&controller=cifre&task=retrybyid',
                 data: { id : id },
-                beforeSend: function () {
+                beforeSend: () => {
                     jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled> ... </button>');
                 },
-                success: function(result) {
+                success: result => {
                     if (result.status) {
                         // When we successfully change the status, we simply dynamically change the button.
                         jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled ><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_MESSAGE_SENT'); ?></button>');
@@ -182,7 +182,7 @@ defined('_JEXEC') or die;
                         actionText.innerHTML = result.msg;
                     }
                 },
-                error: function(jqXHR) {
+                error: jqXHR => {
                     console.log(jqXHR.responseText);
                 }
             });
@@ -196,10 +196,10 @@ defined('_JEXEC') or die;
                 dataType: 'json',
                 url: 'index.php?option=com_emundus&controller=cifre&task=breakupbyid&action='+action,
                 data: { id : id },
-                beforeSend: function () {
+                beforeSend: () => {
                     jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled> ... </button>');
                 },
-                success: function(result) {
+                success: result => {
                     if (result.status) {
                         // Dynamically change the button back to the state of not having a link.
                         jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BROKEN_UP'); ?></button>');
@@ -209,7 +209,7 @@ defined('_JEXEC') or die;
                         actionText.innerHTML = result.msg;
                     }
                 },
-                error: function(jqXHR) {
+                error: jqXHR => {
                     console.log(jqXHR.responseText);
                 }
             });

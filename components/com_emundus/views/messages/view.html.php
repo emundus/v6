@@ -21,6 +21,9 @@ jimport('joomla.application.component.view');
 
 class EmundusViewMessages extends JViewLegacy {
 
+	var $user_id = null;
+	var $user_name = null;
+	var $message_contacts = null;
 
 	public function __construct($config = array()) {
 
@@ -37,8 +40,9 @@ class EmundusViewMessages extends JViewLegacy {
 
 		$current_user = JFactory::getUser();
 
-    	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id))
-			die(JText::_('RESTRICTED_ACCESS'));
+    	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+		    die(JText::_('RESTRICTED_ACCESS'));
+	    }
 
         $document = JFactory::getDocument();
         $document->addStyleSheet('/media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');

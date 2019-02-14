@@ -34,8 +34,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
 		// Load class variables
 		$this->user = JFactory::getSession()->get('emundusUser');
@@ -151,42 +153,60 @@ class EmundusControllerCifre extends JControllerLegacy {
 			// This gets additional information about the offer, for example the title.
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 
+			$m_messages = new EmundusModelMessages();
+			$contact_id = $this->m_cifre->getContactRequestID($fnum['applicant_id'], $this->user->id, $fnum['fnum']);
+
+			$m_profile = new EmundusModelProfile();
+			$profile = $m_profile->getProfileByApplicant($fnum['applicant_id']);
+
 			// Link created: Send email.
 			if (!empty($linkedOffer)) {
 				
 				$linkedOffer = $this->m_cifre->getOffer($linkedOffer);
 				$post = [
 					'USER_NAME' => $this->user->name,
+					'OFFER_USER_NAME' => $fnum['name'],
+					'OFFER_USER_PROFILE' => $profile['profile_label'],
+					'OFFER_ID' => $offerInformation->search_engine_page,
+					'OFFER_NAME' => $offerInformation->titre,
+					'CONTACT_ID' => $contact_id,
+					'OFFER_USER_ID' => $fnum['applicant_id'],
 					'LINKED_OFFER_FNUM' => $linkedOffer->fnum,
 					'LINKED_OFFER_NAME' => $linkedOffer->titre,
-					'OFFER_USER_NAME' => $fnum['name'],
-					'OFFER_NAME' => $offerInformation->titre,
 					'LINKED_OFFER_ID' => $linkedOffer->search_engine_page,
 					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 72;
+				$chat_contact_request = $m_messages->getEmail('chat_contact_request_with_offer');
 
 			} else {
 
 				$post = [
 					'USER_NAME' => $this->user->name,
 					'OFFER_USER_NAME' => $fnum['name'],
+					'OFFER_USER_PROFILE' => $profile['profile_label'],
+					'OFFER_ID' => $offerInformation->search_engine_page,
 					'OFFER_NAME' => $offerInformation->titre,
+					'CONTACT_ID' => $contact_id,
+					'OFFER_USER_ID' => $fnum['applicant_id'],
 					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 71;
+				$chat_contact_request = $m_messages->getEmail('chat_contact_request');
 			}
 
-            // Send a chat message to the user in order to start a conversation thread.
-            $m_messages = new EmundusModelMessages();
-            $link = !empty($linkedOffer) ? JText::_('COM_EMUNDUS_CIFRE_DEMANDE_CONTACT_MESSAGE_LINK').'"<a href="'.JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$linkedOffer->search_engine_page).'">'.$linkedOffer->titre.'</a>"' : '';
-			if(!$m_messages->sendMessage($fnum['applicant_id'],'<p>' . $this->user->name .' '. JText::_('COM_EMUNDUS_CIFRE_DEMANDE_CONTACT_MESSAGE') . '"<a href="'.JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offerInformation->search_engine_page).'">'.$offerInformation->titre.'</a>"'.$link.'</p>', $this->user->id)) {
+			$m_emails = new EmundusModelEmails();
+			$tags = $m_emails->setTags($fnum['applicant_id'], $post);
+			$chat_contact_request = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_request->message);
+
+            // Send a chat message as folder 3 to the user in order to start a conversation thread.
+            if (!$m_messages->sendMessage($fnum['applicant_id'], $chat_contact_request, $this->user->id, true)) {
                 echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
                 exit;
             }
-			
+            
 			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post, $toAttach, $bcc)]);
 			exit;
 
@@ -319,22 +339,28 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			// Send a chat message to the user in order to start a conversation thread.
 			$m_messages = new EmundusModelMessages();
-			$m_messages->sendMessage((int)substr($fnum, -7), JText::_('COM_EMUNDUS_CIFRE_CONTACT_MESSAGE'), $this->user->id);
+			$m_emails = new EmundusModelEmails();
 
-			$fnum = $this->m_files->getFnumInfos($fnum);
-			
 			// This gets additional information about the offer, for example the title.
+			$fnum = $this->m_files->getFnumInfos($fnum);
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
-
+			$contact_id = $this->m_cifre->getContactRequestID($fnum['applicant_id'], $this->user->id, $fnum['fnum']);
+			
 			$post = [
 				'USER_NAME' => $this->user->name,
 				'OFFER_USER_NAME' => $fnum['name'],
 				'OFFER_NAME' => $offerInformation->titre,
+				'CONTACT_ID' => $contact_id,
 			];
+			$tags = $m_emails->setTags($fnum['applicant_id'], $post);
 
-			$email_to_send = 74;
+			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
+			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
+			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
+			$m_messages->sendMessage($link->user_to, $chat_contact_accept, $link->user_from, true);
 
-			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
+			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], 74, $post)]);
 			exit;
 
 		} else {
@@ -384,24 +410,24 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		// Send a chat message to the user in order to start a conversation thread.
 		$m_messages = new EmundusModelMessages();
-		$m_messages->sendMessage($link->user_from, JText::_('COM_EMUNDUS_CIFRE_CONTACT_MESSAGE'), $this->user->id);
+		$m_emails = new EmundusModelEmails();
 
 		if (!empty($link->fnum_from)) {
 
-			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
-
-			// This gets additional information about the offer, for example the title.
-			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
-
 			$post = [
 				'USER_NAME' => $this->user->name,
-				'OFFER_USER_NAME' => $fnum['name'],
-				'OFFER_NAME' => $offerInformation->titre,
+				'CONTACT_ID' => $id
 			];
 
-			$email_to_send = 74;
+			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
+			$tags = $m_emails->setTags($this->user->id, $post);
+			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
+			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
+			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
+			$m_messages->sendMessage($link->user_to, $chat_contact_accept, $link->user_from, true);
 
-			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
+			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], 74, $post)]);
 			exit;
 
 		} else {
@@ -444,7 +470,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			$post = [
 				'USER_NAME'       => $this->user->name,
-				'OFFER_USER_NAME' => $user_from->name
+				'OFFER_USER_NAME' => $user_from->name,
+				'CONTACT_ID' => $id
 			];
 
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
@@ -464,6 +491,12 @@ class EmundusControllerCifre extends JControllerLegacy {
 			$mailer->Encoding = 'base64';
 			$mailer->setBody($body);
 
+			$tags = $m_emails->setTags($this->user->id, $post);
+			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
+			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
+			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
+			$m_messages->sendMessage($link->user_to, $chat_contact_accept, $link->user_from, true);
 
 			// Send and log the email.
 			$send = $mailer->Send();
@@ -477,7 +510,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			} else {
 
 				$sent[] = $user_from->email;
-				$log    = [
+				$log = [
 					'user_id_from' => $this->user->id,
 					'user_id_to'   => $user_from->id,
 					'subject'      => $subject,
@@ -736,11 +769,5 @@ class EmundusControllerCifre extends JControllerLegacy {
         $id = $jinput->post->get('id', null);
 
         $this->m_cifre->getDepartmentsByRegion($id);
-
-
-
-
-
-
     }
 }

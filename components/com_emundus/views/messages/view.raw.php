@@ -21,6 +21,10 @@ jimport('joomla.application.component.view');
 
 class EmundusViewMessages extends JViewLegacy {
 
+	var $user_id = null;
+	var $user_name = null;
+	var $getMessages = null;
+	var $message_contacts = null;
 
 	public function __construct($config = array()) {
 
@@ -36,8 +40,9 @@ class EmundusViewMessages extends JViewLegacy {
 
 		$current_user = JFactory::getUser();
 
-    	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id))
-			die(JText::_('RESTRICTED_ACCESS'));
+    	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+		    die(JText::_('RESTRICTED_ACCESS'));
+	    }
 
         $m_messages = new EmundusModelMessages();
 
@@ -48,9 +53,7 @@ class EmundusViewMessages extends JViewLegacy {
         if ($tmpl == 'chat') {
             $this->getMessages = $m_messages->loadMessages($id);
             $this->user_id = $current_user->id;
-        }
-
-        elseif ($tmpl == 'default') {
+        } elseif ($tmpl == 'default') {
             $this->message_contacts = $m_messages->getContacts();
             $this->user_id = $current_user->id;
             $this->user_name = $current_user->name;
@@ -58,6 +61,5 @@ class EmundusViewMessages extends JViewLegacy {
         }
 
 		parent::display($tpl);
-
     }
 }
