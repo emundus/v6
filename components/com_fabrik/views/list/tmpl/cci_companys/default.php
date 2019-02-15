@@ -91,6 +91,7 @@ echo $this->table->intro;
                     foreach ($data as $d) { ?>
                         <div class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                             <div class="article-title article-title-<?php echo $this->table->renderid; ?>">
+                                <i class="fas fa-caret-right"></i>
                                 <?php if ($this->table->db_table_name == 'jos_emundus_entreprise') :?>
                                     <?php if (!empty($d["Raison sociale"])) :?>
                                         <h4><?php echo $d["Raison sociale"]; ?></h4>
@@ -111,7 +112,8 @@ echo $this->table->intro;
                                     <?php if ($d['fabrik_edit_url']) :?>
                                         <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
                                     <?php endif; ?>
-                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo "data-cid= \"".$d['cid']."\""; } ?>"><i class="fas fa-trash-alt"></i></div>
+                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo 'data-cid= "'.$d['cid'].'"'; } ?>">
+                                    <i class="fas fa-trash-alt"></i></div>
                                 </div>
                             </div>
 
@@ -205,8 +207,13 @@ endif;
             $next.slideToggle();
             $this.parent().toggleClass('open');
 
+
+            $this.find('.fa-caret-right').toggleClass("down");
+
             if (!e.data.multiple) {
                 $el.find('.accordion-content').not($next).slideUp().parent().removeClass('open');
+
+                $el.find('.accordion-content').not($next).parent().find('.fa-caret-right').removeClass("down");
             }
         };
         var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
@@ -217,6 +224,7 @@ endif;
             var first = document.querySelectorAll('.accordion-container-<?php echo $this->table->renderid; ?>')[0];
             jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
             first.classList.add('open');
+            jQuery(first).find('.fa-caret-right').addClass("down");
         }
     });
 
