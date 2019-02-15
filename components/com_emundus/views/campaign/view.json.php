@@ -54,7 +54,7 @@ class EmundusViewCampaign extends JViewLegacy {
 		        // Proccess address
 		        $row->location_address = ucfirst(strtolower($row->location_address));
 		        // Proccess URL
-		        $row->url = 'https://www.competencesetformation.fr/formation?rowid='.$row->id;
+		        $row->url = 'https://www.competencesetformation.fr/formation?rowid='.$row->row_id;
 		        // Process tax.
 		        $row->prix_ttc = empty($row->tax_rate);
 
