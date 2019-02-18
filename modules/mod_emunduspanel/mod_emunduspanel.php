@@ -58,10 +58,11 @@ $link = "index.php";
 
 if (is_array($text) && !empty($text)) {
 	foreach ($text as $t) {
-		if(count($text) != $i)
+		if (count($text) != $i) {
 			$t__ .= $t.',';
-		else
+		} else {
 			$t__ .= $t;
+		}
 		$i++;
 	}
 } else {
@@ -79,7 +80,6 @@ if (!empty($t__)) {
 	$db->setQuery($query);
 	$res = $db->loadObjectList();
 
-
 	if (!empty($res)) {
 		$tab = array();
 		$link = $res[0]->link.'&Itemid='.$res[0]->id;
@@ -96,23 +96,27 @@ if (!empty($t__)) {
 		foreach ($res as $r) {
 			$menu_params = json_decode($r->params, true);
 			$src = '';
-			if (empty($img[$j]) && !empty($menu_params['menu_image']) && empty($menu_params['menu-anchor_css']))
+			if (empty($img[$j]) && !empty($menu_params['menu_image']) && empty($menu_params['menu-anchor_css'])) {
 				$src = JURI::base().$menu_params['menu_image'];
-			else
+			} else {
 				$src = JURI::base().$folder.''.$img[$j];
+			}
 
 			$img = '';
 			if (!empty($src)) {
 				$img = '<img src="'.$src.'" />';
 			}
-			if (!empty($menu_params['menu-anchor_css']))
+
+			if (!empty($menu_params['menu-anchor_css'])) {
 				$glyphicon = '<i class="'.$menu_params['menu-anchor_css'].'"></i>';
-			else
+			} else {
 				$glyphicon = '';
+			}
 
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.'</a>';
-			if($is_text == '1')
+			if ($is_text == '1') {
 				$str .= '<br/><a class="text" href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$r->title.'</a>';
+			}
 			$tab[] = $str;
 			$j++;
 		}
@@ -160,14 +164,14 @@ if (!empty($t__)) {
 				$icon = '';
 			} else {
 				$glyphicon = '';
-				if (!empty($menu_params['menu_image']))
+				if (!empty($menu_params['menu_image'])) {
 					$icon = '<img src="'.JURI::base().$menu_params['menu_image'].'" />';
-				else
+				} else {
 					$icon = '<img src="'.JURI::base().$folder.'files_grey.png" />';
+				}
 			}
 
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.$icon.' <br />'.$r->title.'</a>';
-
 			$tab[] = $str;
 		}
 		$col = count($tab);
