@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -13,7 +13,7 @@ defined('WF_EDITOR') or die('RESTRICTED');
 <div class="uk-position-cover uk-browser uk-browser-external">
 	<?php $this->filebrowser->render(); ?>
 
-	<input type="hidden" id="src" value="" class="filebrowser" />
+	<input type="hidden" value="" class="filebrowser" data-filebrowser />
 </div>
 <div class="actionPanel uk-modal-footer">
 	<button class="uk-button" id="refresh"><?php echo WFText::_('WF_LABEL_REFRESH')?></button>

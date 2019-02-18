@@ -480,7 +480,7 @@ if ( empty($this->files_status) ) {
 											<th class="filesintegrity-table">
 												<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_NAME' ); ?>
 											</th>
-											<th class="filesintegrity-table" style="width: 35%;">
+											<th class="filesintegrity-table" style="max-width: 150px; word-wrap: break-word;">
 												<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RUTA' ); ?>				
 											</th>
 											<th class="filesintegrity-table">
@@ -508,7 +508,7 @@ if ( empty($this->files_status) ) {
 											$last_part = explode(DIRECTORY_SEPARATOR,$row['path']);
 											echo end($last_part); ?>
 										</td>
-										<td style="text-align: center; font-size: 0.75em;">
+										<td style="text-align: center; font-size: 0.75em; max-width: 150px; word-wrap: break-word;">
 											<?php echo $row['path']; ?>
 										</td>
 										<td style="text-align: center;">

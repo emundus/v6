@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -34,6 +34,40 @@ abstract class WFInstall
 
         // the current version
         $current_version = $installer->get('current_version');
+
+        // Add device column
+        if (self::checkTableColumn('#__wf_profiles', 'device') === false) {
+            $db = JFactory::getDBO();
+
+            switch (strtolower($db->name)) {
+                case 'mysql':
+                case 'mysqli':
+                    $query = 'ALTER TABLE #__wf_profiles CHANGE `description` `description` TEXT';
+                    $db->setQuery($query);
+                    $db->query();
+
+                    // Change types field to TEXT
+                    $query = 'ALTER TABLE #__wf_profiles CHANGE `types` `types` TEXT';
+                    $db->setQuery($query);
+                    $db->query();
+
+                    // Add device field - MySQL
+                    $query = 'ALTER TABLE #__wf_profiles ADD `device` VARCHAR(255) AFTER `area`';
+
+                    break;
+                case 'sqlsrv':
+                case 'sqlazure':
+                case 'sqlzure':
+                    $query = 'ALTER TABLE #__wf_profiles ADD `device` NVARCHAR(250)';
+                    break;
+                case 'postgresql':
+                    $query = 'ALTER TABLE #__wf_profiles ADD "device" character varying(255) NOT NULL';
+                    break;
+            }
+
+            $db->setQuery($query);
+            $db->query();
+        }
 
         // install profiles etc.
         $state = self::installProfiles();
@@ -221,12 +255,13 @@ abstract class WFInstall
             $site.'/editor/libraries/js/plugin.full.js',
             $site.'/editor/libraries/mediaplayer/license.txt',
             $site.'/editor/tiny_mce/plugins/inlinepopups/css/dialog.css',
-            $site.'/editor/tiny_mce/plugins/media/img/iframe.png',
             $site.'/editor/tiny_mce/themes/advanced/img/icons.gif',
             $site.'/editor/tiny_mce/plugins/source/css/editor.css',
             $site.'/editor/tiny_mce/plugins/source/codemirror/css/codemirror.css',
             $site.'/editor/tiny_mce/plugins/source/js/editor.js',
-            $site.'/editor/tiny_mce/plugins/source/js/format.js'
+            $site.'/editor/tiny_mce/plugins/source/js/format.js',
+
+            $site.'/editor/tiny_mce/plugins/visualblocks/css/visualblocks.css'
         );
 
         $folders = array(

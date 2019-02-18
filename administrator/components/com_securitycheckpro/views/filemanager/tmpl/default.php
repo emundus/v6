@@ -534,7 +534,7 @@ if ( strstr($server,"iis") ) { ?>
 											<th class="filesstatus-table">
 												<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_KIND' ); ?>				
 											</th>
-											<th class="filesstatus-table" style="width: 35%;">
+											<th class="filesstatus-table" style="max-width: 150px; word-wrap: break-word;">
 												<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RUTA' ); ?>
 											</th>
 											<th class="filesstatus-table">
@@ -575,7 +575,7 @@ if ( strstr($server,"iis") ) { ?>
 										<td style="text-align: center;">
 											<?php echo $row['kind']; ?>
 										</td>
-										<td style="text-align: center; font-size: 0.75em;">
+										<td style="text-align: center; font-size: 0.75em; max-width: 150px; word-wrap: break-word;">
 											<?php echo $row['path']; ?>
 										</td>
 										<td style="text-align: center;">

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -585,10 +585,10 @@ class WFModelProfiles extends WFModel
         if ($plugin->type == 'command') {
             $base = 'components/com_jce/editor/tiny_mce/themes/advanced/img';
         } else {
-            if (isset($plugin->path)) {
-                $base = $plugin->path.'/img/';
+            if (isset($plugin->url)) {
+                $base = $plugin->url . '/img';
             } else {
-                $base = 'components/com_jce/editor/tiny_mce/plugins/'.$plugin->name.'/img';
+                $base = 'components/com_jce/editor/tiny_mce/plugins/' . $plugin->name . '/img';
             }
         }
         // convert backslashes
@@ -602,13 +602,13 @@ class WFModelProfiles extends WFModel
             if ($icon == '|' || $icon == 'spacer') {
                 continue;
             } else {
-                $path = $base.$icon.'.png';
+                $path = $base . '/' . $icon . '.png';
 
                 if (JFile::exists(JPATH_SITE.'/'.$path)) {
-                    $img = '<img src="'.JURI::root(true).$path.'" alt="'.WFText::_($plugin->title).'" />';
+                    $img = '<img src="' . JURI::root(true) . '/' . $path . '" alt="' . WFText::_($plugin->title) . '" />';
                 }
 
-                $span .= '<div data-button="'.preg_replace('/[^\w]/i', '', $icon).'" class="'.self::getIconType($icon).'"><span class="mceIcon mce_'.preg_replace('/[^\w]/i', '', $icon).'">'.$img.'</span></div>';
+                $span .= '<div data-button="' . preg_replace('/[^\w]/i', '', $icon) . '" class="' . self::getIconType($icon) . '"><span class="mceIcon mce_'.preg_replace('/[^\w]/i', '', $icon) . '">' . $img . '</span></div>';
             }
         }
 

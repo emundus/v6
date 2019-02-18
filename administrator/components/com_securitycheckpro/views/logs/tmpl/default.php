@@ -121,8 +121,8 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			<div class="card mb-3">
 				<div class="card-body">
 				
-					<div id="filter-bar" class="btn-toolbar">
-						<div class="filter-search btn-group pull-left" style="margin-bottom: 10px;">
+					<div id="filter-bar" class="btn-toolbar" style="height: auto">
+						<div class="filter-search btn-group pull-left" style="margin-bottom: 10px; margin-left: 10px;">
 							<input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
 						</div>
 						<div class="btn-group pull-left" style="margin-bottom: 10px;">

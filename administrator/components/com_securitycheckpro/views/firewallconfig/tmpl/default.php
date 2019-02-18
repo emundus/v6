@@ -171,7 +171,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 <script type="text/javascript">
 	var ActiveTab = "lists"; 
 	var ActiveTabLists = "blacklist";
-	var ExceptionsActiveTab = "header_referer"; 
+	var ExceptionsActiveTab = "header_referer";
+	var ActiveTabContinent = "europe";
 	
 	function SetActiveTab($value) {
 		ActiveTab = $value;
@@ -181,6 +182,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 	function SetActiveTabLists($value) {
 		ActiveTabLists = $value;
 		storeValue('activelists', ActiveTabLists);
+	}
+	
+	function SetActiveTabContinent($value) {
+		ActiveTabContinent = $value;
+		storeValue('activecontinent', ActiveTabContinent);
 	}
 	
 	function SetActiveTabExceptions($value) {
@@ -228,6 +234,15 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 		} else {
 			$('.nav-tabs a[href="#header_referer"]').parent().addClass('active');
 		}
+		
+		ActiveTabContinent = getStoredValue('activecontinent');
+		//ActiveTabContinent = "northAmerica";
+		if (ActiveTabContinent) {			
+			$('.nav-tabs a[href="#' + ActiveTabContinent + '"]').parent().addClass('active');
+			$('.nav-tabs a[href="#' + ActiveTabContinent + '"]').tab('show');
+		} else {
+			$('.nav-tabs a[href="#europe"]').parent().addClass('active');
+		}
 				
 	};
 	
@@ -270,9 +285,10 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 		
 	}
 	
-	function CheckAll(idname, checktoggle) {
+	function CheckAll(idname, checktoggle, continentname) {
 		var checkboxes = new Array();
 		checkboxes = document.getElementById(idname).getElementsByTagName('input');
+		document.getElementById(continentname).checked = checktoggle;
 		
 		for (var i=0; i<checkboxes.length; i++) {
 			if (checkboxes[i].type == 'checkbox') {
@@ -280,7 +296,14 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			}			
 		}
 		
-    }
+    }	 
+	
+	function disable_continent_checkbox(continentname, name) {
+		var checkbox = document.getElementById(name);
+		if (checkbox.checked != true) {
+			document.getElementById(continentname).checked = false;
+		}		
+	}
 </script>
 
 <script type="text/javascript" language="javascript">
@@ -320,7 +343,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 		jQuery("#delete_period").keypress(function(e) {
             var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
             if (verified) {e.preventDefault();}
-		});
+		});		
+	
 	});
 		
 </script>
@@ -1424,111 +1448,333 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 						</div>
 						
 						<!-- Geoblock -->
-						<div class="tab-pane" id="geoblock" role="tabpanel">							
-							<div class="card mb-12">
-								<div class="card-body">
-									<div class="row">									
-										<div class="col-xl-11 mb-11">
-										
-											<div class="alert alert-info">
-												<h5><?php echo JText::_('COM_SECURITYCHECKPRO_GEOBLOCK_DESCRIPTION'); ?></h5>
-												<div data-toggle="modal" data-target="#div_update_geoblock_database">
-													<button class="btn btn-info" type="button" onclick="Joomla.submitbutton('update_geoblock_database');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_GEOBLOCK_DATABASE' ); ?></button>
-												</div>											
-											</div>
-													
-											<div class="label label-important" style="margin-bottom: 10px;">
-												<h5><?php echo JText::_('COM_SECURITYCHECKPRO_GEOBLOCK_ALERT'); ?></h5>
-											</div>
-											
-											<div class="card-header text-white bg-primary">
-												<?php echo JText::_('COM_SECURITYCHECKPRO_GEOBLOCK_LABEL') ?>
-											</div>
-											<div class="card-body">
-												<fieldset id="continents">
-													<legend><?php echo JText::_('COM_SECURITYCHECKPRO_CONTINENTS_LABEL')?></legend>
-													
-													<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('continents',true)"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-													<button class="btn btn-small" type="button" onclick="CheckAll('continents',false)"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
-																
-													<table id="continents" class="table table-bordered" style="margin-top: 10px;">
-														<tbody>
-															<?php
-															foreach($this->allContinents as $code => $name) {
-																if(empty($name)) continue;
-																$checked = in_array($code, $this->continents) ? 'checked="$checked"' : '';								
-															?>									
-															<tr>
-															<?php
-															if ( $checked ) {		
-															?>	
-																	<td class="marcado">
-															<?php 
-																} else {
-															?>
-																	<td>
-															<?php
-																}
-															?>
-																	<?php echo $name; ?>
-																	<input type="checkbox" name="continent[<?php echo $code?>]" id="continent<?php echo $code?>" <?php echo $checked?> />
-																</td>
-															</tr>
-															<?php 
-															} 
-															?>
-														</tbody>
-													</table>				
-												</fieldset>
-												
-
-												<fieldset id="countries">
-													<legend><?php echo JText::_('COM_SECURITYCHECKPRO_COUNTRIES_LABEL')?></legend>
-													
-													<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('countries',true)"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-													<button class="btn btn-small" type="button" onclick="CheckAll('countries',false)"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
-													
-													<table id="countries" class="table table-bordered" style="margin-top: 10px;">
-														<tbody>
-															<?php
-															$i = 0;
-															
-															foreach($this->allCountries as $code => $name) {
-																$i++;
-																if(empty($name)) continue;
-																$checked = in_array($code, $this->countries) ? 'checked="$checked"' : '';								
-															?>
-															<?php 
-																if ( ($i % 4 == 0) && ($i<4) ) {
-																	echo '<tr>';
-																}
-																if ( $checked ) {		
-															?>	
-																	<td class="marcado">
-															<?php 
-																} else {
-															?>
-																	<td>
-															<?php
-																}
-															?>							
-																	<?php echo $name; ?>
-																	<input type="checkbox" name="country[<?php echo $code?>]" id="country<?php echo $code?>" <?php echo $checked?> />
-																</td>								
-															<?php 
-																if($i % 4 == 0) {
-																	echo '</tr>';
-																}
-															} 
-															?>
-														</tbody>
-													</table>
-												</fieldset>
-											</div>
-										</div>											
-									</div>
-								</div> 
+						<div class="tab-pane" id="geoblock" role="tabpanel">
+						
+							<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+							<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+							<script src="/media/com_securitycheckpro/new/js/datamaps.world.min.js"></script>
+							<div class="alert alert-info" style="text-align: center;">
+								<strong><?php echo JText::_('COM_SECURITYCHECKPRO_MAP_ATTACKS_TEXT'); ?></strong>
 							</div>
+							
+							<div class="card-block">	
+								<div class="card-header text-center">
+									<?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ) . " - " . JText::_( 'COM_SECURITYCHECKPRO_NUMBER_OF_ATTACKS' ); ?>
+									<div style="margin-top: 20px;">
+										<span class="label" style="background-color: green; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_NOATTACKS' ); ?></span>
+										<span class="label" style="background-color: #F3F781; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_LOW' ); ?></span>
+										<span class="label" style="background-color: #FF8000; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MEDIUM' ); ?></span>
+										<span class="label" style="background-color: #FF0000; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_HIGH' ); ?></span>
+									</div>
+								</div>														
+							</div>	
+													
+							<div id="container" style="position: relative; width: 800px; height: 600px;"></div>
+					
+							<div class="card mb-3">															
+								<div class="alert alert-info" style="text-align: center;">
+									<strong><?php echo JText::_('COM_SECURITYCHECKPRO_COUNTRIES_BLOCKED'); ?></strong>									
+								</div>
+								
+								<ul class="nav nav-tabs" role="tablist" id="ContinentTabs">
+									<li class="nav-item" onclick="SetActiveTabContinent('europe');">
+										<a class="nav-link active" href="#europe" data-anchor="europe" data-toggle="tab" role="tab">Europe</a>
+									</li>
+									<li class="nav-item" onclick="SetActiveTabContinent('northAmerica');">
+										<a class="nav-link" href="#northAmerica" data-anchor="northAmerica" data-toggle="tab" role="tab">North America</a>
+									</li>
+									<li class="nav-item" onclick="SetActiveTabContinent('southAmerica');">
+										<a class="nav-link" href="#southAmerica" data-anchor="southAmerica" data-toggle="tab" role="tab">South America</a>
+									</li>
+									<li class="nav-item" onclick="SetActiveTabContinent('africa');">
+										<a class="nav-link" href="#africa" data-anchor="africa" data-toggle="tab" role="tab">Africa</a>
+									</li>
+									<li class="nav-item" onclick="SetActiveTabContinent('asia');">
+										<a class="nav-link"href="#asia" data-anchor="asia" data-toggle="tab" role="tab">Asia</a>
+									</li>
+									<li class="nav-item" onclick="SetActiveTabContinent('oceania');">
+										<a class="nav-link" href="#oceania" data-anchor="oceania" data-toggle="tab" role="tab">Oceania</a>
+									</li>
+								</ul>
+								<div class="tab-content">
+									<div id="europe" class="tab-pane show active">
+										<?php																		
+											$checked = in_array("EU", $this->continents) ? 'checked="$checked"' : '';						
+										?>
+										<input type="checkbox" style="visibility: hidden;" name="continent[EU]" id="continentEU" <?php echo $checked?> />
+																
+										<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('europe_table',true,'continentEU')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+										<button class="btn btn-small" type="button" onclick="CheckAll('europe_table',false,'continentEU')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+													
+										<table id="europe_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+											<tbody>
+												<?php
+													$i = 0;
+																	
+													foreach($this->europe as $code => $name) {
+														$i++;
+														if(empty($name)) continue;
+														$checked = in_array($code, $this->countries) ? 'checked="$checked"' : '';								
+												?>
+												<?php 
+													if ( ($i % 4 == 0) && ($i<4) ) {
+														echo '<tr>';
+													}
+													if ( $checked ) {		
+												?>	
+													<td class="marcado">
+												<?php 
+													} else {
+												?>
+												<td>
+												<?php
+													}
+												?>							
+												<?php echo $name; ?>
+												<input type="checkbox" onclick="disable_continent_checkbox('continentEU','country<?php echo $code?>')" name="country[<?php echo $code?>]" id="country<?php echo $code?>" <?php echo $checked?> />
+												</td>								
+												<?php 
+													if($i % 4 == 0) {
+														echo '</tr>';
+													}
+												} 
+												?>
+											</tbody>
+										</table>
+									</div>
+																	
+																	<div id="northAmerica" class="tab-pane">
+																		<?php																		
+																		$checked = in_array("NA", $this->continents) ? 'checked="$checked"' : '';						
+																		?>
+																		<input type="checkbox" style="visibility: hidden;" name="continent[NA]" id="continentNA" <?php echo $checked?> />
+																	
+																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('northamerica_table',true,'continentNA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" type="button" onclick="CheckAll('northamerica_table',false,'continentNA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+													
+																		<table id="northamerica_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																			<tbody>
+																				<?php
+																				$i = 0;
+																				
+																				foreach($this->northamerica as $code => $name) {
+																					$i++;
+																					if(empty($name)) continue;
+																					$checked = in_array($code, $this->countries) ? 'checked="$checked"' : '';								
+																				?>
+																				<?php 
+																					if ( ($i % 4 == 0) && ($i<4) ) {
+																						echo '<tr>';
+																					}
+																					if ( $checked ) {		
+																				?>	
+																						<td class="marcado">
+																				<?php 
+																					} else {
+																				?>
+																						<td>
+																				<?php
+																					}
+																				?>							
+																						<?php echo $name; ?>
+																						<input type="checkbox" onclick="disable_continent_checkbox('continentNA','country<?php echo $code?>')" name="country[<?php echo $code?>]" id="country<?php echo $code?>" <?php echo $checked?> />
+																					</td>								
+																				<?php 
+																					if($i % 4 == 0) {
+																						echo '</tr>';
+																					}
+																				} 
+																				?>
+																			</tbody>
+																		</table>
+																	</div>
+																	
+																	<div id="southAmerica" class="tab-pane">
+																		<?php																		
+																		$checked = in_array("SA", $this->continents) ? 'checked="$checked"' : '';						
+																		?>
+																		<input type="checkbox" style="visibility: hidden;" name="continent[SA]" id="continentSA" <?php echo $checked?> />
+																	
+																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('southamerica_table',true,'continentSA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" type="button" onclick="CheckAll('southamerica_table',false,'continentSA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+													
+																		<table id="southamerica_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																			<tbody>
+																				<?php
+																				$i = 0;
+																				
+																				foreach($this->southamerica as $code => $name) {
+																					$i++;
+																					if(empty($name)) continue;
+																					$checked = in_array($code, $this->countries) ? 'checked="$checked"' : '';								
+																				?>
+																				<?php 
+																					if ( ($i % 4 == 0) && ($i<4) ) {
+																						echo '<tr>';
+																					}
+																					if ( $checked ) {		
+																				?>	
+																						<td class="marcado">
+																				<?php 
+																					} else {
+																				?>
+																						<td>
+																				<?php
+																					}
+																				?>							
+																						<?php echo $name; ?>
+																						<input type="checkbox" onclick="disable_continent_checkbox('continentSA','country<?php echo $code?>')" name="country[<?php echo $code?>]" id="country<?php echo $code?>" <?php echo $checked?> />
+																					</td>								
+																				<?php 
+																					if($i % 4 == 0) {
+																						echo '</tr>';
+																					}
+																				} 
+																				?>
+																			</tbody>
+																		</table>
+																	</div>
+																	
+																	<div id="africa" class="tab-pane">
+																		<?php																		
+																		$checked = in_array("AF", $this->continents) ? 'checked="$checked"' : '';						
+																		?>
+																		<input type="checkbox" style="visibility: hidden;" name="continent[AF]" id="continentAF" <?php echo $checked?> />
+																	
+																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('africa_table',true,'continentAF')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" type="button" onclick="CheckAll('africa_table',false,'continentAF')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+													
+																		<table id="africa_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																			<tbody>
+																				<?php
+																				$i = 0;
+																				
+																				foreach($this->africa as $code => $name) {
+																					$i++;
+																					if(empty($name)) continue;
+																					$checked = in_array($code, $this->countries) ? 'checked="$checked"' : '';								
+																				?>
+																				<?php 
+																					if ( ($i % 4 == 0) && ($i<4) ) {
+																						echo '<tr>';
+																					}
+																					if ( $checked ) {		
+																				?>	
+																						<td class="marcado">
+																				<?php 
+																					} else {
+																				?>
+																						<td>
+																				<?php
+																					}
+																				?>							
+																						<?php echo $name; ?>
+																						<input type="checkbox" onclick="disable_continent_checkbox('continentAF','country<?php echo $code?>')" name="country[<?php echo $code?>]" id="country<?php echo $code?>" <?php echo $checked?> />
+																					</td>								
+																				<?php 
+																					if($i % 4 == 0) {
+																						echo '</tr>';
+																					}
+																				} 
+																				?>
+																			</tbody>
+																		</table>
+																	</div>
+																	
+																	<div id="asia" class="tab-pane">
+																		<?php																		
+																		$checked = in_array("AS", $this->continents) ? 'checked="$checked"' : '';						
+																		?>
+																		<input type="checkbox" style="visibility: hidden;" name="continent[AS]" id="continentAS" <?php echo $checked?> />
+																	
+																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('asia_table',true,'continentAS')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" type="button" onclick="CheckAll('asia_table',false,'continentAS')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+													
+																		<table id="asia_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																			<tbody>
+																				<?php
+																				$i = 0;
+																				
+																				foreach($this->asia as $code => $name) {
+																					$i++;
+																					if(empty($name)) continue;
+																					$checked = in_array($code, $this->countries) ? 'checked="$checked"' : '';								
+																				?>
+																				<?php 
+																					if ( ($i % 4 == 0) && ($i<4) ) {
+																						echo '<tr>';
+																					}
+																					if ( $checked ) {		
+																				?>	
+																						<td class="marcado">
+																				<?php 
+																					} else {
+																				?>
+																						<td>
+																				<?php
+																					}
+																				?>							
+																						<?php echo $name; ?>
+																						<input type="checkbox" onclick="disable_continent_checkbox('continentAS','country<?php echo $code?>')" name="country[<?php echo $code?>]" id="country<?php echo $code?>" <?php echo $checked?> />
+																					</td>								
+																				<?php 
+																					if($i % 4 == 0) {
+																						echo '</tr>';
+																					}
+																				} 
+																				?>
+																			</tbody>
+																		</table>
+																	</div>
+																	
+																	<div id="oceania" class="tab-pane">
+																		<?php																		
+																		$checked = in_array("OC", $this->continents) ? 'checked="$checked"' : '';						
+																		?>
+																		<input type="checkbox" style="visibility: hidden;" name="continent[OC]" id="continentOC" <?php echo $checked?> />
+																	
+																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('oceania_table',true,'continentOC')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" type="button" onclick="CheckAll('oceania_table',false,'continentOC')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+													
+																		<table id="oceania_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																			<tbody>
+																				<?php
+																				$i = 0;
+																				
+																				foreach($this->oceania as $code => $name) {
+																					$i++;
+																					if(empty($name)) continue;
+																					$checked = in_array($code, $this->countries) ? 'checked="$checked"' : '';								
+																				?>
+																				<?php 
+																					if ( ($i % 4 == 0) && ($i<4) ) {
+																						echo '<tr>';
+																					}
+																					if ( $checked ) {		
+																				?>	
+																						<td class="marcado">
+																				<?php 
+																					} else {
+																				?>
+																						<td>
+																				<?php
+																					}
+																				?>							
+																						<?php echo $name; ?>
+																						<input type="checkbox" onclick="disable_continent_checkbox('continentOC','country<?php echo $code?>')" name="country[<?php echo $code?>]" id="country<?php echo $code?>" <?php echo $checked?> />
+																					</td>								
+																				<?php 
+																					if($i % 4 == 0) {
+																						echo '</tr>';
+																					}
+																				} 
+																				?>
+																			</tbody>
+																		</table>
+																	</div>
+								</div>
+							</div>
+																
 						<!-- End Geoblock -->
 						</div>
 						
@@ -1809,6 +2055,44 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 <!-- Chosen scripts -->
 <script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js"></script>
 <script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/init.js"></script>
+
+<script>
+	var cont = 1;
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		var target = $(e.target).attr("href") // activated tab
+		
+		var data_json = <?php echo $this->logs_by_country; ?>;
+		
+		if ( target == "#geoblock" ) {			
+			if (cont == 1) {
+				//var map = new Datamap({element: document.getElementById('container')});
+				map = new Datamap({
+					scope: 'world',
+					element: document.getElementById('container'),
+					projection: 'mercator',
+					fills: {
+						HIGH: '#FF0000',
+						LOW: '#F3F781',
+						MEDIUM: '#FF8000',
+						UNKNOWN: 'rgb(0,0,0)',
+						defaultFill: 'green'
+					},
+					data:	data_json
+					,geographyConfig: {
+						popupTemplate: function(geo, data) {
+							return ['<div class="hoverinfo" style="text-align: center;"><strong>',
+									geo.properties.name,
+									'<br/>' + data.numberOfThings,
+									'</strong></div>'].join('');
+						},
+						highlightFillColor: 'blue',
+					}
+				});
+				cont++;
+			}
+		}
+	});
+</script>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

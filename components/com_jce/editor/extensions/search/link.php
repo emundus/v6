@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -14,6 +14,8 @@ wfimport('editor.libraries.classes.extensions');
 
 class WFLinkSearchExtension extends WFSearchExtension
 {
+    private $enabled = array();
+    
     /**
      * Constructor activating the default information of the class.
      */
@@ -37,6 +39,8 @@ class WFLinkSearchExtension extends WFSearchExtension
         foreach ($plugins as $plugin) {
             if (JPluginHelper::isEnabled('search', $plugin)) {
                 JPluginHelper::importPlugin('search', $plugin);
+
+                $this->enabled[] = $plugin;
             }
         }
     }
@@ -53,8 +57,7 @@ class WFLinkSearchExtension extends WFSearchExtension
     public function isEnabled()
     {
         $wf = WFEditorPlugin::getInstance();
-
-        return (bool) $wf->getParam('search.link.enable', 1);
+        return (bool) $wf->getParam('search.link.enable', 1) && !empty($this->enabled);
     }
 
     /**
@@ -92,6 +95,10 @@ class WFLinkSearchExtension extends WFSearchExtension
 
     public function render()
     {
+        if (!$this->isEnabled()) {
+            return "";
+        }
+        
         // built select lists
         $orders = array();
         $orders[] = JHtml::_('select.option', 'newest', JText::_('WF_SEARCH_NEWEST_FIRST'));
@@ -191,6 +198,11 @@ class WFLinkSearchExtension extends WFSearchExtension
         for ($i = 0, $count = count($rows); $i < $count; ++$i) {
             $row = &$rows[$i];
 
+            // skip empty titles
+            if (empty($row->title)) {
+                continue;
+            }
+
             $result = new StdClass();
 
             if ($searchphrase == 'exact') {
@@ -202,12 +214,8 @@ class WFLinkSearchExtension extends WFSearchExtension
                 $needle = $searchwords[0];
             }
 
-            // get anchors
-            $anchors = self::getAnchors($row->text);
-
-            if (!empty($anchors)) {
-                $row->anchors = $anchors;
-            }
+            // get anchors if any
+            $row->anchors = self::getAnchors($row->text);
 
             if (method_exists('SearchHelper', 'getActions')) {
                 $row->text = SearchHelper::prepareSearchContent($row->text, $needle);
@@ -253,6 +261,10 @@ class WFLinkSearchExtension extends WFSearchExtension
             $result->title = $row->title;
             $result->text = $row->text;
             $result->link = $row->href;
+
+            if (!empty($row->anchors)) {
+                $result->anchors = $row->anchors;
+            }
 
             $results[] = $result;
         }
