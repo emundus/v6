@@ -33,11 +33,9 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
     );
 
     public static $prefixLengthsPsr4 = array (
-        'Z' => 
+        'T' => 
         array (
-            'Zend\\Validator\\' => 15,
-            'Zend\\Stdlib\\' => 12,
-            'Zend\\Escaper\\' => 13,
+            'TYPO3\\PharStreamWrapper\\' => 24,
         ),
         'S' => 
         array (
@@ -57,8 +55,6 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Container\\' => 14,
-            'PhpOffice\\PhpWord\\' => 18,
-            'PhpOffice\\Common\\' => 17,
         ),
         'J' => 
         array (
@@ -82,17 +78,9 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
     );
 
     public static $prefixDirsPsr4 = array (
-        'Zend\\Validator\\' => 
+        'TYPO3\\PharStreamWrapper\\' => 
         array (
-            0 => __DIR__ . '/..' . '/zendframework/zend-validator/src',
-        ),
-        'Zend\\Stdlib\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
-        ),
-        'Zend\\Escaper\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
+            0 => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src',
         ),
         'Symfony\\Polyfill\\Util\\' => 
         array (
@@ -121,14 +109,6 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
         'Symfony\\Component\\Yaml\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
-        ),
-        'PhpOffice\\PhpWord\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoffice/phpword/src/PhpWord',
-        ),
-        'PhpOffice\\Common\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoffice/common/src/Common',
         ),
         'ReCaptcha\\' => 
         array (
@@ -406,6 +386,13 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
         'Symfony\\Polyfill\\Util\\Binary' => __DIR__ . '/..' . '/symfony/polyfill-util/Binary.php',
         'Symfony\\Polyfill\\Util\\BinaryNoFuncOverload' => __DIR__ . '/..' . '/symfony/polyfill-util/BinaryNoFuncOverload.php',
         'Symfony\\Polyfill\\Util\\BinaryOnFuncOverload' => __DIR__ . '/..' . '/symfony/polyfill-util/BinaryOnFuncOverload.php',
+        'TYPO3\\PharStreamWrapper\\Assertable' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Assertable.php',
+        'TYPO3\\PharStreamWrapper\\Behavior' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Behavior.php',
+        'TYPO3\\PharStreamWrapper\\Exception' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Exception.php',
+        'TYPO3\\PharStreamWrapper\\Helper' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Helper.php',
+        'TYPO3\\PharStreamWrapper\\Interceptor\\PharExtensionInterceptor' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Interceptor/PharExtensionInterceptor.php',
+        'TYPO3\\PharStreamWrapper\\Manager' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Manager.php',
+        'TYPO3\\PharStreamWrapper\\PharStreamWrapper' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/PharStreamWrapper.php',
         'lessc' => __DIR__ . '/..' . '/leafo/lessphp/lessc.inc.php',
         'lessc_formatter_classic' => __DIR__ . '/..' . '/leafo/lessphp/lessc.inc.php',
         'lessc_formatter_compressed' => __DIR__ . '/..' . '/leafo/lessphp/lessc.inc.php',
