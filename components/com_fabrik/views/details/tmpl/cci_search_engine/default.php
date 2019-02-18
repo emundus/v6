@@ -23,8 +23,9 @@ $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
 
-if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
-    JFactory::getApplication()->redirect("/rechercher");
+if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw'])) {
+	JFactory::getApplication()->redirect("/rechercher");
+}
 
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
@@ -147,10 +148,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div id="offer-details">
                     <h2>Publics</h2>
                     <?php
-                    if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '')
+                    if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '') {
 	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
-                    else
-	                    echo "<p>Aucun public précisé.</p>"
+                    } else {
+	                    echo "<p>Aucun public précisé.</p>";
+                    }
                     ?>
                 </div>
 
@@ -225,12 +227,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         <div class="formation">
                             <b><?php
                             $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))));
-                                $town =  ucwords(strtolower($town), '\',. ');
-                                $beforeComma = strpos($town, "D'");
-                                if (!empty($beforeComma)) {
-                                    $replace = strpbrk($town, "D'");
-                                    $town = substr_replace($town,lcfirst($replace), $beforeComma);
-                                }
+                            $town =  ucwords(strtolower($town), '\',. ');
+                            $beforeComma = strpos($town, "D'");
+                            if (!empty($beforeComma)) {
+                                $replace = strpbrk($town, "D'");
+                                $town = substr_replace($town,lcfirst($replace), $beforeComma);
+                            }
                             setlocale(LC_ALL, 'fr_FR.utf8');
                             $start_day = date('d',strtotime($session['date_start']));
                             $end_day = date('d',strtotime($session['date_end']));
@@ -240,14 +242,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                             $end_year = date('y',strtotime($session['date_end']));
 
 
-                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year)
+                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            elseif ($start_month == $end_month && $start_year == $end_year)
+                            } elseif ($start_month == $end_month && $start_year == $end_year) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            elseif ($start_month != $end_month && $start_year == $end_year)
+                            } elseif ($start_month != $end_month && $start_year == $end_year) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                            } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
                                 echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                            }
                             ?>
                             </b>
                             <p><?php echo $town ;?></p>
@@ -263,20 +266,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                 </p>
 
                             <?php
-                            if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0)
-                                echo "<p class='places'>dernières places disponibles</p>";
-                            ?>
+                            if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0) :?>
+                                <p class='places'>dernières places disponibles</p>
+                            <?php endif; ?>
 
-                                <?php if ($session['occupants'] < $session['max_occupants']) :?>
-                                    <div class="em-option-buttons">
-                                        <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
-                                        <a href="/demande-de-pre-inscription?session=<?php echo $session['session_code']; ?>" class="em-option-login">s'inscrire</a>
-                                    </div>
-                                <?php else: ?>
-                                    <div class="em-option-buttons">
-                                        <button class="em-option-complet" disabled>Complet</button>
-                                    </div>
-                                <?php endif; ?>
+                            <?php if ($session['occupants'] < $session['max_occupants']) :?>
+                                <div class="em-option-buttons">
+                                    <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
+                                    <a href="/demande-de-pre-inscription?session=<?php echo $session['session_code']; ?>" class="em-option-login">s'inscrire</a>
+                                </div>
+                            <?php else: ?>
+                                <div class="em-option-buttons">
+                                    <button class="em-option-complet" disabled>Complet</button>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                     <?php endforeach; ?>

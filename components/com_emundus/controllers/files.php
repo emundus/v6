@@ -3122,7 +3122,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity','tu').' ON '.$this->_db->quoteName('tu.code').' = '.$this->_db->quoteName('p.code'))
-			->where($this->_db->quoteName('p.code').' LIKE '.$this->_db->quote($product_code))
+			->where($this->_db->quoteName('p.code').' LIKE '.$this->_db->quote($product_code).' AND '.$this->_db->quoteName('t.published').' = 1 AND '.$this->_db->quoteName('t.date_start').' >= '.date("Y-m-d"))
 			->order($this->_db->quoteName('tu.date_start').' ASC');
 		$this->_db->setQuery($query);
 
