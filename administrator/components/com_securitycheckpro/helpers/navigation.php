@@ -258,7 +258,7 @@ defined('_JEXEC') or die();
         </li>  
 
 		<li class="nav2-item" data-toggle="tooltip" data-placement="right" title="<?php JText::_('OTP'); ?>">
-			<a class="nav2-link" href="#" onclick="get_otp_status();"><i class="fapro fa-fw fa-sign-in"></i><?php echo JText::_('OTP'); ?><span class="badge badge-success" style="margin-left: 5px;"><?php echo JText::_('COM_SECURITYCHECKPRO_NEW'); ?></span></a>	  
+			<a class="nav2-link" href="#" onclick="get_otp_status();"><i class="fapro fa-fw fa-sign-in"></i><?php echo JText::_('OTP'); ?></a>	  
 		</li>
 			
       </ul>

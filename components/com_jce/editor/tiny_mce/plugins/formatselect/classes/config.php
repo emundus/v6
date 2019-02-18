@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -29,7 +29,11 @@ class WFFormatselectPluginConfig
         'section' => 'advanced.section',
         'article' => 'advanced.article',
         'aside' => 'advanced.aside',
+        'header' => 'advanced.header',
+        'footer' => 'advanced.footer',
+        'nav' => 'advanced.nav',
         'figure' => 'advanced.figure',
+        //'figcaption' => 'advanced.figcaption',
         'dt' => 'advanced.dt',
         'dd' => 'advanced.dd',
     );
@@ -45,7 +49,7 @@ class WFFormatselectPluginConfig
         $verify = (bool) $wf->getParam('editor.verify_html', 0);
 
         $legacy = $wf->getParam('editor.theme_advanced_blockformats');
-        $default = 'p,div,address,pre,h1,h2,h3,h4,h5,h6,code,samp,span,section,article,aside,figure,dt,dd';
+        $default = 'p,div,address,pre,h1,h2,h3,h4,h5,h6,code,samp,span,section,article,aside,header,footer,nav,figure,dt,dd';
 
         // get blockformats from parameter
         $blockformats = $wf->getParam('formatselect.blockformats');

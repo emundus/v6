@@ -388,7 +388,7 @@ class com_SecuritycheckproInstallerScript {
 		$indice++;
 				
 		// Enable and configure module
-		$query = "UPDATE #__modules SET position='icon', ordering = '-10', published = '1' WHERE `module`='mod_scpadmin_quickicons'";
+		$query = "UPDATE #__modules SET position='icon', ordering = '1', published = '1' WHERE `module`='mod_scpadmin_quickicons'";
 		$db->setQuery($query);
 		$db->execute();
 

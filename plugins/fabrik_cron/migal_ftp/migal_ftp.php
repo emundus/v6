@@ -311,6 +311,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['hours_per_day'] != $update_item['nbheuresjoursession'])
 							$fields[] = $db->quoteName('t.hours_per_day').' = '.$db->quote($update_item['nbheuresjoursession']);
 
+						// Time spent in the company.
+						if ($db_item['time_in_company'] != $update_item['session1'])
+							$fields[] = $db->quoteName('t.time_in_company').' = '.$db->quote($update_item['session1']);
+
 						// Session minimum occupants = teaching unit minimum occupants
 						if ($db_item['min_occupants'] != $update_item['effectif_mini'])
 							$fields[] = $db->quoteName('t.min_occupants').' = '.$db->quote($update_item['effectif_mini']);
@@ -391,19 +395,22 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						
 						// Partner
 						if ($db_item['partner'] != $update_item['produit9'] || $db_item['partner'] != $update_item['produit8']) {
-							if (!empty($update_item['produit9']) && $db_item['partner'] != $update_item['produit9'])
-								$fields[] = $db->quoteName('p.partner').' = '.$db->quote($update_item['produit9']);
-							elseif (!empty($update_item['produit8']) && $db_item['partner'] != $update_item['produit8'])
+							if (!empty($update_item['produit9']) && $db_item['partner'] != $update_item['produit9']) {
+								$fields[] = $db->quoteName('p.partner') . ' = ' . $db->quote($update_item['produit9']);
+							} elseif (!empty($update_item['produit8']) && $db_item['partner'] != $update_item['produit8']) {
 								$fields[] = $db->quoteName('p.partner').' = '.$db->quote($update_item['produit8']);
+							}
 						}
 
 						// Target
-						if ($db_item['target'] != $update_item['produit7'])
+						if ($db_item['target'] != $update_item['produit7']) {
 							$fields[] = $db->quoteName('p.target').' = '.$db->quote($update_item['produit7']);
+						}
 
 						// Evaluation
-						if ($db_item['evaluation'] != $update_item['evaluation'])
+						if ($db_item['evaluation'] != $update_item['evaluation']) {
 							$fields[] = $db->quoteName('p.evaluation').' = '.$db->quote($update_item['evaluation']);
+						}
 
 						// If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
@@ -489,7 +496,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					// DB table struct for different tables.
 					$programme_columns  = ['code', 'label', 'notes', 'published', 'programmes', 'apply_online', 'url', 'prerequisite', 'audience', 'tagline', 'objectives', 'content', 'numcpf', 'manager_lastname', 'manager_firstname', 'pedagogie', 'certificate', 'partner', 'target', 'evaluation'];
 					$campaign_columns   = ['session_code', 'label', 'description', 'short_description', 'start_date', 'end_date', 'profile_id', 'training', 'published'];
-					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'tax_rate', 'intervenant'];
+					$teaching_columns   = ['code', 'session_code', 'label', 'notes', 'published', 'price', 'date_start', 'date_end', 'registration_periode', 'days', 'hours', 'hours_per_day', 'time_in_company', 'min_occupants', 'max_occupants', 'occupants', 'seo_title', 'location_title', 'location_address', 'location_zip', 'location_city', 'location_region', 'tax_rate', 'intervenant'];
 
 					// Build all value lists for the different inserts at once, this avoids having to loop multiple times.
 					$programme_values = array();
@@ -526,10 +533,11 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Only add programme if it does not already exist in DB and has not already been added.
 						$partner = '';
-						if (!empty($item['produit8']))
+						if (!empty($item['produit8'])) {
 							$partner = $item['produit8'];
-						elseif (!empty($item['produit9']))
+						} elseif (!empty($item['produit9'])) {
 							$partner = $item['produit9'];
+						}
 
 						if (!in_array($item['codeproduit'], array_unique(array_keys($programme_codes))) && !array_key_exists($item['codeproduit'], $programme_values)) {
 							$programme_values[$item['codeproduit']] = implode(',', [
@@ -569,10 +577,11 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								'1'
 							]);
 
-							if ($item['publicationsession'] == true)
+							if ($item['publicationsession']) {
 								$published = '0';
-							else
+							} else {
 								$published = '1';
+							}
 							$teaching_values[] = implode(',', [
 								$db->quote($item['codeproduit']),
 								$db->quote($item['numsession']),
@@ -586,6 +595,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['nbjours']),
 								$db->quote($item['nbheures']),
 								$db->quote($item['nbheuresjoursession']),
+								$db->quote($item['session1']),
 								$db->quote($item['effectif_mini']),
 								$db->quote($item['effectif_maxi']),
 								$db->quote($item['placedispo']['nbInscrit']),

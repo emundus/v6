@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -30,12 +30,11 @@ class WFXMLElement extends SimpleXMLElement
         libxml_use_internal_errors(true);
 
         if (is_file($data)) {
-            // Try to load the xml file
-            $xml = simplexml_load_file($data, 'WFXMLElement');
-        } else {
-            // Try to load the xml string
-            $xml = simplexml_load_string($data, 'WFXMLElement');
+            $data = file_get_contents($data);
         }
+
+        // Try to load the xml string
+        $xml = simplexml_load_string($data, 'WFXMLElement');
 
         if (empty($xml)) {
             // There was an error

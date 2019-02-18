@@ -469,7 +469,17 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('cwattachments','plugin','1.0.6','==','3.0.0','>=','CW Article Attachments Plugin','SQL Injection vulnerability','Oct 01 2018','Version 1.0.6','none','No details'),
 ('Joomla!','core','3.8.12','<=','3.0.0','>=','Joomla! multiple vulnerabilities','4 security vulnerabilities','Oct 09 2018','Joomla! versions 1.5.0 through 3.8.12','update','3.8.13'),
 ('com_kunena','component','5.1.5','<','3.0.0','>=','Kunena Component','Two low vulnerabilities','Oct 22 2018','Version 3.0 through 5.1.4','update','5.1.5'),
-('com_jimtawl','component','2.2.7','==','3.0.0','>=','Jimtawl Component','Sql Injection vulnerabilitiy','Nov 18 2018','Version 2.2.7','update','2.2.8');
+('com_jimtawl','component','2.2.7','==','3.0.0','>=','Jimtawl Component','Sql Injection vulnerabilitiy','Nov 18 2018','Version 2.2.7','update','2.2.8'),
+('com_kunena','component','5.1.7','<','3.0.0','>=','Kunena Component','Xss vulnerability','Nov 21 2018','Version 5.1.6 and lower','update','5.1.7'),
+('com_jephotogallery','component','1.1','==','3.0.0','>=','JE Photo Gallery Component','Sql Injection vulnerabilitiy','Dec 04 2018','Version 1.1','none','No details'),
+('com_muscol','component','3.0.3','<=','3.0.0','>=','Music collection Component','Sql Injection vulnerability','Dec 04 2018','Version 3.0.3','update','3.0.6'),
+('com_jomres','component','9.14.0','<=','3.0.0','>=','Joomres Component','Third party vulnerabilitiy','Dec 07 2018','Version 9.14.0 and lower','update','9.15.0'),
+('com_kunena','component','5.1.7','<=','3.0.0','>=','Kunena Component','Tree XSS vulnerabilities','Jan 03 2019','Version 5.1.7 and lower','update','5.1.8'),
+('com_joomcrm','component','1.1.1','==','3.0.0','>=','JoomCRM Component Component','Sql Injection vulnerabilitiy','Jan 15 2019','Version 1.1.0','update','1.1.2'),
+('com_jpprojects','component','1.1.3.2','==','3.0.0','>=','JoomProject Component','Information Disclosure vulnerabilitiy','Jan 15 2019','Version 1.1.3.2','update','1.1.3.3'),
+('mod_jw_srfr','module','3.5.0','<=','3.0.0','>=','Simple RSS Feed Reader Module','Open Redirect vulnerability','Jan 15 2019','Version 3.6.0','none','No details'),
+('Joomla!','core','3.9.1','<=','3.0.0','>=','Joomla! multiple vulnerabilities','4 low vulnerabilities','Jan 15 2019','Joomla 2.5.0 through 3.9.1','update','3.9.2'),
+('com_jcruisereservation','component','6.0.2','==','3.0.0','>=','J-CruiseReservation Component','Sql Injection vulnerability','Jan 21 2019','Version 6.0.2','update','6.0.4');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -588,7 +598,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.27');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.34');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
