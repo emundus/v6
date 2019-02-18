@@ -124,7 +124,7 @@ foreach ($users as $user) {
 	}
 
 
-	if (!empty($company_id)) {
+	if (!empty($company_id) && $company_id != -1) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
 		$m_formations = new EmundusModelFormations();
 
@@ -149,7 +149,7 @@ foreach ($users as $user) {
 	$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
 
 
-	if (!empty($company_id)) {
+	if (!empty($company_id) && $company_id != -1) {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum).', '.$company_id;
 	} else {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum);
