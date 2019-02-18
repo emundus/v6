@@ -141,7 +141,7 @@ function get_badges_layout($name, $override=0, $involved=0, $assignments=0) {
 
 function get_version_update_info(){
 
-	$currentVersion = '4.1.37';
+	$currentVersion = '4.1.39';
 
 	$buffer = "<div class='gantry-field updater-field' id='updater'>
 		<div id='updater-bar' class='h2bar'>Gantry Framework <span>v".$currentVersion."</span></div>

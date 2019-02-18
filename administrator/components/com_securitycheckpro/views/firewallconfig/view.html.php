@@ -389,56 +389,28 @@ $allContinents = array(
 	'OC' => 'Oceania'
 );
 
-$allCountries = array(
-"" => "", "AP" => "Asia/Pacific Region", "EU" => "Europe", "AD" => "Andorra", "AE" => "United Arab Emirates",
-"AF" => "Afghanistan", "AG" => "Antigua and Barbuda", "AI" => "Anguilla", "AL" => "Albania",  "AM" => "Armenia",
-"AN" => "Netherlands Antilles", "AO" => "Angola", "AQ" => "Antarctica", "AR" => "Argentina", "AS" => "American Samoa",
-"AT" => "Austria", "AU" => "Australia", "AW" => "Aruba", "AZ" => "Azerbaijan", "BA" => "Bosnia and Herzegovina",
-"BB" => "Barbados", "BD" => "Bangladesh", "BE" => "Belgium", "BF" => "Burkina Faso", "BG" => "Bulgaria", "BH" =>"Bahrain",
-"BI" => "Burundi", "BJ" => "Benin", "BM" => "Bermuda", "BN" => "Brunei Darussalam", "BO" => "Bolivia", "BR" => "Brazil",
-"BS" => "Bahamas", "BT" => "Bhutan", "BV" => "Bouvet Island", "BW" => "Botswana", "BY" => "Belarus", "BZ" => "Belize",
-"CA" => "Canada", "CC" => "Cocos (Keeling) Islands", "CD" => "Congo, The Democratic Republic of the",
-"CF" => "Central African Republic", "CG" => "Congo", "CH" => "Switzerland", "CI" => "Cote D'Ivoire", "CK" => "Cook Islands",
-"CL" => "Chile", "CM" => "Cameroon", "CN" => "China", "CO" => "Colombia", "CR" => "Costa Rica", "CU" => "Cuba", "CV" => "Cape Verde",
-"CX" => "Christmas Island", "CY" => "Cyprus", "CZ" => "Czech Republic", "DE" => "Germany", "DJ" => "Djibouti",
-"DK" => "Denmark", "DM" => "Dominica", "DO" => "Dominican Republic", "DZ" => "Algeria", "EC" => "Ecuador", "EE" => "Estonia",
-"EG" => "Egypt", "EH" => "Western Sahara", "ER"=> "Eritrea", "ES" => "Spain", "ET" => "Ethiopia", "FI" => "Finland", "FJ" => "Fiji",
-"FK" => "Falkland Islands (Malvinas)", "FM" => "Micronesia, Federated States of", "FO" => "Faroe Islands",
-"FR" => "France", "FX" => "France, Metropolitan", "GA" => "Gabon", "GB" => "United Kingdom",
-"GD" => "Grenada", "GE" => "Georgia", "GF" => "French Guiana", "GH" => "Ghana", "GI" => "Gibraltar", "GL" => "Greenland",
-"GM" => "Gambia", "GN" => "Guinea", "GP" => "Guadeloupe", "GQ" => "Equatorial Guinea", "GR" => "Greece", "GS" => "South Georgia and the South Sandwich Islands", "GT" => "Guatemala", "GU" => "Guam", "GW" => "Guinea-Bissau", "GY" => "Guyana", "HK" => "Hong Kong", "HM" => "Heard Island and McDonald Islands", 
-"HN" => "Honduras", "HR" => "Croatia", "HT" => "Haiti", "HU" => "Hungary", "ID" => "Indonesia", "IE" => "Ireland", "IL" => "Israel", "IN" => "India",
-"IO" => "British Indian Ocean Territory", "IQ" => "Iraq", "IR" => "Iran, Islamic Republic of",
-"IS" => "Iceland", "IT" => "Italy", "JM" => "Jamaica", "JO" => "Jordan", "JP" => "Japan", "KE" => "Kenya", "KG" => "Kyrgyzstan",
-"KH" => "Cambodia", "KI" => "Kiribati", "KM" => "Comoros", "KN" => "Saint Kitts and Nevis", "KP" => "Korea, Democratic People's Republic of",
-"KR" => "Korea, Republic of", "KW" => "Kuwait", "KY" => "Cayman Islands",
-"KZ" => "Kazakhstan", "LA" => "Lao People's Democratic Republic", "LB" => "Lebanon", "LC" => "Saint Lucia",
-"LI" => "Liechtenstein", "LK" => "Sri Lanka", "LR" => "Liberia", "LS" => "Lesotho", "LT" => "Lithuania", "LU" => "Luxembourg",
-"LV" => "Latvia", "LY" => "Libyan Arab Jamahiriya", "MA" => "Morocco", "MC" => "Monaco", "MD" => "Moldova, Republic of",
-"MG" => "Madagascar", "MH" => "Marshall Islands", "MK" => "Macedonia",
-"ML" => "Mali", "MM" => "Myanmar", "MN" => "Mongolia", "MO" => "Macau", "MP" => "Northern Mariana Islands",
-"MQ" => "Martinique", "MR" => "Mauritania", "MS" => "Montserrat", "MT" => "Malta", "MU" => "Mauritius", "MV" => "Maldives",
-"MW" => "Malawi", "MX" => "Mexico", "MY" => "Malaysia", "MZ" => "Mozambique", "NA" => "Namibia", "NC" => "New Caledonia",
-"NE" => "Niger", "NF" => "Norfolk Island", "NG" => "Nigeria", "NI" => "Nicaragua", "NL" => "Netherlands", "NO" => "Norway",
-"NP" => "Nepal", "NR" => "Nauru", "NU" => "Niue", "NZ" => "New Zealand", "OM" => "Oman", "PA" => "Panama", "PE" => "Peru", "PF" => "French Polynesia",
-"PG" => "Papua New Guinea", "PH" => "Philippines", "PK" => "Pakistan", "PL" => "Poland", "PM" => "Saint Pierre and Miquelon",
-"PN" => "Pitcairn Islands", "PR" => "Puerto Rico", "PS" => "Palestinian Territory", "PT" => "Portugal", "PW" => "Palau", "PY" => "Paraguay",
-"QA" => "Qatar", "RE" => "Reunion", "RO" => "Romania",
-"RU" => "Russian Federation", "RW" => "Rwanda", "SA" => "Saudi Arabia", "SB" => "Solomon Islands",
-"SC" => "Seychelles", "SD" => "Sudan", "SE" => "Sweden", "SG" => "Singapore", "SH" => "Saint Helena", "SI" => "Slovenia",
-"SJ" => "Svalbard and Jan Mayen", "SK" => "Slovakia", "SL" => "Sierra Leone", "SM" => "San Marino", "SN" => "Senegal",
-"SO" => "Somalia", "SR" => "Suriname", "ST" => "Sao Tome and Principe", "SV" => "El Salvador", "SY" => "Syrian Arab Republic",
-"SZ" => "Swaziland", "TC" => "Turks and Caicos Islands", "TD" => "Chad", "TF" => "French Southern Territories",
-"TG" => "Togo", "TH" => "Thailand", "TJ" => "Tajikistan", "TK" => "Tokelau", "TM" => "Turkmenistan",
-"TN" => "Tunisia", "TO" => "Tonga", "TL" => "Timor-Leste", "TR" => "Turkey", "TT" => "Trinidad and Tobago", "TV" => "Tuvalu",
-"TW" => "Taiwan", "TZ" => "Tanzania, United Republic of", "UA" => "Ukraine",
-"ug" => "Uganda", "UM" => "United States Minor Outlying Islands", "US" => "United States", "UY" => "Uruguay",
-"UZ" => "Uzbekistan", "VA" => "Holy See (Vatican City State)", "VC" => "Saint Vincent and the Grenadines",
-"VE" => "Venezuela", "VG" => "Virgin Islands, British", "VI" => "Virgin Islands, U.S.",
-"VN" => "Vietnam", "VU" => "Vanuatu", "WF" => "Wallis and Futuna", "WS" => "Samoa", "YE" => "Yemen", "YT" => "Mayotte",
-"RS" => "Serbia", "ZA" => "South Africa", "ZM" => "Zambia", "ME" => "Montenegro", "ZW" => "Zimbabwe",
-"A1" => "Anonymous Proxy", "A2" => "Satellite Provider", "O1" => "Other",
-"AX" => "Aland Islands", "GG" => "Guernsey", "IM" => "Isle of Man", "JE" => "Jersey", "BL" => "Saint Barthelemy", "MF" => "Saint Martin"
+$this->europe = array(
+"AL" => "Albania","AD" => "Andorra","AM" => "Armenia","AT" => "Austria","AZ" => "Azerbaijan","BA" => "Bosnia and Herzegovina","BE" => "Belgium","BG" => "Bulgaria","BY" => "Belarus","CH" => "Switzerland","CY" => "Cyprus","CZ" => "Czech Republic","DE" => "Germany","DK" => "Denmark","EE" => "Estonia","ES" => "Spain","FI" => "Finland","FR" => "France","GB" => "United Kingdom","GE" => "Georgia","GR" => "Greece","HR" => "Croatia","HU" => "Hungary","IE" => "Ireland","IS" => "Iceland","IT" => "Italy","LT" => "Lithuania","LU" => "Luxembourg","LV" => "Latvia","MD" => "Moldova, Republic of","ME" => "Montenegro","MK" => "Macedonia","NL" => "Netherlands","NO" => "Norway","PL" => "Poland","PT" => "Portugal","RO" => "Romania","RS" => "Serbia","SE" => "Sweden","SI" => "Slovenia","SJ" => "Svalbard and Jan Mayen", "SK" => "Slovakia","TR" => "Turkey","UA" => "Ukraine","RU" => "Russian Federation","VA" => "Holy See (Vatican City State)","MT" => "Malta","MC" => "Monaco","LI" => "Liechtenstein","IM" => "Isle of Man","GI" => "Gibraltar","FO" => "Faroe Islands","AX" => "Aland Islands","GG" => "Guernsey","SM" => "San Marino"
+);
+
+$this->northamerica = array(
+"BS" => "Bahamas","BZ" => "Belize","CA" => "Canada","CR" => "Costa Rica","CU" => "Cuba","DO" => "Dominican Republic","GL" => "Greenland","GT" => "Guatemala","HN" => "Honduras","HT" => "Haiti","JM" => "Jamaica","MX" => "Mexico","NI" => "Nicaragua","PA" => "Panama","PR" => "Puerto Rico","SV" => "El Salvador","US" => "United States","AG" => "Antigua and Barbuda","AW" => "Aruba","BB" => "Barbados","BL" => "Saint-Barthelemy","GD" => "Grenada","KN" => "Saint Kitts and Nevis","LC" => "Saint Lucia","MQ" => "Martinique","TC" => "Turks and Caicos Islands","VG" => "Virgin Islands, British","AI" => "Anguilla","BM" => "Bermuda","DM" => "Dominica","PM" => "Saint Pierre and Miquelon","GP" => "Guadeloupe","KY" => "Cayman Islands","MF" => "Saint-Martin (French part)","MS" => "Montserrat","TT" => "Trinidad and Tobago","VC" => "Saint Vincent and the Grenadines","VI" => "Virgin Islands, U.S."
+);
+
+$this->southamerica = array(
+"AR" => "Argentina","BO" => "Bolivia","BR" => "Brazil","CL" => "Chile","CO" => "Colombia","EC" => "Ecuador","FK" => "Falkland Islands (Malvinas)","GF" => "French Guiana","GY" => "Guyana","PE" => "Peru","PY" => "Paraguay","SR" => "Suriname","UY" => "Uruguay","VE" => "Venezuela","GS" => "South Georgia and the South Sandwich Islands"
+);
+
+$this->africa = array(
+"AO" => "Angola","BF" => "Burkina Faso","BI" => "Burundi","BJ" => "Benin","BW" => "Botswana","CD" => "Congo","CF" => "Central African Republic","CG" => "Congo","CI" => "Cote D'Ivoire","CM" => "Cameroon","DJ" => "Djibouti","DZ" => "Algeria","EG" => "Egypt","ER"=> "Eritrea","ET" => "Ethiopia","GA" => "Gabon","GH" => "Ghana","GM" => "Gambia","GN" => "Guinea","GQ" => "Equatorial Guinea","GW" => "Guinea-Bissau","KE" => "Kenya","LR" => "Liberia","LS" => "Lesotho","LY" => "Libyan Arab Jamahiriya","MA" => "Morocco","MU" => "Mauritius","MG" => "Madagascar","ML" => "Mali","MR" => "Mauritania","MW" => "Malawi","MZ" => "Mozambique","NA" => "Namibia","NE" => "Niger","NG" => "Nigeria","RE" => "Reunion","RW" => "Rwanda","SD" => "Sudan","SL" => "Sierra Leone","SN" => "Senegal","SO" => "Somalia","SS" => "South Sudan","SZ" => "Swaziland","TD" => "Chad","TG" => "Togo","TN" => "Tunisia","TZ" => "Tanzania, United Republic of","UG" => "Uganda","ZA" => "South Africa","ZM" => "Zambia","ZW" => "Zimbabwe","EH" => "Western Sahara","KM" => "Comoros","SH" => "Saint Helena","ST" => "Sao Tome and Principe","BV" => "Bouvet Island","CV" => "Cape Verde","SC" => "Seychelles"
+);
+
+$this->asia = array(
+"AE" => "United Arab Emirates","AF" => "Afghanistan","BD" => "Bangladesh","BN" => "Brunei Darussalam","IO" => "British Indian Ocean Territory","BT" => "Bhutan","CN" => "China","ID" => "Indonesia","IL" => "Israel","IN" => "India","IQ" => "Iraq","IR" => "Iran, Islamic Republic of","JO" => "Jordan","JP" => "Japan","KG" => "Kyrgyzstan","KH" => "Cambodia","KP" => "Korea, Democratic People's Republic of","KR" => "Korea, Republic of","KW" => "Kuwait","KZ" => "Kazakhstan","LA" => "Lao People's Democratic Republic","LB" => "Lebanon","LK" => "Sri Lanka","MO" => "Macau","MM" => "Myanmar","MN" => "Mongolia","MY" => "Malaysia","NP" => "Nepal","OM" => "Oman","PH" => "Philippines","PK" => "Pakistan","PS" => "Palestinian Territory","QA" => "Qatar","SA" => "Saudi Arabia","SY" => "Syrian Arab Republic","TH" => "Thailand","TJ" => "Tajikistan","TL" => "Timor-Leste","TM" => "Turkmenistan","TW" => "Taiwan","UZ" => "Uzbekistan","VN" => "VietNam","YE" => "Yemen","HK" => "Hong Kong","MV" => "Maldives","BH" =>"Bahrain","SG" => "Singapore"
+);
+
+$this->oceania = array(
+"AS" => "American Samoa","AU" => "Australia","UM" => "United States Minor Outlying Islands","CC" => "Cocos (Keeling) Islands","CX" => "Christmas Island","FJ" => "Fiji","FM" => "Micronesia, Federated States of","GU" => "Guam","HM" => "Heard Island and McDonald Islands","UM" => "United States Minor Outlying Islands","KI" => "Kiribati","MH" => "Marshall Islands","MP" => "Northern Mariana Islands","NC" => "New Caledonia","NF" => "Norfolk Island","NR" => "Nauru","NU" => "Niue","NZ" => "New Zealand","PG" => "Papua New Guinea","PW" => "Palau","SB" => "Solomon Islands","TF" => "French Southern Territories","TK" => "Tokelau","TO" => "Tonga","TV" => "Tuvalu","VU" => "Vanuatu","WF" => "Wallis and Futuna","WS" => "Samoa","CK" => "Cook Islands","PF" => "French Polynesia","PN" => "Pitcairn Islands"
 );
 
 
@@ -446,6 +418,9 @@ $allCountries = array(
 $geoip_database_update = $model->get_latest_database_update();
 
 $items_geoblock = $model->load_geoblock_data();
+
+// Obtenemos los logs por paises
+$this->logs_by_country = $model->logs_by_country();
 
 // Inicializamos las variables
 $countries= array();
@@ -469,8 +444,6 @@ if ( (!is_null($items_geoblock)) && ($items_geoblock['geoblockcontinents'] != ''
 
 $this->countries = 	$countries;
 $this->continents = $continents;
-$this->allContinents = $allContinents;
-$this->allCountries = $allCountries;
 $this->geoip_database_update = $geoip_database_update;
 
 // Pestaña upload scanner

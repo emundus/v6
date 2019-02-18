@@ -1039,8 +1039,6 @@ public function get_log_filename($opcion,$devolver=false) {
 	
 	$db = $this->getDbo();
 	
-	//kk
-		
 	$query = $db->getQuery(true)
 		->select(array($db->quoteName('storage_value')))
 		->from($db->quoteName('#__securitycheckpro_storage'))
@@ -1191,9 +1189,6 @@ private function saveStack($opcion, $borrar=true)
 		$this->get_log_filename("filepermissions_log");
 		$this->get_log_filename("fileintegrity_log");
 		$this->get_log_filename("filemalware_log");
-		
-		/*kk$mainframe = JFactory::getApplication();
-		$mainframe->setUserState("kk",$this->filepermissions_log_name);	*/
 		
 		if ( !empty($this->filepermissions_log_name) )  {
 			array_push($array_exentos,$this->filepermissions_log_name);

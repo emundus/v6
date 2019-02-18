@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 $lang = JFactory::getLanguage();
 $extension = 'com_emundus';
 $base_dir = JPATH_SITE . '/components/com_emundus';
-$language_tag =& JFactory::getLanguage()->getTag();
+$language_tag = "fr-FR";
 $reload = true;
 $lang->load($extension, $base_dir, $language_tag, $reload);
 
@@ -93,18 +93,18 @@ function getDepartment($dept) {
     }
 }
 
-// GET the autor's Regions
-function getAuthorRegions($uid) {
+// GET the acteur public Regions
+function getActeurRegions($fnum) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
     $query
         ->select($db->quoteName('dr.name'))
-        ->from($db->quoteName('#__emundus_users', 'u'))
-        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
-        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('ur.region'))
-        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+        ->from($db->quoteName('#__emundus_recherche', 'er'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
+        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
+        ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
 
     $db->setQuery($query);
     try {
@@ -119,19 +119,19 @@ function getAuthorRegions($uid) {
     }
 }
 
-//GET the autor's Departments
-function getAuthorDepartments($uid) {
+//GET the acteur public Departments
+function getActeurDepartments($fnum) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
     $query
         ->select($db->quoteName('dd.departement_nom'))
-        ->from($db->quoteName('#__emundus_users', 'u'))
-        ->leftJoin($db->quoteName('#__emundus_users_597_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
-        ->leftJoin($db->quoteName('#__emundus_users_597_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->from($db->quoteName('#__emundus_recherche', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
         ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
-        ->where($db->quoteName('u.user_id') . ' = ' . $uid);
+        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
 
     $db->setQuery($query);
     try {
@@ -173,12 +173,9 @@ function getProjectDisciplines($fnum) {
 }
 
 
-
-
 echo $this->plugintop;
 
 echo $this->loadTemplate('relateddata');
-
 
 $region = "";
 $department = "";
@@ -194,6 +191,9 @@ require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models'
 $m_cifre = new EmundusModelCifre();
 
 ?>
+
+
+
     <!-- Title -->
     <p class="em-offre-title">
         <?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
@@ -208,7 +208,7 @@ $m_cifre = new EmundusModelCifre();
     <div class="em-offre-author">
         <h1 class="em-offre-title"><?php echo JText::_('COM_EMUNDUS_FABRIK_SUBJECT_PROFILE'); ?></h1>
         <div class="em-offre-author-profile">
-            <div class="em-offre-author-name"><strong>Type : </strong><?php echo $chercheur; ?></div>
+            <div class="em-offre-author-name"><strong><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_TYPE'); ?></strong><?php echo $chercheur; ?></div>
         </div>
 
         <?php
@@ -221,7 +221,7 @@ $m_cifre = new EmundusModelCifre();
 
             <div class="em-offre-inst">
                 <div class="em-offre-institution">
-                    <strong>Parcours : </strong>
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_PARCOURS'); ?></strong>
                     <?php $master = $m_cifre->getUserMasters($author->id); ?>
                     <?php echo $master->master_2_intitule . ' - ' . $master->master_2_etablissement . ' (' . $master->master_2_annee . ')'; ?>
                 </div>
@@ -231,7 +231,7 @@ $m_cifre = new EmundusModelCifre();
             <?php $laboratoire = $m_cifre->getUserLaboratory($author->id); ?>
             <div class="em-offre-inst">
                 <div class="em-offre-institution">
-                    <strong>Nom de l'unité de recherche : </strong>
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_RESEARCH_UNIT'); ?></strong>
                     <?php
                     if (!empty($laboratoire->website)) {
                         $parse = parse_url($laboratoire->website, PHP_URL_SCHEME) === null ? 'http://' . $laboratoire->website : $laboratoire->website;
@@ -244,14 +244,12 @@ $m_cifre = new EmundusModelCifre();
                     ?>
                 </div>
             </div>
-            <a class="btn btn-default" href="/index.php?option=com_fabrik&task=details.view&formid=308&listid=318&rowid=<?php echo $laboratoire->id; ?>">Cliquez ici pour plus d'information</a>
-
 
             <?php $ecole_doc = $m_cifre->getDoctorale($author->id); ?>
                 <?php if (!empty($ecole_doc)) :?>
                     <div class="em-offre-ecole">
                         <div class="em-offre-ecole-doctorale">
-                            <strong>École doctorale : </strong><?php echo $ecole_doc; ?>
+                            <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_SCHOOL'); ?></strong><?php echo $ecole_doc; ?>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -264,7 +262,7 @@ $m_cifre = new EmundusModelCifre();
             ?>
             <div class="em-offre-inst">
                 <div class="em-offre-institution">
-                    <strong>Nom : </strong>
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_INSTITUTE_NAME'); ?></strong>
                     <?php
                     if (!empty($institution->website)) {
                         $parse = parse_url($institution->website, PHP_URL_SCHEME) === null ? 'http://' . $institution->website : $institution->website;
@@ -276,48 +274,46 @@ $m_cifre = new EmundusModelCifre();
                     ?>
                 </div>
             </div>
-            <a class="btn btn-default"
-               href="/index.php?option=com_fabrik&task=details.view&formid=307&listid=317&rowid=<?php echo $institution->id; ?>">Plus d'informations</a>
 
 
         <?php endif; ?>
 
         <div class="em-offre-limit-date">
-            <strong>Date de disponibilité : </strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
+            <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DISPO_DATE'); ?></strong> <?php echo date('d/m/Y', strtotime($this->data['jos_emundus_projet___limit_date'][0])); ?>
         </div>
     </div>
 
     <div class="em-offre">
-        <h1 class="em-offre-title">Le projet </h1>
+        <h1 class="em-offre-title"><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></h1>
 
         <p class="em-offre-subject-title">
-            <strong>Titre : </strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
+            <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_NAME'); ?></strong><?php echo $this->data['jos_emundus_projet___titre_raw'][0]; ?>
         </p>
 
         <!-- THEMES -->
         <div class="em-offre-themes">
-            <div class="em-offre-subtitle">Thématiques identifiées :</div>
-            <strong class="em-highlight"> <?php echo !empty($this->data['data_thematics___thematic_raw']) ? is_array($this->data['data_thematics___thematic_raw']) ? implode('</strong>; <strong class="em-highlight">', $this->data['data_thematics___thematic_raw']) : $this->data['data_thematics___thematic_raw'] : '<strong class="em-highlight">Aucune thématique</strong>'; ?></strong>
+            <div class="em-offre-subtitle"><?php echo JText::_('COM_EMUNDUS_FABRIK_THEMES'); ?></div>
+            <strong class="em-highlight"> <?php echo !empty($this->data['data_thematics___thematic_raw']) ? is_array($this->data['data_thematics___thematic_raw']) ? implode('</strong>; <strong class="em-highlight">', $this->data['data_thematics___thematic_raw']) : $this->data['data_thematics___thematic_raw'] : '<strong class="em-highlight">' . JText::_('COM_EMUNDUS_FABRIK_NO_THEMES') . '</strong>'; ?></strong>
         </div>
 
         <!-- DISCIPLINES -->
         <div class="em-offre-disciplines">
 
-            <div class="em-offre-subtitle">Disciplines sollicitées :</div>
-            <strong class="em-highlight"><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', array_column(getProjectDisciplines($fnum), 'disciplines')) : "Aucune discipline."; ?> </strong>
+            <div class="em-offre-subtitle"><?php echo JText::_('COM_EMUNDUS_FABRIK_DISCIPLINES'); ?></div>
+            <strong class="em-highlight"><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', array_column(getProjectDisciplines($fnum), 'disciplines')) : JText::_('COM_EMUNDUS_FABRIK_NO_DISCIPLINES'); ?> </strong>
         </div>
 
         <?php if ($profile != '1008') : ?>
             <!-- Project context -->
             <p class="em-offre-contexte">
-                <div class="em-offre-subtitle">Enjeu et actualité du sujet :
+                <div class="em-offre-subtitle"><?php echo JText::_('COM_EMUNDUS_FABRIK_ENJEU'); ?>
                 </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
             </p>
 
         <?php else : ?>
             <!-- Project context -->
             <p class="em-offre-contexte">
-            <div class="em-offre-subtitle">Territoire :
+            <div class="em-offre-subtitle"><?php echo JText::_('COM_EMUNDUS_FABRIK_TERRITOIRE'); ?>
             </div><?php echo $this->data['jos_emundus_projet___contexte_raw'][0]; ?>
             </p>
         <?php endif; ?>
@@ -329,11 +325,11 @@ $m_cifre = new EmundusModelCifre();
         <!-- Project question -->
         <?php
         if ($profile == '1006')
-            $questionText = 'Problématique :';
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_FUTURE_DOC');
         elseif ($profile == '1007')
-            $questionText = 'Problématique :';
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_CHERCHEUR');
         elseif ($profile == '1008')
-            $questionText = 'Grand défi :';
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_GRAND_DEFI');
         ?>
         <p class="em-offre-question">
         <div class="em-offre-subtitle"><?php echo $questionText; ?></div><?php echo $this->data['jos_emundus_projet___question_raw'][0]; ?>
@@ -341,55 +337,98 @@ $m_cifre = new EmundusModelCifre();
 
             <!-- Project methodology -->
             <p class="em-offre-methodologie">
-            <div class="em-offre-subtitle">Méthodologie proposée :
+            <div class="em-offre-subtitle"><?php echo JText::_('COM_EMUNDUS_FABRIK_METHODOLOGIE'); ?>
             </div><?php echo $this->data['jos_emundus_projet___methodologie_raw'][0]; ?>
             </p>
 
 
             <div class="em-regions">
-                <strong>Régions : </strong>
+                <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_REGIONS'); ?></strong>
                     <?php
-                        if(!empty($regions))
-                            echo implode(', ', $regions);
-                        else
-                            echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                        if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                            if($profile != '1008') {
+                                if(!empty($regions))
+                                    echo implode(', ', array_unique($regions));
+                                else
+                                    echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                            }
+                            else {
+                                $regions = getActeurRegions($fnum);
+                                if (array_filter(array_column($regions, 'name'))) {
+                                    echo implode(', ', array_unique(array_column($regions, 'name')));
+                                }
+                                else {
+                                    echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                                }
+                            }
+                        }
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
+                        }
 
                     ?>
             </div>
 
+            <?php if ($profile != '1008') :?>
             <div class="em-departments">
-                <strong>Départements : </strong>
+                <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
                     <?php
-                        if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
-                            $departmentArray= array();
-                            foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
-                            {
-                                $departmentArray[] = getDepartment($dep);
-                            }
+                        if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                            if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
+                                $departmentArray= array();
+                                foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
+                                {
+                                    $departmentArray[] = getDepartment($dep);
+                                }
 
-                            echo implode(', ', $departmentArray);
+                                echo implode(', ', array_unique($departmentArray) );
+                            }
+                            else {
+                                echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                            }
+                        }
+                        else {
+                            echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
+                        }
+
+                    ?>
+            </div>
+            <?php else :?>
+                <div class="em-departments">
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
+                    <?php
+                    if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                        $departments = getActeurDepartments($fnum);
+                        if (array_filter(array_column($departments, 'departement_nom'))) {
+                            echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
                         }
                         else {
                             echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
                         }
+                    }
+                    else {
+                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
+                    }
+
                     ?>
-            </div>
+                </div>
+            <?php endif; ?>
 
     </div>
 
 
     <div class="em-partenaires">
-        <h1 class="em-partenaires-title">Les partenaires recherchés </h1>
+        <h1 class="em-partenaires-title"><?php echo JText::_('COM_EMUNDUS_FABRIK_PARTENAIRES'); ?></h1>
 
         <?php if ($profile != '1006') : ?>
             <!-- Have futur docs -->
             <p class="em-partenaires-futur-doc">
-                <strong>Un futur doctorant : </strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
+                <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC'); ?></strong><?php echo $this->data['jos_emundus_recherche___futur_doctorant_yesno']; ?>
             </p>
 
             <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-futur-doc-name">
-                    <strong>Nom et prénom du futur doctorant :</strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC_NAME'); ?></strong><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?>
                 </p>
             <?php endif; ?>
 
@@ -397,11 +436,11 @@ $m_cifre = new EmundusModelCifre();
 
         <?php if ($profile != '1007') :?>
             <p class="em-partenaires-equipe-recherche">
-                <strong>Une équipe de recherche : </strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?>
+                <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE'); ?></strong><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?>
             </p>
             <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-equipe-recherche-name">
-                    <strong>Nom de l'équipe partenaire : </strong><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?>
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE_NAME'); ?></strong><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?>
                 </p>
             <?php endif; ?>
         <?php endif; ?>
@@ -410,16 +449,16 @@ $m_cifre = new EmundusModelCifre();
 
         <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
             <p class="em-partenaires-acteur">
-                <strong>Un acteur public ou associatif : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
+                <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB'); ?></strong><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
             </p>
 
             <p class="em-partenaires-acteur-type">
-                <strong>Type : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?>
+                <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_TYPE'); ?></strong><?php echo $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?>
             </p>
 
             <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0) : ?>
                 <p class="em-partenaires-acteur-type">
-                    <strong>Nom du partenaire : </strong><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
+                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_NAME'); ?></strong><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
                 </p>
             <?php endif; ?>
         <?php endif; ?>
@@ -428,7 +467,7 @@ $m_cifre = new EmundusModelCifre();
 
 <?php if (!empty($files)) : ?>
     <div class="em-attached-files">
-        <h1 class="em-attached-title">Pièces jointes à l'annonce</h1>
+        <h1 class="em-attached-title"><?php echo JText::_('COM_EMUNDUS_FABRIK_ATTACHED_FILES'); ?></h1>
 
         <?php foreach ($files as $file) : ?>
 
@@ -458,7 +497,7 @@ if ($status === 2) :?>
 
     <div class="em-search-item-action">
         <div id="em-search-item-action-button">
-            <button type="button" class="btn btn-default" disabled> Offre clôturée</button>
+            <button type="button" class="btn btn-default" disabled><?php echo JText::_('COM_EMUNDUS_CIFRE_CANCELED_BUTTON'); ?></button>
         </div>
     </div>
 
@@ -468,7 +507,7 @@ if ($status === 2) :?>
 
         <div class="em-search-item-action">
             <div id="em-search-item-action-button">
-                <button type="button" class="btn btn-default" disabled>Offre en attente de validation</button>
+                <button type="button" class="btn btn-default" disabled><?php echo JText::_('COM_EMUNDUS_CIFRE_WAITING_BUTTON'); ?></button>
             </div>
         </div>
 
@@ -476,7 +515,7 @@ if ($status === 2) :?>
 
         <div class="em-search-item-action">
             <div id="em-search-item-action-button">
-                <button type="button" class="btn btn-default" disabled>Offre déposée par vous-même</button>
+                <button type="button" class="btn btn-default" disabled><?php echo JText::_('COM_EMUNDUS_CIFRE_OWN_BUTTON'); ?></button>
             </div>
         </div>
 
@@ -509,14 +548,14 @@ if ($status === 2) :?>
 
         <button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal"
                 data-target="#contactModal">
-            Entrer en contact
+            <?php echo JText::_('COM_EMUNDUS_CIFRE_CONTACT_BUTTON'); ?>
         </button>
 
         <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Demande de contact</h5>
+                        <h5 class="modal-title"><?php echo JText::_('COM_EMUNDUS_CIFRE_CONTACT'); ?></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -524,14 +563,14 @@ if ($status === 2) :?>
                     <div class="modal-body">
 
                         <?php if ($user->profile == '1006') : ?>
-                        <p>Pourquoi ce projet vous semble-t-il intéressant et la structure que vous contactez pertinente pour le traiter ? Quelles orientations méthodologiques et disciplinaires envisagez-vous ?</p>
+                        <p><?php echo JText::_('COM_EMUNDUS_CIFRE_FUTUR_DOC_FIRST_QUESTION'); ?></p>
                         <textarea id="em-contact-message" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
-                        <p>Pourquoi souhaitez-vous faire une thèse Cifre ? En quoi ce projet est-il en adéquation avec votre parcours académique et professionnel (ce que vous avez fait avant, ce que vous souhaitez faire après) ? </p>
+                        <p><?php echo JText::_('COM_EMUNDUS_CIFRE_FUTUR_DOC_SECOND_QUESTION'); ?></p>
                         <textarea id="em-contact-motivation" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
                         <?php if (!empty($offers)) : ?>
-                            <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>
+                            <p><?php echo JText::_('COM_EMUNDUS_CIFRE_JOIN_CIFRE'); ?></p>
                             <select id="em-join-offer">
-                                <option value="">Je ne souhaite pas joindre mes offres.</option>
+                                <option value=""><?php echo JText::_('COM_EMUNDUS_CIFRE_NO_JOIN_CIFRE'); ?></option>
                                 <?php foreach ($offers as $offer) : ?>
                                     <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
                                 <?php endforeach; ?>
@@ -539,11 +578,11 @@ if ($status === 2) :?>
                         <?php endif; ?>
 
                         <hr>
-                        <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                        <span class="em-upload-explain-text"><?php echo JText::_('COM_EMUNDUS_CIFRE_SELECT_FILE'); ?></span>
                         <!-- Upload a file from computer -->
                         <div id="em-attachment-list">
                             <div id="cv-upload_file">
-                                <h4 id="em-filename">Ajoutez votre CV au format .pdf (obligatoire)</h4>
+                                <h4 id="em-filename"><?php echo JText::_('COM_EMUNDUS_CIFRE_ADD_CV'); ?></h4>
                                 <label for="em-cv_to_upload" accept="application/pdf"
                                        id="em-cv_to_upload_label">
                                     <input type="file" id="em-cv_to_upload">
@@ -553,12 +592,12 @@ if ($status === 2) :?>
 
                             <span class="input-group-btn">
                                     <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;"
-                                       onClick="cvAddFile();">Joindre</a>
+                                       onClick="cvAddFile();"><?php echo JText::_('COM_EMUNDUS_CIFRE_JOIN'); ?></a>
                                 </span>
 
                             <div id="doc-upload_file">
-                                <h4 id="em-filename">Ajouter un document (facultatif)</h4>
-                                <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                                <h4 id="em-filename"><?php echo JText::_('COM_EMUNDUS_CIFRE_ADD_FILE'); ?></h4>
+                                <span class="em-upload-explain-text"><?php echo JText::_('COM_EMUNDUS_CIFRE_SELECT_FILE'); ?></span>
                                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">
                                     <input type="file" id="em-doc_to_upload">
                                 </label>
@@ -567,17 +606,17 @@ if ($status === 2) :?>
 
                             <span class="input-group-btn">
                                         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"
-                                           style="top:13px;" onClick="docAddFile();">Joindre</a>
+                                           style="top:13px;" onClick="docAddFile();"><?php echo JText::_('COM_EMUNDUS_CIFRE_JOIN'); ?></a>
                                     </span>
 
                             <?php else : ?>
 
-                            <p>Présentez-vous et expliquez en quoi ce projet et la personne que vous contactez sont en adéquation avec ce que vous faites ou souhaitez faire dans votre structure.</p>
+                            <p><?php echo JText::_('COM_EMUNDUS_CIFRE_QUESTION'); ?></p>
                             <textarea id="em-contact-message" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>
                             <?php if (!empty($offers)) : ?>
-                                <p>Vous pouvez joindre une annonce que vous avez publiée sur la plateforme (facultatif).</p>
+                                <p><?php echo JText::_('COM_EMUNDUS_CIFRE_JOIN_CIFRE'); ?></p>
                                 <select id="em-join-offer">
-                                    <option value="">Je ne souhaite pas joindre mes offres.</option>
+                                    <option value=""><?php echo JText::_('COM_EMUNDUS_CIFRE_NO_JOIN_CIFRE'); ?></option>
                                     <?php foreach ($offers as $offer) : ?>
                                         <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>
                                     <?php endforeach; ?>
@@ -588,8 +627,8 @@ if ($status === 2) :?>
                             <!-- Upload a file from computer -->
                             <div id="em-attachment-list">
                                 <div id="doc-upload_file">
-                                    <h4 id="em-filename">Ajouter un document (facultatif)</h4>
-                                    <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>
+                                    <h4 id="em-filename"><?php echo JText::_('COM_EMUNDUS_CIFRE_ADD_FILE'); ?></h4>
+                                    <span class="em-upload-explain-text"><?php echo JText::_('COM_EMUNDUS_CIFRE_SELECT_FILE'); ?></span>
                                     <label for="em-doc_to_upload" id="em-doc_to_upload_label">
                                         <input type="file" id="em-doc_to_upload">
                                     </label>
@@ -598,16 +637,16 @@ if ($status === 2) :?>
 
                                 <span class="input-group-btn">
                                         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"
-                                           style="top:13px;" onClick="docAddFile();">Joindre</a>
+                                           style="top:13px;" onClick="docAddFile();"><?php echo JText::_('COM_EMUNDUS_CIFRE_JOIN'); ?></a>
                                     </span>
 
                                 <?php endif; ?>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" data-dismiss="modal"
-                                        onclick="actionButton('contact')">Envoyer la demande de contact
+                                        onclick="actionButton('contact')"><?php echo JText::_('COM_EMUNDUS_CIFRE_SEND_CONTACT'); ?>
                                 </button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo JText::_('CANCEL'); ?>
                                 </button>
                             </div>
                         </div>
@@ -616,23 +655,23 @@ if ($status === 2) :?>
 
                 <?php elseif ($action_button == 'reply') : ?>
                     <button type="button" class="btn btn-primary" onclick="actionButton('reply')">
-                        Répondre
+                        <?php echo JText::_('COM_EMUNDUS_CIFRE_ANSWER'); ?>
                     </button>
                     <button type="button" class="btn btn-primary" onclick="breakUp('ignore')">
-                        Ignorer
+                        <?php echo JText::_('COM_EMUNDUS_CIFRE_IGNORE'); ?>
                     </button>
 
                 <?php elseif ($action_button == 'retry') : ?>
                     <button type="button" class="btn btn-primary" onclick="actionButton('retry')">
-                        Relancer
+                        <?php echo JText::_('COM_EMUNDUS_CIFRE_RECALL'); ?>
                     </button>
                     <button type="button" class="btn btn-primary" onclick="breakUp('cancel')">
-                        Annuler la demande
+                        <?php echo JText::_('COM_EMUNDUS_CIFRE_CANCEL'); ?>
                     </button>
 
                 <?php elseif ($action_button == 'breakup') : ?>
                     <button type="button" class="btn btn-primary" onclick="breakUp('breakup')">
-                        Couper contact
+                        <?php echo JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?>
                     </button>
                 <?php endif; ?>
 
@@ -642,18 +681,20 @@ if ($status === 2) :?>
     </div>
 
     <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-        <div id="em-sending-email-caption">Envoi en cours ...</div>
+        <div id="em-sending-email-caption"><?php echo JText::_('COM_EMUNDUS_CIFRE_SENDING'); ?></div>
         <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
     </div>
 
-    <script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+        <script>
 
 
         jQuery('#em-doc_to_upload').on('change',function(evt) {
             jQuery('#other-doc-file-name').html(evt.target.files[0].name);
         });
 
-        jQuery('#cv_to_upload').on('change',function(evt) {
+        jQuery('#em-cv_to_upload').on('change',function(evt) {
             jQuery('#cv-file-name').html(evt.target.files[0].name);
         });
 
@@ -716,16 +757,21 @@ if ($status === 2) :?>
                 },
                 success: function (result) {
                     jQuery('#em-modal-sending-emails').css('display', 'none');
+                    Swal.fire(
+                        '<?php echo JText::_("COM_EMUNDUS_CIFRE_SENT"); ?>',
+                        '',
+                        'success'
+                    )
                     if (result.status) {
 
                         // When we successfully change the status, we simply dynamically change the button.
                         if (action == 'contact') {
-                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')">Relancer</button> ' +
+                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-primary" onclick="actionButton(\'retry\')"><?php echo JText::_("COM_EMUNDUS_CIFRE_RECALL"); ?></button> ' +
                                 ' <button type="button" class="btn btn-primary" onclick="breakUp(\'cancel\')">Annuler la demande</button>');
                         } else if (action == 'retry') {
-                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled > Message envoyé </button>');
+                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled ><?php echo JText::_("COM_EMUNDUS_CIFRE_SENT"); ?></button>');
                         } else if (action == 'reply') {
-                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"> Couper contact </button>');
+                            jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-danger" onclick="breakUp()"><?php echo JText::_("COM_EMUNDUS_CIFRE_CUT_CONTACT"); ?></button>');
                         }
 
                     } else {
@@ -760,27 +806,27 @@ if ($status === 2) :?>
                         // Dynamically change the button back to the state of not having a link.
                         jQuery('#em-search-item-action-button').html('' +
                             '<button type="button" class="btn btn-success hesam-btn-contact" data-toggle="modal" data-target="#contactModal">' +
-                            '        Entrer en contact' +
+                            '        <?php echo JText::_("COM_EMUNDUS_CIFRE_CONTACT_BUTTON"); ?>' +
                             '        </button>' +
                             '        <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">' +
                             '            <div class="modal-dialog" role="document">' +
                             '                <div class="modal-content">' +
                             '                    <div class="modal-header">' +
-                            '                        <h5 class="modal-title">Demande de contact</h5>' +
+                            '                        <h5 class="modal-title"><?php echo JText::_("COM_EMUNDUS_CIFRE_CONTACT"); ?></h5>' +
                             '                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                             '                            <span aria-hidden="true">&times;</span>' +
                             '                        </button>' +
                             '                    </div>' +
                             '                    <div class="modal-body">' +
                             <?php if ($user->profile == '1006') : ?>
-                            '             <p>Pourquoi ce projet vous semble-t-il intéressant et la structure que vous contactez pertinente pour le traiter ? Quelles orientations méthodologiques et disciplinaires envisagez-vous ?</p>' +
+                            '             <p><?php echo JText::_("COM_EMUNDUS_CIFRE_FUTUR_DOC_FIRST_QUESTION"); ?></p>' +
                             '                <textarea id="em-contact-message" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>' +
-                            '            <p>Pourquoi souhaitez-vous faire une thèse Cifre ? En quoi ce projet est-il en adéquation avec votre parcours académique et professionnel (ce que vous avez fait avant, ce que vous souhaitez faire après) ? </p>' +
+                            '            <p><?php echo JText::_("COM_EMUNDUS_CIFRE_FUTUR_DOC_SECOND_QUESTION"); ?></p>' +
                             '                <textarea id="em-contact-motivation" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>' +
                             <?php if (!empty($offers)) : ?>
-                            '                 <p>Si vous le souhaitez : vous pouvez joindre une de vos offres.</p>' +
+                            '                 <p><?php echo JText::_("COM_EMUNDUS_CIFRE_JOIN_CIFRE"); ?></p>' +
                             '                 <select id="em-join-offer">' +
-                            '                     <option value="">Je ne souhaite pas joindre mes offres.</option>' +
+                            '                     <option value=""><?php echo JText::_("COM_EMUNDUS_CIFRE_NO_JOIN_CIFRE"); ?></option>' +
                             <?php foreach ($offers as $offer) : ?>
                             '                         <option value="<?php echo $offer->fnum; ?>"><?php echo $offer->titre; ?></option>' +
                             <?php endforeach; ?>
@@ -788,10 +834,10 @@ if ($status === 2) :?>
                             <?php endif; ?>
 
                             '            <hr>' +
-                            '            <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
+                            '            <span class="em-upload-explain-text"><?php echo JText::_("COM_EMUNDUS_CIFRE_SELECT_CV"); ?></span>' +
                             '            <div id="em-attachment-list">' +
                             '                <div id="cv-upload_file">' +
-                            '                    <h4 id="em-filename">Ajoutez votre CV au format .pdf (obligatoire)</h4>' +
+                            '                    <h4 id="em-filename"><?php echo JText::_("COM_EMUNDUS_CIFRE_ADD_CV"); ?></h4>' +
                             '                     <label for="em-cv_to_upload" accept="application/pdf"' +
                             '                            id="em-cv_to_upload_label">' +
                             '                         <input type="file" id="em-cv_to_upload">' +
@@ -801,12 +847,12 @@ if ($status === 2) :?>
 
                             '               <span class="input-group-btn">' +
                             '       <a class="btn btn-grey" type="button" id="uploadButton" style="top:13px;"' +
-                            '           onClick="cvAddFile();">Joindre</a>' +
+                            '           onClick="cvAddFile();"><?php echo JText::_("COM_EMUNDUS_CIFRE_JOIN"); ?></a>' +
                             '  </span>' +
 
                             '   <div id="doc-upload_file">' +
-                            '                 <h4 id="em-filename">Ajouter un document (facultatif)</h4>' +
-                            '                 <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
+                            '                 <h4 id="em-filename"><?php echo JText::_("COM_EMUNDUS_CIFRE_ADD_FILE"); ?></h4>' +
+                            '                 <span class="em-upload-explain-text"><?php echo JText::_("COM_EMUNDUS_CIFRE_SELECT_FILE"); ?></span>' +
                             '                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">' +
                             '                     <input type="file" id="em-doc_to_upload">' +
                             '                 </label>' +
@@ -815,17 +861,17 @@ if ($status === 2) :?>
 
                             '             <span class="input-group-btn">' +
                             '         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"' +
-                            '            style="top:13px;" onClick="docAddFile();">Joindre</a>' +
+                            '            style="top:13px;" onClick="docAddFile();"><?php echo JText::_("COM_EMUNDUS_CIFRE_JOIN"); ?></a>' +
                             '     </span>' +
 
                             <?php else : ?>
 
-                            '          <p>Présentez-vous et expliquez en quoi ce projet et la personne que vous contactez sont en adéquation avec ce que vous faites ou souhaitez faire dans votre structure.</p>' +
+                            '          <p><?php echo JText::_("COM_EMUNDUS_CIFRE_QUESTION"); ?></p>' +
                             '          <textarea id="em-contact-message" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>' +
                             <?php if (!empty($offers)) : ?>
-                            '              <p>Vous pouvez joindre une annonce que vous avez publiée sur la plateforme (facultatif).</p>' +
+                            '              <p><?php echo JText::_("COM_EMUNDUS_CIFRE_JOIN_CIFRE"); ?></p>' +
                             '              <select id="em-join-offer">' +
-                            '                  <option value="">Je ne souhaite pas joindre mes offres.</option>' +
+                            '                  <option value=""><?php echo JText::_("COM_EMUNDUS_CIFRE_NO_JOIN_CIFRE"); ?></option>' +
                             <?php foreach ($offers as $offer) : ?>
                             '                      <option value="<?php echo $offer->fnum; ?>"><?php echo str_replace("'", "\\'", $offer->titre); ?></option>' +
                             <?php endforeach; ?>
@@ -835,8 +881,8 @@ if ($status === 2) :?>
                             '         <hr>' +
                             '         <div id="em-attachment-list">' +
                             '             <div id="doc-upload_file">' +
-                            '                 <h4 id="em-filename">Ajouter un document (facultatif)</h4>' +
-                            '                 <span class="em-upload-explain-text">Sélectionnez votre fichier, puis cliquez sur “Joindre” pour l’attacher à votre demande de contact</span>' +
+                            '                 <h4 id="em-filename"<?php echo JText::_("COM_EMUNDUS_CIFRE_ADD_FILE"); ?></h4>' +
+                            '                 <span class="em-upload-explain-text"><?php echo JText::_("COM_EMUNDUS_CIFRE_SELECT_FILE"); ?></span>' +
                             '                 <label for="em-doc_to_upload" id="em-doc_to_upload_label">' +
                             '                     <input type="file" id="em-doc_to_upload">' +
                             '                 </label>' +
@@ -845,14 +891,14 @@ if ($status === 2) :?>
 
                             '             <span class="input-group-btn">' +
                             '         <a class="btn btn-grey" type="button" accept="application/pdf" id="uploadButton"' +
-                            '            style="top:13px;" onClick="docAddFile();">Joindre</a>' +
+                            '            style="top:13px;" onClick="docAddFile();"><?php echo JText::_("COM_EMUNDUS_CIFRE_JOIN"); ?></a>' +
                             '     </span>' +
 
                             <?php endif; ?>
                             '                    </div>' +
                             '                    <div class="modal-footer">' +
-                            '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')">Envoyer la demande de contact</button>' +
-                            '                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>' +
+                            '                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actionButton(\'contact\')"><?php echo JText::_("COM_EMUNDUS_CIFRE_SEND_CONTACT"); ?></button>' +
+                            '                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo JText::_("CANCEL"); ?></button>' +
                             '                    </div>' +
                             '                </div>' +
                             '            </div>');
@@ -879,11 +925,12 @@ if ($status === 2) :?>
 
             // Verification of style size and type can be done here.
             uploadcv.doUpload();
+            jQuery('#cv-file-name').empty();
         }
 
         // Add file to the list being attached.
         function docAddFile() {
-
+            console.log("hello");
             // We need to get the file uploaded by the user.
             var doc = jQuery("#em-doc_to_upload")[0].files[0];
             var docId = jQuery("#doc-upload_file");
@@ -891,6 +938,7 @@ if ($status === 2) :?>
 
             // Verification of style size and type can be done here.
             uploaddoc.doUpload();
+            jQuery('#other-doc-file-name').empty();
         }
 
         // Helper function for uploading a file via AJAX.
@@ -914,7 +962,10 @@ if ($status === 2) :?>
             var formData = new FormData();
 
             if (this.getType() != 'application/pdf') {
-                alert("Type de document non permis. Veuillez uniquement envoyer des fichiers au format PDF.");
+                Swal.fire({
+                    type: 'error',
+                    title: '<?php echo JText::_("COM_EMUNDUS_CIFRE_ALERT_PDF"); ?>'
+                })
                 return false;
             }
 
@@ -943,6 +994,7 @@ if ($status === 2) :?>
                     } else {
                         jQuery(that.id).append('<span class="alert"> <?php echo JText::_('UPLOAD_FAILED'); ?> </span>')
                     }
+
                 },
                 error: function (error) {
                     // handle error

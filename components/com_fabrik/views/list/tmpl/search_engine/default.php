@@ -22,6 +22,12 @@ function jsonDecode($val) {
     return (!empty(json_decode($val)))?json_decode($val):$val;
 }
 
+$lang = JFactory::getLanguage();
+$extension = 'com_emundus';
+$base_dir = JPATH_SITE . '/components/com_emundus';
+$language_tag = "fr-FR";
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
 
 // The number of columns to split the list rows into
 $pageClass = $this->params->get('pageclass_sfx', '');
@@ -52,6 +58,33 @@ if ($this->params->get('show_page_heading')) :?>
 // Intro outside of form to allow for other lists/forms to be injected.
 echo $this->table->intro;
 
+// GETS DEPARTMENTS
+function getActeurDepartments($fnum) {
+    $db = JFactory::getDBO();
+
+    
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dd.departement_nom'))
+        ->from($db->quoteName('#__emundus_recherche', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadAssocList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
 ?>
 
 <div class="main">
@@ -81,7 +114,9 @@ echo $this->table->intro;
                                     $data[$i][$val] = $v->data->$key;
                                 else {
                                     $data[$i][$key] = $v->data->$key;
-                                    $data[$i][$raw] = $v->data->$raw;
+                                    if (array_key_exists($raw, $v->data)) {
+                                        $data[$i][$raw] = $v->data->$raw;
+                                    }
                                 }
                             }
                         }
@@ -90,7 +125,8 @@ echo $this->table->intro;
                         }
                         $i = $i + 1;
                     }
-                } ?>
+                }
+                ?>
 
                 <div class="em-search-engine-filters">
                     <?php if ($this->showFilters && $this->bootShowFilters)
@@ -142,21 +178,37 @@ echo $this->table->intro;
 								}
 							}
 
-							$departments = jsonDecode($d['data_departements___departement_nom_raw']);
-							if (is_array($departments)) {
-                                $departments = array_unique($departments);
-                                if (sizeof($departments) > 8) {
-                                    $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
-                                } else {
-                                    $departments = implode('</div> - <div class="em-highlight">', $departments);
+                            if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                                if ($d["jos_emundus_setup_profiles___id_raw"] != "1008") {
+                                    $departments = jsonDecode($d['data_departements___departement_nom_raw']);
+                                    if (is_array($departments)) {
+                                        $departments = array_unique($departments);
+                                        if (sizeof($departments) > 8) {
+                                            $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
+                                        } else {
+                                            $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                        }
+                                    }
+                                }
+
+                                else {
+                                    $departments =  array_unique(array_column(getActeurDepartments($d["jos_emundus_recherche___fnum_raw"]), 'departement_nom'));
+                                    if (sizeof($departments) > 8) {
+                                        $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)) . ' ... ';
+                                    }
+                                    else {
+                                        $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                    }
                                 }
                             }
 
-                            if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
-                                $status = 2;
-                            } else {
-                                $status = 1;
-                            }
+                                if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
+                                    $status = 2;
+                                } else {
+                                    $status = 1;
+                                }
+
+
 
                             ?>
                             <tr>
@@ -175,7 +227,17 @@ echo $this->table->intro;
                                             <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?$themes:'Aucune thématique'; ?></div>
                                         </div>
                                         <div class="em-search-engine-departments">
-                                            <strong>Département(s)</strong> : <div class="em-highlight"><?php echo $departments?$departments:'Aucun département'; ?></div>
+                                            <strong>Département(s)</strong> :
+                                            <div class="em-highlight">
+                                                <?php
+                                                    if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "oui") {
+                                                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
+                                                    }
+                                                    else {
+                                                        echo $departments ? $departments : 'Aucun département';
+                                                    }
+                                                ?>
+                                            </div>
                                         </div>
                                         <?php if (JFactory::getUser()->guest) :?>
                                             <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return='.base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>

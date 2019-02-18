@@ -1685,137 +1685,153 @@ class plgSystemSecuritycheckpro extends JPlugin{
 	}
 	
 	function onAfterInitialise(){
+		
+		$plugin_enabled = false;
+		
+		$db = JFactory::getDBO();
+		
+		try {
+			$query = "SELECT enabled from `#__extensions` WHERE element='securitycheckpro' and type='plugin'" ;			
+			$db->setQuery( $query );
+			$plugin_enabled= $db->loadResult();
+		} catch (Exception $e) {
+			
+		}				
+		
+		// Is the plugin enabled?
+		if ($plugin_enabled) {
 	
-		/* Cargamos el lenguaje del sitio */
-		$lang = JFactory::getLanguage();
-		$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
-		$not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
-		$access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
+			/* Cargamos el lenguaje del sitio */
+			$lang = JFactory::getLanguage();
+			$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+			$not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
+			$access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
 
-		$methods = $this->pro_plugin->getValue('methods','GET,POST,REQUEST','pro_plugin');
-		$logs_attacks = $this->pro_plugin->getValue('logs_attacks',1,'pro_plugin');
-		$mode = $this->pro_plugin->getValue('mode',1,'pro_plugin');
-		$blacklist_ips = $this->pro_plugin->getValue('blacklist','pro_plugin');
-		$dynamic_blacklist_on = $this->pro_plugin->getValue('dynamic_blacklist',1,'pro_plugin');
-		$dynamic_blacklist_time = $this->pro_plugin->getValue('dynamic_blacklist_time',600,'pro_plugin');
-		$dynamic_blacklist_counter = $this->pro_plugin->getValue('dynamic_blacklist_counter',5,'pro_plugin');
-		$whitelist_ips = $this->pro_plugin->getValue('whitelist','pro_plugin');
-		$secondlevel = $this->pro_plugin->getValue('second_level',1,'pro_plugin');
-		$check_base_64 = $this->pro_plugin->getValue('check_base_64',1,'pro_plugin');
-		$add_geoblock_logs = $this->pro_plugin->getValue('add_geoblock_logs',0,'pro_plugin');
-		$priority1 = $this->pro_plugin->getValue('priority1','Whitelist','pro_plugin');
-		$priority2 = $this->pro_plugin->getValue('priority2','Geoblock','pro_plugin');
-		$priority3 = $this->pro_plugin->getValue('priority3','DynamicBlacklist','pro_plugin');
-		$priority4 = $this->pro_plugin->getValue('priority4','Blacklist','pro_plugin');
-		
-		$attack_ip = $this->get_ip();		
-		$request_uri = $_SERVER['REQUEST_URI'];
-		
-		// Chequeamos los nuevos usuarios administradores/super usuarios
-		$this->forbid_new_admins();
-		
-		// Cargamos las librerias necesarias para realizar comprobaciones
-		require_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
-		$model = new SecuritycheckproModel;
-		
-		$aparece_lista_negra = $model->chequear_ip_en_lista($attack_ip,$blacklist_ips);
-		$aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip,$whitelist_ips);
-				
-		// GeoBlocking
-		$countries = $this->geoblock_config->getValue('geoblockcountries','','geoblock');		
-		$continents = $this->geoblock_config->getValue('geoblockcontinents','','geoblock');	
-		
-		// Prioridad
-		
-		if ($priority1 == "Whitelist") {
-			if ($aparece_lista_blanca){
-				return;
-			}			
-		} else	if ($priority1 == "Geoblock") {
-			if( !empty($countries) || !empty($continents)) {
-				// Añadimos los logs de Geobloqueo si está habilitada la opción
-				$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
+			$methods = $this->pro_plugin->getValue('methods','GET,POST,REQUEST','pro_plugin');
+			$logs_attacks = $this->pro_plugin->getValue('logs_attacks',1,'pro_plugin');
+			$mode = $this->pro_plugin->getValue('mode',1,'pro_plugin');
+			$blacklist_ips = $this->pro_plugin->getValue('blacklist','pro_plugin');
+			$dynamic_blacklist_on = $this->pro_plugin->getValue('dynamic_blacklist',1,'pro_plugin');
+			$dynamic_blacklist_time = $this->pro_plugin->getValue('dynamic_blacklist_time',600,'pro_plugin');
+			$dynamic_blacklist_counter = $this->pro_plugin->getValue('dynamic_blacklist_counter',5,'pro_plugin');
+			$whitelist_ips = $this->pro_plugin->getValue('whitelist','pro_plugin');
+			$secondlevel = $this->pro_plugin->getValue('second_level',1,'pro_plugin');
+			$check_base_64 = $this->pro_plugin->getValue('check_base_64',1,'pro_plugin');
+			$add_geoblock_logs = $this->pro_plugin->getValue('add_geoblock_logs',0,'pro_plugin');
+			$priority1 = $this->pro_plugin->getValue('priority1','Whitelist','pro_plugin');
+			$priority2 = $this->pro_plugin->getValue('priority2','Geoblock','pro_plugin');
+			$priority3 = $this->pro_plugin->getValue('priority3','DynamicBlacklist','pro_plugin');
+			$priority4 = $this->pro_plugin->getValue('priority4','Blacklist','pro_plugin');
+			
+			$attack_ip = $this->get_ip();		
+			$request_uri = $_SERVER['REQUEST_URI'];
+			
+			// Chequeamos los nuevos usuarios administradores/super usuarios
+			$this->forbid_new_admins();
+			
+			// Cargamos las librerias necesarias para realizar comprobaciones
+			require_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
+			$model = new SecuritycheckproModel;
+			
+			$aparece_lista_negra = $model->chequear_ip_en_lista($attack_ip,$blacklist_ips);
+			$aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip,$whitelist_ips);
+					
+			// GeoBlocking
+			$countries = $this->geoblock_config->getValue('geoblockcountries','','geoblock');		
+			$continents = $this->geoblock_config->getValue('geoblockcontinents','','geoblock');	
+			
+			// Prioridad
+			
+			if ($priority1 == "Whitelist") {
+				if ($aparece_lista_blanca){
+					return;
+				}			
+			} else	if ($priority1 == "Geoblock") {
+				if( !empty($countries) || !empty($continents)) {
+					// Añadimos los logs de Geobloqueo si está habilitada la opción
+					$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
+				}
+			}  else if ($priority1 == "DynamicBlacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra dinámica
+				if ( $dynamic_blacklist_on ){
+					$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
+				}
+			} else if ($priority1 == "Blacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra
+				if ( $aparece_lista_negra ){
+					$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
+				}
 			}
-		}  else if ($priority1 == "DynamicBlacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra dinámica
-			if ( $dynamic_blacklist_on ){
-				$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
+			
+			
+			if ($priority2 == "Whitelist") {
+				if ($aparece_lista_blanca){
+					return;
+				}
+			} else if ($priority2 == "Geoblock") {
+				if( !empty($countries) || !empty($continents)) {
+					// Añadimos los logs de Geobloqueo si está habilitada la opción
+					$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
+				}
+			}  else if ($priority2 == "DynamicBlacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra dinámica
+				if ( $dynamic_blacklist_on ){
+					$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
+				}
+			} else if ($priority2 == "Blacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra
+				if ( $aparece_lista_negra ){
+					$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
+				}
 			}
-		} else if ($priority1 == "Blacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra
-			if ( $aparece_lista_negra ){
-				$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
+					
+			if ($priority3 == "Whitelist") {
+				if ($aparece_lista_blanca){
+					return;
+				}
+			} else	if ($priority3 == "Geoblock") {
+				if( !empty($countries) || !empty($continents)) {
+					// Añadimos los logs de Geobloqueo si está habilitada la opción
+					$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
+				}
+			}  else if ($priority3 == "DynamicBlacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra dinámica
+				if ( $dynamic_blacklist_on ){
+					$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
+				}
+			} else if ($priority3 == "Blacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra
+				if ( $aparece_lista_negra ){
+					$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
+				}
 			}
-		}
-		
-		
-		if ($priority2 == "Whitelist") {
-			if ($aparece_lista_blanca){
-				return;
+					
+			if ($priority4 == "Whitelist") {
+				if ($aparece_lista_blanca){
+					return;
+				}
+			} else if ($priority4 == "Geoblock") {
+				if( !empty($countries) || !empty($continents)) {
+					// Añadimos los logs de Geobloqueo si está habilitada la opción
+					$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
+				}
+			}  else if ($priority4 == "DynamicBlacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra dinámica
+				if ( $dynamic_blacklist_on ){
+					$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
+				}
+			} else if ($priority4 == "Blacklist") {
+				// Chequeamos si la ip remota se encuentra en la lista negra
+				if ( $aparece_lista_negra ){
+					$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
+				}
 			}
-		} else if ($priority2 == "Geoblock") {
-			if( !empty($countries) || !empty($continents)) {
-				// Añadimos los logs de Geobloqueo si está habilitada la opción
-				$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
+			
+			
+			if ( !$aparece_lista_blanca ){
+				// La IP no se encuentra en ninguna lista
+				$this->acciones_no_listas($methods,$attack_ip,$methods,$request_uri,$check_base_64,$logs_attacks,$secondlevel,$mode);
 			}
-		}  else if ($priority2 == "DynamicBlacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra dinámica
-			if ( $dynamic_blacklist_on ){
-				$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
-			}
-		} else if ($priority2 == "Blacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra
-			if ( $aparece_lista_negra ){
-				$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
-			}
-		}
-				
-		if ($priority3 == "Whitelist") {
-			if ($aparece_lista_blanca){
-				return;
-			}
-		} else	if ($priority3 == "Geoblock") {
-			if( !empty($countries) || !empty($continents)) {
-				// Añadimos los logs de Geobloqueo si está habilitada la opción
-				$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
-			}
-		}  else if ($priority3 == "DynamicBlacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra dinámica
-			if ( $dynamic_blacklist_on ){
-				$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
-			}
-		} else if ($priority3 == "Blacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra
-			if ( $aparece_lista_negra ){
-				$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
-			}
-		}
-				
-		if ($priority4 == "Whitelist") {
-			if ($aparece_lista_blanca){
-				return;
-			}
-		} else if ($priority4 == "Geoblock") {
-			if( !empty($countries) || !empty($continents)) {
-				// Añadimos los logs de Geobloqueo si está habilitada la opción
-				$this->geoBlocking($add_geoblock_logs,$request_uri,$not_applicable);
-			}
-		}  else if ($priority4 == "DynamicBlacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra dinámica
-			if ( $dynamic_blacklist_on ){
-				$this->acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable);
-			}
-		} else if ($priority4 == "Blacklist") {
-			// Chequeamos si la ip remota se encuentra en la lista negra
-			if ( $aparece_lista_negra ){
-				$this->acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable);
-			}
-		}
-		
-		
-		if ( !$aparece_lista_blanca ){
-			// La IP no se encuentra en ninguna lista
-			$this->acciones_no_listas($methods,$attack_ip,$methods,$request_uri,$check_base_64,$logs_attacks,$secondlevel,$mode);
 		}
 	} 
 

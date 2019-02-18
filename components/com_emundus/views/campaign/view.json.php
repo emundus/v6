@@ -35,41 +35,34 @@ class EmundusViewCampaign extends JViewLegacy {
     }
 
     function display($tpl = null) {
-
-        $user = JFactory::getUser();
-
-        if ($user->guest) {
             
-            
-            $m_campaign = new EmundusModelCampaign();
-            $data = $m_campaign->getTeachingUnity();
+        $m_campaign = new EmundusModelCampaign();
+        $data = $m_campaign->getTeachingUnity();
 
-            foreach ($data as $key => $row) {
+        foreach ($data as $key => $row) {
 
-                // Process city name
-                $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($row->location_city))));
-                $town =  ucwords(strtolower($town), '\',. ');
-                $beforeComma = strpos($town, "D'");
-                if (!empty($beforeComma)) {
-                    $replace = strpbrk($town, "D'");
-                    $row->location_city = substr_replace($town,lcfirst($replace), $beforeComma);
-                }
-
-                // Proccess address
-                $row->location_address = ucfirst(strtolower($row->location_address));
-
-                // Proccess URL
-                $row->url = 'https://www.competencesetformation.fr/formation?rowid='.$row->row_id;
-
-                // Process tax.
-                $row->prix_ttc = empty($row->tax_rate);
-
-	            $data[$key] = $row;
-
+            // Process city name
+            $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($row->location_city))));
+            $town =  ucwords(strtolower($town), '\',. ');
+            $beforeComma = strpos($town, "D'");
+            if (!empty($beforeComma)) {
+                $replace = strpbrk($town, "D'");
+                $row->location_city = substr_replace($town,lcfirst($replace), $beforeComma);
             }
 
-            echo json_encode($data);
+            // Proccess address
+            $row->location_address = ucfirst(strtolower($row->location_address));
+
+            // Proccess URL
+            $row->url = 'https://www.competencesetformation.fr/formation?rowid='.$row->row_id;
+
+            // Process tax.
+            $row->prix_ttc = $row->tax_rate == 1;
+
+            $data[$key] = $row;
+
         }
+
+        echo json_encode($data);
     }
 }
-?>

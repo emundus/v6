@@ -3124,14 +3124,11 @@ die();*/
      * function to get all sessions linked to a program
      *
      */
-
     public function programSessions($program) {
-        try
-        {
+        try {
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-
             $query
                 ->select('t.*')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
@@ -3140,13 +3137,11 @@ die();*/
                 ->where($db->quoteName('p.id') . ' = ' . $program .
                     ' AND ' . $db->quoteName('t.published') . ' = ' . 1 .
                     ' AND ' . $db->quoteName('t.date_start') . ' >= ' . date("Y-m-d"))
-                ->order('date_start ASC');;
+                ->order('date_start ASC');
 
             $db->setQuery($query);
-            return $db->loadAssocList() ;
-        }
-        catch(Exception $e)
-        {
+            return $db->loadAssocList();
+        } catch(Exception $e) {
             echo $e->getMessage();
         }
     }

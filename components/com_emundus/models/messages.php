@@ -16,13 +16,15 @@ jimport('joomla.application.component.model');
 
 class EmundusModelMessages extends JModelList {
     var $user = null;
-    /**
-     * Constructor
-     *
-     * @since 3.8.6
-     */
-    public function __construct($config = array())
-	{
+
+	/**
+	 * Constructor
+	 *
+	 * @since 3.8.6
+	 *
+	 * @param array $config
+	 */
+    public function __construct($config = array()) {
         $this->user = JFactory::getSession()->get('emundusUser');
 		parent::__construct($config);
 	}
@@ -32,7 +34,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @param Int $type The type of email to get, type 2 is by default (Templates).
      * @return Boolean False if the query fails and nothing can be loaded.
-     * @return Array AN array of objects describing the messages. (sender, subject, body, etc..)
+     * @return array An array of objects describing the messages. (sender, subject, body, etc..)
      */
     function getAllMessages($type = 2) {
 
@@ -62,7 +64,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @param Int $type The type of category to get, type 2 is by default (Templates).
      * @return Boolean False if the query fails and nothing can be loaded.
-     * @return Array An array of the categories.
+     * @return array An array of the categories.
      */
 	function getAllCategories($type = 2) {
 
@@ -274,13 +276,16 @@ class EmundusModelMessages extends JModelList {
     }
 
 
-    /**
-     * Gets the a file from the setup_attachment table linked to an fnum.
-     *
-     * @since 3.8.6
-     * @param String $fnum the fnum used for getting the attachment.
-     * @param Int $attachment_id the ID of the attachment used in setup_attachment
-     */
+	/**
+	 * Gets the a file from the setup_attachment table linked to an fnum.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @param String $fnum          the fnum used for getting the attachment.
+	 * @param Int    $attachment_id the ID of the attachment used in setup_attachment
+	 *
+	 * @return bool|mixed
+	 */
     function get_upload($fnum, $attachment_id) {
 
         $db = JFactory::getDbo();
@@ -394,13 +399,16 @@ class EmundusModelMessages extends JModelList {
     }
 
 
-    /** Generates a DOC file for setup_letters
-     *
-     * @param Object $letter The template for the doc to create.
-     * @param String $fnum The fnum used to generate the tags.
-     * @return String The path to the saved file.
-     * @return Boolean False if an error occurs.
-     */
+	/** Generates a DOC file for setup_letters
+	 *
+	 * @param Object $letter The template for the doc to create.
+	 * @param String $fnum   The fnum used to generate the tags.
+	 *
+	 * @return String The path to the saved file.
+	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
+	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
+	 * @throws \PhpOffice\PhpWord\Exception\Exception
+	 */
     function generateLetterDoc($letter, $fnum) {
 
         require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
@@ -539,7 +547,7 @@ class EmundusModelMessages extends JModelList {
 
                 $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename);
 
-                $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos['applicant_id'], $fnumsInfos['campaign_id'], $letter->attachment_id, $attachInfos['description']);
+                $m_files->addAttachment($fnum, $filename, $fnumsInfos['applicant_id'], $fnumsInfos['campaign_id'], $letter->attachment_id, $attachInfos['description']);
 
                 return EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename;
 
@@ -557,53 +565,47 @@ class EmundusModelMessages extends JModelList {
 
 
 
-
-
-
     ///// All functions from here are for the messages view
 
-    // get all contacts the current user has received or sent a message
+	/** get all contacts the current user has received or sent a message as well as their latest message.
+	 *
+	 * @param null $user
+	 *
+	 * @return bool|mixed
+	 */
     public function getContacts($user = null) {
 
-        if (empty($user))
-            $user = $this->user->id;
+        if (empty($user)) {
+	        $user = $this->user->id;
+        }
 
         $db = JFactory::getDbo();
-
-        $query = "  select jos_messages.*, sender.name as name_from, sp_sender.label as profile_from, recipient.name as name_to, sp_recipient.label as profile_to, recipientUpload.attachment_id as photo_to, senderUpload.attachment_id as photo_from
-                    
-                    FROM    jos_messages
-                    
-                            INNER JOIN jos_emundus_users AS sender ON sender.user_id = jos_messages.user_id_from
-                            INNER JOIN jos_emundus_users AS recipient ON recipient.user_id = jos_messages.user_id_to
-                    
-                            LEFT JOIN jos_emundus_setup_profiles sp_recipient ON sp_recipient.id =  recipient.profile
-                            LEFT JOIN jos_emundus_setup_profiles sp_sender ON sp_sender.id =  sender.profile
-                            
-                            LEFT JOIN jos_emundus_uploads recipientUpload ON recipientUpload.user_id = recipient.user_id AND recipientUpload.attachment_id = 10
-                            LEFT JOIN jos_emundus_uploads senderUpload ON senderUpload.user_id = sender.user_id AND senderUpload.attachment_id = 10
-                    
-                            INNER JOIN ( SELECT MAX(message_id) AS most_recent_message_id
-                                         FROM   jos_messages
-                                        WHERE folder_id = 2
-                                         GROUP BY CASE WHEN user_id_from > user_id_to
-                                                       THEN user_id_to
-                                                       ELSE user_id_from
-                                                  END,
-                                                  CASE WHEN user_id_from < user_id_to
-                                                     THEN user_id_to
-                                                     ELSE user_id_from
-                                                  END) T ON T.most_recent_message_id = jos_messages.message_id
-                    
-                    WHERE   user_id_from = " . $user . "
-                            OR user_id_to = " . $user . "
-                            
-                            
-                    
-                    ORDER BY date_time DESC ";
+        $query = "SELECT jos_messages.*, sender.name as name_from, sp_sender.label as profile_from, recipient.name as name_to, sp_recipient.label as profile_to, recipientUpload.attachment_id as photo_to, senderUpload.attachment_id as photo_from
+                  FROM jos_messages
+                  INNER JOIN jos_emundus_users AS sender ON sender.user_id = jos_messages.user_id_from
+                  INNER JOIN jos_emundus_users AS recipient ON recipient.user_id = jos_messages.user_id_to
+                  LEFT JOIN jos_emundus_setup_profiles sp_recipient ON sp_recipient.id =  recipient.profile
+                  LEFT JOIN jos_emundus_setup_profiles sp_sender ON sp_sender.id =  sender.profile
+                  LEFT JOIN jos_emundus_uploads recipientUpload ON recipientUpload.user_id = recipient.user_id AND recipientUpload.attachment_id = 10
+                  LEFT JOIN jos_emundus_uploads senderUpload ON senderUpload.user_id = sender.user_id AND senderUpload.attachment_id = 10
+                  INNER JOIN (
+                      SELECT MAX(message_id) AS most_recent_message_id
+                      FROM jos_messages
+                      WHERE (folder_id = 2 OR folder_id = 3)
+                      GROUP BY CASE WHEN user_id_from > user_id_to
+                          THEN user_id_to
+                          ELSE user_id_from
+                      END,
+                      CASE WHEN user_id_from < user_id_to
+                          THEN user_id_to
+                          ELSE user_id_from
+                      END) T ON T.most_recent_message_id = jos_messages.message_id
+				  WHERE user_id_from = ".$user."
+                  OR user_id_to = ".$user."
+                  ORDER BY date_time DESC";
 
         try {
-
+			
             $db->setQuery($query);
             return $db->loadObjectList();
 
@@ -613,21 +615,28 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-    // gets all messages received after the message $lastID
+	/** gets all messages received after the message $lastID
+	 *
+	 * @param      $lastId
+	 * @param null $user
+	 *
+	 * @return bool|mixed
+	 */
     public function updateMessages($lastId, $user = null) {
-        if (empty($user))
-            $user = $this->user->id;
+
+        if (empty($user)) {
+	        $user = $this->user->id;
+        }
 
         $db = JFactory::getDbo();
 
-        // update message state to read
+        // Update message state to read
         $query = $db->getQuery(true);
 
-        $query
-            ->select('*')
+        $query->select('*')
             ->from($db->quoteName('#__messages'))
-            ->where($db->quoteName('message_id') . ' > ' . $lastId . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user . ' AND ' . $db->quoteName('state') . ' = 1 ')
-            ->order(' message_id DESC');
+            ->where($db->quoteName('message_id').' > '.$lastId.' AND '.$db->quoteName('user_id_to').' = '.$user.' AND ' . $db->quoteName('state') . ' = 1 AND ('.$db->quoteName('folder_id').' = 2 OR '.$db->quoteName('folder_id').' = 3)')
+            ->order('message_id DESC');
 
         try {
 
@@ -641,22 +650,26 @@ class EmundusModelMessages extends JModelList {
 
     }
 
-    // load messages between two users ( messages with folder_id 2 )
+	/** load messages between two users ( messages with folder_id 2 )
+	 *
+	 * @param      $user1
+	 * @param null $user2
+	 *
+	 * @return bool|mixed
+	 */
     public function loadMessages($user1, $user2 = null) {
 
-        if (empty($user2))
+        if (empty($user2)) {
 	        $user2 = $this->user->id;
+        }
 
         $db = JFactory::getDbo();
 
         // update message state to read
         $query = $db->getQuery(true);
-
-	    $query
-		    ->update($db->quoteName('#__messages'))
-		    ->set([$db->quoteName('state') . ' = 0'])
+	    $query->update($db->quoteName('#__messages'))
+		    ->set([$db->quoteName('state').' = 0'])
 		    ->where('('.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('user_id_from').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')');
-
 
         try {
 
@@ -671,11 +684,11 @@ class EmundusModelMessages extends JModelList {
 	    $query = $db->getQuery(true);
         $query->select('*')
             ->from($db->quoteName('#__messages'))
-	        ->where($db->quoteName('folder_id').' = 2 AND (('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.'))')
+	        ->where('(('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.' AND '.$db->quoteName('folder_id').' = 2) OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.' AND ('.$db->quoteName('folder_id').' = 2 OR '.$db->quoteName('folder_id').' = 3)))')
 	        ->order($db->quoteName('date_time').' ASC')
             ->setLimit('100');
         try {
-
+            
             $db->setQuery($query);
             return $db->loadObjectList();
 
@@ -686,19 +699,33 @@ class EmundusModelMessages extends JModelList {
 
     }
 
-    // sends message folder_id=2 from user_from to user_to and sets stats to 1
-    public function sendMessage($receiver, $message, $user = null) {
+	/** sends message folder_id=2 from user_from to user_to and sets stats to 1
+	 *
+	 * @param      $receiver
+	 * @param      $message
+	 * @param null $user
+	 * @param bool $system_message
+	 *
+	 * @return bool
+	 */
+    public function sendMessage($receiver, $message, $user = null, $system_message = false) {
 
-        if (empty($user))
-            $user = $this->user->id;
+        if (empty($user)) {
+	        $user = $this->user->id;
+        }
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        if ($system_message) {
+	        $folder = 3;
+        } else {
+	        $folder = 2;
+        }
 
         $columns = array('user_id_from', 'user_id_to', 'folder_id', 'date_time', 'state', 'priority', 'message');
 
-        $values = array($user, $receiver, 2, $db->quote(date("Y-m-d H:i:s")), 1, 0, $db->quote($message));
+        $values = array($user, $receiver, $folder, $db->quote(date("Y-m-d H:i:s")), 1, 0, $db->quote($message));
 
         $query
             ->insert($db->quoteName('#__messages'))
@@ -709,12 +736,35 @@ class EmundusModelMessages extends JModelList {
 
             $db->setQuery($query);
             $db->execute();
-
             return true;
 
         } catch (Exception $e) {
             JLog::add('Error sending message at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
+    }
+
+
+    public function deleteSystemMessages($user1, $user2) {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+
+        $query->delete($db->quoteName('#__messages'))
+            ->where('(('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')) AND '.$db->quoteName('folder_id').' = 3 ');
+
+        try {
+
+            $db->setQuery($query);
+            $db->execute();
+            return true;
+
+        } catch (Exception $e) {
+            JLog::add('Error deleting messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        } 
+
+
     }
 }

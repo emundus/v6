@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright    Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright    Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license    GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -24,15 +24,15 @@ defined('_WF_EXT') or die('RESTRICTED');
     <label for="vimeo_intro" title="<?php echo WFText::_('WF_AGGREGATOR_VIMEO_INTRO_DESC') ?>"
            class="tooltip uk-form-label uk-width-1-5"><?php echo WFText::_('WF_AGGREGATOR_VIMEO_INTRO') ?></label>
     <div class="uk-form-controls uk-width-4-5">
-        <input type="checkbox" id="vimeo_portrait" checked="checked"/>
+        <input type="checkbox" id="vimeo_portrait" />
         <label for="vimeo_portrait" title="<?php echo WFText::_('WF_AGGREGATOR_VIMEO_PORTRAIT_DESC') ?>"
                class="tooltip uk-margin-right"><?php echo WFText::_('WF_AGGREGATOR_VIMEO_PORTRAIT') ?></label>
 
-        <input type="checkbox" id="vimeo_title" checked="checked"/>
+        <input type="checkbox" id="vimeo_title" />
         <label for="vimeo_title" title="<?php echo WFText::_('WF_AGGREGATOR_VIMEO_INTROTITLE_DESC') ?>"
                class="tooltip uk-margin-right"><?php echo WFText::_('WF_AGGREGATOR_VIMEO_INTROTITLE') ?></label>
 
-        <input type="checkbox" id="vimeo_byline" checked="checked"/>
+        <input type="checkbox" id="vimeo_byline" />
         <label for="vimeo_byline" title="<?php echo WFText::_('WF_AGGREGATOR_VIMEO_BYLINE_DESC') ?>"
                class="tooltip"><?php echo WFText::_('WF_AGGREGATOR_VIMEO_BYLINE') ?></label>
     </div>

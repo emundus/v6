@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -15,7 +15,7 @@ defined('JPATH_BASE') or die('RESTRICTED');
  */
 class WFElementBlockformats extends WFElement
 {
-    protected static $formats = array('p' => 'Paragraph', 'div' => 'Div', 'div_container' => 'Div Container', 'h1' => 'Heading1', 'h2' => 'Heading2', 'h3' => 'Heading3', 'h4' => 'Heading4', 'h5' => 'Heading5', 'h6' => 'Heading6', 'blockquote' => 'Blockquote', 'address' => 'Address', 'code' => 'Code', 'pre' => 'Preformatted', 'samp' => 'Sample', 'span' => 'Span', 'section' => 'Section', 'article' => 'Article', 'aside' => 'Aside', 'figure' => 'Figure', 'dt' => 'Definition Term', 'dd' => 'Definition List');
+    protected static $formats = array('p' => 'Paragraph', 'div' => 'Div', 'div_container' => 'Div Container', 'h1' => 'Heading1', 'h2' => 'Heading2', 'h3' => 'Heading3', 'h4' => 'Heading4', 'h5' => 'Heading5', 'h6' => 'Heading6', 'blockquote' => 'Blockquote', 'address' => 'Address', 'code' => 'Code', 'pre' => 'Preformatted', 'samp' => 'Sample', 'span' => 'Span', 'section' => 'Section', 'article' => 'Article', 'aside' => 'Aside', 'header' => 'Header', 'footer' => 'Footer', 'nav' => 'Nav', 'figure' => 'Figure', 'dt' => 'Definition Term', 'dd' => 'Definition List');
 
     /**
      * Element type.

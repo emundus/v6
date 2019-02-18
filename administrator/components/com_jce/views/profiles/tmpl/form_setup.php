@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -84,6 +84,7 @@ defined('_JEXEC') or die('RESTRICTED');
             </div>
             <div class="controls">
               <?php echo $this->lists['usergroups']; ?>
+              <input type="hidden" name="usergroups[]" value="" />
             </div>
         </div>
         <div class="control-group">
@@ -92,6 +93,7 @@ defined('_JEXEC') or die('RESTRICTED');
             </label>
             <div class="controls clearfix">
                 <?php echo $this->lists['users']; ?>
+                <input type="hidden" name="users[]" value="" />
             </div>
             <div class="controls clearfix">
                 <div class="span4 text-right">
