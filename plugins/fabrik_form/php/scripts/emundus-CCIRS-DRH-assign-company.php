@@ -17,6 +17,7 @@ $mainframe = JFactory::getApplication();
 
 $user = $formModel->getElementData('jos_emundus_entreprise___user')[0];
 $cid = $formModel->getElementData('jos_emundus_entreprise___id');
+$position = $formModel->getElementData('jos_emundus_entreprise___function');
 
 if (empty($user) || empty($cid))
 	return false;
@@ -24,10 +25,10 @@ if (empty($user) || empty($cid))
 try {
 
     // Insert columns.
-    $columns = array('user', 'cid', 'profile');
+    $columns = array('user', 'cid', 'profile', 'position');
 
     // Insert values.
-    $values = array($current_user->id, $cid, '1002');
+    $values = array($current_user->id, $cid, '1002', $position);
 
     $query = $db->getQuery(true);
     $query->insert($db->quoteName('#__emundus_user_entreprise'))
