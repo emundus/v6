@@ -356,9 +356,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
-			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
-			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
-			$m_messages->sendMessage($link->user_to, $chat_contact_accept, $link->user_from, true);
+			$m_messages->deleteSystemMessages($fnum['applicant_id'], $this->user->id);
+			$m_messages->sendMessage($this->user->id, $chat_contact_accept, $fnum['applicant_id'], true);
+			$m_messages->sendMessage($fnum['applicant_id'], $chat_contact_accept, $this->user->id, true);
 
 			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], 74, $post)]);
 			exit;
@@ -568,12 +568,13 @@ class EmundusControllerCifre extends JControllerLegacy {
 			];
 
 			// Send a different email based on the context of cancellation.
-			if ($action == 'cancel')
+			if ($action == 'cancel') {
 				$email_to_send = 77;
-			elseif ($action == 'ignore')
+			} elseif ($action == 'ignore') {
 				$email_to_send = 78;
-			else
+			} else {
 				$email_to_send = 75;
+			}
 
 			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
 			exit;
@@ -621,20 +622,24 @@ class EmundusControllerCifre extends JControllerLegacy {
 		// Remove the contact request from the DB.
 		if ($this->m_cifre->deleteContactRequest($link->user_to, $link->user_from, $link->fnum_to)) {
 
+			$m_messages = new EmundusModelMessages();
+
 			// Either we are user_from: send to fnum_to about fnum_to
 			// Or we are user_to and fnum_from exists: send to fnum_from about fnum_from
-			if ($this->user->id == $link->user_from)
+			if ($this->user->id == $link->user_from) {
 				$fnum = $link->fnum_to;
-			else
+			} else {
 				$fnum = $link->fnum_from;
+			}
 
 			// Send a different email based on the context of cancellation.
-			if ($action == 'cancel')
+			if ($action == 'cancel') {
 				$email_to_send = 77;
-			elseif ($action == 'ignore')
+			} elseif ($action == 'ignore') {
 				$email_to_send = 78;
-			else
+			} else {
 				$email_to_send = 75;
+			}
 
 			// If no fnum: We are user_to and fnum_from does not exist: send to user_from about fnum_to
 			if (empty($fnum)) {
@@ -649,7 +654,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
 				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'emails.php');
 
-				$m_messages = new EmundusModelMessages();
 				$m_emails   = new EmundusModelEmails();
 
 				$template = $m_messages->getEmail($email_to_send);
@@ -664,9 +668,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$mail_from      = $template->emailfrom;
 
 				// If the email sender has the same domain as the system sender address.
-				if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+				if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 					$mail_from_address = $mail_from;
-				else {
+				} else {
 					$mail_from_address = $mail_from_sys;
 					$mail_from_name    = $mail_from_sys_name;
 				}
@@ -687,8 +691,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$tags    = $m_emails->setTags($user_from->id, $post);
 				$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
 				$body    = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
-				if ($template != false)
+				if ($template != false) {
 					$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+				}
 
 				// Configure email sender
 				$mailer = JFactory::getMailer();
@@ -725,12 +730,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 					// Log the email in the eMundus logging system.
 					EmundusModelLogs::log($this->user->id, $user_from->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
 
+					$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
 					echo json_encode((object) ['status' => true]);
 					exit;
 				}
-
-				echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
-				exit;
 
 			} else {
 
@@ -745,6 +748,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'OFFER_NAME'      => $offerInformation->titre,
 				];
 
+				$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
 				echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post)]);
 				exit;
 
