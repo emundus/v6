@@ -308,7 +308,13 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                         </div>
                                     <?php else: ?>
 
-                                        <?php $formUrl = base64_encode('/inscription?session='.$session['session_code']); ?>
+                                        <?php
+                                        if ($user->guest) {
+                                            $formUrl = base64_encode('/inscription?session='.$session['session_code']);
+                                        } else {
+	                                        $formUrl = base64_encode('/inscrire-des-collaborateurs?session='.$session['session_code']);
+                                        }
+                                        ?>
 
                                         <div class="em-option-buttons">
                                             <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
