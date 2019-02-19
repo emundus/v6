@@ -21,6 +21,7 @@
         <fields name="params">
             <fieldset name="basic">
                 <field name="email" type="field" default="registration_email" label="Email to send" description="The ID or lbl of the email to be sent contaning the registration URL. Put [ACTIVATION_URL] in the email to add the link." />
+                <field name="activation_redirect" default="/connexion" label="Redirect after activation." description="The URL to go to on successful activation." />
             </fieldset>
         </fields>
     </config>
