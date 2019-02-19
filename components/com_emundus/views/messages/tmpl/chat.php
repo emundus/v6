@@ -47,7 +47,6 @@ if ($this->getMessages[0]->user_id_to == $this->user_id) {
             <ul class="message-list">
                 <?php foreach ($this->getMessages as $getMessage) :?>
                     <li>
-
                         <?php if ($getMessage->user_id_to == $this->user_id) :?>
                             <?php if ($getMessage->folder_id == 3) :?>
                                 <span class="em-system-chat-message alert alert-info">
@@ -168,7 +167,7 @@ if ($this->getMessages[0]->user_id_to == $this->user_id) {
             success: result => {
                 if (result.status) {
                     // When we successfully change the status, we simply dynamically change the button.
-                    jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-primary" onclick="breakUp(\'breakup\','+id+')"> <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BREAKUP'); ?> </button>');
+                    jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-primary" onclick="breakUp(\'breakup\','+id+')"> <?php echo JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?> </button>');
                 } else {
                     var actionText = document.getElementById('em-action-text-'+id);
                     actionText.classList.remove('hidden');
@@ -194,7 +193,7 @@ if ($this->getMessages[0]->user_id_to == $this->user_id) {
             success: result => {
                 if (result.status) {
                     // Dynamically change the button back to the state of not having a link.
-                    jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_BROKEN_UP'); ?></button>');
+                    jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled><?php echo JText::_('COM_EMUNDUS_CIFRE_CANCELLED'); ?></button>');
                 } else {
                     var actionText = document.getElementById('em-action-text-'.id);
                     actionText.classList.remove('hidden');
