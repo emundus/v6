@@ -451,6 +451,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @param bool  $bcc
 	 *
 	 * @return bool
+	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
+	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
+	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
     function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false) {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
@@ -728,25 +731,24 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
 /////// chat functions
-
-    // send message in chat
+    /** send message in chat
+     *
+     */
     public function sendMessage() {
 
         $m_messages = new EmundusModelMessages();
-
         $jinput = JFactory::getApplication()->input;
         $message = $jinput->post->getRaw('message', null);
         $receiver = $jinput->post->get('receiver', null);
         $message = str_replace("&nbsp;", "", $message);
-        $string = preg_replace('/>\s+</', "><", $message);
 
-        echo json_encode((object)[
-            'status' => $m_messages->sendMessage($receiver, $message),
-        ]);
+        echo json_encode((object)['status' => $m_messages->sendMessage($receiver, $message)]);
         exit;
     }
 
-    // update message list
+    /** update message list
+     *
+     */
     public function updatemessages() {
 
         $m_messages = new EmundusModelMessages();
@@ -755,21 +757,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         $lastId = $jinput->post->get('id', null);
         $messages = $m_messages->updateMessages($lastId);
 
-
-        if(!empty($messages)) {
+        if (!empty($messages)) {
             foreach ($messages as $message) {
                 $message->date_time = date("d/m/Y", strtotime($message->date_time));
-                $message->message = strip_tags($message->message);
             }
-            echo json_encode((object)[
-                'status' => 'true',
-                'messages' => $messages
-            ]);
-        }
-        else {
-            echo json_encode((object)[
-                'status' => 'false'
-            ]);
+            echo json_encode((object)['status' => 'true', 'messages' => $messages]);
+        } else {
+            echo json_encode((object)['status' => 'false']);
         }
 
         exit;
