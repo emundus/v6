@@ -3,7 +3,7 @@
 $db = JFactory::getDBO();
 $user = JFactory::getUser();
 
-$profile = $data['jos_emundus_users___profile_raw'];
+$profile = $data['jos_emundus_users___profile_raw'][0];
 $user_id = $data['jos_emundus_users___user_id_raw'];
 
 if ($profile == 1002) {
