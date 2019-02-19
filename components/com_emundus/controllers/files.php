@@ -3122,7 +3122,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity','tu').' ON '.$this->_db->quoteName('tu.code').' = '.$this->_db->quoteName('p.code'))
-			->where($this->_db->quoteName('p.code').' LIKE '.$this->_db->quote($product_code).' AND '.$this->_db->quoteName('t.published').' = 1 AND '.$this->_db->quoteName('t.date_start').' >= '.date("Y-m-d"))
+			->where($this->_db->quoteName('p.code').' LIKE '.$this->_db->quote($product_code).' AND '.$this->_db->quoteName('tu.published').' = 1 AND '.$this->_db->quoteName('tu.date_start').' >= '.date("Y-m-d"))
 			->order($this->_db->quoteName('tu.date_start').' ASC');
 		$this->_db->setQuery($query);
 
@@ -3157,10 +3157,6 @@ class EmundusControllerFiles extends JControllerLegacy
 				}
             }
 
-            if (!empty($session['time_in_company'])) {
-            	$sessions .= ' '.$session['time_in_company'];
-            }
-
 			$sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
 		}
 		$sessions .= '</ul>';
@@ -3172,8 +3168,12 @@ class EmundusControllerFiles extends JControllerLegacy
 			$partner = '';
 		}
 
+		$days = $product[0]['days'].' '.(intval($product[0]['days']) > 1)?'jours':'jour'." pour un total de : ".$product[0]['hours']." heures";
+	    if (!empty($session['time_in_company'])) {
+		    $days .= ' '.$product[0]['time_in_company'];
+	    }
+
         // Build the variables found in the article.
-        $daysWord = (intval($product[0]['days']) > 1)?'jours':'jour';
 	    $post = [
 	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
@@ -3184,7 +3184,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		    '/{PRODUCT_CONTENT}/' => $product[0]['content'],
 		    '/{PRODUCT_MANAGER}/' => $product[0]['manager_firstname'].' '.mb_strtoupper($product[0]['manager_lastname']),
 		    '/{EXPORT_DATE}/' => date('d F Y'),
-		    '/{DAYS}/' => $product[0]['days'].' '.$daysWord." pour un total de : ".$product[0]['hours']." heures",
+		    '/{DAYS}/' => $days,
 		    '/{SESSIONS}/' => $sessions,
 		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
