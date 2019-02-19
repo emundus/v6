@@ -3168,10 +3168,14 @@ class EmundusControllerFiles extends JControllerLegacy
 			$partner = '';
 		}
 
-		$days = $product[0]['days'].' '.(intval($product[0]['days']) > 1)?'jours':'jour'." pour un total de : ".$product[0]['hours']." heures";
-	    if (!empty($session['time_in_company'])) {
-		    $days .= ' '.$product[0]['time_in_company'];
-	    }
+		if (!empty($product[0]['days']) && !empty($product[0]['hours'])) {
+			$days = $product[0]['days'].' '.((intval($product[0]['days']) > 1)?'jours':'jour')." pour un total de : ".$product[0]['hours']." heures";
+		    if (!empty($session['time_in_company'])) {
+			    $days .= ' '.$product[0]['time_in_company'];
+		    }
+	    } else {
+			$days = 'Aucune information disponible.';
+		}
 
         // Build the variables found in the article.
 	    $post = [
