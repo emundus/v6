@@ -2,6 +2,7 @@
 /**
  * @package     eMundus.user_param_redirect
  *
+ * @author      Hugo Moracchini
  * @copyright   Copyright (C) 2019 eMundus All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
@@ -9,7 +10,7 @@
 defined('_JEXEC') or die;
 
 /**
- * Listens for oAuth2 authorization tokens.
+ * Forces a user on a form for as long as he has a specific param in his account set to true.
  *
  * @package  eMundus.user_param_redirect
  */
@@ -19,10 +20,10 @@ class PlgSystemUser_param_redirect extends JPlugin {
 
 		$this->loadLanguage();
 		$user = JFactory::getUser();
+		$url = $this->params->get('url');
 
-		if (!$user->guest && parse_url(JUri::current())['path'] != $this->params->get('url')) {
+		if (!$user->guest && parse_url(JUri::current())['path'] != $url) {
 
-			// need to load fresh instance
 			$table = JTable::getInstance('user', 'JTable');
 			$table->load($user->id);
 
@@ -37,7 +38,7 @@ class PlgSystemUser_param_redirect extends JPlugin {
 			// Redirect the user.
 			$application = JFactory::getApplication();
 			$application->enqueueMessage('Afin de pouvoir continuer en tant que Décideur RH, vous devez déclarer votre entreprise.');
-			$application->redirect($this->params->get('url', null));
+			$application->redirect($url);
 		}
 	}
 }
