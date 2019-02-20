@@ -6,6 +6,12 @@
  * Time: 11:26
  */
 
+$config = JFactory::getConfig();
+
+// get message controller to send mail to the user we are adding
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+$c_messages = new EmundusControllerMessages();
+
 $db = JFactory::getDBO();
 
 jimport('joomla.log.log');
@@ -22,6 +28,9 @@ if (empty($current_user)) {
 }
 
 $redirect = false;
+
+//  Enter this if, if the user already exists
+//From this if, we will send a different email template
 if (empty($user)) {
     $redirect = true;
 
@@ -37,6 +46,32 @@ if (empty($user)) {
     catch (Exception $e) {
         JLog::add('Error in plugin/CCIRS-DRH-create-associate at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
     }
+
+    $post = [
+        'USER_NAME'     => $formModel->getElementData('jos_emundus_users___full_name_raw'),
+        'DHR_NAME'      => $current_user->name,
+        'USER_EMAIL'    => $current_user->email,
+        'COMPANY_NAME'  => $this->data["jos_emundus_users___company_id"],
+        'SITE_NAME'     => $config->get('sitename'),
+        'BASE_URL'      => JURI::root(),
+    ];
+
+    $emailTemplate = 'associate_user';
+}
+
+else {
+    // If a new user, we have to send a password with the mail
+    $post = [
+        'USER_NAME'     => $formModel->getElementData('jos_emundus_users___full_name_raw'),
+        'DHR_NAME'      => $current_user->name,
+        'COMPANY_NAME'  => $this->data["jos_emundus_users___company_id"],
+        'SITE_NAME'     => $config->get('sitename'),
+        'USER_EMAIL'    => $email,
+        'BASE_URL'      => JURI::root(),
+        'USER_PASSWORD' => $this->data["jos_emundus_users___password"],
+    ];
+
+    $emailTemplate = 'associate_new_user';
 }
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
@@ -63,6 +98,12 @@ try {
     $db->execute();
 } catch (Exception $e) {
 	JLog::add('Error setting status in plugin/CCIRS-DRH-create-associate at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+}
+
+// Send the email.
+if (!$c_messages->sendEmailNoFnum($email, $emailTemplate, $post)) {
+    JLog::add('Error sending mail to user', JLog::ERROR, 'com_emundus');
+    JFactory::getApplication()->enqueueMessage(JText::_('SEND_FAILED'), 'error');
 }
 
 // Due to the fact that this plugin runs before save, we need to insert the modifications into the DB table manually.
