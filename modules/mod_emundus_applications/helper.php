@@ -146,11 +146,11 @@ class modemundusApplicationsHelper {
 			->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON '.$db->quoteName('p.code').' = '.$db->quoteName('esc.training'))
 			->leftJoin($db->quoteName('#__emundus_setup_thematiques', 'th').' ON '.$db->quoteName('th.id').' = '.$db->quoteName('p.programmes'))
 			->where($db->quoteName('ecc.applicant_id').' IN (
-				SELECT '.$db->quoteName('eu.user').'
+				SELECT '.$db->quoteName('user').'
 				FROM '.$db->quoteName('#__emundus_user_entreprise','eu').' WHERE '.$db->quoteName('eu.cid').' IN (
 					SELECT '.$db->quoteName('eu.cid').' 
 					FROM '.$db->quoteName('#__emundus_user_entreprise','euu').' WHERE '.$db->quoteName('euu.user').' = '.$user->id.' AND '.$db->quoteName('euu.profile').' = 1002 
-					) AND '.$db->quoteName('eu.user').' != '.$user->id.' 
+					)
 				) AND '.$db->quoteName('p.published').' = 1 AND '.$db->quoteName('t.published').' = 1 AND '.$db->quoteName('th.published').' = 1')
 			->group([$db->quoteName('esc.id')])
 			->order($db->quoteName('ecc.date_submitted').' DESC');
