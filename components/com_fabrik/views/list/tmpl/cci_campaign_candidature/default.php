@@ -188,7 +188,7 @@ echo $this->table->intro;
                                     <?php foreach ($m_formations->getApplicantsInSessionForDRH($d['jos_emundus_setup_campaigns___id_raw']) as $applicant) :?>
                                         <hr class="em-separator">
                                         <div class="row-fluid">
-                                            <div class="em-candidate-name"><?php echo ($applicant->civility=='Male'?'M':'Mme').'. '.$applicant->firstname.' '.$applicant->lastname; ?></div>
+                                            <div class="em-candidate-name"><?php echo $applicant->civility.'. '.$applicant->firstname.' '.$applicant->lastname; ?></div>
                                             <?php if ($d['jos_emundus_setup_status___step_raw'] == 0) :?>
                                                 <div class="em-delete-application" style="cursor: pointer; float: right;" onclick="deleteApplication(<?php echo $applicant->fnum; ?>)">&times;</div>
                                             <?php endif; ?>
