@@ -91,12 +91,10 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 				$response->isnew = empty(JUserHelper::getUserId($body->preferred_username));
 				$response->error_message = '';
 
-				if ($user = new JUser(JUserHelper::getUserId($body->preferred_username))) {
-					if ($user->get('block') || $user->get('activation')) {
-						$response->status = JAuthentication::STATUS_FAILURE;
-						$response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
-						return;
-					}
+				if ($user = new JUser(JUserHelper::getUserId($body->preferred_username)) && ($user->get('block') || $user->get('activation'))) {
+					$response->status = JAuthentication::STATUS_FAILURE;
+					$response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+					return false;
 				}
 
 			} catch (Exception $e) {
@@ -119,7 +117,13 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
 		$oauth2->setOption('requestparams', array('access_type'=>'offline', 'approval_prompt'=>'auto'));
 		$oauth2->setOption('sendheaders', true);
-		$oauth2->authenticate();
+		try {
+			$oauth2->authenticate();
+		} catch(Exception $e) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_CONNECT_DOWN'));
+			$app->redirect('connexion');
+		}
 	}
 
 	/**
@@ -137,7 +141,13 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$oauth2->setOption('clientid', $this->params->get('client_id'));
 		$oauth2->setOption('clientsecret', $this->params->get('client_secret'));
 		$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
-		$result = $oauth2->authenticate();
+		try {
+			$result = $oauth2->authenticate();
+		} catch(Exception $e) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_CONNECT_DOWN'));
+			$app->redirect('connexion');
+		}
 
 		// We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
 		$credentials = array();
@@ -151,10 +161,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$app = JFactory::getApplication();
 
 		// Perform the log in.
-		if ($app->login($credentials, $options) === true)
-			return true;
-		else
-			return false;
+		return ($app->login($credentials, $options) === true);
 	}
 
 	// After the login has been executed, we need to send the user an email.
@@ -187,9 +194,9 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$mail_from      = $template->emailfrom;
 
 		// If the email sender has the same domain as the system sender address.
-		if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+		if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 			$mail_from_address = $mail_from;
-		else {
+		} else {
 			$mail_from_address = $mail_from_sys;
 			$mail_from_name = $mail_from_sys_name;
 		}
@@ -213,8 +220,9 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		// Tags are replaced with their corresponding values using the PHP preg_replace function.
 		$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
 		$body = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
-		if ($template != false)
+		if (!empty($template->Template)) {
 			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+		}
 
 		// Configure email sender
 		$mailer = JFactory::getMailer();

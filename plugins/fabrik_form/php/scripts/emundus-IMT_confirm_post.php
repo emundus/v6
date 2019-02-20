@@ -27,7 +27,6 @@ JLog::addLogger(
     // we need to put it inside an array
     array('com_emundus')
 );
-//include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 $baseurl = JURI::root();
@@ -43,8 +42,6 @@ $current_user   = JFactory::getSession()->get('emundusUser');
 if (empty($current_user->fnum) || !isset($current_user->fnum)) {
     $current_user->fnum = $fnum;
 }
-
-$recipients[] = array('email' => $student->email);
 
 // Récupération des données du mail
 try {
@@ -73,10 +70,11 @@ $from_id    = 62;
 $to_id      = -1;
 
 // If the email sender has the same domain as the system sender address.
-if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-    $mail_from_address = $from;
-else
-    $mail_from_address = $email_from_sys;
+if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+	$mail_from_address = $from;
+} else {
+	$mail_from_address = $email_from_sys;
+}
 
 // Set sender
 $sender = [
@@ -85,64 +83,58 @@ $sender = [
 ];
 
 
-foreach ($recipients as $recipient) {
+if (isset($student->email) && !empty($student->email)) {
 
-    if (isset($recipient['email']) && !empty($recipient['email'])) {
+    // 3. Envoi du lien vers lequel le professeur va pouvoir remplir le formulaire de référence
+    $link_form = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=272&tableid=283&keyid='.$key.'&sid='.$student->id;
 
-        // 3. Envoi du lien vers lequel le professeur va pouvoir remplir le formulaire de référence
-        $link_form = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=272&tableid=283&keyid='.$key.'&sid='.$student->id;
+    // template replacements (patterns)
+    $post = array(
+        'REFERENCE_FORM_URL'    => $link_form,
+        'CAMPAIGN_LABEL'        => $current_user->campaign_name
+    );
+    $tags       = $m_emails->setTags($user->id, $post);
+    $body       = preg_replace($tags['patterns'], $tags['replacements'], $obj->message);
+    $body       = $m_emails->setTagsFabrik($body, array($current_user->fnum));
+    $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));
 
+    $to = array('email' => $student->email);
 
-        // template replacements (patterns)
-        $post = array(
-            'REFERENCE_FORM_URL'    => $link_form,
-            'CAMPAIGN_LABEL'        => $current_user->campaign_name
-        );
-        $tags       = $m_emails->setTags($user->id, $post);
-        $body       = preg_replace($tags['patterns'], $tags['replacements'], $obj->message);
-        $body       = $m_emails->setTagsFabrik($body, array($current_user->fnum));
-        $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));
+    $mailer = JFactory::getMailer();
 
-        $to = array($recipient['email']);
+    $mailer->setSender($sender);
+    $mailer->addReplyTo($from, $fromname);
+    $mailer->addRecipient($to);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
+    $mailer->addAttachment($attachment);
 
-        $mailer = JFactory::getMailer();
+    $send = $mailer->Send();
 
-        $mailer->setSender($sender);
-        $mailer->addReplyTo($from, $fromname);
-        $mailer->addRecipient($to);
-        $mailer->setSubject($subject);
-        $mailer->isHTML(true);
-        $mailer->Encoding = 'base64';
-        $mailer->setBody($body);
-        $mailer->addAttachment($attachment);
+    if ($send !== true) {
 
-        $send = $mailer->Send();
-
-        if ($send !== true) {
-
-            if ($send === false) {
-                JLog::add('No mailer set-up!', JLog::ERROR, 'com_emundus');
-            } else {
-                $app->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient['email'], 'error');
-                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-            }
-
+        if ($send === false) {
+            JLog::add('No mailer set-up!', JLog::ERROR, 'com_emundus');
         } else {
-
-            $app->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient['email'], 'message');
-            try {
-                $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-                            VALUES ('62', '-1', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-                $db->setQuery( $sql );
-                $db->execute();
-            } catch (Exception $e) {
-                JLog::add($sql, JLog::ERROR, 'com_emundus');
-            }
-
+            $app->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$student->email, 'error');
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
         }
-        unset($replacements);
-        unset($mailer);
-    }
-}
 
-?>
+    } else {
+
+        $app->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$student->email, 'message');
+        try {
+            $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+                        VALUES ('62', $student_id, ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+            $db->setQuery( $sql );
+            $db->execute();
+        } catch (Exception $e) {
+            JLog::add($sql, JLog::ERROR, 'com_emundus');
+        }
+
+    }
+    unset($replacements);
+    unset($mailer);
+}

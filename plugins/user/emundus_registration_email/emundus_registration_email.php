@@ -33,9 +33,7 @@ class plgUserEmundus_registration_email extends JPlugin {
 			$app    = JFactory::getApplication();
 			$user   = JFactory::getUser($userId);
 
-			if ($user->guest) {
-				return;
-			} else {
+			if (!$user->guest) {
 
 				// need to load fresh instance
 				$table = JTable::getInstance('user', 'JTable');
@@ -64,6 +62,11 @@ class plgUserEmundus_registration_email extends JPlugin {
 					// save user data
 					if ($table->store()) {
 						$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'));
+						
+						$redirect = $this->params->get('activation_redirect');
+						if (!empty($redirect)) {
+							$app->redirect($redirect);
+						}
 					} else {
 						throw new RuntimeException($table->getError());
 					}
@@ -145,8 +148,6 @@ class plgUserEmundus_registration_email extends JPlugin {
 				}
 			}
 		}
-
-		return;
 	}
 
 	/**
@@ -176,10 +177,11 @@ class plgUserEmundus_registration_email extends JPlugin {
 		// Get a SEF friendly URL or else sites with SEF return 404.
 		// WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
 		// TODO: Possibly use JRoute to make this work without needing a menu item?
-		if (JFactory::getConfig()->get('sef') == 0)
+		if ($config->get('sef') == 0) {
 			$activation_url = $baseURL.'/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
-		else
+		} else {
 			$activation_url = $baseURL.'/activation?emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
+		}
 
 		$post = [
 			'USER_NAME'     => $data['name'],
