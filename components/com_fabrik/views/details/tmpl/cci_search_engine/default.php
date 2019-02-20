@@ -68,11 +68,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
     $title = $this->data['jos_emundus_setup_teaching_unity___label_raw'];
-
+    $page_title = $this->data['jos_emundus_setup_thematiques___label_raw']." - ".$title;
     $video = $this->data['jos_emundus_setup_programmes___video_raw'];
 
     $document = JFactory::getDocument();
-    $document->setTitle($title);
+    $document->setTitle($page_title);
     $document->setDescription(substr(html_entity_decode(strip_tags(html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']))), 0, 200));
 ?>
 
