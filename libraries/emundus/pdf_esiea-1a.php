@@ -812,6 +812,19 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
+function getSiseCountry($country) {
+    $db 			= JFactory::getDBO();
+
+    $query = 'SELECT valeur FROM #__emundus_sise_code_pays WHERE code LIKE "'.$country.'"';
+    try {
+     $db->setQuery($query);
+     return $db->loadResult();
+    } catch (Exception $e) {
+        JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+    }
+
+}
+
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
@@ -845,8 +858,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     // Get form HTML
     $htmldata = '';
     $forms ='';
-
-
     if ($form_post || !empty($form_ids))
         $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id);
 
@@ -860,7 +871,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     try {
 
         // Users informations
-        $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
+        $query = 'SELECT u.id AS user_id,u.email as user_email, c.civility, c.firstname, c.lastname,c.mobile_phone, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.nationality, epd.birth_date, epd.street_1, epd.city_1, epd.city_other, epd.zipcode_1, epd.country_1, ed.user, ea.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
@@ -869,13 +880,26 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
 					LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like '.$db->Quote($fnum).'
 					LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like '.$db->Quote($fnum).'
+					LEFT JOIN #__emundus_admission AS ea ON ed.user = u.id AND ea.fnum like '.$db->Quote($fnum).'
 					WHERE ecc.fnum like '.$db->Quote($fnum).'
 					ORDER BY esc.id DESC';
         $db->setQuery($query);
         $item = $db->loadObject();
-
     } catch (Exception $e) {
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+    }
+
+    try {
+        $query = 'SELECT valeur, code FROM #__emundus_list_profession_insee_sise';
+        $db->setQuery($query);
+        $profession_insee = $db->loadAssocList();
+    } catch (Exception $e) {
+        JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+    }
+
+    $pro_list = '';
+    foreach ($profession_insee as $profession) {
+        $pro_list .= '<b style="color: #0081c5">'.$profession['code'].'</b> '.$profession['valeur'].'. ';
     }
 
     //get logo
@@ -902,52 +926,36 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
-    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_RIGHT);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
     $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
     $dimensions = $pdf->getPageDimensions();
-
     /*** Applicant   ***/
     $htmldata .=
         '<style>
-	.card  { border: none; display:block; line-height:80%;}
-	.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
-	.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
-	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
-	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
-	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
+            .card { border: none; display:block; line-height:6px;}     
+            .card-table-main {line-height: 4px;}       
+            .blue-box { background-color: #0081c5; display: inline-block; height: 10px; width: 5%;}
+            .inner-table {line-height: 5px; border: 1px solid #0081c5;}
+            .title {background-color: #0081c5;}
+	    </style>';
 
-	.label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
-	.label-default {background-color:#999999;}
-	.label-primary {background-color:#337ab7;}
-	.label-success {background-color:#5cb85c;}
-	.label-info    {background-color:#033c73;}
-	.label-warning {background-color:#dd5600;}
-	.label-danger  {background-color:#c71c22;}
-	.label-lightpurple { background-color: #DCC6E0 }
-	.label-purple { background-color: #947CB0 }
-	.label-darkpurple {background-color: #663399 }
-	.label-lightblue { background-color: #6bb9F0 }
-	.label-blue { background-color: #19B5FE }
-	.label-darkblue { background-color: #013243 }
-	.label-lightgreen { background-color: #00E640 }
-	.label-green { background-color: #3FC380 }
-	.label-darkgreen { background-color: #1E824C }
-	.label-lightyellow { background-color: #FFFD7E }
-	.label-yellow { background-color: #FFFD54 }
-	.label-darkyellow { background-color: #F7CA18 }
-	.label-lightorange { background-color: #FABE58 }
-	.label-orange { background-color: #E87E04 }
-	.label-darkorange {background-color: #D35400 }
-	.label-lightred { background-color: #EC644B }
-	.label-red { background-color: #CF000F }
-	.label-darkred { background-color: #96281B }
 
-	</style>';
+    $applicant_email = !empty($item->user_email) ? $item->user_email : $item->email;
+    $applicant_city = !empty($item->city_1) ? $item->city_1 : $item->city_other;
+    $tutor1_city = !empty($item->responsable_ville_1) ? $item->responsable_ville_1 : $item->responsable_ville_other_1;
+    $tutor2_city = !empty($item->responsable_ville_2) ? $item->responsable_ville_2 : $item->responsable_ville_other_2;
+    $financer_city = !empty($item->repondant_financier_city) ? $item->repondant_financier_city : $item->repondant_financier_city_other;
+
+    if($campaign_id == '7') {
+        $dossier_label = JText::_('DOSSIER_INSCRIPTION');
+    }
+    elseif ($campaign_id == '8') {
+        $dossier_label = JText::_('DOSSIER_REINSCRIPTION');
+    }
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $htmldata .= '<div class="card">
@@ -1004,41 +1012,400 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
         $htmldata .= '';
     } else {
-        $htmldata .= '<div class="card">
-					<table width="100%"><tr>';
-        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
-            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
-        elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
-            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
         $htmldata .= '
-		<td width="80%">
-
-		<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
-
-        if (isset($item->maiden_name))
-            $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
-
-        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
-
-        // create a $dt object with the UTC timezone
-        $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-        // change the timezone of the object without changing it's time
-        $dt->setTimezone(new DateTimeZone($offset));
-
-        $htmldata .= '
-		<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
-		<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-		<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>
-		<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-		<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>
-		</td>
-		</tr>
-		</table>
-		</div>';
+                    <div style="background-color: #0089d2; color: white;">
+                    <div class="card" style="background-color: #0089d2; color: white;">
+                    <table class="card-table-main">
+                        <tr>
+                            <td><img class="logo" src="/images/custom/logo-esiea.png" alt="ESIEA - Ecole d\'ingénieurs du monde numérique"></td>
+                            <td style="font-size:60px;">
+                                '.JText::_("FILE").'<br>   <b>'.$dossier_label.'</b><br><br>
+                                <span>'.JText::_("SCHOOLYEARS").'<br>  '. str_replace('-', ' / ', $user->schoolyear).'</span>
+                            </td>
+                        </tr>
+                    </table>
+                    </div>
+                    </div>
+                    
+                    <br>
+                    
+                    <table class="card-table-contact">
+                        <tr>
+                            <td>
+                                <span><u>'.JText::_("STUDENT_CODE").'</u>: </span> <br> <b>'.$fnum.'</b><br>
+                                <span><u>'.JText::_("SCHOOLYEAR").'</u>: </span><br> <b>'.@$item->label.'</b>
+                            </td>
+                            <td>
+                                '.JText::_("ESIEA_SEND_APPLICATION_ADDRESS").'
+                            </td>
+                        </tr>
+                    </table>    
+                    <br>
+                    
+                    <table width="100%">
+                    <tr>
+                        <td  class="title" width="200px"><b style="color: white"> '.JText::_("APPLICANT_PERSONAL_DETAILS").'</b></td>
+                        <td width="79px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
+                    </tr>
+                    <tr >
+                        <td width="280px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
+                                    <td>'.$item->civility.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                    <td>'.$item->lastname.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                    <td>'.$item->firstname.'</td>
+                                </tr>
+                                 <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->street_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->zipcode_1.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$applicant_city.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : '.$item->country_1.'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->mobile_phone.'</td>
+                                </tr>
+                                <tr>'. JText::_("EMAIL") .' : '.$applicant_email.'
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #000;">
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("EMAIL") .' : </td>
+                                </tr>
+                            </table></td>
+                    </tr>
+                    
+                    </table>
+                    
+                    <br>
+                    
+                    <table width="100%">
+                    <tr>
+                        <td class="title" width="250px"><b style="color: white"> '.JText::_("TUTOR_DETAILS").'</b></td>
+                        <td width="29px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
+                    </tr>
+                    <tr>
+                        <td width="280px" class="inner-table">
+                            <table >
+                                <tr>
+                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
+                                    <td>'.$item->responsable_civility_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                    <td>'.$item->responsable_nom_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                    <td>'.$item->responsable_prenom_1.'</td>
+                                </tr>
+                                 <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->responsable_adresse_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->responsable_cp_1.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$tutor1_city.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : '.getSiseCountry($item->responsable_pays_1).'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->responsable_telephone_1.'</td>
+                                </tr>
+                                <tr>'. JText::_("EMAIL") .' : '.$item->responsable_email_1.'
+                                </tr><br>
+                                <tr>  '. JText::_("PROFESSION") .' : '.$item->responsable_profession_1.'
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #000;">
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("EMAIL") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("PROFESSION") .' : </td>
+                                </tr>
+                                
+                            </table></td>
+                    </tr>
+                    
+                    </table>
+                    
+                     <br>
+                    
+                    <table width="100%">
+                    <tr>
+                        <td class="title" width="250px"><b style="color: white"> '.JText::_("TUTOR_DETAILS").'</b></td>
+                        <td width="29px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
+                    </tr>
+                    <tr>
+                        <td width="280px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
+                                    <td>'.$item->responsable_civility_2.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                    <td>'.$item->responsable_nom_2.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                    <td>'.$item->responsable_prenom_2.'</td>
+                                </tr>
+                                 <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->responsable_adresse_2.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->responsable_cp_2.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$tutor2_city.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : '.getSiseCountry($item->responsable_pays_2).'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->responsable_telephone_2.'</td>
+                                </tr>
+                                <tr>'. JText::_("EMAIL") .' : '.$item->responsable_email_2.'
+                                </tr><br> 
+                                <tr>  '. JText::_("PROFESSION") .' : '.$item->responsable_profession_2.'
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #000;">
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("EMAIL") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("PROFESSION") .' : </td>
+                                </tr>
+                                
+                            </table></td>
+                    </tr>
+                    
+                    </table>
+                    <br><b style="font-size:20px;">*Se référer à la nomenclature INSEE en page 2</b> 
+                    <p style="page-break-after: always;"></p>
+                    
+                    
+                    <b style="color: #0081c5;">NOMENCLATURE INSEE</b><br>'.$pro_list.'
+                    <br>
+                    <br>
+                    <table width="100%">
+                    <tr>
+                        <td class="title" width="250px"><b style="color: white"> '.JText::_("FINACER_DETAILS").'</b></td>
+                        <td width="29px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
+                    </tr>
+                    <tr>
+                        <td width="280px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
+                                    <td>'.$item->repondant_financier_civility.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                    <td>'.$item->repondant_financier_nom_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                    <td>'.$item->repondant_financier_prenom_1.'</td>
+                                </tr>
+                                 <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->repondant_address.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->repondant_financier_zipcode.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$financer_city.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : '.getSiseCountry($item->repondant_financier_country).'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->repondant_financier_telephone.'</td>
+                                </tr>
+                                <tr>'. JText::_("EMAIL") .' : '.$item->repondant_financier_email.'
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #000;">
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("EMAIL") .' : </td>
+                                </tr>
+                            </table></td>
+                    </tr>
+                    
+                    </table>
+                    
+                    <br>
+                    
+                    <b style="color:#0081c5; ">FRAIS DE SCOLARITÉ '. $user->schoolyear .' () </b> <br>
+                    
+                    
+                    <table>
+                        <tr><td class="title"><b style="color: white"> '.JText::_("FRAIS_INSCRIPTION_TABLE_TITLE").'</b></td><td></td></tr>
+                        <tr><td width="100%">__ Je procède au virement de 1 450.00 € sur le compte :</td></tr><br>
+                        <tr><td width="100%"><span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span></td></tr><br>
+                        <tr><td width="100%">En indiquant la référence : <b>102065-FLEURY</b></td></tr><br> 
+                        <tr><td width="100%"> __ Je joins un chèque de 1 450.00 € à l\'ordre de l\'ESIEA en indiquant la référence 102065-FLEURY au dos</td></tr><br>
+                    </table>
+                    <br>
+                    
+                    <table>
+                        <tr>
+                            <td class="title"><b style="color: white"> '.JText::_("SOLDE_INSCRIPTION").'</b></td><td></td></tr>
+                    </table>
+                    <div>
+                        <ul><li><b>'.JText::_("PAY_IN_ONE_GO").'</b></li>
+                            <ul>
+                                <li>
+                                    Par virement sur le compte :<br>
+                                    <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
+                                    En indiquant la référence : 102065-FLEURY
+                                </li>
+                                <li>
+                                    Par <b>chèque</b> à l\'ordre de l\'ESIEA en indiquant la référence <b>102065-FLEURY</b> au dos
+                                </li>
+                            </ul>
+                            <br>
+                            <li><b>En 10 fois* 700.00 € le 5 de chaque mois à compter du 5 septembre 2018 par prélèvement :</b></li>
+                            <ul>
+                                <li>
+                                    En utilisant mon compte bancaire / mandat SEPA de l\'année passée
+                                </li>
+                                <li>
+                                    En joignant le mandat SEPA ESIEA complété ainsi qu\'un IBAN / BIC de ma banque
+                                </li>
+                            </ul>
+                        </ul>
+                    </div>
+					';
     }
     /**  END APPLICANT   ****/
 
-    $htmldata .= $forms;
     // Listes des fichiers chargés
     if (!empty($options)) {
         if (in_array("upload", $options)) {
