@@ -85,7 +85,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="g-block size-95">
         <h1><?php echo $title; ?></h1>
             <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
-            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo "code CPF : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
+            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) echo JText::_('CODE')." : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; ?></p>
     </div>
 
         <div class="em-details g-block size-95 em-details-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
