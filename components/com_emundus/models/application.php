@@ -1215,11 +1215,11 @@ class EmundusModelApplication extends JModelList
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0) {
+    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
 
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list     = new EmundusHelperList;
-        $tableuser  = $h_list->getFormsList($aid, $fnum, $fids);
+        $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
         //var_dump($tableuser);
         $forms = "<style>
                     table{
@@ -1308,74 +1308,74 @@ class EmundusModelApplication extends JModelList
                         $forms .= JText::_($itemg->label);
                         $forms .= '</h4>';
 
-/*
-                        if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
-                            foreach($elements as &$iteme) {
+                        /*
+                                                if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
+                                                    foreach($elements as &$iteme) {
 
 
-                                $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                                                        $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
 
-                                try {
+                                                        try {
 
-                                    $this->_db->setQuery($query);
-                                    $res = $this->_db->loadRow();
+                                                            $this->_db->setQuery($query);
+                                                            $res = $this->_db->loadRow();
 
-                                } catch (Exception $e) {
-                                    JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
-                                    throw $e;
-                                }
+                                                        } catch (Exception $e) {
+                                                            JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                            throw $e;
+                                                        }
 
-                                if (count($res)>1) {
-                                    $iteme->content = $res[1];
-                                    $iteme->content_id = $res[0];
-                                } else {
-                                    $iteme->content = '';
-                                    $iteme->content_id = -1;
-                                }
+                                                        if (count($res)>1) {
+                                                            $iteme->content = $res[1];
+                                                            $iteme->content_id = $res[0];
+                                                        } else {
+                                                            $iteme->content = '';
+                                                            $iteme->content_id = -1;
+                                                        }
 
-                                if ($iteme->plugin == 'databasejoin') {
-                                    $params = json_decode($iteme->params);
+                                                        if ($iteme->plugin == 'databasejoin') {
+                                                            $params = json_decode($iteme->params);
 
-                                    if ($params->database_join_display_type == 'checkbox') {
-                                        $query =
-                                            'SELECT `id`, GROUP_CONCAT(' . $iteme->name . ', ", ") as ' . $iteme->name . '
-                                                    FROM `' . $itemt->db_table_name . '_repeat_' . $iteme->name . '`
-                                                    WHERE parent_id=' . $iteme->content_id . ' GROUP BY parent_id';
-                                        try {
-                                            $this->_db->setQuery($query);
-                                            $res = $this->_db->loadRow();
+                                                            if ($params->database_join_display_type == 'checkbox') {
+                                                                $query =
+                                                                    'SELECT `id`, GROUP_CONCAT(' . $iteme->name . ', ", ") as ' . $iteme->name . '
+                                                                            FROM `' . $itemt->db_table_name . '_repeat_' . $iteme->name . '`
+                                                                            WHERE parent_id=' . $iteme->content_id . ' GROUP BY parent_id';
+                                                                try {
+                                                                    $this->_db->setQuery($query);
+                                                                    $res = $this->_db->loadRow();
 
-                                        } catch (Exception $e) {
-                                            JLog::add('Line 1194 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
-                                            throw $e;
-                                        }
+                                                                } catch (Exception $e) {
+                                                                    JLog::add('Line 1194 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                                    throw $e;
+                                                                }
 
-                                        if (count($res)>1) {
-                                            $iteme->content = $res[1];
-                                            $iteme->content_id = $res[0];
-                                        } else {
-                                            $iteme->content = '';
-                                            $iteme->content_id = -1;
-                                        }
-                                    }
-                                }
+                                                                if (count($res)>1) {
+                                                                    $iteme->content = $res[1];
+                                                                    $iteme->content_id = $res[0];
+                                                                } else {
+                                                                    $iteme->content = '';
+                                                                    $iteme->content_id = -1;
+                                                                }
+                                                            }
+                                                        }
 
-                                elseif ($iteme->plugin == 'checkbox') {
-                                    $iteme->content = implode(", ", json_decode (@$res[1]));
-                                    $iteme->content_id = $res[0];
-                                }
+                                                        elseif ($iteme->plugin == 'checkbox') {
+                                                            $iteme->content = implode(", ", json_decode (@$res[1]));
+                                                            $iteme->content_id = $res[0];
+                                                        }
 
-                                elseif ($iteme->plugin=='dropdown' || $iteme->plugin=='radiobutton') {
-                                    $params = json_decode($iteme->params);
-                                    $index = array_search($res[1], $params->sub_options->sub_values);
-                                    $iteme->content = JText::_($params->sub_options->sub_labels[$index]);
-                                    $iteme->content_id = $res[0];
-                                }
-                            }
-                        }
-                        unset($iteme);
+                                                        elseif ($iteme->plugin=='dropdown' || $iteme->plugin=='radiobutton') {
+                                                            $params = json_decode($iteme->params);
+                                                            $index = array_search($res[1], $params->sub_options->sub_values);
+                                                            $iteme->content = JText::_($params->sub_options->sub_labels[$index]);
+                                                            $iteme->content_id = $res[0];
+                                                        }
+                                                    }
+                                                }
+                                                unset($iteme);
 
-  */
+                          */
 
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
@@ -1393,7 +1393,7 @@ class EmundusModelApplication extends JModelList
                             }
                             $forms .= '</table>';
 
-                        // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
+                            // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
                         } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 7 && !$asTextArea) {
 
                             $forms .= '<p><table class="adminlist">
@@ -1536,7 +1536,7 @@ class EmundusModelApplication extends JModelList
                             }
                             $forms .= '</tbody></table></p>';
 
-                        // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
+                            // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                         } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
 
 
@@ -1567,7 +1567,7 @@ class EmundusModelApplication extends JModelList
                             // -- Ligne du tableau --
                             if (count($repeated_elements) > 0) {
                                 $i = 1;
-                               
+
                                 foreach ($repeated_elements as $r_element) {
                                     $j = 0;
                                     $forms .= '<br>---- '.$i.' ----<br>';
@@ -1649,10 +1649,10 @@ class EmundusModelApplication extends JModelList
                                     $forms .= '</table>';
                                     $i++;
                                 }
-                                
+
                             }
 
-                        // AFFICHAGE EN LIGNE
+                            // AFFICHAGE EN LIGNE
                         } else {
                             $forms .= '<table>';
                             foreach ($elements as $element) {
@@ -1763,7 +1763,7 @@ class EmundusModelApplication extends JModelList
 
                                         else
                                             $elt = JText::_($element->content);
-                                        
+
                                         if ($element->plugin == 'textarea')
                                             $forms .= '<tr><td colspan="2" style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span> <br>'.JText::_($elt).'</td></tr>';
                                         else
@@ -1941,7 +1941,7 @@ td {
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
-                                       // $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                        // $elt = strftime($date_params->date_form_format, strtotime($element->content));
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
 
                                     }
@@ -2451,7 +2451,7 @@ td {
         }
 
 
-        
+
         $dbo = $this->getDbo();
 
         if ($sent) {
@@ -2620,7 +2620,7 @@ td {
                     $parent_id = $stored['id'];
                     unset($stored['id']);
                     $stored['fnum'] = $fnum_to;
-  $q=1;
+                    $q=1;
                     $query = 'INSERT INTO '.$form->db_table_name.' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
                     $db->setQuery( $query );
                     $db->execute();
@@ -2635,7 +2635,7 @@ td {
                                 LEFT JOIN #__fabrik_joins AS fj ON (fj.group_id = fe.group_id AND fj.list_id != 0 AND fj.element_id = 0)
                                 WHERE ff.form_id = "'.$form->form_id.'"
                                 ORDER BY ff.ordering';
-$q=2;
+                    $q=2;
                     $db->setQuery( $query );
                     $groups = $db->loadObjectList();
 
@@ -2654,12 +2654,12 @@ $q=2;
                         }
                         if (count($data) > 0) {
                             foreach ($data as $key => $d) {
-  $q=3;
+                                $q=3;
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery( $query );
                                 $stored = $db->loadAssocList();
 
-                               if (count($stored) > 0) {
+                                if (count($stored) > 0) {
                                     $arrayValue = [];
 
                                     foreach($stored as $rowvalues){
@@ -2669,9 +2669,9 @@ $q=2;
                                         $keyValue[] = $rowvalues;
 
                                     }
-                                     unset($stored[0]['id']);
- $q=4;
-                                   // update form data
+                                    unset($stored[0]['id']);
+                                    $q=4;
+                                    // update form data
                                     $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored[0])).'`)'.' VALUES '.implode(',', $arrayValue);
                                     $db->setQuery( $query );
                                     $db->execute();
@@ -2694,7 +2694,7 @@ $q=2;
         return true;
     }
 
-     /**
+    /**
      * Duplicate all documents (files)
      * @param $fnum_from      the fnum of the source
      * @param $fnum_to      the fnum of the duplicated application
@@ -2714,7 +2714,7 @@ $q=2;
                 $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
             }
 
-                // 1. get list of uploaded documents for previous file defined as duplicated
+            // 1. get list of uploaded documents for previous file defined as duplicated
             $query = 'SELECT eu.*
                         FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$pid.'
@@ -2770,21 +2770,21 @@ $q=2;
         return true;
     }
 
-	/**
-	 * Duplicate all documents (files)
-	 *
-	 * @param       $fnum             String     the fnum of application file
-	 * @param       $applicant        Object     the applicant user ID
-	 * @param array $param
-	 * @param int   $status
-	 *
-	 * @return bool
-	 */
+    /**
+     * Duplicate all documents (files)
+     *
+     * @param       $fnum             String     the fnum of application file
+     * @param       $applicant        Object     the applicant user ID
+     * @param array $param
+     * @param int   $status
+     *
+     * @return bool
+     */
     public function sendApplication($fnum, $applicant, $param = array(), $status = 1) {
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
         if ($status == '-1') {
-        	$status = $applicant->status;
+            $status = $applicant->status;
         }
 
         $db = JFactory::getDBO();
