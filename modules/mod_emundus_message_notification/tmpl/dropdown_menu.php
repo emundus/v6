@@ -18,7 +18,7 @@ $notif = 0;
 
     <div class="em-message-dropdown-button" id="messageDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <i class="big circular envelope outline icon" id="messageDropdownIcon"></i>
-        <?php if(!empty($message_contacts)) :?>
+        <?php if (!empty($message_contacts)) :?>
 
             <?php foreach ($message_contacts as $message_notif) :?>
                 <?php if ($message_notif->state == '1')
@@ -26,12 +26,12 @@ $notif = 0;
                 ?>
             <?php endforeach; ?>
         <?php endif; ?>
-        <?php if($notif > 0) :?>
+        <?php if ($notif > 0) :?>
             <div id="new-message-notif"><?php echo $notif; ?></div>
         <?php endif; ?>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="em-message-list">
-        <?php if(empty($message_contacts)) :?>
+        <?php if (empty($message_contacts)) :?>
             <li><p style="text-align: center"><?php echo JText::_("NO_MESSAGES");?></p></li>
         <?php else:?>
             <?php foreach ($message_contacts as $message_contact) :?>

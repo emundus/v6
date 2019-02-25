@@ -56,12 +56,12 @@ class modEmundusMessageNotificationHelper {
                        least(`user_id_from`, `user_id_to`) as x, greatest(`user_id_from`, `user_id_to`) as y, 
                        max(`date_time`) as msg_time
                     from jos_messages 
-                    WHERE (jos_messages.folder_id = 2 OR (jos_messages.folder_id = 2 AND `user_id_to` = ".$user."))
+                    WHERE (jos_messages.folder_id = 2 OR (jos_messages.folder_id = 3 AND `user_id_to` = ".$user."))
                     AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
                     group by x, y
                 )
                 AND (`user_id_to` = ".$user." OR `user_id_from` = ".$user.")
-                AND (jos_messages.folder_id = 2 OR (jos_messages.folder_id = 2 AND `user_id_to` = ".$user."))
+                AND (jos_messages.folder_id = 2 OR (jos_messages.folder_id = 3 AND `user_id_to` = ".$user."))
                 ORDER BY jos_messages.date_time DESC 
                 LIMIT 50";
 
