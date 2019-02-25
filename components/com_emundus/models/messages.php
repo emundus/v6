@@ -591,7 +591,7 @@ class EmundusModelMessages extends JModelList {
                   INNER JOIN (
                       SELECT MAX(message_id) AS most_recent_message_id
                       FROM jos_messages
-                      WHERE (folder_id = 2 OR folder_id = 3)
+                      WHERE (folder_id = 2 OR (folder_id = 3 AND user_id_to = ".$user."))
                       GROUP BY CASE WHEN user_id_from > user_id_to
                           THEN user_id_to
                           ELSE user_id_from
