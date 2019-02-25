@@ -186,7 +186,6 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 				$post = [
 					'USER_NAME' => $this->user->name,
-                    'USER_PROFILE' => $user_profile['profile_label'],
 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_USER_PROFILE' => $profile['profile_label'],
 					'OFFER_ID' => $offerInformation->search_engine_page,
