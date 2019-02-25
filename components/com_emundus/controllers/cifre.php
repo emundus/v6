@@ -158,6 +158,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			$m_profile = new EmundusModelProfile();
 			$profile = $m_profile->getProfileByApplicant($fnum['applicant_id']);
+            $user_profile = $m_profile->getProfileByApplicant($this->user->id);
 
 			// Link created: Send email.
 			if (!empty($linkedOffer)) {
@@ -165,7 +166,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$linkedOffer = $this->m_cifre->getOffer($linkedOffer);
 				$post = [
 					'USER_NAME' => $this->user->name,
-					'OFFER_USER_NAME' => $fnum['name'],
+                    'USER_PROFILE' => $user_profile['profile_label'],
+ 					'OFFER_USER_NAME' => $fnum['name'],
 					'OFFER_USER_PROFILE' => $profile['profile_label'],
 					'OFFER_ID' => $offerInformation->search_engine_page,
 					'OFFER_NAME' => $offerInformation->titre,
