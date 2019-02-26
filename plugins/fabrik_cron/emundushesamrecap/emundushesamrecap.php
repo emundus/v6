@@ -80,8 +80,8 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
 
 		// Generate emails from template and store it in message table
 		if (!empty($users)) {
-            require_once(JPATH_SITE.'/components/com_emundus/controllers/messages.php');
-            require_once(JPATH_SITE.'/components/com_emundus/models/cifre.php');
+            require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+            require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
 			$c_messages = new EmundusControllerMessages();
 			$m_cifre = new EmundusModelCifre();
 
@@ -108,6 +108,8 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
                     </tr>';
                 }
                 $suggestions .= '</table>';
+
+                echo '<pre>'; var_dump($suggestions); die;
 
 				$post = [
                     'FIRSTNAME' => $user->firstname,
