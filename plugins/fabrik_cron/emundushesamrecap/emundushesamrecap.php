@@ -109,8 +109,6 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
                 }
                 $suggestions .= '</table>';
 
-                echo '<pre>'; var_dump($suggestions); die;
-
 				$post = [
                     'FIRSTNAME' => $user->firstname,
                     'LASTNAME' => strtoupper($user->lastname),
