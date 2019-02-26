@@ -79,7 +79,7 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
 
 
 		// Generate emails from template and store it in message table
-		if (!empty($applicants)) {
+		if (!empty($users)) {
             require_once(JPATH_SITE.'/components/com_emundus/controllers/messages.php');
             require_once(JPATH_SITE.'/components/com_emundus/models/cifre.php');
 			$c_messages = new EmundusControllerMessages();
