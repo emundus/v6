@@ -19,7 +19,7 @@ class EmundusModelCifre extends JModelList {
 
 	public function __construct(array $config = array()) {
 
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 		// Load class variables
 		$this->db = JFactory::getDbo();
