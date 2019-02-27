@@ -31,7 +31,7 @@ if (!empty($tab)) :?>
             }
 
             if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1) {
-                echo '<br/><div class="select"';
+                echo '<br/><div class="select">';
                 echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {
                     if (array_key_exists($profile->id, $ids_array)) {
