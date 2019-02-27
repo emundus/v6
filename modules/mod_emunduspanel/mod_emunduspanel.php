@@ -34,10 +34,11 @@ $fnum = $app->input->getString('fnum', null);
 $m_users = new EmundusModelUsers;
 $applicant_profiles = $m_users->getApplicantProfiles();
 
-if (isset($user->menutype))
-	$user_menutype = $user->menutype;
-else
-	$user_menutype = 'mainmenu';
+if (isset($user->menutype)) {
+    $user_menutype = $user->menutype;
+} else {
+    $user_menutype = 'mainmenu';
+}
 
 $folder = $params->get('folder', '');
 $show_profile_link = $params->get('show_profile_link', 1);
@@ -48,6 +49,7 @@ $text = $params->get($user_menutype, '');
 $img = $params->get($user_menutype.'_img', '');
 $is_text = $params->get($user_menutype.'_text', '');
 $show_menu = $params->get('showmenu', true);
+$lean_mode = $params->get('leanmode', false);
 $img = explode(',',$img);
 $col = 0;
 $t__ = '';
@@ -55,6 +57,21 @@ $i = 1;
 $module_title = '';
 
 $link = "index.php";
+
+
+/*
+ * If lean mode is on, we show and hide different aspects of the module based on the user's profiles.
+ * - User only has candidate profiles: hide profile selector and menu icons.
+ * - User has a mix: show dropdown and bubbles if current profile is not applicant.
+ * - User only has non-candidate profile: Do not show select but show bubbles.
+ */
+if ($lean_mode) {
+    $m_profiles = new EmundusModelProfile;
+    $app_prof = $m_profiles->getApplicantsProfilesArray();
+
+    // If all of the user's profiles are found in the list of applicant profiles, then the user is only an applicant.
+    $only_applicant = !array_diff($user->emProfiles, $app_prof);
+}
 
 if (is_array($text) && !empty($text)) {
 	foreach ($text as $t) {
@@ -86,8 +103,7 @@ if (!empty($t__)) {
 
 		if ($user->applicant == 1) {
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
-		}
-		else {
+		} else {
 			$btn_start = '';
 		}
 
@@ -129,9 +145,9 @@ if (!empty($t__)) {
 	/***** get an applicant campaign *******/
 	$m_campaign = new EmundusModelCampaign;
 	$campaign = $m_campaign->getCampaignByFnum($user->fnum);
-	/***** get applicant profiles *******/
-	$m_profiles = new EmundusModelProfile;
-	$applicant_profiles = $m_profiles->getApplicantsProfilesArray();
+    /***** get applicant profiles *******/
+    $m_profiles = new EmundusModelProfile;
+    $applicant_profiles = $m_profiles->getApplicantsProfilesArray();
 	/***************************************/
 
 	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
