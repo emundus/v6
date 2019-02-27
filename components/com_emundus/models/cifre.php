@@ -544,7 +544,7 @@ class EmundusModelCifre extends JModelList {
 		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cl.user_to').' != '.$user_id.' AND '.$this->db->quoteName('cl.user_from').' != '.$user_id.' AND '.$this->db->quoteName('cc.status').' = 1';
 
 		if (!empty($time_ago)) {
-		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.date('Y-m-d H:i:s', strtotime($time_ago));
+		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.$this->db->quote(date('Y-m-d H:i:s', strtotime($time_ago)));
         }
 
 		if ($user_profile == 1006) {

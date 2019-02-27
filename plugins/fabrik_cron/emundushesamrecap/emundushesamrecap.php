@@ -97,22 +97,21 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
                 }
 
                 // Build an HTML list of all of these offers.
-                $suggestions = '<table>';
-
+                $suggestions = '<table><tbody>';
                 foreach ($offers as $offer) {
                     $suggestions .= '<tr>
-                        <td>'.$offer->tire.'</td>
-                        <td>
-                            <a role="button" href="'.JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page).'>'.JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW').'</a>
+                        <td>'.$offer->titre.'</td>
+                        <td style="border-radius: 3px;" align="center" bgcolor="#bb0e29">
+                            <a style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 6px 18px; border: 1px solid #bb0e29; display: inline-block;" href="'.JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page.'" target="_blank">Voir l\'offre</a>
                         </td>
                     </tr>';
                 }
-                $suggestions .= '</table>';
+                $suggestions .= '</tbody></table>';
 
 				$post = [
                     'FIRSTNAME' => $user->firstname,
                     'LASTNAME' => strtoupper($user->lastname),
-                    'OFFRES' => $suggestions,
+                    'OFFERS' => $suggestions,
 				];
 
 				// Send the email.
