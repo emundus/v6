@@ -19,7 +19,7 @@ class EmundusModelCifre extends JModelList {
 
 	public function __construct(array $config = array()) {
 
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 		// Load class variables
 		$this->db = JFactory::getDbo();
@@ -495,14 +495,17 @@ class EmundusModelCifre extends JModelList {
 	}
 
 
-	/**
-	 * Gets suggestions of potential offers that may interest the user
-	 *
-	 * @param Int $user_id The ID of the user we are getting suggestions for.
-	 * @param Int $user_profile The profile of the user
-	 * @return Mixed
-	 */
-	public function getSuggestions($user_id, $user_profile) {
+    /**
+     * Gets suggestions of potential offers that may interest the user
+     *
+     * @param Int $user_id The ID of the user we are getting suggestions for.
+     * @param Int $user_profile The profile of the user
+     * @param DateTime $time_ago Minimum publish date for the offers.
+     *
+     * @return Mixed
+     * @since 6.9.1
+     */
+	public function getSuggestions($user_id, $user_profile, $time_ago = null) {
 
 		if (empty($user_id) || empty($user_profile)) {
 			return false;
@@ -538,7 +541,12 @@ class EmundusModelCifre extends JModelList {
 		}
 
 		// Dynamically build a WHERE based on information about the user.
-		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cl.user_to').' != '.$user_id.' AND '.$this->db->quoteName('cl.user_from').' != '.$user_id;
+		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cl.user_to').' != '.$user_id.' AND '.$this->db->quoteName('cl.user_from').' != '.$user_id.' AND '.$this->db->quoteName('cc.status').' = 1';
+
+		if (!empty($time_ago)) {
+		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.$this->db->quote(date('Y-m-d H:i:s', strtotime($time_ago)));
+        }
+
 		if ($user_profile == 1006) {
 			$fallbackWhere .= ' AND '.$this->db->quoteName('er.futur_doctorant_yesno').' = 1 ';
 		} elseif ($user_profile == 1007) {
