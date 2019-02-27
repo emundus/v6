@@ -49,7 +49,7 @@ $text = $params->get($user_menutype, '');
 $img = $params->get($user_menutype.'_img', '');
 $is_text = $params->get($user_menutype.'_text', '');
 $show_menu = $params->get('showmenu', true);
-$lean_mode = $params->get('leanmode', false);
+$lean_mode = $params->get('leanmode', false) == 'true';
 $img = explode(',',$img);
 $col = 0;
 $t__ = '';
@@ -70,6 +70,7 @@ if ($lean_mode) {
     $app_prof = $m_profiles->getApplicantsProfilesArray();
 
     // If all of the user's profiles are found in the list of applicant profiles, then the user is only an applicant.
+
     $only_applicant = !array_diff($user->emProfiles, $app_prof);
 }
 
