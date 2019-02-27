@@ -102,7 +102,7 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
                     $suggestions .= '<tr>
                         <td>'.$offer->titre.'</td>
                         <td style="border-radius: 3px;" align="center" bgcolor="#bb0e29">
-                            <a style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 6px 18px; border: 1px solid #bb0e29; display: inline-block;" href="'.JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page.'" target="_blank">Voir l\'offre</a>
+                            <a style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 6px 18px; border: 1px solid #bb0e29; display: inline-block;" href="'.JURI::root()."les-offres/consultez-les-offres/details/299/".$offer->search_engine_page.'" target="_blank">Voir l\'offre</a>
                         </td>
                     </tr>
                     <tr><td></td><td></td></tr>';
