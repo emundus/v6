@@ -116,7 +116,7 @@ echo $this->table->intro;
                             }
                         ?>
 
-                        <div class="em-result accordion-container accordion-container-<?php echo $this->table->renderid; ?>" id="<?php echo $d['jos_emundus_campaign_candidature___fnum_raw'];?>">
+                        <div class="em-result accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                             <div class="em-top-details article-title article-title-<?php echo $this->table->renderid; ?>">
                                 <div class="g-block size-70 em-formation-title">
                                     <div class="overflow">
@@ -196,7 +196,7 @@ echo $this->table->intro;
                                     <?php
                                         $count_applicants = 0;
                                         foreach ($m_formations->getApplicantsInSessionForDRH($d['jos_emundus_setup_campaigns___id_raw']) as $applicant) :?>
-                                    <div class="em-candidate">
+                                    <div class="em-candidate" id="<?php echo $applicant->fnum;?>">
                                         <div class="row-fluid">
                                             <div class="em-candidate-name"><?php echo $applicant->civility.'. '.$applicant->firstname.' '.$applicant->lastname; ?></div>
                                             <?php if ($d['jos_emundus_setup_status___step_raw'] == 0) :?>
@@ -213,9 +213,8 @@ echo $this->table->intro;
                                         <div class="row-fluid">
                                             <div class="em-candidate-details">Date de naissance : <?php echo date('d/m/Y', strtotime($applicant->birthday)); ?></div>
                                         </div>
-                                    </div>
-
                                         <hr class="candidate-breaker">
+                                    </div>
 
                                     <?php $count_applicants++;endforeach; ?>
                                 </div>
