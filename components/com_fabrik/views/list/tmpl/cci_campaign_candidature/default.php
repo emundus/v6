@@ -277,8 +277,17 @@ echo $this->table->intro;
         </div>
     </form>
 </div>
-
+</div>
     <script>
+
+        jQuery(document).ready(function(){
+            if(jQuery(this).find('.accordion-container-<?php echo $this->table->renderid; ?>').size() > 0 ) {
+                var first = document.querySelectorAll('.accordion-container-<?php echo $this->table->renderid; ?>')[0];
+                jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
+                first.classList.add('open');
+            }
+        });
+
         jQuery(function() {
             var Accordion = function(el, multiple) {
                 this.el = el || {};
@@ -358,4 +367,4 @@ function deleteApplication(fnum) {
     );
 }
     </script>
-</div>
+
