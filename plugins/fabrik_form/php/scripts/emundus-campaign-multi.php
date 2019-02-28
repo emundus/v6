@@ -42,6 +42,10 @@ try {
 $values = [];
 $users_registered = [];
 
+if($company_id == -1) {
+    $users[0][0] = $current_user->id;
+}
+
 foreach ($users as $user) {
 
 	$user_id = $user[0];
@@ -155,6 +159,9 @@ foreach ($users as $user) {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum);
 	}
 
+	// give the user all rights on that file
+    $rights_values[] = $current_user->id.', 1, '.$db->quote($fnum).', 1, 1, 1, 1';
+
 	// Insert data in #__emundus_users_profiles
 	$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user_id.','.$profile.')';
 	$db->setQuery($query);
@@ -169,7 +176,7 @@ foreach ($users as $user) {
 
 // Prepare query used for multiline insert.
 $columns = ['applicant_id', 'user_id', 'campaign_id', 'fnum'];
-if (!empty($company_id)) {
+if (!empty($company_id) && $company_id != -1) {
 	$columns[] = 'company_id';
 }
 
@@ -186,3 +193,24 @@ try {
 	JLog::add('Error inserting candidatures in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	JError::raiseError(500, 'Could not create candidatures.');
 }
+
+
+// Prepare query used for multiline insert.
+$columns = ['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd'];
+
+// Insert rows into the em_user_assoc table.
+
+$query->clear()
+    ->insert($db->quoteName('#__emundus_users_assoc'))
+    ->columns($columns)
+    ->values($rights_values);
+$db->setQuery($query);
+try {
+    $db->execute();
+} catch(Exception $e) {
+    JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+    JError::raiseError(500, 'Could not create rights.');
+}
+
+
+

@@ -173,9 +173,10 @@ class EmundusModelFormations extends JModelLegacy {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select([$db->quoteName('e.raison_sociale', 'company'), $db->quoteName('u.birthday'), $db->quoteName('u.civility'), $db->quoteName('u.firstname'), $db->quoteName('u.lastname'), $db->quoteName('cc.fnum')])
+		$query->select([$db->quoteName('e.id'), $db->quoteName('e.raison_sociale', 'company'), $db->quoteName('u.user_id'), $db->quoteName('u.birthday'), $db->quoteName('u.civility'), $db->quoteName('u.firstname'), $db->quoteName('u.lastname'), $db->quoteName('cc.fnum'), $db->quoteName('eu.position')])
 			->from($db->quoteName('#__emundus_users','u'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$db->quoteName('cc.applicant_id').' = '.$db->quoteName('u.user_id'))
+			->leftJoin($db->quoteName('#__emundus_user_entreprise','eu').' ON '.$db->quoteName('eu.user').' = '.$db->quoteName('cc.applicant_id'))
 			->leftJoin($db->quoteName('#__emundus_entreprise','e').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('cc.company_id'))
 			->where($db->quoteName('cc.campaign_id').' = '.$campaign.' AND '.$db->quoteName('cc.company_id').' IN ('.implode(',', $companies).')');
 		$db->setQuery($query);
@@ -183,7 +184,7 @@ class EmundusModelFormations extends JModelLegacy {
 		try {
 			return $db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting sessions for DRH at m/formation in query: '.$query, JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting sessions for DRH at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return null;
 		}
 
