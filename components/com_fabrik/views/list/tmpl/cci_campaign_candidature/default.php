@@ -11,8 +11,6 @@ defined('_JEXEC') or die('Restricted access');
 
 $doc = JFactory::getDocument();
 $doc->addStyleSheet('media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
-$doc->addScript('media/com_emundus/lib/chosen/chosen.jquery.js');
-$doc->addStyleSheet('media/com_emundus/lib/chosen/chosen.css');
 $doc->addStyleSheet('templates/g5_helium/custom/css/moteur-de-recherche.css');
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
@@ -84,21 +82,23 @@ echo $this->table->intro;
 
 				if (!empty($this->rows)) {
 					foreach ($this->rows[0] as $k => $v) {
-						foreach ($this->headings as $key => $val) {
-                            $raw = $key.'_raw';
-							if (array_key_exists($raw, $v->data)) {
-							    $data[$i][$key] = $v->data->$key;
-                                $data[$i][$raw] = $v->data->$raw;
-							}
-						}
-                        if (array_key_exists('fabrik_view_url', $v->data)) {
-                            $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                        if (!array_search($v->data->jos_emundus_campaign_candidature___campaign_id_raw, array_column($data, 'jos_emundus_campaign_candidature___campaign_id_raw'))) {
+                            foreach ($this->headings as $key => $val) {
+                                $raw = $key . '_raw';
+                                if (array_key_exists($raw, $v->data)) {
+                                    $data[$i][$key] = $v->data->$key;
+                                    $data[$i][$raw] = $v->data->$raw;
+                                }
+                            }
+                            if (array_key_exists('fabrik_view_url', $v->data)) {
+                                $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                            }
+                            if (array_key_exists('fabrik_edit_url', $v->data)) {
+                                $data[$i]['fabrik_edit_url'] = $v->data->fabrik_view_url;
+                            }
+                            $i = $i + 1;
                         }
-						if (array_key_exists('fabrik_edit_url', $v->data)) {
-							$data[$i]['fabrik_edit_url'] = $v->data->fabrik_view_url;
-						}
-						$i = $i + 1;
-					}
+                    }
 				}
 				?>
 
