@@ -67,11 +67,15 @@ $link = "index.php";
  */
 if ($lean_mode) {
     $m_profiles = new EmundusModelProfile;
-    $app_prof = $m_profiles->getApplicantsProfilesArray();
+	$app_prof = $m_profiles->getApplicantsProfilesArray();
+	
+	$user_prof = [];
+	foreach ($user->emProfiles as $prof) {
+		$user_prof[] = $prof->id;
+	}
 
-    // If all of the user's profiles are found in the list of applicant profiles, then the user is only an applicant.
-
-    $only_applicant = !array_diff($user->emProfiles, $app_prof);
+	// If all of the user's profiles are found in the list of applicant profiles, then the user is only an applicant.
+    $only_applicant = !array_diff($user_prof, $app_prof);
 }
 
 if (is_array($text) && !empty($text)) {
