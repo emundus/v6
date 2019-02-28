@@ -178,7 +178,8 @@ class EmundusModelFormations extends JModelLegacy {
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$db->quoteName('cc.applicant_id').' = '.$db->quoteName('u.user_id'))
 			->leftJoin($db->quoteName('#__emundus_user_entreprise','eu').' ON '.$db->quoteName('eu.user').' = '.$db->quoteName('cc.applicant_id'))
 			->leftJoin($db->quoteName('#__emundus_entreprise','e').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('cc.company_id'))
-			->where($db->quoteName('cc.campaign_id').' = '.$campaign.' AND '.$db->quoteName('cc.company_id').' IN ('.implode(',', $companies).')');
+			->where($db->quoteName('cc.campaign_id').' = '.$campaign.' AND '.$db->quoteName('cc.company_id').' IN ('.implode(',', $companies).')')
+            ->group([$db->quoteName('u.user_id'), $db->quoteName('e.id')]);
 		$db->setQuery($query);
 
 		try {

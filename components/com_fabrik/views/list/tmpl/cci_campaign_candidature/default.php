@@ -170,7 +170,7 @@ echo $this->table->intro;
 
                                         <div class="right g-block size-35">
                                             <div class="formation-length">
-                                                Durée : <?php echo $d['jos_emundus_setup_teaching_unity___hours_raw']; ?>
+                                                Durée : <?php echo ($d['jos_emundus_setup_teaching_unity___hours_raw'] == '1') ? $d['jos_emundus_setup_teaching_unity___hours_raw'].' heure' : $d['jos_emundus_setup_teaching_unity___hours_raw'].' heures'; ?>
                                             </div>
 
                                             <div class="fomation-code">
