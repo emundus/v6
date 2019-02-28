@@ -83,19 +83,19 @@ echo $this->table->intro;
 				$i = 0;
 
 				if (!empty($this->rows)) {
-					foreach ($this->rows as $k => $v) {
+					foreach ($this->rows[0] as $k => $v) {
 						foreach ($this->headings as $key => $val) {
                             $raw = $key.'_raw';
-							if (array_key_exists($raw, $v[0]->data)) {
-							    $data[$i][$key] = $v[0]->data->$key;
-                                $data[$i][$raw] = $v[0]->data->$raw;
+							if (array_key_exists($raw, $v->data)) {
+							    $data[$i][$key] = $v->data->$key;
+                                $data[$i][$raw] = $v->data->$raw;
 							}
 						}
-                        if (array_key_exists('fabrik_view_url', $v[0]->data)) {
-                            $data[$i]['fabrik_view_url'] = $v[0]->data->fabrik_view_url;
+                        if (array_key_exists('fabrik_view_url', $v->data)) {
+                            $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
                         }
-						if (array_key_exists('fabrik_edit_url', $v[0]->data)) {
-							$data[$i]['fabrik_edit_url'] = $v[0]->data->fabrik_view_url;
+						if (array_key_exists('fabrik_edit_url', $v->data)) {
+							$data[$i]['fabrik_edit_url'] = $v->data->fabrik_view_url;
 						}
 						$i = $i + 1;
 					}
@@ -116,12 +116,73 @@ echo $this->table->intro;
                             }
                         ?>
 
-                        <div class="em-result accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
+                        <div class="em-result accordion-container accordion-container-<?php echo $this->table->renderid; ?>" id="<?php echo $d['jos_emundus_campaign_candidature___fnum_raw'];?>">
                             <div class="em-top-details article-title article-title-<?php echo $this->table->renderid; ?>">
-                                <div class="g-block size-50 em-formation-title">
-                                    <h2><?php echo '<a href="'.$d['fabrik_view_url'].'?rowid='.$d['jos_emundus_setup_programmes___id_raw'].'" >'.$title."</a>"; ?></h2>
+                                <div class="g-block size-70 em-formation-title">
+                                    <div class="overflow">
+                                        <h2><?php echo '<a href="'.$d['fabrik_view_url'].'?rowid='.$d['jos_emundus_setup_programmes___id_raw'].'" >'.$title."</a>"; ?></h2>
+                                    </div>
+                                    <div class="em-formation-details g-block size-100">
+                                        <div class="left g-block size-60">
+                                            <div class="formation-day">
+                                                <?php
+                                                setlocale(LC_ALL, 'fr_FR.utf8');
+
+                                                $date_start = $d['jos_emundus_setup_teaching_unity___date_start_raw'];
+                                                $date_end = $d['jos_emundus_setup_teaching_unity___date_end_raw'];
+
+                                                $start_day = date('d',strtotime($date_start));
+                                                $end_day = date('d',strtotime($date_end));
+                                                $start_month = date('m',strtotime($date_start));
+                                                $end_month = date('m',strtotime($date_end));
+                                                $start_year = date('y',strtotime($date_start));
+                                                $end_year = date('y',strtotime($date_end));
+
+                                                if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
+                                                    echo 'Date : le '.strftime('%e', strtotime($date_start)) . " " . strftime('%B', strtotime($date_end)) . " " . date('Y', strtotime($date_end));
+                                                } elseif ($start_month == $end_month && $start_year == $end_year) {
+                                                    echo 'Dates : du '.strftime('%e', strtotime($date_start)) . " au " . strftime('%e', strtotime($date_end)) . " " . strftime('%B', strtotime($date_end)) . " " . date('Y', strtotime($date_end));
+                                                } elseif ($start_month != $end_month && $start_year == $end_year) {
+                                                    echo 'Dates : du '.strftime('%e', strtotime($date_start)) . " " . strftime('%B', strtotime($date_start)) . " au " . strftime('%e', strtotime($date_end)) . " " . strftime('%B', strtotime($date_end)) . " " . date('Y', strtotime($date_end));
+                                                } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
+                                                    echo 'Dates : du '.strftime('%e',strtotime($date_start)) . " " . strftime('%B',strtotime($date_start)) . " " . date('Y', strtotime($date_start)) . " au " . strftime('%e', strtotime($date_end)) . " " . strftime('%B',strtotime($date_end)) . " " . date('Y', strtotime($date_end));
+                                                }
+                                                ?>
+                                            </div>
+
+                                            <div class="formation-number-details">
+                                                n° de session : <?php echo $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>
+                                            </div>
+
+                                            <div class="formation-location">
+                                                <?php
+                                                $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city_raw']))));
+                                                $town = ucwords(strtolower($town), '\',. ');
+                                                $beforeComma = strpos($town, "D'");
+                                                if (!empty($beforeComma)) {
+                                                    $replace = strpbrk($town, "D'");
+                                                    $town = substr_replace($town, lcfirst($replace), $beforeComma);
+                                                }
+                                                echo "Lieu de session : ".$town;
+                                                ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="right g-block size-35">
+                                            <div class="formation-length">
+                                                Durée : <?php echo $d['jos_emundus_setup_teaching_unity___hours_raw']; ?>
+                                            </div>
+
+                                            <div class="fomation-code">
+                                                Code produit : <?php echo str_replace('FOR', '', $d['jos_emundus_setup_programmes___code_raw']); ?>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
                                 </div>
-                                <div class="g-block size-50 em-status">
+                                <div class="g-block size-30 em-status">
                                     <span class="label label-<?php echo $d['jos_emundus_setup_status___class_raw']; ?>">
                                         <?php echo $d['jos_emundus_setup_status___value']; ?>
                                     </span>
@@ -129,98 +190,56 @@ echo $this->table->intro;
                             </div>
 
                             <div class="em-bottom-details accordion-content">
-                                <div class="row-fluid">
-                                    <div class="em-day-details g-block size-50">
-                                        <?php
-                                            setlocale(LC_ALL, 'fr_FR.utf8');
-
-                                            $date_start = $d['jos_emundus_setup_teaching_unity___date_start_raw'];
-                                            $date_end = $d['jos_emundus_setup_teaching_unity___date_end_raw'];
-
-                                            $start_day = date('d',strtotime($date_start));
-                                            $end_day = date('d',strtotime($date_end));
-                                            $start_month = date('m',strtotime($date_start));
-                                            $end_month = date('m',strtotime($date_end));
-                                            $start_year = date('y',strtotime($date_start));
-                                            $end_year = date('y',strtotime($date_end));
-
-                                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
-                                                echo 'Date : le '.strftime('%e', strtotime($date_start)) . " " . strftime('%B', strtotime($date_end)) . " " . date('Y', strtotime($date_end));
-                                            } elseif ($start_month == $end_month && $start_year == $end_year) {
-                                                echo 'Dates : du '.strftime('%e', strtotime($date_start)) . " au " . strftime('%e', strtotime($date_end)) . " " . strftime('%B', strtotime($date_end)) . " " . date('Y', strtotime($date_end));
-                                            } elseif ($start_month != $end_month && $start_year == $end_year) {
-                                                echo 'Dates : du '.strftime('%e', strtotime($date_start)) . " " . strftime('%B', strtotime($date_start)) . " au " . strftime('%e', strtotime($date_end)) . " " . strftime('%B', strtotime($date_end)) . " " . date('Y', strtotime($date_end));
-                                            } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
-                                                echo 'Dates : du '.strftime('%e',strtotime($date_start)) . " " . strftime('%B',strtotime($date_start)) . " " . date('Y', strtotime($date_start)) . " au " . strftime('%e', strtotime($date_end)) . " " . strftime('%B',strtotime($date_end)) . " " . date('Y', strtotime($date_end));
-                                            }
-                                        ?>
-                                    </div>
-                                    <div class="em-length-details g-block size-50">
-                                        Durée : <?php echo $d['jos_emundus_setup_teaching_unity___hours_raw']; ?>
-                                    </div>
-                                </div>
-                                <div class="row-fluid">
-                                    <div class="em-session-number-details g-block size-50">
-                                        n° de session : <?php echo $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>
-                                    </div>
-                                    <div class="em-product-code-details g-block size-50">
-                                        Code produit : <?php echo str_replace('FOR', '', $d['jos_emundus_setup_programmes___code_raw']); ?>
-                                    </div>
-                                </div>
-                                <div class="row-fluid">
-                                    <div class="em-location-details g-block size-50">
-                                        <?php
-                                            $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($d['jos_emundus_setup_teaching_unity___location_city_raw']))));
-                                            $town = ucwords(strtolower($town), '\',. ');
-                                            $beforeComma = strpos($town, "D'");
-                                            if (!empty($beforeComma)) {
-                                                $replace = strpbrk($town, "D'");
-                                                $town = substr_replace($town, lcfirst($replace), $beforeComma);
-                                            }
-                                            echo "Lieu de session : ".$town;
-                                        ?>
-                                    </div>
-                                </div>
-
 
                                 <div class="em-candidate-details">
                                     <div class="em-candidate-title">Collaborateur(s) inscrit(s)</div>
-                                    <?php foreach ($m_formations->getApplicantsInSessionForDRH($d['jos_emundus_setup_campaigns___id_raw']) as $applicant) :?>
-                                        <hr class="em-separator">
+                                    <?php
+                                        $count_applicants = 0;
+                                        foreach ($m_formations->getApplicantsInSessionForDRH($d['jos_emundus_setup_campaigns___id_raw']) as $applicant) :?>
+                                    <div class="em-candidate">
                                         <div class="row-fluid">
                                             <div class="em-candidate-name"><?php echo $applicant->civility.'. '.$applicant->firstname.' '.$applicant->lastname; ?></div>
                                             <?php if ($d['jos_emundus_setup_status___step_raw'] == 0) :?>
-                                                <div class="em-delete-application" style="cursor: pointer; float: right;" onclick="deleteApplication(<?php echo $applicant->fnum; ?>)">&times;</div>
+                                                <!-- TODO: Display n°Stagiaire FROM GESCOF? -->
+                                                <div class="em-delete-application" style="cursor: pointer; float: right;" onclick="deleteApplication('<?php echo $applicant->fnum; ?>')"><i class="fas fa-times fa-2x"></i></div>
                                             <?php endif; ?>
                                         </div>
                                         <div class="row-fluid">
                                             <div class="em-candidate-details">Entreprise : <?php echo $applicant->company; ?></div>
                                         </div>
                                         <div class="row-fluid">
+                                            <div class="em-candidate-function">Fontcion : <?php echo $applicant->position; ?></div>
+                                        </div>
+                                        <div class="row-fluid">
                                             <div class="em-candidate-details">Date de naissance : <?php echo date('d/m/Y', strtotime($applicant->birthday)); ?></div>
                                         </div>
-                                        <hr>
-                                    <?php endforeach; ?>
+                                    </div>
+
+                                        <hr class="candidate-breaker">
+
+                                    <?php $count_applicants++;endforeach; ?>
                                 </div>
 
-                                <hr>
                                 <div class="em-button-add-candidate">
                                     <a href="<?php echo $d['fabrik_edit_url'].'?session='.$d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>">Ajouter un collaborateur</a>
                                 </div>
-                                <hr>
+                                <hr class="add-candidate-breaker">
 
                                 <!-- TODO: If the status is a certain step, don't show this (cancelled, + maybe other steps) -->
                                 <div class="em-payment-details">
                                     <div class="em-payment-title">Facturation à venir</div>
-                                    <div class="row-fluid">
-                                        <div class="em-price">Prix unitaire : <?php echo $d['jos_emundus_setup_teaching_unity___price_raw']; ?> €</div>
-                                        <!-- TODO: Display total facturé (net de taxe) FROM GESCOF? -->
-                                        <!-- TODO: Display financeur -->
-                                        <!-- TODO: Display dates of billing and echeance FROM GESCOF? -->
-                                    </div>
+                                        <div class="row-fluid">
+                                            <div class="em-price">Prix unitaire : <?php echo (float)$d['jos_emundus_setup_teaching_unity___price_raw']; ?> €</div>
+                                            <div class="em-total-price">Prix facturé (net de tax) : <?php echo ((float)$count_applicants)*((float)$d['jos_emundus_setup_teaching_unity___price_raw']); ?> €</div>
+                                            <!-- TODO: Display total facturé (net de taxe) FROM GESCOF? -->
+                                            <!-- TODO: Display financeur -->
+                                            <!-- TODO: Display dates of billing and echeance FROM GESCOF? -->
+                                        </div>
                                 </div>
                             </div>
+                            <hr class="formation-breaker">
                         </div>
+
 
                     <?php endforeach; ?>
 
@@ -261,7 +280,6 @@ echo $this->table->intro;
 </div>
 
     <script>
-        // accordion
         jQuery(function() {
             var Accordion = function(el, multiple) {
                 this.el = el || {};
@@ -290,30 +308,55 @@ echo $this->table->intro;
             var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
         });
 
-
-        function deleteApplication(fnum) {
-
-            if (confirm("Êtes vous sûr(e) de vouloir effacer ?") == true) {
+function deleteApplication(fnum) {
+    Swal.fire({
+            title: "<?php echo JText::_('COM_EMUNDUS_REMOVE_ASSOCIATE'); ?>",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "<?php echo JText::_('JYES');?>",
+            cancelButtonText: "<?php echo JText::_('JNO');?>"
+        }
+    ).then(
+        function (isConfirm) {
+            if (isConfirm.value == true) {
                 jQuery.ajax({
-                   type: 'POST',
+                    type: 'POST',
                     dataType: 'json',
                     url: 'index.php?option=com_emundus&controller=files&task=removefile',
                     data: ({
-                         fnum: fnum
+                        fnum: fnum
                     }),
                     success: function (result) {
-                        if (result.status) {
-                            window.location.reload();
-                        } else {
-                            // TODO: Display error.
+                        if(result.status) {
+
+                            document.getElementById(fnum).hide();
+                            Swal.fire({
+                                type: 'success',
+                                title: "<?php echo JText::_('COM_EMUNDUS_ASSOCIATE_REMOVED'); ?>"
+                            });
+                        }
+                        else {
+                            Swal.fire({
+                                type: 'error',
+                                text: "<?php echo JText::_('COM_EMUNDUS_ASSOCIATE__NOT_REMOVED'); ?>"
+                            });
                         }
                     },
                     error: function(jqXHR) {
                         console.log(jqXHR.responseText);
-                        // TODO: Display error.
+                        Swal.fire({
+                            type: 'error',
+                            text: "<?php echo JText::_('COM_EMUNDUS_ASSOCIATE__NOT_REMOVED'); ?>"
+                        });
                     }
                 });
             }
+        },
+        function() {
+            console.log('BACK');
         }
+    );
+}
     </script>
 </div>
