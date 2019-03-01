@@ -59,6 +59,7 @@ foreach ($users as $user) {
 	}
 	
 	$users_registered[] = $user_id;
+	$continue = false;
 	switch ($applicant_can_renew) {
 
 	    // Cannot create new campaigns at all.
@@ -70,7 +71,7 @@ foreach ($users as $user) {
 			    if (!empty($db->loadResult())) {
 				    JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
 				    $application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
-				    continue;
+				    $continue = true;
 			    }
 		    } catch(Exception $e) {
 			    JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -89,7 +90,7 @@ foreach ($users as $user) {
 				if (in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus');
 					$application->enqueueMessage('User already has a file for this campaign.', 'error');
-	                continue;
+					$continue = true;
 				}
 			} catch (Exception $e) {
 				JLog::add('plugin/emundus_campaign SQL error at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -115,7 +116,7 @@ foreach ($users as $user) {
 				if (!in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus');
 					$application->enqueueMessage('User already has a file for this year.', 'error');
-	                continue;
+					$continue = true;
 				}
 			} catch (Exception $e) {
 				JLog::add('plugin/emundus_campaign SQL error at query :'.$years_query, JLog::ERROR, 'com_emundus');
@@ -124,6 +125,11 @@ foreach ($users as $user) {
 
 		default:
 			break;
+	}
+
+	// This is required due to continue GOTO not being usable in the context of the switch when trying to reinterate on the foreach.
+	if ($continue) {
+		continue;
 	}
 
 
