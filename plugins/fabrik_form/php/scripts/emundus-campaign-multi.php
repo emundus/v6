@@ -14,37 +14,40 @@ defined('_JEXEC') or die();
  */
 
 $db = JFactory::getDBO();
+$query = $db->getQuery(true);
 $current_user = JFactory::getUser();
 $application = Jfactory::getApplication();
 
 $campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
 $company_id = $data['jos_emundus_campaign_candidature___company_id_raw'][0];
 
-$users = $data['___applicant_id_raw'];
+if (!empty($company_id) && $company_id != -1) {
+	$users = $data['___applicant_id_raw'];
+} else {
+	$users[0][0] = $current_user->id;
+}
 
 JLog::addLogger(array('text_file' => 'com_emundus.emundus-campaign-multi.php'), JLog::ALL, array('com_emundus'));
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
 
+$query->select($db->quoteName('profile_id'))
+	->from($db->quoteName('#__emundus_setup_campaigns'))
+	->where($db->quoteName('id').' = '.$campaign_id);
+$db->setQuery($query);
 try {
-	$query = 'SELECT profile_id
-				FROM #__emundus_setup_campaigns
-				WHERE id='.$campaign_id;
-	$db->setQuery($query);
 	$profile = $db->loadResult();
 } catch(Exception $e) {
-	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	JError::raiseError(500, $query);
 }
 
 // Prepare insertion of data (it is not done via the Fabrik form, we do it manually to handle repeat groups multiplying the data set).
 $values = [];
+$rights_values = [];
+$profile_values = [];
 $users_registered = [];
-
-if($company_id == -1) {
-    $users[0][0] = $current_user->id;
-}
 
 foreach ($users as $user) {
 
@@ -56,48 +59,46 @@ foreach ($users as $user) {
 	}
 	
 	$users_registered[] = $user_id;
-
-	$continue = false;
 	switch ($applicant_can_renew) {
 
 	    // Cannot create new campaigns at all.
 	    case 0:
-	        JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
-	        $application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
-	        $continue = true;
+	    	$query->clear()->select($db->quoteName('id'))
+			    ->from($db->quoteName('#__emundus_campaign_candidature'))
+			    ->where($db->quoteName('applicant_id').' = '.$user_id);
+		    try {
+			    if (!empty($db->loadResult())) {
+				    JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
+				    $application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
+				    continue;
+			    }
+		    } catch(Exception $e) {
+			    JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			    JError::raiseError(500, $query);
+		    }
 	        break;
 
 		// If the applicant can only have one file per campaign.
 		case 2:
-			$query = 'SELECT id
-						FROM #__emundus_setup_campaigns
-						WHERE published = 1
-						AND end_date >= NOW()
-						AND start_date <= NOW()
-						AND id NOT IN (
-							select campaign_id
-							from #__emundus_campaign_candidature
-							where applicant_id='. $user_id.'
-						)';
+			$query->clear()->select($db->quoteName('campaign_id'))
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('applicant_id').' = '.$user_id);
+			$db->setQuery($query);
 
 			try {
-
-	            $db->setQuery($query);
-				if (!in_array($campaign_id, $db->loadColumn())) {
+				if (in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus');
 					$application->enqueueMessage('User already has a file for this campaign.', 'error');
-	                $continue = true;
+	                continue;
 				}
-
 			} catch (Exception $e) {
-				JLog::add('plugin/emundus_campaign SQL error at query :'.$query, JLog::ERROR, 'com_emundus');
+				JLog::add('plugin/emundus_campaign SQL error at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			}
-
 			break;
 
 	    // If the applicant can only have one file per school year.
 		case 3:
-			$query = 'SELECT id
+			$years_query = 'SELECT id
 						FROM #__emundus_setup_campaigns
 						WHERE published = 1
 						AND end_date >= NOW()
@@ -108,18 +109,16 @@ foreach ($users as $user) {
 							LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
 							where applicant_id='. $user_id.'
 						)';
+			$db->setQuery($years_query);
 
 			try {
-
-	            $db->setQuery($query);
 				if (!in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus');
 					$application->enqueueMessage('User already has a file for this year.', 'error');
-	                $continue = true;
+	                continue;
 				}
-
 			} catch (Exception $e) {
-				JLog::add('plugin/emundus_campaign SQL error at query :'.$query, JLog::ERROR, 'com_emundus');
+				JLog::add('plugin/emundus_campaign SQL error at query :'.$years_query, JLog::ERROR, 'com_emundus');
 			}
 			break;
 
@@ -139,7 +138,6 @@ foreach ($users as $user) {
 			continue;
 		}
 
-
 		// Check that the user is in the company we are adding the fnum for.
 		if (!$m_formations->checkCompanyUser($user_id, $company_id)) {
 			JLog::add('User: '.$user_id.' is not in the company: '.$company_id, JLog::ERROR, 'com_emundus');
@@ -148,11 +146,10 @@ foreach ($users as $user) {
 		}
 	}
 
-
 	// Generate new fnum
 	$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
 
-
+	// Build values to insert into the table.
 	if (!empty($company_id) && $company_id != -1) {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum).', '.$company_id;
 	} else {
@@ -162,16 +159,21 @@ foreach ($users as $user) {
 	// give the user all rights on that file
     $rights_values[] = $current_user->id.', 1, '.$db->quote($fnum).', 1, 1, 1, 1';
 
-	// Insert data in #__emundus_users_profiles
-	$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user_id.','.$profile.')';
-	$db->setQuery($query);
-	try {
-		$db->execute();
-	} catch(Exception $e) {
-		JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-		JError::raiseError(500, 'Could not assign profile to user.');
-		continue;
-	}
+	// build profiles to assign.
+	$profile_values[] = $user_id.', '.$profile;
+}
+
+// Insert data in #__emundus_users_profiles
+$query->clear()
+	->insert($db->quoteName('#__emundus_users_profiles'))
+	->columns($db->quoteName(['user_id','profile_id']))
+	->values($profile_values);
+$db->setQuery($query);
+try {
+	$db->execute();
+} catch(Exception $e) {
+	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JError::raiseError(500, 'Could not assign profiles to users.');
 }
 
 // Prepare query used for multiline insert.
@@ -181,9 +183,9 @@ if (!empty($company_id) && $company_id != -1) {
 }
 
 // Insert rows into the CC table.
-$query = $db->getQuery(true);
-$query->insert($db->quoteName('#__emundus_campaign_candidature'))
-	->columns($columns)
+$query->clear()
+	->insert($db->quoteName('#__emundus_campaign_candidature'))
+	->columns($db->quoteName($columns))
 	->values($values);
 $db->setQuery($query);
 
@@ -199,7 +201,6 @@ try {
 $columns = ['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd'];
 
 // Insert rows into the em_user_assoc table.
-
 $query->clear()
     ->insert($db->quoteName('#__emundus_users_assoc'))
     ->columns($columns)
