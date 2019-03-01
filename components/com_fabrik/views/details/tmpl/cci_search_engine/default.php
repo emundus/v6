@@ -323,7 +323,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                                         <div class="em-option-buttons">
                                             <a href="/demande-de-contact" class="em-option-contact"><?php echo JText::_('BE_CONTACTED'); ?></a>
-                                            <?php $register_url = "connexion?course=".$session['code']."&cid=".$session['cid']."&redirect=".$formUrl; ?>
+                                            <?php $register_url = "inscription?session=".$session['session_code']."&redirect=".$formUrl; ?>
                                             <a href="<?php echo $register_url; ?>" class="em-option-login"><?php echo JText::_('SIGNUP'); ?></a>
                                         </div>
 
