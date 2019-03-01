@@ -14,7 +14,7 @@
         <ul>
             <?php if (!empty($list)) :?>
                 <?php foreach ($list as $i => $item) :?>
-                    <li class="<?php echo ($item->id)?'menu-item':''; ?>"><a href="<?php echo $item->flink ?>"><?php echo $item->title; ?></a></li>
+                    <li class="<?php echo ($item->id)?'menu-item':''; echo ($item->id == $active_id)?'active':''; ?>"><a href="<?php echo $item->flink ?>"><?php echo $item->title; ?></a></li>
                 <?php endforeach; ?>
             <?php endif; ?>
             <?php
