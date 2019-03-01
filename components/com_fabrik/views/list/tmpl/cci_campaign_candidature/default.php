@@ -195,8 +195,8 @@ if ($pageClass !== '') : ?>
                                 <div class="em-bottom-details accordion-content">
 
                                     <div class="em-candidate-details">
-                                        <div class="em-candidate-title"><?php echo JText::_("COM_EMUNDUS_SIGNED_UP_ASSOCIATES"); ?>
-                                            Collaborateur(s) inscrit(s)
+                                        <div class="em-candidate-title">
+                                            <?php echo JText::_("COM_EMUNDUS_SIGNED_UP_ASSOCIATES"); ?>
                                         </div>
                                         <?php
                                         $count_applicants = 0;
