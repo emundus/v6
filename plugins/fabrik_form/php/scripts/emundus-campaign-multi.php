@@ -223,6 +223,6 @@ if (!empty($rights_values)) {
 	    JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	    JError::raiseError(500, 'Could not create rights.');
 	}
-}
 
-$application->enqueueMessage(JText::_('CAMPAIGN_MULTI_SUCCESS'), 'message');
+    $application->enqueueMessage(JText::_('CAMPAIGN_MULTI_SUCCESS'), 'message');
+}
