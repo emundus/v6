@@ -15,21 +15,25 @@ defined('_JEXEC') or die('Restricted access');
 // If we are not logged in: we cannot access this page and so we are redirected to the login page.
 $user = JFactory::getUser();
 $doc = JFactory::getDocument();
-// GET Google Maps API key
-//$eMConfig   = JComponentHelper::getParams('com_fabrik');
-//$API        = $eMConfig->get("google_api_key", null, "string");
 
-if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw']))
-    JFactory::getApplication()->redirect("/rechercher");
+if (empty($this->data['jos_emundus_setup_teaching_unity___id_raw'])) {
+	JFactory::getApplication()->redirect("/rechercher");
+}
 
 $doc->addStyleSheet('/templates/g5_helium/custom/css/formation.css');
 $doc->addStyleSheet('/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
 
 require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
 
+$m_formations = new EmundusModelFormations();
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
-$applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___code_raw']);
+if ($m_formations->checkHRUser($user->id)) {
+    $applied = [];
+} else {
+	$applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___code_raw']);
+}
 
 if (!$user->guest) {
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
@@ -177,10 +181,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <div id="offer-details">
                     <h2>Publics</h2>
                     <?php
-                    if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '')
+                    if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '') {
 	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
-                    else
+                    } else {
 	                    echo "<p>Aucun public précisé.</p>"
+                    }
                     ?>
                 </div>
 
@@ -254,31 +259,30 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                         <div class="formation">
                             <b><?php
-                            $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))));
+                                $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))));
                                 $town =  ucwords(strtolower($town), '\',. ');
                                 $beforeComma = strpos($town, "D'");
                                 if (!empty($beforeComma)) {
                                     $replace = strpbrk($town, "D'");
                                     $town = substr_replace($town,lcfirst($replace), $beforeComma);
                                 }
-                            setlocale(LC_ALL, 'fr_FR.utf8');
-                            $start_day = date('d',strtotime($session['date_start']));
-                            $end_day = date('d',strtotime($session['date_end']));
-                            $start_month = date('m',strtotime($session['date_start']));
-                            $end_month = date('m',strtotime($session['date_end']));
-                            $start_year = date('y',strtotime($session['date_start']));
-                            $end_year = date('y',strtotime($session['date_end']));
+                                setlocale(LC_ALL, 'fr_FR.utf8');
+                                $start_day = date('d',strtotime($session['date_start']));
+                                $end_day = date('d',strtotime($session['date_end']));
+                                $start_month = date('m',strtotime($session['date_start']));
+                                $end_month = date('m',strtotime($session['date_end']));
+                                $start_year = date('y',strtotime($session['date_start']));
+                                $end_year = date('y',strtotime($session['date_end']));
 
-
-                            if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
-                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            } elseif ($start_month == $end_month && $start_year == $end_year) {
-                                echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            } elseif ($start_month != $end_month && $start_year == $end_year) {
-                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
-                                echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                            }
+                                if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
+                                    echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                } elseif ($start_month == $end_month && $start_year == $end_year) {
+                                    echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                } elseif ($start_month != $end_month && $start_year == $end_year) {
+                                    echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
+                                    echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                }
                             ?>
                             </b>
                             <p><?php echo $town ;?></p>
@@ -295,9 +299,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                 </p>
 
                             <?php
-                            if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0) {
-	                            echo "<p class='places'>dernières places disponibles</p>";
-                            }
+                                if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0) {
+                                    echo "<p class='places'>dernières places disponibles</p>";
+                                }
                             ?>
 
                                 <?php if ($session['occupants'] < $session['max_occupants']) :?>
