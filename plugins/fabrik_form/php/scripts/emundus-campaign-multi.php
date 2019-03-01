@@ -224,3 +224,5 @@ if (!empty($rights_values)) {
 	    JError::raiseError(500, 'Could not create rights.');
 	}
 }
+
+$application->enqueueMessage(JText::_('CAMPAIGN_MULTI_SUCCESS'), 'message');
