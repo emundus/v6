@@ -122,7 +122,7 @@ if ($pageClass !== '') : ?>
                                 <div class="em-top-details article-title article-title-<?php echo $this->table->renderid; ?>">
                                     <div class="g-block size-70 em-formation-title">
                                         <div class="overflow">
-                                            <h2><?php echo $title; ?></h2>
+                                            <i class="fas fa-caret-right"></i><h2><?php echo $title; ?></h2>
                                         </div>
                                         <div class="em-formation-details g-block size-100">
                                             <div class="left g-block size-60">
@@ -172,8 +172,7 @@ if ($pageClass !== '') : ?>
 
                                             <div class="right g-block size-35">
                                                 <div class="formation-length">
-                                                    Durée
-                                                    : <?php echo JText::_("DURATION") . ' : ' . ($d['jos_emundus_setup_teaching_unity___hours_raw'] == '1') ? $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heure' : $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heures'; ?>
+                                                    <?php echo JText::_("DURATION") . ' : ' . ($d['jos_emundus_setup_teaching_unity___hours_raw'] == '1') ? $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heure' : $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heures'; ?>
                                                 </div>
 
                                                 <div class="fomation-code">
@@ -298,6 +297,7 @@ if ($pageClass !== '') : ?>
                 var first = document.querySelectorAll('.accordion-container-<?php echo $this->table->renderid; ?>')[0];
                 jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
                 first.classList.add('open');
+                jQuery(first).find('.fa-caret-right').addClass("down");
             }
         });
 
@@ -321,9 +321,12 @@ if ($pageClass !== '') : ?>
 
                 $next.slideToggle();
                 $this.parent().toggleClass('open');
+                $this.find('.fa-caret-right').toggleClass("down");
+
 
                 if (!e.data.multiple) {
                     $el.find('.accordion-content').not($next).slideUp().parent().removeClass('open');
+                    $el.find('.accordion-content').not($next).parent().find('.fa-caret-right').removeClass("down");
                 }
             };
             var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
