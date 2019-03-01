@@ -122,7 +122,7 @@ if ($pageClass !== '') : ?>
                                 <div class="em-top-details article-title article-title-<?php echo $this->table->renderid; ?>">
                                     <div class="g-block size-70 em-formation-title">
                                         <div class="overflow">
-                                            <h2><?php echo '<a href="' . $d['fabrik_view_url'] . '?rowid=' . $d['jos_emundus_setup_programmes___id_raw'] . '" >' . $title . "</a>"; ?></h2>
+                                            <h2><?php echo $title; ?></h2>
                                         </div>
                                         <div class="em-formation-details g-block size-100">
                                             <div class="left g-block size-60">
@@ -225,9 +225,12 @@ if ($pageClass !== '') : ?>
 
                                             <?php $count_applicants++;endforeach; ?>
                                     </div>
-
+                                    <a href="" >/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw'] . '
                                     <div class="em-button-add-candidate">
-                                        <a href="<?php echo $d['fabrik_edit_url'] . '?session=' . $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_ADD_ASSOCIATE"); ?></a>
+                                        <a href="<?php echo '/inscription?session=' . $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_ADD_ASSOCIATE"); ?></a>
+                                    </div>
+                                    <div class="em-button-see-formation">
+                                        <a href="<?php echo '/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_SEE_FORMATION"); ?></a>
                                     </div>
                                     <hr class="add-candidate-breaker">
 
