@@ -3176,7 +3176,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
 		    '/{PEDAGOGIE}/' => $product[0]['pedagogie'],
-		    '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">CPF</h2><p style="padding-left: 30px;">code CPF : '.$product[0]['cpf'].' </p>':'',
+		    '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">'.JText::_('CODE').'</h2><p style="padding-left: 30px;">code CPF : '.$product[0]['cpf'].' </p>':'',
 		    '/{EVALUATION}/' => $product[0]['evaluation']
 	    ];
 
