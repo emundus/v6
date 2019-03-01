@@ -50,11 +50,11 @@ if ($type == 'logout') :?>
         <?php endif;  ?>
 
         <span class="username">
-            <input id="em_modlgn-username" type="text" name="username" class="inputbox"  size="18" value="<?php echo JText::_( 'USERNAME_CONNEXION' ); ?>" onblur="if(this.value=='') this.value='<?php echo JText::_( 'USERNAME_CONNEXION' ); ?>';" onfocus="if(this.value=='<?php echo JText::_( 'USERNAME_CONNEXION' ); ?>') this.value='';"/>
+            <input id="em_modlgn-username" type="text" name="username" class="inputbox"  size="18" placeholder="<?php echo JText::_('USERNAME_CONNEXION'); ?>"/>
         </span>
 
         <span class="password">
-            <input id="em_modlgn-passwd" type="password" name="password" class="inputbox" size="18" value="<?php echo JText::_( 'Password' ); ?>" onblur="if (this.value=='') this.value='<?php echo JText::_( 'Password' ); ?>';" onfocus="if(this.value=='<?php echo JText::_( 'Password' ); ?>') this.value='';" />
+            <input id="em_modlgn-passwd" type="password" name="password" class="inputbox" size="18" placeholder="<?php echo JText::_('Password'); ?>"/>
         </span>
 
         <?php if (JPluginHelper::isEnabled('system', 'remember')) :?>
