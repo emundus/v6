@@ -218,7 +218,7 @@ if ($pageClass !== '') : ?>
                                                     <div class="em-candidate-function"><?php echo JText::_("POSITION") . ' : ' . $applicant->position; ?></div>
                                                 </div>
                                                 <div class="row-fluid">
-                                                    <div class="em-candidate-details"><?php echo JText::_("DATE_OF_BIRH") . ' : ' . date('d/m/Y', strtotime($applicant->birthday)); ?></div>
+                                                    <div class="em-candidate-details"><?php echo JText::_("DATE_OF_BIRTH") . ' : ' . date('d/m/Y', strtotime($applicant->birthday)); ?></div>
                                                 </div>
                                                 <hr class="candidate-breaker">
                                             </div>
