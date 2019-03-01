@@ -82,9 +82,9 @@ echo $this->table->intro;
 
 				if (!empty($this->rows)) {
 					foreach ($this->rows[0] as $k => $v) {
-                        if (!array_search($v->data->jos_emundus_campaign_candidature___campaign_id_raw, array_column($data, 'jos_emundus_campaign_candidature___campaign_id_raw'))) {
+                        if (!in_array($v->data->jos_emundus_setup_campaigns___id_raw, array_column($data, 'jos_emundus_setup_campaigns___id_raw'))) {
                             foreach ($this->headings as $key => $val) {
-                                $raw = $key . '_raw';
+                                $raw = $key.'_raw';
                                 if (array_key_exists($raw, $v->data)) {
                                     $data[$i][$key] = $v->data->$key;
                                     $data[$i][$raw] = $v->data->$raw;
@@ -98,7 +98,7 @@ echo $this->table->intro;
                             }
                             $i = $i + 1;
                         }
-                    }
+					}
 				}
 				?>
 
