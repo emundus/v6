@@ -185,7 +185,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '') {
 	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
                     } else {
-	                    echo "<p>".JText::_('NO_AUDIENCE')."</p>"
+	                    echo "<p>".JText::_('NO_AUDIENCE')."</p>";
                     }
                     ?>
                 </div>
