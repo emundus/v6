@@ -228,7 +228,7 @@ if ($pageClass !== '') : ?>
                                         <a href="<?php echo '/inscription?session=' . $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_ADD_ASSOCIATE"); ?></a>
                                     </div>
                                     <div class="em-button-see-formation">
-                                        <a href="<?php echo '/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_SEE_FORMATION"); ?></a>
+                                        <a href="<?php echo '/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw']; ?>" target="_blank"><?php echo JText::_("COM_EMUNDUS_SEE_FORMATION"); ?></a>
                                     </div>
                                     <hr class="add-candidate-breaker">
 
