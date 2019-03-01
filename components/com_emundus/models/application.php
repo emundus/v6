@@ -1229,7 +1229,7 @@ class EmundusModelApplication extends JModelList
                     }
                     th {
                         border-spacing: 1px;
-                        color: #666666;
+                        color: #000;
                         padding:5px;
                     }
                     td {
@@ -1308,75 +1308,6 @@ class EmundusModelApplication extends JModelList
                         $forms .= JText::_($itemg->label);
                         $forms .= '</h4>';
 
-                        /*
-                                                if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
-                                                    foreach($elements as &$iteme) {
-
-
-                                                        $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-
-                                                        try {
-
-                                                            $this->_db->setQuery($query);
-                                                            $res = $this->_db->loadRow();
-
-                                                        } catch (Exception $e) {
-                                                            JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
-                                                            throw $e;
-                                                        }
-
-                                                        if (count($res)>1) {
-                                                            $iteme->content = $res[1];
-                                                            $iteme->content_id = $res[0];
-                                                        } else {
-                                                            $iteme->content = '';
-                                                            $iteme->content_id = -1;
-                                                        }
-
-                                                        if ($iteme->plugin == 'databasejoin') {
-                                                            $params = json_decode($iteme->params);
-
-                                                            if ($params->database_join_display_type == 'checkbox') {
-                                                                $query =
-                                                                    'SELECT `id`, GROUP_CONCAT(' . $iteme->name . ', ", ") as ' . $iteme->name . '
-                                                                            FROM `' . $itemt->db_table_name . '_repeat_' . $iteme->name . '`
-                                                                            WHERE parent_id=' . $iteme->content_id . ' GROUP BY parent_id';
-                                                                try {
-                                                                    $this->_db->setQuery($query);
-                                                                    $res = $this->_db->loadRow();
-
-                                                                } catch (Exception $e) {
-                                                                    JLog::add('Line 1194 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
-                                                                    throw $e;
-                                                                }
-
-                                                                if (count($res)>1) {
-                                                                    $iteme->content = $res[1];
-                                                                    $iteme->content_id = $res[0];
-                                                                } else {
-                                                                    $iteme->content = '';
-                                                                    $iteme->content_id = -1;
-                                                                }
-                                                            }
-                                                        }
-
-                                                        elseif ($iteme->plugin == 'checkbox') {
-                                                            $iteme->content = implode(", ", json_decode (@$res[1]));
-                                                            $iteme->content_id = $res[0];
-                                                        }
-
-                                                        elseif ($iteme->plugin=='dropdown' || $iteme->plugin=='radiobutton') {
-                                                            $params = json_decode($iteme->params);
-                                                            $index = array_search($res[1], $params->sub_options->sub_values);
-                                                            $iteme->content = JText::_($params->sub_options->sub_labels[$index]);
-                                                            $iteme->content_id = $res[0];
-                                                        }
-                                                    }
-                                                }
-                                                unset($iteme);
-
-                          */
-
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
                             foreach ($elements as $element) {
@@ -1394,7 +1325,7 @@ class EmundusModelApplication extends JModelList
                             $forms .= '</table>';
 
                             // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
-                        } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 7 && !$asTextArea) {
+                        } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 6 && !$asTextArea) {
 
                             $forms .= '<p><table class="adminlist">
                             <thead>
@@ -1445,7 +1376,7 @@ class EmundusModelApplication extends JModelList
                                     $j = 0;
 
                                     foreach ($r_element as $key => $r_elt) {
-                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
                                             $params = json_decode($elements[$j]->params);
 
                                             if ($elements[$j]->plugin == 'date') {
@@ -1576,7 +1507,7 @@ class EmundusModelApplication extends JModelList
 
                                         if (!empty($r_elt)) {
 
-                                            if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+                                            if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
 
                                                 if ($elements[$j]->plugin == 'date') {
                                                     $date_params = json_decode($elements[$j]->params);
@@ -1639,8 +1570,12 @@ class EmundusModelApplication extends JModelList
                                                 else $elt = JText::_($r_elt);
 
                                                 if (!empty($elt)) {
-                                                    //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.JText::_($elt);
-                                                    $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
+                                                    //$forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
+                                                    if ($element->plugin == 'textarea')
+                                                        $forms .= '<tr><td colspan="2" style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span> <br>'.$elt.'</td></tr>';
+                                                    else
+                                                        $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.$elt.'</td></tr>';
+
                                                 }
                                             }
                                         }
@@ -1862,7 +1797,7 @@ td {
                             //-- Entrée du tableau -- */
                             //$nb_lignes = 0;
                             $t_elt = array();
-                            foreach($elements as &$element) {
+                            foreach($elements as $element) {
                                 $t_elt[] = $element->name;
                                 $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
                             }
@@ -1888,7 +1823,8 @@ td {
                                 $forms .= '<tr>';
                                 $j = 0;
                                 foreach ($r_element as $key => $r_elt) {
-                                    if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+                                    if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) &&  && $elements[$j]->plugin != 'display') {
+
                                         if ($elements[$j]->plugin=='date') {
                                             $date_params = json_decode($elements[$j]->params);
                                             $elt = date($date_params->date_form_format, strtotime($r_elt));
@@ -1937,8 +1873,9 @@ td {
 
                             // AFFICHAGE EN LIGNE
                         } else {
-                            foreach($elements as &$element) {
-                                if(!empty($element->label) && $element->label!=' ') {
+                            foreach($elements as $element) {
+                                if(!empty($element->label) && $element->label!=' '  && $elements->plugin != 'display') {
+
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
                                         // $elt = strftime($date_params->date_form_format, strtotime($element->content));
