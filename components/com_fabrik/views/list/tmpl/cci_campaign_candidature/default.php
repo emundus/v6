@@ -122,7 +122,7 @@ if ($pageClass !== '') : ?>
                                 <div class="em-top-details article-title article-title-<?php echo $this->table->renderid; ?>">
                                     <div class="g-block size-70 em-formation-title">
                                         <div class="overflow">
-                                            <i class="fas fa-caret-right"></i><h2><?php echo $title; ?></h2>
+                                            <i class="fas fa-caret-right"></i><h2 rel="tooltip" title="<?php echo $title; ?>"><?php echo $title; ?></h2>
                                         </div>
                                         <div class="em-formation-details g-block size-100">
                                             <div class="left g-block size-60">
@@ -172,7 +172,7 @@ if ($pageClass !== '') : ?>
 
                                             <div class="right g-block size-35">
                                                 <div class="formation-length">
-                                                    <?php echo JText::_("DURATION") . ' : ' . ($d['jos_emundus_setup_teaching_unity___hours_raw'] == '1') ? $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heure' : $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heures'; ?>
+                                                    <?php echo ($d['jos_emundus_setup_teaching_unity___hours_raw'] == 1) ? JText::_("DURATION") . ' : ' . $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heure' : JText::_("DURATION") . ' : ' . $d['jos_emundus_setup_teaching_unity___hours_raw'] . ' heures'; ?>
                                                 </div>
 
                                                 <div class="fomation-code">
