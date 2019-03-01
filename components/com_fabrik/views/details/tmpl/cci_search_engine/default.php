@@ -110,14 +110,14 @@ if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $title; ?>
             <?php if (!$user->guest) :?>
                 <?php if ($is_favorite) :?>
-                    <i class="fas fa-star em-star-button" rel="tooltip" title="Cliquez ici pour marquer cette formation comme une formation envisagée" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                    <i class="fas fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE'); ?>" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php else :?>
-                    <i class="far fa-star em-star-button" rel="tooltip" title="Cliquez ici pour marquer cette formation comme une formation envisagée" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                    <i class="far fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE'); ?>" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php endif; ?>
             <?php endif; ?>
         </h1>
-            <p><?php echo "réf. " . str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
-            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) { echo "code CPF : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; } ?></p>
+            <p><?php echo JText::_('REF'). str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
+            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) { echo JText::_('CODE')." : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; } ?></p>
     </div>
 
         <div class="em-details g-block size-95 em-details-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
@@ -130,9 +130,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <p id="days">
                         <?php
                         if (floatval($days) > 1) {
-                            echo $days." jours";
+                            echo $days." ".JText::_('DAYS');
                         } elseif (floatval($days) == 1) {
-                            echo $days." jour";
+                            echo $days." ".JText::_('DAY');
                         }
                         ?>
                     </p>
@@ -145,10 +145,11 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
                 <div class="em-reqs">
                     <?php
-                    if (trim($this->data['jos_emundus_setup_programmes___prerequisite_raw']) == '')
-                        echo "<p>Pas de prérequis nécessaire</p>";
-                    else
-                        echo html_entity_decode($this->data['jos_emundus_setup_programmes___prerequisite_raw']);
+                    if (trim($this->data['jos_emundus_setup_programmes___prerequisite_raw']) == '') {
+	                    echo "<p>".JText::_('NO_PREREC')."</p>";
+                    } else {
+	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___prerequisite_raw']);
+                    }
                     ?>
                 </div>
             </div>
@@ -158,13 +159,13 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <?php echo $telechargement_svg; ?>
                 </div>
                 <div class="em-docs">
-                    <p>fiche pédagogique</p>
+                    <p><?php echo JText::_('PEDAGO_FICHE'); ?></p>
                 </div>
             </div>
 
             <?php if (!empty($partenaire)) :?>
                 <div class="partner">
-                    <b>Notre partenaire expert</b>
+                    <b><?php echo JText::_('OUR_EXPERT'); ?></b>
                     <img src="images/custom/ccirs/partenaires/<?php echo $partenaire; ?>.png" alt="Logo partenaire <?php echo $partenaire; ?>">
                 </div>
             <?php endif; ?>
@@ -179,12 +180,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <?php echo $public_svg; ?>
                 </div>
                 <div id="offer-details">
-                    <h2>Publics</h2>
+                    <h2><?php echo JText::_('AUDIENCE'); ?></h2>
                     <?php
                     if (trim($this->data['jos_emundus_setup_programmes___audience_raw']) != '') {
 	                    echo html_entity_decode($this->data['jos_emundus_setup_programmes___audience_raw']);
                     } else {
-	                    echo "<p>Aucun public précisé.</p>"
+	                    echo "<p>".JText::_('NO_AUDIENCE')."</p>"
                     }
                     ?>
                 </div>
@@ -199,7 +200,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
 
                 <div id="objectif-details">
-                    <h2>Objectifs</h2>
+                    <h2><?php echo JText::_('OBJECTIVES'); ?></h2>
                     <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']); ?>
                 </div>
 
@@ -213,7 +214,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
 
                     <div id="key-details">
-                        <h2>Points clés</h2>
+                        <h2><?php echo JText::_('KEY_POINTS'); ?></h2>
 	                    <?php echo html_entity_decode($this->data['jos_emundus_setup_programmes___content_raw']); ?>
                     </div>
 
@@ -228,7 +229,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     </div>
 
                     <div id="certificate-details">
-                        <h3>Certification ou diplôme</h3>
+                        <h3><?php echo JText::_('CERTIFICATE'); ?></h3>
                         <img src="images/custom/ccirs/certifications/<?php echo $certificate; ?>.png" alt="Logo certificat <?php echo $certificate; ?>">
                     </div>
                 </div>
@@ -239,20 +240,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
             <div class="em-options" id="em-formation-options">
 
                 <div class="em-option-menu active" id="em-option-menu-inter">
-                    <b>INTER</b>
+                    <b><?php echo JText::_('INTER'); ?></b>
                 </div>
 
                 <div class="em-option-menu" id="em-option-menu-intra">
-                    <b>INTRA</b>
+                    <b><?php echo JText::_('INTRA'); ?></b>
                 </div>
 
                 <div class="em-option-menu" id="em-option-menu-sur-mesure">
-                    <b>SUR-MESURE</b>
+                    <b><?php echo JText::_('SUR_MESURE'); ?></b>
                 </div>
 
                 <div class="em-option" id="em-option-inter">
                     <div class="em-option-details">
-                        <b> Prochaines sessions</b>
+                        <b><?php echo JText::_('NEXT_SESSIONS'); ?></b>
                     </div>
 
                     <?php foreach ($sessions as $session) :?>
@@ -300,7 +301,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                             <?php
                                 if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0) {
-                                    echo "<p class='places'>dernières places disponibles</p>";
+                                    echo "<p class='places'>".JText::_('LAST_SPOTS_LEFT')."</p>";
                                 }
                             ?>
 
@@ -308,7 +309,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 
                                     <?php if (in_array($session['session_code'], $applied)) :?>
                                         <div class="em-option-buttons">
-                                            <button class="em-option-complet" disabled>Vous êtes déjà inscrit</button>
+                                            <button class="em-option-complet" disabled><?php echo JText::_('ALREADY_SIGNED_UP'); ?></button>
                                         </div>
                                     <?php else: ?>
 
@@ -321,16 +322,16 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                                         ?>
 
                                         <div class="em-option-buttons">
-                                            <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
+                                            <a href="/demande-de-contact" class="em-option-contact"><?php echo JText::_('BE_CONTACTED'); ?></a>
                                             <?php $register_url = "connexion?course=".$session['code']."&cid=".$session['cid']."&redirect=".$formUrl; ?>
-                                            <a href="<?php echo $register_url; ?>" class="em-option-login">s'inscrire</a>
+                                            <a href="<?php echo $register_url; ?>" class="em-option-login"><?php echo JText::_('SIGNUP'); ?></a>
                                         </div>
 
                                     <?php endif; ?>
 
                                 <?php else: ?>
                                     <div class="em-option-buttons">
-                                        <button class="em-option-complet" disabled>Complet</button>
+                                        <button class="em-option-complet" disabled><?php echo JText::_('FULL'); ?></button>
                                     </div>
                                 <?php endif; ?>
                         </div>
@@ -347,8 +348,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         </div>
 
                         <div class="location-details">
-                            <p>Dans votre entreprise</p>
-                            <p>pour <?php echo $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'];?> personnes minimum</p>
+                            <p><?php echo JText::_('IN_YOUR_COMPANY'); ?></p>
+                            <p><?php echo JText::_('FOR'); ?> <?php echo $this->data['jos_emundus_setup_teaching_unity___min_occupants_raw'];?> <?php echo JText::_('PEOPLE_MINIMUM'); ?></p>
                         </div>
                     </div>
 
@@ -360,19 +361,20 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                         <div class="price-details">
                             <p>
                                 <?php
-                                if (!empty($session['tax_rate']))
-                                    echo intval($session['price']) . " € HT" ;
-                                else
-                                    echo intval($session['price']) . " € net" ;
+                                if (!empty($session['tax_rate'])) {
+	                                echo intval($session['price'])." € ".JText::_('HT');
+                                } else {
+	                                echo intval($session['price'])." € ".JText::_('NET');
+                                }
                                 ?>
                             </p>
-                            <p>Par personne</p>
+                            <p><?php echo JText::_('PER_PERSON'); ?></p>
                         </div>
                     </div>
 
                     <div class="em-option-buttons">
-                        <a href="/demande-de-pre-inscription?session=<?php echo $session['code']; ?>" class="em-option-login">demander un devis</a>
-                        <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
+                        <a href="/demande-de-pre-inscription?session=<?php echo $session['code']; ?>" class="em-option-login"><?php echo JText::_('ASK_FOR_QUOTE'); ?></a>
+                        <a href="/demande-de-contact" class="em-option-contact"><?php echo JText::_('BE_CONTACTED'); ?></a>
                     </div>
 
                 </div>
@@ -381,15 +383,15 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                    
                     <div class="em-option-details" id="sur-mesure-details">
                         <div class="top-paragraph">
-                            <b> Vous êtes intéressé par cette thématique mais vous avez des besoins spécifiques?</b>
+                            <b><?php echo JText::_('ARE_YOU_INTERESTED'); ?></b>
                         </div>
 
                         <div class="bottom-paragraph">
-                            <b> Nous pouvons élaborer pour vous une formation sur-mesure.</b>
+                            <b><?php echo JText::_('WE_CAN_CUSTOM'); ?></b>
                         </div>
                     </div>
 
-                    <a href="/demande-de-contact" class="em-option-contact">être contacté</a>
+                    <a href="/demande-de-contact" class="em-option-contact"><?php echo JText::_('BE_CONTACTED'); ?></a>
 
                 </div>
             </div>
@@ -616,8 +618,6 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     <?php endif; ?>
 
 </script>
-
-
 
 <?php
 echo $this->pluginbottom;
