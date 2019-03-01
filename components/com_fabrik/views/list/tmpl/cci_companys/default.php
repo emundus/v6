@@ -81,9 +81,9 @@ echo $this->table->intro;
         <div class="g-block size-100">
             <?php if ($this->navigation->total < 1) :?>
                 <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
-                    <h2>Vous n'avez pas d'entreprises</h2>
+                    <h2><?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?></h2>
                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
-                    <h2>Vous n'avez pas de collaborateurs</h2>
+                    <h2><?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?></h2>
                 <?php endif; ?>
             <?php else: ?>
                 <?php
@@ -105,7 +105,7 @@ echo $this->table->intro;
                                     <?php endif; ?>
 
 	                                <?php if (!empty($d['user_id'])) :?>
-                                        <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $d['user_id']; ?>">inscrire à une formation</a></div>
+                                        <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $d['user_id']; ?>"><?php echo JText::_("COM_EMUNDUS_SIGNUP_FORMATION");?></a></div>
 	                                <?php endif; ?>
                                 <?php endif; ?>
                                 <div class="accordion-icons">
@@ -113,7 +113,8 @@ echo $this->table->intro;
                                         <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
                                     <?php endif; ?>
                                     <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo 'data-cid= "'.$d['cid'].'"'; } ?>">
-                                    <i class="fas fa-trash-alt"></i></div>
+                                        <i class="fas fa-times"></i>
+                                    </div>
                                 </div>
                             </div>
 
@@ -229,29 +230,58 @@ endif;
     });
 
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
+
+        var table  =
+        console.log("<?php echo $this->table->db_table_name; ?>");
         e.stopPropagation();
 
-        if (confirm("Êtes vous sûr(e) de vouloir effacer ?") == true) {
-            jQuery.ajax({
-                type: "post",
-                url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
-                dataType: 'json',
-                data : ({
-                    id: jQuery(this).data("id"),
-                    <?php if (!empty($d['user_id'])) :?>
-                    cid: jQuery(this).data("cid"),
-                    <?php endif; ?>
-                }),
-                success: function(result) {
-                    if (result.status) {
-                        location.reload();
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(jqXHR.responseText);
+        Swal.fire({
+                title: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_CONFIRM') : JText::_('REMOVE_COMPANY_CONFIRM'); ?>",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#dc3545",
+                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                cancelButtonText: "<?php echo JText::_('JNO');?>"
+            }
+        ).then(
+            function (isConfirm) {
+                if (isConfirm.value == true) {
+                    jQuery.ajax({
+                        type: "post",
+                        url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
+                        dataType: 'json',
+                        data : ({
+                            id: jQuery(this).data("id"),
+                            <?php if (!empty($d['user_id'])) :?>
+                            cid: jQuery(this).data("cid"),
+                            <?php endif; ?>
+                        }),
+                        success: function(result) {
+                            if (result.status) {
+                                Swal.fire({
+                                    type: 'success',
+                                    title: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_REMOVED') : JText::_('REMOVE_COMPANY_REMOVED'); ?>"
+                                });
+                            }
+                            else {
+                                Swal.fire({
+                                    type: 'error',
+                                    text: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE__NOT_REMOVED') : JText::_('REMOVE_COMPANY_NOT_REMOVED'); ?>"
+                                });
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR.responseText);
+                            Swal.fire({
+                                type: 'error',
+                                text: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_NOT_REMOVED') : JText::_('REMOVE_COMPANY_NOT_REMOVED'); ?>"
+                            });
+                        }
+                    });
                 }
-            });
-        }
+            }
+        );
     });
 
 </script>
