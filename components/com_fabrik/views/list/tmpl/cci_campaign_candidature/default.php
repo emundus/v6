@@ -225,7 +225,6 @@ if ($pageClass !== '') : ?>
 
                                             <?php $count_applicants++;endforeach; ?>
                                     </div>
-                                    <a href="" >/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw'] . '
                                     <div class="em-button-add-candidate">
                                         <a href="<?php echo '/inscription?session=' . $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_ADD_ASSOCIATE"); ?></a>
                                     </div>
