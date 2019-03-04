@@ -230,7 +230,8 @@ endif;
     });
 
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
-        
+        var row = jQuery(this).closest('.article-title')[0];
+
         e.stopPropagation();
 
         Swal.fire({
@@ -257,6 +258,7 @@ endif;
                         }),
                         success: function(result) {
                             if (result.status) {
+                                jQuery(row).hide();
                                 Swal.fire({
                                     type: 'success',
                                     title: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_REMOVED') : JText::_('REMOVE_COMPANY_REMOVED'); ?>"
