@@ -51,22 +51,24 @@ echo $this->table->intro;
             foreach ($rows as $k => $v) {
                 foreach ($this->headings as $key => $val) {
                     $raw = $key.'_raw';
-
-                    if (array_key_exists($raw, $v->data)) {
+                    if (property_exists($v->data, $raw)) {
+                        if ($raw =="jos_emundus_users___birthday_raw") {
+                            $v->data->$raw = date('d/m/Y', strtotime($v->data->$raw));
+                        }
                         $data[$i][$val] = $v->data->$raw;
                     }
-
                 }
-                if (array_key_exists('__pk_val', $v->data)) {
+
+                if (property_exists($v->data, '__pk_val')) {
                     $data[$i]['id'] = $v->data->__pk_val;
                 }
-                if (array_key_exists('fabrik_edit_url', $v->data) && !empty($v->data->fabrik_edit)) {
+                if (property_exists($v->data, 'fabrik_edit')) {
                     $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
                 }
-                if (array_key_exists('id', $v)) {
+                if (property_exists($v->data, 'id')) {
                     $data[$i]['row_id'] = $v->id;
                 }
-                if (array_key_exists('jos_emundus_users___user_id_raw', $v->data)) {
+                if (property_exists($v->data, 'jos_emundus_users___user_id_raw')) {
                     $data[$i]['id'] = $v->data->jos_emundus_users___user_id_raw;
                 }
 
@@ -88,7 +90,7 @@ echo $this->table->intro;
             <?php else: ?>
                 <?php
                     $gCounter = 0;
-                    foreach ($data as $d) { ?>
+                    foreach ($data as $d) :?>
                         <div class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                             <div class="article-title article-title-<?php echo $this->table->renderid; ?>">
                                 <i class="fas fa-caret-right"></i>
@@ -119,7 +121,7 @@ echo $this->table->intro;
                             </div>
 
                             <div class="accordion-content">
-                                <?php foreach ($d as $k => $v) { ?>
+                                <?php foreach ($d as $k => $v) :?>
                                     <?php if ($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id' && $k != 'cid') :?>
                                         <?php if (strpos($k, 'Title')) :?>
                                             <div class="em-group-title">
@@ -128,14 +130,14 @@ echo $this->table->intro;
                                         <?php else: ?>
                                             <div class="em-element <?php echo str_replace(' ','-', $k);?>">
                                                 <div class="em-element-label"><?php echo $k; ?></div>
-                                                <div class="em-element-value"><?php echo $v; ?></div>
+                                            <div class="em-element-value"><?php echo $v; ?></div>
                                             </div>
                                         <?php endif; ?>
                                     <?php endif;?>
-                                <?php } ?>
+                                <?php endforeach; ?>
                             </div>
                         </div>
-                <?php } ?>
+                <?php endforeach; ?>
             <?php endif; ?>
         </div>
 
