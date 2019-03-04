@@ -230,7 +230,7 @@ endif;
     });
 
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
-        var row = jQuery(this).closest('.article-title')[0];
+        var row = jQuery(this).closest('.accordion-container')[0];
 
         e.stopPropagation();
 
