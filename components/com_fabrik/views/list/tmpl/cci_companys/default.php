@@ -112,7 +112,7 @@ echo $this->table->intro;
                                     <?php if ($d['fabrik_edit_url']) :?>
                                         <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
                                     <?php endif; ?>
-                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo 'data-cid= "'.$d['cid'].'"'; } ?>">
+                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo 'data-cid= "'.$d['cid'].'"'; } ?>>
                                         <i class="fas fa-times"></i>
                                     </div>
                                 </div>
@@ -120,7 +120,7 @@ echo $this->table->intro;
 
                             <div class="accordion-content">
                                 <?php foreach ($d as $k => $v) { ?>
-                                    <?php if ($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id') :?>
+                                    <?php if ($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id' && $k != 'cid') :?>
                                         <?php if (strpos($k, 'Title')) :?>
                                             <div class="em-group-title">
                                                 <span><?php echo str_replace('Title-', '',$k); ?></span>
@@ -230,9 +230,7 @@ endif;
     });
 
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
-
-        var table  =
-        console.log("<?php echo $this->table->db_table_name; ?>");
+        
         e.stopPropagation();
 
         Swal.fire({
@@ -252,9 +250,9 @@ endif;
                         url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
                         dataType: 'json',
                         data : ({
-                            id: jQuery(this).data("id"),
+                            id: jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").data("id"),
                             <?php if (!empty($d['user_id'])) :?>
-                            cid: jQuery(this).data("cid"),
+                                cid: jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").data("cid"),
                             <?php endif; ?>
                         }),
                         success: function(result) {
