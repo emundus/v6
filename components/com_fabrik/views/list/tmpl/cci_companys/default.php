@@ -62,7 +62,7 @@ echo $this->table->intro;
                 if (property_exists($v->data, '__pk_val')) {
                     $data[$i]['id'] = $v->data->__pk_val;
                 }
-                if (property_exists($v->data, 'fabrik_edit')) {
+                if (property_exists($v->data, 'fabrik_edit') && !empty($v->data->fabrik_edit)) {
                     $data[$i]['fabrik_edit_url'] = $v->data->fabrik_edit_url;
                 }
                 if (property_exists($v->data, 'id')) {
