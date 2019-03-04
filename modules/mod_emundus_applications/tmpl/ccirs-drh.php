@@ -34,7 +34,7 @@ echo $description;
                             if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
                                 echo strftime('%e',strtotime($application['date_start']))." ".strftime('%B',strtotime($application['date_end']))." ".date('Y',strtotime($application['date_end']));
                             } elseif ($start_month == $end_month && $start_year == $end_year) {
-                                echo strftime('%e',strtotime($application['date_start']))." au ".strftime('%e',strtotime($application['date_start']))." ".strftime('%B',strtotime($application['date_end']))." ".date('Y',strtotime($application['date_end']));
+                                echo strftime('%e',strtotime($application['date_start']))." au ".strftime('%e',strtotime($application['date_end']))." ".strftime('%B',strtotime($application['date_end']))." ".date('Y',strtotime($application['date_end']));
                             } elseif ($start_month != $end_month && $start_year == $end_year) {
                                 echo strftime('%e', strtotime($application['date_start']))." ".strftime('%B', strtotime($application['date_start']))." au ".strftime('%e', strtotime($application['date_end']))." ".strftime('%B', strtotime($application['date_end']))." ".date('Y', strtotime($application['date_end']));
                             } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
