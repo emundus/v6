@@ -53,7 +53,6 @@ echo $this->table->intro;
                     $raw = $key.'_raw';
                     if (property_exists($v->data, $raw)) {
                         if ($raw =="jos_emundus_users___birthday_raw") {
-                            echo "<pre>";var_dump($v->data->$raw); echo "</pre>";
                             $v->data->$raw = date('d/m/Y', strtotime($v->data->$raw));
                         }
                         $data[$i][$val] = $v->data->$raw;
