@@ -53,6 +53,7 @@ echo $this->table->intro;
                     $raw = $key.'_raw';
                     if (property_exists($v->data, $raw)) {
                         if ($raw =="jos_emundus_users___birthday_raw") {
+                            echo "<pre>";var_dump($v->data->$raw); echo "</pre>";
                             $v->data->$raw = date('d/m/Y', strtotime($v->data->$raw));
                         }
                         $data[$i][$val] = $v->data->$raw;
@@ -232,6 +233,7 @@ endif;
     });
 
     jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
+        var that = jQuery(this);
         var row = jQuery(this).closest('.accordion-container')[0];
 
         e.stopPropagation();
@@ -253,9 +255,9 @@ endif;
                         url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
                         dataType: 'json',
                         data : ({
-                            id: jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").data("id"),
+                            id: jQuery(that).data("id"),
                             <?php if (!empty($d['user_id'])) :?>
-                                cid: jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").data("cid"),
+                                cid: jQuery(that).data("cid"),
                             <?php endif; ?>
                         }),
                         success: function(result) {
