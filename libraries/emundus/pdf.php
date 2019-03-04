@@ -175,7 +175,12 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
     unset($logo_footer);
 
     $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-    $pdf->SetFont('helvetica', '', 8);
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    // set default font subsetting mode
+    $pdf->setFontSubsetting(true);
+    // set font
+    $pdf->SetFont('freeserif', '', 8);
 
     $letter->body = $m_emails->setTagsFabrik($letter->body, array($fnum));
 
@@ -348,7 +353,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
                 if ($ed->element_name=="reason") {
                     $result .= '<ul>';
                     foreach ($evaluation as $e) {
-                        $result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; //die(print_r(@$reason[$e[@$ed->element_name]]));
+                        $result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; 
                     }
                     if (@!empty($evaluation[0]["reason_other"]))
                         $result .= '<ul><li>'.@$evaluation[0]["reason_other"].'</li></ul>';
@@ -373,7 +378,6 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
         'USER_EMAIL' => $current_user->email,
         'FNUM' => $fnum );
 
-//die(var_dump($tags));
     foreach ($letters as $letter) {
         $error = 0;
 
@@ -506,7 +510,12 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
             $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
             //$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-            $pdf->SetFont('helvetica', '', 8);
+            // set default monospaced font
+            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+            // set default font subsetting mode
+            $pdf->setFontSubsetting(true);
+            // set font
+            $pdf->SetFont('freeserif', '', 8);
 
             //$dimensions = $pdf->getPageDimensions();
 
@@ -516,7 +525,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             $htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"]))));
 
             //$htmldata .= $letter["footer"];
-            //die($htmldata);
+
             $pdf->AddPage();
 
             // Print text using writeHTMLCell()
@@ -675,7 +684,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             $file_type = explode('.', $file_path[count($file_path)-1]);
             $name = date('Y-m-d_H-i-s').$attachment['lbl'].'.'.$file_type[1];
 
-            $file = JPATH_BASE.$letter['file']; //die($file);
+            $file = JPATH_BASE.$letter['file']; 
             if (file_exists($file)) {
                 $mime_type = get_mime_type($file);
                 header('Content-type: application/'.$mime_type);
@@ -717,7 +726,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
             $document->save(JPATH_BASE.DS.'tmp'.DS.$name);
 
-            $file = JPATH_BASE.DS.'tmp'.DS.$name; //die($file);
+            $file = JPATH_BASE.DS.'tmp'.DS.$name; 
             if (file_exists($file)) {
                 $mime_type = get_mime_type($file);
                 header('Content-type: application/'.$mime_type);
@@ -779,7 +788,12 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
             $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
             //$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-            $pdf->SetFont('helvetica', '', 8);
+            // set default monospaced font
+            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+            // set default font subsetting mode
+            $pdf->setFontSubsetting(true);
+            // set font
+            $pdf->SetFont('freeserif', '', 10);
 
             //$dimensions = $pdf->getPageDimensions();
 
@@ -787,7 +801,6 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             ;
             $htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"]))));
             //$htmldata .= $letter["footer"];
-            //die($htmldata);
             $pdf->AddPage();
 
             // Print text using writeHTMLCell()
@@ -797,7 +810,6 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             $pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS."demo", 'I');
         }
     }
-//die(print_r($files));
     exit();
 }
 
@@ -854,7 +866,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
     $pdf->SetCreator(PDF_CREATOR);
-    $pdf->SetAuthor('Decision Publique');
+    $pdf->SetAuthor('eMundus');
     $pdf->SetTitle('Application Form');
 
     try {
@@ -890,30 +902,35 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $ext = substr($logo, -3);
     $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
     if (is_file($logo_prg))
-        $logo = $logo_prg;
+    	$logo = $logo_prg;
 
-    //get title
-    $title = $config->get('sitename');
-    if (is_file($logo))
-        $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+	//get title
+	$title = $config->get('sitename');
+	if (is_file($logo))
+		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 
-    unset($logo);
-    unset($title);
+	unset($logo);
+	unset($title);
 
-    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
-    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-    $pdf->SetFont('helvetica', '', 10);
-    $pdf->AddPage();
-    $dimensions = $pdf->getPageDimensions();
+	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
+	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	// set default monospaced font
+	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	// set default font subsetting mode
+	$pdf->setFontSubsetting(true);
+	// set font
+	$pdf->SetFont('freeserif', '', 10);
+	$pdf->AddPage();
+	$dimensions = $pdf->getPageDimensions();
 
-    /*** Applicant   ***/
-    $htmldata .=
-        '<style>
+	/*** Applicant   ***/
+	$htmldata .=
+	'<style>
 	.card  { border: none; display:block; line-height:80%;}
 	.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
 	.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
@@ -1139,7 +1156,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 
 
     $pdf->SetCreator(PDF_CREATOR);
-    $pdf->SetAuthor('Decision Publique');
+    $pdf->SetAuthor('eMundus');
     $pdf->SetTitle('Application Form');
 
     try {
@@ -1162,8 +1179,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     } catch (Exception $e) {
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
     }
-//die(str_replace("#_", "jos", $query));
-
 
     //get logo
     $template 	= $app->getTemplate(true);
@@ -1188,16 +1203,21 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     unset($logo);
     unset($title);
 
-    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
-    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-    $pdf->SetFont('helvetica', '', 10);
-    $pdf->AddPage();
-    $dimensions = $pdf->getPageDimensions();
+	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
+	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	// set default monospaced font
+	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	// set default font subsetting mode
+	$pdf->setFontSubsetting(true);
+	// set font
+	$pdf->SetFont('freeserif', '', 10);
+	$pdf->AddPage();
+	$dimensions = $pdf->getPageDimensions();
 
 
     /*** Applicant   ***/
@@ -1444,8 +1464,13 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
     // set margins
     $pdf->SetMargins(15, 40, 15);
 
-    $pdf->SetAutoPageBreak(true, 50);
-    $pdf->SetFont('helvetica', '', 8);
+	$pdf->SetAutoPageBreak(true, 50);
+	// set default monospaced font
+	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	// set default font subsetting mode
+	$pdf->setFontSubsetting(true);
+	// set font
+	$pdf->SetFont('helvetica', '', 8);
 
     $pdf->AddPage();
 
