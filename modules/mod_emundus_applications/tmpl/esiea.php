@@ -21,7 +21,7 @@ echo $description;
             <div class="row" id="row<?php echo $application->fnum; ?>">
                 <div class="col-md-12 main-page-application-title">
                     <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>">
-                        <?php echo (in_array($application->status, $admission_status))?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
+                        <?php echo (in_array($application->status, $admission_status))?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:JText::_('COM_EMUNDUS_CANDIDACY').' - '.$application->label; ?>
                     </a>
                 </div>
 
