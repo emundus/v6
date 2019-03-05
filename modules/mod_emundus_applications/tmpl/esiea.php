@@ -20,8 +20,8 @@ echo $description;
 		<?php foreach ($applications as $application) : ?>
             <div class="row" id="row<?php echo $application->fnum; ?>">
                 <div class="col-md-12 main-page-application-title">
-                    <a href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&Itemid=' . $Itemid . '#em-panel'); ?>">
-                        <?php echo (!empty($user->fnum) && $application->fnum == $user->fnum) ? '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>' . $application->label . '</b>' : $application->label; ?>
+                    <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>">
+                        <?php echo (in_array($application->status, $admission_status))?JText::_('ADMISSION').' - '.$application->label:$application->label; ?>
                     </a>
                 </div>
 
@@ -29,7 +29,7 @@ echo $description;
                     <p>
 						<?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
                     </p>
-                    <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode("index.php?fnum=" . $application->fnum) . '&Itemid=' . $Itemid . '#em-panel'); ?>" role="button">
+                    <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>" role="button">
                         <i class="folder open outline icon"></i> <?php echo (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
