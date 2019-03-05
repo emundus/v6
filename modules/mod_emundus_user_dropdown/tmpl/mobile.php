@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
         <ul>
             <?php if (!empty($list)) :?>
                 <?php foreach ($list as $i => $item) :?>
-                    <li class="<?php echo ($item->id == $active_id)?'active':''; ?>"><a href="<?php echo $item->flink ?>"><?php echo $item->title; ?></a></li>
+                    <li class="<?php echo ($item->id == $active_id)?'active':''; ?>"><a href="<?php echo $item->flink ?>" <?php echo ($item->browserNav == 1)?'target="_blank"':''; ?>><?php echo $item->title; ?></a></li>
                 <?php endforeach; ?>
                 <li role="separator" class="divider"></li>
             <?php endif; ?>
