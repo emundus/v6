@@ -11,189 +11,201 @@
 defined('_JEXEC') or die('Restricted access');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
-class plgUserEmundus_registration_email extends JPlugin {
+class plgUserEmundus_registration_email extends JPlugin
+{
 
-	/**
-	 * Constructor
-	 *
-	 * @access public
-	 *
-	 * @param  object $subject The object to observe
-	 * @param  array  $config  An array that holds the plugin configuration
-	 *
-	 * @since  3.9.1
-	 * @throws Exception
-	 */
-	public function __construct(&$subject, $config) {
+    /**
+     * Constructor
+     *
+     * @access public
+     *
+     * @param  object $subject The object to observe
+     * @param  array $config An array that holds the plugin configuration
+     *
+     * @since  3.9.1
+     * @throws Exception
+     */
+    public function __construct(&$subject, $config)
+    {
 
-		parent::__construct($subject, $config);
-		$this->loadLanguage();
-		 if (JRequest::getInt('emailactivation')) {
-			$userId = JRequest::getInt('u');
-			$app    = JFactory::getApplication();
-			$user   = JFactory::getUser($userId);
-
-			if (!$user->guest) {
-
-				// need to load fresh instance
-				$table = JTable::getInstance('user', 'JTable');
-				$table->load($userId);
-
-				if (empty($table->id)) {
-					throw new Exception('User cannot be found');
-				}
-
-				$params = new JRegistry($table->params);
-
-				// get token from user parameters
-				$token = $params->get('emailactivation_token');
-				$token = md5($token);
-
-				// Check that the token is in a valid format.
-				if (!empty($token) && strlen($token) === 32 && JRequest::getInt($token, 0, 'get') === 1) {
-
-					// Remove token and from user params.
-					$params->set('emailactivation_token', null);
-					$table->params = $params->toString();
-
-					// Unblock the user :)
-					$table->block = 0;
-
-					// save user data
-					if ($table->store()) {
-						$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'));
-						
-						$redirect = $this->params->get('activation_redirect');
-						if (!empty($redirect)) {
-							$app->redirect($redirect);
-						}
-					} else {
-						throw new RuntimeException($table->getError());
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Call our custom plugin event after the user is saved.
-	 * @since 3.9.1
-	 *
-	 * @param $user
-	 * @param $isnew
-	 * @param $result
-	 * @param $error
-	 *
-	 * @throws Exception
-	 */
-	public function onUserAfterSave($user, $isnew, $result, $error) {
-		$this->onAfterStoreUser($user, $isnew, $result, $error);
-	}
+        parent::__construct($subject, $config);
+        $this->loadLanguage();
+        if (JRequest::getInt('emailactivation')) {
+            $userId = JRequest::getInt('u');
+            $app = JFactory::getApplication();
+            $user = JFactory::getUser($userId);
 
 
-	/**
-	 * Once a new user is created, add the activation email token in his params.
-	 * @since 3.9.1
-	 *
-	 * @param $new
-	 * @param $isnew
-	 * @param $result
-	 * @param $error
-	 *
-	 * @throws Exception
-	 */
-	public function onAfterStoreUser($new, $isnew, $result, $error) {
-		$userId = (int) $new['id'];
-		$user = JFactory::getUser($userId);
+            if (!$user->guest) {
 
-		if (!$isnew || !JFactory::getUser()->guest) {
-			return;
-		}
+                // need to load fresh instance
+                $table = JTable::getInstance('user', 'JTable');
+                $table->load($userId);
 
-		// if saving user's data was successful
-		if ($result && !$error) {
+                if (empty($table->id)) {
+                    throw new Exception('User cannot be found');
+                }
 
-			// Generate the activation token.
-			$activation = md5(mt_rand());
+                $params = new JRegistry($table->params);
 
-			// Store token in User's Parameters
-			$user->setParam('emailactivation_token', $activation);
+                // get token from user parameters
+                $token = $params->get('emailactivation_token');
+                $token = md5($token);
+                // Check that the token is in a valid format.
+                if (!empty($token) && strlen($token) === 32 && JRequest::getInt($token, 0, 'get') === 1) {
 
-			// Get the raw User Parameters
-			$params = $user->getParameters();
+                    // Remove token and from user params.
+                    $params->set('emailactivation_token', null);
+                    $table->params = $params->toString();
 
-			// Set the user table instance to include the new token.
-			$table = JTable::getInstance('user', 'JTable');
-			$table->load($userId);
-			$table->params = $params->toString();
+                    // Unblock the user :)
+                    $table->block = 0;
 
-			// Block the user (until he activates).
-			$table->block = 1;
+                    // save user data
+                    if ($table->store()) {
+                        $app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'));
 
-			// Save user data
-			if (!$table->store()) {
-				throw new RuntimeException($table->getError());
-			}
+                        $redirect = $this->params->get('activation_redirect');
+                        if (!empty($redirect)) {
+                            $app->redirect($redirect);
+                        }
+                    } else {
+                        throw new RuntimeException($table->getError());
+                    }
+                } else {
+                    $app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'));
 
-			// Send activation email
-			if ($this->sendActivationEmail($user->getProperties(), $activation)) {
+                    $redirect = $this->params->get('activation_redirect');
+                    if (!empty($redirect)) {
+                        $app->redirect($redirect);
+                    }
+                }
+            }
+        }
+    }
 
-				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_SENT'));
+    /**
+     * Call our custom plugin event after the user is saved.
+     * @since 3.9.1
+     *
+     * @param $user
+     * @param $isnew
+     * @param $result
+     * @param $error
+     *
+     * @throws Exception
+     */
+    public function onUserAfterSave($user, $isnew, $result, $error)
+    {
+        $this->onAfterStoreUser($user, $isnew, $result, $error);
+    }
 
-				// Force user logout
-				if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {
-					$app->logout();
-					$app->redirect(JRoute::_(''), false);
-				}
-			}
-		}
-	}
 
-	/**
-	 * Send activation email to user in order to proof it
-	 * @since  3.9.1
-	 *
-	 * @access private
-	 *
-	 * @param  array  $data  JUser Properties ($user->getProperties)
-	 * @param  string $token Activation token
-	 *
-	 * @return bool
-	 * @throws Exception
-	 */
-	private function sendActivationEmail($data, $token) {
+    /**
+     * Once a new user is created, add the activation email token in his params.
+     * @since 3.9.1
+     *
+     * @param $new
+     * @param $isnew
+     * @param $result
+     * @param $error
+     *
+     * @throws Exception
+     */
+    public function onAfterStoreUser($new, $isnew, $result, $error)
+    {
+        $userId = (int)$new['id'];
+        $user = JFactory::getUser($userId);
 
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
-		$c_messages = new EmundusControllerMessages();
+        if (!$isnew || !JFactory::getUser()->guest) {
+            return;
+        }
 
-		$userID = (int) $data['id'];
-		$baseURL = rtrim(JURI::root(), '/');
-		$md5Token = md5($token);
+        // if saving user's data was successful
+        if ($result && !$error) {
 
-		// Compile the user activated notification mail values.
-		$config = JFactory::getConfig();
+            // Generate the activation token.
+            $activation = md5(mt_rand());
 
-		// Get a SEF friendly URL or else sites with SEF return 404.
-		// WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
-		// TODO: Possibly use JRoute to make this work without needing a menu item?
-		if ($config->get('sef') == 0) {
-			$activation_url = $baseURL.'/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
-		} else {
-			$activation_url = $baseURL.'/activation?emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
-		}
+            // Store token in User's Parameters
+            $user->setParam('emailactivation_token', $activation);
 
-		$post = [
-			'USER_NAME'     => $data['name'],
-			'USER_EMAIL'    => $data['email'],
-			'SITE_NAME'     => $config->get('sitename'),
-			'ACTIVATION_URL' => $activation_url,
-			'BASE_URL'      => $baseURL,
-			'USER_LOGIN'    => $data['username'],
-			'USER_PASSWORD' => $data['password_clear']
-		];
+            // Get the raw User Parameters
+            $params = $user->getParameters();
 
-		// Send the email.
-		return $c_messages->sendEmailNoFnum($data['email'], $this->params->get('email', 'registration_email'), $post);
-	}
+            // Set the user table instance to include the new token.
+            $table = JTable::getInstance('user', 'JTable');
+            $table->load($userId);
+            $table->params = $params->toString();
+
+            // Block the user (until he activates).
+            $table->block = 1;
+
+            // Save user data
+            if (!$table->store()) {
+                throw new RuntimeException($table->getError());
+            }
+
+            // Send activation email
+            if ($this->sendActivationEmail($user->getProperties(), $activation)) {
+
+                $app = JFactory::getApplication();
+                $app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_SENT'));
+
+                // Force user logout
+                if ($this->params->get('logout', null) && $userId === (int)JFactory::getUser()->id) {
+                    $app->logout();
+                    $app->redirect(JRoute::_(''), false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Send activation email to user in order to proof it
+     * @since  3.9.1
+     *
+     * @access private
+     *
+     * @param  array $data JUser Properties ($user->getProperties)
+     * @param  string $token Activation token
+     *
+     * @return bool
+     * @throws Exception
+     */
+    private function sendActivationEmail($data, $token)
+    {
+
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+        $c_messages = new EmundusControllerMessages();
+
+        $userID = (int)$data['id'];
+        $baseURL = rtrim(JURI::root(), '/');
+        $md5Token = md5($token);
+
+        // Compile the user activated notification mail values.
+        $config = JFactory::getConfig();
+
+        // Get a SEF friendly URL or else sites with SEF return 404.
+        // WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
+        // TODO: Possibly use JRoute to make this work without needing a menu item?
+        if ($config->get('sef') == 0) {
+            $activation_url = $baseURL . '/index.php?option=com_users&task=edit&emailactivation=1&u=' . $userID . '&' . $md5Token . '=1';
+        } else {
+            $activation_url = $baseURL . '/activation?emailactivation=1&u=' . $userID . '&' . $md5Token . '=1';
+        }
+
+        $post = [
+            'USER_NAME' => $data['name'],
+            'USER_EMAIL' => $data['email'],
+            'SITE_NAME' => $config->get('sitename'),
+            'ACTIVATION_URL' => $activation_url,
+            'BASE_URL' => $baseURL,
+            'USER_LOGIN' => $data['username'],
+            'USER_PASSWORD' => $data['password_clear']
+        ];
+
+        // Send the email.
+        return $c_messages->sendEmailNoFnum($data['email'], $this->params->get('email', 'registration_email'), $post);
+    }
 }
