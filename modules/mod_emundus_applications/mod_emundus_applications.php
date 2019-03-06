@@ -17,6 +17,7 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -57,6 +58,7 @@ if ($layout == '_:ccirs-drh') {
 	$cc_list_url = $params->get('cc_list_url', 'index.php');
 } elseif ($layout == '_:ccirs') {
     $cc_list_url = $params->get('cc_list_url', 'index.php');
+	$applications = modemundusApplicationsHelper::getApplications($layout);
 } else {
 	// We send the layout as a param because Hesam needs different information.
 	$applications = modemundusApplicationsHelper::getApplications($layout);
@@ -71,6 +73,11 @@ if (empty($user)) {
 	$user->id = JFactory::getUser()->id;
 }
 $user->fnums 	= $applications;
+
+if (empty($user->profile)) {
+	$h_list = new EmundusHelperList();
+	$user->profile = $h_list->getProfile($user->id);
+}
 
 $m_application 	= new EmundusModelApplication;
 $m_profile		= new EmundusModelProfile;
