@@ -192,7 +192,7 @@ if ($pageClass !== '') : ?>
                                 </div>
 
                                 <div class="em-bottom-details accordion-content">
-
+                                    <?php if ($this->params->get("note") == "1002") :?>
                                     <div class="em-candidate-details">
                                         <div class="em-candidate-title">
                                             <?php echo JText::_("COM_EMUNDUS_SIGNED_UP_ASSOCIATES"); ?>
@@ -227,6 +227,7 @@ if ($pageClass !== '') : ?>
                                     <div class="em-button-add-candidate">
                                         <a href="<?php echo '/inscription?session=' . $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_ADD_ASSOCIATE"); ?></a>
                                     </div>
+                                    <?php endif; ?>
                                     <div class="em-button-see-formation">
                                         <a href="<?php echo '/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw']; ?>" target="_blank"><?php echo JText::_("COM_EMUNDUS_SEE_FORMATION"); ?></a>
                                     </div>
@@ -239,9 +240,11 @@ if ($pageClass !== '') : ?>
                                             <div class="em-price"><?php echo JText::_("COM_EMUNDUS_UNIT_PRICE") . ' : ' . (float)$d['jos_emundus_setup_teaching_unity___price_raw']; ?>
                                                 €
                                             </div>
+                                            <?php if ($this->params->get("note") == "1002") :?>
                                             <div class="em-total-price"><?php echo JText::_("COM_EMUNDUS_TOTAL_PRICE") . ' : ' . ((float)$count_applicants) * ((float)$d['jos_emundus_setup_teaching_unity___price_raw']); ?>
                                                 €
                                             </div>
+                                            <?php endif; ?>
                                             <!-- TODO: Display total facturé (net de taxe) FROM GESCOF? -->
                                             <!-- TODO: Display financeur -->
                                             <!-- TODO: Display dates of billing and echeance FROM GESCOF? -->
