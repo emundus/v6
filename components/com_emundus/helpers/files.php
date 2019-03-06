@@ -2255,8 +2255,9 @@ class EmundusHelperFiles
             $str .= '<h1>Institutional Admission</h1>';
             foreach ($elements as $element) {
 
-                if ($element->element_name == 'time_date')
+                if ($element->element_name == 'time_date') {
                     $str .= '<em>'.JHtml::_('date', $adm[$element->tab_name.'___'.$element->element_name], JText::_('DATE_FORMAT_LC')).'</em>';
+                }
 
                 if ($element->element_name == 'user') {
                     $str .= '<h2>'.JFactory::getUser($adm[$element->tab_name.'___'.$element->element_name])->name.'</h2>';
@@ -2281,10 +2282,11 @@ class EmundusHelperFiles
                     array_key_exists($k, $adm))
                 {
                     $str .= '<tr>';
-                    if (strpos($element->element_plugin, 'textarea') !== false)
-                        $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $adm[$k] . '</td>';
-                    else
-                        $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $adm[$k] . '</td>';
+                    if (strpos($element->element_plugin, 'textarea') !== false) {
+	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.$adm[$k].'</td>';
+                    } else {
+	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.$adm[$k].'</td>';
+                    }
                     $str .= '</tr>';
                 }
             }
@@ -2310,7 +2312,6 @@ class EmundusHelperFiles
         $element_id     = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
         $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
-        
 
         foreach ($admissions as $adm) {
            
@@ -2321,7 +2322,7 @@ class EmundusHelperFiles
 
             $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
            
-            foreach ($elements as $element){
+            foreach ($elements as $element) {
                 $k = $element->tab_name.'___'.$element->element_name;
 
                 if ($element->element_name != 'id' &&
@@ -2336,10 +2337,11 @@ class EmundusHelperFiles
                     array_key_exists($k, $adm))
                 {
                     $str .= '<tr>';
-                    if (strpos($element->element_plugin, 'textarea') !== false)
-                        $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $adm[$k] . '</td>';
-                    else
-                        $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $adm[$k] . '</td>';
+                    if (strpos($element->element_plugin, 'textarea') !== false) {
+	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.$adm[$k].'</td>';
+                    } else {
+	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.$adm[$k].'</td>';
+                    }
                     $str .= '</tr>';
                 }
             }
@@ -2374,8 +2376,7 @@ class EmundusHelperFiles
      * @since   1.6
      */
     public function createFnum($campaign_id, $user_id){
-        $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
-        return $fnum;
+        return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -2393,7 +2394,6 @@ class EmundusHelperFiles
         // The strategy is simple: if there's an error, the table probably doesn't exist.
         $query->select($db->quoteName('id'))->from($db->quoteName($table_name))->setLimit('1');
 
-
         try {
             $db->setQuery($query);
             return !empty($db->loadResult());
@@ -2402,18 +2402,23 @@ class EmundusHelperFiles
         }
     }
 
-    public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid){
+    public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid) {
         $db = JFactory::getDBO();
+	    $query = $db->getQuery(true);
 
         try {
-            $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
-            $db->setQuery( $query );
-            $db->query();
+        	$query->insert($db->quoteName('#__emundus_filters'))
+		        ->columns($db->quoteName(['time_date', 'user', 'name', 'constraints', 'item_id']))
+		        ->values($db->quote($time_date).",".$user_id.",".$db->quote($name).",".$db->quote($constraints).",".$itemid);
+            $db->setQuery($query);
+            $db->execute();
 
-            $query = 'SELECT f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
+            $query->clear()
+	            ->select([$db->quoteName('id'), $db->quoteName('name')])
+                ->from($db->quoteName('#__emundus_filters'))
+	            ->where($db->quoteName('time_date').' = '.$db->quote($time_date).' AND '.$db->quoteName('user').' = '.$user_id.' AND '.$db->quoteName('item_id').' = '.$itemid);
             $db->setQuery($query);
             return $db->loadObject();
-
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -2421,13 +2426,16 @@ class EmundusHelperFiles
         }
     }
 
-    public function getExportExcelFilter($user_id){
+    public function getExportExcelFilter($user_id) {
         $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
 
         try {
-            $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
+        	$query->select('*')
+		        ->from($db->quoteName('#__emundus_filters'))
+		        ->where($db->quoteName('user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%excelfilter%'));
             $db->setQuery($query);
-           return $db->loadObjectList();
+            return $db->loadObjectList();
 
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -2436,19 +2444,18 @@ class EmundusHelperFiles
         }
     }
 
-    public function checkadmission(){
+    public function checkadmission() {
         $db = JFactory::getDBO();
 
         try {
             $query = 'SELECT * from #__emundus_admission limit 1';
             $db->setQuery($query);
-            $db->query() ;
+            $db->query();
             return true;
 
         } catch (Exception $e) {
            return false;
         }
-
     }
     
 }

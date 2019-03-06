@@ -28,8 +28,8 @@ $message_contacts = $helper->getContacts($user->id);
 
 $layout = $params->get('layout','default');
 
-if($layout == 'default') {
-    if($messages != "0") {
+if ($layout == 'default') {
+    if ($messages != "0") {
         require JModuleHelper::getLayoutPath('mod_emundus_message_notification', $layout);
     }
 }

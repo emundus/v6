@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 echo $description;
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&view=renew_application">
+    <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102">
         <span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span>
     </a>
     <hr>
@@ -20,8 +20,8 @@ echo $description;
 		<?php foreach ($applications as $application) : ?>
             <div class="row" id="row<?php echo $application->fnum; ?>">
                 <div class="col-md-12 main-page-application-title">
-                    <a href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&Itemid=' . $Itemid . '#em-panel'); ?>">
-                        <?php echo (!empty($user->fnum) && $application->fnum == $user->fnum) ? '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>' . $application->label . '</b>' : $application->label; ?>
+                    <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>">
+                        <?php echo (in_array($application->status, $admission_status))?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
                     </a>
                 </div>
 
@@ -29,7 +29,7 @@ echo $description;
                     <p>
 						<?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
                     </p>
-                    <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode("index.php?fnum=" . $application->fnum) . '&Itemid=' . $Itemid . '#em-panel'); ?>" role="button">
+                    <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>" role="button">
                         <i class="folder open outline icon"></i> <?php echo (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
@@ -129,7 +129,7 @@ echo $description;
 endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
 
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>

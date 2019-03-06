@@ -3006,39 +3006,31 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function saveExcelFilter()
-    {
-        $db = JFactory::getDBO();
-        $jinput         = JFactory::getApplication()->input;
-        $name           = $jinput->getString('filt_name', null);
-        $current_user   = JFactory::getUser();
-        $user_id        = $current_user->id;
-        $itemid         = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $params       = $jinput->getString('params', null);
-        $constraints    = array('excelfilter'=>$params);
+    public function saveExcelFilter() {
+	    $current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $name = $jinput->getString('filt_name', null);
+        $itemid = $jinput->get->get('Itemid', null);
 
-        $constraints = json_encode($constraints);
+        $params = $jinput->getString('params', null);
+        $constraints = json_encode(array('excelfilter'=>$params));
 
         $h_files = new EmundusHelperFiles;
-
-        if (empty($itemid))
-            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
+        if (empty($itemid)) {
+	        $itemid = $jinput->post->get('Itemid', null);
+        }
 
         $time_date = (date('Y-m-d H:i:s'));
-
-
-        $result = $h_files->saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid);
+        $result = $h_files->saveExcelFilter($current_user->id, $name, $constraints, $time_date, $itemid);
 
         echo json_encode((object)(array('status' => true, 'filter' => $result)));
         exit;
-
     }
-    public function getExportExcelFilter(){
-        $db = JFactory::getDBO();
-        $user_id   = JFactory::getUser()->id;
+
+    public function getExportExcelFilter() {
+        $user_id  = JFactory::getUser()->id;
 
         $h_files = new EmundusHelperFiles;
-
         $filters = $h_files->getExportExcelFilter($user_id);
 
         echo json_encode((object)(array('status' => true, 'filter' => $filters)));

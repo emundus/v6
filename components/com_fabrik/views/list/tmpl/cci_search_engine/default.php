@@ -62,6 +62,7 @@ $prix_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."
 $public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_public.svg");
 $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
+$page_title = "Rechercher une formation";
 
 $category = JFactory::getApplication()->input->get->get('category');
 $cible = JFactory::getApplication()->input->get->get('cible');
@@ -76,6 +77,8 @@ if(!empty($category)) {
 
     $db->setQuery($query);
     $category = $db->loadAssoc();
+
+    $page_title .= " en ".$category['label'];
 }
 
 if (!empty($cible)) {
@@ -103,11 +106,12 @@ if (!empty($cible)) {
         default:
             $cible = strtoupper($cible);
         break;
-
     }
+
+    $page_title .= " pour ".$cible;
 }
 
-
+$doc->setTitle($page_title);
 ?>
 
 <div class="main">

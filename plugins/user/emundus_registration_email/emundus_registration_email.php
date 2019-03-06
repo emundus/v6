@@ -49,6 +49,8 @@ class plgUserEmundus_registration_email extends JPlugin {
 				$token = $params->get('emailactivation_token');
 				$token = md5($token);
 
+				$redirect = $this->params->get('activation_redirect');
+
 				// Check that the token is in a valid format.
 				if (!empty($token) && strlen($token) === 32 && JRequest::getInt($token, 0, 'get') === 1) {
 
@@ -62,14 +64,18 @@ class plgUserEmundus_registration_email extends JPlugin {
 					// save user data
 					if ($table->store()) {
 						$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'));
-						
-						$redirect = $this->params->get('activation_redirect');
-						if (!empty($redirect)) {
-							$app->redirect($redirect);
-						}
 					} else {
 						throw new RuntimeException($table->getError());
 					}
+
+				} elseif ($table->block == 0) {
+					$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'), 'warning');
+				} else {
+					$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ERROR_ACTIVATED'), 'error');
+				}
+
+				if (!empty($redirect)) {
+					$app->redirect($redirect);
 				}
 			}
 		}
@@ -164,6 +170,9 @@ class plgUserEmundus_registration_email extends JPlugin {
 	 */
 	private function sendActivationEmail($data, $token) {
 
+        $jinput = JFactory::getApplication()->input;
+        $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
+
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 		$c_messages = new EmundusControllerMessages();
 
@@ -184,6 +193,7 @@ class plgUserEmundus_registration_email extends JPlugin {
 		}
 
 		$post = [
+		    'CIVILITY'      => $civility,
 			'USER_NAME'     => $data['name'],
 			'USER_EMAIL'    => $data['email'],
 			'SITE_NAME'     => $config->get('sitename'),

@@ -30,8 +30,8 @@ if (!empty($tab)) :?>
                 }
             }
 
-            if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1) {
-                echo '<br/><div class="select"';
+            if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (($lean_mode && !$only_applicant) || !$lean_mode)) {
+                echo '<br/><div class="select">';
                 echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {
                     if (array_key_exists($profile->id, $ids_array)) {
@@ -44,7 +44,7 @@ if (!empty($tab)) :?>
                 </div></legend></div><br/><br/>';
             }
         }
-        if ($show_menu == 'true') :?>
+        if ($show_menu == 'true' && (($lean_mode && !in_array($user->profile, $applicant_profiles)) || !$lean_mode)) :?>
             <div class="ui grid">
             <?php
             if (!in_array($user->profile, $applicant_profiles) || $user->fnum) {
