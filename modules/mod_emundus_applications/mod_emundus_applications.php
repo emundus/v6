@@ -55,6 +55,8 @@ $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
 if ($layout == '_:ccirs-drh') {
 	$applications = modemundusApplicationsHelper::getDrhApplications();
 	$cc_list_url = $params->get('cc_list_url', 'index.php');
+} elseif ($layout == '_:ccirs') {
+    $cc_list_url = $params->get('cc_list_url', 'index.php');
 } else {
 	// We send the layout as a param because Hesam needs different information.
 	$applications = modemundusApplicationsHelper::getApplications($layout);
