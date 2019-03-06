@@ -17,6 +17,7 @@
             <fieldset name="basic">
                 <field name="url" type="field" default="index.php" label="URL to redirect to" description="The URL to redirect the user to if they have no company." />
                 <field name="user_param" type="field" label="User parameter name" description="The params of the user, if the params is TRUE then the user will be redirected, this param is probably added to the user object by another plugin." />
+                <field name="trigger_urls" type="field" label="Trigger URLs" description="Enter a comma separated list of all URLs that should trigger the plugin, if blank: all pages will trigger it." />
             </fieldset>
         </fields>
     </config>

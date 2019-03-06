@@ -21,8 +21,17 @@ class PlgSystemUser_param_redirect extends JPlugin {
 		$this->loadLanguage();
 		$user = JFactory::getUser();
 		$url = $this->params->get('url');
+		$current_url = parse_url(JUri::current())['path'];
 
-		if (!$user->guest && parse_url(JUri::current())['path'] != $url) {
+		if (!$user->guest && $current_url != $url) {
+
+			$trigger_urls = $this->params->get('trigger_urls');
+			if (!empty($trigger_urls)) {
+				$trigger_urls = explode(',', $trigger_urls);
+				if (!in_array($current_url, $trigger_urls)) {
+					return;
+				}
+			}
 
 			$table = JTable::getInstance('user', 'JTable');
 			$table->load($user->id);
