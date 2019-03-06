@@ -97,7 +97,7 @@
         border-color: #663399;
     }
 }
-@media(max-width:768px) {
+@media(max-width:767px) {
     .position-me {
         background-color: #19B5FE;
         position: relative;
