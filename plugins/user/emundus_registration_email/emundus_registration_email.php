@@ -173,6 +173,8 @@ class plgUserEmundus_registration_email extends JPlugin {
         $jinput = JFactory::getApplication()->input;
         $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
 
+        $password = !empty($data['password_clear']) ? $data['password_clear'] : $jinput->post->get('jos_emundus_users___password');
+
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 		$c_messages = new EmundusControllerMessages();
 
@@ -200,9 +202,9 @@ class plgUserEmundus_registration_email extends JPlugin {
 			'ACTIVATION_URL' => $activation_url,
 			'BASE_URL'      => $baseURL,
 			'USER_LOGIN'    => $data['username'],
-			'USER_PASSWORD' => $data['password_clear']
+			'USER_PASSWORD' => $password
 		];
-
+		
 		// Send the email.
 		return $c_messages->sendEmailNoFnum($data['email'], $this->params->get('email', 'registration_email'), $post);
 	}
