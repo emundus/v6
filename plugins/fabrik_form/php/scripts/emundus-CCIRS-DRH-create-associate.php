@@ -53,7 +53,7 @@ if (empty($user)) {
         'USER_EMAIL'    => $current_user->email,
         'COMPANY_NAME'  => $this->data["jos_emundus_users___company_id"],
         'SITE_NAME'     => $config->get('sitename'),
-        'BASE_URL'      => JURI::root(),
+        'BASE_URL'      => JURI::root()
     ];
 
     $emailTemplate = 'associate_user';
@@ -68,7 +68,8 @@ else {
         'SITE_NAME'     => $config->get('sitename'),
         'USER_EMAIL'    => $email,
         'BASE_URL'      => JURI::root(),
-        'USER_PASSWORD' => $this->data["jos_emundus_users___password"],
+        'USER_PASSWORD' => $this->data["jos_emundus_users___password_verification"],
+        'USER_PASSWORD_2' => $this->data["jos_emundus_users___password_verification_raw"]
     ];
 
     $emailTemplate = 'associate_new_user';
