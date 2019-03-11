@@ -72,6 +72,10 @@ echo $this->table->intro;
                     $data[$i]['id'] = $v->data->jos_emundus_users___user_id_raw;
                 }
 
+                if (property_exists($v->data, 'fabrik_view_url') && !empty($v->data->fabrik_view_url)) {
+                    $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                }
+
                 $i = $i + 1;
             }
         }
@@ -113,6 +117,8 @@ echo $this->table->intro;
                                 <div class="accordion-icons">
                                     <?php if ($d['fabrik_edit_url']) :?>
                                         <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
+                                    <?php elseif ($d['fabrik_view_url']) :?>
+                                        <a href="<?php echo $d['fabrik_view_url']; ?>"><i class="fa fa-eye"></i></a>
                                     <?php endif; ?>
                                     <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo 'data-cid= "'.$d['cid'].'"'; } ?>>
                                         <i class="fas fa-times"></i>
@@ -122,7 +128,7 @@ echo $this->table->intro;
 
                             <div class="accordion-content">
                                 <?php foreach ($d as $k => $v) :?>
-                                    <?php if ($k != 'fabrik_edit_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id' && $k != 'cid') :?>
+                                    <?php if ($k != 'fabrik_edit_url' && $k != 'fabrik_view_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id' && $k != 'cid') :?>
                                         <?php if (strpos($k, 'Title')) :?>
                                             <div class="em-group-title">
                                                 <span><?php echo str_replace('Title-', '',$k); ?></span>
