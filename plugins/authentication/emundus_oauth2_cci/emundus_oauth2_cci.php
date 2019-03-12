@@ -139,7 +139,14 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$oauth2->setOption('clientid', $this->params->get('client_id'));
 		$oauth2->setOption('clientsecret', $this->params->get('client_secret'));
 		$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
-		$result = $oauth2->authenticate();
+        try{
+            $result = $oauth2->authenticate();
+        }catch(Exception $e) {
+            $app = JFactory::getApplication();
+
+            $app->enqueueMessage(JText::_('COM_EMUNDUS_CCI_FAIL'), 'error');
+            $app->redirect(JRoute::_('connexion'));
+        }
 
 		// We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
 		$credentials = ['username' => 'temporary_username'];
@@ -159,7 +166,6 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		else
 			return false;
 	}
-
 	// After the login has been executed, we need to send the user an email.
 	public function onOAuthAfterRegister(...$user_info) {
 	    // check if there is a email template to send
