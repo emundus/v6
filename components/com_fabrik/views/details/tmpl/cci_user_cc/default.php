@@ -150,17 +150,17 @@ $i = 0;
 endforeach; ?>
 
     <div class="em-no-find-formation">
-        <h3><?php echo JText::_('COM_EMUNDUS_NO_FIND_FORMATION');?></h3>
+        <h3><?php echo JText::_('COM_EMUNDUS_NO_FIND_FORMATION');?><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_HERE");?></a></h3>
         <?php if (!empty($this->data["jos_emundus_users___user_id_raw"])) :?>
-            <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_SIGNUP_FORMATION");?></a></div>
+            <div class="em-inscrire-col"></div>
         <?php endif; ?>
     </div>
 
 <?php else: ?>
     <div class="em-no-formations">
-        <h2><?php echo JText::_('COM_EMUNDUS_HAS_NO_FORMATIONS');?></h2>
+        <h2><?php echo JText::_('COM_EMUNDUS_HAS_NO_FORMATIONS');?><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_HERE");?></a></h2>
         <?php if (!empty($this->data["jos_emundus_users___user_id_raw"])) :?>
-            <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_SIGNUP_FORMATION");?></a></div>
+            <div class="em-inscrire-col"></div>
         <?php endif; ?>
     </div>
 <?php endif; ?>
