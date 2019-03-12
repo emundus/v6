@@ -30,11 +30,8 @@ require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'format
 
 $m_users = new EmundusModelUsers();
 $m_formations = new EmundusModelFormations();
-$campaigns = $m_users->getCampaignsCandidature($this->data["jos_emundus_users___user_id_raw"]);
-$formations = array();
-foreach ($campaigns as $campaign) {
-    $formations[] = $m_formations->getUserFormationByRH($this->data["jos_emundus_users___user_id_raw"], $user->id);
-}
+
+$formations = $m_formations->getUserFormationByRH($this->data["jos_emundus_users___user_id_raw"], $user->id);
 ?>
 <div class="page-header">
     <h1><?php echo JText::_("COM_EMUNDUS_APPLICATIONS_FOR") . strtoupper($this->data["jos_emundus_users___lastname_raw"]) . " " . ucfirst($this->data["jos_emundus_users___firstname_raw"]); ?></h1>

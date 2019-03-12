@@ -259,7 +259,7 @@ class EmundusModelFormations extends JModelLegacy {
         $db->setQuery($query);
 
         try {
-            return $db->loadObject();
+            return $db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('Error getting user companies at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return null;
