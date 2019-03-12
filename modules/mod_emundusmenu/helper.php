@@ -83,7 +83,7 @@ class modEmundusMenuHelper
 					{
 						case 'separator':
 							// No further action needed.
-							continue;
+							continue 2;
 
 						case 'url':
 							if ((strpos($item->link, 'index.php?') === 0) && (strpos($item->link, 'Itemid=') === false)) {
