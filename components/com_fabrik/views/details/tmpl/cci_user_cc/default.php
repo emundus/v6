@@ -119,7 +119,7 @@ foreach ($formations as $formation):?>
 
             </div>
 
-            <div class="g-block size-30">
+            <div class="g-block size-30 links">
                 <div class="em-status">
                     <span class="label label-<?php echo $formation->class; ?>">
                         <?php echo $formation->value; ?>
