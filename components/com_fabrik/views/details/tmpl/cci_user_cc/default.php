@@ -50,7 +50,11 @@ echo $this->loadTemplate('relateddata');
 
 $numItems = count($formations);
 $i = 0;
-foreach ($formations as $formation):?>
+?>
+
+<?php if (!empty($formations)) :?>
+
+    <?php foreach ($formations as $formation):?>
 
     <div class="accordion-container accordion-container-<?php echo $formation->program_id; ?>" id="<?php echo $formation->fnum; ?>">
         <div class="em-top-details article-title article-title-<?php echo $formation->program_id; ?>">
@@ -143,14 +147,33 @@ foreach ($formations as $formation):?>
 
     </div>
 <?php
-endforeach;
+endforeach; ?>
 
+    <div class="em-no-find-formation">
+        <h3><?php echo JText::_('COM_EMUNDUS_HAS_NO_APPLICATIONS');?></h3>
+        <?php if (!empty($this->data["jos_emundus_users___user_id_raw"])) :?>
+            <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_SIGNUP_FORMATION");?></a></div>
+        <?php endif; ?>
+    </div>
+
+<?php else: ?>
+    <div class="em-no-formations">
+        <h2><?php echo JText::_('COM_EMUNDUS_HAS_NO_APPLICATIONS');?></h2>
+        <?php if (!empty($this->data["jos_emundus_users___user_id_raw"])) :?>
+            <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_SIGNUP_FORMATION");?></a></div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+
+<?php
 echo $this->pluginbottom;
 echo $this->loadTemplate('actions');
 echo '</div>';
 echo $form->outro;
 echo $this->pluginend;
 ?>
+
+
 
 <script>
     function deleteApplication(fnum) {
