@@ -52,7 +52,7 @@ $numItems = count($formations);
 $i = 0;
 foreach ($formations as $formation):?>
 
-    <div class="accordion-container accordion-container-<?php echo $formation->program_id; ?>">
+    <div class="accordion-container accordion-container-<?php echo $formation->program_id; ?>" id="<?php echo $formation->fnum; ?>">
         <div class="em-top-details article-title article-title-<?php echo $formation->program_id; ?>">
             <div class="g-block size-70 em-formation-title">
                 <div class="overflow">
