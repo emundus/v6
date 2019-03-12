@@ -8,50 +8,35 @@
 
 defined('_JEXEC') or die('Restricted access'); 
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
-?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
+$chosen = "media/com_securitycheckpro/new/vendor/chosen/chosen.css";
+JHTML::stylesheet($chosen);
+
+// Add style declaration
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
+?>
 
 <?php 
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
- <!-- Chosen styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel="stylesheet">
- <!-- Cpanel styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet">
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=ruleslogs');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=ruleslogs');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 		<?php 
 		// Cargamos la navegación
@@ -78,7 +63,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 							</div>
 							<div class="btn-group pull-left" style="margin-left: 10px;">
 								<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-								<button class="btn tip" type="button" onclick="document.getElementById('filter_rules_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+								<button class="btn tip" id="filter_rules_search_button" type="button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 							</div>							
 						</div>
 						
@@ -139,7 +124,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 
 						</div>
 
-						<div class="card" style="margin-top: 10px; margin-left: 10px; width: 40rem;">
+						<div class="card" class="margin-top-10 margin-left-10 width-40rem">
 							<div class="card-body card-header">
 								<?php echo JText::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?><br/>								
 							</div>								
@@ -148,15 +133,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			</div>			
 		</div>
 </div>
-
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
-<!-- Chosen scripts -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/init.js"></script>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

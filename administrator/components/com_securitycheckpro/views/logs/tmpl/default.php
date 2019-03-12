@@ -52,16 +52,13 @@ $lang2->load('plg_system_securitycheckpro');
 $vulnerable_array = array(JHtml::_('select.option','Si', JText::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')),
 			JHtml::_('select.option','No', JText::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
@@ -71,31 +68,16 @@ JHTML::stylesheet($sweet);
 
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/logs.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=logs');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=logs');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 		<?php 
 		// Cargamos la navegación
@@ -127,7 +109,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 						</div>
 						<div class="btn-group pull-left" style="margin-bottom: 10px;">
 							<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-							<button class="btn tip" type="button" onclick="document.getElementById('filter_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+							<button class="btn tip" id="search_filter_button" type="button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 						</div>
 						<div class="filter-search btn-group pull-left hidden-phone" style="margin-left: 10px;">
 							<?php echo JHTML::_('calendar', $this->getModel()->getState('datefrom',''), 'datefrom', 'datefrom', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
@@ -138,7 +120,17 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 						<div class="btn-group">
 							<select name="filter_leido" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
 								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_MARKED_DESCRIPTION');?></option>
-								<?php echo JHtml::_('select.options', $leido_array, 'value', 'text', $this->state->get('filter.leido'));?>
+								<?php 
+									// Set the filter to "Not read" by default
+									if (empty($this->state->get('filter.leido')))
+									{
+										$leido = 0;
+									} else 
+									{
+										$leido = $this->state->get('filter.leido');
+									}															
+									echo JHtml::_('select.options', $leido_array, 'value', 'text', $leido);
+								?>
 							</select>
 							<select name="filter_type" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
 								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
@@ -216,7 +208,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 										<td align="center">
 												<?php $title = JText::_( 'COM_SECURITYCHECK_ORIGINAL_STRING' ); ?>
 												<?php $decoded_string = base64_decode($row->original_string); ?>
-												<?php $decoded_string = filter_var($decoded_string, FILTER_SANITIZE_STRING); ?>
+												<?php $decoded_string = htmlentities($decoded_string, ENT_QUOTES, "UTF-8"); ?>
 												<?php $description_sanitized =  htmlentities(filter_var($row->description, FILTER_SANITIZE_STRING)); ?>
 												<?php echo JText::_( 'COM_SECURITYCHECKPRO_' .$row->tag_description ); ?>
 												<?php echo JText::_( ':' .$description_sanitized ); ?>
@@ -314,13 +306,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 				</div>
 		</div>
 </div>
-
-
- <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

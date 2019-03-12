@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -496,21 +496,22 @@ HTML;
 	public function onScanAlertsBrowse()
 	{
 		$scan_id = $this->container->input->getInt('scan_id', 0);
+		$bar     = JToolbar::getInstance('toolbar');
 
 		$subtitle_key = 'COM_ADMINTOOLS_TITLE_' . strtoupper($this->container->input->getCmd('view', 'cpanel'));
 		JToolbarHelper::title(JText::sprintf($subtitle_key, $scan_id), 'admintools');
 
 		JToolbarHelper::publishList('publish', 'COM_ADMINTOOLS_LBL_SCANALERTS_MARKSAFE');
 		JToolbarHelper::unpublishList('unpublish', 'COM_ADMINTOOLS_LBL_SCANALERTS_MARKUNSAFE');
+		$markAllSafeLink = 'index.php?option=com_admintools&view=ScanAlerts&task=markallsafe&scan_id=' . $scan_id;
+		$bar->appendButton('Link', 'checkmark', JText::_('COM_ADMINTOOLS_LBL_SCANALERTS_MARKALLSAFE'), $markAllSafeLink);
 
 		JToolbarHelper::divider();
 
-		$bar = JToolbar::getInstance('toolbar');
-
-		$printLink = 'index.php?option=com_admintools&view=ScanAlerts&tmpl=component&layout=print&scan_id='.$scan_id;
+		$printLink = 'index.php?option=com_admintools&view=ScanAlerts&tmpl=component&layout=print&scan_id=' . $scan_id;
 		$bar->appendButton('Link', 'print', JText::_('COM_ADMINTOOLS_MSG_COMMON_PRINT'), $printLink);
 
-		$csvLink = 'index.php?option=com_admintools&view=ScanAlerts&format=csv&scan_id='.$scan_id;
+		$csvLink = 'index.php?option=com_admintools&view=ScanAlerts&format=csv&scan_id=' . $scan_id;
 		$bar->appendButton('Link', 'download', JText::_('COM_ADMINTOOLS_MSG_COMMON_CSV'), $csvLink);
 
 		JToolbarHelper::divider();

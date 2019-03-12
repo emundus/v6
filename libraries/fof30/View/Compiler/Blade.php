@@ -1,13 +1,14 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
 namespace FOF30\View\Compiler;
 
 use FOF30\Container\Container;
+use FOF30\Utils\Phpfunc;
 
 defined('_JEXEC') or die;
 
@@ -89,9 +90,33 @@ class Blade implements CompilerInterface
 	 */
 	protected $container;
 
+	/**
+	 * Should I use the PHP Tokenizer extension to compile Blade templates? Default is true and is preferable. We expect
+	 * this to be false only on bad quality hosts. It can be overridden with Reflection for testing purposes.
+	 *
+	 * @var bool
+	 */
+	protected $usingTokenizer = false;
+
 	public function __construct(Container $container)
 	{
-		$this->container = $container;
+		$this->container      = $container;
+		$this->usingTokenizer = false;
+
+		if (function_exists('token_get_all') && defined('T_INLINE_HTML'))
+		{
+			$this->usingTokenizer = true;
+		}
+	}
+
+	/**
+	 * Report if the PHP Tokenizer extension is being used
+	 *
+	 * @return  bool
+	 */
+	public function isUsingTokenizer()
+	{
+		return $this->usingTokenizer;
 	}
 
 	/**
@@ -159,12 +184,24 @@ class Blade implements CompilerInterface
 	{
 		$result = '';
 
-		// Here we will loop through all of the tokens returned by the Zend lexer and
-		// parse each one into the corresponding valid PHP. We will then have this
-		// template as the correctly rendered PHP that can be rendered natively.
-		foreach (token_get_all($value) as $token)
+		if ($this->usingTokenizer)
 		{
-			$result .= is_array($token) ? $this->parseToken($token) : $token;
+			// Here we will loop through all of the tokens returned by the Zend lexer and
+			// parse each one into the corresponding valid PHP. We will then have this
+			// template as the correctly rendered PHP that can be rendered natively.
+			foreach (token_get_all($value) as $token)
+			{
+				$result .= is_array($token) ? $this->parseToken($token) : $token;
+			}
+		}
+		else
+		{
+			foreach ($this->compilers as $type)
+			{
+				$value = $this->{"compile{$type}"}($value);
+			}
+
+			$result .= $value;
 		}
 
 		// If there are any footer lines that need to get added to a template we will
@@ -173,7 +210,7 @@ class Blade implements CompilerInterface
 		if (count($this->footer) > 0)
 		{
 			$result = ltrim($result, PHP_EOL)
-				.PHP_EOL.implode(PHP_EOL, array_reverse($this->footer));
+				. PHP_EOL . implode(PHP_EOL, array_reverse($this->footer));
 		}
 
 		return $result;
@@ -964,14 +1001,63 @@ class Blade implements CompilerInterface
 	}
 
 	/**
-	 * Register a custom Blade compiler.
+	 * Register a custom Blade compiler. Using a tag or not changes the behavior of this method when you try to redefine
+	 * an existing custom Blade compiler.
+	 *
+	 * If you use a tag which already exists the old compiler is replaced by the new one you are defining.
+	 *
+	 * If you do not use a tag, the new compiler you are defining will always be added to the bottom of the list. That
+	 * is to say, if another compiler would be matching the same function name (e.g. `@foobar`) it would get compiled by
+	 * the first compiler, the one already set, not the one you are defining now. You are suggested to always use a tag
+	 * for this reason.
+	 *
+	 * Finally, note that custom Blade compilers are compiled last. This means that you cannot override a core Blade
+	 * compiler with a custom one. If you need to do that you need to create a new Compiler class -- probably extending
+	 * this one -- and override the protected compiler methods. Remember to also create a custom Container and override
+	 * its 'blade' key with a callable which returns an object of your custom class.
 	 *
 	 * @param  callable  $compiler
+	 * @param  string    $tag       Optional. Give the callable a tag you can look for with hasExtensionByName
+	 *
 	 * @return void
 	 */
-	public function extend($compiler)
+	public function extend($compiler, $tag = null)
 	{
+		if (!is_null($tag))
+		{
+			$this->extensions[$tag] = $compiler;
+
+			return;
+		}
+
 		$this->extensions[] = $compiler;
+	}
+
+	/**
+	 * Look if a custom Blade compiler exists given its optional tag name.
+	 *
+	 * @param   string  $tag
+	 *
+	 * @return  bool
+	 */
+	public function hasExtension($tag)
+	{
+		return array_key_exists($tag, $this->extensions);
+	}
+
+	/**
+	 * Remove a custom BLade compiler given its optional tag name
+	 *
+	 * @param   string  $tag
+	 */
+	public function removeExtension($tag)
+	{
+		if (!$this->hasExtension($tag))
+		{
+			return;
+		}
+
+		unset ($this->extensions[$tag]);
 	}
 
 	/**
@@ -1078,5 +1164,4 @@ class Blade implements CompilerInterface
 
 		return array_map('stripcslashes', $tags);
 	}
-
 }

@@ -9,10 +9,13 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-if(!class_exists('JoomlaCompatModel')) {
-	if(interface_exists('JModel')) {
+if (!class_exists('JoomlaCompatModel')) 
+{
+	if(interface_exists('JModel'))
+	{
 		abstract class JoomlaCompatModel extends JModelLegacy {}
-	} else {
+	} else
+	{
 		class JoomlaCompatModel extends JModel {}
 	}
 }
@@ -37,9 +40,11 @@ public function getValue($key, $default = null, $key_name = 'geoblock')
 {
 	if(is_null($this->config)) $this->load($key_name);
 	
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if (version_compare(JVERSION, '3.0', 'ge'))
+	{
 		return $this->config->get($key, $default);
-	} else {
+	} else
+	{
 		return $this->config->getValue($key, $default);
 	}
 }
@@ -47,13 +52,16 @@ public function getValue($key, $default = null, $key_name = 'geoblock')
 /* Establece el valor de una opción de configuración de 'htaccess protection' */
 public function setValue($key, $value, $save = false, $key_name = 'geoblock')
 {
-	if(is_null($this->config)) {
+	if (is_null($this->config))
+	{
 		$this->load($key_name);
 	}
 		
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if (version_compare(JVERSION, '3.0', 'ge')) 
+	{
 		$x = $this->config->set($key, $value);
-	} else {
+	} else 
+	{
 		$x = $this->config->setValue($key, $value);
 	}
 	if($save) $this->save($key_name);
@@ -72,14 +80,17 @@ public function load($key_name)
 	$db->setQuery($query);
 	$res = $db->loadResult();
 	
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if (version_compare(JVERSION, '3.0', 'ge'))
+	{
 		$this->config = new JRegistry();
-	} else {
+	} else 
+	{
 		$this->config = new JRegistry('securitycheckpro');
 	}
-	if(!empty($res)) {
+	if (!empty($res))
+	{
 		$res = json_decode($res, true);		
-		 $this->config->loadArray($res);		
+		$this->config->loadArray($res);		
 	}
 	
 }
@@ -87,7 +98,8 @@ public function load($key_name)
 /* Guarda la configuración de 'htaccess protection' con a la tabla #__securitycheckpro_storage */
 public function save($key_name)
 {
-	if(is_null($this->config)) {
+	if (is_null($this->config))
+	{
 		$this->load($key_name);
 	}
 		
@@ -114,7 +126,8 @@ public function save($key_name)
 function getConfig()
 {
 	$config = array();
-	foreach($this->defaultConfig as $k => $v) {
+	foreach($this->defaultConfig as $k => $v)
+	{
 		$config[$k] = $this->getValue($k, $v);
 	}
 	
@@ -133,13 +146,15 @@ function saveConfig($newParams, $key_name = 'geoblock')
 }
 
 /* Función para descargar la bbdd de Maxmind 2 */
-function update_geoblock_database() {
+function update_geoblock_database()
+{
 		// Ruta donde se encuentra el fichero
 		$datFile = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR .'components' . DIRECTORY_SEPARATOR .'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'GeoLite2-Country.mmdb';
 		
 		/* Creamos un fichero testigo que indicará si la actualización se ha llevado a cabo correctamente; si este fichero existe al final del proceso es que ha habido algún problema */
 		$testigo_update = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR .'components' . DIRECTORY_SEPARATOR .'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans' . DIRECTORY_SEPARATOR . 'maxmind_update.php';
-		if ( !JFile::exists($testigo_update) ) {
+		if (!JFile::exists($testigo_update))
+		{
 			$file = fopen($testigo_update,"w");
 			$content = "<?php die('Forbidden.'); ?>";
 			fwrite($file,$content);
@@ -147,7 +162,8 @@ function update_geoblock_database() {
 		}
 					
 		// Sanity check
-		if(!function_exists('gzinflate')) {
+		if (!function_exists('gzinflate'))
+		{
 			return JText::_('COM_SECURITYCHECKPRO_ERR_NOGZSUPPORT');
 		}
 
@@ -266,18 +282,21 @@ private function downloadDatabase()
 		$compressed = $response->body;
 		
 		// Generic check on valid HTTP code
-		if($response->code > 299) {
-			throw new Exception(JText::_('COM_SECURITYCHECKPRO_ERR_MAXMIND_GENERIC') . " (" . $response->code . ")" );
+		if ($response->code > 299)
+		{
+			throw new Exception(JText::_('COM_SECURITYCHECKPRO_ERR_MAXMIND_GENERIC') . " (" . $response->code . ")");
 		}
 		
 
 		// An empty file indicates a problem with MaxMind's servers
-		if (empty($compressed))	{
+		if (empty($compressed))
+		{
 			throw new Exception(JText::_('COM_SECURITYCHECKPRO_ERR_EMPTYDOWNLOAD'));
 		}
 
 		// Sometimes you get a rate limit exceeded
-		if (stristr($compressed, 'Rate limited exceeded') !== false) {
+		if (stristr($compressed, 'Rate limited exceeded') !== false)
+		{
 			throw new Exception(JText::_('COM_SECURITYCHECKPRO_ERR_MAXMINDRATELIMIT'));
 		}
 
@@ -285,7 +304,8 @@ private function downloadDatabase()
 	}
 
 /* Función que actualiza la fecha de la última descarga del fichero Geoipv2 */
-function update_latest_download() {
+function update_latest_download()
+{
 	
 	$db = JFactory::getDBO();
 	
@@ -299,7 +319,8 @@ function update_latest_download() {
 }
 	
 /* Función que devuelve el número de días desde la última actualización de la bbdd de Maxmind */
-function get_latest_database_update() {
+function get_latest_database_update()
+{
 	
 	// Inicializamos variables
 	$days_since_last_update=0;
@@ -318,18 +339,22 @@ function get_latest_database_update() {
 	$latest = $db->loadResult();
 	
 	// Si no hay ningún valor establecemos la fecha actual
-	if ( empty($latest) ) {
+	if (empty($latest)) 
+	{
 		$params = utf8_encode(json_encode($now));			
 		$object = (object)array(
 			'storage_key'		=> 'geoip_database_update',
 			'storage_value'		=> $params
 		);
 			
-		try {
+		try 
+		{
 			$result = $db->insertObject('#__securitycheckpro_storage', $object);			
-		} catch (Exception $e) {				
+		} catch (Exception $e)
+		{				
 		}
-	} else {
+	} else
+	{
 		$latest = json_decode($latest, true);			
 		
 		$last_check = new DateTime(date('Y-m-d H:i:s',strtotime($latest['date'])));

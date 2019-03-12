@@ -138,4 +138,22 @@
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox"	validate="rules" filter="rules" component="com_securitycheckpro" section="component" />		
 	</fieldset>
 	
+	<fieldset name="lock_tables" label="COM_SECURITYCHECKPRO_LOCK_TABLES" description="COM_SECURITYCHECKPRO_LOCK_TABLES_DESCRIPTION">
+		<field name="lock_tables_easy" type="list" label="COM_SECURITYCHECKPRO_LOCK_TABLES_EASY" default="1">
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+		</field>
+		
+		<field name="block_tables_easy" type="list" label="COM_SECURITYCHECKPRO_BLOCK_TABLES" multiple="true" default='["users","content"]' showon="lock_tables_easy:1">
+			<option value="users">COM_SECURITYCHECKPRO_USERS</option>
+			<option value="content">COM_SECURITYCHECKPRO_CONTENT</option>
+		</field>
+		
+		
+		<field name="block_tables_plus_note" type="note" label="COM_SECURITYCHECKPRO_BLOCK_TABLES_NOTE" showon="lock_tables_easy:0" />
+		
+		<field name="block_tables_plus" type="textarea" default="users,user_usergroup_map,content,redirect_links,extensions" label="COM_SECURITYCHECKPRO_BLOCK_TABLES" description="COM_SECURITYCHECKPRO_BLOCK_TABLES_DESCRIPTION" class="span12" showon="lock_tables_easy:0" />
+		
+	</fieldset>
+	
 </config>

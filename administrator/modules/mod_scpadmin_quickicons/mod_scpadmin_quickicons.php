@@ -12,7 +12,8 @@ require_once dirname(__FILE__).'/helper.php';
 $user = JFactory::getUser();
 
 // Añadido ACL (Si se deniega el acceso a la administración de Securitycheck Pro el módulo no será mostrado)
-if ( $user->authorise('core.manage','com_securitycheckpro') ){
+if ($user->authorise('core.manage','com_securitycheckpro'))
+{
 	$buttons = modScpadminQuickIconsHelper::getButtons($params);
 	require JModuleHelper::getLayoutPath('mod_scpadmin_quickicons', $params->get('layout', 'default'));
 }

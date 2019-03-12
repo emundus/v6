@@ -13,31 +13,38 @@ class SecuritycheckprosModelDbCheck extends SecuritycheckproModel
 {
 
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct();
 	}
 	
 	/* Función que comprueba si la base de datos es mysql y existen tablas que optimizar */
-	public function getIsSupported() {
+	public function getIsSupported() 
+	{
 		return (strpos(JFactory::getApplication()->getCfg('dbtype'), 'mysql') !== false && $this->getTables());
 	}
 	
 	/* Función que obtiene las tablas a optimizar */
-	public function getTables() {
+	public function getTables() 
+	{
 		static $cache;
 		
 		// Extraemos la configuración de qué tablas mostrar
 		$params = JComponentHelper::getParams('com_securitycheckpro');
 		$tables_to_check = $params->get('tables_to_check','All');
 	
-		if (is_null($cache)) {
+		if (is_null($cache))
+		{
 			$db = $this->getDbo();
 			$db->setQuery("SHOW TABLE STATUS");
 			$tables = $db->loadObjectList();
 			// Si sólo tenemos que mostrar las tablas 'MyISAM', excluimos las demás
-			if ( $tables_to_check == 'Myisam' ) {
-				foreach ($tables as $i => $table) {
-					if (isset($table->Engine) && $table->Engine != 'MyISAM') {
+			if ($tables_to_check == 'Myisam')
+			{
+				foreach ($tables as $i => $table)
+				{
+					if (isset($table->Engine) && $table->Engine != 'MyISAM')
+					{
 						unset($tables[$i]);
 					}
 				}
@@ -50,7 +57,8 @@ class SecuritycheckprosModelDbCheck extends SecuritycheckproModel
 	}
 	
 	/* Función para optimizar y reparar tablas */
-	public function optimizeTables() {
+	public function optimizeTables()
+	{
 		$app 	= JFactory::getApplication();
 		$db 	= $this->getDbo();
 		$query	= $db->getQuery(true);
@@ -61,24 +69,28 @@ class SecuritycheckprosModelDbCheck extends SecuritycheckproModel
 			'repair' => ''
 		);
 		
-		if ( $engine == 'MyISAM' ) {
-		
-			try {
+		if ($engine == 'MyISAM')
+		{		
+			try 
+			{
 				// Optimize
 				$db->setQuery("OPTIMIZE TABLE ".$db->qn($table));
 				$result = $db->loadObject();
 				$return['optimize'] = $result->Msg_text;
-			} catch (Exception $e) {
+			} catch (Exception $e) 
+			{
 				$this->setError($e->getMessage());
 				return false;
 			}
 			
-			try {
+			try
+			{
 				// Repair
 				$db->setQuery("REPAIR TABLE ".$db->qn($table));
 				$result = $db->loadObject();
 				$return['repair'] = $result->Msg_text;
-			} catch (Exception $e) {
+			} catch (Exception $e)
+			{
 				return false;
 			}
 		}

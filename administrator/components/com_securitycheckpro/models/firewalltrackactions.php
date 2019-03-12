@@ -16,7 +16,8 @@ jimport('joomla.html.pagination');
 class SecuritycheckprosModelFirewallTrackActions extends SecuritycheckproModel
 {
 
-public function is_plugin_installed() {
+public function is_plugin_installed()
+{
 	// Inicializamos las variables
 	$installed= false;
 	
@@ -24,10 +25,10 @@ public function is_plugin_installed() {
 	$plugin = JpluginHelper::getPlugin('system', 'trackactions');
 	
 	// Si el valor devuelto es un array, entonces el plugin no existe o no está habilitado
-	if ( !is_array($plugin) ) {
+	if (!is_array($plugin))
+	{
 		$installed = true;		
-	}
-	
+	}	
 	return $installed;
 }
 

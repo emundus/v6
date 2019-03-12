@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 // Load framework base classes
 jimport('joomla.application.component.controller');
@@ -78,9 +78,11 @@ function protect()
 
 	$status = $model->protect();
 	$url = 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1';
-	if($status) {
+	if ($status)
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_PROTECTION_APPLIED'));
-	} else {
+	} else 
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_PROTECTION_NOTAPPLIED'),'error');
 	}
 	
@@ -93,9 +95,11 @@ function delete_htaccess()
 
 	$status = $model->delete_htaccess();
 	$url = 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1';
-	if($status) {
+	if ($status)
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_HTACCESS_DELETED'));
-	} else {
+	} else
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_HTACCESS_NOT_DELETED'),'error');
 	}
 	
@@ -108,9 +112,11 @@ function restore_htaccess()
 
 	$status = $model->restore_htaccess();
 	$url = 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1';
-	if($status) {
+	if ($status)
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_ORIGINAL_HTACCESS_RESTORED'));
-	} else {
+	} else
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_ORIGINAL_HTACCESS_NOT_RESTORED'),'error');
 	}
 	
@@ -130,8 +136,8 @@ function generate_rules()
 	// Mandamos el contenido al navegador
 	@ob_end_clean();	
 	ob_start();	
-	header( 'Content-Type: text/plain' );
-	header( 'Content-Disposition: attachment;filename=securitycheckpro_nginx_rules.txt' );
+	header('Content-Type: text/plain');
+	header('Content-Disposition: attachment;filename=securitycheckpro_nginx_rules.txt');
 	print $txt_content;
 	exit();
 		
@@ -140,7 +146,7 @@ function generate_rules()
 /* Redirecciona las peticiones a System Info */
 function redireccion_system_info()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1' );
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1');
 }
 
 /* Guarda las modificaciones a los user-agents por defecto */
@@ -154,17 +160,21 @@ function save_default_user_agent()
 	$pos_header = strpos($new_user_agents_blacklist,"## Begin Securitycheck Pro Default Blacklist");
 	$pos_footer = strpos($new_user_agents_blacklist,"## End Securitycheck Pro Default Blacklist");
 	// Si no existen las cabeceras y pie de esta opción (necesarias para detectar la configuraación aplicada), las añadimos
-	if ( $pos_header === false ) {	
+	if ($pos_header === false)
+	{	
 		$new_user_agents_blacklist = "## Begin Securitycheck Pro Default Blacklist" . PHP_EOL . $new_user_agents_blacklist;
 	} 
-	if ( $pos_footer === false ) {	
+	if ($pos_footer === false)
+	{	
 		$new_user_agents_blacklist .= PHP_EOL . "## End Securitycheck Pro Default Blacklist";
 	} 
 	$status = JFile::write(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist.inc', $new_user_agents_blacklist);
 	$url = 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1';
-	if($status) {
+	if ($status)
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_CHANGES_SAVED'));
-	} else {
+	} else 
+	{
 		$this->setRedirect($url,JText::_('COM_SECURITYCHECKPRO_CHANGES_NOT_SAVED'),'error');
 	}
 	

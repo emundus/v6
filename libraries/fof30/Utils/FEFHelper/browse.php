@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -10,6 +10,8 @@ use FOF30\Utils\ArrayHelper;
 use FOF30\Utils\FEFHelper\BrowseView;
 use FOF30\View\DataView\DataViewInterface;
 use FOF30\View\DataView\Raw as DataViewRaw;
+
+defined('_JEXEC') or die;
 
 /**
  * Custom JHtml (HTMLHelper) class. Offers browse view controls compatible with Akeeba Frontend

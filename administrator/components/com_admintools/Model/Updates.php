@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -660,7 +660,7 @@ ENDBODY;
 
 		$content = <<< XML
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.3.0" type="package" method="upgrade">
+<extension version="3.8.0" type="package" method="upgrade">
     <name>Admin Tools package</name>
     <author>Nicholas K. Dionysopoulos</author>
     <creationDate>2016-06-01</creationDate>

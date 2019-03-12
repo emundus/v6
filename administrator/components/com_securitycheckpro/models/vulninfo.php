@@ -8,8 +8,8 @@
 
 // Chequeamos si el archivo está incluído en Joomla!
 defined('_JEXEC') or die();
-jimport( 'joomla.application.component.model' );
-jimport( 'joomla.access.rule' );
+jimport('joomla.application.component.model');
+jimport('joomla.access.rule');
 /**
 * Modelo Vulninfo
 */
@@ -58,12 +58,12 @@ function __construct()
 */
 function getTotal()
 {
-// Cargamos el contenido si es que no existe todavía
-if (empty($this->_total)) {
-	$query = $this->_buildQuery();
-	$this->_total = $this->_getListCount($query);
-}
-return $this->_total;
+	// Cargamos el contenido si es que no existe todavía
+	if (empty($this->_total)) {
+		$query = $this->_buildQuery();
+		$this->_total = $this->_getListCount($query);
+	}
+	return $this->_total;
 }
 
 /* 
@@ -71,12 +71,12 @@ return $this->_total;
 */
 function getPagination()
 {
-// Cargamos el contenido si es que no existe todavía
-if (empty($this->_pagination)) {
-	jimport('joomla.html.pagination');
-$this->_pagination = new JPagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit') );
-}
-return $this->_pagination;
+	// Cargamos el contenido si es que no existe todavía
+	if (empty($this->_pagination)) {
+		jimport('joomla.html.pagination');
+	$this->_pagination = new JPagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit'));
+	}
+	return $this->_pagination;
 }
 
 /*
@@ -84,10 +84,10 @@ return $this->_pagination;
 */
 function _buildQuery()
 {
-$query = ' SELECT * '
-. ' FROM #__securitycheckpro_db ORDER BY id DESC '
-;
-return $query;
+	$query = ' SELECT * '
+	. ' FROM #__securitycheckpro_db ORDER BY id DESC '
+	;
+	return $query;
 }
 
 /**
@@ -95,7 +95,6 @@ return $query;
  */
 function datos()
 {
-	
 	$db = JFactory::getDBO();
 	$query = 'SELECT * FROM #__securitycheckpro_db ORDER BY id DESC';
 	$db->setQuery($query, $this->getState('limitstart'), $this->getState('limit'));

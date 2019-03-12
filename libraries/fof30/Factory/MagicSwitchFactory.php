@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -12,7 +12,6 @@ use FOF30\Dispatcher\Dispatcher;
 use FOF30\Factory\Exception\ControllerNotFound;
 use FOF30\Factory\Exception\DispatcherNotFound;
 use FOF30\Factory\Exception\ModelNotFound;
-use FOF30\Factory\Exception\ToolbarNotFound;
 use FOF30\Factory\Exception\TransparentAuthenticationNotFound;
 use FOF30\Factory\Exception\ViewNotFound;
 use FOF30\Factory\Magic\DispatcherFactory;

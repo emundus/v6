@@ -8,18 +8,18 @@
 
 // Chequeamos si el archivo está incluído en Joomla!
 defined('_JEXEC') or die();
-jimport( 'joomla.application.component.model' );
-jimport( 'joomla.version' );
-jimport( 'joomla.access.rule' );
-jimport( 'joomla.application.component.helper' );
-jimport('joomla.updater.update' );
-jimport('joomla.installer.helper' );
-jimport('joomla.installer.installer' );
-jimport( 'joomla.application.component.controller' );
-jimport( 'joomla.html.html.behavior' );
+jimport('joomla.application.component.model');
+jimport('joomla.version');
+jimport('joomla.access.rule');
+jimport('joomla.application.component.helper');
+jimport('joomla.updater.update');
+jimport('joomla.installer.helper');
+jimport('joomla.installer.installer');
+jimport('joomla.application.component.controller');
+jimport('joomla.html.html.behavior');
 
 // Load library
-require_once(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php');
+require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php';
 
 /**
 * Modelo Securitycheck
@@ -101,18 +101,22 @@ function __construct()
 	$mainframe = JFactory::getApplication();
 	
 	// Chequeamos si existe el fichero filemanager, necesario para lanzar las tareas de integridad y permisos
-	$exists_filemanager = $mainframe->getUserState( "exists_filemanager", true );
+	$exists_filemanager = $mainframe->getUserState("exists_filemanager", true);
 	
 	// Si no existe, deshabilitamos el Cron para evitar una página en blanco
-	if ( !$exists_filemanager ) {
+	if (!$exists_filemanager)
+	{
 		$this->disable_plugin("cron");		
 	}	
 	
-	if ( (strstr(strtolower( filter_var( $_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING ) ), 'apache')) || (strstr(strtolower( filter_var( $_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING ) ), 'litespeed')) || (strstr(strtolower( filter_var( $_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING ) ), 'wisepanel')) ){
+	if ((strstr(strtolower(filter_var($_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING)), 'apache')) || (strstr(strtolower(filter_var($_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING)), 'litespeed')) || (strstr(strtolower(filter_var($_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING)), 'wisepanel')))
+	{
 		$server = 'apache';
-	} else if ( strstr( strtolower( filter_var( $_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING ) ), 'nginx' ) ) {
+	} else if (strstr(strtolower(filter_var($_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING)), 'nginx'))
+	{
 		$server = 'nginx';
-	} else if ( strstr( strtolower( filter_var( $_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING ) ), 'microsoft-iis' ) ) {		
+	} else if (strstr(strtolower(filter_var($_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING)), 'microsoft-iis'))
+	{		
 		$server = 'iis';
 	}
 		
@@ -135,28 +139,34 @@ $result = $db->loadObjectList();
 // Importamos el modelo Securitycheckpros
 JLoader::import('joomla.application.component.model');
 JLoader::import('securitycheckpros', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-$securitycheckpro_model = JModelLegacy::getInstance( 'securitycheckpros', 'SecuritycheckprosModel');
-$securitycheckpro_model->actualizarbbdd( $result );
+$securitycheckpro_model = JModelLegacy::getInstance('securitycheckpros', 'SecuritycheckprosModel');
+$securitycheckpro_model->actualizarbbdd($result);
 $logs_pending = $this->LogsPending();
 }
 
 /* Función que obtiene el id del plugin de: '1' -> Securitycheck Pro , '2' -> Securitycheck Pro Cron */
-function get_plugin_id($opcion) {
+function get_plugin_id($opcion)
+{
 
 	$db = JFactory::getDBO();
-	if ( $opcion == 1 ) {
+	if ($opcion == 1)
+	{
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro" and type="plugin"';
-	} else if ( $opcion == 2 ) {
+	} else if ($opcion == 2)
+	{
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Cron" and type="plugin"';
-	} else if ( $opcion == 3 ) {
+	} else if ($opcion == 3)
+	{
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database" and type="plugin"';
-	} else if ( $opcion == 4 ) {
+	} else if ($opcion == 4)
+	{
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Spam Protection" and type="plugin"';
-	} else if ( $opcion == 5 ) {
+	} else if ($opcion == 5)
+	{
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - url inspector" and type="plugin"';
 	}
 	
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	$id = $db->loadResult();
 	
@@ -164,13 +174,15 @@ function get_plugin_id($opcion) {
 }
 
 /* Función que busca logs por fecha */
-function LogsByDate($opcion) {
+function LogsByDate($opcion)
+{
 	
 	// Inicializamos la variable
 	$query = null;
 	
 	$db = JFactory::getDBO();
-	switch ($opcion){
+	switch ($opcion)
+	{
 		case 'last_year':
 			$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE YEAR(`time`) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))';
 			break;
@@ -194,7 +206,7 @@ function LogsByDate($opcion) {
 			break;
 	}
 	
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	$result = $db->loadResult();
 	
@@ -202,26 +214,28 @@ function LogsByDate($opcion) {
 }
 
 /* Función que busca logs por tipo */
-function LogsByType($opcion) {
+function LogsByType($opcion)
+{
 	
 	// Inicializamos la variable
 	$query = null;
 	
 	$db = JFactory::getDBO();
-	switch ($opcion){
+	switch ($opcion)
+	{
 		case 'total_firewall_rules':
-			$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE ( `type` = "XSS" OR `type` = "SQL_INJECTION" OR `type` = "LFI" OR `type` = "SECOND_LEVEL" OR `type` LIKE \'%_BASE64\' )';
+			$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "XSS" OR `type` = "SQL_INJECTION" OR `type` = "LFI" OR `type` = "SECOND_LEVEL" OR `type` LIKE \'%_BASE64\')';
 			break;
 		case 'total_blocked_access':
-			$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE ( `type` = "IP_BLOCKED" OR `type` = "IP_BLOCKED_DINAMIC" )';
+			$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "IP_BLOCKED" OR `type` = "IP_BLOCKED_DINAMIC")';
 			break;
 		case 'total_user_session_protection':
-			$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE ( `type` = "USER_AGENT_MODIFICATION" OR `type` = "REFERER_MODIFICATION" OR `type` = "SESSION_PROTECTION" OR `type` = "SESSION_HIJACK_ATTEMPT" )';
+			$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "USER_AGENT_MODIFICATION" OR `type` = "REFERER_MODIFICATION" OR `type` = "SESSION_PROTECTION" OR `type` = "SESSION_HIJACK_ATTEMPT")';
 			break;
 		
 	}
 	
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	$result = $db->loadResult();
 	
@@ -229,7 +243,8 @@ function LogsByType($opcion) {
 }
 
 /* Función que modifica los valores del Firewall web para aplicar una configuración básica de los filtros */
-function Set_Easy_Config() {
+function Set_Easy_Config()
+{
 	
 	// Inicializamos las variables
 	$query = null;
@@ -247,10 +262,12 @@ function Set_Easy_Config() {
 	$params = $db->loadResult();
 	$params = json_decode($params, true);
 	
-	if(!empty($params)) {
+	if (!empty($params))
+	{
 		// Guardamos la configuración anterior
 		$previous_params = $params;
-	} else {
+	} else
+	{
 		// Establecemos los parámetros por defecto
 		$previous_params = $this->defaultConfig;
 	}
@@ -276,9 +293,11 @@ function Set_Easy_Config() {
 		'storage_value'		=> $params
 	);
 		
-	try {
+	try 
+	{
 		$result = $db->insertObject('#__securitycheckpro_storage', $object);			
-	} catch (Exception $e) {	
+	} catch (Exception $e)
+	{	
 		$applied = false;
 	}
 				
@@ -297,9 +316,11 @@ function Set_Easy_Config() {
 		)))
 	);
 			
-	try {
+	try
+	{
 		$db->insertObject('#__securitycheckpro_storage', $object);
-	} catch (Exception $e) {		
+	} catch (Exception $e)
+	{		
 		$applied = false;
 	}
 		
@@ -307,7 +328,8 @@ function Set_Easy_Config() {
 }
 
 /* Función que obtiene si se ha aplicado la opción 'Easy config' */
-function Get_Easy_Config() {
+function Get_Easy_Config()
+ {
 	
 	// Inicializamos las variables
 	$query = null;
@@ -323,7 +345,8 @@ function Get_Easy_Config() {
 	$applied = $db->loadResult();
 	$applied = json_decode($applied, true);
 		
-	if( !(empty($applied)) && ($applied['applied']) ) {
+	if (!(empty($applied)) && ($applied['applied']))
+	{
 		$result = true;
 	}
 	
@@ -331,7 +354,8 @@ function Get_Easy_Config() {
 }
 
 /* Función que modifica los valores del Firewall web para aplicar la configuración previa de los filtros */
-function Set_Default_Config() {
+function Set_Default_Config()
+{
 	
 	// Inicializamos las variables
 	$query = null;
@@ -359,7 +383,8 @@ function Set_Default_Config() {
 	$previous_params = $db->loadResult();
 	$previous_params = json_decode($previous_params, true);
 	
-	if(!empty($previous_params)) {
+	if (!empty($previous_params))
+	{
 		
 		// Parámetros que se desactivan o cuyo valor se deja en blanco para evitar falsos positivos
 		$params['check_header_referer'] = $previous_params['previous_config']['check_header_referer'];
@@ -382,9 +407,11 @@ function Set_Default_Config() {
 			'storage_value'		=> $params
 		);
 		
-		try {
+		try 
+		{
 			$result = $db->insertObject('#__securitycheckpro_storage', $object);			
-		} catch (Exception $e) {	
+		} catch (Exception $e)
+		{	
 			$applied = false;
 		}
 		 
@@ -403,12 +430,15 @@ function Set_Default_Config() {
 			)))
 		);
 			
-		try {
+		try 
+		{
 			$db->insertObject('#__securitycheckpro_storage', $object);
-		} catch (Exception $e) {		
+		} catch (Exception $e)
+		{		
 			$applied = false;
 		}
-	} else {
+	} else 
+	{
 		$applied = false;
 	}
 	
@@ -416,17 +446,22 @@ function Set_Default_Config() {
 }
 
 /* Acciones al pulsar el botón 'Disable' del Firewall Web o Cron */
-function disable_plugin($plugin){
+function disable_plugin($plugin)
+{
 	(int) $plugin_id = 0;
 	
 	// Obtenemos el id del plugin a deshabilitar
-	if ( $plugin == 'firewall' ) {
+	if ($plugin == 'firewall')
+	{
 		$plugin_id = $this->get_plugin_id(1);
-	} else if ( $plugin == 'cron' ) {
+	} else if ($plugin == 'cron')
+	{
 		$plugin_id = $this->get_plugin_id(2);
-	} else if ( $plugin == 'update_database' ) {
+	} else if ($plugin == 'update_database')
+	{
 		$plugin_id = $this->get_plugin_id(3);
-	} else if ( $plugin == 'spam_protection' ) {
+	} else if ($plugin == 'spam_protection')
+	{
 		$plugin_id = $this->get_plugin_id(4);
 	}
 	
@@ -441,19 +476,25 @@ function disable_plugin($plugin){
 }
 
 /* Acciones al pulsar el botón 'Enable' del Firewall Web o Cron */
-function enable_plugin($plugin){
+function enable_plugin($plugin)
+{
 	(int) $plugin_id = 0;
 	
 	// Obtenemos el id del plugin a deshabilitar
-	if ( $plugin == 'firewall' ) {
+	if ($plugin == 'firewall') 
+	{
 		$plugin_id = $this->get_plugin_id(1);
-	} else if ( $plugin == 'cron' ) {
+	} else if ($plugin == 'cron')
+	{
 		$plugin_id = $this->get_plugin_id(2);
-	} else if ( $plugin == 'update_database' ) {
+	} else if ($plugin == 'update_database')
+	{
 		$plugin_id = $this->get_plugin_id(3);
-	} else if ( $plugin == 'spam_protection' ) {
+	} else if ($plugin == 'spam_protection')
+	{
 		$plugin_id = $this->get_plugin_id(4);
-	} else if ( $plugin == 'url_inspector' ) {
+	} else if ($plugin == 'url_inspector')
+	{
 		$plugin_id = $this->get_plugin_id(5);
 	}
 	
@@ -468,7 +509,8 @@ function enable_plugin($plugin){
 }
 
 /* Función que establece las actualizaciones automáticas de Geolite2 */
-function enable_automatic_updates() {
+function enable_automatic_updates()
+{
 	
 	// Get the params and set the new values
 	$params = JComponentHelper::getParams('com_securitycheckpro');
@@ -480,13 +522,15 @@ function enable_automatic_updates() {
 	$table->bind(array('params' => $params->toString()));
 			
 	// check for error
-	if (!$table->check()) {
-		JError::raiseError( 100, $table->getError() );
+	if (!$table->check())
+	{
+		JError::raiseError(100, $table->getError());
 		return false;
 	}
 	// Save to database
-	if (!$table->store()) {
-		JError::raiseError( 100, $table->getError() );
+	if (!$table->store())
+	{
+		JError::raiseError(100, $table->getError());
 		return false;
 	}
 			
@@ -496,24 +540,29 @@ function enable_automatic_updates() {
 }
 
 /* Función que obtiene la versión del componente pasado como argumento */
-function get_version($extension) {
+function get_version($extension)
+{
 
 	$version = '0.0.0';
 	
 	$db = JFactory::getDBO();
-	if ( $extension == 'securitycheckpro' ) {
+	if ($extension == 'securitycheckpro')
+	{
 		$query = 'SELECT manifest_cache FROM #__extensions WHERE name="Securitycheck Pro"';
-	} else if ( $extension == 'databaseupdate' ) {
+	} else if ($extension == 'databaseupdate')
+	{
 		$query = 'SELECT manifest_cache FROM #__extensions WHERE name="System - Securitycheck Pro Update Database" and type="plugin"';
-	} else if ( $extension == 'trackactions' ) {
+	} else if ($extension == 'trackactions')
+	{
 		$query = 'SELECT manifest_cache FROM #__extensions WHERE name="Track Actions Package" and type="package"';
 	} 
 	
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	$manifest_json = $db->loadResult();
 	
-	if ( !empty($manifest_json) ) {
+	if (!empty($manifest_json))
+	{
 		$manifest_decoded = json_decode($manifest_json);
 		$version = $manifest_decoded->version;
 	}
@@ -529,22 +578,24 @@ public static function modal($selector='a.modal', $params = array())
         $document = &JFactory::getDocument();
 
         // Load the necessary files if they haven't yet been loaded
-        if (!isset($included)) {
-                // Load the javascript and css
-                //JHtml::_('behavior.framework');
-                JHTML::_('script','system/modal.js', false, true);
-                JHTML::_('stylesheet','system/modal.css', array(), true);
+        if (!isset($included)) 
+		{
+            // Load the javascript and css            
+            JHTML::_('script','system/modal.js', false, true);
+            JHTML::_('stylesheet','system/modal.css', array(), true);
 
-                $included = true;
+            $included = true;
         }
 
-        if (!isset($modals)) {
+        if (!isset($modals))
+		{
                 $modals = array();
         }
 
         $sig = md5(serialize(array($selector,$params)));
-        if (isset($modals[$sig]) && ($modals[$sig])) {
-                return;
+        if (isset($modals[$sig]) && ($modals[$sig]))
+		{
+            return;
         }
 
         // Setup options object
@@ -574,6 +625,350 @@ public static function modal($selector='a.modal', $params = array())
         // Set static array
         $modals[$sig] = true;
         return;
+}
+
+/* Función que crea un trigger con las parámetros pasados como argumento */
+function create_trigger_scp($option,$component_name,$table_name)
+{
+	$db = JFactory::getDBO();
+	try 
+	{		
+		$message = JText::_( 'COM_SECURITYCHECKPRO_LOCKED_MESSAGE' );
+		$trigger_name = $component_name . "_" . $option . "_trigger";
+		$table_name_joomla_format = "#__" . $table_name;
+				
+		if ($option == "delete") 
+		{			
+			$query = "CREATE TRIGGER {$trigger_name}
+			BEFORE DELETE ON {$table_name_joomla_format}
+			FOR EACH ROW
+			BEGIN
+			IF OLD.storage_key = 'locked' THEN 
+				SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+			END IF;
+			END;";	
+		} else 
+		{
+			$query = "CREATE TRIGGER {$trigger_name}
+			BEFORE {$option} ON {$table_name_joomla_format}
+			FOR EACH ROW
+			BEGIN
+			IF NEW.storage_key = 'locked' THEN 
+				SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+			END IF;
+			END;";	
+		}
+		$db->setQuery($query);
+		$db->execute();
+	} catch (Exception $e)
+	{			
+		//dump($e->getMessage(),"error");
+	}	
+}
+
+/* Función que crea un trigger con las parámetros pasados como argumento */
+function create_trigger($option,$component_name,$table_name)
+{
+	$db = JFactory::getDBO();
+	try 
+	{		
+		$message = JText::_( 'COM_SECURITYCHECKPRO_LOCKED_MESSAGE' );
+		$trigger_name = $component_name . "_" . $option . "_trigger";
+		$table_name_joomla_format = "#__" . $table_name;
+		
+		if ($table_name == "users")
+		{
+			if ($option == "update") 
+			{
+				$query = "CREATE TRIGGER {$trigger_name}
+					BEFORE {$option} ON {$table_name_joomla_format}
+					FOR EACH ROW
+					BEGIN
+					DECLARE locked integer;
+					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+							
+					IF @locked = 1 and ((OLD.name != NEW.name) OR (OLD.username != NEW.username) OR (OLD.email != NEW.email) OR (OLD.password != NEW.password) OR (OLD.block != NEW.block) OR (OLD.otpKey != NEW.otpKey) OR (OLD.otep != NEW.otep)) THEN 
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+					END IF;
+					END;";	
+			} else {
+				$query = "CREATE TRIGGER {$trigger_name}
+					BEFORE {$option} ON {$table_name_joomla_format}
+					FOR EACH ROW
+					BEGIN
+					DECLARE locked integer;
+					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+							
+					IF @locked = 1 THEN 
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+					END IF;
+					END;";	
+			}
+		} else if ($table_name == "content")
+		{
+			if ($option == "update") 
+			{
+				$query = "CREATE TRIGGER {$trigger_name}
+					BEFORE {$option} ON {$table_name_joomla_format}
+					FOR EACH ROW
+					BEGIN
+					DECLARE locked integer;
+					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+							
+					IF @locked = 1 and ((OLD.introtext != NEW.introtext) OR (OLD.fulltext != NEW.fulltext)) THEN 
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+					END IF;
+					END;";	
+			} else {
+				$query = "CREATE TRIGGER {$trigger_name}
+					BEFORE {$option} ON {$table_name_joomla_format}
+					FOR EACH ROW
+					BEGIN
+					DECLARE locked integer;
+					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+							
+					IF @locked = 1 THEN 
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+					END IF;
+					END;";	
+			}
+		} else if ($table_name == "extensions")
+		{
+			if ($option == "update") 
+			{
+				$query = "CREATE TRIGGER {$trigger_name}
+					BEFORE {$option} ON {$table_name_joomla_format}
+					FOR EACH ROW
+					BEGIN
+					DECLARE locked integer;
+					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+							
+					IF @locked = 1 and ((OLD.extension_id != NEW.extension_id) OR (OLD.name != NEW.name) OR (OLD.element != NEW.element) OR (OLD.folder != NEW.folder) OR (OLD.access != NEW.access) OR (OLD.protected != NEW.protected) OR (OLD.state != NEW.state)) THEN 
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+					END IF;
+					END;";	
+			} else {
+				$query = "CREATE TRIGGER {$trigger_name}
+					BEFORE {$option} ON {$table_name_joomla_format}
+					FOR EACH ROW
+					BEGIN
+					DECLARE locked integer;
+					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+							
+					IF @locked = 1 THEN 
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+					END IF;
+					END;";	
+			}
+		} else 
+		{
+			$query = "CREATE TRIGGER {$trigger_name}
+				BEFORE {$option} ON {$table_name_joomla_format}
+				FOR EACH ROW
+				BEGIN
+				DECLARE locked integer;
+				SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+						
+				IF @locked = 1 THEN 
+					SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+				END IF;
+				END;";	
+		}		
+		
+		$db->setQuery($query);
+		$db->execute();
+	} catch (Exception $e)
+	{					
+	}	
+}
+
+/* Función que bloquea las tablas seleccionadas */
+function lock_tables()
+{
+	// Check component's parameters
+	$params = JComponentHelper::getParams('com_securitycheckpro');
+	$lock_tables_easy = $params->get('lock_tables_easy');	
+	$tables_to_block = $params->get('block_tables_easy');
+	
+	// Set default values if empty
+	if (is_null($lock_tables_easy))
+	{
+		$lock_tables_easy = true;
+	}
+	
+	if (is_null($tables_to_block))
+	{
+		$tables_to_block = array("users","content");
+	}
+	
+	if ($lock_tables_easy)
+	{		
+		foreach ($tables_to_block as $table_name)
+		{
+			if ($table_name == "users")
+			{
+				// 'Users' table triggers
+				$this->create_trigger("insert","users","users");
+				$this->create_trigger("update","users","users");
+				$this->create_trigger("delete","users","users");
+				
+				// 'user_usergroup_map' table triggers
+				$this->create_trigger("insert","user_usergroup_map","user_usergroup_map");
+				$this->create_trigger("update","user_usergroup_map","user_usergroup_map");
+				$this->create_trigger("delete","user_usergroup_map","user_usergroup_map");
+					
+				// 'K2' user triggers
+				/*$this->create_trigger("insert","k2_users","k2_users");
+				$this->create_trigger("update","k2_users","k2_users");
+				$this->create_trigger("delete","k2_users","k2_users");*/
+										
+					
+			} else if ($table_name == "content")
+			{
+				// 'Content' table triggers
+				$this->create_trigger("insert","content","content");
+				$this->create_trigger("update","content","content");
+				$this->create_trigger("delete","content","content");
+				
+				// 'redirect_links' table triggers
+				$this->create_trigger("insert","redirect_links","redirect_links");
+				$this->create_trigger("update","redirect_links","redirect_links");
+				$this->create_trigger("delete","redirect_links","redirect_links");
+				
+				// 'extensions' table triggers
+				$this->create_trigger("insert","extensions","extensions");
+				$this->create_trigger("update","extensions","extensions");
+				$this->create_trigger("delete","extensions","extensions");
+				
+				/*// 'K2' table triggers
+				$this->create_trigger("insert","k2_items","k2_items");
+				$this->create_trigger("update","k2_items","k2_items");
+				$this->create_trigger("delete","k2_items","k2_items");*/
+			}
+		}		
+	} else {
+		$tables_to_block = $params->get('block_tables_plus');
+		if (!empty($tables_to_block))
+		{
+			$tables_to_block = explode(",",$tables_to_block);
+			foreach ($tables_to_block as $table_name)
+			{
+				$table_name = filter_var($table_name, FILTER_SANITIZE_STRING);
+				// New table triggers
+				$this->create_trigger("insert",$table_name,$table_name);
+				$this->create_trigger("update",$table_name,$table_name);
+				$this->create_trigger("delete",$table_name,$table_name);
+			}
+		}
+	}
+	
+	$db = JFactory::getDBO();
+	// Block scp tables
+	try 
+	{		
+		$query = "UPDATE #__securitycheckpro_storage SET `storage_value` = '1' WHERE `storage_key` = 'locked'";
+		$db->setQuery($query);
+		$db->execute();
+	} catch (Exception $e)
+	{			
+	}
+	
+	// Securitycheck Pro table triggers
+	$this->create_trigger_scp("insert","scp","securitycheckpro_storage");
+	$this->create_trigger_scp("update","scp","securitycheckpro_storage");
+	$this->create_trigger_scp("delete","scp","securitycheckpro_storage");	
+		
+}
+
+/* Función que borra un trigger */
+function drop_trigger($trigger_name)
+{
+	$db = JFactory::getDBO();
+	
+	try 
+	{		
+		$query = "DROP TRIGGER {$trigger_name};";	
+		$db->setQuery($query);
+		$db->execute();
+	} catch (Exception $e)
+	{	
+		
+	}	
+}
+
+/* Función que desbloquea las tablas seleccionadas */
+function unlock_tables()
+{
+	
+	$params = JComponentHelper::getParams('com_securitycheckpro');
+	$lock_tables_easy = $params->get('lock_tables_easy');
+
+	// Securitycheck Pro triggers
+	$this->drop_trigger("scp_insert_trigger");
+	$this->drop_trigger("scp_update_trigger");
+	$this->drop_trigger("scp_delete_trigger");	
+	
+	$db = JFactory::getDBO();
+	try 
+	{		
+		$query = "SHOW TRIGGERS;";	
+		$db->setQuery($query);
+		$db->execute();
+		$triggers = $db->loadObjectList("Trigger");			
+	} catch (Exception $e)
+	{	
+		// Trying to delete triggers using the info stored in the component
+		$tables_to_block = $params->get('block_tables_plus');
+		if (!empty($tables_to_block))
+		{
+			$tables_to_block = explode(",",$tables_to_block);
+			foreach ($tables_to_block as $table_name)
+			{
+				$table_name = filter_var($table_name, FILTER_SANITIZE_STRING);
+				$this->drop_trigger($table_name . "_insert_trigger");
+				$this->drop_trigger($table_name . "_update_trigger");
+				$this->drop_trigger($table_name . "_delete_trigger");
+			}
+		}
+	}	
+		
+	if (!empty($triggers))
+	{
+		foreach ($triggers as $trigger)
+		{
+			// "Trigger" field contains trigger name
+			$this->drop_trigger($trigger->Trigger);
+		}
+	}		
+		
+	$db = JFactory::getDBO();
+	try 
+	{		
+		$query = "UPDATE #__securitycheckpro_storage SET `storage_value` = '0' WHERE `storage_key` = 'locked'";
+		$db->setQuery($query);
+		$db->execute();
+	} catch (Exception $e)
+	{			
+	}
+	
+}
+
+/* Función que chequea el estado de la tabla que controla los triggers */
+function lock_status()
+{
+	$locked = 0;
+	$db = JFactory::getDBO();	
+	try 
+	{		
+		$query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key="locked"';
+		$db->setQuery($query);
+		$db->execute();
+		$locked = $db->loadResult();
+	} catch (Exception $e)
+	{	
+		return 0;
+	}	
+	return $locked;
 }
 
 }

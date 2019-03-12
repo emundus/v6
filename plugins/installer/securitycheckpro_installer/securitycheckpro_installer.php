@@ -37,7 +37,8 @@ class plgInstallerSecuritycheckPro_Installer extends JPlugin
 		$downloadId = $component->params->get('downloadid', '');
 				 
 		// bind credentials to request by appending it to the download url
-		if (!empty($downloadId)) {
+		if (!empty($downloadId))
+		{
 			$separator = strpos($url, '?') !== false ? '&' : '?';
 			$url .= $separator . 'dlid=' . $downloadId;
 		}

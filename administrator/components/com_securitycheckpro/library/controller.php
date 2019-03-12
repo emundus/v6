@@ -10,15 +10,19 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
-if(!class_exists('JoomlaCompatController')) {
-	if(interface_exists('JController')) {
+if (!class_exists('JoomlaCompatController'))
+{
+	if (interface_exists('JController'))
+	{
 		abstract class JoomlaCompatController extends JControllerLegacy {}
-	} else {
+	} else
+	{
 		class JoomlaCompatController extends JController {}
 	}
 }
 
-class SecuritycheckproController extends JoomlaCompatController {
+class SecuritycheckproController extends JoomlaCompatController
+{
 	
 function __construct()
 {
@@ -38,12 +42,12 @@ function redireccion_system_info()
 }
 
 /* Acciones a ejecutar cuando se pulsa el botón 'Purge sessions' */
-function purge_sessions(){
+function purge_sessions()
+{
 	$model = $this->getModel();
 	$model->purge_sessions();
 		
-	$this->setRedirect( 'index.php?option=com_securitycheckpro' );
-		
+	$this->setRedirect( 'index.php?option=com_securitycheckpro' );		
 }
 
 /* Hace una consulta a la tabla especificada como parámetro */
@@ -58,19 +62,24 @@ public function load($key_name)
 		$db->setQuery($query);
 		$res = $db->loadResult();
 			
-		if(version_compare(JVERSION, '3.0', 'ge')) {
+		if (version_compare(JVERSION, '3.0', 'ge'))
+		{
 			$this->config = new JRegistry();
-		} else {
+		} else
+		{
 			$this->config = new JRegistry('securitycheckpro');
 		}
-		if(!empty($res)) {
+		
+		if (!empty($res)) 
+		{
 			$res = json_decode($res, true);
 			$this->config->loadArray($res);
 		}
 }
 
 /* Acciones al pulsar el botón para exportar la configuración */
-function Export_config(){
+function Export_config()
+{
 		$db = JFactory::getDBO();
 	
 		// Obtenemos los valores de las distintas opciones del Firewall Web
@@ -104,14 +113,17 @@ function Export_config(){
 		$this->load("controlcenter");
 		
 		// Buscamos si el campo ha sido configurado
-		if(version_compare(JVERSION, '3.0', 'ge')) {
+		if (version_compare(JVERSION, '3.0', 'ge'))
+		{
 			$secret_key = $this->config->get("secret_key", false);
-		} else {
+		} else
+		{
 			$secret_key = $this->config->getValue("secret_key", false);
 		}
 				
 		// Si ha sido configurado, buscamos su valor en el string_json y lo borramos
-		if ( $secret_key ) {
+		if ($secret_key)
+		{
 			$json_string = str_replace($secret_key,"",$json_string);
 		}
 							

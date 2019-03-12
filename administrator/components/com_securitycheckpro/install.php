@@ -13,7 +13,8 @@ jimport('joomla.installer.installer');
 /**
  * Script file of Securitycheck Pro component
  */
-class com_SecuritycheckproInstallerScript {
+class com_SecuritycheckproInstallerScript
+{
 	// Check if we are calling update method. It's used in 'install_message' function
 	public $update = false;
 	
@@ -28,8 +29,10 @@ class com_SecuritycheckproInstallerScript {
 	public $url_plugin_enabled = false;
 		
 	/** @var array Obsolete files and folders to remove after new UI  */
-	private $ObsoleteFilesAndFolders = array(
-		'files'	=> array(
+	private $ObsoleteFilesAndFolders = array
+	(
+		'files'	=> array
+		(
 			// Outdated css files
 			'media/com_securitycheckpro/stylesheets/jquery.percentageloader-0.1.css',
 			// Outdated code
@@ -129,7 +132,8 @@ class com_SecuritycheckproInstallerScript {
 			
 			
 		),
-		'folders'	=> array(
+		'folders'	=> array
+		(
 			// Removed views
 			'administrator/components/com_securitycheckpro/views/firewallcpanel',	
 			'administrator/components/com_securitycheckpro/views/securitycheckpro',
@@ -159,7 +163,8 @@ class com_SecuritycheckproInstallerScript {
 	);
 			
 	/* Función que desinstala el componente Securitycheck */
-	private function _unistall_Securitycheck() {
+	private function _unistall_Securitycheck()
+	{
 		
 		$db = JFactory::getDbo();
 		$installer = new JInstaller();
@@ -170,7 +175,8 @@ class com_SecuritycheckproInstallerScript {
 		$columnElement   = $db->quoteName("element");
 
 		// Uninstall Securitycheck component
-		$db->setQuery(
+		$db->setQuery
+		(
 				"SELECT 
 					$columnName
 				FROM
@@ -183,7 +189,8 @@ class com_SecuritycheckproInstallerScript {
 
 		$this->id_free = $db->loadResult();
 
-		if ($this->id_free) {
+		if ($this->id_free)
+		{
 			$this->result_free = $installer->uninstall('component',$this->id_free,1);
 		}
 	}
@@ -198,13 +205,15 @@ class com_SecuritycheckproInstallerScript {
 		$securitycheckpro_cached_file = JPATH_CACHE . '/com_securitycheckpro.updates.ini';
 		
 		// Remove cached files
-		if ( JFile::exists($securitycheckpro_cached_file) ) {
+		if (JFile::exists($securitycheckpro_cached_file))
+		{
 			JFile::delete($securitycheckpro_cached_file);
 		}
 		
 		// Remove files
 		JLoader::import('joomla.filesystem.file');
-		if(!empty($ObsoleteFilesAndFolders['files'])) foreach($ObsoleteFilesAndFolders['files'] as $file) {
+		if(!empty($ObsoleteFilesAndFolders['files'])) foreach($ObsoleteFilesAndFolders['files'] as $file)
+		{
 			$f = JPATH_ROOT.'/'.$file;			
 			if(!JFile::exists($f)) continue;
 			$res = JFile::delete($f);			
@@ -212,7 +221,8 @@ class com_SecuritycheckproInstallerScript {
 		
 		/* Remove folders */
 		JLoader::import('joomla.filesystem.file');
-		if(!empty($ObsoleteFilesAndFolders['folders'])) foreach($ObsoleteFilesAndFolders['folders'] as $folder) {
+		if(!empty($ObsoleteFilesAndFolders['folders'])) foreach($ObsoleteFilesAndFolders['folders'] as $folder)
+		{
 			$f = JPATH_ROOT.'/'.$folder;
 			if(!JFolder::exists($f)) continue;			
 			$res = JFolder::delete($f);							
@@ -220,17 +230,19 @@ class com_SecuritycheckproInstallerScript {
 	}
 	
 	/* Cambia la protección del backend para que funcione OTP */
-	private function _311_version_changes() {
+	private function _311_version_changes()
+	{
 	
 		// Extraemos la información necesario de la tabla #_extensions 		
 		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__extensions WHERE (name="securitycheckpro")' ;
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		$db->execute();
 		$result = $db->loadAssocList();
 		
 		// Si no existe versión previa no es necesario hacer ninguna acción
-		if ( !empty($result) ) {
+		if (!empty($result))
+		{
 		
 			// Decodificamos la información de la versión, que está en formato json en la entrada 'manifest_cache'
 			$stack = json_decode($result[0]["manifest_cache"], true);
@@ -239,21 +251,25 @@ class com_SecuritycheckproInstallerScript {
 			$scpro_version = $stack["version"];
 			
 			// Si la versión instalada es menor a la 3.1.1, hemos de realizar las comprobaciones
-			if ( version_compare($scpro_version,"3.1.1","lt") ) {
+			if (version_compare($scpro_version,"3.1.1","lt"))
+			{
 				// Extraemos las opciones de la protección del backend
 				$query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE (storage_key="cparams")' ;
-				$db->setQuery( $query );
+				$db->setQuery($query);
 				$db->execute();
 				$result = $db->loadAssocList();
 								
-				if ( !empty($result) ) {
+				if (!empty($result))
+				{
 					$stack = json_decode($result[0]["storage_value"], true);
 					
 					// Chequeamos si está habilitada la protección del backend					
-					if ( !empty($stack["hide_backend_url"]) ) {
+					if (!empty($stack["hide_backend_url"]))
+					{
 						// Chequeamos si existe el fichero .htaccess
 						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . ".htaccess";
-						if ( file_exists($path) ) {							
+						if (file_exists($path))
+						{							
 							//read the entire string
 							$str=file_get_contents($path);
 
@@ -281,17 +297,20 @@ class com_SecuritycheckproInstallerScript {
 	public function preflight($type, $parent)
 	{
 		// Only allow to install on PHP 5.3.0 or later
-		if ( !version_compare(PHP_VERSION, '5.3.0', 'ge') ) {
+		if (!version_compare(PHP_VERSION, '5.3.0', 'ge'))
+		{
 			Jerror::raiseWarning(null, "Securitycheck Pro requires, at least, PHP 5.3.0");
 			return false;
-		} else if ( version_compare(JVERSION, '3.0.0', 'lt') ) {
+		} else if (version_compare(JVERSION, '3.0.0', 'lt'))
+		{
 			// Only allow to install on Joomla! 3.0.0 or later, but not in 2.5 branch
 			Jerror::raiseWarning(null, "This version doesn't work in Joomla! 2.5 branch");			
 			return false;
 		}
 		
 		// Check if the 'mb_strlen' function is enabled
-		if ( !function_exists("mb_strlen") ) {
+		if (!function_exists("mb_strlen"))
+		{
 			Jerror::raiseWarning(null, "The 'mb_strlen' function is not installed in your host. Please, ask your hosting provider about how to install it.");
 			return false;
 		}
@@ -310,7 +329,7 @@ class com_SecuritycheckproInstallerScript {
 	 * @param string $type install, update or discover_update
 	 * @param JInstaller $parent 
 	 */
-	function postflight( $type, $parent )
+	function postflight($type, $parent)
 	{
 		// Inicializamos las variables
 		$existe_tabla = false;
@@ -318,21 +337,26 @@ class com_SecuritycheckproInstallerScript {
 		$db = JFactory::getDBO();
 		$total_rows = $db->getTableList();
 		
-		if ( !(is_null($total_rows)) ) {
-			foreach ($total_rows as $table_name) {
-				if ( strstr($table_name,"securitycheckpro_logs") ) {
+		if (!(is_null($total_rows)))
+		{
+			foreach ($total_rows as $table_name)
+			{
+				if (strstr($table_name,"securitycheckpro_logs"))
+				{
 					$existe_tabla = true;
 				}
 			}
 		}
 		
-		if ( !$existe_tabla ) {
+		if (!$existe_tabla)
+		{
 			// Disable Securitycheck Pro plugin
 			$tableExtensions = $db->quoteName("#__extensions");
 			$columnElement   = $db->quoteName("element");
 			$columnType      = $db->quoteName("type");
 			$columnEnabled   = $db->quoteName("enabled");
-			$db->setQuery(
+			$db->setQuery
+			(
 				"UPDATE 
 					$tableExtensions
 				SET
@@ -345,7 +369,8 @@ class com_SecuritycheckproInstallerScript {
 			$db->execute();
 			
 			// Disable Securitycheck Pro Cron plugin
-			$db->setQuery(
+			$db->setQuery
+			(
 				"UPDATE 
 					$tableExtensions
 				SET
@@ -367,7 +392,8 @@ class com_SecuritycheckproInstallerScript {
 	 *
 	 * @return void
 	 */
-	function install($parent) {
+	function install($parent)
+	{
 		// General settings
 		$status = new JObject();
 		$status->modules = array();
@@ -388,17 +414,18 @@ class com_SecuritycheckproInstallerScript {
 		$indice++;
 				
 		// Enable and configure module
-		$query = "UPDATE #__modules SET position='icon', ordering = '1', published = '1' WHERE `module`='mod_scpadmin_quickicons'";
+		$query = "UPDATE #__modules SET position='icon', ordering = '-1', published = '1' WHERE `module`='mod_scpadmin_quickicons'";
 		$db->setQuery($query);
 		$db->execute();
-
+		
 		$query = "SELECT `id` FROM `#__modules` WHERE `module` = 'mod_scpadmin_quickicons'";
 		$db->setQuery($query);
-		(int) $modID = $db->loadResult();
-		
+		$modID = $db->loadResult();
+				
 		// If the module_id is empty, we'll get an SQL error and the installion process will break
-		if ( (!empty($modID)) && (is_int($modID)) ) {
-			$query = "REPLACE INTO `#__modules_menu` (`moduleid`,`menuid`) VALUES ({$modID}, 0)";
+		if ((!empty($modID)) && (is_int(intval($modID))))
+		{						
+			$query = "REPLACE `#__modules_menu` (`moduleid`,`menuid`) VALUES ({$modID}, 0)";
 			$db->setQuery($query);
 			$db->execute();
 		}
@@ -407,7 +434,8 @@ class com_SecuritycheckproInstallerScript {
 		
 		// Install plugins
 						
-		foreach($manifest->plugins->plugin as $plugin) {
+		foreach($manifest->plugins->plugin as $plugin)
+		{
 			$installer = new JInstaller();
 			$attributes = $plugin->attributes();
 			$plg = $source . DIRECTORY_SEPARATOR . $attributes['folder']. DIRECTORY_SEPARATOR . $attributes['plugin'];
@@ -432,7 +460,8 @@ class com_SecuritycheckproInstallerScript {
 		$columnEnabled   = $db->quoteName("enabled");
             
 		// Enable Securitycheck Pro plugin
-		$db->setQuery(
+		$db->setQuery
+		(
 			"UPDATE 
 				$tableExtensions
 			SET
@@ -447,7 +476,8 @@ class com_SecuritycheckproInstallerScript {
 		
 		
 		// Enable Securitycheck Pro Installer plugin
-		$db->setQuery(
+		$db->setQuery
+		(
 			"UPDATE 
 				$tableExtensions
 			SET
@@ -465,7 +495,8 @@ class com_SecuritycheckproInstallerScript {
 		$memory_limit = (int) substr($memory_limit,0,-1);
 				
 		// If $memory_limit value is less or equal than 128, then whe will not enable de Cron plugin to avoid issues
-		if ( ($memory_limit > 128) && (!$this->update) ) {
+		if (($memory_limit > 128) && (!$this->update))
+		{
 		
 			// Enable Securitycheck Pro Cron plugin
 			$db->setQuery(
@@ -491,7 +522,8 @@ class com_SecuritycheckproInstallerScript {
 	 *
 	 * @return void
 	 */
-	function uninstall($parent){
+	function uninstall($parent)
+	{
 	
 		// General settings
 		$status = new JObject();
@@ -505,7 +537,8 @@ class com_SecuritycheckproInstallerScript {
 		// Uninstall module
 		$db->setQuery("SELECT extension_id FROM #__extensions WHERE type = 'module' AND element = 'mod_scpadmin_quickicons' LIMIT 1");
 		(int) $id = $db->loadResult();
-		if ($id) {
+		if ($id)
+		{
 			$installer = new JInstaller();
 			$result[0] = $installer->uninstall('module', $id);
 			$status->modules[] = array('name'=>'Securitycheck Pro - Quick Icons','client'=>'administrator', 'result'=>$result);			
@@ -519,7 +552,8 @@ class com_SecuritycheckproInstallerScript {
 		$result = '';
             
 		// Uninstall  Securitycheck Pro plugin
-		$db->setQuery(
+		$db->setQuery
+		(
 			"SELECT 
 				$columnName
 			FROM
@@ -535,7 +569,8 @@ class com_SecuritycheckproInstallerScript {
 
 		$id = $db->loadResult();
 
-		if ($id) {
+		if ($id)
+		{
 			$installer = new JInstaller();
 			$result[1] = $installer->uninstall('plugin',$id,1);		
 		} else {
@@ -543,7 +578,8 @@ class com_SecuritycheckproInstallerScript {
 		}
 		
 		// Uninstall  Securitycheck Pro Cron plugin
-		$db->setQuery(
+		$db->setQuery
+		(
 			"SELECT 
 				$columnName
 			FROM
@@ -559,15 +595,18 @@ class com_SecuritycheckproInstallerScript {
 
 		$id = $db->loadResult();
 
-		if ($id) {
+		if ($id)
+		{
 			$installer = new JInstaller();
 			$result[2] = $installer->uninstall('plugin',$id,1);		
-		} else {
+		} else 
+		{
 			$result[2] = FALSE;
 		}
 		
 		// Uninstall  Securitycheck Pro URL inspector
-		$db->setQuery(
+		$db->setQuery
+		(
 			"SELECT 
 				$columnName
 			FROM
@@ -583,7 +622,8 @@ class com_SecuritycheckproInstallerScript {
 
 		$id = $db->loadResult();
 
-		if ($id) {
+		if ($id)
+		{
 			$installer = new JInstaller();
 			$result[3] = $installer->uninstall('plugin',$id,1);		
 		} else {
@@ -591,7 +631,8 @@ class com_SecuritycheckproInstallerScript {
 		}
 		
 		// Uninstall Installer plugin
-		$db->setQuery(
+		$db->setQuery
+		(
 			"SELECT 
 				$columnName
 			FROM
@@ -607,10 +648,12 @@ class com_SecuritycheckproInstallerScript {
 
 		$id = $db->loadResult();
 		
-		if ($id) {
+		if ($id)
+		{
 			$installer = new JInstaller();
 			$result[4] = $installer->uninstall('plugin',$id,1);		
-		} else {
+		} else 
+		{
 			$result[4] = FALSE;
 		}
 				
@@ -624,7 +667,8 @@ class com_SecuritycheckproInstallerScript {
 	 *
 	 * @return void
 	 */
-	function update($parent) {		
+	function update($parent)
+	{		
 		// This variable is updated.
 		$this->update = true;		
 		$this->install($parent);		
@@ -635,29 +679,33 @@ class com_SecuritycheckproInstallerScript {
 	 *
 	 * @return void
 	 */
-	function install_message($id_free,$result_free,$result,$status,$memory_limit){
+	function install_message($id_free,$result_free,$result,$status,$memory_limit)
+	{
 		// Initialize variables
 		$cabecera = '';
 		$result_ok = '';
 		$result_not_ok = '';
 			
-		if ( !($this->update) ) {
-			$cabecera = JText::_( 'COM_SECURITYCHECKPRO_HEADER_INSTALL' );
-			$result_ok = JText::_( 'COM_SECURITYCHECKPRO_INSTALLED' );
-			$result_not_ok = JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' );
-		} else {
-			$cabecera = JText::_( 'COM_SECURITYCHECKPRO_HEADER_UPDATE' );
-			$result_ok = JText::_( 'COM_SECURITYCHECKPRO_UPDATED' );
-			$result_not_ok = JText::_( 'COM_SECURITYCHECKPRO_NOT_UPDATED' );
+		if (!($this->update))
+		{
+			$cabecera = JText::_('COM_SECURITYCHECKPRO_HEADER_INSTALL');
+			$result_ok = JText::_('COM_SECURITYCHECKPRO_INSTALLED');
+			$result_not_ok = JText::_('COM_SECURITYCHECKPRO_NOT_INSTALLED');
+		} else 
+		{
+			$cabecera = JText::_('COM_SECURITYCHECKPRO_HEADER_UPDATE');
+			$result_ok = JText::_('COM_SECURITYCHECKPRO_UPDATED');
+			$result_not_ok = JText::_('COM_SECURITYCHECKPRO_NOT_UPDATED');
 		}
 		
 ?>
 		<img src='../media/com_securitycheckpro/images/tick_48x48.png' style='float: left; margin: 5px;'>
 		<?php
-			if ( !($this->update) ) {			
+			if (!($this->update))
+			{			
 		?>
 			<h1><?php echo $cabecera ?></h1>
-			<h2><?php echo JText::_( 'COM_SECURITYCHECKPRO_WELCOME' ); ?></h2>
+			<h2><?php echo JText::_('COM_SECURITYCHECKPRO_WELCOME'); ?></h2>
 		<?php 
 			} else {
 		?>
@@ -669,8 +717,8 @@ class com_SecuritycheckproInstallerScript {
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th class="title" colspan="2"><?php echo JText::_( 'COM_SECURITYCHECKPRO_EXTENSION' ); ?></th>
-						<th width="30%"><?php echo JText::_( 'COM_SECURITYCHECKPRO_STATUS' ); ?></th>
+						<th class="title" colspan="2"><?php echo JText::_('COM_SECURITYCHECKPRO_EXTENSION'); ?></th>
+						<th width="30%"><?php echo JText::_('COM_SECURITYCHECKPRO_STATUS'); ?></th>
 					</tr>
 				</thead>
 				<tfoot>
@@ -680,7 +728,7 @@ class com_SecuritycheckproInstallerScript {
 				</tfoot>
 				<tbody>
 					<tr>
-						<td colspan="2">Securitycheck Pro <?php echo JText::_( 'COM_SECURITYCHECKPRO_COMPONENT' ); ?></td>
+						<td colspan="2">Securitycheck Pro <?php echo JText::_('COM_SECURITYCHECKPRO_COMPONENT'); ?></td>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-success\">";								
@@ -690,9 +738,9 @@ class com_SecuritycheckproInstallerScript {
 						</td>
 					</tr>
 					<tr class="row0">
-						<td class="key" colspan="2">Securitycheck Pro <?php echo JText::_( 'COM_SECURITYCHECKPRO_PLUGIN' ); ?></td>
+						<td class="key" colspan="2">Securitycheck Pro <?php echo JText::_('COM_SECURITYCHECKPRO_PLUGIN'); ?></td>
 					<?php
-						if ( $result[1] ) {
+						if ($result[1]) {
 					?>
 							<td>
 								<?php 
@@ -702,7 +750,7 @@ class com_SecuritycheckproInstallerScript {
 								</span>
 								<?php 
 									$span = "<span class=\"badge badge-info\">";	
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );																					
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');																					
 								?>
 								<?php echo $span . $message; ?>
 							</td>
@@ -721,9 +769,10 @@ class com_SecuritycheckproInstallerScript {
 					?>
 					</tr>
 					<tr class="row0">
-						<td class="key" colspan="2">Securitycheck Pro Cron <?php echo JText::_( 'Plugin' ); ?></td>
+						<td class="key" colspan="2">Securitycheck Pro Cron <?php echo JText::_('Plugin'); ?></td>
 					<?php
-						if ( $result[2] ) {
+						if ($result[2])
+						{
 					?>
 						<td>
 							<?php 
@@ -733,27 +782,31 @@ class com_SecuritycheckproInstallerScript {
 							</span>
 							<?php 
 								$limit = false;
-								if ( $this->update ) {
+								if ($this->update)
+								{
 									$span = "<span class=\"badge badge-info\">";	
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );
-								} else if ( $memory_limit > 128 ) {
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
+								} else if ($memory_limit > 128)
+								{
 									$span = "<span class=\"badge badge-info\">";	
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );
-								} else if ( $memory_limit <= 128 ) {
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
+								} else if ($memory_limit <= 128)
+								{
 									$span = "<span class=\"badge badge-warning\">";
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' );
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED');
 									$limit = true;
 								}
 							?>
 							<?php echo $span . $message; ?>
 							</span>
 							<?php
-								if ( $limit ) {
+								if ($limit)
+								{
 							?>
 								<br/>
 								<tr>
 									<td>
-										<?php echo JText::_( 'COM_SECURITYCHECKPRO_MEMORY_LIMIT_LOW' ); ?>	
+										<?php echo JText::_('COM_SECURITYCHECKPRO_MEMORY_LIMIT_LOW'); ?>	
 									</td>								 
 								</tr>
 							<?php
@@ -775,9 +828,9 @@ class com_SecuritycheckproInstallerScript {
 					?>
 					</tr>
 					<tr class="row0">
-						<td class="key" colspan="2">URL Inspector <?php echo JText::_( 'Plugin' ); ?></td>
+						<td class="key" colspan="2">URL Inspector <?php echo JText::_('Plugin'); ?></td>
 					<?php
-						if ( $result[3] ) {
+						if ($result[3]) {
 					?>
 							<td>
 								<?php 
@@ -786,18 +839,21 @@ class com_SecuritycheckproInstallerScript {
 								<?php echo $span . $result_ok; ?>
 								</span>
 								<?php 
-								if ( $this->url_plugin_enabled ) {
+								if ($this->url_plugin_enabled)
+								{
 									$span = "<span class=\"badge badge-info\">";	
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );
-								} else {
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
+								} else 
+								{
 									$span = "<span class=\"badge badge-danger\">";	
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_DISABLED' );
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED');
 								}
 							?>
 							<?php echo $span . $message; ?>								
 							</td>
 					<?php
-						} else {
+						} else
+						{
 					?>
 							<td>
 								<?php 
@@ -811,9 +867,10 @@ class com_SecuritycheckproInstallerScript {
 					?>
 					</tr>
 					<tr class="row0">
-						<td class="key" colspan="2">Installer <?php echo JText::_( 'Plugin' ); ?></td>
+						<td class="key" colspan="2">Installer <?php echo JText::_('Plugin'); ?></td>
 					<?php
-						if ( $result[4] ) {
+						if ($result[4])
+						{
 					?>
 							<td>
 								<?php 
@@ -823,12 +880,13 @@ class com_SecuritycheckproInstallerScript {
 								</span>
 								<?php 
 									$span = "<span class=\"badge badge-info\">";	
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );																					
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');																					
 								?>
 								<?php echo $span . $message; ?>
 							</td>
 					<?php
-						} else {
+						} else
+						{
 					?>
 							<td>
 								<?php 
@@ -842,12 +900,14 @@ class com_SecuritycheckproInstallerScript {
 					?>
 					</tr>
 					<?php
-					if ( count($status->modules) > 0 ) {
+					if (count($status->modules) > 0)
+					{
 					?>
 						<tr class="row0">
-						<td class="key" colspan="2">Securitycheck Pro Info <?php echo JText::_( 'COM_SECURITYCHECKPRO_MODULE' ); ?></td>
+						<td class="key" colspan="2">Securitycheck Pro Info <?php echo JText::_('COM_SECURITYCHECKPRO_MODULE'); ?></td>
 					<?php
-							if ($status->modules['0']['result']) {
+							if ($status->modules['0']['result'])
+							{
 					?>
 							<td>
 								<?php 
@@ -857,12 +917,13 @@ class com_SecuritycheckproInstallerScript {
 								</span>
 								<?php 
 									$span = "<span class=\"badge badge-info\">";	
-									$message = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_ENABLED' );																					
+									$message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');																					
 								?>
 								<?php echo $span . $message; ?>
 							</td>
 					<?php
-							} else {
+							} else
+							{
 					?>
 							<td>
 								<?php 
@@ -877,28 +938,31 @@ class com_SecuritycheckproInstallerScript {
 						</tr>
 					<?php
 					}
-					if ($id_free) {
+					if ($id_free)
+					{
 					?>
 						<tr class="row0">
-							<td class="key" colspan="2">Securitycheck <?php echo JText::_( 'COM_SECURITYCHECK_COMPONENT' ); ?></td>
+							<td class="key" colspan="2">Securitycheck <?php echo JText::_('COM_SECURITYCHECK_COMPONENT'); ?></td>
 					<?php
-							if ($result_free) {
+							if ($result_free)
+							{
 					?>
 							<td>
 								<?php 
 									$span = "<span class=\"badge badge-success\">";								
 								?>
-								<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
+								<?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 								</span>
 							</td>									
 					<?php
-							} else {
+							} else 
+							{
 					?>
 							<td>
 								<?php 
 									$span = "<span class=\"badge badge-danger\">";								
 								?>
-								<?php echo $span . JText::_( 'COM_SECURITYCHECK_NOT_UNINSTALLED'); ?>
+								<?php echo $span . JText::_('COM_SECURITYCHECK_NOT_UNINSTALLED'); ?>
 								</span>
 							</td>							
 					<?php
@@ -919,16 +983,17 @@ class com_SecuritycheckproInstallerScript {
 	 *
 	 * @return void
 	 */
-	function uninstall_message($result,$status){
+	function uninstall_message($result,$status)
+	{
 ?>
-		<h1><?php echo JText::_( 'COM_SECURITYCHECKPRO_HEADER_UNINSTALL' ); ?></h1>
-		<h2><?php echo JText::_( 'COM_SECURITYCHECKPRO_GOODBYE' ); ?></h2>
+		<h1><?php echo JText::_('COM_SECURITYCHECKPRO_HEADER_UNINSTALL'); ?></h1>
+		<h2><?php echo JText::_('COM_SECURITYCHECKPRO_GOODBYE'); ?></h2>
 		<div class="securitycheck-bootstrap">
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th class="title" colspan="2"><?php echo JText::_( 'COM_SECURITYCHECKPRO_EXTENSION' ); ?></th>
-					<th width="30%"><?php echo JText::_( 'COM_SECURITYCHECKPRO_STATUS' ); ?></th>
+					<th class="title" colspan="2"><?php echo JText::_('COM_SECURITYCHECKPRO_EXTENSION'); ?></th>
+					<th width="30%"><?php echo JText::_('COM_SECURITYCHECKPRO_STATUS'); ?></th>
 				</tr>
 			</thead>
 			<tfoot>
@@ -938,35 +1003,37 @@ class com_SecuritycheckproInstallerScript {
 			</tfoot>
 			<tbody>
 				<tr>
-					<td colspan="2">Securitycheck Pro <?php echo JText::_( 'COM_SECURITYCHECKPRO_COMPONENT' ); ?></td>
+					<td colspan="2">Securitycheck Pro <?php echo JText::_('COM_SECURITYCHECKPRO_COMPONENT'); ?></td>
 					<td>
 						<?php 
 							$span = "<span class=\"badge badge-success\">";								
 						?>
-						<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
+						<?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 						</span>
 					</td>					
 				</tr>
 				<tr class="row0">
-					<td class="key" colspan="2">Securitycheck Pro <?php echo JText::_( 'COM_SECURITYCHECKPRO_PLUGIN' ); ?></td>
+					<td class="key" colspan="2">Securitycheck Pro <?php echo JText::_('COM_SECURITYCHECKPRO_PLUGIN'); ?></td>
 				<?php
-					if ($result[1]) {
+					if ($result[1])
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-success\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 							</span>
 						</td>
 				<?php
-					} else {
+					} else 
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-danger\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
 							</span>
 						</td>						
 				<?php
@@ -974,25 +1041,27 @@ class com_SecuritycheckproInstallerScript {
 				?>
 				</tr>
 				<tr class="row0">
-					<td class="key" colspan="2">Securitycheck Pro Cron <?php echo JText::_( 'Plugin' ); ?></td>
+					<td class="key" colspan="2">Securitycheck Pro Cron <?php echo JText::_('Plugin'); ?></td>
 				<?php
-					if ($result[2]) {
+					if ($result[2])
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-success\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 							</span>
 						</td>
 				<?php
-					} else {
+					} else 
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-danger\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
 							</span>
 						</td>
 				<?php
@@ -1000,25 +1069,27 @@ class com_SecuritycheckproInstallerScript {
 				?>
 				</tr>
 				<tr class="row0">
-					<td class="key" colspan="2">URL Inspector <?php echo JText::_( 'Plugin' ); ?></td>
+					<td class="key" colspan="2">URL Inspector <?php echo JText::_('Plugin'); ?></td>
 				<?php
-					if ($result[3]) {
+					if ($result[3])
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-success\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 							</span>
 						</td>
 				<?php
-					} else {
+					} else
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-danger\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
 							</span>
 						</td>
 				<?php
@@ -1026,25 +1097,27 @@ class com_SecuritycheckproInstallerScript {
 				?>
 				</tr>
 				<tr class="row0">
-					<td class="key" colspan="2">Installer <?php echo JText::_( 'Plugin' ); ?></td>
+					<td class="key" colspan="2">Installer <?php echo JText::_('Plugin'); ?></td>
 				<?php
-					if ($result[4]) {
+					if ($result[4])
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-success\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 							</span>
 						</td>
 				<?php
-					} else {
+					} else
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-danger\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
 							</span>
 						</td>
 				<?php
@@ -1052,28 +1125,31 @@ class com_SecuritycheckproInstallerScript {
 				?>
 				</tr>
 				<?php
-				if ( count($status->modules) > 0 ) {
+				if (count($status->modules) > 0) 
+				{
 				?>
 					<tr class="row0">
-					<td class="key" colspan="2">Securitycheck Pro Info <?php echo JText::_( 'COM_SECURITYCHECKPRO_MODULE' ); ?></td>
+					<td class="key" colspan="2">Securitycheck Pro Info <?php echo JText::_('COM_SECURITYCHECKPRO_MODULE'); ?></td>
 				<?php
-					if ($status->modules['0']['result']) {
+					if ($status->modules['0']['result'])
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-success\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_UNINSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
 							</span>
 						</td>
 				<?php
-					} else {
+					} else
+					{
 				?>
 						<td>
 							<?php 
 								$span = "<span class=\"badge badge-danger\">";								
 							?>
-							<?php echo $span . JText::_( 'COM_SECURITYCHECKPRO_NOT_INSTALLED' ); ?>
+							<?php echo $span . JText::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
 							</span>
 						</td>
 				<?php

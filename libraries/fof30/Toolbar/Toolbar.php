@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -15,8 +15,8 @@ use FOF30\Utils\StringHelper;
 use FOF30\View\DataView\DataViewInterface;
 use FOF30\View\View;
 use Joomla\Utilities\ArrayHelper;
-use JToolBarHelper;
 use JText;
+use JToolBarHelper;
 
 defined('_JEXEC') or die;
 

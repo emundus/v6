@@ -17,16 +17,13 @@ $status_array = array(JHtml::_('select.option','0', JText::_('COM_SECURITYCHECKP
 			JHtml::_('select.option','1', JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_OK')),
 			JHtml::_('select.option','2', JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_EXCEPTIONS')));
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 // Add style declaration
 $media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
@@ -37,184 +34,12 @@ JHTML::stylesheet($sweet);
 ?>
 
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/fileintegrity.php';
 ?>
-
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">
-	function get_percent() {
-		url = 'index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=get_percent_integrity';
-		jQuery.ajax({
-			url: url,							
-			method: 'GET',
-			success: function(responseText){					
-				if ( responseText < 100 ) {
-					document.getElementById('current_task').innerHTML = in_progress_string;
-					document.getElementById('warning_message2').innerHTML = '';
-					document.getElementById('error_message').className = 'alert alert-info';
-					document.getElementById('error_message').innerHTML = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_ACTIVE_TASK' ); ?>';					
-					hideElement('button_start_scan');
-					cont = 3;					
-					runButton();
-				}					
-			}
-		});
-	}
-	
-	function estado_integrity_timediff() {		
-		url = 'index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=getEstadoIntegrity_Timediff';
-		jQuery.ajax({
-			url: url,							
-			method: 'GET',
-			dataType: 'json',
-			success: function(response){				
-				var json = Object.keys(response).map(function(k) {return response[k] });
-				var estado_integrity = json[0];
-				var timediff = json[1];
-											
-				if ( ((estado_integrity != 'ENDED') && (estado_integrity != error_string)) && (timediff < 3) ) {
-					get_percent();
-				} else if ( ((estado_integrity != 'ENDED') && (estado_integrity != error_string)) && (timediff > 3) ) {					
-					hideElement('button_start_scan');
-					hideElement('task_status');
-					document.getElementById('task_error').style.display = "block";					
-					document.getElementById('error_message').className = 'alert alert-danger';
-					document.getElementById('error_message').innerHTML = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_TASK_FAILURE' ); ?>';			
-				}						
-			},
-			error: function(xhr, status) {				
-			}
-		});
-	}
-	
-	jQuery(document).ready(function() {	
-		hideElement('backup-progress');
-		estado_integrity_timediff();
-				
-		// Chequeamos cuando se pulsa el botón 'close' del modal 'initialize data' para actualizar la página
-		$(function() {
-			$("#buttonclose").click(function() {
-				setTimeout(function () {window.location.reload()},1000);				
-			});
-		});		
-	});		
-</script>
-	
-<script type="text/javascript" language="javascript">
-	var cont = 0;
-	var etiqueta = '';
-	var url = '';
-	var percent = 0;
-	var ended_string2 = '<span class="badge badge-success"><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_ENDED' ); ?></span>';
-	var in_progress_string = '<span class="badge badge-info"><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS' ); ?></span>';
-	var error_string = '<span class="badge badge-danger"><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_ERROR' ); ?>';
-	var now = '';
-	var respuesta_reparar = '';
-		
-	function date_time(id) {
-		date = new Date();
-		year = date.getFullYear();
-		month = date.getMonth()+1;
-		if (month<10) {
-			month = "0"+month;
-		}
-		day = date.getDate();
-		if (day<10) {
-			day = "0"+day;
-		}
-		h = date.getHours();
-		if (h<10) {
-			h = "0"+h;
-		}
-		m = date.getMinutes();
-		if (m<10) {
-			m = "0"+m;
-		}
-		s = date.getSeconds();
-		if (s<10) {
-			s = "0"+s;
-		}
-		now = year+'-'+month+'-'+day+' '+h+':'+m+':'+s
-		document.getElementById(id).innerHTML = now;		
-	}
-	
-	function runButton() {
-		if ( cont == 0 ){
-			document.getElementById('backup-progress').style.display = "block";
-			document.getElementById('warning_message2').innerHTML = '';			
-			date_time('start_time');								
-			percent = 0;
-		} else if ( cont == 1 ){			
-			document.getElementById('task_status').innerHTML = in_progress_string;
-			url = 'index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones_integrity';
-			jQuery.ajax({
-				url: url,							
-				method: 'GET',
-				success: function(responseText){													
-				}
-			});							
-		} else {
-			url = 'index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=get_percent_integrity';
-			jQuery.ajax({
-				url: url,							
-				method: 'GET',
-				success: function(responseText){
-					percent = responseText;					
-					document.getElementById('bar').style.width = percent + "%";
-					if (percent == 100) {						
-						date_time('end_time');
-						hideElement('error_message');
-						document.getElementById('task_status').innerHTML = ended_string2;
-						document.getElementById('bar').style.width = 100 + "%";
-						document.getElementById('completed_message2').innerHTML = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_PROCESS_COMPLETED' ); ?>';
-						document.getElementById('warning_message2').innerHTML = "<?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATING_STATS' ); ?><br/><br/><img src=\"<?php echo JURI::root(); ?>media/com_securitycheckpro/images/loading.gif\" width=\"30\" height=\"30\" />";												
-						//setTimeout(function () {window.location.reload()},2000);							
-						var url_to_redirect = '<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1',false);?>';
-						window.location.href = url_to_redirect;
-					}
-				},
-				error: function(responseText) {
-					document.getElementById('task_error').style.display = "block";
-					hideElement('backup-progress');
-					hideElement('task_status');	
-					document.getElementById('warning_message2').innerHTML = '';
-					document.getElementById('error_message').className = 'alert alert-danger';
-					document.getElementById('error_message').innerHTML = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_FAILURE' ); ?>';
-					document.getElementById('error_button').innerHTML = '<?php echo ('<button class="btn btn-primary" type="button" onclick="window.location.reload();">' . JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_REFRESH_BUTTON' ) . '</button>');?>';
-				}
-			});
-		}
-						
-		cont = cont + 1;
-		
-		if ( percent == 100) {
-		
-		} else if  ( (cont > 40) && (percent < 90) ) {
-			var t = setTimeout("runButton()",75000);
-		} else {								
-			var t = setTimeout("runButton()",1000);
-		}
-													
-	}	
-</script>
 
 <?php
 if ( empty($this->last_check_integrity) ) {
@@ -225,7 +50,7 @@ if ( empty($this->files_status) ) {
 }
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1');?>" method="post" style="margin-top: -18px;" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1');?>" method="post" class="margin-top-minus18" name="adminForm" id="adminForm">
 
 <?php 
 		
@@ -569,12 +394,6 @@ if ( empty($this->files_status) ) {
 			
 		</div>
 </div>		
-
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script>
 
 <input type="hidden" name="controller" value="filemanager" />
 <input type="hidden" name="boxchecked" value="1" />

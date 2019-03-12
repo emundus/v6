@@ -124,32 +124,29 @@ function action( $name, $attribs = null, $selected = null, $id=false )
 	return JHTML::_('select.genericlist',  $arr, $name, 'class="chosen-select-no-single"', 'value', 'text', (int) $selected, $id );
 }
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $site_url = JURI::root();
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
+
+$chosen = "media/com_securitycheckpro/new/vendor/chosen/chosen.css";
+JHTML::stylesheet($chosen);
+
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
 ?>
-
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
-<?php 
-// Cargamos el contenido común
-include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-?>
-
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
 <?php
 	$current_ip = "";
@@ -168,213 +165,22 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 	$cidr_v4_example = $current_ip . "/20";
 ?>
 
-<script type="text/javascript">
-	var ActiveTab = "lists"; 
-	var ActiveTabLists = "blacklist";
-	var ExceptionsActiveTab = "header_referer";
-	var ActiveTabContinent = "europe";
-	
-	function SetActiveTab($value) {
-		ActiveTab = $value;
-		storeValue('active', ActiveTab);
-	}
-	
-	function SetActiveTabLists($value) {
-		ActiveTabLists = $value;
-		storeValue('activelists', ActiveTabLists);
-	}
-	
-	function SetActiveTabContinent($value) {
-		ActiveTabContinent = $value;
-		storeValue('activecontinent', ActiveTabContinent);
-	}
-	
-	function SetActiveTabExceptions($value) {
-		ExceptionsActiveTab = $value;
-		storeValue('exceptions_active', ExceptionsActiveTab);
-	}
-	
-	function storeValue(key, value) {
-		if (localStorage) {
-			localStorage.setItem(key, value);
-		} else {
-			$.cookies.set(key, value);
-		}
-	}
-	
-	function getStoredValue(key) {
-		if (localStorage) {
-			return localStorage.getItem(key);
-		} else {
-			return $.cookies.get(key);
-		}
-	}
-	
-	window.onload = function() {
-		ActiveTab = getStoredValue('active');
-		if (ActiveTab) {
-			$('.nav-tabs a[href="#' + ActiveTab + '"]').parent().addClass('active');
-			$('.nav-tabs a[href="#' + ActiveTab + '"]').tab('show');
-		} else {
-			$('.nav-tabs a[href="#lists"]').parent().addClass('active');
-		}
-		
-		ActiveTablists = getStoredValue('activelists');
-		if (ActiveTablists) {
-			$('.nav-tabs a[href="#' + ActiveTablists + '"]').parent().addClass('active');
-			$('.nav-tabs a[href="#' + ActiveTablists + '"]').tab('show');
-		} else {
-			$('.nav-tabs a[href="#blacklist"]').parent().addClass('active');
-		}
-		
-		ExceptionsActiveTab = getStoredValue('exceptions_active');
-		if (ExceptionsActiveTab) {
-			$('.nav-tabs a[href="#' + ExceptionsActiveTab + '"]').parent().addClass('active');
-			$('.nav-tabs a[href="#' + ExceptionsActiveTab + '"]').tab('show');
-		} else {
-			$('.nav-tabs a[href="#header_referer"]').parent().addClass('active');
-		}
-		
-		ActiveTabContinent = getStoredValue('activecontinent');
-		//ActiveTabContinent = "northAmerica";
-		if (ActiveTabContinent) {			
-			$('.nav-tabs a[href="#' + ActiveTabContinent + '"]').parent().addClass('active');
-			$('.nav-tabs a[href="#' + ActiveTabContinent + '"]').tab('show');
-		} else {
-			$('.nav-tabs a[href="#europe"]').parent().addClass('active');
-		}
-				
-	};
-	
-		
-	function setOwnIP() {
-		var ownip = '<?php echo $current_ip; ?>';
-		$("#whitelist_add_ip").val(ownip);
-		
-	}
-	
-	function muestra_progreso(){
-		jQuery("#select_blacklist_file_to_upload").show();
-	}
-	
-	function muestra_progreso_geoblock(){
-		jQuery("#div_update_geoblock_database").show();		
-		//jQuery("#div_refresh_geoblock").show();
-	}
-	
-	function Disable() {
-		//Obtenemos el índice las opciones de redirección
-		var element = adminForm.elements["redirect_options"].selectedIndex;
-						
-		// Si está establecida la opción de la propia página, habilitamos el campo redirect_url para escritura. Si no, lo deshabilitamos
-		if ( element==0 ) {
-			document.getElementById('redirect_url').readOnly = true;
-		} else {			
-			document.getElementById('redirect_url').readOnly = false;
-		}
-		
-		//Obtenemos el índice de la opción 'strip all tags'
-		var element = adminForm.elements["strip_all_tags"].selectedIndex;
-				
-		// Ocultamos o mostramos la caja de texto según la elección anterior
-		if ( element==1 ) {
-			$("#tags_to_filter_div").hide();			
-		} else {
-			$("#tags_to_filter_div").show();			
-		}
-		
-	}
-	
-	function CheckAll(idname, checktoggle, continentname) {
-		var checkboxes = new Array();
-		checkboxes = document.getElementById(idname).getElementsByTagName('input');
-		document.getElementById(continentname).checked = checktoggle;
-		
-		for (var i=0; i<checkboxes.length; i++) {
-			if (checkboxes[i].type == 'checkbox') {
-				checkboxes[i].checked = checktoggle;
-			}			
-		}
-		
-    }	 
-	
-	function disable_continent_checkbox(continentname, name) {
-		var checkbox = document.getElementById(name);
-		if (checkbox.checked != true) {
-			document.getElementById(continentname).checked = false;
-		}		
-	}
-</script>
-
-<script type="text/javascript" language="javascript">
-
-	jQuery(document).ready(function() {
-		Disable();
-		
-		jQuery("#dynamic_blacklist_time").keypress(function(e) {
-            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
-            if (verified) {e.preventDefault();}
-		});
-		jQuery("#dynamic_blacklist_counter").keypress(function(e) {
-            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
-            if (verified) {e.preventDefault();}
-		});
-		
-		jQuery("#email_max_number").keypress(function(e) {
-            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
-            if (verified) {e.preventDefault();}
-		});
-		
-		jQuery("#log_limits_per_ip_and_day").keypress(function(e) {
-            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
-            if (verified) {e.preventDefault();}
-		});
-		
-		jQuery("#second_level_limit_words").keypress(function(e) {
-            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
-            if (verified) {e.preventDefault();}
-		});
-		
-		jQuery("#spammer_limit").keypress(function(e) {
-            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
-            if (verified) {e.preventDefault();}
-		});
-		
-		jQuery("#delete_period").keypress(function(e) {
-            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
-            if (verified) {e.preventDefault();}
-		});		
-	
-	});
-		
-</script>
-
 <?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
- <!-- Chosen styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel="stylesheet">
- <!-- Cpanel styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet">
+// Cargamos el contenido común...
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=firewallconfig&'. JSession::getFormToken() .'=1');?>" style="margin-top: -18px;" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm">
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallconfig.php';
+?>
+
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=firewallconfig&'. JSession::getFormToken() .'=1');?>" class="margin-top-minus18" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm">
 
 		<!-- Modal update geoblock -->
 		<div class="modal fade" id="div_update_geoblock_database" tabindex="-1" role="dialog" aria-labelledby="updategeoblockLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">					
 					<div class="modal-body">	
-						<fieldset class="uploadform" style="margin-left: 10px;">
+						<fieldset class="uploadform margin-left-10">
 							<legend><?php echo JText::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_TEXT'); ?></legend>
 							<div class="form-actions center" id="div_refresh_geoblock">
 								<span class="tammano-18"><?php echo JText::_('COM_SECURITYCHECKPRO_UPDATING'); ?></span><br/>					
@@ -402,46 +208,46 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 				<div class="card-body">
 									
 					<ul class="nav nav-tabs" role="tablist" id="WafConfigurationTabs">
-					  <li class="nav-item" onclick="SetActiveTab('lists');">
+					  <li class="nav-item" id="li_lists_tab">
 						<a class="nav-link active" href="#lists" data-toggle="tab" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_LISTS_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('methods');">
+					  <li class="nav-item" id="li_methods_tab">
 						<a class="nav-link" href="#methods" data-toggle="tab" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_METHODS_INSPECTED_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('mode');">
+					  <li class="nav-item" id="li_mode_tab">
 						<a class="nav-link" data-toggle="tab" href="#mode" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_MODE_FIELDSET_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('logs');">
+					  <li class="nav-item" id="li_logs_tab">
 						<a class="nav-link" data-toggle="tab" href="#logs" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_LOGS_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('redirection');">
+					  <li class="nav-item" id="li_redirection_tab">
 						<a class="nav-link" data-toggle="tab" href="#redirection" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_REDIRECTION_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('second');">
+					  <li class="nav-item" id="li_second_tab">
 						<a class="nav-link" data-toggle="tab" href="#second" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('email_notifications');">
+					  <li class="nav-item" id="li_email_notifications_tab">
 						<a class="nav-link" data-toggle="tab" href="#email_notifications" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_NOTIFICATIONS_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('exceptions');">
+					  <li class="nav-item" id="li_exceptions_tab">
 						<a class="nav-link" data-toggle="tab" href="#exceptions" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_EXCEPTIONS_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('session_protection');">
+					  <li class="nav-item" id="li_session_protection_tab">
 						<a class="nav-link" data-toggle="tab" href="#session_protection" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_SESSION_PROTECTION_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('geoblock');">
+					  <li class="nav-item" id="li_geoblock_tab">
 						<a class="nav-link" data-toggle="tab" href="#geoblock" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_GEOBLOCK_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('upload_scanner');">
+					  <li class="nav-item" id="li_upload_scanner_tab">
 						<a class="nav-link" data-toggle="tab" href="#upload_scanner" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_LABEL'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('spam_protection');">
+					  <li class="nav-item" id="li_spam_protection_tab">
 						<a class="nav-link" data-toggle="tab" href="#spam_protection" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_SPAM_PROTECTION'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('url_inspector');">
+					  <li class="nav-item" id="li_url_inspector_tab">
 						<a class="nav-link" data-toggle="tab" href="#url_inspector" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_URL_INSPECTOR_TEXT'); ?></a>
 					  </li>
-					  <li class="nav-item" onclick="SetActiveTab('track_actions');">
+					  <li class="nav-item" id="li_track_actions_tab">
 						<a class="nav-link" data-toggle="tab" href="#track_actions" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_TRACK_ACTIONS'); ?></a>
 					  </li>
 					</ul>
@@ -465,13 +271,13 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 														
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_TIME_LABEL'); ?></h4>
 														<div class="controls">
-															<input type="text" size="5" maxlength="5" id="dynamic_blacklist_time" name="dynamic_blacklist_time" value="<?php echo $this->dynamic_blacklist_time ?>" title="" />		
+															<input type="number" size="5" maxlength="5" id="dynamic_blacklist_time" name="dynamic_blacklist_time" value="<?php echo $this->dynamic_blacklist_time ?>" title="" />		
 														</div>
 														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_TIME_DESCRIPTION') ?></small></p></blockquote>
 														
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_COUNTER_LABEL'); ?></h4>
 														<div class="controls">
-															<input type="text" size="3" maxlength="3" id="dynamic_blacklist_counter" name="dynamic_blacklist_counter" value="<?php echo $this->dynamic_blacklist_counter ?>" title="" />		
+															<input type="number" size="3" maxlength="3" id="dynamic_blacklist_counter" name="dynamic_blacklist_counter" value="<?php echo $this->dynamic_blacklist_counter ?>" title="" />		
 														</div>
 														<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_COUNTER_DESCRIPTION') ?></small></p></blockquote>														
 													</div>													
@@ -527,30 +333,30 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_LISTS_MANAGEMENT' ); ?>
 										</div>
 										<div class="card-body">
-												<div id="filter-bar" class="btn-toolbar" style="margin-left: 10px;">
+												<div id="filter-bar" class="btn-toolbar" class="margin-left-10">
 													<div class="filter-search btn-group pull-left">
 														<input type="text" name="filter_lists_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.lists_search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
 													</div>
-													<div class="btn-group pull-left" style="margin-left: 10px;">
+													<div class="btn-group pull-left" class="margin-left-10">
 														<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-														<button class="btn tip" type="button" onclick="document.getElementById('filter_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+														<button id="search_button" class="btn tip" type="button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 													</div>
 												</div>
 												<br/>
 												<div class="box-content">
 													<ul class="nav nav-tabs" role="tablist" id="ListsTabs">
-													  <li class="nav-item" onclick="SetActiveTabLists('blacklist');">
+													  <li class="nav-item" id="li_blacklist_tab">
 														<a class="nav-link active" href="#blacklist" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_BLACKLIST'); ?></a>
 													  </li>
-													  <li class="nav-item" onclick="SetActiveTabLists('dynamic_blacklist_tab');">
+													  <li class="nav-item" id="li_dynamic_blacklist_tab">
 														<a class="nav-link" href="#dynamic_blacklist_tab" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST'); ?></a>
 													  </li>
-													  <li class="nav-item" onclick="SetActiveTabLists('whitelist');">
+													  <li class="nav-item" id="li_whitelist_tab">
 														<a class="nav-link" data-toggle="tab" href="#whitelist" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_WHITELIST'); ?></a>
 													  </li>
 													</ul>
 																								
-													<div id="pagination" style="margin-bottom: 30px;">
+													<div id="pagination" class="margin-bottom-30">
 														<?php				
 															if ( isset($this->pagination) ) {									
 														?>
@@ -579,7 +385,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																	  </div>
 																	  <div class="modal-body">	
 																		<div id="div_messages">
-																			<label style="color: red;"><?php echo JText::_('COM_SECURITYCHECKPRO_OVERWRITE_WARNING'); ?></label>
+																			<label class="red"><?php echo JText::_('COM_SECURITYCHECKPRO_OVERWRITE_WARNING'); ?></label>
 																			<h5><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_EXPORTED_FILE'); ?></h5>						
 																			<div class="controls">
 																				<input class="input_box" id="file_to_import" name="file_to_import" type="file" size="57" />
@@ -587,7 +393,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		</div>																				
 																	  </div>
 																		<div class="modal-footer" id="div_boton_subida">
-																			<input class="btn btn-primary" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" onclick="Joomla.submitbutton('import_blacklist');" />
+																			<input class="btn btn-primary" id="upload_import_button" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />
 																			<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
 																		</div>			  
 																	</div>
@@ -632,7 +438,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		<p>
 																		<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_IP_CURRENT'); ?>
 																		<code><?php echo $current_ip; ?></code>	
-																		<button type="button" class="btn btn-sm btn-success" onclick="setOwnIP(); Joomla.submitbutton('addip_whitelist');" href="#">
+																		<button type="button" id="add_ip_whitelist_button" class="btn btn-sm btn-success" href="#">
 																			<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_TO_WHITELIST'); ?>
 																		</button>
 																		</p>
@@ -642,23 +448,23 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																	<div class="btn-group pull-left">
 																		<input type="text" name="blacklist_add_ip" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP'); ?>" id="blacklist_add_ip" value="" title="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP_LABEL'); ?>" />
 																	</div>
-																	<div class="btn-group pull-left" style="margin-left: 10px; margin-bottom: 20px;">
-																		<button class="btn btn-success" onclick="Joomla.submitbutton('addip_blacklist')" href="#">
+																	<div class="btn-group pull-left" class="margin-left-10 margin-bottom-20">
+																		<button class="btn btn-success" id="add_ip_blacklist_button" href="#">
 																			<i class="fapro fa-plus-octagon"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_ADD'); ?>
 																		</button>
 																	</div>
-																	<div class="btn-group pull-left" style="margin-left: 10px;">
+																	<div class="btn-group pull-left" class="margin-left-10">
 																		<a href="#select_blacklist_file_to_upload" role="button" class="btn btn-secondary" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_IMPORT_IPS' ); ?></a>								
 																	</div>
-																	<div class="btn-group pull-left" style="margin-left: 10px;">
-																		<button class="btn btn-info" onclick="Joomla.submitbutton('Export_blacklist');" href="#">
+																	<div class="btn-group pull-left" class="margin-left-10">
+																		<button class="btn btn-info" id="export_blacklist_button" href="#">
 																			<i class="icon-new icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_EXPORT_IPS'); ?>
 																		</button>
 																	</div>
 																	<div class="btn-group pull-right">
-																		<button class="btn btn-danger" onclick="Joomla.submitbutton('deleteip_blacklist');" href="#">
+																		<button class="btn btn-danger" id="delete_ip_blacklist_button" href="#">
 																			<i class="icon-trash icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_DELETE'); ?>
 																		</button>
@@ -671,7 +477,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																			<th class="center"><?php echo JText::_( "Ip" ); ?></th>
 																			<th class="center"><?php echo JText::_( 'COM_SECURITYCHECKPRO_GEOLOCATION_LABEL' ); ?></th>
 																			<th class="center">
-																				<input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
+																				<input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this);" />
 																			</th>
 																		</tr>
 																	</thead>   
@@ -706,8 +512,8 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																</div>
 
 																<div id="dynamic_blacklist_buttons">
-																	<div class="btn-group pull-right" style="margin-bottom: 5px;">
-																		<button class="btn btn-danger" onclick="Joomla.submitbutton('deleteip_dynamic_blacklist')" href="#">
+																	<div class="btn-group pull-right" class="margin-bottom-5">
+																		<button class="btn btn-danger" id="deleteip_dynamic_blacklist_button" href="#">
 																			<i class="icon-trash icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_DELETE'); ?>
 																		</button>
@@ -719,7 +525,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																				<th class="center"><?php echo JText::_( "Ip" ); ?></th>
 																				<th class="center"><?php echo JText::_( 'COM_SECURITYCHECKPRO_GEOLOCATION_LABEL' ); ?></th>
 																				<th class="center">
-																					<input type="checkbox" id="toggle_dynamic_blacklist" name="toggle_dynamic_blacklist" value="" onclick="Joomla.checkAll(this)" />
+																					<input type="checkbox" id="toggle_dynamic_blacklist" name="toggle_dynamic_blacklist" value="" />
 																				</th>
 																			</tr>
 																		</thead>   
@@ -761,7 +567,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																	  </div>
 																	  <div class="modal-body">	
 																		<div id="div_messages">
-																			<label style="color: red;"><?php echo JText::_('COM_SECURITYCHECKPRO_OVERWRITE_WARNING'); ?></label>
+																			<label class="red"><?php echo JText::_('COM_SECURITYCHECKPRO_OVERWRITE_WARNING'); ?></label>
 																			<h5><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_EXPORTED_FILE'); ?></h5>						
 																			<div class="controls">
 																				<input class="input_box" id="file_to_import_whitelist" name="file_to_import_whitelist" type="file" size="57" />
@@ -769,7 +575,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		</div>																				
 																	  </div>
 																		<div class="modal-footer" id="div_boton_subida">
-																			<input class="btn btn-primary" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" onclick="Joomla.submitbutton('import_whitelist');" />
+																			<input class="btn btn-primary" id="import_whitelist_button" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />
 																			<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
 																		</div>			  
 																	</div>
@@ -799,7 +605,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		<p>
 																		<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_IP_CURRENT'); ?>
 																		<code><?php echo $current_ip; ?></code>		
-																		<button type="button" class="btn btn-sm btn-success" onclick="setOwnIP(); Joomla.submitbutton('addip_whitelist');" href="#">
+																		<button type="button" id="add_ip_whitelist_button" class="btn btn-sm btn-success" href="#">
 																			<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_TO_WHITELIST'); ?>
 																		</button>
 																		</p>
@@ -809,23 +615,23 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																	<div class="btn-group pull-left">
 																		<input type="text" name="whitelist_add_ip" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP'); ?>" id="whitelist_add_ip" value="" title="<?php echo JText::_('COM_SECURITYCHECKPRO_NEW_IP_LABEL'); ?>" />
 																	</div>
-																	<div class="btn-group pull-left" style="margin-left: 10px; margin-bottom: 20px;">
-																		<button class="btn btn-success" onclick="Joomla.submitbutton('addip_whitelist')" href="#">
+																	<div class="btn-group pull-left" class="margin-left-10 margin-bottom-20">
+																		<button class="btn btn-success" id="addip_whitelist_button" href="#">
 																			<i class="fapro fa-plus-octagon"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_ADD'); ?>
 																		</button>
 																	</div>
-																	<div class="btn-group pull-left" style="margin-left: 10px;">
+																	<div class="btn-group pull-left" class="margin-left-10">
 																		<a href="#select_whitelist_file_to_upload" role="button" class="btn btn-secondary" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_IMPORT_IPS' ); ?></a>								
 																	</div>
-																	<div class="btn-group pull-left" style="margin-left: 10px;">
-																		<button class="btn btn-info" onclick="Joomla.submitbutton('Export_whitelist');" href="#">
+																	<div class="btn-group pull-left" class="margin-left-10">
+																		<button class="btn btn-info" id="export_whitelist_button" href="#">
 																			<i class="icon-new icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_EXPORT_IPS'); ?>
 																		</button>
 																	</div>
 																	<div class="btn-group pull-right">
-																		<button class="btn btn-danger" onclick="Joomla.submitbutton('deleteip_whitelist')" href="#">
+																		<button class="btn btn-danger" id="deleteip_whitelist_button" href="#">
 																			<i class="icon-trash icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_DELETE'); ?>
 																		</button>
@@ -944,7 +750,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LOG_LIMITS_PER_IP_AND_DAY_LABEL'); ?></h4>					
 												<div class="controls">
-													<input type="text" size="4" maxlength="4" id="log_limits_per_ip_and_day" name="log_limits_per_ip_and_day" value="<?php echo $this->log_limits_per_ip_and_day ?>" title="" />		
+													<input type="number" size="4" maxlength="4" id="log_limits_per_ip_and_day" name="log_limits_per_ip_and_day" value="<?php echo $this->log_limits_per_ip_and_day ?>" title="" />		
 												</div>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_COUNTER_DESCRIPTION') ?></small></footer></blockquote>
 																								
@@ -997,14 +803,14 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 												?>
 													<div class="controls controls-row">
 														<div class="input-prepend">
-															<span class="add-on" style="background-color: #8EBBFF;"><?php echo $site_url ?></span>
-															<input class="input-large" type="text" name="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
+															<span class="add-on" class="background-8EBBFF"><?php echo $site_url ?></span>
+															<input class="input-large" type="text" id="redirect_url" name="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
 														</div>						
 													</div>
 												<?php } else {	?>
 													<div class="input-group">
-														<span class="input-group-addon" style="background-color: #8EBBFF;"><?php echo $site_url ?></span>
-														<input type="text" class="form-control" name="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
+														<span class="input-group-addon" class="background-8EBBFF"><?php echo $site_url ?></span>
+														<input type="text" class="form-control" id="redirect_url" name="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
 													</div>											
 												<?php } ?>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_EXPLAIN') ?></small></footer></blockquote>
@@ -1076,7 +882,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																								
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LIMIT_WORDS_LABEL'); ?></h4>
 												<div class="controls">
-													<input type="text" size="2" maxlength="2" id="second_level_limit_words" name="second_level_limit_words" value="<?php echo $this->second_level_limit_words ?>" title="" />		
+													<input type="number" size="2" maxlength="2" id="second_level_limit_words" name="second_level_limit_words" value="<?php echo $this->second_level_limit_words ?>" title="" />		
 												</div>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LIMIT_WORDS_DESCRIPTION') ?></small></footer></blockquote>
 																							
@@ -1089,7 +895,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 											<div class="card-body">
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_WORDS_LABEL'); ?></h4>
 												<div class="controls">
-													<textarea cols="35" rows="3" name="second_level_words" style="width: 560px; height: 340px;"><?php echo $this->second_level_words ?></textarea>
+													<textarea cols="35" rows="3" name="second_level_words" class="width_560_height_340"><?php echo $this->second_level_words ?></textarea>
 												</div>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_WORDS_DESCRIPTION') ?></small></footer></blockquote>
 																							
@@ -1156,7 +962,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_NAME_DESCRIPTION') ?></small></footer></blockquote>
 																								
 												<div class="controls">
-													<input class="btn btn-primary" type="button" id="boton_test_email" value="<?php echo JText::_('COM_SECURITYCHECKPRO_SEND_EMAIL_TEST'); ?>" onclick= "Joomla.submitbutton('send_email_test');" />		
+													<input class="btn btn-primary" type="button" id="boton_test_email" value="<?php echo JText::_('COM_SECURITYCHECKPRO_SEND_EMAIL_TEST'); ?>" />		
 												</div>												
 											</div>
 										</div>
@@ -1174,7 +980,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																							
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_MAX_NUMBER_LABEL'); ?></h4>
 												<div class="controls">
-													<input type="text" size="3" maxlength="3" id="email_max_number" name="email_max_number" value="<?php echo $this->email_max_number ?>" title="" />		
+													<input type="number" size="3" maxlength="3" id="email_max_number" name="email_max_number" value="<?php echo $this->email_max_number ?>" title="" />		
 												</div>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_MAX_NUMBER_DESCRIPTION') ?></small></footer></blockquote>
 											</div>
@@ -1202,22 +1008,22 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_EXCLUDE_EXCEPTIONS_IF_VULNERABLE_DESCRIPTION') ?></small></footer></blockquote>
 												
 												<ul class="nav nav-tabs" role="tablist" id="ExceptionsTabs">
-													<li class="nav-item" onclick="SetActiveTabExceptions('header_referer');">
+													<li class="nav-item" id="li_header_referer_tab">
 														<a class="nav-link active" href="#header_referer" data-toggle="tab" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_HEADER_REFERER_LABEL'); ?></a>
 													</li>
-													<li class="nav-item" onclick="SetActiveTabExceptions('base64');">
+													<li class="nav-item" id="li_base64_tab">
 														<a class="nav-link" href="#base64" data-toggle="tab" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_CHECK_BASE64_LABEL'); ?></a>
 													</li>
-													<li class="nav-item" onclick="SetActiveTabExceptions('xss');">
+													<li class="nav-item" id="li_xss_tab">
 														<a class="nav-link" href="#xss" data-toggle="tab" role="tab"><?php echo JText::_('XSS'); ?></a>
 													</li>
-													<li class="nav-item" onclick="SetActiveTabExceptions('sql');">
+													<li class="nav-item" id="li_sql_tab">
 														<a class="nav-link" href="#sql" data-toggle="tab" role="tab"><?php echo JText::_('SQL Injection'); ?></a>
 													</li>
-													<li class="nav-item" onclick="SetActiveTabExceptions('lfi');">
+													<li class="nav-item" id="li_lfi_tab">
 														<a class="nav-link" href="#lfi" data-toggle="tab" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_LFI_EXCEPTIONS_LABEL'); ?></a>
 													</li>
-													<li class="nav-item" onclick="SetActiveTabExceptions('secondlevel');">
+													<li class="nav-item" id="li_secondlevel_tab">
 														<a class="nav-link" href="#secondlevel" data-toggle="tab" role="tab"><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_EXCEPTIONS_LABEL'); ?></a>
 													</li>
 												</ul>
@@ -1239,7 +1045,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_BASE64_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="base64_exceptions" style="width: 560px; height: 140px;"><?php echo $this->base64_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="base64_exceptions" class="firewall-config-style"><?php echo $this->base64_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_BASE64_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>											
 													</div>
@@ -1253,7 +1059,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 														<div class="control-group" id="tags_to_filter_div">
 															<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_TAGS_TO_FILTER_LABEL'); ?></h4>
 															<div class="controls">
-																<textarea cols="35" rows="3" name="tags_to_filter" style="width: 560px; height: 140px;"><?php echo $this->tags_to_filter ?></textarea>								
+																<textarea cols="35" rows="3" name="tags_to_filter" class="firewall-config-style"><?php echo $this->tags_to_filter ?></textarea>								
 															</div>
 															<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_TAGS_TO_FILTER_DESCRIPTION') ?></small></footer></blockquote>
 															
@@ -1261,7 +1067,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 														
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_TAGS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="strip_tags_exceptions" style="width: 560px; height: 140px;"><?php echo $this->strip_tags_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="strip_tags_exceptions" class="firewall-config-style"><?php echo $this->strip_tags_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_STRIP_TAGS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 														
@@ -1269,37 +1075,37 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													<div class="tab-pane" id="sql" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_DUPLICATE_BACKSLASHES_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="duplicate_backslashes_exceptions" style="width: 560px; height: 140px;"><?php echo $this->duplicate_backslashes_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="duplicate_backslashes_exceptions" class="firewall-config-style"><?php echo $this->duplicate_backslashes_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DUPLICATE_BACKSLASHES_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 																											
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LINE_COMMENTS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="line_comments_exceptions" style="width: 560px; height: 140px;"><?php echo $this->line_comments_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="line_comments_exceptions" class="firewall-config-style"><?php echo $this->line_comments_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LINE_COMMENTS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SQL_PATTERN_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="sql_pattern_exceptions" style="width: 560px; height: 140px;"><?php echo $this->sql_pattern_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="sql_pattern_exceptions" class="firewall-config-style"><?php echo $this->sql_pattern_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SQL_PATTERN_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_IF_STATEMENT_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="if_statement_exceptions" style="width: 560px; height: 140px;"><?php echo $this->if_statement_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="if_statement_exceptions" class="firewall-config-style"><?php echo $this->if_statement_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_IF_STATEMENT_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_USING_INTEGERS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="using_integers_exceptions" style="width: 560px; height: 140px;"><?php echo $this->using_integers_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="using_integers_exceptions" class="firewall-config-style"><?php echo $this->using_integers_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_USING_INTEGERS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 																												
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_ESCAPE_STRINGS_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="escape_strings_exceptions" style="width: 560px; height: 140px;"><?php echo $this->escape_strings_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="escape_strings_exceptions" class="firewall-config-style"><?php echo $this->escape_strings_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_ESCAPE_STRINGS_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 														
@@ -1307,7 +1113,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													<div class="tab-pane" id="lfi" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_LFI_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="lfi_exceptions" style="width: 560px; height: 140px;"><?php echo $this->lfi_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="lfi_exceptions" class="firewall-config-style"><?php echo $this->lfi_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_LFI_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 																											
@@ -1315,7 +1121,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													<div class="tab-pane" id="secondlevel" role="tabpanel">
 														<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_EXCEPTIONS_LABEL'); ?></h4>
 														<div class="controls">
-															<textarea cols="35" rows="3" name="second_level_exceptions" style="width: 560px; height: 140px;"><?php echo $this->second_level_exceptions ?></textarea>								
+															<textarea cols="35" rows="3" name="second_level_exceptions" class="firewall-config-style"><?php echo $this->second_level_exceptions ?></textarea>								
 														</div>
 														<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_EXCEPTIONS_DESCRIPTION') ?></small></footer></blockquote>
 														
@@ -1377,7 +1183,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 												<?php
 													} else {
 												?>	
-														<blockquote class="blockquote" id="launch_time_alert"><footer class="blockquote-footer"><span style="color: red;"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SHARED_SESSIONS_EANBLED') ?></span></small></footer></blockquote>														
+														<blockquote class="blockquote" id="launch_time_alert"><footer class="blockquote-footer"><span class="red"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SHARED_SESSIONS_EANBLED') ?></span></small></footer></blockquote>														
 												<?php		
 													}
 												?>
@@ -1453,7 +1259,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 							<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
 							<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
 							<script src="/media/com_securitycheckpro/new/js/datamaps.world.min.js"></script>
-							<div class="alert alert-info" style="text-align: center;">
+							<div class="alert alert-info" class="centrado">
 								<strong><?php echo JText::_('COM_SECURITYCHECKPRO_MAP_ATTACKS_TEXT'); ?></strong>
 							</div>
 							
@@ -1472,27 +1278,27 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 							<div id="container" style="position: relative; width: 800px; height: 600px;"></div>
 					
 							<div class="card mb-3">															
-								<div class="alert alert-info" style="text-align: center;">
+								<div class="alert alert-info" class="centrado">
 									<strong><?php echo JText::_('COM_SECURITYCHECKPRO_COUNTRIES_BLOCKED'); ?></strong>									
 								</div>
 								
 								<ul class="nav nav-tabs" role="tablist" id="ContinentTabs">
-									<li class="nav-item" onclick="SetActiveTabContinent('europe');">
+									<li class="nav-item" id="li_europe_tab">
 										<a class="nav-link active" href="#europe" data-anchor="europe" data-toggle="tab" role="tab">Europe</a>
 									</li>
-									<li class="nav-item" onclick="SetActiveTabContinent('northAmerica');">
+									<li class="nav-item" id="li_northAmerica_tab">
 										<a class="nav-link" href="#northAmerica" data-anchor="northAmerica" data-toggle="tab" role="tab">North America</a>
 									</li>
-									<li class="nav-item" onclick="SetActiveTabContinent('southAmerica');">
+									<li class="nav-item" id="li_southAmerica_tab">
 										<a class="nav-link" href="#southAmerica" data-anchor="southAmerica" data-toggle="tab" role="tab">South America</a>
 									</li>
-									<li class="nav-item" onclick="SetActiveTabContinent('africa');">
+									<li class="nav-item" id="li_africa_tab">
 										<a class="nav-link" href="#africa" data-anchor="africa" data-toggle="tab" role="tab">Africa</a>
 									</li>
-									<li class="nav-item" onclick="SetActiveTabContinent('asia');">
+									<li class="nav-item" id="li_asia_tab">
 										<a class="nav-link"href="#asia" data-anchor="asia" data-toggle="tab" role="tab">Asia</a>
 									</li>
-									<li class="nav-item" onclick="SetActiveTabContinent('oceania');">
+									<li class="nav-item" id="li_oceania_tab">
 										<a class="nav-link" href="#oceania" data-anchor="oceania" data-toggle="tab" role="tab">Oceania</a>
 									</li>
 								</ul>
@@ -1501,12 +1307,12 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 										<?php																		
 											$checked = in_array("EU", $this->continents) ? 'checked="$checked"' : '';						
 										?>
-										<input type="checkbox" style="visibility: hidden;" name="continent[EU]" id="continentEU" <?php echo $checked?> />
+										<input type="checkbox" class="hidden" name="continent[EU]" id="continentEU" <?php echo $checked?> />
 																
-										<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('europe_table',true,'continentEU')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-										<button class="btn btn-small" type="button" onclick="CheckAll('europe_table',false,'continentEU')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+										<button class="btn btn-small btn-primary" id="check_all_europe_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+										<button class="btn btn-small" type="button" id="uncheck_all_europe_table_button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
 													
-										<table id="europe_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+										<table id="europe_table" class="table table-striped table-bordered bootstrap-datatable datatable margin-top-10">
 											<tbody>
 												<?php
 													$i = 0;
@@ -1547,12 +1353,12 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		<?php																		
 																		$checked = in_array("NA", $this->continents) ? 'checked="$checked"' : '';						
 																		?>
-																		<input type="checkbox" style="visibility: hidden;" name="continent[NA]" id="continentNA" <?php echo $checked?> />
+																		<input type="checkbox" class="hidden" name="continent[NA]" id="continentNA" <?php echo $checked?> />
 																	
-																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('northamerica_table',true,'continentNA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-																		<button class="btn btn-small" type="button" onclick="CheckAll('northamerica_table',false,'continentNA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+																		<button class="btn btn-small btn-primary" id="check_all_northamerica_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" id="uncheck_all_northamerica_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
 													
-																		<table id="northamerica_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																		<table id="northamerica_table" class="table table-striped table-bordered bootstrap-datatable datatable margin-top-10">
 																			<tbody>
 																				<?php
 																				$i = 0;
@@ -1593,12 +1399,12 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		<?php																		
 																		$checked = in_array("SA", $this->continents) ? 'checked="$checked"' : '';						
 																		?>
-																		<input type="checkbox" style="visibility: hidden;" name="continent[SA]" id="continentSA" <?php echo $checked?> />
+																		<input type="checkbox" class="hidden" name="continent[SA]" id="continentSA" <?php echo $checked?> />
 																	
-																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('southamerica_table',true,'continentSA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-																		<button class="btn btn-small" type="button" onclick="CheckAll('southamerica_table',false,'continentSA')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+																		<button class="btn btn-small btn-primary" id="check_all_southamerica_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" id="uncheck_all_southamerica_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
 													
-																		<table id="southamerica_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																		<table id="southamerica_table" class="table table-striped table-bordered bootstrap-datatable datatable margin-top-10">
 																			<tbody>
 																				<?php
 																				$i = 0;
@@ -1639,12 +1445,12 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		<?php																		
 																		$checked = in_array("AF", $this->continents) ? 'checked="$checked"' : '';						
 																		?>
-																		<input type="checkbox" style="visibility: hidden;" name="continent[AF]" id="continentAF" <?php echo $checked?> />
+																		<input type="checkbox" class="hidden" name="continent[AF]" id="continentAF" <?php echo $checked?> />
 																	
-																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('africa_table',true,'continentAF')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-																		<button class="btn btn-small" type="button" onclick="CheckAll('africa_table',false,'continentAF')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+																		<button class="btn btn-small btn-primary" id="check_all_africa_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" id="uncheck_all_africa_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
 													
-																		<table id="africa_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																		<table id="africa_table" class="table table-striped table-bordered bootstrap-datatable datatable margin-top-10">
 																			<tbody>
 																				<?php
 																				$i = 0;
@@ -1685,12 +1491,12 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		<?php																		
 																		$checked = in_array("AS", $this->continents) ? 'checked="$checked"' : '';						
 																		?>
-																		<input type="checkbox" style="visibility: hidden;" name="continent[AS]" id="continentAS" <?php echo $checked?> />
+																		<input type="checkbox" class="hidden" name="continent[AS]" id="continentAS" <?php echo $checked?> />
 																	
-																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('asia_table',true,'continentAS')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-																		<button class="btn btn-small" type="button" onclick="CheckAll('asia_table',false,'continentAS')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+																		<button class="btn btn-small btn-primary" id="check_all_asia_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" id="uncheck_all_asia_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
 													
-																		<table id="asia_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																		<table id="asia_table" class="table table-striped table-bordered bootstrap-datatable datatable margin-top-10">
 																			<tbody>
 																				<?php
 																				$i = 0;
@@ -1731,12 +1537,12 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																		<?php																		
 																		$checked = in_array("OC", $this->continents) ? 'checked="$checked"' : '';						
 																		?>
-																		<input type="checkbox" style="visibility: hidden;" name="continent[OC]" id="continentOC" <?php echo $checked?> />
+																		<input type="checkbox" class="hidden" name="continent[OC]" id="continentOC" <?php echo $checked?> />
 																	
-																		<button class="btn btn-small btn-primary" type="button" onclick="CheckAll('oceania_table',true,'continentOC')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
-																		<button class="btn btn-small" type="button" onclick="CheckAll('oceania_table',false,'continentOC')"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
+																		<button class="btn btn-small btn-primary" id="check_all_oceania_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_ALL' ); ?></button>
+																		<button class="btn btn-small" id="uncheck_all_oceania_table_button" type="button"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UNCHECK_ALL' ); ?></button>
 													
-																		<table id="oceania_table" class="table table-striped table-bordered bootstrap-datatable datatable" style="margin-top: 10px;">
+																		<table id="oceania_table" class="table table-striped table-bordered bootstrap-datatable datatable margin-top-10">
 																			<tbody>
 																				<?php
 																				$i = 0;
@@ -1896,7 +1702,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																										
 													<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_LIMIT_LABEL'); ?></h4>
 													<div class="controls">
-														<input type="text" size="3" maxlength="3" id="spammer_limit" name="spammer_limit" value="<?php echo $this->spammer_limit ?>" title="" />	
+														<input type="number" size="3" maxlength="3" id="spammer_limit" name="spammer_limit" value="<?php echo $this->spammer_limit ?>" title="" />	
 													</div>
 													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SPAMMER_LIMIT_DESCRIPTION') ?></small></footer></blockquote>
 													
@@ -1921,7 +1727,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 							<?php if ($this->url_inspector_enabled == 0) { ?>
 							<div class="alert alert-warning centrado">
 								<h4><?php echo JText::_( 'COM_SECURITYCHECKPRO_URL_INPECTOR_DISABLED' ); ?></h4>
-								<button class="btn btn-success" onclick="Joomla.submitbutton('enable_url_inspector')" href="#">
+								<button id="enable_url_inspector_button" class="btn btn-success" href="#">
 									<i class="icon-ok icon-white"> </i>
 										<?php echo JText::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
 								</button>			
@@ -1965,7 +1771,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																									
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_FORBIDDEN_WORDS_LABEL'); ?></h4>
 												<div class="controls">
-													<textarea cols="35" rows="3" name="inspector_forbidden_words" style="width: 560px; height: 340px;"><?php echo $this->inspector_forbidden_words ?></textarea>
+													<textarea cols="35" rows="3" name="inspector_forbidden_words" class="width_560_height_340"><?php echo $this->inspector_forbidden_words ?></textarea>
 												</div>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_FORBIDDEN_WORDS_DESCRIPTION') ?></small></footer></blockquote>
 												
@@ -1991,7 +1797,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 																									
 													<h4 class="card-title"><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_DELETE_PERIOD'); ?></h4>
 													<div class="controls">
-														<input type="text" size="3" maxlength="3" id="delete_period" name="delete_period" value="<?php echo $this->delete_period ?>" title="" />	
+														<input type="number" size="3" maxlength="3" id="delete_period" name="delete_period" value="<?php echo $this->delete_period ?>" title="" />	
 													</div>
 													<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SYSTEM_TRACKACTIONS_LOG_DELETE_PERIOD_DESC') ?></small></footer></blockquote>
 																										
@@ -2046,53 +1852,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 		</div>
 <!-- End Wrapper -->			
 </div>		
-
- <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script>
-<!-- Chosen scripts -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/init.js"></script>
-
-<script>
-	var cont = 1;
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-		var target = $(e.target).attr("href") // activated tab
-		
-		var data_json = <?php echo $this->logs_by_country; ?>;
-		
-		if ( target == "#geoblock" ) {			
-			if (cont == 1) {
-				//var map = new Datamap({element: document.getElementById('container')});
-				map = new Datamap({
-					scope: 'world',
-					element: document.getElementById('container'),
-					projection: 'mercator',
-					fills: {
-						HIGH: '#FF0000',
-						LOW: '#F3F781',
-						MEDIUM: '#FF8000',
-						UNKNOWN: 'rgb(0,0,0)',
-						defaultFill: 'green'
-					},
-					data:	data_json
-					,geographyConfig: {
-						popupTemplate: function(geo, data) {
-							return ['<div class="hoverinfo" style="text-align: center;"><strong>',
-									geo.properties.name,
-									'<br/>' + data.numberOfThings,
-									'</strong></div>'].join('');
-						},
-						highlightFillColor: 'blue',
-					}
-				});
-				cont++;
-			}
-		}
-	});
-</script>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

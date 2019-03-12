@@ -10,46 +10,32 @@ defined('_JEXEC') or die('Restricted access');
 $font_awesome = "media/com_securitycheckpro/stylesheets/font-awesome.min.css";
 JHTML::stylesheet($font_awesome);
 
+$document = JFactory::getDocument();
+
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/trackactions_logs.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">
-	jQuery(document).ready(function() {		
-		//Tooltips
-		jQuery("#show_tables").tooltip();
-	});	
-</script>
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=trackactions_logs');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=trackactions_logs');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 			<?php 
 		// Cargamos la navegación
@@ -73,7 +59,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 							<div id="j-main-container">
 								<div id="editcell">
 								<div class="accordion-group">
-								<div style="font-weight:bold; font-size:10pt; text-align:center;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
+								<div class="editcell"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
 								<table class="table table-striped">								
 								<thead>
 									<tr>
@@ -205,11 +191,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 		</div>
 </div>	
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

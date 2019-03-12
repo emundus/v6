@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -9,6 +9,8 @@ namespace FOF30\Factory\Scaffolding\Layout;
 
 use FOF30\Container\Container;
 use SimpleXMLElement;
+
+defined('_JEXEC') or die;
 
 /**
  * Scaffolding Builder

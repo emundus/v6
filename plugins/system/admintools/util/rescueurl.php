@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -317,7 +317,20 @@ abstract class AtsystemUtilRescueurl
 			}
 			else
 			{
-				static::$isAdmin = !\JFactory::$application ? false : \JFactory::getApplication()->isAdmin();
+				$app = \JFactory::$application;
+
+				if (!$app)
+				{
+					static::$isAdmin = false;
+				}
+				elseif (method_exists($app, 'isClient'))
+				{
+					static::$isAdmin = $app->isClient('admin');
+				}
+				elseif (method_exists($app, 'isAdmin'))
+				{
+					static::$isAdmin = $app->isAdmin();
+				}
 			}
 		}
 

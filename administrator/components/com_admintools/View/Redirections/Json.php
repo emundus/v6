@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright 2010-2018 Akeeba Ltd / Nicholas K. Dionysopoulos
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 

@@ -14,68 +14,32 @@ JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 $lang2 = JFactory::getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
 ?>
-
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/sysinfo.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">	
-
-	function SetActiveTab($value) {
-		ActiveTab = $value;
-		storeValue('active', ActiveTab);
-	}
-	
-	function storeValue(key, value) {
-		if (localStorage) {
-			localStorage.setItem(key, value);
-		} else {
-			$.cookies.set(key, value);
-		}
-	}
-	
-	// Set active tab
-	window.onload = function() {
-		$('.nav-tabs a[href="#overall_status"]').parent().addClass('active');				
-	};		
-</script>
-
-<form action="index.php" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="index.php" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 <?php 
 		// Cargamos la navegación
@@ -92,7 +56,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			  		  
 			<!-- Contenido principal -->
 			
-			<div class="card mb-3" style="margin-left: 10px;">
+			<div class="card mb-3" class="margin-left-10">
 				<div class="card-header">
 				  <i class="fapro fa-table"></i>
 					<?php echo JText::_( 'COM_SECURITYCHECKPRO_SYSTEM_INFORMATION' ); ?>
@@ -210,7 +174,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 														} else {
 															echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 													?>
-														<button class="btn btn-info btn-mini" type="button" onclick="GoToJoomlaUpdate();"><i class="icon-wrench icon-white"></i></button>
+														<button class="btn btn-info btn-mini" id="GoToJoomlaUpdate_button" type="button"><i class="icon-wrench icon-white"></i></button>
 													<?php }	?>														
 												</div>							
 											</li>
@@ -228,7 +192,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['vuln_extensions'] ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToVuln')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" id="GoToVuln_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal vuln extensions -->
 													<div class="modal hide bd-example-modal-lg" id="modal_vuln_extensions" tabindex="-1" role="dialog" aria-labelledby="modal_vuln_extensionsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -265,7 +229,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['suspicious_files'] ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToMalware')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" id="GoToMalware_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal malware found -->
 													<div class="modal hide bd-example-modal-lg" id="modal_malware_found" tabindex="-1" role="dialog" aria-labelledby="modal_malware_foundLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -302,7 +266,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['files_with_bad_integrity']) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToIntegrity')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" id="GoToIntegrity_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal file integrity -->
 													<div class="modal hide bd-example-modal-lg" id="modal_files_with_bad_integrity" tabindex="-1" role="dialog" aria-labelledby="modal_files_with_bad_integrityLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -339,7 +303,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',$this->system_info['files_with_incorrect_permissions'] ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToPermissions')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" id="GoToPermissions_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal file permissions -->
 													<div class="modal hide bd-example-modal-lg" id="modal_file_permissions" tabindex="-1" role="dialog" aria-labelledby="modal_file_permissionsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -376,7 +340,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" id="GoToHtaccessProtection_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal Hide backend -->
 													<div class="modal hide bd-example-modal-lg" id="modal_hide_backend" tabindex="-1" role="dialog" aria-labelledby="modal_hide_backendLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -413,7 +377,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="SetActiveTab('session_protection'); Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_session_protection_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal forbid new admins -->
 													<div class="modal hide bd-example-modal-lg" id="modal_forbid_new_admins" tabindex="-1" role="dialog" aria-labelledby="modal_forbid_new_adminsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -450,7 +414,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="GoToJoomlaPlugins();" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_joomla_plugins_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal two factor -->
 													<div class="modal hide bd-example-modal-lg" id="modal_two_factor_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_two_factor_enabledLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -487,7 +451,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="storeValue('active_htaccess', 'headers_protection'); Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_headers_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal http headers -->
 													<div class="modal hide bd-example-modal-lg" id="modal_http_headers" tabindex="-1" role="dialog" aria-labelledby="modal_http_headersLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -553,7 +517,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToCpanel')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_twofactor_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
 													<div class="modal hide bd-example-modal-lg" id="modal_firewall_plugin_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_firewall_plugin_enabledLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -593,7 +557,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallLists')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_security_status_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
 													<div class="modal hide bd-example-modal-lg" id="modal_dynamic_blacklist" tabindex="-1" role="dialog" aria-labelledby="modal_dynamic_blacklistLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -632,7 +596,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallLogs')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_security_status_logs_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
 													<div class="modal hide bd-example-modal-lg" id="modal_logs_attacks" tabindex="-1" role="dialog" aria-labelledby="modal_logs_attacksLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -672,7 +636,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallSecondLevel')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_second_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal firewall enabled -->
 													<div class="modal hide bd-example-modal-lg" id="modal_second_level" tabindex="-1" role="dialog" aria-labelledby="modal_second_levelLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -711,7 +675,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_exclude_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal exceptions -->
 													<div class="modal hide bd-example-modal-lg" id="modal_exclude_exceptions_if_vulnerable" tabindex="-1" role="dialog" aria-labelledby="modal_second_levelLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -750,7 +714,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_xss_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal xss filter -->
 													<div class="modal hide bd-example-modal-lg" id="modal_strip_tags_exceptions" tabindex="-1" role="dialog" aria-labelledby="modal_strip_tags_exceptionsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -789,7 +753,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_sql_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal SQL filter -->
 													<div class="modal hide bd-example-modal-lg" id="modal_sql_pattern_exceptions" tabindex="-1" role="dialog" aria-labelledby="modal_sql_pattern_exceptionsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -828,7 +792,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToFirewallExceptions')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_lfi_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal LFI filter -->
 													<div class="modal hide bd-example-modal-lg" id="modal_lfi_exceptions" tabindex="-1" role="dialog" aria-labelledby="modal_lfi_exceptionsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -871,7 +835,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_session_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal Session protection -->
 													<div class="modal hide bd-example-modal-lg" id="modal_session_protection_active" tabindex="-1" role="dialog" aria-labelledby="modal_session_protection_activeLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -914,7 +878,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToUserSessionProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_session_hijack_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal Session hijack -->
 													<div class="modal hide bd-example-modal-lg" id="modal_session_hijack_protection" tabindex="-1" role="dialog" aria-labelledby="modal_session_hijack_protectionLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -954,7 +918,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToUploadScanner')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_upload_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal upload scanner -->
 													<div class="modal hide bd-example-modal-lg" id="modal_upload_scanner_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_upload_scanner_enabledLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -994,7 +958,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToCpanel')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_cron_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal cron enabled -->
 													<div class="modal hide bd-example-modal-lg" id="modal_cron_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_cron_enabledLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1046,7 +1010,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 														} else {
 															echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 													?>											
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToPermissions')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_filemanager_check_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal last filemanager -->
 													<div class="modal hide bd-example-modal-lg" id="modal_last_check" tabindex="-1" role="dialog" aria-labelledby="modal_last_checkLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1098,7 +1062,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 														} else {
 															echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 													?>											
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToIntegrity')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_fileintegrity_check_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal last fileintegrity -->
 													<div class="modal hide bd-example-modal-lg" id="modal_last_check_integrity" tabindex="-1" role="dialog" aria-labelledby="modal_last_check_integrityLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1135,7 +1099,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToCpanel')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_spam_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal spam protection -->
 													<div class="modal hide bd-example-modal-lg" id="modal_spam_protection_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_spam_protection_enabledLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1174,7 +1138,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_htaccess_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal htaccess protection -->
 													<div class="modal hide bd-example-modal-lg" id="modal_prevent_access" tabindex="-1" role="dialog" aria-labelledby="modal_prevent_accessLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1211,7 +1175,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_browsing_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal unauthorized browsing -->
 													<div class="modal hide bd-example-modal-lg" id="modal_prevent_unauthorized_browsing" tabindex="-1" role="dialog" aria-labelledby="modal_prevent_unauthorized_browsingLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1248,7 +1212,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_file_injection_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal file injection -->
 													<div class="modal hide bd-example-modal-lg" id="modal_file_injection_protection" tabindex="-1" role="dialog" aria-labelledby="modal_file_injection_protectionLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1285,7 +1249,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_self_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal self environ -->
 													<div class="modal hide bd-example-modal-lg" id="modal_self_environ" tabindex="-1" role="dialog" aria-labelledby="modal_self_environLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1322,7 +1286,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_xframe_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal xframe options -->
 													<div class="modal hide bd-example-modal-lg" id="modal_xframe_options" tabindex="-1" role="dialog" aria-labelledby="modal_xframe_optionsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1359,7 +1323,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_mime_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal mime attacks -->
 													<div class="modal hide bd-example-modal-lg" id="modal_prevent_mime_attacks" tabindex="-1" role="dialog" aria-labelledby="modal_prevent_mime_attacksLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1396,7 +1360,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_default_banned_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal default banned list -->
 													<div class="modal hide bd-example-modal-lg" id="modal_default_banned_list" tabindex="-1" role="dialog" aria-labelledby="modal_default_banned_listLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1433,7 +1397,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_signature_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal disable server signature -->
 													<div class="modal hide bd-example-modal-lg" id="modal_disable_server_signature" tabindex="-1" role="dialog" aria-labelledby="modal_disable_server_signatureLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1470,7 +1434,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_eggs_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal disallow php eggs -->
 													<div class="modal hide bd-example-modal-lg" id="modal_disallow_php_eggs" tabindex="-1" role="dialog" aria-labelledby="modal_disallow_php_eggsLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1507,7 +1471,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 													} else {
 														echo "<span class=\"badge badge-danger\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
 												?>
-													<button class="btn btn-info btn-mini" type="button" onclick="Joomla.submitbutton('GoToHtaccessProtection')" href="#"><i class="icon-wrench icon-white"></i></button>
+													<button class="btn btn-info btn-mini" type="button" id="li_extension_status_sensible_button" href="#"><i class="icon-wrench icon-white"></i></button>
 													<!-- Modal disallow sensible files -->
 													<div class="modal hide bd-example-modal-lg" id="modal_disallow_sensible_files_access" tabindex="-1" role="dialog" aria-labelledby="modal_disallow_sensible_files_accessLabel" aria-hidden="true">
 														  <div class="modal-dialog modal-lg" role="document">
@@ -1618,28 +1582,8 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 </div>
 
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
-
-
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />
 <input type="hidden" name="boxchecked" value="1" />
 <input type="hidden" name="controller" value="filemanager" />
 </form>
-	
-<script type="text/javascript" language="javascript">
-		
-		// Go to Joomla Update page
-		function GoToJoomlaUpdate() {
-			window.location.href="index.php?option=com_joomlaupdate";			
-		}				
-		
-		// Go to Joomla Plugins page
-		function GoToJoomlaPlugins() {
-			window.location.href="index.php?option=com_plugins&view=plugins";			
-		}	
-</script>

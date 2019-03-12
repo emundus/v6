@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -116,7 +116,10 @@ class AtsystemUtilExceptionshandler
 		$message = AtsystemUtilRescueurl::processBlockMessage($message);
 
 		// Show the 403 message
-		if ($this->cparams->getValue('use403view', 0))
+		$use403View = $this->cparams->getValue('use403view', 0);
+		$isFrontend = $this->container->platform->isFrontend();
+
+		if ($use403View && $isFrontend)
 		{
 			// Using a view
 			if (!$this->container->platform->getSessionVar('block', false, 'com_admintools'))

@@ -44,13 +44,14 @@ function read_file()
 	}
 	
 	//First check if the file has the right extension, we need txt only
-	if ( !(strtolower(JFile::getExt($userfile['name']) ) == 'txt') ) {
+	if (!(strtolower(JFile::getExt($userfile['name'])) == 'txt'))
+	{
 		JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_EXTENSION'));
 		return false;
 	}
 
 	// Check if there was a problem uploading the file.
-	if ( $userfile['error'] || $userfile['size'] < 1 || !($userfile['type'] == "text/plain") )
+	if ($userfile['error'] || $userfile['size'] < 1 || !($userfile['type'] == "text/plain"))
 	{
 		JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'));
 		return false;
@@ -65,7 +66,8 @@ function read_file()
 	$upload_res = JFile::upload($tmp_src, $tmp_dest);
 	
 	// El fichero se ha subido correctamente
-	if ($upload_res) {
+	if ($upload_res)
+	{
 		// Leemos el contenido del fichero, que ha de estar en formato json
 		$file_content = file_get_contents($tmp_dest);
 		$file_content_json = json_decode($file_content,true);
@@ -73,13 +75,14 @@ function read_file()
 		$db = JFactory::getDBO();
 		
 		// Si hay contenido...
-		if ( !empty($file_content_json) ) {
+		if (!empty($file_content_json))
+		{
 			// ... y lo recorremos y extraemos los pares 'storage_key' y 'storage_value'
-			foreach ($file_content_json as $entry) {
-			
+			foreach ($file_content_json as $entry) 
+			{			
 				// Configuración del firewall web
-				if ( array_key_exists("storage_key",$entry) ) {
-										
+				if (array_key_exists("storage_key",$entry))
+				{										
 					// Instanciamos un objeto para almacenar los datos que serán sobreescritos
 					$object = new StdClass();					
 					$object->storage_key = $entry["storage_key"];
@@ -93,28 +96,34 @@ function read_file()
 					$db->setQuery($query);
 					$exists = $db->loadResult();
 																	
-					try {
+					try
+					{
 						// Añadimos los datos a la BBDD	
-						if ( is_null($exists) ) {
+						if (is_null($exists))
+						{
 							$res = $db->insertObject('#__securitycheckpro_storage', $object);
-						} else {
+						} else 
+						{
 							$res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
 						}
 							
-						if ( !$res ) {
+						if (!$res)
+						{
 							JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'));
 							return false;
 						}
-					} catch (Exception $e) {	
+					} catch (Exception $e)
+					{	
 						JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'));
 						return false;
 					}
 				// Configuración del componente
-				} else if ( array_key_exists("params",$entry) ) {
+				} else if (array_key_exists("params",$entry))
+				{
 					
 					// Obtenemos el extension_id de la extensión, necesario para actualizar la información
 					$query = 'SELECT extension_id FROM #__extensions WHERE name="Securitycheck Pro" and type="component"';
-					$db->setQuery( $query );
+					$db->setQuery($query);
 					$db->execute();
 					$id = $db->loadResult();
 					
@@ -123,15 +132,18 @@ function read_file()
 					$object->extension_id = $id;
 					$object->params = $entry['params'];
 																			
-					try {
+					try 
+					{					
 						// Añadimos los datos a la BBDD
 						$res = $db->updateObject('#__extensions', $object, 'extension_id');		
 						
-						if ( !$res ) {
+						if (!$res)
+						{
 							JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'));
 							return false;
 						}
-					} catch (Exception $e) {	
+					} catch (Exception $e) 
+					{	
 						JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'));
 						return false;
 					}
@@ -142,7 +154,8 @@ function read_file()
 			// ... y mostramos un mensaje de éxito
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_IMPORT_SUCCESSFULLY'));
 		
-		} else {
+		} else 
+		{
 			JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'));
 			return false;			
 		}		

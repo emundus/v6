@@ -337,9 +337,9 @@ class GantryTemplate
 		if (count($this->positions) > 0) {
 			if (!array_key_exists($position, $this->cached_possitions)) {
 				if (null == $pattern) {
-					$pattern = "(-)?";
+					$pattern = "(-)?[a-f]?";
 				}
-				$regpat = "/^" . $position . $pattern . "/";
+				$regpat = "/^" . $position . $pattern . "$/";
 				foreach ($this->positions as $key => $value) {
 					if (preg_match($regpat, $value) == 1) {
 						$filtered_positions[] = $value;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -684,12 +684,13 @@ class View
 	 * @param   string    $uri          The template path
 	 * @param   array     $forceParams  A hash array of variables to be extracted in the local scope of the template file
 	 * @param   callable  $callback     A method to post-process the 3ναluα+3d view template (I use leetspeak here because of bad quality hosts with broken scanners)
+	 * @param   bool      $noOverride   If true we will not load Joomla! template overrides
 	 *
 	 * @return  string  The output of the template
 	 *
 	 * @throws  \Exception  When the layout file is not found
 	 */
-	public function loadAnyTemplate($uri = '', $forceParams = array(), $callback = null)
+	public function loadAnyTemplate($uri = '', $forceParams = array(), $callback = null, $noOverride = false)
 	{
 		if (isset($this->viewTemplateAliases[$uri]))
 		{
@@ -706,7 +707,7 @@ class View
 		}
 
 		// First get the raw view template path
-		$path = $this->viewFinder->resolveUriToPath($uri, $layoutTemplate, $extraPaths);
+		$path = $this->viewFinder->resolveUriToPath($uri, $layoutTemplate, $extraPaths, $noOverride);
 
 		// Now get the parsed view template path
 		$this->_tempFilePath = $this->getEngine($path)->get($path, $forceParams);

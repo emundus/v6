@@ -862,3 +862,192 @@ font-size: 14px;
 .centrado{
 text-align: center;
 }
+
+.left {
+    float: left;
+}
+
+.btn-dark {
+    color: #fff !important;
+    background-color: #343a40 !important;
+    border-color: #343a40 !important;
+}
+
+.none {
+    display: none !important;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-bottom-5 {
+    margin-bottom: 5px;
+}
+
+.text-align-right {
+    text-align: right;
+}
+
+.max-width-20rem {
+    max-width: 20rem;
+}
+
+.margin-top-minus18 {
+    margin-top: -18px;
+}
+
+.margin-top-5 {
+    margin-top: 5px;
+}
+
+.width-0 {
+    width: 0%;
+}
+
+.firewall-config-style {
+   width: 560px;
+   height: 140px;
+}
+
+.margin-left-10 {
+    margin-left: 10px;
+}
+
+.margin-bottom-30 {
+    margin-bottom: 30px;
+}
+
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+.background-8EBBFF {
+    background-color: #8EBBFF;
+}
+
+.width_560_height_340 {
+    width: 560px;
+	height: 340px;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.malwarescan-table-info {
+    font-size: 0.75em;
+	max-width: 150px; 
+	word-wrap: break-word;
+}
+
+.font-size-13 {
+	font-size: 13px;
+}
+
+.margin-bottom-3rem {
+	margin-bottom: 3rem !important;
+}
+
+.justify-content-center {
+	justify-content: center;
+}
+
+.margin-right-10 {
+    margin-right: 10px;
+}
+
+.margin-bottom-10 {
+    margin-bottom: 10px;
+}
+
+.margin-right-5 {
+    margin-right: 5px;
+}
+
+.background-FF9EB4 {
+    background-color: #FF9EB4;
+}
+
+.padding-10-10-10-10 {
+    padding: 10px 10px 10px 10px;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+}
+
+.malwarescan-table-info2 {
+    max-width: 150px; 
+	word-wrap: break-word;
+}
+
+.font-size-14 {
+    font-size:14px;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.width_560 {
+    width: 560px;
+}
+
+.overflow-y-scroll {
+    overflow-y: scroll;
+}
+
+.width-750 {
+    width: 750px;
+}
+
+.background-FFBF60 {
+    background-color: #FFBF60;
+}
+
+.background-D0F5A9 {
+    background-color: #D0F5A9;
+}
+
+.background-FFADF5 {
+    background-color: #FFADF5;
+}
+
+.background-C68C51 {
+    background-color: #C68C51;
+}
+
+.margin-left-60 {
+    margin-left: 60px;
+}
+
+.margin-top-50 {
+    margin-top: 50px;
+}
+
+.width-40rem {
+    width: 40rem;
+}
+
+.max-width-1200 {
+    max-width: 1200px;
+}
+
+.editcell {
+    font-weight:bold;
+	font-size:10pt; 
+	text-align:center;
+}
+
+.float-right {
+    float:right;
+}
+
+.margin-left-20 {
+    margin-left: 20px;
+}
+
+.height-300 {
+    height: 300px;
+}

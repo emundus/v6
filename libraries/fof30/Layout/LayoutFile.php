@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -70,8 +70,13 @@ class LayoutFile extends JLayoutFile
 
 			reset($files);
 
-			while ((list(, $fileName) = each($files)) && is_null($this->fullPath))
+			foreach ($files as $fileName)
 			{
+				if (!is_null($this->fullPath))
+				{
+					break;
+				}
+
 				$r              = $filesystem->pathFind($possiblePaths, $fileName);
 				$this->fullPath = $r === false ? null : $r;
 			}

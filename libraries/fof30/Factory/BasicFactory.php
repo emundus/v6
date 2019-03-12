@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -14,13 +14,13 @@ use FOF30\Factory\Exception\ControllerNotFound;
 use FOF30\Factory\Exception\DispatcherNotFound;
 use FOF30\Factory\Exception\FormLoadData;
 use FOF30\Factory\Exception\FormLoadFile;
+use FOF30\Factory\Exception\FormNotFound;
 use FOF30\Factory\Exception\ModelNotFound;
 use FOF30\Factory\Exception\ToolbarNotFound;
-use FOF30\Factory\Exception\FormNotFound;
 use FOF30\Factory\Exception\TransparentAuthenticationNotFound;
 use FOF30\Factory\Exception\ViewNotFound;
-use FOF30\Factory\Scaffolding\Layout\Builder as LayoutBuilder;
 use FOF30\Factory\Scaffolding\Controller\Builder as ControllerBuilder;
+use FOF30\Factory\Scaffolding\Layout\Builder as LayoutBuilder;
 use FOF30\Factory\Scaffolding\Model\Builder as ModelBuilder;
 use FOF30\Factory\Scaffolding\View\Builder as ViewBuilder;
 use FOF30\Form\Form;

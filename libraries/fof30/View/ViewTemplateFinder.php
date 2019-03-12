@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -255,12 +255,13 @@ class ViewTemplateFinder
 	 * @param   string  $uri             The view template URI to parse
 	 * @param   string  $layoutTemplate  The layout template override of the View class
 	 * @param   array   $extraPaths      Any extra lookup paths where we'll be looking for this view template
+	 * @param   bool    $noOverride      If true we will not load Joomla! template overrides
 	 *
 	 * @return  string
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function resolveUriToPath($uri, $layoutTemplate = '', array $extraPaths = array())
+	public function resolveUriToPath($uri, $layoutTemplate = '', array $extraPaths = array(), $noOverride = false)
 	{
 		// Parse the URI into its parts
 		$parts = $this->parseTemplateUri($uri);
@@ -274,7 +275,7 @@ class ViewTemplateFinder
 		$paths = array();
 
 		// If we are on the correct side of the application or we have an "any:" URI look for a template override
-		if (($parts['admin'] == -1) || ($parts['admin'] == $isAdmin))
+		if (!$noOverride && (($parts['admin'] == -1) || ($parts['admin'] == $isAdmin)))
 		{
 			$paths[] = $templatePath . '/' . $parts['view'];
 		}

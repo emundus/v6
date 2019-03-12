@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 // Load framework base classes
 jimport('joomla.application.component.controller');
@@ -26,13 +26,16 @@ public function save()
 	$jinput = JFactory::getApplication()->input;
 	$data = $jinput->get('post');
 		
-	if ( !array_key_exists('loggable_extensions',$data) ) {
+	if (!array_key_exists('loggable_extensions',$data))
+	{
 		$data['loggable_extensions'] = explode(',',"com_banners,com_cache,com_categories,com_config,com_contact,com_content,com_installer,com_media,com_menus,com_messages,com_modules,com_newsfeeds,com_plugins,com_redirect,com_tags,com_templates,com_users");
 	}
 	
-	if ( !is_numeric($data['delete_period']) ) {
+	if (!is_numeric($data['delete_period']))
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_INVALID_VALUE'),'error');
-	} else {
+	} else 
+	{
 		$model->saveConfig($data, 'pro_plugin');
 	}
 

@@ -14,7 +14,8 @@ class SecuritycheckprosControllerJson extends SecuritycheckproController
 // Definimos las variables
 protected $input = array();
 
-	public function __construct($config = array()) {
+	public function __construct($config = array())
+	{
 		$this->input = JFactory::getApplication()->input;
 		parent::__construct($config);
 	}
@@ -36,8 +37,10 @@ protected $input = array();
 		$clientJSON = $this->input->get('json', null, 'raw', 2);
 
 		// Elininamos posibles barras añadidas si magic_quotes_gpc está habilitado
-		if(function_exists('get_magic_quotes_gpc')) {
-			if(get_magic_quotes_gpc()) {
+		if(function_exists('get_magic_quotes_gpc'))
+		{
+			if(get_magic_quotes_gpc())
+			{
 				$clientJSON = stripslashes($clientJSON);
 			}
 		}

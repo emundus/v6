@@ -22,68 +22,34 @@ $vulnerable_array = array(JHtml::_('select.option','Si', JText::_('COM_SECURITYC
 			JHtml::_('select.option','No', JText::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
 
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitycheckpros.php';
 ?>
-
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">
-	function filter_vulnerable_extension(product) {
-		url = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&format=raw&task=filter_vulnerable_extension&product=';
-		url = url.concat(product);
-		jQuery.ajax({
-			url: url,							
-			method: 'GET',
-			error: function(request, status, error) {
-				alert(request.responseText);
-			},
-			success: function(response){								
-				jQuery("#response_result").text("");
-				jQuery("#response_result").append(response);				
-				jQuery("#modal_vuln_extension").modal('show');							
-			}
-		});
-	}	
-</script>
 
 	<!-- Modal vulnerable extension -->
 	<div class="modal bd-example-modal-lg" id="modal_vuln_extension" tabindex="-1" role="dialog" aria-labelledby="modal_vuln_extensionLabel" aria-hidden="true">
-	  <div class="modal-dialog modal-lg" style="max-width: 1200px;" role="document">
+	  <div class="modal-dialog modal-lg" class="max-width-1200" role="document">
 			<div class="modal-content">
 				<div class="modal-header alert alert-info">
 					<h2 class="modal-title"><?php echo JText::_( 'COM_SECURITYCHECKPRO_VULN_INFO_TEXT' ); ?></h2>
@@ -91,7 +57,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					<span aria-hidden="true">&times;</span>
 					</button>				
 				</div>
-				<div class="modal-body" style="overflow-x: auto;">
+				<div class="modal-body" class="overflow-x-auto">
 					<div class="table-responsive" id="response_result">		
 					</div>					
 				</div>
@@ -102,7 +68,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 		</div>
 	</div>									
 
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 		<?php 
 		// Cargamos la navegación
@@ -162,7 +128,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			<!-- Extensions table -->
 			<div class="card mb-3">
 				<div id="editcell">
-					<div style="font-weight:bold; font-size:10pt; text-align:center;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
+					<div class="editcell"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
 					<table class="table table-striped">						
 						<thead>
 							<tr>
@@ -186,7 +152,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					</table>					
 				</div>
 				
-				<div style="margin-left: 10px; margin-right: 10px;">
+				<div class="margin-left-10 margin-right-10">
 					<select name="filter_extension_type" class="custom-select" onchange="this.form.submit()">
 						<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
 						<?php echo JHtml::_('select.options', $type_array, 'value', 'text', $this->state->get('filter.extension_type'));?>
@@ -195,7 +161,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 						<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITIES');?></option>
 						<?php echo JHtml::_('select.options', $vulnerable_array, 'value', 'text', $this->state->get('filter.vulnerable'));?>
 					</select>
-					<span class="badge badge-info" style="padding: 10px 10px 10px 10px; float:right;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATE' ) . $this->last_update; ?></span>
+					<span class="badge badge-info" class="padding-10-10-10-10 float-right"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATE' ) . $this->last_update; ?></span>
 				</div>
 	
 				<div class="card-body">
@@ -248,7 +214,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 									<td class="text-center">
 								<?php
 									if ( $type == 'core' ) {
-									 echo "<span class=\"badge\" style=\"background-color: #FFADF5; \">";
+									 echo "<span class=\"badge\" class=\"background-FFADF5; \">";
 									} else if ( $type == 'component' ) {
 									 echo "<span class=\"badge badge-info\">";
 									} else if ( $type == 'module' ) {
@@ -303,13 +269,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			</div>		
 				
 </div>
-
-
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

@@ -17,16 +17,17 @@ $status_array = array(JHtml::_('select.option','0', JText::_('COM_SECURITYCHECKP
 			JHtml::_('select.option','1', JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_OK')),
 			JHtml::_('select.option','2', JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_EXCEPTIONS')));
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 // Add style declaration
 $media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
@@ -37,52 +38,16 @@ JHTML::stylesheet($sweet);
 
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/onlinechecks.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">
-
-	jQuery(document).ready(function() {	
-					
-		// Chequeamos cuando se pulsa el botón 'close' del modal 'initialize data' para actualizar la página
-		$(function() {
-			$("#buttonclose").click(function() {
-				setTimeout(function () {window.location.reload()},1000);				
-			});
-		});		
-		
-		contenido = '<?php 
-			$mainframe = JFactory::getApplication();
-			$contenido = $mainframe->getUserState('contenido', "vacio");			
-			if ($contenido != "vacio") {
-				echo "no vacio";
-			} else {
-				echo "vacio";								
-			}
-		?>';	
-		
-		if (contenido != "vacio") {	
-			jQuery("#view_file").modal('show');
-		} 
-	});		
-</script>
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=onlinechecks&'. JSession::getFormToken() .'=1');?>" method="post" style="margin-top: -18px;" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=onlinechecks&'. JSession::getFormToken() .'=1');?>" method="post" class="margin-top-minus18" name="adminForm" id="adminForm">
 
 	<!-- Modal view file -->
 		<div class="modal" id="view_file" tabindex="-1" role="dialog" aria-labelledby="viewfileLabel" aria-hidden="true">
@@ -140,7 +105,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 								</div>
 								<div class="btn-group pull-left">
 									<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-									<button class="btn tip" type="button" onclick="document.getElementById('filter_onlinechecks_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+									<button class="btn tip" type="button" id="filter_onlinechecks_search_button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 								</div>								
 							</div>
 											
@@ -215,7 +180,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 											}					
 										}				
 										?></td>				
-										<td class="center" style="font-size:14px"><?php echo $row[4]; ?></td>
+										<td class="center" class="font-size-14"><?php echo $row[4]; ?></td>
 										</td>										
 										<td class="center">
 											<?php echo JHtml::_('grid.id', $k, $row[1], '', 'onlinechecks_logs_table'); ?>
@@ -240,12 +205,6 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			
 		</div>
 </div>		
-
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script>   
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

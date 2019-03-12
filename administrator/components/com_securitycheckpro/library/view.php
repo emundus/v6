@@ -12,17 +12,22 @@ defined('_JEXEC') or die('Restricted access');
 // Imports
 jimport('joomla.application.component.view');
 
-if(!class_exists('JoomlaCompatView')) {
-	if(interface_exists('JView')) {
+if (!class_exists('JoomlaCompatView'))
+	{
+	if (interface_exists('JView'))
+	{
 		abstract class JoomlaCompatView extends JViewLegacy {}
-	} else {
+	} else 
+	{
 		class JoomlaCompatView extends JView {}
 	}
 }
 
-class SecuritycheckproView extends JoomlaCompatView {
+class SecuritycheckproView extends JoomlaCompatView
+{
 
-function __construct() 	{
+function __construct()
+	{
 	parent::__construct();
 		
 	JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_CPANEL_FIREWALL_CONFIGURATION'), 'securitycheckpro' );
