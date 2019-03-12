@@ -201,10 +201,9 @@ class EmundusModelFormations extends JModelLegacy {
 
 		if ($user_id == null) {
 			$user_id = JFactory::getUser()->id;
-		}
-
-		if ($user_id == null) {
-			return false;
+            if ($user_id == null) {
+                return false;
+            }
 		}
 
 		$db = JFactory::getDbo();
@@ -218,10 +217,55 @@ class EmundusModelFormations extends JModelLegacy {
 		try {
 			return $db->loadColumn();
 		} catch (Exception $e) {
-			JLog::add('Error getting user companies at m/formation in query: '.$query, JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting user companies at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
 	}
+
+
+	/**
+     * this function returns all the formations the user is signed up to by the DRH
+     * @param      $campaign
+     * @param null $user_id
+     * @return mixed
+     */
+	public function getUserFormationByRH($user_id = null, $user_rh = null) {
+        if ($user_id == null) {
+            return null;
+        }
+
+        if($user_rh == null) {
+            $user_id = JFactory::getUser()->id;
+            if ($user_rh == null) {
+                return null;
+            }
+        }
+
+        $user_companies = $this->getCompaniesDRH($user_rh);
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select([$db->quoteName('ecc.fnum'), $db->quoteName('esp.id', 'program_id'), $db->quoteName('estu.label', 'label'), $db->quoteName('estu.price'), $db->quoteName('estu.notes'), $db->quoteName('estu.date_start'), $db->quoteName('estu.date_end'), $db->quoteName('estu.location_title'), $db->quoteName('estu.location_address'), $db->quoteName('estu.location_zip'), $db->quoteName('estu.location_city'), $db->quoteName('estu.session_code'), $db->quoteName('estu.hours'), $db->quoteName('estu.hours'), $db->quoteName('estu.code'), $db->quoteName('ess.value'), $db->quoteName('ess.class')])
+            ->from($db->quoteName('#__emundus_users', 'eu'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('eu.user_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+            ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'estu') . ' ON ' . $db->quoteName('estu.session_code') . ' = ' . $db->quoteName('esc.session_code'))
+            ->leftJoin($db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status'))
+            ->where($db->quoteName('eu.user_id') . " = " . $user_id . ' AND ' . $db->quoteName('ecc.company_id') . ' IN (' . implode(', ', $user_companies) . ')');
+        $db->setQuery($query);
+
+        try {
+            return $db->loadObject();
+        } catch (Exception $e) {
+            JLog::add('Error getting user companies at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return null;
+        }
+
+
+    }
 
 }
