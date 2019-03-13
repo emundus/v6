@@ -154,14 +154,11 @@ class EmundusViewEmail extends JViewLegacy
 					    $fnum->status = $app_file->status;
 				    }
 			    }
-			    $experts_list = $evaluations->getExperts(@$fnums[0]->fnum, $reference_field, $reference_table);
+			    $this->experts_list = $evaluations->getExperts(@$fnums[0]->fnum, $reference_field, $reference_table);
 
-			    $email = @EmundusHelperEmails::createEmailBlock(array('expert'), $experts_list);
-			    $this->assignRef('fnums', $fnums[0]);
-
-			    $this->assignRef('experts_list', $experts_list);
-			    $this->assignRef('email', $email);
-			    $this->assignRef('default_email_tmpl', $default_email_tmpl);
+			    $this->email = @EmundusHelperEmails::createEmailBlock(array('expert'), $experts_list);
+			    $this->fnums =  $fnums[key($fnums)];
+				$this->default_email_tmpl = $default_email_tmpl;
 		    }
 
 			parent::display($tpl);

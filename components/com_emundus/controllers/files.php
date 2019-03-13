@@ -1441,7 +1441,7 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
             foreach ($fnum as $k => $v) {
-                if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
+                if ($k != 'code' && strpos($k, 'campaign_id')===false) {
 
                     if ($k === 'fnum') {
                         $line .= " ".$v."\t";
@@ -2083,7 +2083,7 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnumsArray as $fnunLine) {
             $col = 0;
             foreach ($fnunLine as $k => $v) {
-                if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
+                if ($k != 'code' && strpos($k, 'campaign_id')===false) {
 
                     if ($k === 'fnum') {
                         $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow($col, $line, (string) $v, PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2579,11 +2579,14 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+	/** Generate a new document from the many templates.
+	 * @throws Exception
+	 */
     public function generatedoc() {
         $jinput = JFactory::getApplication()->input;
-        $fnums  = $jinput->getString('fnums', "");
-        $code   = $jinput->getString('code', "");
-        $idTmpl = $jinput->getString('id_tmpl', "");
+        $fnums  = $jinput->post->getString('fnums', "");
+        $code   = $jinput->post->getString('code', "");
+        $idTmpl = $jinput->post->getString('id_tmpl', "");
 
         $fnumsArray = explode(",", $fnums);
 
@@ -2599,22 +2602,20 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $res = new stdClass();
         $res->status = true;
-        $res->files = array();
+        $res->files = [];
         $fnumsInfos = $m_files->getFnumsTagsInfos($fnumsArray);
 
         switch ($tmpl[0]['template_type']) {
-            case 1:
+
+        	case 1:
                 //Simple FILE
                 $res->status = false;
                 $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
                 echo json_encode($res);
                 break;
+
             case 2:
                 //Generate PDF
-                /*if (!empty($tmpl[0]['attachment_id'])) {
-                    require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-                    $files = letter_pdf($user->id, $tmpl[0]['status'], $tmpl[0]['training'], 0, 0);
-                }*/
                 $res->status = false;
                 $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE_FROM_HTML_TEMPLATE");
                 echo json_encode($res);
@@ -2623,22 +2624,25 @@ class EmundusControllerFiles extends JControllerLegacy
             case 3:
                 // template DOCX
                 require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
-                //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php
 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+
+                // Special tags which require a bit more work.
+	            $special = ['user_dob_age', 'evaluation_radar'];
+
                 try {
                     $phpWord = new \PhpOffice\PhpWord\PhpWord();
                     $preprocess = $phpWord->loadTemplate(JPATH_BASE.$tmpl[0]['file']);
-                    //$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
                     $tags = $preprocess->getVariables();
                     $idFabrik = array();
                     $setupTags = array();
                     foreach ($tags as $i => $val) {
                         $tag = strip_tags($val);
-                        if (is_numeric($tag))
-                            $idFabrik[] = $tag;
-                        else
-                            $setupTags[] = $tag;
+                        if (is_numeric($tag)) {
+	                        $idFabrik[] = $tag;
+                        } else {
+	                        $setupTags[] = $tag;
+                        }
                     }
 
                     if (!empty($idFabrik)) {
@@ -2708,33 +2712,55 @@ class EmundusControllerFiles extends JControllerLegacy
                     foreach ($fnumsArray as $fnum) {
 
                     	$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
-
                     	if (isset($fnumsInfos[$fnum])) {
                             foreach ($setupTags as $tag) {
                                 $val = "";
                                 $lowerTag = strtolower($tag);
 
                                 if (array_key_exists($lowerTag, $const)) {
+
 	                                $preprocess->setValue($tag, $const[$lowerTag]);
+
+                                } elseif (in_array($lowerTag, $special)) {
+
+                                	// Each tag has it's own logic requiring special work.
+                                	switch ($lowerTag) {
+
+                                		// dd-mm-YYYY (YY)
+		                                case 'user_dob_age':
+											$birthday = $m_files->getBirthdate($fnum, 'd/m/Y', true);
+											$preprocess->setValue($tag, $birthday->date.' ('.$birthday->age.')');
+		                                	break;
+
+	                                    // This is a special radar style element of the evaluation values.
+		                                case 'evaluation_radar':
+		                                	$preprocess->setValue($tag, '');
+
+		                                	// The code below cannot work as of right now, objects cannot be inserted in a template file being parsed.
+		                                    // TODO: Retry doing this when a new version of PHPOffice is available.
+		                                	/*$evaluation = $m_evalutaion->getScore($fnum);
+			                                $section = $phpWord->addSection();
+			                                $section->addChart('radar', array_keys($evaluation), $evaluation);
+			                                $section->addTextBreak();*/
+		                                	break;
+
+		                                default:
+			                                $preprocess->setValue($tag, '');
+		                                break;
+	                                }
+
                                 } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
-	                                $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
+                                	$preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
                                 } else {
-                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], null, $fnum, '');
+                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                     $i = 0;
-                                    foreach ($tags['patterns'] as $key => $value) {
+                                    foreach ($tags['patterns'] as $value) {
                                         if ($value == $tag) {
                                             $val = $tags['replacements'][$i];
                                             break;
                                         }
                                         $i++;
                                     }
-                                    // Add HTML to a tag value is not possible....
-                                    /*$phpWord = new \PhpOffice\PhpWord\PhpWord();
-                                    $section = $phpWord->addSection();
-                                    $preprocessHtml = new \PhpOffice\PhpWord\Shared\Html;
-                                    $preprocessHtml->addHtml($section, $val);*/
-
-                                    //$val = HTMLtoOpenXML::getInstance()->fromHTML(str_replace("<br />","<br>", stripslashes($val)));
                                     $preprocess->setValue($tag, htmlspecialchars($val));
                                 }
                             }
@@ -2742,8 +2768,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 if (isset($fabrikValues[$id][$fnum])) {
                                     $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
                                     $preprocess->setValue($id, $value);
-                                }
-                                else {
+                                } else {
                                     $preprocess->setValue($id, '');
                                 }
                             }
@@ -2764,8 +2789,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         unset($preprocess);
                     }
                     echo json_encode($res);
-                }
-                catch(Exception $e) {
+                
+                } catch(Exception $e) {
                     $res->status = false;
                     $res->msg = JText::_("AN_ERROR_OCURRED").':'. $e->getMessage();
                     echo json_encode($res);
@@ -2876,7 +2901,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 unlink($fn);
             }
         }
-        $pdf->Output($path, 'I');
+	    ob_end_clean();
+	    $pdf->Output($path, 'I');
         exit;
     }
 
@@ -2999,39 +3025,31 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function saveExcelFilter()
-    {
-        $db = JFactory::getDBO();
-        $jinput         = JFactory::getApplication()->input;
-        $name           = $jinput->getString('filt_name', null);
-        $current_user   = JFactory::getUser();
-        $user_id        = $current_user->id;
-        $itemid         = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $params       = $jinput->getString('params', null);
-        $constraints    = array('excelfilter'=>$params);
+    public function saveExcelFilter() {
+	    $current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $name = $jinput->getString('filt_name', null);
+        $itemid = $jinput->get->get('Itemid', null);
 
-        $constraints = json_encode($constraints);
+        $params = $jinput->getString('params', null);
+        $constraints = json_encode(array('excelfilter'=>$params));
 
         $h_files = new EmundusHelperFiles;
-
-        if (empty($itemid))
-            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
+        if (empty($itemid)) {
+	        $itemid = $jinput->post->get('Itemid', null);
+        }
 
         $time_date = (date('Y-m-d H:i:s'));
-
-
-        $result = $h_files->saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid);
+        $result = $h_files->saveExcelFilter($current_user->id, $name, $constraints, $time_date, $itemid);
 
         echo json_encode((object)(array('status' => true, 'filter' => $result)));
         exit;
-
     }
-    public function getExportExcelFilter(){
-        $db = JFactory::getDBO();
-        $user_id   = JFactory::getUser()->id;
+
+    public function getExportExcelFilter() {
+        $user_id  = JFactory::getUser()->id;
 
         $h_files = new EmundusHelperFiles;
-
         $filters = $h_files->getExportExcelFilter($user_id);
 
         echo json_encode((object)(array('status' => true, 'filter' => $filters)));
@@ -3093,8 +3111,9 @@ class EmundusControllerFiles extends JControllerLegacy
     	$filename = DS.'images'.DS.'product_pdf'.DS.'formation-'.$product_code.'.pdf';
 
     	// PDF is rebuilt every time, this is because the information on the PDF probably changes ofter.
-    	if (file_exists(JPATH_BASE.$filename))
+    	if (file_exists(JPATH_BASE.$filename)) {
     		unlink(JPATH_BASE.$filename);
+        }
 
     	// The PDF template is saved in the Joomla backoffice as an article.
 		$article = $h_export->getArticle(58);
@@ -3109,12 +3128,12 @@ class EmundusControllerFiles extends JControllerLegacy
 			->select([
 				$this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'),
 				$this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
-				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
+				$this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
 			])
 			->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity','tu').' ON '.$this->_db->quoteName('tu.code').' = '.$this->_db->quoteName('p.code'))
-			->where($this->_db->quoteName('p.code').' LIKE '.$this->_db->quote($product_code))
+			->where($this->_db->quoteName('p.code').' LIKE '.$this->_db->quote($product_code).' AND '.$this->_db->quoteName('tu.published').' = 1 AND '.$this->_db->quoteName('tu.date_start').' >= '.date("Y-m-d"))
 			->order($this->_db->quoteName('tu.date_start').' ASC');
 		$this->_db->setQuery($query);
 
@@ -3140,13 +3159,13 @@ class EmundusControllerFiles extends JControllerLegacy
             
             } else {
 
-                if ($start_month == $end_month && $start_year == $end_year)
+                if ($start_month == $end_month && $start_year == $end_year) {
                     $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                elseif ($start_month != $end_month && $start_year == $end_year)
+                } elseif ($start_month != $end_month && $start_year == $end_year) {
                     $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year))
+                } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
                     $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-
+				}
             }
 
 			$sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
@@ -3154,13 +3173,22 @@ class EmundusControllerFiles extends JControllerLegacy
 		$sessions .= '</ul>';
 
 	    $partner = str_replace(' ', '-', trim(strtolower($product[0]['partner'])));
-		if (!empty($partner))
+		if (!empty($partner)) {
 			$partner = '<img src="images/custom/ccirs/partenaires/'.$partner.'.png" height="30">';
-		else
+		} else {
 			$partner = '';
+		}
+
+		if (!empty($product[0]['days']) && !empty($product[0]['hours'])) {
+			$days = $product[0]['days'].' '.((intval($product[0]['days']) > 1)?'jours':'jour')." pour un total de : ".$product[0]['hours']." heures";
+		    if (!empty($session['time_in_company'])) {
+			    $days .= ' '.$product[0]['time_in_company'];
+		    }
+	    } else {
+			$days = 'Aucune information disponible.';
+		}
 
         // Build the variables found in the article.
-        $daysWord = (intval($product[0]['days']) > 1)?'jours':'jour';
 	    $post = [
 	    	'/{PARTNER_LOGO}/' => $partner,
 	    	'/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
@@ -3171,7 +3199,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		    '/{PRODUCT_CONTENT}/' => $product[0]['content'],
 		    '/{PRODUCT_MANAGER}/' => $product[0]['manager_firstname'].' '.mb_strtoupper($product[0]['manager_lastname']),
 		    '/{EXPORT_DATE}/' => date('d F Y'),
-		    '/{DAYS}/' => $product[0]['days'].' '.$daysWord." pour un total de : ".$product[0]['hours']." heures",
+		    '/{DAYS}/' => $days,
 		    '/{SESSIONS}/' => $sessions,
 		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',

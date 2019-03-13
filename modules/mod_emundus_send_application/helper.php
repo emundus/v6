@@ -25,4 +25,23 @@ class modemundusSendApplicationHelper {
 		return $db->loadObject();
 	}
 
+    static function getSearchEngineId($fnum) {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery('true');
+
+        $query
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__emundus_recherche'))
+            ->where($db->quoteName('fnum') . ' LIKE "' . $fnum . '"' );
+
+        try {
+            $db->setQuery($query);
+            return $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 }

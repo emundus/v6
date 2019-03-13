@@ -25,7 +25,6 @@ media/com_emundus.*
 media/com_emundus/*.bak
 php.ini
 /favicon.ico
-workspace.xml
 emundus_bdd*
 201*emundus*
 /.htaccess.*

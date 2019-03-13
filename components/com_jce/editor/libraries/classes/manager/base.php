@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -221,6 +221,25 @@ class WFMediaManagerBase extends WFEditorPlugin
             return $data;
         }
 
+        // svg
+        if (preg_match('#\.svg$#i', $file)) {
+            $svg = @simplexml_load_file($path);
+
+            if ($svg && isset($svg['viewBox'])) {
+                list($start_x, $start_y, $end_x, $end_y) = explode(' ', $svg['viewBox']);
+                
+                $width 	= (int) $end_x;
+                $height	= (int) $end_y;
+                
+                if ($width && $height) {
+                    $data['width'] 	= $width;
+                    $data['height']	= $height;
+
+                    return $data;
+                }
+            }
+        }
+
         // video and audio
         if (preg_match('#\.(avi|wmv|wm|asf|asx|wmx|wvx|mov|qt|mpg|mpeg|m4a|swf|dcr|rm|ra|ram|divx|mp4|ogv|ogg|webm|flv|f4v|mp3|ogg|wav|xap)$#i', $file)) {
 
@@ -263,8 +282,12 @@ class WFMediaManagerBase extends WFEditorPlugin
 
         // fix Link plugin legacy "direction" conflict
         if ($this->get('caller') === 'link') {
-            $fallback = $this->getParam('editor.dir');
-            $dir = $this->getParam($this->getName().'.dir', $fallback);
+            // get directory from File Browser parameters
+            $dir = $this->getParam('browser.dir');
+            // if value is empty, use editor parameter
+            if (empty($dir)) {
+                $dir = $this->getParam('editor.dir');
+            }
         }
 
         $websafe_spaces = $this->getParam('editor.websafe_allow_spaces', '_');

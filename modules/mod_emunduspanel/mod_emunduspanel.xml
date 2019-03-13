@@ -147,6 +147,10 @@
 					<option value="false">JNo</option>
 					<option value="true">JYes</option>
 				</field>
+				<field name="leanmode" type="radio" default="false" label="MOD_EMUNDUSPANEL_LEAN_MODE_LABEL" description="MOD_EMUNDUSPANEL_LEAN_MODE_DESC">
+					<option value="false">JNo</option>
+					<option value="true">JYes</option>
+				</field>
 			</fieldset>
 		</fields>
 	</config>

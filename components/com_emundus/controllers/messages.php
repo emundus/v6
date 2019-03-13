@@ -28,8 +28,8 @@ class EmundusControllerMessages extends JControllerLegacy {
      * @since 3.8.6
      */
     function __construct($config = array()) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         parent::__construct($config);
     }
 
@@ -103,12 +103,49 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $jinput = JFactory::getApplication()->input;
 
+        // If a filetype was sent in POST: check it.
+	    $filetype = $jinput->post->get('filetype', null);
+
         // Get the file sent via AJAX POST
         $file = $jinput->files->get('file');
 
+        // Get the user sent via AJAX POST
+        $user = $jinput->post->get('user');
+
+        // Get the user sent via AJAX POST
+        $fnum = $jinput->post->get('fnum');
+
+        // Check if an error is present
+	    if (!isset($file['error']) || is_array($file['error'])) {
+		    echo json_encode(['status' => false]);
+		    exit;
+	    }
+
+	    // Check if file name is alphanumeric
+	    if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
+	    	echo json_encode(['status' => false]);
+	    	exit;
+	    }
+
+	    // Check if file name is not too long.
+	    if (mb_strlen($file['name'], "UTF-8") > 225) {
+	    	echo json_encode(['status' => false]);
+	    	exit;
+	    }
+
+	    // If we specifically are uploading a PDF, check the MIME type.
+	    if ($filetype == 'pdf' && $file['type'] != 'application/pdf') {
+		    echo json_encode(['status' => false]);
+		    exit;
+	    }
+
+	    // Check file extension and remove any dengerous ones.
+	    if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])){
+		    exit("You cannot upload this type of file.");
+	    }
         // Check if the message attachments directory exists.
-        if (!is_dir('tmp'.DS.'messageattachments')) {
-            mkdir('tmp'.DS.'messageattachments', 0777, true);
+        if (!is_dir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum)) {
+            mkdir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum, 0777, true);
         }
 
         // Sanitize filename.
@@ -116,10 +153,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
 
         // Move the uploaded file to the server directory.
-        $target = 'tmp'.DS.'messageattachments'.DS.$file['name'];
+        $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
 
-        if (file_exists($target))
-            unlink($target);
+        
+        if (file_exists($target)) {
+	        unlink($target);
+        }
 
         move_uploaded_file($file['tmp_name'], $target);
 
@@ -405,14 +444,18 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	/** The generic function used for sending emails.
 	 *
-	 * @param      $fnum
-	 * @param      $email_id
-	 * @param null $post
-	 * @param null $attachments
-     *
+	 * @param       $fnum
+	 * @param       $email_id
+	 * @param null  $post
+	 * @param array $attachments
+	 * @param bool  $bcc
+	 *
 	 * @return bool
+	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
+	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
+	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
-    function sendEmail($fnum, $email_id, $post = null, $attachments = []) {
+    function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false) {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
@@ -444,9 +487,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mail_from      = $template->emailfrom;
 
 	    // If the email sender has the same domain as the system sender address.
-	    if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+	    if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 		    $mail_from_address = $mail_from;
-	    else {
+	    } else {
 		    $mail_from_address = $mail_from_sys;
 		    $mail_from_name = $mail_from_sys_name;
 	    }
@@ -459,12 +502,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
-	    if (!empty($attachments) && is_array($attachments))
+	    if (!empty($attachments) && is_array($attachments)) {
 	        $toAttach = $attachments;
-	    else
-	        $toAttach[] = $attachments;
-
-
+	    } else {
+		    $toAttach[] = $attachments;
+	    }
 
 	    // In case no post value is supplied
 	    if (empty($post)) {
@@ -485,11 +527,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    // Tags are replaced with their corresponding values using the PHP preg_replace function.
 	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 	    $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
-	    if ($template != false)
+	    if ($template != false) {
 		    $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+	    }
 
 	    // Configure email sender
 	    $mailer = JFactory::getMailer();
+	    if ($bcc) {
+		    $mailer->addBCC($user->email);
+	    }
 	    $mailer->setSender($sender);
 	    $mailer->addReplyTo($mail_from, $mail_from_name);
 	    $mailer->addRecipient($fnum['email']);
@@ -685,25 +731,24 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
 /////// chat functions
-
-    // send message in chat
+    /** send message in chat
+     *
+     */
     public function sendMessage() {
 
         $m_messages = new EmundusModelMessages();
-
         $jinput = JFactory::getApplication()->input;
         $message = $jinput->post->getRaw('message', null);
         $receiver = $jinput->post->get('receiver', null);
         $message = str_replace("&nbsp;", "", $message);
-        $string = preg_replace('/>\s+</', "><", $message);
 
-        echo json_encode((object)[
-            'status' => $m_messages->sendMessage($receiver, $message),
-        ]);
+        echo json_encode((object)['status' => $m_messages->sendMessage($receiver, $message)]);
         exit;
     }
 
-    // update message list
+    /** update message list
+     *
+     */
     public function updatemessages() {
 
         $m_messages = new EmundusModelMessages();
@@ -712,21 +757,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         $lastId = $jinput->post->get('id', null);
         $messages = $m_messages->updateMessages($lastId);
 
-
-        if(!empty($messages)) {
+        if (!empty($messages)) {
             foreach ($messages as $message) {
                 $message->date_time = date("d/m/Y", strtotime($message->date_time));
-                $message->message = strip_tags($message->message);
             }
-            echo json_encode((object)[
-                'status' => 'true',
-                'messages' => $messages
-            ]);
-        }
-        else {
-            echo json_encode((object)[
-                'status' => 'false'
-            ]);
+            echo json_encode((object)['status' => 'true', 'messages' => $messages]);
+        } else {
+            echo json_encode((object)['status' => 'false']);
         }
 
         exit;

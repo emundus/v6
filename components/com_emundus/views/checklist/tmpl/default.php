@@ -30,7 +30,7 @@ $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->end_date)) ? t
 $is_app_sent         = (@$user->status != 0)? true : false;
 
 $block_upload = true;
-if (!$is_dead_line_passed || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
+if ((!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
     $block_upload = false;
 }
 
@@ -104,14 +104,14 @@ if ($this->show_info_panel) : ?>
                     $div .= JText::_('CANT_VIEW') ;
                     }
                     $div .= '&nbsp;-&nbsp;' ;
-                    if($item->can_be_deleted==1) {
+                    if($item->can_be_deleted==1 && !$block_upload) {
                     $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
                     }
                     else {
                     $div .= JText::_('CANT_DELETE');
                     }
                     $div .= ' | ';
-                    $div .= ($item->timedate);
+                    $div .= JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
                     $div .= ' | ';
                     if ($this->show_shortdesc_input) {
                         $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
@@ -180,6 +180,8 @@ if ($this->show_info_panel) : ?>
           });
 
           this.on("success", function(file, responseText) {
+            document.location.reload(true);
+
             // Handle the responseText here. For example, add the text to the preview element:
             var response = JSON.parse(responseText);
             var id = response["id"];
@@ -191,8 +193,8 @@ if ($this->show_info_panel) : ?>
             }
 
             // Change icon on fieldset
-            document.getElementById("l"+'.$attachment->id.').className = "need_ok";
-            document.getElementById("ml"+'.$attachment->id.').className = "need_ok";
+            document.getElementById("l'.$attachment->id.'").className = "need_ok";
+            document.getElementById("'.$attachment->id.'").className = "need_ok";
 
             // Create the remove button
             var removeButton = Dropzone.createElement("<button>X</button>");
@@ -218,10 +220,10 @@ if ($this->show_info_panel) : ?>
                     format: "raw"
                 }),
                 success: function(result) {
-                    if (result.status) {
+                    if (result.status) { 
                         // Change icon on fieldset
-                        document.getElementById("l"+'.$attachment->id.').className = "";
-                        document.getElementById("ml"+'.$attachment->id.').className = "";
+                        document.getElementById("l'.$attachment->id.'").className = "";
+                        document.getElementById("'.$attachment->id.'").className = "";
                         alert("'. JText::_('ATTACHMENT_DELETED').'");
                     }
 

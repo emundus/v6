@@ -142,6 +142,8 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
                     $emails->logEmail($message);
                     $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
                 }
+                // to avoid been considered as a spam process or DDoS
+                sleep(0.1);
 
 			}
 		}

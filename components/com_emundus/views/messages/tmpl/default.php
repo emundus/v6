@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $lastId = $this->message_contacts[0]->message_id;
 $id = JFactory::getApplication()->input->get->get('chatid',null);
-if(empty($id)) {
+if (empty($id)) {
     if ($this->message_contacts[0]->user_id_to == $this->user_id)
         $id = $this->message_contacts[0]->user_id_from;
     else
@@ -45,6 +45,7 @@ if(empty($id)) {
                         <?php endif; ?>
                     </div>
                 </li>
+            <hr>
             <?php endif; ?>
 
             <?php if ($message_contact->user_id_from == $this->user_id) :?>
@@ -58,6 +59,7 @@ if(empty($id)) {
                             <p class="read-contact contact-message" id="contact-<?php echo $message_contact->user_id_from ; ?>-message"><?php echo strip_tags($message_contact->message) ;?></p>
                     </div>
                 </li>
+            <hr>
             <?php endif; ?>
 
         <?php endforeach ; ?>
@@ -138,10 +140,12 @@ if(empty($id)) {
                 success: function (result) {
 
                     $('#em-chat').html(result);
+                    var active = $('#em-contact-<?php echo $id; ?>');
                     var icon = document.getElementById('unread-icon');
                     var boldName = document.getElementById('contact-'+id+'-name');
                     var boldDate = document.getElementById('contact-'+id+'-date');
                     var boldMessage = document.getElementById('contact-'+id+'-message');
+                    active.addClass('active');
                     if(icon && boldName && boldDate && boldMessage) {
                         icon.parentNode.removeChild(icon);
                         $(boldName).removeClass('unread-contact').addClass('read-contact');
@@ -166,6 +170,7 @@ if(empty($id)) {
     });
 
     $('.em-list-item').on("click", function() {
+        var active = $(this);
         var contactList = document.getElementById("em-contacts");
         var chat = document.getElementById("chat");
         var chat2 = document.getElementById("em-chat");
@@ -202,6 +207,11 @@ if(empty($id)) {
             success: function (result) {
 
                 $('#em-chat').html(result);
+
+                if(!active.hasClass('active')){
+                    $('.em-list-item').removeClass('active');
+                    active.addClass('active');
+                }
                 $('#em-chat').toggleClass(chatClass);
                 $('#em-chat').toggleClass('em-chat-'+id);
 

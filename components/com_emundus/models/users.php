@@ -764,11 +764,11 @@ class EmundusModelUsers extends JModelList {
 	    $univ_id = $params['univ_id'];
 
 	    if (empty($univ_id)) {
-		    $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','',0)";
+		    $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".date('Y-m-d H:i:s')."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
 		    $db->setQuery($query);
 		    $db->Query();
 	    } else {
-		    $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','','".$univ_id."')";
+		    $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".date('Y-m-d H:i:s')."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
 		    $db->setQuery($query);
 		    $db->Query();
 	    }
@@ -1574,7 +1574,7 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getGroupsAcl($gid) {
-      if (count($gid) > 0) {
+      if (!empty($gid) && count($gid) > 0) {
         try {
             if (is_array($gid)) {
                 $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
@@ -1594,8 +1594,9 @@ class EmundusModelUsers extends JModelList {
             error_log($e->getMessage(), 0);
             return false;
         }
-      } else
-        return array();
+      } else {
+	      return array();
+      }
     }
 
     public function getGroupUsers($gid) {

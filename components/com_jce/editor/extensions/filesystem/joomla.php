@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -223,7 +223,7 @@ class WFJoomlaFileSystem extends WFFileSystem
         return 0;
     }
 
-    public function getFolders($relative, $filter = '')
+    public function getFolders($relative, $filter = '', $sort = '')
     {
         $path = WFUtility::makePath($this->getBaseDir(), $relative);
         $path = WFUtility::fixPath($path);
@@ -238,8 +238,9 @@ class WFJoomlaFileSystem extends WFFileSystem
         $folders = array();
 
         if (!empty($list)) {
-            // Sort alphabetically
+            // Sort alphabetically by default
             natcasesort($list);
+
             foreach ($list as $item) {
                 $item = WFUtility::convertEncoding($item);
 
@@ -260,10 +261,14 @@ class WFJoomlaFileSystem extends WFFileSystem
             }
         }
 
+        if ($sort) {
+            $folders = self::sortItemsByKey($folders, $sort);
+        }
+
         return $folders;
     }
 
-    public function getFiles($relative, $filter = '')
+    public function getFiles($relative, $filter = '', $sort = '')
     {
         $path = WFUtility::makePath($this->getBaseDir(), $relative);
         $path = WFUtility::fixPath($path);
@@ -280,8 +285,9 @@ class WFJoomlaFileSystem extends WFFileSystem
         $x = 1;
 
         if (!empty($list)) {
-            // Sort alphabetically
+            // Sort alphabetically by default
             natcasesort($list);
+
             foreach ($list as $item) {
                 $item = WFUtility::convertEncoding($item);
 
@@ -300,6 +306,7 @@ class WFJoomlaFileSystem extends WFFileSystem
                     'name' => $item,
                     'writable' => is_writable(WFUtility::makePath($path, $item)) || $this->isFtp(),
                     'type' => 'files',
+                    'extension' => pathinfo($item, PATHINFO_EXTENSION)
                 );
 
                 $properties = self::getFileDetails($data['id'], $x);
@@ -308,6 +315,10 @@ class WFJoomlaFileSystem extends WFFileSystem
 
                 ++$x;
             }
+        }
+
+        if ($sort) {            
+            $files = self::sortItemsByKey($files, $sort);
         }
 
         return $files;
@@ -328,7 +339,7 @@ class WFJoomlaFileSystem extends WFFileSystem
         $path = WFUtility::makePath($this->getBaseDir(), rawurldecode($dir));
         $date = @filemtime($path);
 
-        return array('modified' => $date);
+        return array('modified' => $date, 'size' => '');
     }
 
     /**
@@ -408,19 +419,27 @@ class WFJoomlaFileSystem extends WFFileSystem
 
         $data['preview'] = WFUtility::cleanPath($url, '/');
 
-        if (preg_match('#\.(jpg|jpeg|bmp|gif|tiff|png)#i', $file)) {
+        if (preg_match('#\.(jpg|jpeg|bmp|gif|tiff|png|svg)#i', $file)) {
             $image = array();
 
             if ($count <= 100) {
-                $props = @getimagesize($path);
+                if (preg_match('#\.svg$#i', $file)) {
+                	$svg = @simplexml_load_file($path);
 
-                $width = $props[0];
-                $height = $props[1];
-
-                $image = array(
-                    'width' => $width,
-                    'height' => $height,
-                );
+            		if ($svg && isset($svg['viewBox'])) {
+                		list($start_x, $start_y, $end_x, $end_y) = explode(' ', $svg['viewBox']);
+                		
+                		$width 	= (int) $end_x;
+                		$height	= (int) $end_y;
+                		
+                		if ($width && $height) {
+                			$image['width'] 	= $width;
+                			$image['height']	= $height;
+                		}
+            		}
+                } else {
+                	list($image['width'], $image['height']) = @getimagesize($path);
+                }
             }
 
             $data['preview'] .= '?' . $date;
@@ -668,17 +687,28 @@ class WFJoomlaFileSystem extends WFFileSystem
         // get overwrite state
         $conflict = $this->get('upload_conflict', 'overwrite');
         // get suffix
-        $suffix = WFFileBrowser::getFileSuffix();
+        $suffix = $this->get('upload_suffix', '_copy');
 
         if ($conflict == 'unique') {
             // get extension
             $extension = JFile::getExt($name);
             // get name without extension
             $name = JFile::stripExt($name);
+            // create tmp copy
+            $tmpname = $name;
+
+            $x = 1;
 
             while (JFile::exists($dest)) {
-                $name .= $suffix;
-                $dest = WFUtility::makePath($path, $name.'.'.$extension);
+                if (strpos($suffix, '$') !== false) {
+                    $tmpname = $name . str_replace('$', $x, $suffix); 
+                } else {
+                    $tmpname .= $suffix;
+                }
+
+                $dest = WFUtility::makePath($path, $tmpname.'.'.$extension);
+
+                $x++;
             }
         }
 

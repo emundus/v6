@@ -37,8 +37,7 @@ class EmundusViewChecklist extends JViewLegacy
 		parent::__construct($config);
 	}
 
-    function display($tpl = null)
-    {
+    function display($tpl = null) {
 		$app 	= JFactory::getApplication();
 		$db 	= JFactory::getDbo();
     	$layout = $app->input->getString('layout', null);
@@ -76,28 +75,33 @@ class EmundusViewChecklist extends JViewLegacy
 
 			if ((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100) {
 				$eMConfig = JComponentHelper::getParams('com_emundus');
-				$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
-				$application_fee = $eMConfig->get('application_fee', 0);
 				$accept_created_payments = $eMConfig->get('accept_created_payments', 0);
 				$fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
-
-				$params = [
-					'type_mail' => 'paid_validation',
-					'can_edit_until_deadline' => $can_edit_until_deadline,
-					'application_fee' => $application_fee
-				];
 
 				$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
 
 				// If created payments aren't accepted then we don't need to check.
-				if ($accept_created_payments)
-					$payment_created_offline = count($m_application->getHikashopOrder($fnumInfos, true))>0?1:0;
-				else
+				if ($accept_created_payments) {
+					$payment_created_offline = count($m_application->getHikashopOrder($fnumInfos, true)) > 0 ? 1 : 0;
+				} else {
 					$payment_created_offline = false;
+				}
 
-				// Don't send the application if the payment has not been fully sent.
-				if ($accept_created_payments == 2 || $paid || $payment_created_offline)
-					$m_application->sendApplication($this->_user->fnum, $this->_user, $params);
+				if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
+
+					if ($eMConfig->get('redirect_after_payment')) {
+
+						require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+						$m_checklist = new EmundusModelChecklist;
+
+						// If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
+						$app->redirect($m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$this->_user->fnum);
+
+					} else {
+						// Don't send the application if the payment has not been fully sent.
+						$m_application->sendApplication($this->_user->fnum, $this->_user, [], $eMConfig->get('status_after_payment', 1));
+					}
+				}
 
 				$applications = $m_application->getApplications($this->_user->id);
 			}
@@ -105,7 +109,6 @@ class EmundusViewChecklist extends JViewLegacy
 			$this->assignRef('applications', $applications);
 			$this->assignRef('attachments', $attachments);
 			$this->assignRef('forms', $forms);
-
 			break;
 
 			default :

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -129,6 +129,13 @@ if (strpos($theme, '.') === false) {
                                         endif;
                                     endif;
                                 endforeach;
+                                // Add 5 spacer items to the first row
+                                if ($i === 1) :
+                                    for ($x = 1; $x <= 5; ++$x) :
+                                        echo '<div class="mceToolBarItem sortableRowItem spacer uk-sortable-handle" data-name="spacer"><div class="mceSeparator"></div></div>';
+                                    endfor;    
+                                endif;
+
                                 ?>
                               </div>
                               <div class="sortableRowHandle"><span class="icon-menu"></span></div>

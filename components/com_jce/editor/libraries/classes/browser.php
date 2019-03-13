@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -182,6 +182,7 @@ class WFFileBrowser extends JObject
             $config = array(
                 'dir' => $this->get('dir'),
                 'upload_conflict' => $wf->getParam('editor.upload_conflict', 'overwrite'),
+                'upload_suffix' => $wf->getParam('editor.upload_suffix', '_copy'),
                 'filetypes' => $this->listFileTypes(),
             );
 
@@ -266,8 +267,8 @@ class WFFileBrowser extends JObject
     }
 
     public function setFileTypes($list = 'jpg,jpeg,png,gif')
-    {
-        if ($list{0} === '=') {
+    {        
+        if ($list && $list[0] === '=') {
             $list = substr($list, 1);
         }
 
@@ -371,10 +372,10 @@ class WFFileBrowser extends JObject
      *
      * @return File list array
      */
-    private function getFiles($relative, $filter = '.')
+    private function getFiles($relative, $filter = '.', $sort = '')
     {
         $filesystem = $this->getFileSystem();
-        $list = $filesystem->getFiles($relative, $filter);
+        $list = $filesystem->getFiles($relative, $filter, $sort);
 
         return $list;
     }
@@ -386,10 +387,10 @@ class WFFileBrowser extends JObject
      *
      * @return Folder list array
      */
-    private function getFolders($relative, $filter = '')
+    private function getFolders($relative, $filter = '', $sort = '')
     {
         $filesystem = $this->getFileSystem();
-        $list = $filesystem->getFolders($relative, $filter);
+        $list = $filesystem->getFolders($relative, $filter, $sort);
 
         $filters = $this->get('filter');
 
@@ -428,7 +429,7 @@ class WFFileBrowser extends JObject
      * @param int    $limit    List limit
      * @param int    $start    list start point
      */
-    public function getItems($path, $limit = 25, $start = 0, $filter = '')
+    public function getItems($path, $limit = 25, $start = 0, $filter = '', $sort = '')
     {
         $filesystem = $this->getFileSystem();
 
@@ -441,6 +442,9 @@ class WFFileBrowser extends JObject
         $path = rawurldecode($path);
 
         WFUtility::checkPath($path);
+
+        // trim leading slash
+        $path = ltrim($path, "/");
 
         // get source dir from path eg: images/stories/fruit.jpg = images/stories
         $dir = $filesystem->getSourceDir($path);
@@ -464,11 +468,11 @@ class WFFileBrowser extends JObject
         }
 
         // get file list by filter
-        $files = $this->getFiles($dir, $name . '\.(?i)(' . implode('|', $filetypes) . ')$');
+        $files = $this->getFiles($dir, $name . '\.(?i)(' . implode('|', $filetypes) . ')$', $sort);
 
         if (empty($filter) || $filter{0} != '.') {
             // get folder list
-            $folders = $this->getFolders($dir, '^(?i).*' . WFUtility::makeSafe($filter) . '.*');
+            $folders = $this->getFolders($dir, '^(?i).*' . WFUtility::makeSafe($filter) . '.*', $sort);
         }
 
         $folderArray = array();
@@ -603,7 +607,7 @@ class WFFileBrowser extends JObject
             $treedir = $dir;
             if ($root) {
                 $result = '<ul>'
-                . '<li id="/" class="uk-tree-open uk-tree-root uk-padding-remove">'
+                . '<li data-id="/" class="uk-tree-open uk-tree-root uk-padding-remove">'
                 . ' <div class="uk-tree-row">'
                 . '   <a href="#">'
                 . '     <span class="uk-tree-icon" role="presentation">'
@@ -625,7 +629,7 @@ class WFFileBrowser extends JObject
 
                 $open = preg_match('#' . $name . '\b#', $treedir);
 
-                $result .= '<li id="' . $this->escape($name) . '" class="' . ($open ? 'uk-tree-open' : '') . '">'
+                $result .= '<li data-id="' . $this->escape($name) . '" class="' . ($open ? 'uk-tree-open' : '') . '">'
                     . ' <div class="uk-tree-row">'
                     . '   <a href="#">'
                     . '     <span class="uk-tree-icon" role="presentation"></span>'
@@ -933,13 +937,6 @@ class WFFileBrowser extends JObject
         }
     }
 
-    public function getFileSuffix()
-    {
-        $suffix = WFText::_('WF_MANAGER_FILE_SUFFIX');
-
-        return str_replace('WF_MANAGER_FILE_SUFFIX', '_copy', $suffix);
-    }
-
     private function validateUploadedFile($file)
     {
         // check the POST data array
@@ -1045,6 +1042,9 @@ class WFFileBrowser extends JObject
         // trim extension
         $ext = trim($ext);
 
+        // make extension websafe
+        $ext = WFUtility::makeSafe($ext, $this->get('websafe_mode', 'utf-8'), $this->get('websafe_spaces'), $this->get('websafe_textcase'));
+
         // check extension exists
         if (empty($ext) || $ext === $file['name']) {
             throw new InvalidArgumentException('Upload Failed: The file name does not contain a valid extension.');
@@ -1052,6 +1052,7 @@ class WFFileBrowser extends JObject
 
         // strip extension
         $name = WFUtility::stripExtension($name);
+        
         // make file name 'web safe'
         $name = WFUtility::makeSafe($name, $this->get('websafe_mode', 'utf-8'), $this->get('websafe_spaces'), $this->get('websafe_textcase'));
 

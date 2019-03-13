@@ -46,14 +46,12 @@ class EmundusModelCalendar extends JModelLegacy {
         $createdCalendar = $google_api_service->calendars->insert($calendar);
 
         return $createdCalendar->getId();
-
     }
 
     // Creates a local calendar to be managed by dpCalendar.
     public function dpcalendar_add_calendar($title, $alias, $color, $googleId, $parentId, $program) {
 
         $db = JFactory::getDbo();
-        $user = JFactory::getUser();
 
         // in order to get the path we need the name of the parent calendar
         // This is because the path is written as parentAlias/calAlias
@@ -122,8 +120,9 @@ class EmundusModelCalendar extends JModelLegacy {
             die(json_encode(['status' => false]));
         }
 
-        if ($event->booking_information != '' && $event->capacity_used == 1)
+        if ($event->booking_information != '' && $event->capacity_used == 1) {
             die(json_encode(['status' => false, 'message' => 'Event already booked, please refresh the page.']));
+        }
 
         $event->title = $booked_prefix.' - '.$event->title;
         $event->description = $user->name;
@@ -241,9 +240,11 @@ class EmundusModelCalendar extends JModelLegacy {
             die(json_encode(['status' => false]));
         }
 
-        if (isset($result))
-            return true;
-        else return false;
+        if (isset($result)) {
+	        return true;
+        } else {
+	        return false;
+        }
 
     }
 
@@ -272,17 +273,6 @@ class EmundusModelCalendar extends JModelLegacy {
         } catch (Exception $e) {
             JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
             die(json_encode(['status' => false]));
-        }
-
-        // Get event
-        try {
-
-            $db->setQuery("SELECT booking_information FROM #__dpcalendar_events WHERE id = ".$event_id);
-            $user_id = $db->loadResult();
-
-        } catch (Exception $e) {
-            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
-            die (json_encode(['status' => false]));
         }
 
         $post = array(
@@ -358,8 +348,9 @@ class EmundusModelCalendar extends JModelLegacy {
 
     public function email_event($event_id, $booked = null) {
 
-        if (!isset($booked))
+        if (!isset($booked)) {
             return false;
+        }
 
         $mailer = JFactory::getMailer();
         $config = JFactory::getConfig();
@@ -423,32 +414,34 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $from_id = 62;
 
-        if ($booked)
+        if ($booked) {
             $email = $m_emails->getEmail('booking_created_user');
-        else
+        } else {
             $email = $m_emails->getEmail('booking_deleted_user');
+        }
 
         // Tags are replaced with their corresponding values using the PHP preg_replace function.
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
         $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
         $body = $m_emails->setTagsFabrik($body, array($user->fnum));
 
-        // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
         $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
         $email_from_sys = $config->get('mailfrom');
         $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 
-        if ($email->name === null)
+        if ($email->name === null) {
             $mail_from_name = $config->get('fromname');
-        else
+        } else {
             $mail_from_name = $email->name;
+        }
 
         // If the email sender has the same domain as the system sender address.
-        if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+        if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
             $mail_from_address = $email_from;
-        else
+        } else {
             $mail_from_address = $email_from_sys;
+        }
 
         // Set sender
         $sender = [
@@ -484,10 +477,11 @@ class EmundusModelCalendar extends JModelLegacy {
         // We are using the program name to get the associated group and then getting all users inside of that group.
         $recipients = $this->getProgramRecipients($params->program);
 
-        if ($booked)
+        if ($booked) {
             $email = $m_emails->getEmail('booking_created_recipient');
-        else
+        } else {
             $email = $m_emails->getEmail('booking_deleted_recipient');
+        }
 
         if (isset($recipients) && is_array($recipients)) {
             foreach ($recipients as $recipient) {
@@ -509,22 +503,23 @@ class EmundusModelCalendar extends JModelLegacy {
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
                 $body = $m_emails->setTagsFabrik($body, array($user->fnum));
 
-                // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
                 $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
                 $email_from_sys = $config->get('mailfrom');
                 $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 
-                if ($email->name === null)
+                if ($email->name === null) {
                     $mail_from_name = $config->get('fromname');
-                else
+                } else {
                     $mail_from_name = $email->name;
+                }
 
-                    // If the email sender has the same domain as the system sender address.
-                if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                // If the email sender has the same domain as the system sender address.
+                if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
                     $mail_from_address = $email_from;
-                else
+                } else {
                     $mail_from_address = $email_from_sys;
+                }
 
                 // Set sender
                 $sender = [
@@ -570,8 +565,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $user = JFactory::getUser();
 
         // Make sure variables aren't empty and the start and end dates have the same number of elements.
-        if ($calendar_id == null || count($start_dates) == 0 || count($end_dates) == 0 || count($start_dates) != count($end_dates))
+        if ($calendar_id == null || count($start_dates) == 0 || count($end_dates) == 0 || count($start_dates) != count($end_dates)) {
             return false;
+        }
 
         // Get calendar information to use for the events.
         $query = 'SELECT extension FROM #__categories WHERE id = '.$calendar_id;
@@ -586,8 +582,9 @@ class EmundusModelCalendar extends JModelLegacy {
         }
 
         // Check that the calendar id actually corresponds to a calendar.
-        if ($extension != 'com_dpcalendar')
+        if ($extension != 'com_dpcalendar') {
             return false;
+        }
 
         $query = 'INSERT INTO #__dpcalendar_events
                     (catid, uid, original_id,title, alias, start_date, end_date, images, url, language, created, created_by, created_by_alias) VALUES ';
@@ -625,8 +622,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $profilesToNotify = $eMConfig->get('mailRecipients');
 
-        if ($profilesToNotify == '-1')
+        if ($profilesToNotify == '-1') {
             return null;
+        }
 
         try {
 
@@ -705,7 +703,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $synthesis->block   = preg_replace($tags['patterns'], $tags['replacements'], @$program->synthesis);
 
         $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
-        if (count(@$element_ids[0])>0) {
+        if (count(@$element_ids[0]) > 0) {
             $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
             $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
         }
@@ -725,26 +723,16 @@ class EmundusModelCalendar extends JModelLegacy {
         $client->setClientSecret($clientSecret);
         $client->setScopes(SCOPES);
         $client->setAccessType('offline');
-        $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $uri = ! isset($_SERVER['HTTP_HOST']) ? JUri::getInstance('http://localhost') : JFactory::getURI();
+        $uri = !isset($_SERVER['HTTP_HOST']) ? JUri::getInstance('http://localhost') : JFactory::getURI();
 
-        if (filter_var($uri->getHost(), FILTER_VALIDATE_IP))
+        if (filter_var($uri->getHost(), FILTER_VALIDATE_IP)) {
             $uri->setHost('localhost');
+        }
 
-        $client->setRedirectUri(
-            $uri->toString(
-                array(
-                    'scheme',
-                    'host',
-                    'port',
-                    'path'
-                )
-            ).'?option=com_dpcalendar&view=calendar'
-        );
+        $client->setRedirectUri($uri->toString(array('scheme', 'host', 'port', 'path')).'?option=com_emundus&controller=calendar&task=authenticateclient');
 
         // Refresh the token if it's expired.
-
         return $client;
     }
 
@@ -757,43 +745,38 @@ class EmundusModelCalendar extends JModelLegacy {
         ));
         $myUrl = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
         $urlExpl = explode('&', $myUrl);
-        $authCodeExpl = explode('=', $urlExpl[2]);
+        $authCodeExpl = explode('=', $urlExpl[3]);
         $compareURL = $authCodeExpl[0];
         $authCode = $authCodeExpl[1];
 
-        // If we are on the callback from google don't save
-        if ($compareURL != 'code') {
-            $params = $app->input->get('params', array(
-                'clientId' => null,
-                'clientSecret' => null
-            ), 'array');
-            $session->set('clientId', $params['clientId']);
-            $session->set('clientSecret', $params['clientSecret']);
-        }
-
-        $clientId = $session->get('clientId', null);
-        $clientSecret = $session->get('clientSecret', null);
-
-        if ($compareURL == 'code') {
-            $session->set('clientId', null);
-            $session->set('clientSecret', null);
-        }
+	    // If we are on the callback from google don't save
+	    if ($compareURL != 'code') {
+		    $params = $app->input->get('params', array(
+			    'clientId' => null,
+			    'clientSecret' => null
+		    ), 'array');
+		    $session->set('clientId', $params['clientId']);
+		    $session->set('clientSecret', $params['clientSecret']);
+	    } else {
+		    $session->set('clientId', null);
+		    $session->set('clientSecret', null);
+	    }
 
         try {
             $client = $this->getClient($eMConfig->get('clientId'), $eMConfig->get('clientSecret'));
             $client->setApprovalPrompt('force');
 
-            if (empty($client)) return;
+            if (empty($client)) {
+                return;
+            }
             if ($compareURL != 'code') {
                 $app->redirect($client->createAuthUrl());
                 $app->close();
             }
 
-            $cal = new Google_Service_Calendar($client);
-
             $token = $client->authenticate($authCode);
             $tok = json_decode($token, true);
-            if (($tok['refresh_token'] != null)) {
+            if ($tok['refresh_token'] != null) {
                 $eMConfig->set('refreshToken', $tok['refresh_token']);
 
                 $componentid = JComponentHelper::getComponent('com_emundus')->id;
@@ -809,18 +792,18 @@ class EmundusModelCalendar extends JModelLegacy {
                 }
             }
 
-            if ($token === true) die();
+            if ($token === true) {
+                die();
+            }
 
-            if ($token) $client->setAccessToken($token);
+            if ($token) {
+                $client->setAccessToken($token);
+            }
 
         } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
         }
-
     }
-
 }
-
-?>
 

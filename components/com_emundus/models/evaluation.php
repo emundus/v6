@@ -19,8 +19,7 @@ require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
 
 
-class EmundusModelEvaluation extends JModelList
-{
+class EmundusModelEvaluation extends JModelList {
 	private $_total = null;
 	private $_pagination = null;
 	private $_applicants = array();
@@ -36,18 +35,15 @@ class EmundusModelEvaluation extends JModelList
 	 *
 	 * @since 1.5
 	 */
-	public function __construct()
-	{
+	public function __construct() {
 
 		parent::__construct();
-		//global $option;
 
 		$this->_files = new EmundusModelFiles;
 
 		$mainframe = JFactory::getApplication();
 
 		// Get current menu parameters
-		//$current_user = JFactory::getUser();
 		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 
@@ -59,28 +55,20 @@ class EmundusModelEvaluation extends JModelList
 			return false;
 		$menu_params = $menu->getParams($current_menu->id);
 
-		//$filts_names = explode(',', $menu_params->get('em_filters_names'));
-		//$filts_values = explode(',', $menu_params->get('em_filters_values'));
-
 		$session = JFactory::getSession();
-
-		if (!$session->has('filter_order'))
-		{
+		if (!$session->has('filter_order')) {
 			$session->set('filter_order', 'jos_emundus_campaign_candidature.fnum');
 			$session->set('filter_order_Dir', 'desc');
 		}
 
-		if(!$session->has('limit'))
-		{
+		if (!$session->has('limit')) {
 			$limit = $mainframe->getCfg('list_limit');
 			$limitstart = 0;
 			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
 			$session->set('limit', $limit);
 			$session->set('limitstart', $limitstart);
-		}
-		else
-		{
+		} else {
 			$limit = intval($session->get('limit'));
 			$limitstart = intval($session->get('limitstart'));
 			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -102,11 +90,9 @@ class EmundusModelEvaluation extends JModelList
 			$this->elements_id .= implode(',', $elements_eval);
 		}
 
-		if ($session->has('adv_cols'))
-		{
+		if ($session->has('adv_cols')) {
 			$adv = $session->get('adv_cols');
-			if (!empty($adv))
-			{
+			if (!empty($adv)) {
 				$this->elements_id .= ','.implode(',', $adv);
 			}
 
@@ -116,13 +102,11 @@ class EmundusModelEvaluation extends JModelList
 		$this->_elements_default = array();
 		$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
 
-		if (!empty($this->_elements))
-		{
-			foreach ($this->_elements as $def_elmt)
-			{
+		if (!empty($this->_elements)) {
+			foreach ($this->_elements as $def_elmt) {
 				$group_params = json_decode($def_elmt->group_attribs);
 
-				if($def_elmt->element_plugin == 'date') {
+				if ($def_elmt->element_plugin == 'date') {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
@@ -149,7 +133,7 @@ class EmundusModelEvaluation extends JModelList
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					}
 					else {
-                        if($attribs->database_join_display_type=="checkbox"){
+                        if ($attribs->database_join_display_type == "checkbox") {
 
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
                             $query = '(
@@ -166,7 +150,6 @@ class EmundusModelEvaluation extends JModelList
                     }
 
 					$this->_elements_default[] = $query;
-					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
 				}
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
 					$element_attribs = json_decode($def_elmt->element_attribs);
@@ -176,9 +159,7 @@ class EmundusModelEvaluation extends JModelList
 					foreach ($element_attribs->sub_options->sub_values as $key => $value) {
 						$if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
 						$endif .= ')';
-						//$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
 					}
-					//$this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
 					$this->_elements_default[] = implode(',', $if).','.$select.$endif.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
 				}
 				else {
@@ -205,12 +186,10 @@ class EmundusModelEvaluation extends JModelList
 
 		$elements_names = '"' . implode('", "', $this->col) . '"';
 		$result = @EmundusHelperList::getElementsDetails($elements_names);
-
 		$result = @EmundusHelperFiles::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
 
 		$this->details = new stdClass();
-		foreach ($result as $res)
-		{
+		foreach ($result as $res) {
 			$this->details->{$res->tab_name . '__' . $res->element_name} = array('element_id' => $res->element_id,
 			                                                                     'plugin' => $res->element_plugin,
 			                                                                     'attribs' => $res->params,
@@ -220,18 +199,19 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
-	public function getElementsVar()
-	{
+	public function getElementsVar() {
 		return $this->_elements;
 	}
 
 	/**
 	 * Get list of evaluation element
-	 * @param 	  int displayed in Fabrik List ; yes=1
+	 *
+	 * @param      int displayed in Fabrik List ; yes=1
+	 *
 	 * @return    string list of Fabrik element ID used in evaluation form
-	 **/
-	public function getEvaluationElements($show_in_list_summary=1, $hidden=0)
-	{
+	 **@throws Exception
+	 */
+	public function getEvaluationElements($show_in_list_summary=1, $hidden=0) {
 		$session = JFactory::getSession();
 		$h_files = new EmundusHelperFiles;
 		$jinput = JFactory::getApplication()->input;
@@ -282,11 +262,15 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	/**
-     * Get list of evaluation elements
-     * @param 	  show_in_list_summary int show item defined as displayed in Fabrik List ; yes=1
-     * @param 	  hidden int show item defined as hidden in Fabrik List  ; yes=1
-     * @return    string list of Fabrik element ID used in evaluation form
-     **/
+	 * Get list of evaluation elements
+	 *
+	 * @param      int show_in_list_summary get elements displayed in Fabrik List ; yes=1
+	 * @param      int hidden get hidden elements ; yes=1
+	 * @param      array code get elements from Evaluation form defined for programme list
+	 *
+	 * @return    array list of Fabrik element ID used in evaluation form
+	 **@throws Exception
+	 */
     public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array())
     {
         $session = JFactory::getSession();
@@ -294,65 +278,59 @@ class EmundusModelEvaluation extends JModelList
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
-		//$elements = array();
+        $view = $jinput->getString('view', null);
+
+        $elements = array();
+
         if ($session->has('filt_params'))
         {
+
             $filt_params = $session->get('filt_params');
-            if (is_array($filt_params['programme']) && count(@$filt_params['programme'])>0) {
-                foreach (array_unique($filt_params['programme']) as $value) {
-					$groups = $this->getGroupsEvalByProgramme($value);
-                    if (empty($groups)) {
-                        $eval_elt_list = array();
-                    } else {
-						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-						//var_dump($eval_elt_list);die;
-                        if (count($eval_elt_list)>0) {
-                            foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
-                            }
+            
+            if(!empty($code))
+            	$programmes = array_unique($code);
+            elseif ( $filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
+            	$programmes = array_unique($filt_params['programme']);
+            else
+            	return array();
+
+            foreach ($programmes as $value) { 
+                $groups = $this->getGroupsEvalByProgramme($value);
+                
+                if (empty($groups)) {
+                    $eval_elt_list = array();
+                } else {
+                    $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                    
+                    if (count($eval_elt_list)>0) {
+                        foreach ($eval_elt_list as $eel) {
+                            if(isset($eel->element_id) && !empty($eel->element_id))
+                                $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
                         }
                     }
-				}
-				//var_dump($elements);
-				
-            }else{
-				if(!empty($code)){
-					foreach ($code as $value) {
-						$groups = $this->getGroupsEvalByProgramme($value);
-						if (empty($groups)) {
-							$eval_elt_list = array();
-						} else {
-							$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-							if (count($eval_elt_list)>0) {
-								foreach ($eval_elt_list as $eel) {
-									if(isset($eel->element_id) && !empty($eel->element_id))
-										$elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	
-        return @$elements;
+                }
+            }
+        }
+
+        return $elements;
     }
-    /**
-     * Get list of ALL evaluation element
-     * @param 	  int displayed in Fabrik List ; yes=1
-     * @param 	  string code of the programme
-     * @return    string list of Fabrik element ID used in evaluation form
-     **/
-    public function getAllEvaluationElements($show_in_list_summary=1, $programme_code)
-    {
+
+	/**
+	 * Get list of ALL evaluation element
+	 *
+	 * @param int $show_in_list_summary
+	 * @param      string code of the programme
+	 *
+	 * @return array list of Fabrik element ID used in evaluation form
+	 * @throws Exception
+	 */
+    public function getAllEvaluationElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
 
-        if ($session->has('filt_params'))
-        {
+        if ($session->has('filt_params')) {
             //var_dump($session->get('filt_params'));
             $elements_id = array();
 			$filt_params = $session->get('filt_params');
@@ -387,14 +365,16 @@ class EmundusModelEvaluation extends JModelList
         return @$elements_id;
     }
 
-    /**
-     * Get list of ALL decision elements
-     * @param 	  int displayed in Fabrik List ; yes=1
-     * @param 	  string code of the programme
-     * @return    string list of Fabrik element ID used in evaluation form
-     **/
-    public function getAllDecisionElements($show_in_list_summary=1, $programme_code)
-    {
+	/**
+	 * Get list of ALL decision elements
+	 *
+	 * @param      int displayed in Fabrik List ; yes=1
+	 * @param      string code of the programme
+	 *
+	 * @return    array list of Fabrik element ID used in evaluation form
+	 **@throws Exception
+	 */
+    public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
         $jinput = JFactory::getApplication()->input;
@@ -435,13 +415,12 @@ class EmundusModelEvaluation extends JModelList
         return @$elements_id;
     }
 
-	public function _buildContentOrderBy()
-    {
+	public function _buildContentOrderBy() {
         $filter_order = JFactory::getSession()->get('filter_order');
         $filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
 
         $can_be_ordering = array();
-        if(count($this->_elements) > 0) {
+        if (count($this->_elements) > 0) {
             foreach ($this->_elements as $element) {
                 $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
                 $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
@@ -485,35 +464,28 @@ class EmundusModelEvaluation extends JModelList
 		return $multi_array;
 	}
 
-	public function getCampaign()
-	{
+	public function getCampaign() {
 		return @EmundusHelperFiles::getCampaign();
 	}
 
-	public function getCurrentCampaign()
-	{
+	public function getCurrentCampaign() {
 		return @EmundusHelperFiles::getCurrentCampaign();
 	}
 
-	public function getCurrentCampaignsID()
-	{
+	public function getCurrentCampaignsID() {
 		return @EmundusHelperFiles::getCurrentCampaignsID();
 	}
 
-	public function getProfileAcces($user)
-	{
+	public function getProfileAcces($user) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id=' . $user;
 		$db->setQuery($query);
-		$profiles = $db->loadResultArray();
-
-		return $profiles;
+		return $db->loadResultArray();
 	}
 
-	public function setSubQuery($tab, $elem)
-	{
+	public function setSubQuery($tab, $elem) {
 		$search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
 		$search_values = JRequest::getVar('elements_values', NULL, 'POST', 'array', 0);
 		$search_other = JRequest::getVar('elements_other', NULL, 'POST', 'array', 0);
@@ -556,8 +528,7 @@ class EmundusModelEvaluation extends JModelList
 		return $list;
 	}
 
-	public function setSelect($search)
-	{
+	public function setSelect($search) {
 		$cols = array();
 		if (!empty($search)) {
 			asort($search);
@@ -582,15 +553,13 @@ class EmundusModelEvaluation extends JModelList
 		return $cols;
 	}
 
-	public function isJoined($tab, $joined)
-	{
+	public function isJoined($tab, $joined) {
 		foreach ($joined as $j)
 			if ($tab == $j) return true;
 		return false;
 	}
 
-	public function setJoins($search, $query, $joined)
-	{
+	public function setJoins($search, $query, $joined) {
 		$tables_list = array();
 		if (!empty($search)) {
 			$old_table = '';
@@ -623,8 +592,7 @@ class EmundusModelEvaluation extends JModelList
 		return $tables_list;
 	}
 
-	public function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default)
-	{
+	public function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default) {
 		$current_user = JFactory::getUser();
 		$search = $this->getState('elements');
 		$search_other = $this->getState('elements_other');
@@ -713,9 +681,7 @@ class EmundusModelEvaluation extends JModelList
 	 * @param    array $head_val header name
 	 * @param    object $applicant array of applicants indexed by database column
 	 **/
-	public function setEvalList($search, &$eval_list, $head_val, $applicant)
-	{
-		//print_r($applicant); die();
+	public function setEvalList($search, &$eval_list, $head_val, $applicant)  {
 		if (!empty($search)) {
 			foreach ($search as $c) {
 				if (!empty($c)) {
@@ -1076,67 +1042,71 @@ class EmundusModelEvaluation extends JModelList
 		}
 		$sql_fnum = '';
 
-		if (count($this->fnum_assoc) > 0)
+		if (count($this->fnum_assoc) > 0) {
 			$sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+		}
 
 		$query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+
+		// In case we have no associated files, show nothing.
+		if (count($this->fnum_assoc) == 0 && empty($filt_menu['programme'])) {
+			$query['q'] .= 'AND 1 = 2';
+		}
 
 		return $query;
 	}
 
-	private function _buildSearch($str_array, $tableAlias = array())
-    {
+	private function _buildSearch($str_array, $tableAlias = array()) {
 		$q = array('q' => array(), 'join' => array());
 		$all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
 		
-        foreach($str_array as $str){
+        foreach ($str_array as $str) {
            
 			$val = explode(': ', $str);
 			
-			if($val[0] == "ALL"){
+			if ($val[0] == "ALL") {
            
-                if (is_numeric($val[1]))
-                {
+                if (is_numeric($val[1])) {
                     //possibly fnum ou uid
-                    if($all > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
+                    if ($all > 0) {
+                        $q['q'][] = ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
+                    } else {
+                        $q['q'][] = ' and (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
                     }
                    
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                    if (!in_array('jos_users', $tableAlias)) {
+	                    $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                    }
                     $q['users'] = true;
                     
-                }
-                else
-                {
-                    if(filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false)
-                    {
+                } else {
+                    if (filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false) {
                         //the request is an email
-                        if($all > 0){
-                            $q['q'][]= ' or (u.email = "'.$val[1].'") ';
-                        }else{
-                            $q['q'][]= ' and (u.email = "'.$val[1].'") ';
+                        if ($all > 0) {
+                            $q['q'][] = ' or (u.email = "'.$val[1].'") ';
+                        } else {
+                            $q['q'][] = ' and (u.email = "'.$val[1].'") ';
                         }
-                        //$q['q'][] .= ' (u.email = "'.$val[1].'") ';
-                        if (!in_array('jos_users', $tableAlias))
-                            $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+
+                        if (!in_array('jos_users', $tableAlias)) {
+	                        $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                        }
                         $q['users'] = true;
-                    }
-                    else
-                    {
-                        if($all > 0){
-                            $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        }else{
-                            $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+
+                    } else {
+
+                    	if ($all > 0) {
+                            $q['q'][] = ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                        } else {
+                            $q['q'][] = ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
                         }
-                        if (!in_array('jos_users', $tableAlias)){
+
+                        if (!in_array('jos_users', $tableAlias)) {
                             $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id';
                             $q['users'] = true;
                         }
                             
-                        if (!in_array('jos_emundus_users', $tableAlias)){
+                        if (!in_array('jos_emundus_users', $tableAlias)) {
                             $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
                             $q['em_user'] = true;
                         }
@@ -1145,103 +1115,105 @@ class EmundusModelEvaluation extends JModelList
                 
                 $all = $all + 1;
             }
-            if($val[0] == "FNUM"){
-                
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($fnum > 0){
-                        $q['q'][]= ' or (c.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (c.fnum like "'.$val[1].'%") ';
-                    }
 
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                    
-                    $fnum = $fnum + 1;
-                }
-            }
-            if($val[0] == "ID"){
+            if ($val[0] == "FNUM" && is_numeric($val[1])) {
                 
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($id > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ') ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ') ';
-                    }
-                   
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                   
-                    $id = $id + 1;
+                //possibly fnum ou uid
+                if ($fnum > 0) {
+                    $q['q'][] = ' or (c.fnum like "'.$val[1].'%") ';
+                } else {
+                    $q['q'][] = ' and (c.fnum like "'.$val[1].'%") ';
                 }
+
+                if (!in_array('jos_users', $tableAlias)) {
+	                $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                }
+                $q['users'] = true;
+                $fnum = $fnum + 1;
+
             }
-            if($val[0] == "EMAIL"){
+
+            if ($val[0] == "ID" && is_numeric($val[1])) {
+                
+                //possibly fnum ou uid
+                if ($id > 0) {
+                    $q['q'][] = ' or (u.id = ' . $val[1] . ') ';
+                } else {
+                    $q['q'][] = ' and (u.id = ' . $val[1] . ') ';
+                }
+
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                }
+                $q['users'] = true;
+
+                $id = $id + 1;
+            }
+
+            if ($val[0] == "EMAIL") {
                
-                    //the request is an email
-                    if($email > 0){
-                        $q['q'][]= ' or ( u.email like "%'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and ( u.email like "%'.$val[1].'%") ';
-                    }
-                    //$q['q'][] = ' ( u.email like "%'.$val[1].'%") ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                    
-                    $email = $email + 1;
-            }
-            if($val[0] == "USERNAME"){
-                 //the request is an username
-                if($username > 0){
-                    $q['q'][]= ' or ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
-                    $q['q'][]= ' and ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                //the request is an email
+                if ($email > 0) {
+                    $q['q'][] = ' or ( u.email like "%'.$val[1].'%") ';
+                } else {
+                    $q['q'][] = ' and ( u.email like "%'.$val[1].'%") ';
                 }
-				//$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-				if (!in_array('jos_users', $tableAlias))
+
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                }
+                $q['users'] = true;
+
+                $email = $email + 1;
+            }
+
+            if ($val[0] == "USERNAME") {
+                 //the request is an username
+                if ($username > 0) {
+                    $q['q'][] = ' or ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+                    $q['q'][] = ' and ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                }
+
+				if (!in_array('jos_users', $tableAlias)) {
 					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+				}
 				$q['users'] = true;
                
                 $username = $username + 1;
             }
-            if($val[0] == "LAST_NAME"){
+
+            if ($val[0] == "LAST_NAME") {
                 //the request is a lastname
-                if($lastname > 0){
-                    $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
-                    $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                if ($lastname > 0) {
+                    $q['q'][] = ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+                    $q['q'][] = ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
                 }
                 
-                if (!in_array('jos_emundus_users', $tableAlias)){
+                if (!in_array('jos_emundus_users', $tableAlias)) {
                     $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
                     $q['em_user'] = true;
                 }
                 
                 $lastname = $lastname + 1;
             }
-            if($val[0] == "FIRST_NAME"){
+
+            if ($val[0] == "FIRST_NAME") {
                 //the request is a firstname
-                    if($firstname > 0){
-                        $q['q'][]= ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }else{
-                        $q['q'][]= ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }
-                    //$q['q'][] = ' and (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    if (!in_array('jos_emundus_users', $tableAlias)){
-                        $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
-                        $q['em_user'] = true;
-                    }
-                    
-                    $firstname = $firstname + 1;
+                if ($firstname > 0) {
+                    $q['q'][] = ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+                    $q['q'][] = ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                }
+
+                if (!in_array('jos_emundus_users', $tableAlias)) {
+                    $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
+                    $q['em_user'] = true;
+                }
+
+                $firstname = $firstname + 1;
             }
-
-
         }
         
         return $q;
@@ -1358,84 +1330,68 @@ if (JFactory::getUser()->id == 655)
 	}
 
 
-	public function getActionsACL()
-	{
+	public function getActionsACL() {
 		return $this->_files->getActionsACL();
 	}
 
-	public function getDefaultElements()
-	{
+	public function getDefaultElements() {
 		return $this->_elements;
 	}
 
-	public function getSelectList()
-	{
+	public function getSelectList() {
 		return $this->_files->getSelectList();
 	}
 
-	public function getProfiles()
-	{
+	public function getProfiles() {
 		return $this->_files->getProfiles();
 	}
 
-	public function getProfileByID($id)
-	{
+	public function getProfileByID($id) {
 		return $this->_files->getProfileByID($id);
 	}
 
-	public function getProfilesByIDs($ids)
-	{
+	public function getProfilesByIDs($ids) {
 		return $this->_files->getProfilesByIDs($ids);
 	}
 
-	public function getAuthorProfiles()
-	{
+	public function getAuthorProfiles() {
 		return $this->_files->getAuthorProfiles();
 	}
 
-	public function getApplicantsProfiles()
-	{
+	public function getApplicantsProfiles() {
 		return $this->_files->getApplicantsProfiles();
 	}
 
-	public function getApplicantsByProfile($profile)
-	{
+	public function getApplicantsByProfile($profile) {
 		return $this->_files->getApplicantsByProfile($profile);
 	}
 
 
-	public function getAuthorUsers()
-	{
+	public function getAuthorUsers() {
 		return $this->_files->getAuthorUsers();
 	}
 
-	public function getMobility()
-	{
+	public function getMobility() {
 		return $this->_files->getMobility();
 	}
 
-	public function getElements()
-	{
+	public function getElements() {
 		return $this->_files->getElements();
 	}
 
-	public function getElementsName()
-	{
+	public function getElementsName() {
 		return $this->_files->getElementsName();
 	}
 
-	public function getTotal()
-	{
+	public function getTotal() {
 		if (empty($this->_total))
 			$this->_total = count($this->_applicants);
 		return $this->_total;
 	}
 
-	public function getPagination()
-	{
+	public function getPagination() {
 		// Load the content if it doesn't already exist
-		if (empty($this->_pagination))
-		{
+		if (empty($this->_pagination)) {
 			jimport('joomla.html.pagination');
 			$session = JFactory::getSession();
 			$this->_pagination = new JPagination($this->getTotal(), $session->get('limitstart'), $session->get('limit'));
@@ -1444,8 +1400,7 @@ if (JFactory::getUser()->id == 655)
 	}
 
 	// get applicant columns
-	public function getApplicantColumns()
-	{
+	public function getApplicantColumns() {
 		$cols = array();
 		$cols[] = array('name' => 'user_id', 'label' => 'User id');
 		$cols[] = array('name' => 'user', 'label' => 'User id');
@@ -1457,21 +1412,17 @@ if (JFactory::getUser()->id == 655)
 	}
 
     // get string of fabrik group ID use for evaluation form
-    public function getGroupsEvalByProgramme($code){
+    public function getGroupsEvalByProgramme($code) {
         $db = $this->getDbo();
         $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
-        try
-        {
-            if(!empty($code)) {
+        try {
+            if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
             } else return null;
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
-
     }
 
 
@@ -1479,102 +1430,80 @@ if (JFactory::getUser()->id == 655)
     public function getGroupsDecisionByProgramme($code){
         $db = $this->getDbo();
         $query = 'select fabrik_decision_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
-        try
-        {
-            if(!empty($code)) {
+        try {
+            if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
             } else return null;
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
-
     }
 
-	public function getSchoolyears()
-	{
+	public function getSchoolyears() {
 		return $this->_files->getSchoolyears();
 	}
 
-	public function getAllActions()
-	{
-
+	public function getAllActions() {
 		return $this->_files->getAllActions();
 	}
 
-	public function getEvalGroups()
-	{
+	public function getEvalGroups() {
 		return $this->_files->getEvalGroups();
 	}
 
-	public function shareGroups($groups, $actions, $fnums)
-	{
+	public function shareGroups($groups, $actions, $fnums) {
 		return $this->_files->shareGroups($groups, $actions, $fnums);
 	}
 
-	public function shareUsers($users, $actions, $fnums)
-	{
+	public function shareUsers($users, $actions, $fnums) {
 		return $this->_files->shareUsers($users, $actions, $fnums);
 	}
 
-	public function getAllTags()
-	{
+	public function getAllTags() {
 		return $this->_files->getAllTags();
 	}
 
-	public function getAllStatus()
-	{
+	public function getAllStatus() {
 		return $this->_files->getAllStatus();
 	}
 
-	public function tagFile($fnums, $tag)
-	{
+	public function tagFile($fnums, $tag) {
 		return $this->_files->tagFile($fnums, $tag);
 	}
 
-	public function getTaggedFile($tag = null)
-	{
+	public function getTaggedFile($tag = null) {
 		return $this->_files->getTaggedFile($tag = null);
 	}
 
-	public function updateState($fnums, $state)
-	{
+	public function updateState($fnums, $state) {
 		return $this->_files->updateState($fnums, $state);
 	}
 
-	public function getPhotos()
-	{
+	public function getPhotos() {
 		return $this->_files->getPhotos();
 	}
 
-	public function getEvaluatorsFromGroup()
-	{
+	public function getEvaluatorsFromGroup() {
 		return $this->_files->getEvaluatorsFromGroup();
 	}
-	public function getEvaluators()
-	{
+	public function getEvaluators() {
 		return $this->_files->getEvaluators();
 	}
 
-	public function unlinkEvaluators($fnum, $id, $isGroup)
-	{
+	public function unlinkEvaluators($fnum, $id, $isGroup) {
 		return $this->_files->unlinkEvaluators($fnum, $id, $isGroup);
 	}
 
-	public function getFnumInfos($fnum)
-	{
+	public function getFnumInfos($fnum) {
 		return $this->_files->getFnumInfos($fnum);
 	}
 
-	public function changePublished($fnum, $published = -1)
-	{
+	public function changePublished($fnum, $published = -1) {
 		return $this->_files->changePublished($fnum, $published = -1);
 	}
 
-	public function getAllFnums()
-	{
+	public function getAllFnums() {
 		return $this->_files->getAllFnums();
 	}
 
@@ -1584,23 +1513,19 @@ if (JFactory::getUser()->id == 655)
 	*	@param elements 	array of element to get value
 	* 	@return array
 	*/
-	public function getFnumArray($fnums, $elements)
-	{
+	public function getFnumArray($fnums, $elements) {
 		return $this->_files->getFnumArray($fnums, $elements);
 	}
 
-	public function getEvalsByFnum($fnums)
-	{
+	public function getEvalsByFnum($fnums) {
 		return $this->_files->getEvalsByFnum($fnums);
 	}
 
-	public function getCommentsByFnum($fnums)
-	{
+	public function getCommentsByFnum($fnums) {
 		return $this->_files->getCommentsByFnum($fnums);
 	}
 
-	public function getFilesByFnums($fnums)
-	{
+	public function getFilesByFnums($fnums) {
 		return $this->_files->getFilesByFnums($fnums);
 	}
 
@@ -1714,14 +1639,13 @@ if (JFactory::getUser()->id == 655)
 
 	/**
      * 	Copy a line by ID from the evaluation table and use it to overrite or create another line
-     *	@param fromID 		line to copy data from
-	 *  @param toID  		line to copy data to
+     *	@param $fromID 		line to copy data from
+	 *  @param $toID  		line to copy data to
      * 	@return boolean
     **/
 	function copyEvaluation($fromID, $toID = null, $fnum = null, $student = null, $user = null) {
 
 		try {
-
 
 			$query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.id = ' . $this->_db->Quote($fromID);
             $this->_db->setQuery($query);
@@ -1801,7 +1725,6 @@ if (JFactory::getUser()->id == 655)
 	/**
 	* 	Get evaluations for fnum done by a user
 	*	@param fnum 		Application File number
-	*	@param user 		user
 	* 	@return array
 	**/
     function getDecisionFnum($fnum) {
@@ -1977,7 +1900,57 @@ if (JFactory::getUser()->id == 655)
     }
 
 
+	/**
+	 * @param $fnum
+	 *
+	 * @return array|bool
+	 */
+    function getScore($fnum) {
 
+	    $fnumInfos = $this->_files->getFnumInfos($fnum);
+    	$query = 'SELECT fe.id, fe.name, fe.label, fe.params, fl.db_table_name FROM #__fabrik_elements AS fe
+				LEFT JOIN #__fabrik_groups AS fg ON fg.id = fe.group_id
+				LEFT JOIN #__fabrik_formgroup AS ffg ON ffg.group_id = fg.id
+				LEFT JOIN #__fabrik_forms AS ff ON ffg.form_id = ff.id 
+				LEFT JOIN #__fabrik_lists as fl ON fl.form_id = ff.id
+				WHERE fg.id IN (
+					SELECT p.fabrik_group_id FROM #__emundus_setup_programmes AS p WHERE p.code LIKE '.$this->_db->quote($fnumInfos['training']).'
+				) AND fe.published = 1 AND fe.params NOT LIKE '.$this->_db->quote('%"comment":""%');
+    	$this->_db->setQuery($query);
+    	try {
+    		$elements = $this->_db->loadObjectList('id');
+	    } catch (Exception $e) {
+    		return false;
+	    }
+
+	    $query = $this->_db->getQuery(true);
+    	$return = [];
+	    foreach ($elements as $element) {
+
+			$query->clear()
+				->select($this->_db->quoteName($element->name))
+				->from($this->_db->quoteName($element->db_table_name))
+		        ->where('fnum LIKE '.$this->_db->quote($fnum));
+			$this->_db->setQuery($query);
+
+			try {
+				$value = $this->_db->loadResult();
+			} catch (Exception $e) {
+				continue;
+			}
+
+			if (empty($value)) {
+				$value = 0;
+			}
+
+		    // The highest possible value of the evaluation criteria is hidden in the comment.
+		    $max = json_decode($element->params)->comment;
+			
+			// Make an array containing all element names brought to 10.
+			$return[$element->label] = ($value/$max)*10;
+
+	    }
+	    
+	    return $return;
+    }
 }
-
-?>

@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantrymenuitemparamoverride.class.php 7001 2013-01-31 07:27:48Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2018 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system

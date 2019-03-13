@@ -31,16 +31,10 @@ defined('_JEXEC') or die;
 
 
 <div class='em-message-notification'>
-    <?php if($messages == "1") :?>
+    <?php if ($messages == "1") :?>
         <p><a href="/index.php?option=com_emundus&view=messages"> <?php echo JText::_("YOU_HAVE") . $messages . JText::_("ONE_MESSAGE") ;?></a></p>
     <? else:?>
         <p><a href="/index.php?option=com_emundus&view=messages"> <?php echo JText::_("YOU_HAVE") . $messages . JText::_("MORE_MESSAGES");?></a></p>
     <?php endif;?>
 </div>
-
-<script>
-
-</script>
-
-
 

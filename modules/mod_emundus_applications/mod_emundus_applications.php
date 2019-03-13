@@ -22,7 +22,6 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.p
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
 $document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
-//$document->addStyleSheet( 'https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css' );
 
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
@@ -51,6 +50,7 @@ $show_progress_documents 	= $params->get('show_progress_documents', 0);
 $show_progress_color 		= $params->get('show_progress_color', '#EA5012');
 $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
+$admission_status           = explode(',', $params->get('admission_status'));
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 if ($layout == '_:ccirs-drh') {
@@ -72,6 +72,7 @@ if (empty($user)) {
 	$user = new stdClass();
 	$user->id = JFactory::getUser()->id;
 }
+
 $user->fnums 	= $applications;
 
 if (empty($user->profile)) {
@@ -85,8 +86,9 @@ $m_checklist 	= new EmundusModelChecklist;
 
 // show application files if applicant profile like current profile and nothing if not
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
-if (in_array($user->profile, $applicant_profiles)) {
 
+if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
+	
 	if (isset($user->fnum) && !empty($user->fnum)) {
 		$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
 		$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));

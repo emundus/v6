@@ -16,22 +16,22 @@ $editor = JFactory::getEditor('tinymce');
 $wysiwyg = $editor->display('message_body', '', '100%', '110', '20', '20', false, 'message_body', null, null, array('mode' => 'simple'));
 
 $receiver = null;
-if ($this->getMessages[0]->user_id_to == $this->user_id)
-    $receiver = $this->getMessages[0]->user_id_from;
-
-else
-    $receiver = $this->getMessages[0]->user_id_to;
+if ($this->getMessages[0]->user_id_to == $this->user_id) {
+	$receiver = $this->getMessages[0]->user_id_from;
+} else {
+	$receiver = $this->getMessages[0]->user_id_to;
+}
 ?>
 
 <!-- WYSIWYG Editor -->
 <link rel="stylesheet" href="/components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/js/tinymce.min.js"></script>
-<script data-cfasync="false" type="text/javascript">tinyMCE.init({selector: "textarea.tinymce", theme: "modern",mobile: { theme: 'mobile' }, menubar:false,statusbar: false,
+<script data-cfasync="false" type="text/javascript">tinyMCE.init({ selector: "textarea.tinymce", theme: "modern", mobile: { theme: 'mobile' }, menubar:false, statusbar: false,
         toolbar: 'undo redo | styleselect | bold italic', plugins: [
-            "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
+            "advlist autolink autosave link lists charmap print preview hr anchor pagebreak spellchecker",
             "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-            "table contextmenu directionality emoticons template textcolor paste"
+            "contextmenu directionality emoticons template textcolor paste"
         ]
     })
 </script>
@@ -47,13 +47,19 @@ else
             <ul class="message-list">
                 <?php foreach ($this->getMessages as $getMessage) :?>
                     <li>
-                        <?php if($getMessage->user_id_to == $this->user_id):?>
-                            <div class="em-message-bubble em-contact-left">
-                                <?php echo "<p>" . $getMessage->message . "</p>"; ?>
-                            </div>
+                        <?php if ($getMessage->user_id_to == $this->user_id) :?>
+                            <?php if ($getMessage->folder_id == 3) :?>
+                                <span class="em-system-chat-message alert alert-info">
+                                    <?php echo $getMessage->message; ?>
+                                </span>
+                            <?php else :?>
+                                <div class="em-message-bubble em-contact-left">
+			                        <?php echo "<p>" . $getMessage->message . "</p>"; ?>
+                                </div>
+                            <?php endif; ?>
                         <?php endif; ?>
 
-                        <?php if($getMessage->user_id_from == $this->user_id):?>
+                        <?php if ($getMessage->user_id_from == $this->user_id) :?>
                             <div class="em-message-bubble em-contact-right">
                                 <?php  echo "<p>" . $getMessage->message . "</p>"; ?>
                             </div>
@@ -78,7 +84,8 @@ else
         var contactList = document.getElementById("em-contacts");
         var chat = document.getElementById("chat");
         var chat2 = document.getElementById("em-chat");
-        if(contactList.className === 'hideContent'){
+        if (contactList.className === 'hideContent') {
+
           //  document.getElementById("em-loader").style.display = "none";
             jQuery(contactList).toggleClass('showContent');
             jQuery(contactList).toggleClass('hideContent');
@@ -95,7 +102,6 @@ else
             jQuery(chat).toggleClass('showChat');
             jQuery(chat2).toggleClass('hideChat');
             jQuery(chat2).toggleClass('showChat');
-
 
         }
     }
@@ -146,7 +152,59 @@ else
                 }
             });
         }
-    };
+    }
+
+    function reply(id) {
+
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&controller=cifre&task=replybyid',
+            data: { id : id },
+            beforeSend: () => {
+                jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled> ... </button>');
+            },
+            success: result => {
+                if (result.status) {
+                    // When we successfully change the status, we simply dynamically change the button.
+                    jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-primary" onclick="breakUp(\'breakup\','+id+')"> <?php echo JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?> </button>');
+                } else {
+                    var actionText = document.getElementById('em-action-text-'+id);
+                    actionText.classList.remove('hidden');
+                    actionText.innerHTML = result.msg;
+                }
+            },
+            error: jqXHR => {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+    function breakUp(action, id) {
+
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&controller=cifre&task=breakupbyid&action='+action,
+            data: { id : id },
+            beforeSend: () => {
+                jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled> ... </button>');
+            },
+            success: result => {
+                if (result.status) {
+                    // Dynamically change the button back to the state of not having a link.
+                    jQuery('#em-buttons-'+id).html('<button type="button" class="btn btn-default" disabled><?php echo JText::_('COM_EMUNDUS_CIFRE_CANCELLED'); ?></button>');
+                } else {
+                    var actionText = document.getElementById('em-action-text-'.id);
+                    actionText.classList.remove('hidden');
+                    actionText.innerHTML = result.msg;
+                }
+            },
+            error: jqXHR => {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
 
 </script>
 

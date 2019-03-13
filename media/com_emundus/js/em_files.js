@@ -1559,6 +1559,7 @@ $(document).ready(function() {
                 $(".modal-body").empty();
                 $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
                 break;
+
             //export excel
             case 6:
             $('#can-val').empty();
@@ -2230,7 +2231,7 @@ $(document).ready(function() {
                                                             dataType:'json',
                                                             success: function(result) {
 
-                                                                var item='<option value="0" selected>Select an option</option>';
+                                                                var item='<option value="0" selected>' + Joomla.JText._('PLEASE_SELECT') + '</option>';
 
                                                                 for (var d in result.elts) {
 
@@ -2870,7 +2871,7 @@ $(document).ready(function() {
                                     error: function(jqXHR) {
                                         console.log(jqXHR.responseText);
                                     }
-                                })
+                                });
 
                                 $.ajax({
                                     type:'get',
@@ -4755,9 +4756,10 @@ $(document).ready(function() {
                                 '</div>');
                             }
 
-                            setTimeout(function(){
+                            setTimeout(function() {
                                 $('#em-modal-actions').modal('hide');
-                            }, 380000);
+                            }, 800);
+                            reloadData($('#view').val());
                         },
                         error: function (jqXHR) {
                             console.log(jqXHR.responseText);

@@ -94,11 +94,17 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
+        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
+        $profile_id = $m_profile->getProfileByFnum($fnum);
+
+        
+
+
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id);
             exit;
         } elseif(EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum);
+            application_form_pdf($user->id, $fnum, true, 1, null, null, null, $profile_id);
             exit;
         } else die(JText::_('ACCESS_DENIED'));
 
@@ -240,10 +246,10 @@ class EmundusController extends JControllerLegacy {
         $redirect      = $jinput->get->getBase64('redirect', null);
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
-	    if (empty($redirect))
-	    	$redirect = 'index.php';
-	    else
-	    	$redirect = base64_decode($redirect);
+        if (empty($redirect))
+            $redirect = 'index.php';
+        else
+            $redirect = base64_decode($redirect);
 
         if (empty($fnum))
             $app->redirect($redirect);
@@ -256,7 +262,7 @@ class EmundusController extends JControllerLegacy {
             $result = $m_files->deleteFile($fnum);
 
         } elseif(EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) ||
-                 EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+            EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
 
         } else {
@@ -401,8 +407,8 @@ class EmundusController extends JControllerLegacy {
             $user = $current_user;
             $fnum = $user->fnum;
             if ($duplicate == 1 && $nb <= 1 && $copy_application_form == 1) {
-               $fnums = implode(',', $db->Quote(array_keys($user->fnums)));
-               $where = ' AND user_id='.$user->id.' AND attachment_id='.$attachment_id. ' AND `fnum` in (select fnum from `#__emundus_campaign_candidature` where `status`=0)';
+                $fnums = implode(',', $db->Quote(array_keys($user->fnums)));
+                $where = ' AND user_id='.$user->id.' AND attachment_id='.$attachment_id. ' AND `fnum` in (select fnum from `#__emundus_campaign_candidature` where `status`=0)';
             } else {
                 $fnums = $db->Quote($fnum);
                 $where = ' AND user_id='.$user->id.' AND id='.$upload_id;
@@ -499,19 +505,19 @@ class EmundusController extends JControllerLegacy {
     */
     function openfile() {
 
-    	require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
         $app    = JFactory::getApplication();
         $jinput = $app->input;
         $fnum   = $jinput->get->get('fnum', null);
 
         // Redirection URL used to bring the user back to the right spot.
-	    $redirect = $jinput->get->getBase64('redirect', null);
+        $redirect = $jinput->get->getBase64('redirect', null);
 
-	    if (empty($redirect))
-	    	$redirect = JURI::base().'index.php';
-	    else
-	    	$redirect = base64_decode($redirect);
+        if (empty($redirect))
+            $redirect = JURI::base().'index.php';
+        else
+            $redirect = base64_decode($redirect);
 
         if (empty($fnum))
             $app->redirect($redirect);
@@ -545,21 +551,21 @@ class EmundusController extends JControllerLegacy {
 
         $session->set('emundusUser', $aid);
 
-	    // If a redirection URL is set: completely ignore it and go find the first form of the file.
-	    if (!empty($redirect)) {
-		    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
-		    $m_application = new EmundusModelApplication;
-		    $redirect = $m_application->getFirstPage($redirect);
-	    } else {
-		    $redirect = 'index.php';
-	    }
+        // If a redirection URL is set: completely ignore it and go find the first form of the file.
+        if (!empty($redirect)) {
+            require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+            $m_application = new EmundusModelApplication;
+            $redirect = $m_application->getFirstPage($redirect);
+        } else {
+            $redirect = 'index.php';
+        }
 
         //JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
         $this->setRedirect($redirect);
     }
 
-     // *****************switch profile controller************
-     function switchprofile() {
+    // *****************switch profile controller************
+    function switchprofile() {
         include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
 
@@ -589,7 +595,7 @@ class EmundusController extends JControllerLegacy {
                         $application    = $m_profile->getFnumDetails($fnum);
 
                         if ($aid->id != $infos['applicant_id'])
-                        	return;
+                            return;
 
                         $aid->profile       = $profile['profile_id'];
                         $aid->profile_label = $profile['label'];
@@ -666,7 +672,7 @@ class EmundusController extends JControllerLegacy {
 
         $student_id = $jinput->get->get('sid', null);
         $duplicate  = $jinput->get->get('duplicate', null);
-		$layout     = $jinput->get->get('layout', null);
+        $layout     = $jinput->get->get('layout', null);
         $format     = $jinput->get->get('format', null);
         $itemid     = $jinput->get('Itemid', null);
         $fnum       = $jinput->get->get('fnum', null);
@@ -680,7 +686,7 @@ class EmundusController extends JControllerLegacy {
             $fnum = $user->fnum;
 
             if ($copy_application_form == 1 && $duplicate == 1)
-               $fnums = array_keys($user->fnums);
+                $fnums = array_keys($user->fnums);
             else
                 $fnums[] = $fnum;
 
@@ -1257,27 +1263,27 @@ class EmundusController extends JControllerLegacy {
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
-	    // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
-	    if (!empty(JFactory::getUser($uid)->id)) {
-		    $db = JFactory::getDBO();
-		    $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
-		    $db->setQuery($query);
-		    $fileInfo = $db->loadObject();
-		    if (empty($fileInfo))
-			    $fileInfo->fnum = explode('_', $file)[0];
-	    }
+        // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
+        if (!empty(JFactory::getUser($uid)->id)) {
+            $db = JFactory::getDBO();
+            $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
+            $db->setQuery($query);
+            $fileInfo = $db->loadObject();
+            if (empty($fileInfo))
+                $fileInfo->fnum = explode('_', $file)[0];
+        }
 
-	    // Check if the user is an applicant and it is his file.
-	    if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid) {
-		    if ($fileInfo->can_be_viewed != 1)
-			    die (JText::_( 'ACCESS_DENIED' ));
-	    }
-	    // If the user has the rights to open attachments.
-	    elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
-		    die (JText::_('ACCESS_DENIED'));
-	    } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r')) {
-		    die (JText::_('ACCESS_DENIED'));
-	    }
+        // Check if the user is an applicant and it is his file.
+        if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid) {
+            if ($fileInfo->can_be_viewed != 1)
+                die (JText::_( 'ACCESS_DENIED' ));
+        }
+        // If the user has the rights to open attachments.
+        elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
+            die (JText::_('ACCESS_DENIED'));
+        } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r')) {
+            die (JText::_('ACCESS_DENIED'));
+        }
 
         // Otherwise, open the file if it exists.
         $file = JPATH_BASE.DS.$url;

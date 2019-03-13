@@ -2,7 +2,7 @@
 /**
  * @version   $Id: date.php 4246 2012-10-11 22:06:13Z kevin $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2018 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system

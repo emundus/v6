@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -40,8 +40,15 @@ class WFAggregatorExtension_Youtube extends WFAggregatorExtension
         $plugin = WFEditorPlugin::getInstance();
 
         return array(
-            'width' => $plugin->getParam('aggregator.youtube.width', 560),
-            'height' => $plugin->getParam('aggregator.youtube.height', 315),
+            'width'     => $plugin->getParam('aggregator.youtube.width', 560),
+            'height'    => $plugin->getParam('aggregator.youtube.height', 315),
+
+            'controls'  => (int) $plugin->getParam('aggregator.youtube.controls', 1),
+            'loop'      => (int) $plugin->getParam('aggregator.youtube.loop', 0),
+            'autoplay'  => (int) $plugin->getParam('aggregator.youtube.autoplay', 0),
+            'rel'       => (int) $plugin->getParam('aggregator.youtube.related', 1),
+            'modestbranding'  => (int) $plugin->getParam('aggregator.youtube.modestbranding', 0),
+            'privacy'   => (int) $plugin->getParam('aggregator.youtube.privacy', 0)
         );
     }
 }

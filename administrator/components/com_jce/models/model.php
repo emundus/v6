@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -105,7 +105,7 @@ class WFModel extends WFModelBase
         }
     }
 
-    public static function getBrowserLink($element = null, $filter = '', $callback = '')
+    public static function getBrowserLink($element = null, $mediatype = '', $callback = '')
     {
         // load base classes
         require_once JPATH_ADMINISTRATOR . '/components/com_jce/includes/base.php';
@@ -133,8 +133,8 @@ class WFModel extends WFModelBase
                 $url .= '&element=' . $element;
             }
 
-            if ($filter) {
-                $url .= '&filter=' . $filter;
+            if ($mediatype) {
+                $url .= '&mediatype=' . $mediatype;
             }
 
             if ($callback) {

@@ -362,16 +362,18 @@ class EmundusHelperEmails
 
 	function getEmail($lbl)
 	{
-		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl like '.$this->_db->Quote($lbl);
-		$this->_db->setQuery( $query );
-		return $this->_db->loadObject();
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl like '.$db->Quote($lbl);
+		$db->setQuery( $query );
+		return $db->loadObject();
 	}
 
 	function getAllEmail($type=2)
 	{
-		$query = 'SELECT * FROM #__emundus_setup_emails WHERE type IN ('.$this->_db->Quote($type).') AND published=1';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadObjectList();
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM #__emundus_setup_emails WHERE type IN ('.$db->Quote($type).') AND published=1';
+		$db->setQuery($query);
+		return $db->loadObjectList();
 	}
 
 	function getTemplate(){
@@ -581,7 +583,7 @@ class EmundusHelperEmails
 			$campaigns_id[] = intval($params[1]);
 		}
 
-		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
+		$captcha	= 1;
 
 		$from 		= JRequest::getVar( 'mail_from', null, 'post' );
 		$from_id	= JRequest::getVar( 'mail_from_id', null, 'post' );

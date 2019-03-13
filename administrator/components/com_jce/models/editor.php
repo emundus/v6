@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -207,6 +207,9 @@ class WFModelEditor extends WFModelBase
             $settings['toggle'] = $wf->getParam('editor.toggle', 1, 1);
             $settings['toggle_label'] = htmlspecialchars($wf->getParam('editor.toggle_label', ''));
             $settings['toggle_state'] = $wf->getParam('editor.toggle_state', 1, 1);
+
+            // Set active tab
+            $settings['active_tab'] = 'wf-editor-' . $wf->getParam('editor.active_tab', 'wysiwyg');
 
             // Get all optional plugin configuration options
             $this->getPluginConfig($settings);
@@ -617,6 +620,11 @@ class WFModelEditor extends WFModelBase
                 // core plugins
                 $core = array('core', 'autolink', 'cleanup', 'code', 'format', 'importcss', 'colorpicker', 'upload');
 
+                // load branding
+                if (!WF_EDITOR_PRO) {
+                    $core[] = 'branding';
+                }
+
                 // add advlists plugin if lists are loaded
                 if (in_array('lists', $items)) {
                     $items[] = 'advlist';
@@ -662,10 +670,15 @@ class WFModelEditor extends WFModelBase
 
                     // reset index
                     $items = array_values($items);
-
+                    
                     // add to array
-                    $plugins['external'][$name] = JURI::root(true) . $attribs->path . '/editor_plugin.js';
+                    $plugins['external'][$name] = JURI::root(true) . '/' . $attribs->url . '/editor_plugin.js';
                 }
+
+                // remove missing plugins
+                $items = array_filter($items, function($item) {
+                    return is_file(WF_EDITOR_PLUGINS . '/' . $item . '/editor_plugin.js');
+                });
 
                 // update core plugins
                 $plugins['core'] = $items;
@@ -825,12 +838,12 @@ class WFModelEditor extends WFModelBase
         jimport('joomla.filesystem.folder');
         jimport('joomla.filesystem.file');
 
-        // use system template as default
-        $url = 'templates/system/css';
-        // use 'system' as default
-        $template = 'system';
-        // use system editor.css as default
-        $styles = 'templates/system/css/editor.css';
+        // set default url as empty value
+        $url = '';
+        // set default tempalte as empty value
+        $template = '';
+        // use editor default styles
+        $styles = '';
         // stylesheets
         $stylesheets = array();
         // files
@@ -929,9 +942,8 @@ class WFModelEditor extends WFModelBase
 
                 $files[] = $url . '/' . basename($file);
                 break;
-            // Nothing, use system default
+            // Nothing, use editor default
             case 2:
-                $files[] = 'templates/system/css/editor.css';
                 break;
         }
 
@@ -1011,7 +1023,7 @@ class WFModelEditor extends WFModelBase
                 // add etag
                 if ($absolute === false) {
                     // create hash
-                    $etag = '?' . md5_file(JPATH_SITE . '/' . $file);
+                    $etag = '?' . filemtime(JPATH_SITE . '/' . $file);
                 }
 
                 $stylesheets[] = $root . '/' . $file . $etag;

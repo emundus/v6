@@ -160,4 +160,43 @@ class modemundusApplicationsHelper {
 	}
 
 
+	// HESAM Get ammount of demands for an offer
+	static function getNumberOfContactOffers($fnum) {
+
+        $db = JFactory::getDbo();
+
+        $query = 'SELECT count(ec.id)
+					FROM #__emundus_cifre_links ec
+					WHERE ec.fnum_to LIKE "'.$fnum.'"
+					AND (ec.state = 2 OR ec.state = 1)';
+
+        try {
+            $db->setQuery($query);
+            return $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    static function getSearchEngineId($fnum) {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery('true');
+
+        $query
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__emundus_recherche'))
+            ->where($db->quoteName('fnum') . ' LIKE "' . $fnum . '"' );
+
+        try {
+            $db->setQuery($query);
+            return $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 }

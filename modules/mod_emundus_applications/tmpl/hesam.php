@@ -14,15 +14,14 @@ echo $description;
 $uri = JUri::getInstance();
 ?>
 
-
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
     <a class="btn btn-success" href="<?php echo JURI::base(); ?>component/fabrik/form/102"><span class="icon-plus"></span> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></a>
 <?php endif; ?>
 
-
 <?php if (!empty($applications)) : ?>
+
     <div class="em-hesam-applications">
-		<?php foreach ($applications as $application) : ?>
+        <?php foreach ($applications as $application) : ?>
             <div class="col-md-4 em-hesam-application-card" id="row<?php echo $application->fnum; ?>">
 
                 <div class="em-hesam-application-card-details">
@@ -30,7 +29,7 @@ $uri = JUri::getInstance();
                         <span class="label label-<?php echo $application->class; ?>"><?php echo $application->value; ?></span>
                     </div>
 
-                    <div class="col-md-12 em-bottom-space">
+                    <div class="row em-bottom-space">
                         <?php if (!empty($application->titre)) :?>
                             <?php echo ($application->fnum == $user->fnum)?'<b>'.$application->titre.'</b>':$application->titre; ?>
                         <?php else: ?>
@@ -38,7 +37,7 @@ $uri = JUri::getInstance();
                         <?php endif; ?>
                     </div>
 
-                    <div class="col-md-12 em-bottom-space">
+                    <div class="row em-bottom-space">
                         <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode(JUri::getInstance()->getPath())); ?>"  role="button">
                             <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
                         </a>
@@ -47,14 +46,14 @@ $uri = JUri::getInstance();
                             <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
                         <?php endif; ?>
 
-                        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'les-offres/consultez-les-offres/details/299/'. modemundusApplicationsHelper::getSearchEngineId($application->fnum) .'?format=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i></a>
 
-                        <?php if ($application->status <= 1) : ?>
+                        <?php if ($application->status != 3) : ?>
                             <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                         <?php endif; ?>
                     </div>
 
-                    <div class="col-md-12 em-bottom-space">
+                    <div class="row em-bottom-space">
                         <?php if ($application->status == 1) : ?>
                             <a class="btn btn-success btn-xs em-cloturer" onClick="completefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('COMPLETE_APPLICATION'); ?>">
                                 <i class="check icon"></i> <?php echo JText::_('COMPLETE_APPLICATION'); ?>
@@ -65,13 +64,23 @@ $uri = JUri::getInstance();
                             </a>
                         <?php endif; ?>
                     </div>
+
+                    <div class="row em-bottom-space em-interested">
+                        <?php if (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) == 1) :?>
+                            <p><?php echo JText::_('MOD_EMUNDUS_ONE_PERSON'); ?></p>
+                        <?php elseif (modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum) > 1) :?>
+                            <p><?php echo modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum); ?><?php echo JText::_('MOD_EMUNDUS_MORE_ONE_PERSON'); ?></p>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
-
             </div>
-		<?php endforeach;  ?>
+        <?php endforeach;  ?>
     </div>
-<?php else : echo JText::_('NO_FILE'); ?>
+<?php else : ?>
+    <span class="em-no-file-found">
+        <?php echo JText::_('NO_FILE'); ?>
+    </span>
 <?php endif; ?>
 
 

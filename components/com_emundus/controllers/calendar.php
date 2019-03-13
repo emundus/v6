@@ -20,11 +20,12 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'calendar.php');
 
 class EmundusControllerCalendar extends JControllerLegacy {
 
-    /**
-    * Creates a calendar using the google API and by manually creating a category for dpcalendar to use.
-    *
-    * @return bool
-    */
+	/**
+	 * Creates a calendar using the google API and by manually creating a category for dpcalendar to use.
+	 *
+	 * @return null
+	 * @throws Exception
+	 */
     public function createcalendar() {
 
         $m_calendar = new EmundusModelCalendar();
@@ -61,6 +62,9 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
     }
 
+	/**
+	 * @throws Exception
+	 */
     public function bookinterview() {
 
         $m_calendar = new EmundusModelCalendar();
@@ -127,7 +131,6 @@ class EmundusControllerCalendar extends JControllerLegacy {
     public function createtimeslots() {
 
         $m_calendar = new EmundusModelCalendar();
-        $eMConfig = JComponentHelper::getParams('com_emundus');
 
         $jinput = JFactory::getApplication()->input;
 
@@ -212,10 +215,11 @@ class EmundusControllerCalendar extends JControllerLegacy {
                 $current_date = new DateTime($start_date->format('Y-m-d H:i'));
 
                 // If it's a Friday, skip the weekend.
-                if ($current_date->format('w') == 5)
-                    $nb_days = $nb_days + 3;
-                else
-                    $nb_days++;
+                if ($current_date->format('w') == 5) {
+	                $nb_days = $nb_days + 3;
+                } else {
+	                $nb_days++;
+                }
 
                 // Move the current date to the next day.
                 $current_date->modify('+'.$nb_days.' day');
@@ -241,6 +245,17 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         echo json_encode(['status' => $result]);
 
+    }
+
+
+    /**
+     * Used for first activation with the calendar.
+     */
+    public function authenticateclient() {
+    	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
+    	$m_calendar = new EmundusModelCalendar();
+		$m_calendar->authenticateClient();
+		JFactory::getApplication()->redirect('/index.php');
     }
 
 }

@@ -57,7 +57,7 @@ class EmundusViewCampaign extends JViewLegacy {
             $row->url = 'https://www.competencesetformation.fr/formation?rowid='.$row->row_id;
 
             // Process tax.
-            $row->prix_ttc = $row->tax_rate == 1;
+            $row->prix_ttc = !empty($row->tax_rate);
 
             $data[$key] = $row;
 

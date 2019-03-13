@@ -62,6 +62,7 @@ $prix_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."
 $public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_public.svg");
 $telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
 
+$page_title = "Rechercher une formation";
 
 $category = JFactory::getApplication()->input->get->get('category');
 $cible = JFactory::getApplication()->input->get->get('cible');
@@ -76,6 +77,8 @@ if(!empty($category)) {
 
     $db->setQuery($query);
     $category = $db->loadAssoc();
+
+    $page_title .= " en ".$category['label'];
 }
 
 if (!empty($cible)) {
@@ -103,11 +106,12 @@ if (!empty($cible)) {
         default:
             $cible = strtoupper($cible);
         break;
-
     }
+
+    $page_title .= " pour ".$cible;
 }
 
-
+$doc->setTitle($page_title);
 ?>
 
 <div class="main">
@@ -119,7 +123,7 @@ if (!empty($cible)) {
                     <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
                         <?php echo $category['label']; ?>
                     </div>
-                    <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+                    <a href="/recherche"><span aria-hidden="true">&times;</span></a>
                 </div>
             <?php endif; ?>
 
@@ -128,7 +132,7 @@ if (!empty($cible)) {
                     <div class="em-filter-cible">
                         <?php echo $cible; ?>
                     </div>
-                    <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+                    <a href="/rechercher"><span aria-hidden="true">&times;</span></a>
                 </div>
             <?php endif; ?>
 
@@ -226,7 +230,7 @@ if (!empty($cible)) {
                                             </div>
 
                                             <div class="em-themes em-theme-title em-theme-<?php echo $theme_color; ?>">
-                                                <a href="rechercher?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $theme_title))));?>"><?php echo $theme_label; ?></a>
+                                                <a href="/formations/<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $category['title']))));?>"><?php echo $theme_label; ?></a>
                                             </div>
                                         </div>
 

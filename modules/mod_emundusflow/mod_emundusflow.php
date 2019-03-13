@@ -41,7 +41,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	// module params
 	$show_programme = $params->get('show_programme', 1);
 	$show_deadline  = $params->get('show_deadline', 0);
-	$offset = JFactory::getConfig()->get('offset');
+    $admission  = $params->get('admission', 0);
+    $layout = $params->get('layout', 'default');
+    $offset = JFactory::getConfig()->get('offset');
 
 	// eMundus params
 	$params_emundus 		= JComponentHelper::getParams('com_emundus');
@@ -54,14 +56,21 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$m_application 	= new EmundusModelApplication;
 	$m_files 		= new EmundusModelFiles;
 
-	$fnumInfos = $m_files->getFnumInfos($user->fnum);
+	$paid = null;
 	if ($application_fee == 1) {
+		$fnumInfos = $m_files->getFnumInfos($user->fnum);
+		if($admission)
+            $paid_orders = $m_application->getHikashopOrder($fnumInfos, false, $admission);
+		else
+		    $paid_orders = $m_application->getHikashopOrder($fnumInfos);
 
-		$paid_orders = $m_application->getHikashopOrder($fnumInfos);
-		$paid = is_array($paid_orders) && count($paid_orders) > 0?1:0;
-		if ($paid == 0) {
+		$paid = !empty($paid_orders);
+		if (!$paid) {
 
-			$sentOrder = $m_application->getHikashopOrder($fnumInfos, true);
+			if ($admission)
+		        $sentOrder = $m_application->getHikashopOrder($fnumInfos, true, $admission);
+            else
+                $sentOrder = $m_application->getHikashopOrder($fnumInfos, true);
 
 			// If students with a scholarship have a different fee.
 			// The form ID will be appended to the URL, taking him to a different checkout page.
@@ -93,7 +102,11 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 			$orderCancelled = false;
 			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
 
-			$cancelled_orders = $m_application->getHikashopCancelledOrders($fnumInfos);
+			if($admission)
+                $cancelled_orders = $m_application->getHikashopCancelledOrders($fnumInfos, $admission);
+			else
+			    $cancelled_orders = $m_application->getHikashopCancelledOrders($fnumInfos);
+
 			if (is_array($cancelled_orders) && count($cancelled_orders) > 0)
 				$orderCancelled = true;
 
@@ -114,5 +127,5 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	}
 
 
-	require(JModuleHelper::getLayoutPath('mod_emundusflow'));
+	require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }

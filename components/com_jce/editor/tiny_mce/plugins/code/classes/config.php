@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -23,6 +23,8 @@ class WFCodePluginConfig
         $settings['code_style'] = $wf->getParam('editor.allow_css', 0, 0, 'boolean');
 
         $settings['code_cdata'] = $wf->getParam('editor.cdata', 1, 1, 'boolean');
+
+        $settings['code_protect_shortcode'] = $wf->getParam('editor.protect_shortcode', 0, 0, 'boolean');
 
         $remove = array();
 

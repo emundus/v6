@@ -501,8 +501,8 @@ if ( $buscar_componente ){
 	if ($joomla_version <> $version_componente){
 	 /* Si la versión instalada en el sistema es distinta de la de la bbdd, actualizamos la bbdd. Esto sucede cuando se actualiza la versión de Joomla */
 	 $resultado_update = $this->actualizar_registro('Joomla!', 'securitycheckpro', 'Product', $joomla_version, 'InstalledVersion');
-	 $mensaje_actualizados = JText::_('COM_SECURITYCHECKPRO_CORE_UPDATED');
-	 $jinput->set('core_actualizado', $mensaje_actualizados);	 
+	 $mensaje_actualizados = JText::_('COM_SECURITYCHECKPRO_CORE_UPDATED');	 
+	 $jinput = JFactory::getApplication()->set('core_actualizado', $mensaje_actualizados);	 
 	}
 } else {  /* Hacemos un insert en la base de datos con el nombre y la versión del componente */
 $resultado_insert = $this->insertar_registro( 'Joomla!', $joomla_version, 'core' );

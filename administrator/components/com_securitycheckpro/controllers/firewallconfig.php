@@ -74,8 +74,7 @@ public function save()
 	$custom_code = $jinput->get("custom_code",null,'raw');
 	
 	$data = $jinput->getArray($_POST);
-	
-	
+		
 	$data['base64_exceptions'] = $model->clearstring($data['base64_exceptions'], 2);
 	$data['strip_tags_exceptions'] = $model->clearstring($data['strip_tags_exceptions'], 2);
 	$data['duplicate_backslashes_exceptions'] = $model->clearstring($data['duplicate_backslashes_exceptions'], 2);

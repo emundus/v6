@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -169,6 +169,28 @@ class WFLanguageParser extends JObject
         return $array;
     }
 
+    protected static function getOverrides() 
+    {
+        // get the language file
+        $language = JFactory::getLanguage();
+        // get language tag
+        $tag = $language->getTag();
+        
+        $file = JPATH_SITE . '/language/overrides/' . $tag . '.override.ini';
+
+        $ini  = array();
+
+        if (is_file($file)) {
+            $content = @file_get_contents($file);
+            
+            if ($content && is_string($content)) {
+                $ini = @parse_ini_string($content, true);
+            }
+        }
+
+        return $ini;
+    }
+
     protected static function filterSections($ini, $sections = array(), $filter = '')
     {
         if ($ini && is_array($ini)) {
@@ -220,6 +242,9 @@ class WFLanguageParser extends JObject
 
         $output = '';
 
+        // get overrides
+        $overrides = self::getOverrides();
+
         if (!empty($data)) {
             $x = 0;
 
@@ -230,6 +255,10 @@ class WFLanguageParser extends JObject
                     $i = 0;
 
                     foreach ($strings as $k => $v) {
+                        if (array_key_exists(strtoupper($k), $overrides)) {
+                            $v = $overrides[$k];
+                        }
+                        
                         // remove "
                         $v = str_replace('"', '', $v);
 
