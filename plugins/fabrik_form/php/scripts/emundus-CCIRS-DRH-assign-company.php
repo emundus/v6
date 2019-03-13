@@ -17,7 +17,6 @@ $mainframe = JFactory::getApplication();
 
 $user = $formModel->getElementData('jos_emundus_entreprise___user')[0];
 $cid = $formModel->getElementData('jos_emundus_entreprise___id');
-$position = $formModel->getElementData('jos_emundus_entreprise___function');
 
 if (empty($user) || empty($cid))
 	return false;
@@ -28,7 +27,7 @@ try {
     $columns = array('user', 'cid', 'profile', 'position');
 
     // Insert values.
-    $values = array($current_user->id, $cid, '1002', $position);
+    $values = array($current_user->id, $cid, '1002', $db->quote('Décideur RH'));
 
     $query = $db->getQuery(true);
     $query->insert($db->quoteName('#__emundus_user_entreprise'))

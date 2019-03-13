@@ -236,7 +236,7 @@ class EmundusModelFormations extends JModelLegacy {
         }
 
         if($user_rh == null) {
-            $user_id = JFactory::getUser()->id;
+            $user_rh = JFactory::getUser()->id;
             if ($user_rh == null) {
                 return null;
             }
