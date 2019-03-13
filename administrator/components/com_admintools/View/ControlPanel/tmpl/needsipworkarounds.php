@@ -1,9 +1,12 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
+
+// Protect from unauthorized access
+defined('_JEXEC') or die();
 
 // IP Workarounds are available on Pro version only
 if (!defined('ADMINTOOLS_PRO') || !ADMINTOOLS_PRO)

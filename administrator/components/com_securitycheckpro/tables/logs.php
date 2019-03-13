@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * Logs Table class
@@ -37,7 +37,8 @@ class TableLogs extends JTable
 	 *
 	 * @param object Database connector object
 	 */
-	function TableLogs(& $db) {
+	function TableLogs(&$db)
+	{
 		parent::__construct('#__securitycheckpro_logs', 'id', $db);
 	}
 }

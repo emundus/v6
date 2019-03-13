@@ -1,12 +1,13 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
 namespace FOF30\Utils;
 
+defined('_JEXEC') or die;
 
 /**
  * ArrayHelper is an array utility class for doing all sorts of odds and ends with arrays.

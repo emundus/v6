@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 // Load framework base classes
 jimport('joomla.application.component.controller');
@@ -35,21 +35,25 @@ public function apply_rules()
 	$jinput = JFactory::getApplication()->input;
 	$ids	=$jinput->getVar('cid', '', 'array');
 	
-	if (empty($ids)) {
+	if (empty($ids))
+	{
 		JError::raiseWarning(500, JText::_('COM_SECURITYCHECKPRO_RULES_NO_GROUPS_SELECTED'));
-	} else {
+	} else
+	{
 		// Obtenemos el modelo
 		$model = $this->getModel("rules");
 
 		// Cambiamos el estado de los registros seleccionados
-		if (!$model->apply_rules()) {
+		if (!$model->apply_rules())
+		{
 			JError::raiseWarning(500, $model->getError());
-		} else {
+		} else 
+		{
 			$this->setMessage(JText::plural('COM_SECURITYCHECKPRO_RULES_N_GROUPS_SELECTED', count($ids)));
 		}
 	}
 
-	$this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=rules&'. JSession::getFormToken() .'=1' );
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=rules&'. JSession::getFormToken() .'=1');
 }
 
 /* Método para NO aplicar las reglas a un grupo o conjunto de grupos */
@@ -59,28 +63,32 @@ public function not_apply_rules()
 	$jinput = JFactory::getApplication()->input;
 	$ids	=$jinput->getVar('cid', '', 'array');
 	
-	if (empty($ids)) {
+	if (empty($ids))
+	{
 		JError::raiseWarning(500, JText::_('COM_SECURITYCHECKPRO_RULES_NO_GROUPS_SELECTED'));
-	} else {
+	} else 
+	{
 		// Obtenemos el modelo
 		$model = $this->getModel("rules");
 
 		// Cambiamos el estado de los registros seleccionados
-		if (!$model->not_apply_rules()) {
+		if (!$model->not_apply_rules())
+		{
 			JError::raiseWarning(500, $model->getError());
-		} else {
+		} else 
+		{
 			$this->setMessage(JText::plural('COM_SECURITYCHECKPRO_RULES_N_GROUPS_SELECTED', count($ids)));
 		}
 	}
 
-	$this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=rules&'. JSession::getFormToken() .'=1' );
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=rules&'. JSession::getFormToken() .'=1');
 }
 
 /* Muestra las entradas de confianza */
 function rules_logs()
 {
 	$jinput = JFactory::getApplication()->input;
-	$jinput->set( 'view', 'ruleslogs' );
+	$jinput->set('view', 'ruleslogs');
 	
 	parent::display();
 }
@@ -88,13 +96,13 @@ function rules_logs()
 /* Redirecciona las peticiones al componente */
 function redireccion()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=rules&view=rules' );
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=rules&view=rules');
 }
 
 /* Redirecciona las peticiones al Panel de Control */
 function redireccion_control_panel()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro' );
+	$this->setRedirect('index.php?option=com_securitycheckpro');
 }
 
 }

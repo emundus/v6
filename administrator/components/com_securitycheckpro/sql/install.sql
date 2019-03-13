@@ -479,7 +479,11 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_jpprojects','component','1.1.3.2','==','3.0.0','>=','JoomProject Component','Information Disclosure vulnerabilitiy','Jan 15 2019','Version 1.1.3.2','update','1.1.3.3'),
 ('mod_jw_srfr','module','3.5.0','<=','3.0.0','>=','Simple RSS Feed Reader Module','Open Redirect vulnerability','Jan 15 2019','Version 3.6.0','none','No details'),
 ('Joomla!','core','3.9.1','<=','3.0.0','>=','Joomla! multiple vulnerabilities','4 low vulnerabilities','Jan 15 2019','Joomla 2.5.0 through 3.9.1','update','3.9.2'),
-('com_jcruisereservation','component','6.0.2','==','3.0.0','>=','J-CruiseReservation Component','Sql Injection vulnerability','Jan 21 2019','Version 6.0.2','update','6.0.4');
+('com_jcruisereservation','component','6.0.2','==','3.0.0','>=','J-CruiseReservation Component','Sql Injection vulnerability','Jan 21 2019','Version 6.0.2','update','6.0.4'),
+('com_easyshop','component','1.2.3','==','3.0.0','>=','EasyShop Component','Local file inclusion vulnerability','Feb 04 2019','Version 1.2.3','update','1.2.4'),
+('Joomla!','core','3.9.2','<=','3.0.0','>=','Joomla! multiple vulnerabilities','6 low vulnerabilities','Feb 12 2019','Joomla 2.5.0 through 3.9.2','update','3.9.3'),
+('com_edocman','component','1.11.7','==','3.0.0','>=','Edocman Component','Sql Injection vulnerability','Feb 23 2019','Version 1.11.7','update','1.11.8'),
+('com_kunena','component','5.1.10','<','3.0.0','>=','Kunena Component','XSS vulnerabilities','Mar 05 2019','Version 5.1.0 through 5.1.10','update','5.1.10');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -561,6 +565,9 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
 PRIMARY KEY (`storage_key`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0;
 
+INSERT INTO `#__securitycheckpro_storage` (`storage_key`,`storage_value`) VALUES 
+('locked','0');
+
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `group_id` INT(10),
@@ -598,7 +605,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.34');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.38');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

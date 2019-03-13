@@ -8,17 +8,17 @@
 
 // Chequeamos si el archivo está incluído en Joomla!
 defined('_JEXEC') or die();
-jimport( 'joomla.application.component.model' );
-jimport( 'joomla.version' );
-jimport( 'joomla.access.rule' );
-jimport( 'joomla.application.component.helper' );
-jimport('joomla.updater.update' );
-jimport('joomla.installer.helper' );
-jimport('joomla.installer.installer' );
-jimport( 'joomla.application.component.controller' );
+jimport('joomla.application.component.model');
+jimport('joomla.version');
+jimport('joomla.access.rule');
+jimport('joomla.application.component.helper');
+jimport('joomla.updater.update');
+jimport('joomla.installer.helper');
+jimport('joomla.installer.installer');
+jimport('joomla.application.component.controller');
 
 // Load library
-require_once(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php');
+require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php';
 
 /**
 * Modelo Securitycheck
@@ -33,7 +33,6 @@ private $vuln_table = 'Not_defined';
 // Variable que contiene la versión de la bbdd local (contendrá el mayor valor del campo 'dbversion' del archivo xml leído)
 private $higher_database_version = '0.0.0';
 
-
 function __construct()
 {
 	parent::__construct();
@@ -41,7 +40,8 @@ function __construct()
 }
 
 /* Chequea qué tipo de componente de securitycheck está instalado */
-function check_securitycheck_type() {
+function check_securitycheck_type()
+{
 
 	$db = JFactory::getDbo();
 	
@@ -54,11 +54,12 @@ function check_securitycheck_type() {
 	$result = $db->loadResult();
 	
 	// La extensión Pro está instalada; actualizamos la variable $securitycheck_type y $table
-	if ( $result == '1' ) {
+	if ($result == '1')
+	{
 		$this->securitycheck_type = 'com_securitycheckpro';
 		$this->vuln_table = '#__securitycheckpro_db';
-	} else {
-		
+	} else 
+	{		
 		// Consultamos si está instalada la versión free
 		$query = $db->getQuery(true)
 			->select('COUNT(*)')
@@ -68,7 +69,8 @@ function check_securitycheck_type() {
 		$result = $db->loadResult();
 		
 		// La extensión free está instalada; actualizamos la variable $securitycheck_type y $table
-		if ( $result == '1' ) {
+		if ($result == '1')
+		{
 			$this->securitycheck_type = 'com_securitycheck';
 			$this->vuln_table = '#__securitycheck_db';
 		}	
@@ -76,33 +78,41 @@ function check_securitycheck_type() {
 }
 
 /* Función que añade vulnerabilidades a la bbdd del componente securitycheck */
-function add_vuln($array_complete,$local_database_version) {
+function add_vuln($array_complete,$local_database_version)
+{
 
 	// La versión mayor de la bbdd corresponderá, al principio, a la almacenada.
 	$this->higher_database_version = $this->get_database_version();
 	
 	// Comprobamos si hemos de insertar cada vulnerabilidad
-	foreach ($array_complete as $vulnerability) {
+	foreach ($array_complete as $vulnerability)
+	{
 		/* Consultamos la rama para la que es válida la vulnerabilidad. Para ello dividimos los strings en el formato array[0]=3, array[1]=0... Así, el primer valor contendrá la rama para la que es válida la vulnerabilidad y la rama de joomla instalada */
 		$jversion_exists = array_key_exists("jversion",$vulnerability);
-		if ( $jversion_exists ) {
+		if ($jversion_exists)
+		{
 			$vulnerabillity_branch = explode(".",$vulnerability['jversion']);			
-		} else {
+		} else
+		{
 			$vulnerabillity_branch = "3.0.0";			
 		}
 		$local_joomla_branch = explode(".",JVERSION);
 		
 		// La versión de la vulnerabilidad debe ser mayor que la de la bbdd local para almacenarla/eliminarla
-		if ( version_compare($vulnerability['dbversion'],$local_database_version,'gt') ) {	
+		if (version_compare($vulnerability['dbversion'],$local_database_version,'gt'))
+		{	
 			// Actualizamos la variable que contiene la mayor versión de la bbdd leída del xml. Este valor se almacenará luego en la bbdd local.
 			$this->higher_database_version = $vulnerability['dbversion'];
 			// Método para insertar una vulnerabilidad
 			$key_exists = array_key_exists("method",$vulnerability);
-			if ( ( $key_exists && $vulnerability['method'] == 'add' ) || (!$key_exists) ) {
+			if (($key_exists && $vulnerability['method'] == 'add') || (!$key_exists))
+			{
 				// La vulnerabilidad debe corresponder con la rama de Joomla local
-				if ( $vulnerabillity_branch[0] == $local_joomla_branch[0] ) {
+				if ($vulnerabillity_branch[0] == $local_joomla_branch[0])
+				{
 					// Rellenamos el objeto que vamos a insertar en la tabla '#__securitycheck(pro)_db', según la opción instalada
-					if ( $this->securitycheck_type == 'com_securitycheckpro' ) {						
+					if ($this->securitycheck_type == 'com_securitycheckpro')
+					{						
 						$nueva_vulnerabilidad = (object) array(
 							'Product' => filter_var($vulnerability['product'], FILTER_SANITIZE_STRING),
 							'vuln_type' => filter_var($vulnerability['type'], FILTER_SANITIZE_STRING),
@@ -117,7 +127,8 @@ function add_vuln($array_complete,$local_database_version) {
 							'solution_type' => filter_var($vulnerability['solution_type'], FILTER_SANITIZE_STRING),
 							'solution' => filter_var($vulnerability['solution'], FILTER_SANITIZE_STRING),
 						);
-					} else if ( $this->securitycheck_type == 'com_securitycheck' ) {
+					} else if ($this->securitycheck_type == 'com_securitycheck')
+					{
 						$nueva_vulnerabilidad = (object) array(
 							'Product' => filter_var($vulnerability['product'], FILTER_SANITIZE_STRING),
 							'type' => filter_var($vulnerability['type'], FILTER_SANITIZE_STRING),
@@ -130,7 +141,8 @@ function add_vuln($array_complete,$local_database_version) {
 					
 					$insert_result = JFactory::getDbo()->insertObject($this->vuln_table, $nueva_vulnerabilidad, 'id');
 				}	
-			} else if ( ($key_exists) && ($vulnerability['method'] == 'delete') ) {
+			} else if (($key_exists) && ($vulnerability['method'] == 'delete'))
+			{
 			// Método para eliminar una vulnerabilidad
 				$db = JFactory::getDbo();
 				$query = $db->getQuery(true);
@@ -155,12 +167,14 @@ function add_vuln($array_complete,$local_database_version) {
 }
 
 /* Función que devuelve la hora y fecha actuales */
-public function currentDateTime_func() {
+public function currentDateTime_func()
+{
     return (date('Y-m-d H:i:s'));
 }
 
 /* Devuelve la versión de la bbdd local */
-function get_database_version() {
+function get_database_version()
+{
 	
 	$db = JFactory::getDbo();
 	
@@ -175,7 +189,8 @@ function get_database_version() {
 }
 
 /* Chequea la última vez que se lanzó una comprobación de nuevas versiones */
-function last_check() {
+function last_check() 
+{
 	
 	// Inicializamos las variables
 	$last_check = null;
@@ -190,7 +205,8 @@ function last_check() {
 	$task_time = $db->loadResult();
 	
 	// Si el campo no esta vacío, devolvemos la hora/día actual formateada
-	if( (isset($task_time)) && (!empty($task_time)) ) {
+	if ((isset($task_time)) && (!empty($task_time)))
+	{
 		$last_check = new DateTime(date('Y-m-d H:i:s',strtotime($task_time)));
 	} 
 	
@@ -198,7 +214,8 @@ function last_check() {
 }
 
 /* Función que realiza todo el proceso de comprobación de nuevas vulnerabilidades */
-function tarea_comprobacion() {
+function tarea_comprobacion()
+{
 		
 	// Inicializamos las variables
 	$result = true;
@@ -210,30 +227,34 @@ function tarea_comprobacion() {
 	
 	$mainframe = JFactory::getApplication();
 	
-	if ( $this->securitycheck_type == 'Not_defined' ) {
+	if ($this->securitycheck_type == 'Not_defined')
+	{
 		// No hay ninguna versión de Securitycheck instalada!
 		$result = false;
-	} else {
-	
+	} else
+	{	
 		// Buscamos el Download ID 
 		$plugin = JPluginHelper::getPlugin('system', 'securitycheckpro_update_database');
-		if ( !empty($plugin) ) {
+		if (!empty($plugin))
+		{
 			$params = new JRegistry($plugin->params);
 			$downloadid = $params->get('downloadid');
 		}
 		
 		// Si el 'Download ID' está vacío, intentamos extraerlo de SCP
-		if ( empty($downloadid) ) {			
+		if (empty($downloadid))
+		{			
 			$app = JComponentHelper::getParams('com_securitycheckpro');
 			$downloadid = $app->get('downloadid');			
 		}
 		
-		if ( empty($downloadid) ) {	
+		if (empty($downloadid))
+		{	
 			// Si el 'Download ID' está vacío, escribimos una entrada en el campo 'message' y no realizamos ninguna acción
 			$this->set_campo_bbdd('message', 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY');
 			$result = false;			
-		} else {
-			
+		} else 
+		{			
 			// Url que contendrá el fichero xml (debe contener el Download ID del usuario para poder acceder a ella)
 			$xmlfile = "https://securitycheck.protegetuordenador.com/index.php/downloads/securitycheck-pro-database-updates-xml/securitycheck-pro-database-updates-xml-1-0-0/databases-xml?dlid=" . $downloadid;
 						
@@ -241,7 +262,8 @@ function tarea_comprobacion() {
 			$array_complete = array();
 			
 			// Leemos el contenido del archivo xml (si existe la función curl_init)
-			if ( function_exists('curl_init') ) {
+			if (function_exists('curl_init'))
+			{
 				$ch = curl_init($xmlfile);
 				curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
 				curl_setopt($ch, CURLOPT_AUTOREFERER, true);
@@ -254,13 +276,16 @@ function tarea_comprobacion() {
 				$xmlresponse = curl_exec($ch);	
 				
 				// Si el resultado de la petición es 'false' obtenemos el error para ver qué está pasando
-				if($xmlresponse === false) {
+				if ($xmlresponse === false)
+				{
 					$result = false;					
-				} else {
+				} else
+				{
 					/* Chequeamos si hay una etiqueta html de redirección, que tendrá el formato '<html><meta http-equiv="refresh" content="0;/.well-known/captcha/?b=http://192.168.56.50/index.php/downloads/securitycheck-pro-database-updates-xml/securitycheck-pro-database-updates-xml-1-0-0/databases-xml?dlid=xx"></meta></head></html>' */
 					$redirection = strpos($xmlresponse,'meta http-equiv="refresh"');
 					
-					if ( $redirection === false ) {
+					if ($redirection === false)
+					{
 						// No hay etiqueta; leemos el contenido del archivo xml
 						$xml = simplexml_load_string($xmlresponse);
 					} 
@@ -268,23 +293,24 @@ function tarea_comprobacion() {
 				}				
 				// Cerramos el manejador
 				curl_close($ch);				
-			} else {
+			} else
+			{
 				JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));
 			}
 			
 			// Comprobamos que hemos leido el archivo xml (esta variable será FALSE, por ejemplo, si no puede conectar con el servidor)
-			if ( $xml ) {				
-								
+			if ($xml)
+			{										
 				// Obtenemos todos los nodos hijos del archivo xml
 				$children  = $xml->children();
 					
-				foreach ( $children as $child) {
-					
+				foreach ($children as $child)
+				{					
 					// Inicializamos el array de elementos de cada vulnerabilidad
 					$element = array();
 					
-					foreach ($child as $key => $value) {
-						
+					foreach ($child as $key => $value)
+					{						
 						// Para cada elemento, convertimos el par clave - valor en un string para poder manejarlo
 						(string) $valores = $key . "#" . $value;
 						$valores = explode("#",$valores);
@@ -302,18 +328,21 @@ function tarea_comprobacion() {
 				
 				// Añadimos las nuevas vulnerabilidades a la BBDD
 				$this->add_vuln($array_complete,$local_database_version);	
-			} else {
+			} else
+			{
 				$result = false;
 				
 				$scp_update_database_subscription_status = $mainframe->getUserState("scp_update_database_subscription_status",null);
-				if ( empty($scp_update_database_subscription_status) ) {
+				if (empty($scp_update_database_subscription_status))
+				{
 					/* Establecemos la variable scp_update_database_subscription_status a 'No definida' */	
 					$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
 				}				
 			}
 			
 			// Si el proceso ha sido correcto, actualizamos la bbdd
-			if ( $result ) {
+			if ($result) 
+			{
 				// Actualizamos la fecha de la última comprobación y la versión de la bbdd local
 				$this->set_campo_bbdd('last_check',date('Y-m-d H:i:s'));
 				$this->set_campo_bbdd('version',$this->higher_database_version);
@@ -340,21 +369,24 @@ function set_campo_bbdd($campo,$valor)
 	$query->where('id=1');
 
 	// ... y la lanzamos
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 }
 
 	
-function check_for_updates(){
+function check_for_updates()
+{
 	// Inicializamos las variables
 	$interval = 0;
 	
 	// Último chequeo realizado
 	$last_check = $this->last_check();
 	// Si no hay consultas previas, establecemos el intervalo a '2' para lanzar una.
-	if( (!isset($last_check)) || (empty($last_check)) ) {
+	if ((!isset($last_check)) || (empty($last_check))) 
+	{
 		$interval = 20;
-	} else {
+	} else
+	{
 		$now = new DateTime(date('Y-m-d',strtotime($this->currentDateTime_func())));
 		// Extraemos las horas que han pasado desde el último chequeo
 		$diff = $now->diff($last_check);	
@@ -362,7 +394,8 @@ function check_for_updates(){
 		$interval = $hours + ($diff->days*24);		
 	}
 		
-	if ( $interval > 12 ) {
+	if ($interval > 12)
+	{
 		// Comprobamos si existen nuevas actualizaciones
 		$this->tarea_comprobacion();		
 	}
@@ -370,20 +403,25 @@ function check_for_updates(){
 }
 
 /* Función para determinar si el plugin pasado como argumento ('1' -> Securitycheck Pro, '2' -> Securitycheck Pro Cron, '3' -> Securitycheck Pro Update Database) está habilitado o deshabilitado. También determina si el plugin Securitycheck Pro Update Database (opción 4)  está instalado */
-function PluginStatus($opcion) {
+function PluginStatus($opcion)
+{
 		
 	$db = JFactory::getDBO();
-	if ( $opcion == 1 ) {
+	if ($opcion == 1)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro"';
-	} else if ( $opcion == 2 ) {
+	} else if ($opcion == 2)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Cron"';
-	} else if ( $opcion == 3 ) {
+	} else if ($opcion == 3)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
-	} else if ( $opcion == 4 ) {
+	} else if ($opcion == 4)
+	{
 		$query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
 	}
 	
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	$enabled = $db->loadResult();
 	

@@ -11,7 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 // Load library
-require_once(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php');
+require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php';
 
 class SecuritycheckProsModelIP extends SecuritycheckproModel
 {
@@ -23,7 +23,8 @@ class SecuritycheckProsModelIP extends SecuritycheckproModel
 	}
 	
 	/* Extract info of an ip and cidr */
-	public function get_ip_info($ip, $cidr = NULL){
+	public function get_ip_info($ip, $cidr = NULL)
+	{
 		$maxSubNets = '2048'; // Stop memory leak from invalid input or large ranges
 		$superNet = $ip;
 		$superNetMask = ''; // optional
@@ -44,10 +45,12 @@ class SecuritycheckProsModelIP extends SecuritycheckproModel
 		$existe_barra = strstr($superNet,"/");
 				
 		// Calculate supernet mask and cdr
-		if ($existe_barra != false){  //if cidr type mask
+		if ($existe_barra != false)
+		{  //if cidr type mask
 			$charHost = inet_pton(strtok($superNet, '/'));
 			$charMask = $this->_cdr2Char(strtok('/'),strlen($charHost));
-		} else {
+		} else
+		{
 		  $charHost = inet_pton($superNet);
 		  $charMask = inet_pton($superNetMask);
 		}
@@ -74,7 +77,8 @@ class SecuritycheckProsModelIP extends SecuritycheckproModel
 	}
 	
 	// Check if an IPv4 address is in subnet
-	public function cidr_match($ip,$network,$cidr){
+	public function cidr_match($ip,$network,$cidr)
+	{
 		if ((ip2long($ip) & ~((1 << (32 - $cidr)) - 1) ) == ip2long($network))
         {
             return true;
@@ -84,8 +88,10 @@ class SecuritycheckProsModelIP extends SecuritycheckproModel
 	}
 	
 	// Check if an IPv4 address is in subnet
-	function ip_in_range( $ip, $range ) {
-		if ( strpos( $range, '/' ) == false ) {
+	function ip_in_range( $ip, $range )
+	{
+		if (strpos($range, '/') == false)
+		{
 			$range .= '/32';
 		}
 		// $range is in IP/CIDR format eg 127.0.0.1/24
@@ -128,10 +134,12 @@ class SecuritycheckProsModelIP extends SecuritycheckproModel
 		} 
 	}*/
 	
-	public function checkIPv6WithinRange($ipv6, $range) {
+	public function checkIPv6WithinRange($ipv6, $range)
+	{
 		list ($net, $mask) = preg_split("/\//", $range);
 
-		if ($mask % 4) {
+		if ($mask % 4) 
+		{
 			return false; //"Only masks divisible by 4 are supported"
 		}
 			
@@ -147,25 +155,32 @@ class SecuritycheckProsModelIP extends SecuritycheckproModel
 	}
 
 	// Convert array of short unsigned integers to binary
-	function _packBytes($array) {
-	  foreach ( $array as $byte ) {
+	function _packBytes($array)
+	{
+		foreach ( $array as $byte )
+		{
 			$chars .= pack('C',$byte);
 		}
 		return $chars;
 	}
+	
 	// Convert binary to array of short integers
-	function _unpackBytes($string) {
+	function _unpackBytes($string)
+	{
 		return unpack('C*',$string);
 	}
+	
 	// Add array of short unsigned integers
-	function _addBytes($array1,$array2) {
+	function _addBytes($array1,$array2)
+	{
 		$result = array();
 		$carry = 0;
 		foreach ( array_reverse($array1,true) as $value1 ) {
 			$value2 = array_pop($array2);
 			if ( empty($result) ) { $value2++; }
 			$newValue = $value1 + $value2 + $carry;
-			if ( $newValue > 255 ) {
+			if ($newValue > 255)
+			{
 			  $newValue = $newValue - 256;
 			  $carry = 1;
 			} else {
@@ -175,39 +190,57 @@ class SecuritycheckProsModelIP extends SecuritycheckproModel
 		}
 		return $result;
 	}
+	
 	/* Useful Functions */
-	function _cdr2Bin ($cdrin,$len=4){
-		if ( $len > 4 || $cdrin > 32 ) { // Are we ipv6?
+	function _cdr2Bin ($cdrin,$len=4)
+	{
+		if ($len > 4 || $cdrin > 32)
+		{ // Are we ipv6?
 			return str_pad(str_pad("", $cdrin, "1"), 128, "0");
-		} else {
+		} else
+		{
 		  return str_pad(str_pad("", $cdrin, "1"), 32, "0");
 		}
 	}
-	function _bin2Cdr ($binin){
+	
+	function _bin2Cdr ($binin)
+	{
 		return strlen(rtrim($binin,"0"));
 	}
-	function _cdr2Char ($cdrin,$len=4){
+	
+	function _cdr2Char ($cdrin,$len=4)
+	{
 		$hex = $this->_bin2Hex($this->_cdr2Bin($cdrin,$len));
 		return $this->_hex2Char($hex);
 	}
-	function _char2Cdr ($char){
+	
+	function _char2Cdr ($char)
+	{
 		$bin = $this->_hex2Bin($this->_char2Hex($char));
 		return $this->_bin2Cdr($bin);
 	}
-	function _hex2Char($hex){
+	
+	function _hex2Char($hex)
+	{
 		return pack('H*',$hex);
 	}
-	function _char2Hex($char){
+	
+	function _char2Hex($char)
+	{
 		$hex = unpack('H*',$char);
 		return array_pop($hex);
 	}
-	function _hex2Bin($hex){
+	
+	function _hex2Bin($hex)
+	{
 	  $bin='';
 	  for($i=0;$i<strlen($hex);$i++)
 		$bin.=str_pad(decbin(hexdec($hex{$i})),4,'0',STR_PAD_LEFT);
 	  return $bin;
 	}
-	function _bin2Hex($bin){
+	
+	function _bin2Hex($bin)
+	{
 	  $hex='';
 	  for($i=strlen($bin)-4;$i>=0;$i-=4)
 		$hex.=dechex(bindec(substr($bin,$i,4)));

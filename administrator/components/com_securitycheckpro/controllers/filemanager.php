@@ -19,7 +19,8 @@ jimport('joomla.application.component.controller');
 class SecuritycheckprosControllerFileManager extends SecuritycheckproController
 {
 
-public function  __construct() {
+public function  __construct() 
+{
 		parent::__construct();	
 		
 		$jinput = JFactory::getApplication()->input;
@@ -28,16 +29,20 @@ public function  __construct() {
 		$task = $jinput->get('task', null);
 		$model = $this->getModel("filemanager");
 								
-		if ( $view == "filesintegrity") {
+		if ( $view == "filesintegrity")
+		{
 			$view = $this->getView( 'filesintegrity', 'html' );
 			$view->setModel($model);			
-		} else if ( $view == "filemanager") {			
+		} else if ( $view == "filemanager")
+		{			
 			$view = $this->getView( 'filemanager', 'html' );
 			$view->setModel($model);
-		} else if ( $view == "malwarescan") {			
+		} else if ( $view == "malwarescan")
+		{			
 			$view = $this->getView( 'malwarescan', 'html' );
 			$view->setModel($model);
-			if ( $task != "view_file") {
+			if ( $task != "view_file")
+			{
 				$mainframe = JFactory::getApplication();
 				// Si la tarea es distinta a "view_file" inicializamos la variable de estado 'contenido'
 				$mainframe->setUserState('contenido', "vacio");
@@ -51,11 +56,14 @@ public function display($cachable = false, $urlparams = Array())
 {
 	$jinput = JFactory::getApplication()->input;
 	$view = $jinput->get('view', 'filemanager');
-	if ( $view == "filesintegrity") {
+	if ( $view == "filesintegrity")
+	{
 		$jinput->set('view', 'filesintegrity');
-	} else if ( $view == "filemanager") {
+	} else if ( $view == "filemanager")
+	{
 		$jinput->set('view', 'filemanager');		
-	} else if ( $view == "malwarescan") {
+	} else if ( $view == "malwarescan")
+	{
 		$jinput->set('view', 'malwarescan');		
 	}
 	
@@ -83,7 +91,8 @@ function redireccion_control_panel_y_borra_log()
 	// ¿ Debemos borrar el archivo de logs?
 	$params = JComponentHelper::getParams('com_securitycheckpro');
 	$delete_log_file = $params->get('delete_log_file',1);
-	if ( $delete_log_file == 1 ) {
+	if ( $delete_log_file == 1 ) 
+	{
 		// Si no puede borrar el archivo, Joomla muestra un error indicándolo a través de JERROR
 		$result = JFile::delete($filename);
 	}
@@ -121,7 +130,8 @@ public function initialize_data()
 }
 
 /* Acciones al pulsar el escaneo de archivos manual */
-function acciones(){
+function acciones()
+{
 	$model = $this->getModel("filemanager");
 	
 	/* Instanciamos el mainframe para guardar variables de estado de usuario */
@@ -138,7 +148,8 @@ function acciones(){
 }
 
 /* Acciones al pulsar el chequeo manual de integridad */
-function acciones_integrity(){
+function acciones_integrity()
+{
 	$model = $this->getModel("filemanager");
 	
 	$model->set_campo_filemanager('files_scanned_integrity',0);
@@ -150,7 +161,8 @@ function acciones_integrity(){
 }
 
 /* Acciones al pulsar el chequeo manual de malware */
-function acciones_malwarescan(){
+function acciones_malwarescan()
+{
 	$model = $this->getModel("filemanager");
 	
 	$model->set_campo_filemanager('files_scanned_malwarescan',0);
@@ -162,7 +174,8 @@ function acciones_malwarescan(){
 }
 
 /* Acciones al pulsar el borrado de la información de la BBDD */
-function acciones_clear_data(){
+function acciones_clear_data()
+{
 	
 	$message = JText::_('COM_SECURITYCHECKPRO_CLEAR_DATA_DELETING_ENTRIES');
 	echo $message; 
@@ -180,7 +193,8 @@ function initialize_database()
 }
 
 /* Obtiene el estado del proceso de análisis de permisos de archivos consultando la tabla '#__securitycheckpro_file_manager'*/
-public function getEstado() {
+public function getEstado()
+{
 	$model = $this->getModel("filemanager");
 	$message = $model->get_campo_filemanager('estado');
 	$message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_' .$message);
@@ -188,7 +202,8 @@ public function getEstado() {
 }
 
 /* Obtiene el estado del proceso de análisis de la integridad de los archivos consultando la tabla '#__securitycheckpro_file_manager'*/
-public function getEstadoIntegrity() {
+public function getEstadoIntegrity()
+{
 	$model = $this->getModel("filemanager");
 	$message = $model->get_campo_filemanager('estado_integrity');
 	$message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_' .$message);
@@ -196,7 +211,8 @@ public function getEstadoIntegrity() {
 }
 
 /* Obtiene el estado del proceso de análisis de bús1queda de malware en los archivos consultando la tabla '#__securitycheckpro_file_manager'*/
-public function getEstadoMalwareScan() {
+public function getEstadoMalwareScan()
+{
 	$model = $this->getModel("filemanager");
 	$message = $model->get_campo_filemanager('estado_malwarescan');
 	$message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_' .$message);
@@ -204,19 +220,22 @@ public function getEstadoMalwareScan() {
 }
 
 /* Obtiene el estado del proceso de hacer un drop y crear de nuevo la tabla '#__securitycheckpro_file_permissions'*/
-public function getEstadoClearData() {
+public function getEstadoClearData()
+{
 	$model = $this->getModel("filemanager");
 	$message = $model->get_campo_filemanager('estado_clear_data');
 	$message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_' .$message);
 	echo $message;
 }
 
-public function currentDateTime() {
+public function currentDateTime()
+{
     echo date('Y-m-d H:i:s');
 }
 
 /* Obtiene el estado del proceso de análisis de la integridad de los archivos consultando los datos de sesión almacenados previamente */
-public function get_percent_integrity() {
+public function get_percent_integrity()
+{
 	$model = $this->getModel("filemanager");
 	$message = $model->get_campo_filemanager('files_scanned_integrity');
 	echo $message;
@@ -224,7 +243,8 @@ public function get_percent_integrity() {
 }
 
 /* Obtiene el estado del proceso de análisis de permisos de los archivos consultando los datos de sesión almacenados previamente */
-public function get_percent() {
+public function get_percent()
+{
 	$model = $this->getModel("filemanager");
 	$message = $model->get_campo_filemanager('files_scanned');
 	echo $message;
@@ -232,7 +252,8 @@ public function get_percent() {
 }
 
 /* Obtiene el estado del proceso de análisis de búsqueda de malware en los archivos consultando los datos de sesión almacenados previamente */
-public function get_percent_malwarescan() {
+public function get_percent_malwarescan()
+{
 	$model = $this->getModel("filemanager");
 	$message = $model->get_campo_filemanager('files_scanned_malwarescan');
 	echo $message;
@@ -240,46 +261,49 @@ public function get_percent_malwarescan() {
 }
 
 /* Obtiene la diferencia, en horas, entre dos tareas de verificación de integridad. Si la diferencia es mayor de 3 horas, devuelve el valor 20000 */
-public function getEstadoIntegrity_Timediff() {
+public function getEstadoIntegrity_Timediff()
+{
 	$model = $this->getModel("filemanager");
 	$datos = null;
 		
 	(int) $timediff = $model->get_timediff("integrity");
 	$estado_integrity = $model->get_campo_filemanager('estado_integrity');
 	$datos = json_encode(array(
-				'estado_integrity'	=> $estado_integrity,
-				'timediff'		=> $timediff
-			));
+		'estado_integrity'	=> $estado_integrity,
+		'timediff'		=> $timediff
+	));
 			
 	echo $datos;		
 }
 
 /* Obtiene la diferencia, en horas, entre dos tareas de chequeo de permisos. Si la diferencia es mayor de 3 horas, devuelve el valor 20000 */
-public function getEstado_Timediff() {
+public function getEstado_Timediff()
+{
 	$model = $this->getModel("filemanager");
 	$datos = null;
 		
 	(int) $timediff = $model->get_timediff("permissions");
 	$estado = $model->get_campo_filemanager('estado');
 	$datos = json_encode(array(
-				'estado'	=> $estado,
-				'timediff'		=> $timediff
-			));
+		'estado'	=> $estado,
+		'timediff'		=> $timediff
+	));
 			
 	echo $datos;		
 }
 
 /* Obtiene la diferencia, en horas, entre dos tareas de búsqueda de malware. Si la diferencia es mayor de 3 horas, devuelve el valor 20000 */
-public function getEstadoMalwarescan_Timediff() {
+public function getEstadoMalwarescan_Timediff()
+{
 	$model = $this->getModel("filemanager");
 	$datos = null;
 		
 	(int) $timediff = $model->get_timediff("malwarescan");
 	$estado_malwarescan = $model->get_campo_filemanager('estado_malwarescan');
 	$datos = json_encode(array(
-				'estado_malwarescan'	=> $estado_malwarescan,
-				'timediff'		=> $timediff
-			));
+		'estado_malwarescan'	=> $estado_malwarescan,
+		'timediff'		=> $timediff
+	));
 			
 	echo $datos;		
 }
@@ -384,9 +408,11 @@ function addfile_exception()
 	$model = $this->getModel("filemanager");
 	// Obtenemos el valor del campo "table" del formulario, que indicará de qué pantalla venimos y qué tabla queremos modificar
 	$table = $this->input->post->get("table",null);	
-	if ( empty($table) ) {
+	if (empty($table))
+	{
 		Jerror::raiseWarning(null, JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'));
-	} else {
+	} else 
+	{
 		$model->addfile_exception($table);
 	}
 			
@@ -400,9 +426,11 @@ function deletefile_exception()
 	// Obtenemos el valor del campo "table" del formulario, que indicará de qué pantalla venimos  y qué tabla queremos modificar
 	$table = $this->input->post->get("table",null);
 	
-	if ( empty($table) ) {		
+	if (empty($table))
+	{		
 		JFactory::getApplication()->enqueueMessage(JText::_('SOME_ERROR_OCCURRED'), 'error');
-	} else {
+	} else
+	{
 		$model->deletefile_exception($table);
 	}
 		
@@ -410,7 +438,8 @@ function deletefile_exception()
 }
 
 /* Marca como seguros todos los archivos de la BBDD que aparecen como inseguros. Esto es útil cuando hay actualizaciones o la primera vez que lanzamos 'File Integrity' */
-function mark_all_unsafe_files_as_safe() {
+function mark_all_unsafe_files_as_safe()
+{
 	
 	$model = $this->getModel("filemanager");
 	$model->mark_all_unsafe_files_as_safe();
@@ -419,7 +448,8 @@ function mark_all_unsafe_files_as_safe() {
 }
 
 /* Marca como seguros todos los archivos de la BBDD seleccionados */
-function mark_checked_files_as_safe() {
+function mark_checked_files_as_safe()
+{
 	
 	$model = $this->getModel("filemanager");
 	$model->mark_checked_files_as_safe();
@@ -428,7 +458,8 @@ function mark_checked_files_as_safe() {
 }
 
 /* Acciones al pulsar el botón para exportar la información */
-function export_logs_integrity(){
+function export_logs_integrity()
+{
 		
 	/** @var string fileintegrity's name */
 	$fileintegrity_name = '';
@@ -446,11 +477,13 @@ function export_logs_integrity(){
 	$stack_integrity = $db->loadResult();	
 	$stack_integrity = json_decode($stack_integrity, true);
 		
-	if(!empty($stack_integrity)) {
+	if (!empty($stack_integrity))
+	{
 		$fileintegrity_name = $stack_integrity['filename'];
 				
 		// Leemos el contenido del fichero
-		if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name) ) {
+		if (JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name))
+		{
 			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name);
 			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
@@ -465,7 +498,8 @@ function export_logs_integrity(){
 		$headers = array(JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RUTA' ),JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TAMANNO'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_MODIFIED'), 'Info');
 		$csv_export .= implode(",",$headers);
 		
-		for ($i = 0 , $n = count($stack) ; $i < $n ; $i++) {
+		for ($i = 0 , $n = count($stack) ; $i < $n ; $i++)
+		{
 			$csv_export .= "\n" .$stack[$i]['path'];
 			$size = filesize($stack[$i]['path']);
 			$csv_export .= "," .$size;		
@@ -487,7 +521,8 @@ function export_logs_integrity(){
 		header( 'Content-Disposition: attachment;filename=' . $filename );
 		print $csv_export;
 		exit();
-	} else {
+	} else
+	{
 		Jerror::raiseWarning(null, JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'));
 		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1' );			
 	}	
@@ -500,9 +535,11 @@ function online_check_files()
 	
 	$jinput = JFactory::getApplication()->input;
 	
-	if ( !$error ) {
+	if (!$error)
+	{
 		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
-	} else {
+	} else
+	{
 		$jinput->set('view', 'malwarescan');
 	
 		parent::display();
@@ -518,9 +555,11 @@ function online_check_hashes()
 	
 	$jinput = JFactory::getApplication()->input;
 	
-	if ( !$error ) {
+	if (!$error)
+	{
 		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
-	} else {
+	} else
+	{
 		$jinput->set('view', 'malwarescan');
 		parent::display();
 	}
@@ -572,7 +611,8 @@ function csv_export_malware()
 	$headers = array(JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RUTA'),JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_TAMANNO' ),JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_MODIFIED'),JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_TYPE'), JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_DESCRIPTION'), JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_CODE_DESCRIPTION'), JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_ALERT_LEVEL'), 'Safe', 'Hash', 'Data_id', 'Rest_ip', JText::_( 'COM_SECURITYCHECKPRO_MALWARESCAN_ONLINE_CHECK' ), JText::_( 'COM_SECURITYCHECKPRO_MOVED_TO_QUARANTINE' ), 'Quarantined file name');
 	$csv_export .= implode(";",$headers);
 
-	for ($i = 0 , $n = count($items) ; $i < $n ; $i++) {		
+	for ($i = 0 , $n = count($items) ; $i < $n ; $i++)
+	{		
 		$csv_export .= "\n" .implode(";",$items[$i]);
 	}
 	

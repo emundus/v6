@@ -73,20 +73,23 @@ abstract class modScpadminQuickIconsHelper
 	JLoader::import('joomla.application.component.model');
 	JLoader::import('cpanel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 	JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-	$cpanel_model = JModelLegacy::getInstance( 'cpanel', 'SecuritycheckprosModel');
-	$filemanager_model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
+	$cpanel_model = JModelLegacy::getInstance('cpanel', 'SecuritycheckprosModel');
+	$filemanager_model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
 	
 	$mainframe = JFactory::getApplication();
 	
-	if ( (empty($cpanel_model)) || (empty($filemanager_model)) ) {		
-		$mainframe->setUserState( "exists_filemanager", false );	
+	if ((empty($cpanel_model)) || (empty($filemanager_model)))
+	{		
+		$mainframe->setUserState("exists_filemanager", false);	
 		return;
-	} else if ( !empty($filemanager_model) ) {
-		$mainframe->setUserState( "exists_filemanager", true );
+	} else if (!empty($filemanager_model))
+	{
+		$mainframe->setUserState("exists_filemanager", true);
 	}
 		
 	$key = (string)$params;
-	if (!isset(self::$buttons[$key])) {
+	if (!isset(self::$buttons[$key]))
+		{
 		$context = $params->get('context', 'mod_scpadmin_quickicons');
 		if ($context == 'mod_scpadmin_quickicons')
 		{
@@ -96,7 +99,8 @@ abstract class modScpadminQuickIconsHelper
 		// Array is empty because we will add icons later
 		self::$buttons[$key] = array();
 
-		if( $params->get('check_vulnerable_extensions', 1) == 1 ) {	
+		if($params->get('check_vulnerable_extensions', 1) == 1)
+		{	
 		
 			// Check for vulnerable components
 			$cpanel_model->buscarQuickIcons();
@@ -104,20 +108,23 @@ abstract class modScpadminQuickIconsHelper
 			// Vulnerable components
 			$db = JFactory::getDBO();
 			$query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Si"';
-			$db->setQuery( $query );
+			$db->setQuery($query);
 			$db->execute();	
 			$vuln_extensions = $db->loadResult();
 			
 			// Undefined vulnerable components
 			$query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Indefinido"';
-			$db->setQuery( $query );
+			$db->setQuery($query);
 			$db->execute();	
 			$undefined_vuln_extensions = $db->loadResult();
 			
-			if ( $vuln_extensions > 0 ) {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			if ($vuln_extensions > 0) 
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_vulnerable_extensions_image = 'warning';
-				} else { 
+				} else
+				{ 
 					$check_vulnerable_extensions_image = 'fa fa-exclamation';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -134,10 +141,13 @@ abstract class modScpadminQuickIconsHelper
 				}
 				
 				$check_vulnerable_extensions_label = JText::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
-			} else if  ( $undefined_vuln_extensions > 0 ) {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			} else if  ($undefined_vuln_extensions > 0)
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_vulnerable_extensions_image = 'help';
-				} else { 
+				} else
+				{ 
 					$check_vulnerable_extensions_image = 'fa fa-question-circle ';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -154,11 +164,14 @@ abstract class modScpadminQuickIconsHelper
 				}
 				
 				$check_vulnerable_extensions_label = JText::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
-			} else {
+			} else
+			{
 				
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_vulnerable_extensions_image = 'checkmark';
-				} else { 
+				} else 
+				{ 
 					$check_vulnerable_extensions_image = 'fa fa-check-circle ';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -177,25 +190,30 @@ abstract class modScpadminQuickIconsHelper
 				$check_vulnerable_extensions_label = JText::_('MOD_SECURITYCHECKPRO_NO_VULNERABLE_EXTENSIONS');
 			}
 			
-			$array_vuln_extensions = array(
-						'link' => JRoute::_( 'index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1' ),
-						'image' => $check_vulnerable_extensions_image,
-						'text' => $check_vulnerable_extensions_label,
-						'id'    => 'plg_quickicon_scp_vuln_extensions',
-						'access' => true
-					);
+			$array_vuln_extensions = array
+			(
+				'link' => JRoute::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1'),
+				'image' => $check_vulnerable_extensions_image,
+				'text' => $check_vulnerable_extensions_label,
+				'id'    => 'plg_quickicon_scp_vuln_extensions',
+				'access' => true
+			);
 			array_push(self::$buttons[$key],$array_vuln_extensions);
 		}
 				
-		if( $params->get('check_not_readed_logs', 1) == 1 ) {
+		if($params->get('check_not_readed_logs', 1) == 1)
+		{
 			
 			// Check for unread logs
 			(int) $logs_pending = $cpanel_model->LogsPending();
 				
-			if ( $logs_pending == 0 ) {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			if ($logs_pending == 0)
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_not_readed_logs_image = 'drawer';
-				} else { 
+				} else
+				{ 
 					$check_not_readed_logs_image = 'fa fa-inbox';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -212,10 +230,13 @@ abstract class modScpadminQuickIconsHelper
 				}
 				
 				$check_not_readed_logs_label = JText::_('MOD_SECURITYCHECKPRO_NOT_UNREAD_LOGS');
-			} else {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			} else
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_not_readed_logs_image = 'drawer-2';
-				} else { 
+				} else
+				{ 
 					$check_not_readed_logs_image = 'fapro fa-inbox-in';
 					$document = JFactory::getDocument();
 					// Add style to avoid fapro icons not to be shown aligned to fa icons
@@ -237,25 +258,30 @@ abstract class modScpadminQuickIconsHelper
 				$check_not_readed_logs_label = JText::_('MOD_SECURITYCHECKPRO_UNREAD_LOGS');
 			}
 			
-			$array_not_readed_logs = array(
-						'link' => JRoute::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&task=view_logs'),
-						'image' => $check_not_readed_logs_image,
-						'text' => $check_not_readed_logs_label,
-						'id'    => 'plg_quickicon_scp_logs',
-						'access' => true
-					);
+			$array_not_readed_logs = array
+			(
+				'link' => JRoute::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&task=view_logs'),
+				'image' => $check_not_readed_logs_image,
+				'text' => $check_not_readed_logs_label,
+				'id'    => 'plg_quickicon_scp_logs',
+				'access' => true
+			);
 			array_push(self::$buttons[$key],$array_not_readed_logs);
 		}
 
-		if( $params->get('check_file_permissions', 1) == 1 ) {
+		if($params->get('check_file_permissions', 1) == 1)
+		{
 			
 			// Get files with incorrect permissions from database
 			$files_with_incorrect_permissions = $filemanager_model->loadStack("filemanager_resume","files_with_incorrect_permissions");
 				
-			if ( $files_with_incorrect_permissions == 0 ) {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			if ($files_with_incorrect_permissions == 0)
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_file_permissions_image = 'checkbox';
-				} else { 
+				} else 
+				{ 
 					$check_file_permissions_image = 'fa fa-check-square';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -272,10 +298,13 @@ abstract class modScpadminQuickIconsHelper
 				}
 						
 				$check_file_permissions_label = JText::_('MOD_SECURITYCHECKPRO_FILE_PERMISSIONS_OK');
-			} else {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			} else
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_file_permissions_image = 'checkbox-unchecked';
-				} else { 
+				} else
+				{ 
 					$check_file_permissions_image = 'fa fa-square';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -294,25 +323,30 @@ abstract class modScpadminQuickIconsHelper
 				$check_file_permissions_label = JText::_('MOD_SECURITYCHECKPRO_FILE_PERMISSIONS_WRONG');
 			}
 			
-			$array_check_file_permissions = array(
-						'link' => $url = JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filemanager&'. JSession::getFormToken() .'=1' ),
-						'image' => $check_file_permissions_image,
-						'text' => $check_file_permissions_label,
-						'id'    => 'plg_quickicon_scp_permissions',
-						'access' => true
-					);
+			$array_check_file_permissions = array
+			(
+				'link' => $url = JRoute::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filemanager&'. JSession::getFormToken() .'=1'),
+				'image' => $check_file_permissions_image,
+				'text' => $check_file_permissions_label,
+				'id'    => 'plg_quickicon_scp_permissions',
+				'access' => true
+			);
 			array_push(self::$buttons[$key],$array_check_file_permissions);
 		}
 		
-		if( $params->get('check_file_integrity', 1) == 1 ) {
+		if($params->get('check_file_integrity', 1) == 1)
+		{
 			
 			// Get files with incorrect permissions from database
 			$files_with_bad_integrity = $filemanager_model->loadStack("fileintegrity_resume","files_with_bad_integrity");
 				
-			if ( $files_with_bad_integrity == 0 ) {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			if ($files_with_bad_integrity == 0)
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_file_integrity_image = 'locked';
-				} else { 
+				} else 
+				{ 
 					$check_file_integrity_image = 'fa fa-lock';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -329,10 +363,13 @@ abstract class modScpadminQuickIconsHelper
 				}
 				
 				$check_file_integrity_label = JText::_('MOD_SECURITYCHECKPRO_FILE_INTEGRITY_OK');
-			} else {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			} else
+			{
+				if (version_compare(JVERSION, '3.20', 'lt')) 
+				{
 					$check_file_integrity_image = 'cancel';
-				} else { 
+				} else 
+				{ 
 					$check_file_integrity_image = 'fa fa-unlock';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -351,25 +388,30 @@ abstract class modScpadminQuickIconsHelper
 				$check_file_integrity_label = JText::_('MOD_SECURITYCHECKPRO_FILE_INTEGRITY_WRONG');
 			}
 			
-			$array_check_file_integrity = array(
-						'link' => JRoute::_( 'index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_fileintegrity()' ),
-						'image' => $check_file_integrity_image,
-						'text' => $check_file_integrity_label,
-						'id'    => 'plg_quickicon_scp_integrity',
-						'access' => true
-					);
+			$array_check_file_integrity = array
+			(
+				'link' => JRoute::_('index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_fileintegrity()'),
+				'image' => $check_file_integrity_image,
+				'text' => $check_file_integrity_label,
+				'id'    => 'plg_quickicon_scp_integrity',
+				'access' => true
+			);
 			array_push(self::$buttons[$key],$array_check_file_integrity);
 		}
 		
-		if( $params->get('check_malwarescan', 1) == 1 ) {
+		if($params->get('check_malwarescan', 1) == 1)
+		{
 			
 			// Get suspicious files from database
 			$suspicious_files = $filemanager_model->loadStack("malwarescan_resume","suspicious_files");
 				
-			if ( $suspicious_files == 0 ) {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			if ($suspicious_files == 0)
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_malwarescan_image = 'thumbs-up';
-				} else { 
+				} else 
+				{ 
 					$check_malwarescan_image = 'fa fa-thumbs-up';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -386,10 +428,13 @@ abstract class modScpadminQuickIconsHelper
 				}
 				
 				$check_malwarescan_label = JText::_('MOD_SECURITYCHECKPRO_MALWARESCAN_OK');
-			} else {
-				if ( version_compare(JVERSION, '3.20', 'lt') ) {
+			} else 
+			{
+				if (version_compare(JVERSION, '3.20', 'lt'))
+				{
 					$check_malwarescan_image = 'thumbs-down';
-				} else { 
+				} else 
+				{ 
 					$check_malwarescan_image = 'fa fa-bug';
 					$document = JFactory::getDocument();
 					$document->addScriptDeclaration("
@@ -408,13 +453,14 @@ abstract class modScpadminQuickIconsHelper
 				$check_malwarescan_label = JText::_('MOD_SECURITYCHECKPRO_MALWARESCAN_WRONG');
 			}
 			
-			$array_malwarescan_integrity = array(			
-						'link' => JRoute::_( 'index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_malware()' ),
-						'image' => $check_malwarescan_image,
-						'text' => $check_malwarescan_label,
-						'id'    => 'plg_quickicon_scp_malware',
-						'access' => true
-					);
+			$array_malwarescan_integrity = array
+			(			
+				'link' => JRoute::_('index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_malware()'),
+				'image' => $check_malwarescan_image,
+				'text' => $check_malwarescan_label,
+				'id'    => 'plg_quickicon_scp_malware',
+				'access' => true
+			);
 			array_push(self::$buttons[$key],$array_malwarescan_integrity);
 		}
 		

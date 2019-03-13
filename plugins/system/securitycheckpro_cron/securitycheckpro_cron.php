@@ -4,22 +4,25 @@
 * @ Copyright (c) 2011 - Jose A. Luque
 * @license GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html
 */
-defined( '_JEXEC' ) or die( 'Restricted access' );
-jimport( 'joomla.plugin.plugin' );
+defined('_JEXEC') or die('Restricted access');
+jimport('joomla.plugin.plugin');
 
 // Load library
-require_once(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php');
+require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php';
 
-class plgSystemSecuritycheckpro_cron extends JPlugin{
+class plgSystemSecuritycheckpro_cron extends JPlugin
+{
 private $cron_plugin = null;
 
-function __construct( &$subject, $config ){
-	parent::__construct( $subject, $config );		
+function __construct(&$subject, $config)
+{
+	parent::__construct($subject, $config);		
 	
 	// Cargamos los parámetros del componente
 		JLoader::import('joomla.application.component.model');
 		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/models/protection.php';
-		if(interface_exists('JModel')) {
+		if(interface_exists('JModel'))
+		{
 			$this->cron_plugin = JModelLegacy::getInstance('Protection','SecuritycheckProsModel');
 		} else {
 			$this->cron_plugin = JModel::getInstance('Protection','SecuritycheckProsModel');
@@ -27,16 +30,19 @@ function __construct( &$subject, $config ){
 }
 	
 /* Acciones para chequear los permisos de los archivos automáticamente*/
-function acciones($opcion,$launch_time){
+function acciones($opcion,$launch_time)
+{
 		
 	// Import Securitycheckpros model
 	JLoader::import('joomla.application.component.model');
 	JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-	$model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
+	$model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
 	
-	if ( $opcion == 'launch' ) {
+	if ($opcion == 'launch')
+	{
 		$model->set_campo_filemanager('last_check',date('Y-m-d ' . $launch_time . ':00:00'));
-	} else {
+	} else
+	{
 		$model->set_campo_filemanager('last_check',date('Y-m-d H:i:s'));
 	}
 	
@@ -46,18 +52,21 @@ function acciones($opcion,$launch_time){
 }
 
 /* Acciones para chequear la integridad del sistema de ficheros automáticamente */
-function acciones_integrity($opcion,$launch_time){
+function acciones_integrity($opcion,$launch_time)
+{
 	// Inicializamos las variables
 	$number_of_files = array();
 	
 	// Import Securitycheckpros model
 	JLoader::import('joomla.application.component.model');
 	JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-	$model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
+	$model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
 	
-	if ( $opcion == 'launch' ) {
+	if ($opcion == 'launch')
+	{
 		$model->set_campo_filemanager('last_check_integrity',date('Y-m-d ' . $launch_time . ':00:00'));
-	} else {
+	} else
+	{
 		$model->set_campo_filemanager('last_check_integrity',date('Y-m-d H:i:s'));
 	}
 	
@@ -69,7 +78,7 @@ function acciones_integrity($opcion,$launch_time){
 	// ¿Hemos de analizar los ficheros con integridad modificada en busca de malware?
 	$params = JComponentHelper::getParams('com_securitycheckpro');
 	$look_for_malware = $params->get('look_for_malware',0);
-	if ( $look_for_malware ) {
+	if ($look_for_malware) {
 		$model->scan("malwarescan_modified");
 	}
 	
@@ -77,7 +86,8 @@ function acciones_integrity($opcion,$launch_time){
 	$number_of_files = $this->consulta_resultado_scan();
 	$send_email = $params->get('send_email_on_wrong_integrity',1);
 	$email_subject = $params->get('email_subject_on_wrong_integrity',"");
-	if ( $send_email && ($number_of_files[0] > 0) ) {
+	if ($send_email && ($number_of_files[0] > 0))
+	{
 		$this-> mandar_correo($number_of_files[0],$number_of_files[1],$look_for_malware,$email_subject);
 	}
 	
@@ -85,7 +95,8 @@ function acciones_integrity($opcion,$launch_time){
 }
 
 /* Acciones para chequear si el sitio web no ha lanzado la(s) tarea(s) del cron en el horario especificado (esto puede pasar en sitios web con poco tráfico o tráfico principal en horas diferentes a las que se ha establecido el cron) */
-private function check_timestamp(){
+private function check_timestamp()
+{
 	// Inicializamos las variables
 	$last_check = null;
 	$launch = false;
@@ -93,7 +104,7 @@ private function check_timestamp(){
 	// Import Securitycheckpros model
 	JLoader::import('joomla.application.component.model');
 	JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-	$model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
+	$model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
 	
 	// Consultamos la última tarea lanzada
 	$db = $model->getDbo();
@@ -103,7 +114,8 @@ private function check_timestamp(){
 	$db->setQuery($query);
 	$task = $db->loadResult();
 	
-	switch ($task)  {
+	switch ($task)
+	{
 		case "INTEGRITY":
 			$query = $db->getQuery(true)
 				->select($db->quoteName('last_check_integrity'))
@@ -111,9 +123,11 @@ private function check_timestamp(){
 			$db->setQuery($query);
 			$task_time = $db->loadResult();
 			
-			if( (isset($task_time)) && (!empty($task_time)) ) {
+			if((isset($task_time)) && (!empty($task_time))) 
+			{
 				$last_check = new DateTime(date('Y-m-d H:i:s',strtotime($task_time)));
-			} else {
+			} else
+			{
 				$last_check = new DateTime($model->currentDateTime_func());
 			}	
 			break;
@@ -124,9 +138,11 @@ private function check_timestamp(){
 			$db->setQuery($query);
 			$task_time = $db->loadResult();
 			
-			if( (isset($task_time)) && (!empty($task_time)) ) {
+			if((isset($task_time)) && (!empty($task_time)))
+			{
 				$last_check = new DateTime(date('Y-m-d H:i:s',strtotime($task_time)));
-			} else {
+			} else
+			{
 				$last_check = new DateTime($model->currentDateTime_func());
 			}
 			break;
@@ -135,27 +151,30 @@ private function check_timestamp(){
 	$now = new DateTime($model->currentDateTime_func());
 	$interval = date_diff($last_check,$now)->format('%h');
 			
-	if ( $interval >= 24 ) {
+	if ($interval >= 24)
+	{
 		$launch = true;
 		// Actualizamos el campo 'cron_tasks_launched' de la tabla 'file_manager' para asegurarnos que la(s) tarea(s) se lanza(n) siempre.
 		$query = 'UPDATE #__securitycheckpro_file_manager SET cron_tasks_launched=0 WHERE id=1';
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		$db->execute();
 	}
 	
 	return $launch;
 }
 	
-function onAfterInitialise(){
+function onAfterInitialise()
+{
 	
 	// Import Securitycheckpros model
 	JLoader::import('joomla.application.component.model');
 	JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-	$model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
+	$model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
 	
-	if ( empty($model) ) {
+	if (empty($model))
+	{
 		$mainframe =JFactory::getApplication();
-		$mainframe->setUserState( "exists_filemanager", false );
+		$mainframe->setUserState("exists_filemanager", false);
 		return;
 	}
 		
@@ -170,25 +189,30 @@ function onAfterInitialise(){
 	$hour = date('H');
 	
 		// Si la  hora local coincide con la establecida para lanzar las tareas, no se han recibido peticiones en el horario fijado o el horario de lanzamiento es cada X horas
-	if ( ( ($hour == $launch_time) || ($launch_task) ) || ($periodicity < 24) ) { 
+	if ((($hour == $launch_time) || ($launch_task)) || ($periodicity < 24))
+	{ 
 		// Creamos un nuevo objeto query ...
 		$db = $model->getDbo();
 		// y consultamos si se está ejecutando una tarea por el plugin
 		$query = 'SELECT cron_tasks_launched FROM #__securitycheckpro_file_manager WHERE id=1';
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		$launched = $db->loadResult();
 					
-		if ( $launched == 0 ) {  // No hay ninguna tarea ejecutándose
+		if ($launched == 0)
+		{  // No hay ninguna tarea ejecutándose
 			// Actualizamos el campo 'cron_tasks_launched' de la tabla 'file_manager' para indicar que las tareas se están ejecutando
 			$query = 'UPDATE #__securitycheckpro_file_manager SET cron_tasks_launched=1 WHERE id=1';
-			$db->setQuery( $query );
+			$db->setQuery($query);
 			$db->execute();
-			switch ($tasks) {
+			switch ($tasks)
+			{
 				case "alternate":
 					$last_task = $model->get_campo_filemanager('last_task');
-					if ( $last_task == "INTEGRITY" ) {
+					if ($last_task == "INTEGRITY")
+					{
 						$last_check = new DateTime(date('Y-m-d H:i:s',strtotime($model->loadStack("fileintegrity_resume","last_check_integrity"))));
-					} else if ( $last_task == "PERMISSIONS" ) {
+					} else if ($last_task == "PERMISSIONS")
+					{
 						$last_check = new DateTime(date('Y-m-d H:i:s',strtotime($model->loadStack("filemanager_resume","last_check"))));
 					}
 					$now = new DateTime(date('Y-m-d H:i:s',strtotime($model->currentDateTime_func())));
@@ -197,23 +221,31 @@ function onAfterInitialise(){
 					(int) $interval = $now->diff($last_check)->format("%a")*24;
 					
 					// Si el resultado es cero, es que no ha pasado ningún día. Extraemos el número de horas
-					if ( $interval == 0 ) {
+					if ($interval == 0)
+					{
 						 $interval = $now->diff($last_check)->format("%h");
 					}
 					
-					if ( $interval >= $periodicity ) {  // Hay que lanzar la tarea
-						if ( $last_task == "PERMISSIONS" ) {
-							if ( ($launch_task) && ( $hour != $launch_time ) ) {
+					if ($interval >= $periodicity)
+					{  // Hay que lanzar la tarea
+						if ($last_task == "PERMISSIONS")
+							{
+							if (($launch_task) && ($hour != $launch_time))
+							{
 								$this->acciones_integrity('launch',$launch_time);
-							} else {
+							} else
+							{
 								$this->acciones_integrity('normal',$launch_time);
 							}
 							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
 							$model->set_campo_filemanager("last_task",'INTEGRITY');
-						} else if ( $last_task == "INTEGRITY" ) {
-							if ( ($launch_task) && ( $hour != $launch_time ) ) {
+						} else if ($last_task == "INTEGRITY")
+						{
+							if (($launch_task) && ($hour != $launch_time))
+							{
 								$this->acciones('launch',$launch_time);
-							} else {
+							} else
+							{
 								$this->acciones('normal',$launch_time);
 							}							
 							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
@@ -229,14 +261,18 @@ function onAfterInitialise(){
 					(int) $permissions_interval = $now->diff($last_check)->format("%a")*24;
 					
 					// Si el resultado es cero, es que no ha pasado ningún día. Extraemos el número de horas
-					if ( $permissions_interval == 0 ) {
+					if ($permissions_interval == 0)
+					{
 						 $permissions_interval = $now->diff($last_check)->format("%h");
 					}
 					
-					if ( $permissions_interval >= $periodicity ) {  // Hay que lanzar la tarea
-						if ( ($launch_task) && ( $hour != $launch_time ) ) {
+					if ($permissions_interval >= $periodicity)
+					{  // Hay que lanzar la tarea
+						if (($launch_task) && ($hour != $launch_time))
+						{
 							$this->acciones('launch',$launch_time);
-						} else {
+						} else
+						{
 							$this->acciones('normal',$launch_time);
 						}
 						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
@@ -251,14 +287,18 @@ function onAfterInitialise(){
 					(int) $integrity_interval = $now->diff($last_check_integrity)->format("%a")*24;
 					
 					// Si el resultado es cero, es que no ha pasado ningún día. Extraemos el número de horas
-					if ( $integrity_interval == 0 ) {
+					if ($integrity_interval == 0)
+					{
 						 $integrity_interval = $now->diff($last_check_integrity)->format("%h");
 					}
 					
-					if ( $integrity_interval >= $periodicity ) {  // Hay que lanzar la tarea
-						if ( ($launch_task) && ( $hour != $launch_time ) ) {
+					if ($integrity_interval >= $periodicity)
+					{  // Hay que lanzar la tarea
+						if (($launch_task) && ($hour != $launch_time))
+						{
 							$this->acciones_integrity('launch',$launch_time);							
-						} else {
+						} else
+						{
 							$this->acciones_integrity('normal',$launch_time);							
 						}
 						
@@ -276,20 +316,25 @@ function onAfterInitialise(){
 					(int) $interval_integrity = $now->diff($last_check_integrity)->format("%a")*24;
 					
 					// Si el resultado es cero, es que no ha pasado ningún día. Extraemos el número de horas
-					if ( $interval_permissions == 0 ) {
+					if ($interval_permissions == 0)
+					{
 						 $interval_permissions = $now->diff($last_check)->format("%h");
 					}
 					
 					// Si el resultado es cero, es que no ha pasado ningún día. Extraemos el número de horas
-					if ( $interval_integrity == 0 ) {
+					if ($interval_integrity == 0)
+					{
 						 $interval_integrity = $now->diff($last_check_integrity)->format("%h");
 					}
 					
-					if ( ($interval_permissions >= $periodicity) && ($interval_integrity >= $periodicity) ) {  // Hay que lanzar la tarea
-						if ( ($launch_task) && ( $hour != $launch_time ) ) {
+					if (($interval_permissions >= $periodicity) && ($interval_integrity >= $periodicity)) 
+					{  // Hay que lanzar la tarea
+						if (($launch_task) && ($hour != $launch_time))
+						{
 							$this->acciones_integrity('launch',$launch_time);
 							$this->acciones('launch',$launch_time);
-						} else {
+						} else
+						{
 							$this->acciones_integrity('normal',$launch_time);
 							$this->acciones('normal',$launch_time);
 						}
@@ -301,18 +346,20 @@ function onAfterInitialise(){
 			}
 			// Actualizamos el campo 'cron_tasks_launched' de la tabla 'file_manager' para indicar que las tareas ya han terminado de ejecutarse
 			$query = 'UPDATE #__securitycheckpro_file_manager SET cron_tasks_launched=0 WHERE id=1';
-			$db->setQuery( $query );
+			$db->setQuery($query);
 			$db->execute();
 		}
 	}
 }
 
 /*  Función para mandar correos electrónicos */
-function mandar_correo($with_bad_integrity, $with_suspicious_patterns,$look_for_malware,$subject){
+function mandar_correo($with_bad_integrity, $with_suspicious_patterns,$look_for_malware,$subject)
+{
 	// Cargamos los parámetros del componente
 	JLoader::import('joomla.application.component.model');
 	require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/models/protection.php';
-	if(interface_exists('JModel')) {
+	if(interface_exists('JModel'))
+	{
 		$this->pro_plugin = JModelLegacy::getInstance('Protection','SecuritycheckProsModel');
 	} else {
 		$this->pro_plugin = JModel::getInstance('Protection','SecuritycheckProsModel');
@@ -330,19 +377,23 @@ function mandar_correo($with_bad_integrity, $with_suspicious_patterns,$look_for_
 	$sitename = $config->get('sitename');
 	
 	// Chequeamos si se han establecido los valores para mandar el correo
-	if ( !empty($email_to) ) {		
+	if (!empty($email_to))
+	{		
 		
 		/* Cargamos el lenguaje del sitio */
 		$lang = JFactory::getLanguage();
 		$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
 								
 		// Creamos el asunto y el cuerpo del mensaje
-		if ( empty($subject) ) {
+		if (empty($subject))
+		{
 			$subject = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_EMAIL_SITENAME'),$sitename);
 		}		
-		if ( $look_for_malware ) {
+		if ($look_for_malware)
+		{
 			$body = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY'),$with_bad_integrity,$with_suspicious_patterns);
-		} else {
+		} else
+		{
 			$body = JText::sprintf($lang->_('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY_NO_MALWARE_SCAN'),$with_bad_integrity);			
 		}
 		
@@ -368,7 +419,8 @@ function mandar_correo($with_bad_integrity, $with_suspicious_patterns,$look_for_
 }
 
 /* Función que devuelve el número de archivos con integridad o permisos incorrectos y con patrones sospechosos */
-private function consulta_resultado_scan(){
+private function consulta_resultado_scan()
+{
 		
 	// Inicializamos las variables
 	$result = array();
@@ -377,9 +429,11 @@ private function consulta_resultado_scan(){
 	// Import Securitycheckpros model
 	JLoader::import('joomla.application.component.model');
 	JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-	if(interface_exists('JModel')) {
+	if(interface_exists('JModel'))
+	{
 		$model = JModelLegacy::getInstance('filemanager','SecuritycheckProsModel');
-	} else {
+	} else
+	{
 		$model = JModel::getInstance('filemanager','SecuritycheckProsModel');
 	}	
 	

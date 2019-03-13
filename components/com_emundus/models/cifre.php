@@ -541,10 +541,10 @@ class EmundusModelCifre extends JModelList {
 		}
 
 		// Dynamically build a WHERE based on information about the user.
-		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cl.user_to').' != '.$user_id.' AND '.$this->db->quoteName('cl.user_from').' != '.$user_id.' AND '.$this->db->quoteName('cc.status').' = 1';
+		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cc.status').' = 1';
 
 		if (!empty($time_ago)) {
-		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.$this->db->quote(date('Y-m-d H:i:s', strtotime($time_ago)));
+		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.$this->db->quote(date('Y-m-d H:i:s', $time_ago));
         }
 
 		if ($user_profile == 1006) {
@@ -579,7 +579,7 @@ class EmundusModelCifre extends JModelList {
 		$query = $this->db->getQuery(true);
 		$query->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-			->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
+            ->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_to').' OR '.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_from').')')
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
 			->leftJoin($this->db->quoteName('#__emundus_projet', 'ep').' ON '.$this->db->quoteName('ep.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
 			->leftJoin($this->db->quoteName('#__emundus_projet_620_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('ep.id'))
@@ -590,6 +590,7 @@ class EmundusModelCifre extends JModelList {
 			->group([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id')]);
 
 		$this->db->setQuery($query);
+
 		try {
 			$results = $this->db->loadObjectList();
 			shuffle($results);
@@ -621,7 +622,7 @@ class EmundusModelCifre extends JModelList {
 			$query = $this->db->getQuery(true);
 			$query->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-				->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to').' OR '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('cl.fnum_from').')')
+				->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_to').' OR '.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_from').')')
 				->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
 				->leftJoin($this->db->quoteName('#__emundus_projet', 'ep').' ON '.$this->db->quoteName('ep.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
 				->leftJoin($this->db->quoteName('#__emundus_projet_620_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('ep.id'))

@@ -21,48 +21,31 @@ $type_array = array(JHtml::_('select.option','Component', JText::_('COM_SECURITY
 $vulnerable_array = array(JHtml::_('select.option','Si', JText::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')),
 			JHtml::_('select.option','No', JText::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
 
-JHtml::_('formbehavior.chosen', 'select');
-
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
 ?>
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
+
 
 <?php 
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
 
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 		<?php 
 		// Cargamos la navegación
@@ -82,7 +65,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			
 			<!-- Contenido principal -->			
 			<div class="card mb-3">
-				<div style="margin-left: 10px; margin-right: 10px; margin-top: 10px;">
+				<div class="margin-left-10 margin-right-10 margin-top-10">
 					<?php $local_joomla_branch = explode(".",JVERSION); 
 					// Construimos la cabecera de la versión de Joomla para la que se muestran vulnerabilidades según la versión instalada
 					if ( $local_joomla_branch[0] == "3" ) {
@@ -91,7 +74,7 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 						$joomla_version_header = "<i class=\"fa fa-fw icon-joomla\"> 4</i>";
 					}
 					?>
-					<span class="badge" style="background-color: #C68C51; padding: 10px 10px 10px 10px; float:right;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_VULNERABILITY_LIST' ); echo $joomla_version_header; ?></span>
+					<span class="badge" class="background-FFADF5 padding-10-10-10-10 float-right"><?php echo JText::_( 'COM_SECURITYCHECKPRO_VULNERABILITY_LIST' ); echo $joomla_version_header; ?></span>
 				</div>
 				<div class="card-body">						
 						<div class="table-responsive">
@@ -188,13 +171,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 				</div>
 		</div>
 </div>		  
-		
-		
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

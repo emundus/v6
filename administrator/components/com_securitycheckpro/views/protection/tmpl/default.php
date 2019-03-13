@@ -29,17 +29,17 @@ function xframeoptions( $name, $attribs = null, $selected = null, $id=false )
 	return JHTML::_('select.genericlist',  $arr, $name, 'class="chosen-select-no-single"', 'value', 'text', $selected, $id );
 }
 
-
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 // Add style declaration
 $media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
@@ -49,198 +49,18 @@ $site_url = JURI::base();
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
+
+$chosen = "media/com_securitycheckpro/new/vendor/chosen/chosen.css";
+JHTML::stylesheet($chosen);
 ?>
 
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection.php';
 ?>
-
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
- <!-- Chosen styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">
-
-	jQuery(document).ready(function() {	
-	
-		// Chequeamos cuando se pulsa el botón 'close' del modal 'initialize data' para actualizar la página
-		$(function() {
-			$("#buttonclose").click(function() {
-				setTimeout(function () {window.location.reload()},1000);				
-			});
-		});			
-		
-	});		
-</script>
-
-<script type="text/javascript" language="javascript">
-
-var Password = {
- 
-  _pattern : /[a-zA-Z0-9]/, 
-  
-  _getRandomByte : function()
-  {
-    // http://caniuse.com/#feat=getrandomvalues
-    if(window.crypto && window.crypto.getRandomValues) 
-    {
-      var result = new Uint8Array(1);
-      window.crypto.getRandomValues(result);
-      return result[0];
-    }
-    else if(window.msCrypto && window.msCrypto.getRandomValues) 
-    {
-      var result = new Uint8Array(1);
-      window.msCrypto.getRandomValues(result);
-      return result[0];
-    }
-    else
-    {
-      return Math.floor(Math.random() * 256);
-    }
-  },
-  
-  generate : function(length)
-  {
-    return Array.apply(null, {'length': length})
-      .map(function()
-      {
-        var result;
-        while(true) 
-        {
-          result = String.fromCharCode(this._getRandomByte());
-          if(this._pattern.test(result))
-          {
-            return result;
-          }
-        }        
-      }, this)
-      .join('');  
-  }    
-    
-};
-</script>
-
-<script type="text/javascript" language="javascript">
-
-var ActiveTabHtaccess = "autoprotection";
-
-function SetActiveTabHtaccess($value) {
-	ActiveTabHtaccess = $value;
-	storeValue('active_htaccess', ActiveTabHtaccess);
-}
-	
-function storeValue(key, value) {
-	if (localStorage) {
-		localStorage.setItem(key, value);
-	} else {
-		$.cookies.set(key, value);
-	}
-}
-	
-function getStoredValue(key) {
-	if (localStorage) {
-		return localStorage.getItem(key);
-	} else {
-		return $.cookies.get(key);
-	}
-}
-
-window.onload = function() {
-	hideIt();
-	ActiveTabHtaccess = getStoredValue('active_htaccess');
-				
-	if (ActiveTabHtaccess) {
-		$('.nav-tabs a[href="#' + ActiveTabHtaccess + '"]').parent().addClass('active');
-		$('.nav-tabs a[href="#' + ActiveTabHtaccess + '"]').tab('show');
-	} else {
-		$('.nav-tabs a[href="#autoprotection"]').parent().addClass('active');
-	}			
-};
-
-function add_exception() {
-	var exception = document.adminForm.exception.value;
-	
-	var previous_exceptions = (document.adminForm.backend_exceptions.value).length;
-	
-	if (previous_exceptions > 0 ) {
-		document.adminForm.backend_exceptions.value += ',' + exception;
-	} else {
-		document.adminForm.backend_exceptions.value += exception;
-	}
-	document.adminForm.exception.value = "";
-}
-
-function delete_exception() {
-	var exception = document.adminForm.exception.value;
-	
-	var textarea = document.getElementById("backend_exceptions");
-	
-	// Borramos todas las opciones posibles, comas delante y detrás y sin comas
-	textarea.value = textarea.value.replace(',' + exception, "");	
-	textarea.value = textarea.value.replace(exception + ',', "");	
-	textarea.value = textarea.value.replace(exception, "");
-	
-	document.adminForm.exception.value = "";
-}
-
-function delete_all() {
-	var exception = document.adminForm.exception.value;
-	
-	var textarea = document.getElementById("backend_exceptions");
-	
-	textarea.value = "";	
-}
-
-function muestra_default_user_agent(){
-		jQuery("#div_default_user_agents").modal('show');			
-}
-
-function hideIt(){
-	var selected = document.getElementById('backend_protection_applied');
-	if (selected.checked) {		
-		jQuery("#menu_hide_backend_1").hide();
-		jQuery("#menu_hide_backend_2").hide();
-		jQuery("#menu_hide_backend_3").hide();
-		jQuery("#menu_hide_backend_4").hide();
-		jQuery("#block").hide();
-		jQuery("#block2").hide();
-		jQuery("#block3").hide();
-		jQuery("#block4").hide();
-		document.getElementById("hide_backend_url").value = "";
-		document.getElementById("backend_exceptions").value = "";		
-		document.getElementById("backend_protection_applied").value = "1";
-	} else {
-		jQuery("#menu_hide_backend_1").show();
-		jQuery("#menu_hide_backend_2").show();
-		jQuery("#menu_hide_backend_3").show();
-		jQuery("#menu_hide_backend_4").show();
-		jQuery("#block").show();
-		jQuery("#block2").show();
-		jQuery("#block3").show();
-		jQuery("#block4").show();
-		document.getElementById("backend_protection_applied").value = "0";
-	}	
-}
-	
-</script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1');?>" method="post" name="adminForm" id="adminForm">
 
@@ -285,29 +105,29 @@ function hideIt(){
 			?>
 			
 			<!-- Contenido principal -->			
-			<div style="overflow-x: auto;">	
+			<div class="overflow-x-auto">	
 				<ul class="nav nav-tabs" role="tablist" id="protectionTab">
-					<li class="nav-item" onclick="SetActiveTabHtaccess('autoprotection');">
+					<li class="nav-item" id="li_autoprotection_tab">
 						<a class="nav-link active" href="#autoprotection" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_PROTECTION_AUTOPROTECTION_TEXT'); ?></a>
 					</li>
-					<li class="nav-item" onclick="SetActiveTabHtaccess('headers_protection');">
+					<li class="nav-item" id="li_headers_protection_tab">
 						<a class="nav-link" href="#headers_protection" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_PROTECTION_TEXT'); ?></a>
 					</li>
-					<li class="nav-item" onclick="SetActiveTabHtaccess('user_agents_protection');">
+					<li class="nav-item" id="li_user_agents_protection_tab">
 						<a class="nav-link" href="#user_agents_protection" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_PROTECTION_USER_AGENTS_TEXT'); ?></a>
 					</li>
-					<li class="nav-item" onclick="SetActiveTabHtaccess('fingerprinting');">
+					<li class="nav-item" id="li_fingerprinting_tab">
 						<a class="nav-link" href="#fingerprinting" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_FINGERPRINTING_PROTECTION_TEXT'); ?></a>
 					</li>
-					<li class="nav-item" onclick="SetActiveTabHtaccess('backend_protection');">
+					<li class="nav-item" id="li_backend_protection_tab">
 						<a class="nav-link" href="#backend_protection" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_BACKEND_PROTECTION_TEXT'); ?></a>
 					</li>
-					<li class="nav-item" onclick="SetActiveTabHtaccess('performance_tab');">
+					<li class="nav-item" id="li_performance_tab_tab">
 						<a class="nav-link" href="#performance_tab" data-toggle="tab" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_PERFORMANCE'); ?></a>
 					</li>					
 				</ul>
 				
-				<div class="tab-content" style="overflow: auto;">
+				<div class="tab-content" class="overflow-auto">
 					<div class="tab-pane show active" id="autoprotection" role="tabpanel">
 						<div class="control-group">
 							<label for="own_banned_list" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_TEXT'); ?></label>
@@ -424,7 +244,7 @@ function hideIt(){
 						<div class="control-group">
 							<label for="csp_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT'); ?></label>
 							<div class="controls controls-row">
-								<input type="text" class="form-control" style="width: 560px;" id="csp_policy" name="csp_policy" aria-describedby="csp_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['csp_policy']); ?>">			
+								<input type="text" class="form-control" class="width_560" id="csp_policy" name="csp_policy" aria-describedby="csp_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['csp_policy']); ?>">			
 								<?php if ( $this->config_applied['csp_policy'] ) {?>
 									<span class="help-inline">
 										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
@@ -437,7 +257,7 @@ function hideIt(){
 						<div class="control-group">
 							<label for="referrer_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_TEXT'); ?></label>
 							<div class="controls controls-row">
-								<input type="text" class="form-control" style="width: 560px;" id="referrer_policy" name="referrer_policy" aria-describedby="referrer_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['referrer_policy']); ?>">			
+								<input type="text" class="form-control" class="width_560" id="referrer_policy" name="referrer_policy" aria-describedby="referrer_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['referrer_policy']); ?>">			
 								<?php if ( $this->config_applied['referrer_policy'] ) {?>
 									<span class="help-inline">
 										<span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
@@ -462,15 +282,15 @@ function hideIt(){
 											<span aria-hidden="true">&times;</span>
 										</button>
 									</div>
-									<div class="modal-body" style="overflow-y: scroll;">
+									<div class="modal-body" class="overflow-y-scroll">
 										<div class="color_rojo">
 											<?php echo JText::_('COM_SECURITYCHECKPRO_WARNING_CHANGES_USER_AGENTS'); ?>
 										</div>
 										<br/>
-										<textarea id="file_info" name="file_info" rows="20" style="width: 800px;"><?php echo $default; ?></textarea>								
+										<textarea id="file_info" name="file_info" rows="20" class="width-750 height-300"><?php echo $default; ?></textarea>								
 									</div>
 									<div class="modal-footer">					
-										<input class="btn btn-success" type="button" id="boton_guardar" value="<?php echo JText::_('COM_SECURITYCHECKPRO_SAVE_CLOSE'); ?>" onclick= " Joomla.submitbutton('save_default_user_agent');" />
+										<input class="btn btn-success" id="save_default_user_agent_button" type="button" id="boton_guardar" value="<?php echo JText::_('COM_SECURITYCHECKPRO_SAVE_CLOSE'); ?>" />
 										<button type="button" class="btn dtn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
 									</div>			  
 								</div>
@@ -488,7 +308,7 @@ function hideIt(){
 								<?php } ?>
 							</div>
 						</div>
-						<input class="btn btn-primary" style="margin-bottom: 10px;" type="button" id="boton_default_user_agent" value="<?php echo JText::_('COM_SECURITYCHECKPRO_EDIT_DEFAULT_USER_AGENTS'); ?>" onclick= "muestra_default_user_agent();" />
+						<input class="btn btn-primary" class="margin-bottom-10" type="button" id="boton_default_user_agent" value="<?php echo JText::_('COM_SECURITYCHECKPRO_EDIT_DEFAULT_USER_AGENTS'); ?>" />
 						<blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
@@ -588,20 +408,15 @@ function hideIt(){
 									if ( version_compare(JVERSION, '3.20', 'lt') ) {										
 								?>
 									<div class="input-prepend">
-										<span class="add-on" style="background-color: #FFBF60;"><?php echo $site_url ?>?</span>
+										<span class="add-on" class="background-FFBF60""><?php echo $site_url ?>?</span>
 										<input class="input-large" type="text" name="hide_backend_url" id="hide_backend_url" value="<?php echo $this->protection_config['hide_backend_url']?>" placeholder="<?php echo $this->protection_config['hide_backend_url'] ?>">
 								<?php } else {	?>
 									<div class="input-group">
-										<span class="input-group-addon" style="background-color: #FFBF60;"><?php echo $site_url ?>?</span>
+										<span class="input-group-addon" class="background-FFBF60""><?php echo $site_url ?>?</span>
 										<input class="input-large" type="text" name="hide_backend_url" id="hide_backend_url" value="<?php echo $this->protection_config['hide_backend_url']?>" placeholder="<?php echo $this->protection_config['hide_backend_url'] ?>">									
 																									
 								<?php } ?>
-								<?php
-										// Obtenemos la longitud de la clave que tenemos que generar
-										$params = JComponentHelper::getParams('com_securitycheckpro');
-										$size = $params->get('secret_key_length',20);				
-										?>
-										<input type='button' class="btn btn-primary" style="margin-left: 10px;" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("hide_backend_url").value = Password.generate(<?php echo $size; ?>)' />
+									<input type='button' id="hide_backend_url_button" class="btn btn-primary" class="margin-left-10" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' />
 								</div>
 								<?php if ( $this->config_applied['hide_backend_url'] ) {?>
 									<span class="help-inline">
@@ -619,11 +434,11 @@ function hideIt(){
 									if ( version_compare(JVERSION, '3.20', 'lt') ) {										
 								?>
 									<div class="input-prepend">
-										<span class="add-on" style="background-color: #D0F5A9;"><?php echo "/" ?></span>
+										<span class="add-on" class="background-D0F5A9""><?php echo "/" ?></span>
 										<input class="input-large" type="text" name="hide_backend_url_redirection" id="hide_backend_url_redirection" value="<?php echo $this->protection_config['hide_backend_url_redirection']?>" placeholder="not_found">
 								<?php } else {	?>
 									<div class="input-group">
-										<span class="input-group-addon" style="background-color: #D0F5A9;"><?php echo "/" ?></span>
+										<span class="input-group-addon" class="background-D0F5A9""><?php echo "/" ?></span>
 										<input class="input-large" type="text" name="hide_backend_url_redirection" id="hide_backend_url_redirection" value="<?php echo $this->protection_config['hide_backend_url_redirection']?>" placeholder="not_found">
 								<?php } ?>
 								</div>							
@@ -642,7 +457,7 @@ function hideIt(){
 								<div class="col-lg-3">
 									<textarea readonly rows="5" cols="30" name="backend_exceptions" id="backend_exceptions"><?php echo $this->protection_config['backend_exceptions'] ?></textarea>							
 								</div>
-								<div class="col-lg-3" style="margin-left: 60px; margin-top: 50px;">
+								<div class="col-lg-3" class="margin-left-60 margin-top-50">
 									<div class="input-group">
 									  <input class="span8" type="text" name="exception" id="exception" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_YOUR_EXCEPTION_HERE') ?>">
 										<div class="input-group-btn">
@@ -656,13 +471,13 @@ function hideIt(){
 													</button>
 													<ul class="dropdown-menu">
 														<li>
-															<a href="#backend_exceptions" onclick="add_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
+															<a href="#backend_exceptions" id="add_exception_button"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
 														</li>							
 														<li>
-															<a href="#backend_exceptions" onclick="delete_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>
+															<a href="#backend_exceptions" id="delete_exception_button"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>
 														</li>
 														<li>
-															<a href="#backend_exceptions" onclick="delete_all();"><?php echo JText::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>
+															<a href="#backend_exceptions" id="delete_all_button"><?php echo JText::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>
 														</li>
 													</ul>						
 												</div>
@@ -671,9 +486,9 @@ function hideIt(){
 													  <?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?>
 													</button>
 													<div class="dropdown-menu dropdown-menu-right">
-														<a class="dropdown-item" href="#backend_exceptions" onclick="add_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
-														<a class="dropdown-item" href="#backend_exceptions" onclick="delete_exception();"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>
-														<a class="dropdown-item" href="#backend_exceptions" onclick="delete_all();"><?php echo JText::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>									  
+														<a class="dropdown-item" id="add_exception_button" href="#backend_exceptions"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
+														<a class="dropdown-item" id="delete_exception_button" href="#backend_exceptions"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>
+														<a class="dropdown-item" id="delete_all_button" href="#backend_exceptions"><?php echo JText::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>									  
 													</div>
 												<?php	} 	?>
 										</div>
@@ -733,15 +548,6 @@ function hideIt(){
 			
 		</div>
 </div>		
-
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script>
-<!-- Chosen scripts -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/init.js"></script>  
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="boxchecked" value="1" />

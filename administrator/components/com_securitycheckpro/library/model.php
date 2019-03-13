@@ -11,10 +11,13 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
-if(!class_exists('JoomlaCompatModel')) {
-	if(interface_exists('JModel')) {
+if (!class_exists('JoomlaCompatModel'))
+{
+	if (interface_exists('JModel'))
+	{
 		abstract class JoomlaCompatModel extends JModelLegacy {}
-	} else {
+	} else 
+	{
 		class JoomlaCompatModel extends JModel {}
 	}
 }
@@ -124,7 +127,7 @@ private $defaultConfig = array(
 	'forbid_new_admins'	=> 0,
 	'spammer_what_to_check'	=> array('Email','IP','Username'),
 	'strip_all_tags'	=>	1,
-	'tags_to_filter'			=> 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml',
+	'tags_to_filter'			=> 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,img,svg,input',
 	'inspector_forbidden_words'	=> 'wp-login.php,.git,owl.prev,tmp.php,home.php,Guestbook.php,aska.cgi,default.asp,jax_guestbook.php,bbs.cg,gastenboek.php,light.cgi,yybbs.cgi,wsdl.php,wp-content,cache_aqbmkwwx.php,.suspected,seo-joy.cgi,google-assist.php,wp-main.php,sql_dump.php,xmlsrpc.php',
 	'write_log_inspector'	=> 1,
 	'action_inspector'	=>	2,
@@ -173,11 +176,13 @@ protected function populateState()
 /* Obtiene el valor de una opción de configuración */
 public function getValue($key, $default = null, $key_name = 'cparams')
 {
-	if(is_null($this->config)) $this->load($key_name);
+	if (is_null($this->config)) $this->load($key_name);
 	
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if (version_compare(JVERSION, '3.0', 'ge'))
+	{
 		return $this->config->get($key, $default);
-	} else {
+	} else
+	{
 		return $this->config->getValue($key, $default);
 	}
 }
@@ -185,15 +190,19 @@ public function getValue($key, $default = null, $key_name = 'cparams')
 /* Establece el valor de una opción de configuración ' */
 public function setValue($key, $value, $save = false, $key_name = 'cparams')
 {
-	if(is_null($this->config)) {
+	if (is_null($this->config))
+	{
 		$this->load($key_name);
 	}
 		
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if (version_compare(JVERSION, '3.0', 'ge'))
+	{
 		$x = $this->config->set($key, $value);
-	} else {
+	} else
+	{
 		$x = $this->config->setValue($key, $value);
 	}
+	
 	if($save) $this->save($key_name);
 	return $x;
 }
@@ -210,12 +219,15 @@ public function load($key_name)
 	$db->setQuery($query);
 	$res = $db->loadResult();
 		
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if (version_compare(JVERSION, '3.0', 'ge'))
+	{
 		$this->config = new JRegistry();
-	} else {
+	} else
+	{
 		$this->config = new JRegistry('securitycheckpro');
 	}
-	if(!empty($res)) {
+	if (!empty($res))
+	{
 		$res = json_decode($res, true);
 		$this->config->loadArray($res);
 	}
@@ -224,7 +236,8 @@ public function load($key_name)
 /* Guarda la configuración en la tabla pasada como parámetro */
 public function save($key_name)
 {
-	if(is_null($this->config)) {
+	if (is_null($this->config))
+	{
 		$this->load($key_name);
 	}
 		
@@ -233,29 +246,35 @@ public function save($key_name)
 	
 	$data = $this->config->toArray();
 	
-	if ( $key_name != 'inspector' ) {
-		
+	if ($key_name != 'inspector')
+	{		
 		// Chequeamos si los valores de prioridad son nulos; si lo son, les asignamos un valor
-		if ( (array_key_exists("priority1",$data)) && (is_null($data['priority1'])) || (!array_key_exists("priority1",$data)) ) {
+		if ((array_key_exists("priority1",$data)) && (is_null($data['priority1'])) || (!array_key_exists("priority1",$data)))
+		{
 			$data['priority1'] = 'Geoblock';
 		}
-		if ( (array_key_exists("priority2",$data)) && (is_null($data['priority2'])) || (!array_key_exists("priority2",$data)) ) {
+		if ((array_key_exists("priority2",$data)) && (is_null($data['priority2'])) || (!array_key_exists("priority2",$data)))
+		{
 			$data['priority2'] = 'Whitelist';
 		}
-		if ( (array_key_exists("priority3",$data)) && (is_null($data['priority3'])) || (!array_key_exists("priority3",$data)) ) {
+		if ((array_key_exists("priority3",$data)) && (is_null($data['priority3'])) || (!array_key_exists("priority3",$data))) 
+		{
 			$data['priority3'] = 'DynamicBlacklist';
 		}
-		if ( (array_key_exists("priority4",$data)) && (is_null($data['priority4'])) || (!array_key_exists("priority4",$data)) ) {
+		if ((array_key_exists("priority4",$data)) && (is_null($data['priority4'])) || (!array_key_exists("priority4",$data))) 
+		{
 			$data['priority4'] = 'Blacklist';
 		}
 			
-		if ( ($data['priority1'] == $data['priority2']) || ($data['priority1'] == $data['priority3']) || ($data['priority1'] == $data['priority4']) || ($data['priority2'] == $data['priority3']) || ($data['priority3'] == $data['priority4']) ) {
+		if (($data['priority1'] == $data['priority2']) || ($data['priority1'] == $data['priority3']) || ($data['priority1'] == $data['priority4']) || ($data['priority2'] == $data['priority3']) || ($data['priority3'] == $data['priority4']))
+		{
 			Jerror::raiseWarning(100, JText::_('COM_SECURITYCHECKPRO_DUPLICATE_OPTIONS'));
 			return;
 		}
 		
 		// Borramos el índice 'priority', correspondiente a versiones anteriores a la 2.8.5
-		if ( array_key_exists("priority",$data) ) {
+		if (array_key_exists("priority",$data))
+		{
 			unset($data['priority']);
 		}
 	}
@@ -280,21 +299,26 @@ public function save($key_name)
 /* Obtiene la configuración de los parámetros del Firewall Web */
 function getConfig()
 {
-	if(interface_exists('JModel')) {
+	if (interface_exists('JModel'))
+	{
 		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
-	} else {
+	} else
+	{
 		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	/* Si por alguna razón la variable $params no está definida, creamos un objeto para definirla */
-	if ( !$params) {		
+	if (!$params)
+	{		
 		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'firewallconfig.php';
 		$params = new SecuritycheckprosModelFirewallConfig();				
-	} else {		
+	} else
+	{		
 	}
 	
 	$config = array();
-	foreach($this->defaultConfig as $k => $v) {
+	foreach($this->defaultConfig as $k => $v)
+	{
 		$config[$k] = $params->getValue($k, $v, 'pro_plugin');
 	}
 	return $config;	
@@ -303,14 +327,17 @@ function getConfig()
 /* Obtiene la configuración de los parámetros del Cron */
 function getCronConfig()
 {
-	if(interface_exists('JModel')) {
+	if (interface_exists('JModel'))
+	{
 		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
-	} else {
+	} else 
+	{
 		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	$config = array();
-	foreach($this->defaultConfig as $k => $v) {
+	foreach($this->defaultConfig as $k => $v)
+	{
 		$config[$k] = $params->getValue($k, $v, 'cron_plugin');
 	}
 	return $config;
@@ -319,14 +346,17 @@ function getCronConfig()
 /* Obtiene la configuración de los parámetros del Control Center */
 function getControlCenterConfig()
 {
-	if(interface_exists('JModel')) {
+	if (interface_exists('JModel'))
+	{
 		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
-	} else {
+	} else
+	{
 		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	$config = array();
-	foreach($this->defaultConfig as $k => $v) {
+	foreach($this->defaultConfig as $k => $v)
+	{
 		$config[$k] = $params->getValue($k, $v, 'controlcenter');
 	}
 	return $config;
@@ -335,9 +365,11 @@ function getControlCenterConfig()
 /* Guarda la modificación de los parámetros de la opción 'Mode' */
 function saveConfig($newParams, $key_name = 'cparams')
 {
-	if(interface_exists('JModel')) {
+	if (interface_exists('JModel'))
+	{
 		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
-	} else {
+	} else
+	{
 		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
@@ -355,14 +387,15 @@ function saveConfig($newParams, $key_name = 'cparams')
 function clearstring($string_to_clear, $option = 1)
 {
 	// Eliminamos espacios y retornos de carro entre los elementos
-	switch ($option) {
+	switch ($option)
+	{
 		case 1:
 			// Transformamos el string array para poder manejarlo mejor
 			$string_to_array = explode(',',$string_to_clear);
 			// Eliminamos los espacios en blanco al principio y al final de cada elemento
-			$string_to_array = array_map( function ($element) { return trim($element); },$string_to_array );
+			$string_to_array = array_map(function ($element) { return trim($element); },$string_to_array);
 			// Eliminamos los retornos de carro, nuevas líneas y tabuladores de cada elemento
-			$string_to_array = array_map( function ($element) { return str_replace(array("\n", "\t", "\r"), '', $element); },$string_to_array );
+			$string_to_array = array_map(function ($element) { return str_replace(array("\n", "\t", "\r"), '', $element); },$string_to_array);
 			// Volvemos a convertir el array en string
 			$string_to_clear = implode(',',$string_to_array);
 			break;
@@ -375,37 +408,48 @@ function clearstring($string_to_clear, $option = 1)
 }
 
 /* Función para chequear si una ip pertenece a una lista en la que podemos especificar rangos. Podemos tener una ip del tipo 192.168.*.* y una ip 192.168.1.1 entraría en ese rango */
-function chequear_ip_en_lista($ip,$lista){
+function chequear_ip_en_lista($ip,$lista)
+{
 	$aparece = false;
 	$igual = false;
 	$array_ip_peticionaria = explode('.',$ip);
 	
-	if (strlen($lista) > 0) {
+	if (strlen($lista) > 0)
+	{
 		// Eliminamos los caracteres en blanco antes de introducir los valores en el array
 		$lista = str_replace(' ','',$lista);
 		$array_ips = explode(',',$lista);
-		if ( is_int(array_search($ip,$array_ips)) ){	// La ip aparece tal cual en la lista
+		if (is_int(array_search($ip,$array_ips)))
+		{	// La ip aparece tal cual en la lista
 			$aparece = true;
-		} else {
-			foreach ($array_ips as &$indice){
-										
-					if (strrchr($indice,'*')){ // Chequeamos si existe el carácter '*' en el string; si no existe podemos ignorar esta ip
+		} else
+		{
+			foreach ($array_ips as &$indice)
+			{										
+					if (strrchr($indice,'*'))
+					{ // Chequeamos si existe el carácter '*' en el string; si no existe podemos ignorar esta ip
 						$array_ip_lista = explode('.',$indice); // Formato array:  $array_ip_lista[0] = '192' , $array_ip_lista[1] = '168'
 						$k = 0;
 						$igual = true;
-						while (($k <= 3) && ($igual)) {
-							if ($array_ip_lista[$k] == '*') {
+						while (($k <= 3) && ($igual))
+						{
+							if ($array_ip_lista[$k] == '*')
+							{
 								$k++;
-							}else {
-								if ($array_ip_lista[$k] == $array_ip_peticionaria[$k]) {
+							}else
+							{
+								if ($array_ip_lista[$k] == $array_ip_peticionaria[$k])
+								{
 									$k++;
-								} else {
+								} else
+								{
 									$igual = false;
 								}
 							}
 						}
 					}
-					if ( strstr($indice,"/") != false ){ // Chequeamos si existe el carácter '/' en el string (formato CIDR); si no existe podemos ignorar esta ip
+					if (strstr($indice,"/") != false)
+					{ // Chequeamos si existe el carácter '/' en el string (formato CIDR); si no existe podemos ignorar esta ip
 						require_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/ip.php';
 		
 						$model = new SecuritycheckProsModelIP;
@@ -415,20 +459,23 @@ function chequear_ip_en_lista($ip,$lista){
 						
 						// Comprobamos si la IP tiene formato v4
 						$ip_v4 = filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4);
-						if ( $ip_v4 ){
+						if ($ip_v4)
+						{
 							// Comprobamos si la ipv4 ya aparece en las listas
 							//$aparece = $model->cidr_match($ip,$ip_range_info["network"],strstr($indice,"/"));							
 							$aparece = $model->ip_in_range($ip,$indice);
 						}
 						// Comprobamos si la IP tiene formato v6
 						$ip_v6 = filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV6);
-						if ( $ip_v6 ){
+						if ($ip_v6)
+						{
 							// Comprobamos si la ipv6 ya aparece en las listas
 							$aparece =  $model->checkIPv6WithinRange($ip,$ip_range_info["network"] . strstr($indice,"/"));							
 						}												
 
 					}
-					if ($igual) { // $igual será true cuando hayamos recorrido el array y todas las partes del mismo coincidan con la ip que realiza la petición
+					if ($igual)
+					{ // $igual será true cuando hayamos recorrido el array y todas las partes del mismo coincidan con la ip que realiza la petición
 						$aparece = true;
 						return $aparece;
 					}
@@ -439,7 +486,8 @@ function chequear_ip_en_lista($ip,$lista){
 	return $aparece;
 }
 
-function encrypt($text_to_encrypt,$encryption_key) {
+function encrypt($text_to_encrypt,$encryption_key)
+{
 	// Generate an initialization vector
 	// This *MUST* be available for decryption as well
 	$iv = openssl_random_pseudo_bytes(8);
@@ -455,7 +503,8 @@ function encrypt($text_to_encrypt,$encryption_key) {
 	return $encrypted;
 }
 
-function decrypt($text_to_decrypt,$encryption_key) {
+function decrypt($text_to_decrypt,$encryption_key)
+ {
 	// To decrypt, separate the encrypted data from the initialization vector ($iv)
 	$parts = explode(':', $text_to_decrypt);
 	// $parts[0] = encrypted data
@@ -467,7 +516,8 @@ function decrypt($text_to_decrypt,$encryption_key) {
 }
 
 /* Función que modifica el valor de algún parámetro de un componente */
-function modify_component_value($param_name,$value,$option) {
+function modify_component_value($param_name,$value,$option)
+{
 
 	// Inicializamos las variables
 	$added = true;
@@ -479,18 +529,22 @@ function modify_component_value($param_name,$value,$option) {
 	$params = JComponentHelper::getParams('com_securitycheckpro');
 	$actual_values = $params->get($param_name,null);
 			
-	if ( $option == "add" ) {
-		
-		if ( is_null($actual_values) ) {
+	if ($option == "add")
+	{		
+		if (is_null($actual_values))
+		{
 			$actual_values =  $value;			
-		} else {
-			if ( strstr($actual_values,$value) ) {  // El path ya se encuentra incluido como excepcion
+		} else 
+		{
+			if (strstr($actual_values,$value))
+			{  // El path ya se encuentra incluido como excepcion
 				$already_exists = true;
 			}
 			$actual_values .= "," . $value;
 		}
 		
-		if ( !$already_exists ) {  // El elemento no existe en la lista
+		if (!$already_exists)
+		{  // El elemento no existe en la lista
 		
 			$params->set($param_name, $actual_values);
 			
@@ -500,13 +554,15 @@ function modify_component_value($param_name,$value,$option) {
 			$table->bind(array('params' => $params->toString()));
 			
 			// check for error
-			if (!$table->check()) {
-				JError::raiseError( 100, $table->getError() );
+			if (!$table->check())
+			{
+				JError::raiseError(100, $table->getError());
 				return false;
 			}
 			// Save to database
-			if (!$table->store()) {
-				JError::raiseError( 100, $table->getError() );
+			if (!$table->store())
+			{
+				JError::raiseError(100, $table->getError());
 				return false;
 			}
 			
@@ -514,17 +570,19 @@ function modify_component_value($param_name,$value,$option) {
 			parent::cleanCache('_system', 0);
 			parent::cleanCache('_system', 1);
 			
-		} else {
+		} else 
+		{
 			$added = false;
 		}
 		
 		return $added;
-	} else if ( $option == "delete" ) {
-	
-		if ( is_null($actual_values) ) {
+	} else if ($option == "delete")
+	{	
+		if (is_null($actual_values))
+		{
 			$actual_values =  $value;
-		} else {
-			
+		} else
+		{			
 			// Convertimos todas las excepciones en un array
 			$array_values = explode(',',$actual_values);
 			
@@ -541,7 +599,8 @@ function modify_component_value($param_name,$value,$option) {
 			$new_value = implode(',',$new_array);
 			
 			// El valor se ha encontrado
-			if ( is_int($indice_elemento) ) {
+			if (is_int($indice_elemento))
+			{
 				$params->set($param_name, $new_value);
 				
 				$componentid = JComponentHelper::getComponent('com_securitycheckpro')->id;
@@ -550,20 +609,23 @@ function modify_component_value($param_name,$value,$option) {
 				$table->bind(array('params' => $params->toString()));
 				
 				// check for error
-				if (!$table->check()) {
-					JError::raiseError( 100, $table->getError() );
+				if (!$table->check())
+				{
+					JError::raiseError(100, $table->getError());
 					return false;
 				}
 				// Save to database
-				if (!$table->store()) {
-					JError::raiseError( 100, $table->getError() );
+				if (!$table->store())
+				{
+					JError::raiseError(100, $table->getError());
 					return false;
 				}
 			
 				// Clean the component cache. Without these lines changes will not be reflected until cache expired.
 				parent::cleanCache('_system', 0);
 				parent::cleanCache('_system', 1);				
-			} else {
+			} else 
+			{
 				$deleted = false;
 			}
 			
@@ -573,7 +635,8 @@ function modify_component_value($param_name,$value,$option) {
 }
 
 /* Función que añade una ruta  a la lista de excepciones */
-function addfile_exception($type) {
+function addfile_exception($type)
+{
 	// Inicializamos las variables
 	$added_elements = 0;
 	$already_exists_elements = 0;
@@ -587,50 +650,61 @@ function addfile_exception($type) {
 	// Creamos el objeto JInput para obtener las variables del formulario
 	$jinput = JFactory::getApplication()->input;
 	
-	if ($type == 'malwarescan') {
+	if ($type == 'malwarescan')
+	{
 		// Obtenemos las rutas de los ficheros que serán añadidas como excepciones
 		$paths = $jinput->get('malwarescan_status_table','0','array');
 		
 		// ¿Usamos nuestra propia lista de excepciones o la del escaneo de integridad?
 		$use_filemanager_exceptions = $params->get('use_filemanager_exceptions',1);
-		if ( !$use_filemanager_exceptions ) {
+		if (!$use_filemanager_exceptions)
+		{
 			$option = 'malwarescan_path_exceptions';
 		}
-	} else if ($type == 'permissions') {
+	} else if ($type == 'permissions')
+	{
 		// Obtenemos las rutas de los ficheros que serán añadidas como excepciones
 		$paths = $jinput->get('filesstatus_table','0','array');
 		
 		$option = 'file_manager_path_exceptions';
-	} else if ($type == 'integrity') {
+	} else if ($type == 'integrity')
+	{
 		// Obtenemos las rutas de los ficheros que serán añadidas como excepciones
 		$paths = $jinput->get('filesintegritystatus_table','0','array');		
 	}
 	
-	if ( !empty($paths) ) {	
-		foreach($paths as $path) {
+	if (!empty($paths))
+	{	
+		foreach($paths as $path)
+		{
 			// Path sanitizada
 			//$sanitized_path = $db->escape($path);
 			// Agregamos el archivo a la lista de excepciones
 			$added = $this->modify_component_value($option,$path,'add');
-			if ( $added ) {
+			if ($added) 
+			{
 				$added_elements++;
-			} else {
+			} else 
+			{
 				$already_exists_elements++;
 			}
 		}
 	}
 	
 	JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ADDED_TO_LIST',$added_elements));
-	if ( $added_elements > 0 ) {
+	if ($added_elements > 0)
+	{
 		Jerror::raiseNotice(100, JText::_('COM_SECURITYCHECKPRO_ELEMENTS_LAUNCH_NEW_SCAN'));
 	}
-	if ( $already_exists_elements > 0 ) {
+	if ($already_exists_elements > 0)
+	{
 		Jerror::raiseWarning(100, JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ALREADY_EXISTS',$already_exists_elements));
 	}
 }
 
 /* Función que borra una ruta de la lista de excepciones */
-function deletefile_exception($type) {
+function deletefile_exception($type)
+{
 	// Inicializamos las variables
 	$deleted_elements = 0;
 	$option = 'file_integrity_path_exceptions';
@@ -643,53 +717,62 @@ function deletefile_exception($type) {
 	// Creamos el objeto JInput para obtener las variables del formulario
 	$jinput = JFactory::getApplication()->input;
 	
-	if ($type == 'malwarescan') {
+	if ($type == 'malwarescan')
+	{
 		// Obtenemos las rutas de los ficheros que serán añadidas como excepciones
 		$paths = $jinput->get('malwarescan_status_table','0','array');
 		
 		// ¿Usamos nuestra propia lista de excepciones o la del escaneo de integridad?
 		$use_filemanager_exceptions = $params->get('use_filemanager_exceptions',1);
-		if ( !$use_filemanager_exceptions ) {
+		if (!$use_filemanager_exceptions)
+		{
 			$option = 'malwarescan_path_exceptions';
 		}
-	} else if ($type == 'permissions') {
+	} else if ($type == 'permissions')
+	{
 		// Obtenemos las rutas de los ficheros que serán añadidas como excepciones
 		$paths = $jinput->get('filesstatus_table','0','array');
 				
 		$option = 'file_manager_path_exceptions';
-	} else if ($type == 'integrity') {
+	} else if ($type == 'integrity')
+	{
 		// Obtenemos las rutas de los ficheros que serán añadidas como excepciones
 		$paths = $jinput->get('filesintegritystatus_table','0','array');		
 	}
 	
-	if ( !empty($paths) ) {	
-		foreach($paths as $path) {
+	if (!empty($paths))
+	{	
+		foreach($paths as $path)
+		{
 			// Path sanitizada
 			$sanitized_path = $db->escape($path);
 			// Agregamos el archivo a la lista de excepciones
 			$deleted = $this->modify_component_value($option,$sanitized_path,'delete');
-			if ( $deleted ) {
+			if ($deleted)
+			{
 				$deleted_elements++;
 			}
 		}
 	}
 	
 	JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_DELETED_FROM_LIST',$deleted_elements));
-	if ( $deleted_elements > 0 ) {
+	if ($deleted_elements > 0)
+	{
 		Jerror::raiseNotice(100, JText::_('COM_SECURITYCHECKPRO_ELEMENTS_LAUNCH_NEW_SCAN'));
 	}	
 }
 
 /*Genera un nombre de fichero .php  de 20 caracteres */
-function generateKey() {
+function generateKey()
+{
 	
 	$chars = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //available characters
-	srand( ( double ) microtime() * 1000000 ); //random seed
+	srand((double) microtime() * 1000000); //random seed
 	$pass = '' ;
 		
-	for ( $i = 1; $i <= 20; $i++ ) {
+	for ($i = 1; $i <= 20; $i++) {
 		$num = rand() % 33;
-		$tmp = substr( $chars, $num, 1 );
+		$tmp = substr($chars, $num, 1);
 		$pass = $pass . $tmp;
 	}
 
@@ -697,28 +780,37 @@ function generateKey() {
 }
 
 /* Función para determinar si el plugin pasado como argumento ('1' -> Securitycheck Pro, '2' -> Securitycheck Pro Cron, '3' -> Securitycheck Pro Update Database) está habilitado o deshabilitado. También determina si el plugin Securitycheck Pro Update Database (opción 4)  está instalado */
-function PluginStatus($opcion) {
+function PluginStatus($opcion)
+{
 		
 	$db = JFactory::getDBO();
-	if ( $opcion == 1 ) {
+	if ($opcion == 1)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro"';
-	} else if ( $opcion == 2 ) {
+	} else if ($opcion == 2)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Cron"';
-	} else if ( $opcion == 3 ) {
+	} else if ($opcion == 3)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
-	} else if ( $opcion == 4 ) {
+	} else if ($opcion == 4)
+	{
 		$query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
-	} else if ( $opcion == 5 ) {
+	} else if ($opcion == 5)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Spam Protection"';
-	} else if ( $opcion == 6 ) {
+	} else if ($opcion == 6)
+	{
 		$query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Securitycheck Spam Protection"';
-	} else if ( $opcion == 7 ) {
+	} else if ($opcion == 7)
+	{
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - url inspector"';
-	} else if ( $opcion == 8 ) {
+	} else if ($opcion == 8)
+	{
 		$query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Track Actions"';
 	}
 	
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	$enabled = $db->loadResult();
 	
@@ -761,14 +853,15 @@ function set_campo_filemanager($campo,$valor)
 	$query->where('id=1');
 
 	// ... y la lanzamos
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 }
 
 /* Función para obtener el valor de un campo de la tabla '#_securitycheckpro_file_manager' */
 function get_campo_filemanager($campo)
 {
-	try {
+	try 
+	{
 		// Creamos el nuevo objeto query
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -782,13 +875,15 @@ function get_campo_filemanager($campo)
 		$query->where('id=1');
 		
 		// ... y la lanzamos
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		$result = $db->loadResult();
-	} catch (Exception $e) {
+	} catch (Exception $e)
+	{
 		$result = "ERROR";
 	}
 	
-	if ( (is_null($result)) && ($campo=='estado') ) {
+	if ((is_null($result)) && ($campo=='estado'))
+	{
 		$result = "ERROR";
 	}
 	
@@ -823,30 +918,33 @@ function loadStack($opcion,$field)
 	// Establecemos el tamaño máximo de memoria que el script puede consumir
 	$params = JComponentHelper::getParams('com_securitycheckpro');
 	$memory_limit = $params->get('memory_limit','512M');
-	if ( preg_match('/^[0-9]*M$/',$memory_limit) ) {
+	if (preg_match('/^[0-9]*M$/',$memory_limit))
+	{
 		ini_set('memory_limit',$memory_limit);
-	} else {
+	} else 
+	{
 		ini_set('memory_limit','512M');
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_VALID_MEMORY_LIMIT'),'error');
 	}
 			
-	switch ($opcion) {
-		case "permissions":
-			
+	switch ($opcion)
+	{
+		case "permissions":			
 			// Leemos el contenido del fichero
 			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
 			
-			if(empty($stack)) {
+			if (empty($stack))
+			{
 				$stack = array();
 				return;
 			}
 			break;
-		case "integrity":
-			
+		case "integrity":			
 			// Leemos el contenido del fichero
 			$stack = file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 			
-			if(empty($stack)) {
+			if (empty($stack))
+			{
 				$this->Stack_Integrity = array();
 				return;
 			}
@@ -859,7 +957,8 @@ function loadStack($opcion,$field)
 			$db->setQuery($query);
 			$stack = $db->loadResult();
 			
-			if(empty($stack)) {
+			if (empty($stack))
+			{
 				$this->files_scanned = 0;
 				$this->files_with_incorrect_permissions = 0;
 				return;
@@ -873,7 +972,8 @@ function loadStack($opcion,$field)
 			$db->setQuery($query);
 			$stack = $db->loadResult();
 						
-			if(empty($stack)) {
+			if (empty($stack))
+			{
 				$files_scanned_integrity = 0;
 				$files_with_incorrect_integrity = 0;
 				return;
@@ -887,7 +987,8 @@ function loadStack($opcion,$field)
 			$db->setQuery($query);
 			$stack = $db->loadResult();
 			
-			if(empty($stack)) {
+			if (empty($stack))
+			{
 				$this->files_scanned_malwarescan = 0;
 				$this->suspicious_files = 0;
 				return;
@@ -897,7 +998,8 @@ function loadStack($opcion,$field)
 	
 	$stack = json_decode($stack, true);
 	
-	switch ($field) {
+	switch ($field)
+	{
 		case "file_manager":
 			$this->Stack = array_splice($stack['files_folders'], $this->getState('limitstart'), $this->getState('limit'));
 			return ($this->Stack);
@@ -905,9 +1007,11 @@ function loadStack($opcion,$field)
 			$this->files_scanned = $stack['files_scanned'];
 			return ($this->files_scanned);
 		case "files_with_incorrect_permissions":
-			if(empty($stack)) {
+			if(empty($stack))
+			{
 				$this->files_with_incorrect_permissions = 0;
-			} else {
+			} else
+			{
 				$this->files_with_incorrect_permissions = $stack['files_with_incorrect_permissions'];			
 			}	
 			return ($this->files_with_incorrect_permissions);			
@@ -917,9 +1021,11 @@ function loadStack($opcion,$field)
 			$this->files_scanned_integrity = $stack['files_scanned_integrity'];
 			return ($this->files_scanned_integrity);
 		case "files_with_bad_integrity":
-			if(empty($stack)) {
+			if(empty($stack))
+			{
 				$this->files_with_incorrect_integrity = 0;
-			} else {
+			} else 
+			{
 				$this->files_with_incorrect_integrity = $stack['files_with_incorrect_integrity'];			
 			}
 			return ($this->files_with_incorrect_integrity);
@@ -931,9 +1037,11 @@ function loadStack($opcion,$field)
 			$this->files_scanned_malwarescan = $stack['files_scanned_malwarescan'];
 			return ($this->files_scanned_malwarescan);
 		case "suspicious_files":
-			if(empty($stack)) {
+			if (empty($stack))
+			{
 				$this->suspicious_files = 0;
-			} else {
+			} else 
+			{
 				$this->suspicious_files = $stack['suspicious_files'];			
 			}	
 			return ($this->suspicious_files);		
@@ -941,7 +1049,8 @@ function loadStack($opcion,$field)
 }
 
 /* Función que extrae las entradas de la BBDD '#__securitycheckpro_dynamic_blacklist' */
-function get_dynamic_blacklist_ips() {
+function get_dynamic_blacklist_ips()
+{
 	
 	// Inicializamos las variables
 	$query = null;
@@ -959,7 +1068,8 @@ function get_dynamic_blacklist_ips() {
 }
 
 /* Función que extrae las entradas de la BBDD '#__securitycheckpro_dynamic_blacklist' */
-function get_subscriptions_status() {
+function get_subscriptions_status()
+{
 	// Inicializamos las variables
 	$downloadid = '';
 	$mainframe = JFactory::getApplication();
@@ -970,44 +1080,55 @@ function get_subscriptions_status() {
 	
 	// Buscamos el Download ID 
 	$plugin = JPluginHelper::getPlugin('system', 'securitycheckpro_update_database');
-	if ( !empty($plugin) ) {
+	if (!empty($plugin))
+	{
 		$params = new JRegistry($plugin->params);
 		$downloadid = $params->get('downloadid');		
 	}
-	if ( empty($downloadid) ) {
+	if (empty($downloadid))
+	{
 		$app = JComponentHelper::getParams('com_securitycheckpro');
 		$downloadid = $app->get('downloadid');
 	}
 	
 	// Si el Download id está vacío actualizamos las variables
-	if ( empty($downloadid) ) {
-		$mainframe->setUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY' ));		
-		$mainframe->setUserState("scp_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY' ));
-		$mainframe->setUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY' ));
-	} else {
-		if ( function_exists('curl_init') ) {
+	if (empty($downloadid))
+	{
+		$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY'));		
+		$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY'));
+		$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY'));
+	} else
+	{
+		if (function_exists('curl_init'))
+		{
 			// Obtenemos la respuesta de cada url
 			$this->get_response("scp",$downloadid);
-			if ($update_database_plugin_exists) {
+			if ($update_database_plugin_exists)
+			{
 				$this->get_response("update",$downloadid);
-			} else {
-				$mainframe->setUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' ));
+			} else
+			{
+				$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED'));
 			}
-			if ($trackactions_plugin_exists) {
+			if ($trackactions_plugin_exists)
+			{
 				$this->get_response("trackactions",$downloadid);
-			} else {
-				$mainframe->setUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' ));
+			} else
+			{
+				$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED'));
 			}
-		} else {
-			$mainframe->setUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_CURL_NOT_DEFINED' ));		
-			$mainframe->setUserState("scp_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_CURL_NOT_DEFINED' ));
-			$mainframe->setUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_CURL_NOT_DEFINED' ));
+		} else 
+		{
+			$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));		
+			$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));
+			$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));
 		}
 		
 	}	
 }
 
-function get_response($product,$downloadid) {
+function get_response($product,$downloadid)
+{
 	
 	$mainframe = JFactory::getApplication();
 	
@@ -1016,11 +1137,14 @@ function get_response($product,$downloadid) {
 	
 		
 	// Url que contendrá el fichero xml, que a su vez contendrá la url de acceso al elemento
-	if ($product == "update") {				
+	if ($product == "update")
+	{				
 		$plan_id = 14;
-	} else 	if ($product == "scp") {
+	} else 	if ($product == "scp")
+	{
 		$plan_id = 12;	
-	} else 	if ($product == "trackactions") {
+	} else 	if ($product == "trackactions")
+	{
 		$plan_id = 17;
 	}
 							
@@ -1039,30 +1163,41 @@ function get_response($product,$downloadid) {
 	$response = curl_exec($ch);	
 	
 	// Si el campo obtenido no es numérico salimos
-	if ( !is_numeric($response) ) {
+	if (!is_numeric($response))
+	{
 		return;		
 	}	
 						
 	// Si el resultado de la petición es 'false' no podemos hacer nada
-	if($response === false) {		
+	if ($response === false)
+	{		
 				
-	} else {
-		if ( $response == "5" ) {
+	} else
+	{
+		if ($response == "5")
+		{
 			/* Hemos contactado y el código devuelto es '5'; establecemos la variable correspondiente a 'Active' */
-			if ($product == "update") {
+			if ($product == "update")
+			{
 				$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
-			} else if ($product == "scp") {
+			} else if ($product == "scp")
+			{
 				$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
-			} else if ($product == "trackactions") {
+			} else if ($product == "trackactions")
+			{
 				$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
 			}
-		} else if ( $response == "4" ) {
+		} else if ($response == "4")
+		{
 			/* Hemos contactado y el código devuelto es '4'; establecemos la variable correspondiente a 'Expired' */
-			if ($product == "update") {
+			if ($product == "update")
+			{
 				$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
-			} else if ($product == "scp") {
+			} else if ($product == "scp")
+			{
 				$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
-			} else if ($product == "trackactions") {
+			} else if ($product == "trackactions")
+			{
 				$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
 			}
 		}
@@ -1073,11 +1208,12 @@ function get_response($product,$downloadid) {
 }
 
 /* Función que determina el número de logs marcados como "no leido"*/
-function LogsPending() {
+function LogsPending()
+{
 		
 	$db = JFactory::getDBO();
 	$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE marked=0';
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	$enabled = $db->loadResult();
 	
@@ -1085,16 +1221,17 @@ function LogsPending() {
 }
 
 /* Borra las tablas #_sessions y #_securitycheckpro_sessions */
-function purge_sessions(){
+function purge_sessions()
+{
 	$db = JFactory::getDBO();
 	// Tabla 'sessions'
 	$query = 'TRUNCATE TABLE #__session' ;
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 	
 	// Tabla 'securitycheckpro_sessions'
 	$query = 'TRUNCATE TABLE #__securitycheckpro_sessions' ;
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$db->execute();
 }
 

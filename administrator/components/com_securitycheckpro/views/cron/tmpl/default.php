@@ -72,79 +72,35 @@ function periodicitylist( $name, $attribs = null, $selected = null, $id=false )
 	return JHTML::_('select.genericlist',  $arr, $name, 'class="chosen-select-no-single" onchange="Disable()"', 'value', 'text', (int) $selected, $id );
 }
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
+
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
 
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/cron.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
- <!-- Chosen styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">
-	// Añadimos la función Disable cuando se cargue la página para que deshabilite (o no) el desplegable del launching interval
-	jQuery(document).ready(function() {		
-		Disable();
-	});
-		
-	function Disable() {
-		//Obtenemos el índice de la periodicidad y los elementos de la opción launching interval
-		var element = adminForm.elements["periodicity"].selectedIndex;
-		var nodes = document.getElementById("launch_time").getElementsByTagName('*');
-		
-		// Si se seleccionan las horas, deshabilitamos los elementos del launching interval, puesto que no serán necesarios.
-		if ( element<5 ) {
-			$("#launch_time").hide();
-			$("#launch_time_description").hide();
-			$("#launch_time_alert").show();
-			$("#periodicity_description_normal").hide();
-			$("#periodicity_description_alert").show();
-		} else {
-			$("#launch_time").show();
-			$("#launch_time_description").show();
-			$("#launch_time_alert").hide();
-			$("#periodicity_description_normal").show();
-			$("#periodicity_description_alert").hide();
-		}
-		
-	}
-</script>
-
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=cron&'. JSession::getFormToken() .'=1');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=cron&'. JSession::getFormToken() .'=1');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 		<?php 
 		// Cargamos la navegación
@@ -178,14 +134,14 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 									<?php echo launchtimelist('launch_time', array(), $this->launch_time) ?>
 								</div>
 								<blockquote id="launch_time_description"><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CRON_LAUNCH_TIME_DESCRIPTION') ?></small></p></blockquote>
-								<blockquote id="launch_time_alert"><p class="text-info"><small><span style="color: red;"><?php echo JText::_('PLG_SECURITYCHECKPRO_LAUNCH_TIME_ALERT') ?></span></small></p></blockquote>
+								<blockquote id="launch_time_alert"><p class="text-info"><small><span class="red"><?php echo JText::_('PLG_SECURITYCHECKPRO_LAUNCH_TIME_ALERT') ?></span></small></p></blockquote>
 								
 								<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_CRON_PERIODICITY_LABEL'); ?></h4>										
 								<div class="controls" id="periodicity">
 									<?php echo periodicitylist('periodicity', array(), $this->periodicity) ?>
 								</div>
 								<blockquote id="periodicity_description_normal"><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_CRON_PERIODICITY_DESCRIPTION') ?></small></p></blockquote>				
-								<blockquote id="periodicity_description_alert"><p class="text-info"><small><span style="color: red;"><?php echo JText::_('PLG_SECURITYCHECKPRO_CRON_PERIODICITY_DESCRIPTION_ALERT') ?></span></small></p></blockquote>
+								<blockquote id="periodicity_description_alert"><p class="text-info"><small><span class="red"><?php echo JText::_('PLG_SECURITYCHECKPRO_CRON_PERIODICITY_DESCRIPTION_ALERT') ?></span></small></p></blockquote>
 							</div>
 						</div>
 					</div>					
@@ -193,16 +149,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			</div>
 		</div>
 </div>
-
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
-<!-- Chosen scripts -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/init.js"></script>
-
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

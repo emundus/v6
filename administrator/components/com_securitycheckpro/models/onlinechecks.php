@@ -36,12 +36,13 @@ protected function populateState()
 /*  Función para la paginación */
 function getPagination()
 {
-// Cargamos el contenido si es que no existe todavía
-if (empty($this->_pagination)) {
-	jimport('joomla.html.pagination');
-$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit') );
-}
-return $this->_pagination;
+	// Cargamos el contenido si es que no existe todavía
+	if (empty($this->_pagination))
+	{
+		jimport('joomla.html.pagination');
+		$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit'));
+	}
+	return $this->_pagination;
 }
 
 /* Ver un fichero de log */
@@ -56,13 +57,15 @@ public function view_log()
 		
 	$mainframe = JFactory::getApplication();
 	
-	if ( !empty($filename) && (count($filename) == 1) ) {	
+	if (!empty($filename) && (count($filename) == 1))
+	{	
 		// Establecemos la ruta donde están almacenados los escaneos
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
 		$file_content = file_get_contents($folder_path.$filename[0]);
 		$contenido = $mainframe->setUserState('contenido', $file_content);
 		
-	}else {
+	}else
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SELECT_ONLY_A_FILE'),'error');
 		$contenido = $mainframe->setUserState('contenido', "vacio");
 	}
@@ -88,28 +91,35 @@ public function delete_files()
 	// Establecemos la ruta donde están almacenados los escaneos
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
 	
-	if ( !empty($filenames) ) {	
-		foreach($filenames as $filename) {
+	if (!empty($filenames))
+	{	
+		foreach($filenames as $filename)
+		{
 			$delete_result = JFile::delete($folder_path.$filename);
-			if ( $delete_result ) {
+			if ($delete_result)
+			{
 				$sql = "DELETE FROM `#__securitycheckpro_online_checks` WHERE filename='{$filename}'";
 				$db->setQuery($sql);
 				$result = $db->execute();
 				
-				if ( $result ) {
+				if ($result)
+				{
 					$deleted_elements++;
 				}
-			}else {
+			}else
+			{
 				JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_DELETE_FILE_ERROR',$folder_path.$filename),'error');	
 			}
 			
 		}
 		
-		if ($deleted_elements > 0) {
+		if ($deleted_elements > 0) 
+		{
 			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_DELETED_FROM_LIST',$deleted_elements));
 		}
 		
-	}else {
+	}else
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'),'error');	
 	}
 
@@ -123,18 +133,20 @@ public function delete_files()
 	$uids = JRequest::getVar('cid', null, '', 'array');
 	JArrayHelper::toInteger($uids, array());
 	
-	foreach($uids as $uid) {
-				
+	foreach($uids as $uid)
+	{				
 		$sql = "DELETE FROM `#__securitycheckprocontrolcenter_websites` WHERE id='{$uid}'";
 		$db->setQuery($sql);
 		$result = $db->execute();
 		
-		if ( $result ) {
+		if ($result) 
+		{
 			$deleted_elements++;
 		}
 	}
 		
-	if ($deleted_elements > 0) {
+	if ($deleted_elements > 0) 
+	{
 		JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_CONTROL_CENTER_DELETED_ELEMENTS',$deleted_elements));
 	}
 		
@@ -162,10 +174,11 @@ public function load($key_name = null)
 	$search = htmlentities($filter_onlinechecks_search);
 	
 	/* Si el campo 'search' no está vacío, buscamos en todos los campos del array */			
-	if (!empty($search) ) {
+	if (!empty($search)) 
+	{
 		// Inicializamos el array
 		$filtered_array = array();
-		$filtered_array = array_values(array_filter($websites, function ($element) use ($search) { return ( (strstr($element[1],$search)) || (strstr($element[2],$search)) || (strstr($element[3],$search)) );} ));
+		$filtered_array = array_values(array_filter($websites, function ($element) use ($search) { return ((strstr($element[1],$search)) || (strstr($element[2],$search)) || (strstr($element[3],$search)));}));
 	
 		$websites = $filtered_array;		
 	} 
@@ -180,7 +193,8 @@ public function load($key_name = null)
 }
 
 /* Función para descargar el fichero de logs de archivos sospechosos */
-function download_log_file(){
+function download_log_file()
+{
 
 	// Creamos el objeto JInput para obtener las variables del formulario
 	$jinput = JFactory::getApplication()->input;
@@ -188,22 +202,24 @@ function download_log_file(){
 	// Obtenemos las rutas de los ficheros a analizar
 	$filename = $jinput->get('onlinechecks_logs_table',null,'array');
 	
-	if ( !empty($filename) && (count($filename) == 1) ) {		
+	if (!empty($filename) && (count($filename) == 1))
+	{		
 		// Establecemos la ruta donde se almacenarán los escaneos
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
 
-		header( 'Content-Description: File Transfer' );
-		header( 'Content-Type: application/octet-stream' );
-		header( 'Content-Disposition: attachment;filename=' . $filename[0] );
-		header( 'Expirer: 0' );
-		header( 'Cache-Control: must-revalidate' );
-		header( 'Pragma: public' );
-		header( 'Content-Lenght: ' . filesize($folder_path.$filename[0]) );
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/octet-stream');
+		header('Content-Disposition: attachment;filename=' . $filename[0]);
+		header('Expirer: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Lenght: ' . filesize($folder_path.$filename[0]));
 		ob_clean();
 		flush();
 		readfile($folder_path.$filename[0]);
 		exit;
-	}else {
+	}else
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SELECT_ONLY_A_FILE'),'error');	
 	}
 

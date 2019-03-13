@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -162,10 +162,10 @@ class FixPermissions extends Model
 
 		$db->setQuery($query)->execute();
 
-		$this->folderStack = array();
-		$this->filesStack = array();
-		$this->totalFolders = 0;
-		$this->doneFolders = 0;
+		$this->folderStack	= array();
+		$this->filesStack	= array();
+		$this->totalFolders	= 0;
+		$this->doneFolders	= 0;
 	}
 
 	/**
@@ -184,20 +184,20 @@ class FixPermissions extends Model
 
 		if (empty($stack))
 		{
-			$this->folderStack = array();
-			$this->filesStack = array();
-			$this->totalFolders = 0;
-			$this->doneFolders = 0;
+			$this->folderStack	= array();
+			$this->filesStack	= array();
+			$this->totalFolders	= 0;
+			$this->doneFolders	= 0;
 
 			return;
 		}
 
 		$stack = json_decode($stack, true);
 
-		$this->folderStack = $stack['folders'];
-		$this->filesStack = $stack['files'];
-		$this->totalFolders = $stack['total'];
-		$this->doneFolders = $stack['done'];
+		$this->folderStack	= $stack['folders'];
+		$this->filesStack	= $stack['files'];
+		$this->totalFolders	= $stack['total'];
+		$this->doneFolders	= $stack['done'];
 	}
 
 	/**

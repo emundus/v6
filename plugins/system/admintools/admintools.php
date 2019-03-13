@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -27,25 +27,9 @@ else
 	$version = '5.0.0'; // all bets are off!
 }
 
-if (!version_compare($version, '5.4.0', '>='))
+if (!version_compare($version, '5.6.0', '>='))
 {
 	return;
-}
-
-// Why, oh why, are you people using eAccelerator? Seriously, what's wrong with you, people?!
-if (function_exists('eaccelerator_info'))
-{
-	$isBrokenCachingEnabled = true;
-
-	if (function_exists('ini_get') && !ini_get('eaccelerator.enable'))
-	{
-		$isBrokenCachingEnabled = false;
-	}
-
-	if ($isBrokenCachingEnabled)
-	{
-		return;
-	}
 }
 
 // Include and initialise Admin Tools System Plugin autoloader

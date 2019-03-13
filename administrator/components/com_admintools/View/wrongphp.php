@@ -1,13 +1,16 @@
 <?php
 /**
- * @package   AkeebaBackup
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
+// Protect from unauthorized access
+defined('_JEXEC') or die();
+
 // PHP 5.6 is modern enough. Anything else gets a warning.
-$minPHPVersion = '5.4.0';
-$recommendedPHPVersion = '5.6.0';
+$minPHPVersion = '5.6.0';
+$recommendedPHPVersion = '7.2.0';
 
 if (!version_compare(PHP_VERSION, $minPHPVersion, 'lt'))
 {
@@ -50,6 +53,11 @@ elseif (version_compare(PHP_VERSION, '7.2.0', 'lt'))
 elseif (version_compare(PHP_VERSION, '7.3.0', 'lt'))
 {
 	$akeebaCommonDatePHP = new DateTime('2020-11-30 00:00:00', $tx);
+}
+// PHP 7.3
+elseif (version_compare(PHP_VERSION, '7.4.0', 'lt'))
+{
+	$akeebaCommonDatePHP = new DateTime('2021-12-6 00:00:00', $tx);
 }
 
 ?>

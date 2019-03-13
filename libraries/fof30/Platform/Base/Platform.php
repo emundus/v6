@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -344,6 +344,11 @@ abstract class Platform implements PlatformInterface
 	 * @return  void
 	 */
 	public function logDeprecated($message)
+	{
+		// The default implementation does nothing. Override this in your platform classes.
+	}
+
+	public function logUserAction($title, $logText, $extension)
 	{
 		// The default implementation does nothing. Override this in your platform classes.
 	}

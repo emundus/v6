@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -32,7 +32,14 @@ $uriBase = rtrim(JUri::base(), '/');
             <?php endif; ?>
         <?php endif; ?>
 
-        <a href="index.php?option=com_admintools&view=SEOAndLinkTools" class="akeeba-action--teal">
+	    <?php if ($this->isPro): ?>
+		<a href="index.php?option=com_admintools&view=TempSuperUsers" class="akeeba-action--teal">
+			<span class="akion-clock"></span>
+		    <?php echo \JText::_('COM_ADMINTOOLS_TITLE_TEMPSUPERUSERS'); ?>
+		</a>
+		<?php endif; ?>
+
+		<a href="index.php?option=com_admintools&view=SEOAndLinkTools" class="akeeba-action--teal">
             <span class="akion-link"></span>
             <?php echo \JText::_('COM_ADMINTOOLS_TITLE_SEOANDLINK'); ?>
         </a>

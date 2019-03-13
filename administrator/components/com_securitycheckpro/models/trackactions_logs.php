@@ -224,19 +224,22 @@ public function getListQuery()
 	}
 
 /* Función para borrar un array de logs */
-function delete(){
+function delete()
+{
 	$uids = JRequest::getVar('cid', null, '', 'array');
 	
 	JArrayHelper::toInteger($uids, array());
 	
 	// Chequeamos si se ha seleccionado algún elemento
-	if ( empty($uids) ) {
+	if (empty($uids))
+	{
 		JError::raiseWarning(500, JText::_("COM_SECURITYCHECKPRO_NO_ELEMENTS_SELECTED"));
 		return false;
 	}
 	
 	$db = $this->getDbo();
-	foreach($uids as $uid) {
+	foreach($uids as $uid)
+	{
 		$sql = "DELETE FROM `#__securitycheckpro_trackactions` WHERE id='{$uid}'";
 		$db->setQuery($sql);
 		$db->execute();	
@@ -244,7 +247,8 @@ function delete(){
 }
 
 /* Función para runcar una tabla */
-function delete_all(){
+function delete_all()
+{
 	$db = $this->getDbo();
 	
 	$sql = "TRUNCATE table `#__securitycheckpro_trackactions`";

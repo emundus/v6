@@ -26,7 +26,8 @@ protected $info = null;
  */
 public function &getInfo()
 {
-	if (is_null($this->info)){
+	if (is_null($this->info))
+	{
 		$this->info = array();
 		$version = new JVersion;
 		$db = JFactory::getDBO();
@@ -98,91 +99,119 @@ public function &getInfo()
 }
 
 // Obtiene el porcentaje general de cada una de las barras de progreso
-public function getOverall($info,$opcion) {
+public function getOverall($info,$opcion)
+{
 	// Inicializamos variables
 	$overall = 0;
 	
-	switch ($opcion) {
+	switch ($opcion)
+	{
 		// Porcentaje de progreso de  Joomla Configuration
 		case 1:
-			if ( $info['kickstart_exists'] ) {
+			if ($info['kickstart_exists'])
+			{
 				return 2;
 			}
-			if ( version_compare($info['coreinstalled'],$info['corelatest'],'==') ) {
+			if (version_compare($info['coreinstalled'],$info['corelatest'],'=='))
+			{
 				$overall = $overall + 4;
 			}
-			if ( $info['files_with_incorrect_permissions'] == 0 ) {
+			if ($info['files_with_incorrect_permissions'] == 0)
+			{
 				$overall = $overall + 5;
 			}
-			if ( $info['files_with_bad_integrity'] == 0 ) {
+			if ($info['files_with_bad_integrity'] == 0)
+			{
 				$overall = $overall + 10;
 			}
-			if ( $info['vuln_extensions'] == 0 ) {
+			if ($info['vuln_extensions'] == 0)
+			{
 				$overall = $overall + 30;
 			}
-			if ( $info['suspicious_files'] == 0 ) {
+			if ($info['suspicious_files'] == 0)
+			{
 				$overall = $overall + 20;
 			}
-			if ( $info['backend_protection'] ) {
+			if ($info['backend_protection'])
+			{
 				$overall = $overall + 10;
 			}
-			if ( $info['firewall_options']['forbid_new_admins'] == 1 ) {
+			if ($info['firewall_options']['forbid_new_admins'] == 1)
+			{
 				$overall = $overall + 5;
 			}			
-			if ( $info['twofactor_enabled'] >= 1 ) {
+			if ($info['twofactor_enabled'] >= 1)
+			{
 				$overall = $overall + 10;
 			}
-			if ( $info['htaccess_protection']['xframe_options'] == 1 ) {
+			if ($info['htaccess_protection']['xframe_options'] == 1)
+			{
 				$overall = $overall + 1;
 			}
-			if ( $info['htaccess_protection']['sts_options'] == 1 ) {
+			if ($info['htaccess_protection']['sts_options'] == 1)
+			{
 				$overall = $overall + 1;
 			}
-			if ( $info['htaccess_protection']['xss_options'] == 1 ) {
+			if ($info['htaccess_protection']['xss_options'] == 1)
+			{
 				$overall = $overall + 1;
 			}
-			if ( $info['htaccess_protection']['csp_policy'] == 1 ) {
+			if ($info['htaccess_protection']['csp_policy'] == 1)
+			{
 				$overall = $overall + 1;
 			}
-			if ( $info['htaccess_protection']['referrer_policy'] == 1 ) {
+			if ($info['htaccess_protection']['referrer_policy'] == 1)
+			{
 				$overall = $overall + 1;
 			}
-			if ( $info['htaccess_protection']['prevent_mime_attacks'] == 1 ) {
+			if ($info['htaccess_protection']['prevent_mime_attacks'] == 1)
+			{
 				$overall = $overall + 1;
 			}
 			break;
 		case 2:
-			if ( $info['firewall_plugin_enabled'] ) {
+			if ($info['firewall_plugin_enabled'])
+			{
 				$overall = $overall + 10;				
 				// Configuración del firewall
-				if ( $info['firewall_options']['dynamic_blacklist'] ) {
+				if ($info['firewall_options']['dynamic_blacklist'])
+				{
 					$overall = $overall + 10;					
 				}
-				if ( $info['firewall_options']['logs_attacks'] ) {
+				if ($info['firewall_options']['logs_attacks'])
+				{
 					$overall = $overall + 2;					
 				}
-				if ( $info['firewall_options']['second_level'] ) {
+				if ($info['firewall_options']['second_level'])
+				{
 					$overall = $overall + 2;					
 				}
-				if ( !(strstr($info['firewall_options']['strip_tags_exceptions'],'*')) ) {
+				if (!(strstr($info['firewall_options']['strip_tags_exceptions'],'*')))
+				{
 					$overall = $overall + 4;					
 				}
-				if ( !(strstr($info['firewall_options']['sql_pattern_exceptions'],'*')) ) {
+				if (!(strstr($info['firewall_options']['sql_pattern_exceptions'],'*')))
+				{
 					$overall = $overall + 4;										
 				}
-				if ( !(strstr($info['firewall_options']['lfi_exceptions'],'*')) ) {
+				if (!(strstr($info['firewall_options']['lfi_exceptions'],'*')))
+				{
 					$overall = $overall + 4;										
 				}
-				if ( $info['firewall_options']['session_protection_active'] ) {
+				if ($info['firewall_options']['session_protection_active'])
+				{
 					$overall = $overall + 2;					
 				}
-				if ( $info['firewall_options']['session_hijack_protection'] ) {
+				if ($info['firewall_options']['session_hijack_protection'])
+				{
 					$overall = $overall + 2;					
 				}
-				if ( $info['firewall_options']['upload_scanner_enabled'] ) {
+				if ($info['firewall_options']['upload_scanner_enabled']) 
+				{
 					$overall = $overall + 4;					
 				}
-				if ( $info['spam_protection_plugin_enabled'] ) {
+				if ($info['spam_protection_plugin_enabled'])
+				{
 					$overall = $overall + 2;					
 				}
 				
@@ -193,9 +222,11 @@ public function getOverall($info,$opcion) {
 				// Extraemos los días que han pasado desde el último chequeo
 				(int) $interval = $now->diff($last_check)->format("%a");
 																		
-				if ( $interval < 2 ) {
+				if ($interval < 2)
+				{
 					$overall = $overall + 10;					
-				} else {
+				} else
+				{
 					
 				}
 				
@@ -205,44 +236,55 @@ public function getOverall($info,$opcion) {
 				// Extraemos los días que han pasado desde el último chequeo
 				(int) $interval = $now->diff($last_check_integrity)->format("%a");
 																		
-				if ( $interval < 2 ) {
+				if ($interval < 2)
+				{
 					$overall = $overall + 10;					
-				} else {
+				} else
+				{
 					
 				}
 				// Htaccess protection
-				if ( $info['htaccess_protection']['prevent_access'] ) {
+				if ($info['htaccess_protection']['prevent_access'])
+				{
 					$overall = $overall + 6;					
 				}
-				if ( $info['htaccess_protection']['prevent_unauthorized_browsing'] ) {
+				if ($info['htaccess_protection']['prevent_unauthorized_browsing'])
+				{
 					$overall = $overall + 4;
 				}
-				if ( $info['htaccess_protection']['file_injection_protection'] ) {
+				if ($info['htaccess_protection']['file_injection_protection'])
+				{
 					$overall = $overall + 4;
 				}
-				if ( $info['htaccess_protection']['self_environ'] ) {
+				if ($info['htaccess_protection']['self_environ']) {
 					$overall = $overall + 4;
 				}
-				if ( $info['htaccess_protection']['xframe_options'] ) {
+				if ($info['htaccess_protection']['xframe_options'])
+				{
 					$overall = $overall + 2;
 				}
-				if ( $info['htaccess_protection']['prevent_mime_attacks'] ) {
+				if ($info['htaccess_protection']['prevent_mime_attacks'])
+				{
 					$overall = $overall + 2;
 				}
-				if ( $info['htaccess_protection']['default_banned_list'] ) {
+				if ($info['htaccess_protection']['default_banned_list'])
+				{
 					$overall = $overall + 3;
 				}
-				if ( $info['htaccess_protection']['disable_server_signature'] ) {
+				if ($info['htaccess_protection']['disable_server_signature'])
+				{
 					$overall = $overall + 3;
 				}
-				if ( $info['htaccess_protection']['disallow_php_eggs'] ) {
+				if ($info['htaccess_protection']['disallow_php_eggs']) 
+				{
 					$overall = $overall + 3;					
 				}
-				if ( $info['htaccess_protection']['disallow_sensible_files_access'] ) {
+				if ($info['htaccess_protection']['disallow_sensible_files_access'])
+				{
 					$overall = $overall + 3;					
-				}
-					
-			} else {
+				}					
+			} else 
+			{
 				return 2;
 			}
 			break;		

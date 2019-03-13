@@ -1,4 +1,21 @@
 <?php die() ?>
+Admin Tools 5.3.0
+================================================================================
++ Protection of all component and plugin folders against direct web access
++ Disable access to backend users who haven't logged in for a long time (gh-188)
++ Updated default list of blocked User Agents
++ Joomla! 4 alpha 7 compatibility
+~ Added PHP malware samples in the PHP File Change Scanner
+# [LOW] Failed Login log entries would be deleted on upgrade even if they don't contained plaintext passwords
+
+Admin Tools 5.2.1
+================================================================================
++ Mark All as Safe button in the PHP File Change Scanner report viewer
+# [MEDIUM] Super User list not cleared on deactivating the Monitor Super Users feature, requiring you to edit every Super User added in the meantime after re-enabling the feature
+# [LOW] Fixed a fatal error if a security exception is triggered in the backend while using HTML templates
+# [LOW] PHP File Change Scanner page: Possible Threats column included "Marked as Safe" files.
+# [LOW] PHP File Change Scanner, Examine file view: pressing Cancel took you to a page with no records displayed
+
 Admin Tools 5.2.0
 ================================================================================
 + Referrer Policy option for web.config Maker

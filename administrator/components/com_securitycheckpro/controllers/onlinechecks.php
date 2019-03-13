@@ -8,7 +8,7 @@
  */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 // Load framework base classes
 jimport('joomla.application.component.controller');
@@ -20,12 +20,14 @@ jimport('joomla.application.component.controller');
 class SecuritycheckprosControllerOnlineChecks extends SecuritycheckproController
 {
 
-public function  __construct() {
+public function  __construct()
+{
 		parent::__construct();	
 		
 		$task = JFactory::getApplication()->input->get('task', null);
 										
-		if ( $task != "view_file") {
+		if ($task != "view_file")
+		{
 			$mainframe = JFactory::getApplication();
 			// Si la tarea es distinta a "view_file" inicializamos la variable de estado 'contenido'
 			$mainframe->setUserState('contenido', "vacio");		

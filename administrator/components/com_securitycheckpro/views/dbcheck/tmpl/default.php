@@ -11,151 +11,33 @@
 defined('_JEXEC') or die('Restricted access');
 JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 $opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
 JHTML::stylesheet($opa_icons);
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
+
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/dbcheck.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet">
-
-<script type="text/javascript" language="javascript">
-	jQuery(document).ready(function() {			
-		//Tooltips
-		jQuery("#show_tables").tooltip();
-	});
-</script>
-
-<script type="text/javascript">
-	requestTimeOut = {};
-	requestTimeOut.Seconds = 60;
-
-	
-	Database = {};
-	Database.Check = {
-		unhide: function(item) {
-			return $(item).removeClass('hidden');
-		},
-		tables: [],
-		tablesNum: 0,
-		table: '',
-		content: '',
-		prefix: '',
-		startCheck: function() {
-			this.table 	 = $('#' + this.prefix + '-table');
-			this.content = $('#' + this.prefix);
-			if (!this.tables.length) {
-				return false;
-			}
-			
-			this.unhide(this.content);
-			this.content.hide().show('fast', function() {
-				Database.Check.stepCheck(0);
-			});
-		},
-		stopCheck: function() {
-			
-		},
-		setProgress: function(index) {
-			if ($('#' + this.prefix + '-progress .securitycheckpro-bar').length > 0) {
-				var currentProgress = (100 / this.tablesNum) * index;
-				$('#' + this.prefix + '-progress .securitycheckpro-bar').css('width', currentProgress + '%');				
-			}
-		},
-		stepCheck: function(index) {
-			this.setProgress(index);
-			if (!this.tables || !this.tables.length) {
-				this.stopCheck();
-				return false;
-			}
-			
-			this.unhide(this.table.find('tr')[index+1]);
-			
-						
-			var jArray= <?php echo json_encode($this->tables ); ?>;
-			var table = jArray[index]['Name'];
-			var engine = jArray[index]['Engine'];
-			$.ajax({
-				type: 'POST',
-				url: 'index.php?option=com_securitycheckpro&controller=dbcheck',
-				data: {
-					task: 'optimize',
-					table: table,
-					engine: engine,
-					sid: Math.random()
-				},
-				success: function(data) {
-					$('#result' + index).html(data);
-					if (requestTimeOut.Seconds != 0) {	
-						setTimeout(function(){Database.Check.stepCheck(index+1)}, 60);						
-					}
-					else {						
-						Database.Check.stepCheck(index+1);						
-					}
-				}
-			});
-		}
-	}
-	
-	
-	// DB Check
-	function StartDbCheck() {
-		hideElement('buttondatabase');
-		
-		Database.Check.unhide('#securitycheck-bootstrap-database');
-				
-		Database.Check.prefix = 'securitycheck-bootstrap-database';
-		Database.Check.tables = [];
-		<?php krsort($this->tables); ?>
-		<?php foreach ($this->tables as $table) { ?>
-		Database.Check.tables.push('<?php echo addslashes($table->Name); ?>');
-		<?php } ?>
-		Database.Check.tablesNum = Database.Check.tables.length;
-		
-		Database.Check.stopCheck = function() {
-			$('#securitycheck-bootstrap-database-progress').fadeOut('fast', function(){$(this).remove()});			
-		}
-		
-		Database.Check.startCheck();	
-	}
-</script>
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=dbcheck');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=dbcheck');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
 
 		<?php 
 		// Cargamos la navegación
@@ -179,8 +61,8 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					<div class="card text-center">						
 						<div class="card-body">						
 							<span class="sc-icon32 sc-icon-orange sc-icon-search"></span>
-							<div style="margin-top: 5px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_SHOW_TABLES' ); ?></div>
-							<div style="margin-top: 5px;"><span class="label label-info"><?php echo $this->show_tables; ?></span></div>													             
+							<div class="margin-top-5"><?php echo JText::_( 'COM_SECURITYCHECKPRO_SHOW_TABLES' ); ?></div>
+							<div class="margin-top-5"><span class="label label-info"><?php echo $this->show_tables; ?></span></div>													             
 						</div>
 						<div class="card-footer">
 							<a href="#" id="show_tables" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_DB_CONTENT' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
@@ -192,8 +74,8 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 					<div class="card text-center">						
 						<div class="card-body">						
 							<span class="sc-icon32 sc-icon-orange sc-icon-date"></span>
-							<div style="margin-top: 5px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_LABEL' ); ?></div>
-							<div style="margin-top: 5px;"><span class="label label-info"><?php echo $this->last_check_database; ?></span></div>
+							<div class="margin-top-5"><?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_LABEL' ); ?></div>
+							<div class="margin-top-5"><span class="label label-info"><?php echo $this->last_check_database; ?></span></div>
 						</div>
 						<div class="card-footer">
 							<a href="#" id="show_tables" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_DESCRIPTION' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
@@ -209,13 +91,13 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 						</div>
 						<div class="card-body">
 							<div id="buttondatabase" class="text-center">
-								<button class="btn btn-primary" type="button" onclick="StartDbCheck();"><i class="fapro fa-fw fa-fire"> </i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
+								<button class="btn btn-primary" id="start_db_check" type="button"><i class="fapro fa-fw fa-fire"> </i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
 							</div>
 							
 							<div id="securitycheck-bootstrap-main-content">		
 								<div id="securitycheck-bootstrap-database" class="securitycheck-bootstrap-content-box hidden">
 									<div class="securitycheck-bootstrap-content-box-content">
-										<div class="securitycheck-bootstrap-progress" id="securitycheck-bootstrap-database-progress"><div class="securitycheckpro-bar" style="width: 0%;"></div></div>
+										<div class="securitycheck-bootstrap-progress" id="securitycheck-bootstrap-database-progress"><div class="securitycheckpro-bar" class="width-0"></div></div>
 										<table id="securitycheck-bootstrap-database-table">
 											<thead>
 												<tr>
@@ -278,12 +160,6 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 			<?php } ?>			
 		</div>
 </div>	
-
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />
