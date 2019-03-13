@@ -824,7 +824,7 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -833,6 +833,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+    if (empty($file_lbl)) {
+    	$file_lbl = "_application";
+    }
 
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
@@ -843,13 +847,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $db 			= JFactory::getDBO();
     $app 			= JFactory::getApplication();
-    //$eMConfig 		= JComponentHelper::getParams('com_emundus');
     $current_user 	= JFactory::getUser();
     $user 			= $m_profile->getEmundusUser($user_id);
     $fnum 			= empty($fnum)?$user->fnum:$fnum;
-
-    //$export_pdf = $eMConfig->get('export_pdf');
-    //$user_profile = $m_users->getCurrentUserProfile($user_id);
 
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
@@ -1118,10 +1118,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $data 	= array('key' => $keys, 'value' => $values);
             $m_application->uploadAttachment($data);
         } else {
-            $pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'FI');
+            $pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.$file_lbl.'.pdf', 'FI');
         }
     } else {
-        $pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'F');
+        $pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.$file_lbl.'.pdf', 'F');
     }
 }
 
