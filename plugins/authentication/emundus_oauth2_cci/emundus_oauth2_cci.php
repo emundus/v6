@@ -91,7 +91,8 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 				$response->isnew = empty(JUserHelper::getUserId($body->preferred_username));
 				$response->error_message = '';
 
-				if ($user = new JUser(JUserHelper::getUserId($body->preferred_username)) && ($user->get('block') || $user->get('activation'))) {
+                $user = new JUser(JUserHelper::getUserId($body->preferred_username));
+				if ($user->get('block') || $user->get('activation')) {
 					$response->status = JAuthentication::STATUS_FAILURE;
 					$response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
 					return false;
