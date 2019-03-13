@@ -89,20 +89,38 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 		$m_profile = new EmundusModelProfile();
-		$m_campaign = new EmundusModelProfile();
 		$m_emails = new EmundusModelEmails();
+		$m_files = new EmundusModelFiles();
 
 		$student = JFactory::getSession()->get('emundusUser');
+		$fnum = $m_files->getFnumInfos($student->fnum);
 
 		// These tags will be used for generating signer names and emails programmatically.
 		$post = ['USER_NAME' => $student->name, 'USER_EMAIL' => $student->email];
 		$tags = $m_emails->setTags($student->id, $post);
 
 		// Docusign OAuth credentials are saved in the plugin's params.
-		$token = $this->getParam('token');
-		$account_id = $this->getParam('account_id');
 		$host = $this->getParam('host');
+
+		$attachment_id = $this->getParam('attachment_id');
+		if (empty($attachment_id)) {
+			return;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('lbl'))
+			->from($db->quoteName('#__emundus_setup_attachments'))
+			->where($db->quoteName('id').' = '.$attachment_id);
+		$db->setQuery($query);
+		try {
+			$attachment_label = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting attachment label in plugin/docusign at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
 
 		// Signer names and emails can be generated using Fabrik ID tags (ex: ${2302}) or standard tags (ex: [USER_NAME]).
 		$signer_name_1 = $this->getParam('signer_name_1');
@@ -121,17 +139,27 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			$signer_email_1 = preg_replace($tags['patterns'], $tags['replacements'], $signer_email_1);
 			$signer_email_1 = $m_emails->setTagsFabrik($signer_email_1, array($student->fnum));
 
-			$signer = new DocuSign\eSign\Model\Signer(['email' => $signer_email_1, 'name' => $signer_name_1, 'recipient_id' => "1", 'routing_order' => "1"]);
-
-			// TODO: Work out signature positioning.
+			$signer = new DocuSign\eSign\Model\Signer([
+				'email' => $signer_email_1, 
+				'name' => $signer_name_1, 
+				'recipient_id' => "1", 
+				'routing_order' => "1"
+			]);
+			
 			$signTab = new DocuSign\eSign\Model\SignHere([
-				'document_id' => '1', 'page_number' => '1', 'recipient_id' => '1',
-				'tab_label' => 'Signature 1', 'x_position' => '195', 'y_position' => '147'
+				'document_id' => '1',
+				'page_number' => '1',
+				'recipient_id' => '1',
+				'tab_label' => 'Signature 1',
+				'anchorString' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_1_ANCHOR'),
+				'anchorXOffset' => '0',
+				'anchorYOffset' => '-10',
+				'anchorUnits' => 'mms'
 			]);
 
 			// Add the tabs to the signer object
 			// The Tabs object wants arrays of the different field/tab types
-			$signer->setTabs(new DocuSign\eSign\Model\Tabs(['sign_here_tabs' => $signTab]));
+			$signer->setTabs(new DocuSign\eSign\Model\Tabs(['sign_here_tabs' => [$signTab]]));
 			$signers[] = $signer;
 			unset($signer, $signTab);
 		}
@@ -144,17 +172,27 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			$signer_email_2 = preg_replace($tags['patterns'], $tags['replacements'], $signer_email_2);
 			$signer_email_2 = $m_emails->setTagsFabrik($signer_email_2, array($student->fnum));
 
-			$signer = new DocuSign\eSign\Model\Signer(['email' => $signer_email_2, 'name' => $signer_name_2, 'recipient_id' => "2", 'routing_order' => "2"]);
-
-			// TODO: Work out signature positioning.
+			$signer = new DocuSign\eSign\Model\Signer([
+				'email' => $signer_email_2, 
+				'name' => $signer_name_2, 
+				'recipient_id' => "2", 
+				'routing_order' => "2"
+			]);
+			
 			$signTab = new DocuSign\eSign\Model\SignHere([
-				'document_id' => '1', 'page_number' => '1', 'recipient_id' => '2',
-				'tab_label' => 'Signature 2', 'x_position' => '195', 'y_position' => '147'
+				'document_id' => '1',
+				'page_number' => '1',
+				'recipient_id' => '2',
+				'tab_label' => 'Signature 2',
+				'anchorString' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_2_ANCHOR'),
+				'anchorXOffset' => '0',
+				'anchorYOffset' => '-10',
+				'anchorUnits' => 'mms'
 			]);
 
 			// Add the tabs to the signer object
 			// The Tabs object wants arrays of the different field/tab types
-			$signer->setTabs(new DocuSign\eSign\Model\Tabs(['sign_here_tabs' => $signTab]));
+			$signer->setTabs(new DocuSign\eSign\Model\Tabs(['sign_here_tabs' => [$signTab]]));
 			$signers[] = $signer;
 			unset($signer, $signTab);
 		}
@@ -167,17 +205,27 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			$signer_email_3 = preg_replace($tags['patterns'], $tags['replacements'], $signer_email_3);
 			$signer_email_3 = $m_emails->setTagsFabrik($signer_email_3, array($student->fnum));
 
-			$signer = new DocuSign\eSign\Model\Signer(['email' => $signer_email_3, 'name' => $signer_name_3, 'recipient_id' => "3", 'routing_order' => "3"]);
-
-			// TODO: Work out signature positioning.
+			$signer = new DocuSign\eSign\Model\Signer([
+				'email' => $signer_email_3, 
+				'name' => $signer_name_3, 
+				'recipient_id' => "3", 
+				'routing_order' => "3"
+			]);
+			
 			$signTab = new DocuSign\eSign\Model\SignHere([
-				'document_id' => '1', 'page_number' => '1', 'recipient_id' => '3',
-				'tab_label' => 'Signature 3', 'x_position' => '195', 'y_position' => '147'
+				'document_id' => '1',
+				'page_number' => '1',
+				'recipient_id' => '3',
+				'tab_label' => 'Signature 3',
+				'anchorString' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_3_ANCHOR'),
+				'anchorXOffset' => '0',
+				'anchorYOffset' => '-10',
+				'anchorUnits' => 'mms'
 			]);
 
 			// Add the tabs to the signer object
 			// The Tabs object wants arrays of the different field/tab types
-			$signer->setTabs(new DocuSign\eSign\Model\Tabs(['sign_here_tabs' => $signTab]));
+			$signer->setTabs(new DocuSign\eSign\Model\Tabs(['sign_here_tabs' => [$signTab]]));
 			$signers[] = $signer;
 			unset($signer, $signTab);
 		}
@@ -195,14 +243,15 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		}
 		$profile_id = $m_profile->getProfileByFnum($student->fnum);
 		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-		application_form_pdf($student->id, $student->fnum, true, 1, null, null, null, $profile_id);
-		$fileNamePath = EMUNDUS_PATH_ABS.$student->id.DS.$student->fnum.'_application.pdf';
+		application_form_pdf($student->id, $student->fnum, false, 1, null, null, null, $profile_id, $attachment_label);
+		$fileName = $student->fnum.$attachment_label.'.pdf';
+		$fileNamePath = EMUNDUS_PATH_ABS.$student->id.DS.$fileName;
 		$base64FileContent = base64_encode(file_get_contents($fileNamePath));
 
 		// create the DocuSign document object
 		$document = new DocuSign\eSign\Model\Document([
 			'document_base64' => $base64FileContent,
-			'name' => 'eMundus digital signature',
+			'name' => JFactory::getConfig()->get('sitename'),
 			'file_extension' => 'pdf',
 			'document_id' => '1'
 		]);
@@ -218,17 +267,75 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		// Step 2. Create/send the envelope.
 		$config = new DocuSign\eSign\Configuration();
 		$config->setHost($host);
-		$config->addDefaultHeader("Authorization", "Bearer " . $token);
+		$config->addDefaultHeader("X-DocuSign-Authentication", "{\"Username\":\"".$this->getParam('username')."\",\"Password\":\"".$this->getParam('password')."\",\"IntegratorKey\":\"".$this->getParam('integrator_key')."\"}");
 		$apiClient = new DocuSign\eSign\ApiClient($config);
-		$envelopeApi = new DocuSign\eSign\Api\EnvelopesApi($apiClient);
 
+		//*** STEP 1 - Login API: get first Account ID and baseURL
+		$authenticationApi = new DocuSign\eSign\Api\AuthenticationApi($apiClient);
+		$options = new \DocuSign\eSign\Api\AuthenticationApi\LoginOptions();
 		try {
-			$results = $envelopeApi->createEnvelope($account_id, $envelopeDefinition);
+			$loginInformation = $authenticationApi->login($options);
 		} catch (DocuSign\eSign\ApiException $e) {
-			JLog::add('Error creating DocuSign envelope -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error logging in to API -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			try {
+				JFactory::getApplication()->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SEND_ERROR'));
+			} catch (Exception $e) {
+				JLog::add('Error initiating JApplication in plugin/docusign -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+			return;
 		}
 
-		echo '<pre>'; var_dump($results); echo '</pre>'; die;
+		if (!empty($loginInformation)) {
+			$loginAccount = $loginInformation->getLoginAccounts()[0];
+			$host = $loginAccount->getBaseUrl();
+			$host = explode("/v2",$host);
+			$host = $host[0];
+
+			// UPDATE configuration object
+			$config->setHost($host);
+
+			// instantiate a NEW docusign api client (that has the correct baseUrl/host)
+			$apiClient = new DocuSign\eSign\ApiClient($config);
+
+			$account_id = $loginAccount->getAccountId();
+			if (!empty($account_id)) {
+				$envelopeApi = new DocuSign\eSign\Api\EnvelopesApi($apiClient);
+				try {
+					$results = $envelopeApi->createEnvelope($account_id, $envelopeDefinition);
+				} catch (DocuSign\eSign\ApiException $e) {
+					JLog::add('Error creating DocuSign envelope -> '.$e->getResponseBody()->message, JLog::ERROR, 'com_emundus');
+					try {
+						JFactory::getApplication()->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SEND_ERROR'));
+					} catch (Exception $e) {
+						JLog::add('Error initiating JApplication in plugin/docusign -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					}
+					return;
+				}
+
+				// Docusign envelope has been sent, now adding it to the eMundus data model.
+				$query->clear()
+					->insert($db->quoteName('#__emundus_uploads'))
+					->columns($db->quoteName(['user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename']))
+					->values('62, '.$db->quote($student->fnum).', '.$fnum['id'].', '.$attachment_id.', '.$db->quote($fileName));
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					JLog::add('Error adding upload to table in plugin/docusign at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				}
+
+				$query->clear()
+					->insert($db->quoteName('#__emundus_files_request'))
+					->columns($db->quoteName(['time_date', 'student_id', 'fnum', 'keyid', 'attachment_id', 'filename', 'campaign_id', 'email', 'email_other']))
+					->values($db->quote(date('Y-m-d H:i:s', strtotime($results->getStatusDateTime()))).', '.$student->id.', '.$db->quote($student->fnum).', '.$db->quote($results->getEnvelopeId()).', '.$attachment_id.', '.$db->quote($fileName).', '.$fnum['id'].', '.$db->quote($signer_email_1).', '.$db->quote($signer_email_2));
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					JLog::add('Error adding file_request to table in plugin/docusign at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				}
+			}
+		}
 	}
 
 	/**
