@@ -257,7 +257,7 @@ endif;
                 if (isConfirm.value == true) {
                     jQuery.ajax({
                         type: "post",
-                        url: "<?php echo $rows[0]->data->fabrik_view_url; ?>",
+                        url: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? 'index.php?option=com_emundus&controller=formations&task=deleteassociate' : 'index.php?option=com_emundus&controller=formations&task=deletecompany'; ?>",
                         dataType: 'json',
                         data : ({
                             id: jQuery(that).data("id"),
