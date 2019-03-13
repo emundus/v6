@@ -234,9 +234,11 @@ class plgUserEmundus extends JPlugin
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
             $previous_url = base64_decode($return_url['return']);
             if (empty($previous_url)) {
-                $return_url = $jinput->POST->getVar('return');
-                $previous_url = base64_decode($return_url);
+                $previous_url = base64_decode($jinput->POST->getVar('return'));
             }
+	        if (empty($previous_url)) {
+		        $previous_url = base64_decode($return_url['redirect']);
+	        }
         } else {
             $previous_url = base64_decode($redirect);
         }
@@ -264,6 +266,14 @@ class plgUserEmundus extends JPlugin
 			        $o_user->save();
 			        $user['password'] = $pass;
 			        unset($pass, $password);
+
+			        // Set the user table instance to not block the user.
+			        $table = JTable::getInstance('user', 'JTable');
+			        $table->load(JFactory::getUser()->id);
+			        $table->block = 0;
+			        if (!$table->store()) {
+				        throw new RuntimeException($table->getError());
+			        }
 
 			        JPluginHelper::importPlugin('authentication');
 			        $dispatcher = JEventDispatcher::getInstance();

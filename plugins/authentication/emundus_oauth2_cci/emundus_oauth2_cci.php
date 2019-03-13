@@ -91,18 +91,21 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 				$response->isnew = empty(JUserHelper::getUserId($body->preferred_username));
 				$response->error_message = '';
 
-				if ($user = new JUser(JUserHelper::getUserId($body->preferred_username)) && ($user->get('block') || $user->get('activation'))) {
+                $user = new JUser(JUserHelper::getUserId($body->preferred_username));
+				if ($user->get('block') || $user->get('activation')) {
 					$response->status = JAuthentication::STATUS_FAILURE;
 					$response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
 					return false;
 				}
 
+				return true;
 			} catch (Exception $e) {
 				// log error.
 				$response->status = JAuthentication::STATUS_FAILURE;
 				return false;
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -141,121 +144,124 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$oauth2->setOption('clientid', $this->params->get('client_id'));
 		$oauth2->setOption('clientsecret', $this->params->get('client_secret'));
 		$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
-		try {
-			$result = $oauth2->authenticate();
-		} catch(Exception $e) {
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_CONNECT_DOWN'));
-			$app->redirect('connexion');
-		}
+    try{
+        $result = $oauth2->authenticate();
+    } catch(Exception $e) {
+        $app = JFactory::getApplication();
+
+        $app->enqueueMessage(JText::_('COM_EMUNDUS_CCI_FAIL'), 'error');
+        $app->redirect(JRoute::_('connexion'));
+    }
 
 		// We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
-		$credentials = array();
-		$credentials['username']  = 'temporary_username';
+		$credentials = ['username' => 'temporary_username'];
 
 		// Adding the token to the login options allows Joomla to use it for logging in.
-		$options = array();
-		$options['token']  = $result;
-		$options['provider'] = 'cciconnect';
+		$options = [
+			'token'     => $result,
+			'provider'  => 'cciconnect',
+			'remember'  => true
+		];
 
 		$app = JFactory::getApplication();
 
 		// Perform the log in.
 		return ($app->login($credentials, $options) === true);
 	}
-
 	// After the login has been executed, we need to send the user an email.
 	public function onOAuthAfterRegister(...$user_info) {
+	    // check if there is a email template to send
+	    if ($this->params->get('email_id')) {
+            $user['username'] = $user_info[3];
+            $user['password'] = $user_info[4];
+            $user['email'] = $user_info[5];
+            $user['name'] = $user_info[6];
 
-		$user['username'] = $user_info[3];
-		$user['password'] = $user_info[4];
-		$user['email'] = $user_info[5];
-		$user['name'] = $user_info[6];
+            $user_id = JUserHelper::getUserId($user['username']);
 
-		$user_id = JUserHelper::getUserId($user['username']);
+            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $m_messages = new EmundusModelMessages();
+            $m_emails   = new EmundusModelEmails();
 
-		$m_messages = new EmundusModelMessages();
-		$m_emails   = new EmundusModelEmails();
+            $config = JFactory::getConfig();
 
-		$config = JFactory::getConfig();
+            $template = $m_messages->getEmail($this->params->get('email_id'));
 
-		$template = $m_messages->getEmail($this->params->get('email_id'));
+            // Get default mail sender info
+            $mail_from_sys = $config->get('mailfrom');
+            $mail_from_sys_name = $config->get('fromname');
 
-		// Get default mail sender info
-		$mail_from_sys = $config->get('mailfrom');
-		$mail_from_sys_name = $config->get('fromname');
+            // If no mail sender info is provided, we use the system global config.
+            $mail_from_name = $mail_from_sys;
+            $mail_from      = $template->emailfrom;
 
-		// If no mail sender info is provided, we use the system global config.
-		$mail_from_name = $mail_from_sys;
-		$mail_from      = $template->emailfrom;
+            // If the email sender has the same domain as the system sender address.
+            if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+                $mail_from_address = $mail_from;
+            } else {
+                $mail_from_address = $mail_from_sys;
+                $mail_from_name = $mail_from_sys_name;
+            }
 
-		// If the email sender has the same domain as the system sender address.
-		if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-			$mail_from_address = $mail_from;
-		} else {
-			$mail_from_address = $mail_from_sys;
-			$mail_from_name = $mail_from_sys_name;
-		}
+            // Set sender
+            $sender = [
+                $mail_from_address,
+                $mail_from_name
+            ];
 
-		// Set sender
-		$sender = [
-			$mail_from_address,
-			$mail_from_name
-		];
+            $post = [
+                'USER_NAME'     => $user['fullname'],
+                'SITE_URL'      => JURI::base(),
+                'USER_EMAIL'    => $user['email'],
+                'USER_PASS'     => $user['password'],
+                'USERNAME'      => $user['username']
+            ];
 
-		$post = [
-			'USER_NAME'     => $user['fullname'],
-			'SITE_URL'      => JURI::base(),
-			'USER_EMAIL'    => $user['email'],
-			'USER_PASS'     => $user['password'],
-			'USERNAME'      => $user['username']
-		];
+            $tags = $m_emails->setTags($user_id, $post);
 
-		$tags = $m_emails->setTags($user_id, $post);
+            // Tags are replaced with their corresponding values using the PHP preg_replace function.
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
+            if (!empty($template->Template)) {
+                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+            }
 
-		// Tags are replaced with their corresponding values using the PHP preg_replace function.
-		$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
-		$body = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
-		if (!empty($template->Template)) {
-			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-		}
+            // Configure email sender
+            $mailer = JFactory::getMailer();
+            $mailer->setSender($sender);
+            $mailer->addReplyTo($mail_from, $mail_from_name);
+            $mailer->addRecipient($user['email']);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
 
-		// Configure email sender
-		$mailer = JFactory::getMailer();
-		$mailer->setSender($sender);
-		$mailer->addReplyTo($mail_from, $mail_from_name);
-		$mailer->addRecipient($user['email']);
-		$mailer->setSubject($subject);
-		$mailer->isHTML(true);
-		$mailer->Encoding = 'base64';
-		$mailer->setBody($body);
+            // Send and log the email.
+            $send = $mailer->Send();
 
-		// Send and log the email.
-		$send = $mailer->Send();
+            if ($send !== true) {
 
-		if ($send !== true) {
+                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                return false;
 
-			JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-			return false;
+            } else {
 
-		} else {
+                $sent[] = $user['email'];
+                $log = [
+                    'user_id_to'    => $user_id,
+                    'subject'       => $subject,
+                    'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user['email'].'</i><br>'.$body,
+                    'type'          => $template->type
+                ];
+                $m_emails->logEmail($log);
 
-			$sent[] = $user['email'];
-			$log = [
-				'user_id_to'    => $user_id,
-				'subject'       => $subject,
-				'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user['email'].'</i><br>'.$body,
-				'type'          => $template->type
-			];
-			$m_emails->logEmail($log);
-
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
-			return true;
-		}
+                $app = JFactory::getApplication();
+                $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
+                return true;
+            }
+        }
 	}
 }
