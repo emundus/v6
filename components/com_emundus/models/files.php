@@ -813,10 +813,8 @@ class EmundusModelFiles extends JModelLegacy
             $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
             $and = ' OR ';
         } else {
-            if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
-                $sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
-                $and = ' AND ';
-            }
+            $sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
+            $and = ' AND ';
         }
         $sql_fnum = '';
         if (count($this->fnum_assoc)>0)
@@ -1171,7 +1169,6 @@ class EmundusModelFiles extends JModelLegacy
             $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
         
         $q = $this->_buildWhere($lastTab);
-        
         if (!empty($leftJoin))
             $query .= $leftJoin;
         $query .= $q['join'];
@@ -1180,7 +1177,6 @@ class EmundusModelFiles extends JModelLegacy
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-        
         $dbo->setQuery($query);
         try
         {
@@ -3098,20 +3094,16 @@ die();*/
      * @param $fnum
      * @return bool|mixed
      */
-    public function deleteFile($fnum)
-    {
-        try
-        {
+    public function deleteFile($fnum) {
+        try {
             $db = JFactory::getDbo();
 
             $query = 'DELETE FROM #__emundus_campaign_candidature
                         WHERE fnum like '.$db->Quote($fnum);
 
             $db->setQuery($query);
-            return $db->query() ;
-        }
-        catch(Exception $e)
-        {
+            return $db->query();
+        } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
@@ -3130,7 +3122,7 @@ die();*/
 
             $query = $db->getQuery(true);
             $query
-                ->select('t.*')
+            ->select('t.*, c.id AS cid')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
@@ -3146,6 +3138,27 @@ die();*/
         }
     }
 
+    public function getAppliedSessions($program) {
+        try {
+            $current_user = JFactory::getUser();
+
+            $db = JFactory::getDbo();
+
+            $query = $db->getQuery(true);
+
+            $query
+                ->select('esc.session_code')
+                ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+                ->where($db->quoteName('esc.training') . ' LIKE ' . $db->quote($program). 'and' .$db->quoteName('ecc.applicant_id') . ' = ' . $current_user->id);
+
+            $db->setQuery($query);
+            return $db->loadColumn() ;
+        }
+        catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
 
 	/**
 	 * Gets the user's birthdate.
