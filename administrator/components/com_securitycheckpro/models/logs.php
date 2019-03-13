@@ -67,7 +67,8 @@ public function getListQuery()
 	$search = $app->getUserState('filter.search', '');	
 	
 	// Sanitizamos la entrada
-	if ( !is_null($search) ) {
+	if (!is_null($search)) 
+	{
 		$search = $db->Quote('%' . $db->escape($search, true) . '%');
 	}
 		
@@ -76,18 +77,21 @@ public function getListQuery()
 	$query->where('(a.ip LIKE '.$search.' OR a.time LIKE '.$search.' OR a.username LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
 	
 	// Filtramos la descripcion
-	if ($description = $this->getState('filter.description')) {
+	if ($description = $this->getState('filter.description'))
+	{
 		$query->where('a.tag_description = '.$db->quote($description));
 	}
 	
 	// Filtramos el tipo
-	if ($log_type = $this->getState('filter.type')) {
+	if ($log_type = $this->getState('filter.type'))
+	{
 		$query->where('a.type = '.$db->quote($log_type));
 	}
 		
 	// Filtramos leido/no leido
 	$leido = $this->getState('filter.leido');
-	if (is_numeric($leido)) {
+	if (is_numeric($leido)) 
+	{
 		$query->where('a.marked = '.(int) $leido);
 	}	
 	
@@ -97,25 +101,33 @@ public function getListQuery()
 
 	$fltDateFrom = $this->getState('datefrom', null, 'string');
 	
-	if(!empty($fltDateFrom)) {
+	if (!empty($fltDateFrom))
+	{
 		$is_valid = $this->checkIsAValidDate($fltDateFrom);
-		if ($is_valid ) {
+		if ($is_valid)
+		{
 			$date = new JDate($fltDateFrom);
 			$query->where($db->quoteName('time').' >= '.$db->Quote($date->toSql()));
-		} else {
-			if ( $fltDateFrom != "0000-00-00 00:00:00" ) {
+		} else 
+		{
+			if ($fltDateFrom != "0000-00-00 00:00:00")
+			{
 				JError::raiseNotice(100,JText::_("COM_SECURITYCHECKPRO_DATE_NOT_VALID"));
 			}			
 		}	
 	}
 	
-	if(!empty($fltDateTo)) {
+	if (!empty($fltDateTo)) 
+	{
 		$is_valid = $this->checkIsAValidDate($fltDateTo);
-		if ($is_valid ) {
+		if ($is_valid) 
+		{
 			$date = new JDate($fltDateTo);
 			$query->where($db->quoteName('time').' <= '.$db->Quote($date->toSql()));
-		} else {
-			if ( $fltDateTo != "0000-00-00 00:00:00" ) {
+		} else 
+		{
+			if ($fltDateTo != "0000-00-00 00:00:00") 
+			{
 				JError::raiseNotice(100,JText::_("COM_SECURITYCHECKPRO_DATE_NOT_VALID"));
 			}
 		}	
@@ -128,13 +140,16 @@ public function getListQuery()
 	}
 		
 
-function checkIsAValidDate($myDateString){
+function checkIsAValidDate($myDateString)
+{
     return (bool)strtotime($myDateString);
 }
 
 /* Función para cambiar el estado de un array de logs de no leído a leído */
-function mark_read($uids=null){
-	if ( empty($uids) ) {
+function mark_read($uids=null)
+{
+	if (empty($uids))
+	{
 		$jinput = JFactory::getApplication()->input;
 		$uids = $jinput->get('cid', 0,'array');
 	}	
@@ -150,7 +165,8 @@ function mark_read($uids=null){
 }
 
 /* Función para cambiar el estado de un array de logs de leído a no leído */
-function mark_unread(){
+function mark_unread()
+{
 	$jinput = JFactory::getApplication()->input;
 	$uids = $jinput->get('cid', 0,'array');
 	
@@ -165,14 +181,16 @@ function mark_unread(){
 }
 
 /* Función para borrar un array de logs */
-function delete(){
+function delete()
+{
 	$jinput = JFactory::getApplication()->input;
 	$uids = $jinput->get('cid', 0,'array');
 	
 	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 	
 	$db = $this->getDbo();
-	foreach($uids as $uid) {
+	foreach($uids as $uid) 
+	{
 		$sql = "DELETE FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
 		$db->setQuery($sql);
 		$db->execute();	
@@ -180,34 +198,46 @@ function delete(){
 }
 
 /* Función para chequear si una ip pertenece a una lista en la que podemos especificar rangos. Podemos tener una ip del tipo 192.168.*.* y una ip 192.168.1.1 entraría en ese rango */
-function chequear_ip_en_lista($ip,$lista){
+function chequear_ip_en_lista($ip,$lista)
+{
 	$aparece = false;
 	$array_ip_peticionaria = explode('.',$ip);
 		
-	if (strlen($lista) > 0) {
+	if (strlen($lista) > 0) 
+	{
 		// Eliminamos los caracteres en blanco antes de introducir los valores en el array
 		$lista = str_replace(' ','',$lista);
 		$array_ips = explode(',',$lista);
-		if ( is_int(array_search($ip,$array_ips)) ){	// La ip aparece tal cual en la lista
+		if (is_int(array_search($ip,$array_ips)))
+		{	// La ip aparece tal cual en la lista
 			$aparece = true;
-		} else {
-			foreach ($array_ips as &$indice){
-					if (strrchr($indice,'*')){ // Chequeamos si existe el carácter '*' en el string; si no existe podemos ignorar esta ip
+		} else 
+		{
+			foreach ($array_ips as &$indice)
+			{
+					if (strrchr($indice,'*'))
+					{ // Chequeamos si existe el carácter '*' en el string; si no existe podemos ignorar esta ip
 					$array_ip_lista = explode('.',$indice); // Formato array:  $array_ip_lista[0] = '192' , $array_ip_lista[1] = '168'
 					$k = 0;
 					$igual = true;
-					while (($k <= 3) && ($igual)) {
-						if ($array_ip_lista[$k] == '*') {
+					while (($k <= 3) && ($igual))
+					{
+						if ($array_ip_lista[$k] == '*') 
+						{
 							$k++;
-						}else {
-							if ($array_ip_lista[$k] == $array_ip_peticionaria[$k]) {
+						}else
+						{
+							if ($array_ip_lista[$k] == $array_ip_peticionaria[$k]) 
+							{
 								$k++;
-							} else {
+							} else 
+							{
 								$igual = false;
 							}
 						}
 					}
-					if ($igual) { // $igual será true cuando hayamos recorrido el array y todas las partes del mismo coincidan con la ip que realiza la petición
+					if ($igual)
+					{ // $igual será true cuando hayamos recorrido el array y todas las partes del mismo coincidan con la ip que realiza la petición
 						$aparece = true;
 						return $aparece;
 					}
@@ -219,7 +249,8 @@ function chequear_ip_en_lista($ip,$lista){
 }
 
 /* Función que añade un conjunto de Ips a la lista negra */
-function add_to_blacklist() {
+function add_to_blacklist()
+ {
 	
 	// Inicializamos las variables
 	$query = null;
@@ -246,32 +277,40 @@ function add_to_blacklist() {
 	$params = $db->loadResult();
 	$params = json_decode($params, true);
 		
-	foreach($uids as $uid) {
+	foreach($uids as $uid)
+	{
 		$sql = "SELECT ip FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
 		$db->setQuery($sql);
 		$db->execute();
 		$ip = $db->loadResult();
 		// Get the client IP to see if the user wants to block his own IP
 		$client_ip = "";
-		if ( isset($_SERVER["REMOTE_ADDR"]) ) {
+		if (isset($_SERVER["REMOTE_ADDR"]))
+		{
 			$client_ip = $db->escape($_SERVER["REMOTE_ADDR"]);
-		} else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ) {
+		} else if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]))
+		{
 			$client_ip = $db->escape($_SERVER["HTTP_X_FORWARDED_FOR"]);
-		} else if ( isset($_SERVER["HTTP_CLIENT_IP"]) ) {
+		} else if (isset($_SERVER["HTTP_CLIENT_IP"])) 
+		{
 			$client_ip = $db->escape($_SERVER["HTTP_CLIENT_IP"]);
 		} 
 		
-		if ( $ip == $client_ip) {
+		if ($ip == $client_ip)
+		{
 			JError::raiseWarning(100,JText::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP'));
 			$array_size--;
 			break;
 		}
 				
 		$aparece_lista_negra = $this->chequear_ip_en_lista($ip,$params['blacklist']);
-		if (!$aparece_lista_negra) {
-			if ( !empty($params['blacklist']) ) {
+		if (!$aparece_lista_negra)
+		{
+			if (!empty($params['blacklist']))
+			{
 				$params['blacklist'] .= ',' .$ip;
-			} else {
+			} else 
+			{
 				$params['blacklist'] = $ip;
 			}			
 			$added_elements++;
@@ -279,10 +318,12 @@ function add_to_blacklist() {
 	}
 	$not_added = $array_size - $added_elements;
 	
-	if ($added_elements > 0) {
+	if ($added_elements > 0)
+	{
 		JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ADDED_TO_LIST',$added_elements));
 	}
-	if ($not_added > 0) {
+	if ($not_added > 0)
+	{
 		JError::raiseNotice(100,JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED',$not_added));
 	}
 	
@@ -300,9 +341,11 @@ function add_to_blacklist() {
 		'storage_value'		=> $params
 	);
 		
-	try {
+	try
+	{
 		$result = $db->insertObject('#__securitycheckpro_storage', $object);			
-	} catch (Exception $e) {	
+	} catch (Exception $e)
+	{	
 		$applied = false;
 	}
 	
@@ -316,9 +359,11 @@ public function getValue($key, $default = null, $key_name = 'cparams')
 {
 	if(is_null($this->config)) $this->load($key_name);
 	
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if(version_compare(JVERSION, '3.0', 'ge')) 
+	{
 		return $this->config->get($key, $default);
-	} else {
+	} else
+	{
 		return $this->config->getValue($key, $default);
 	}
 }
@@ -335,12 +380,15 @@ public function load($key_name)
 	$db->setQuery($query);
 	$res = $db->loadResult();
 		
-	if(version_compare(JVERSION, '3.0', 'ge')) {
+	if(version_compare(JVERSION, '3.0', 'ge'))
+	{
 		$this->config = new JRegistry();
-	} else {
+	} else
+	{
 		$this->config = new JRegistry('securitycheckpro');
 	}
-	if(!empty($res)) {
+	if (!empty($res))
+	{
 		$res = json_decode($res, true);
 		$this->config->loadArray($res);
 	}
@@ -349,21 +397,25 @@ public function load($key_name)
 /* Obtiene la configuración de los parámetros de la opción 'Mode' */
 function getConfig()
 {
-	if(interface_exists('JModel')) {
+	if (interface_exists('JModel'))
+	{
 		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
-	} else {
+	} else 
+	{
 		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	$config = array();
-	foreach($this->defaultConfig as $k => $v) {
+	foreach($this->defaultConfig as $k => $v)
+	{
 		$config[$k] = $params->getValue($k, $v, 'pro_plugin');
 	}
 	return $config;
 }
 
 /* Función para borrar todos los logs */
-function delete_all(){
+function delete_all()
+{
 	
 	$db = $this->getDbo();
 	$sql = "TRUNCATE `#__securitycheckpro_logs`";
@@ -372,7 +424,8 @@ function delete_all(){
 }
 
 /* Función que añade un conjunto de Ips a la lista blanca */
-function add_to_whitelist() {
+function add_to_whitelist() 
+{
 	
 	// Inicializamos las variables
 	$query = null;
@@ -399,7 +452,8 @@ function add_to_whitelist() {
 	$params = $db->loadResult();
 	$params = json_decode($params, true);
 		
-	foreach($uids as $uid) {
+	foreach($uids as $uid)
+	{
 		$sql = "SELECT ip FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
 		$db->setQuery($sql);
 		$db->execute();
@@ -407,10 +461,13 @@ function add_to_whitelist() {
 		
 				
 		$aparece_lista_blanca = $this->chequear_ip_en_lista($ip,$params['whitelist']);
-		if (!$aparece_lista_blanca) {
-			if ( !empty($params['blacklist']) ) {
+		if (!$aparece_lista_blanca)
+		{
+			if (!empty($params['blacklist']))
+			{
 				$params['whitelist'] .= ',' .$ip;
-			} else {
+			} else
+			{
 				$params['whitelist'] = $ip;
 			}						
 			$added_elements++;
@@ -418,10 +475,12 @@ function add_to_whitelist() {
 	}
 	$not_added = $array_size - $added_elements;
 	
-	if ($added_elements > 0) {
+	if ($added_elements > 0)
+	{
 		JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ADDED_TO_LIST',$added_elements));
 	}
-	if ($not_added > 0) {
+	if ($not_added > 0)
+	{
 		JError::raiseNotice(100,JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED',$not_added));
 	}
 	
@@ -439,9 +498,11 @@ function add_to_whitelist() {
 		'storage_value'		=> $params
 	);
 		
-	try {
+	try 
+	{
 		$result = $db->insertObject('#__securitycheckpro_storage', $object);			
-	} catch (Exception $e) {	
+	} catch (Exception $e)
+	{	
 		$applied = false;
 	}
 	

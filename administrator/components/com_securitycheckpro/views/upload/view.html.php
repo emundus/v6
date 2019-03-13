@@ -7,9 +7,9 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
-jimport( 'joomla.application.component.view' );
+jimport('joomla.application.component.view');
 
 /**
  * Securitycheck View
@@ -21,7 +21,7 @@ class SecuritycheckprosViewUpload extends JViewLegacy
 	 **/
 	function display($tpl = null)
 	{
-		JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | '.JText::_('COM_SECURITYCHECKPRO_IMPORT_CONFIG_TITLE'), 'securitycheckpro' );
+		JToolBarHelper::title(JText::_('Securitycheck Pro').' | '.JText::_('COM_SECURITYCHECKPRO_IMPORT_CONFIG_TITLE'), 'securitycheckpro');
 		
 		// Información para la barra de navegación
 		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';

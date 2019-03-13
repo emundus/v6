@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -172,11 +172,6 @@ class ControlPanel extends Model
 		$dbInstaller = new Installer($db, JPATH_ADMINISTRATOR . '/components/com_admintools/sql/xml');
 
 		$dbInstaller->updateSchema();
-
-		// Let's check and fix common tables, too
-		/** @var Stats $statsModel */
-		$statsModel = $this->container->factory->model('Stats')->tmpInstance();
-		$statsModel->checkAndFixCommonTables();
 
 		// And finally remove the flag if everything went fine
 		$params->set('updatedb', null);

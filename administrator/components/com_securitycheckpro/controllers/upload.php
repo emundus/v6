@@ -9,18 +9,22 @@ defined('_JEXEC') or die();
 
 class SecuritycheckprosControllerUpload extends SecuritycheckproController
 {
-	public function __construct($config = array()) {
+	public function __construct($config = array())
+	{
 		parent::__construct($config);
 	}
 	
 	/* Acciones al pulsar el botón 'Import settings' */
-	function read_file(){
+	function read_file()
+	{
 		$model = $this->getModel("upload");
 		$res = $model->read_file();
 		
-		if ($res) {
+		if ($res)
+		{
 			$this->setRedirect( 'index.php?option=com_securitycheckpro' );		
-		} else {
+		} else
+		{
 			$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=upload&'. JSession::getFormToken() .'=1' );	
 		}
 	}

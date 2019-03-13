@@ -1,13 +1,8 @@
 <?php
 /**
- * Akeeba Strapper
- *
- * A handy distribution of namespaced jQuery and Bootstrap 2.3.4
- *
- * THIS IS LEGACY CODE. SUPPORT FOR AKEEBA STRAPPER WILL BE DROPPED IN DECEMBER 31ST, 2015.
- *
- * @copyright Copyright (c)2017-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 2 or later
+ *  @package     AkeebaFEF
+ *  @copyright   Copyright (c)2017-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ *  @license     GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.3.0" type="package" method="upgrade">
+<extension version="3.8.0" type="package" method="upgrade">
     <name>Admin Tools package</name>
     <author>Nicholas K. Dionysopoulos</author>
-    <creationDate>2018-11-16</creationDate>
+    <creationDate>2019-03-12</creationDate>
     <packagename>admintools</packagename>
-    <version>5.2.0</version>
+    <version>5.3.0</version>
     <url>https://www.akeebabackup.com</url>
     <packager>Akeeba Ltd</packager>
     <packagerurl>https://www.akeebabackup.com</packagerurl>
-    <copyright>Copyright (c)2010-2018 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
+    <copyright>Copyright (c)2010-2019 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
     <license>GNU GPL v3 or later</license>
-    <description>Admin Tools Core installation package v.5.2.0</description>
+    <description>Admin Tools Core installation package v.5.3.0</description>
 
     <!-- List of extensions to install -->
     <files>
@@ -19,6 +19,7 @@
 
         <!-- Plugins: system -->
         <file type="plugin" group="system" id="admintools">plg_system_admintools-core.zip</file>
+        <file type="plugin" group="system" id="admintoolsactionlog">plg_system_admintoolsactionlog.zip</file>
     </files>
 
     <!-- Installation script -->

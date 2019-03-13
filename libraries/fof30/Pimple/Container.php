@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Pimple.
  *
@@ -25,6 +24,8 @@
  */
 
 namespace FOF30\Pimple;
+
+defined('_JEXEC') or die;
 
 /**
  * Container main class.

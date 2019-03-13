@@ -1,8 +1,8 @@
 <?php
 /**
- * @package        AkeebaFEF
- * @copyright Copyright (c)2017-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license        GNU GPL version 3 or later
+ *  @package     AkeebaFEF
+ *  @copyright   Copyright (c)2017-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ *  @license     GNU General Public License version 3, or later
  */
 
 defined('_JEXEC') or die();
@@ -38,6 +38,11 @@ class file_fefInstallerScript
 	 */
 	protected $fofLibrariesPath = 'fof30';
 
+	/**
+	 * Constant used to detect whether FOF has been loaded
+	 *
+	 * @var   string
+	 */
 	protected $fofDefine = 'FOF30_INCLUDED';
 
 	/**
@@ -115,7 +120,7 @@ class file_fefInstallerScript
 		// In case of an update, discovery etc I need to check if I am an update
 		if (($type == 'update') && !$this->amIAnUpdate($parent))
 		{
-			$msg = "<p>You have a newer version of Akeeba Frontend Framework installed. If you want to downgrade please uninstall Akeeba Frontend Framework and install the older version.</p>";
+			$msg = "<p>You already have a newer version of Akeeba Frontend Framework installed. If you want to downgrade please uninstall Akeeba Frontend Framework and install the older version.</p><p>If you see this message during the installation or update of an Akeeba extension please ignore it <em>and</em> the immediately following “Files Install: Custom install routine failure” message. They are expected but Joomla! won't allow us to prevent them from showing up.</p>";
 
 			JLog::add($msg, JLog::WARNING, 'jerror');
 
@@ -137,10 +142,17 @@ class file_fefInstallerScript
 					'media/fef/fonts/Ionicon/ionicons.ttf',
 				],
 				'folders' => [
-					// The beta had this folder uppercase, then we moved it to lowercase
-					'media/fef/fonts/Akeeba'
 				],
 			];
+
+			// We need this trick to prevent the Akeeba font being removed on case-insensitive Windows and macOS filesystems
+			$phpOS = strtoupper(PHP_OS);
+
+			if (!in_array(substr($phpOS, 0, 3), ['MAC', 'WIN']))
+			{
+				// The beta had this folder uppercase, then we moved it to lowercase
+				$removeFiles['folders'][] = 'media/fef/fonts/Akeeba';
+			}
 
 			// Remove obsolete files and folders
 			$this->removeFilesAndFolders($removeFiles);
@@ -156,6 +168,8 @@ class file_fefInstallerScript
 	 *
 	 * @param   string                $type   install, update or discover_update
 	 * @param   JInstallerAdapterFile $parent Parent object
+	 *
+	 * @throws  Exception
 	 */
 	public function postflight($type, JInstallerAdapterFile $parent)
 	{

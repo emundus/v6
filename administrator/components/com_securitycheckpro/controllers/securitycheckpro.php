@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 // Load framework base classes
 jimport('joomla.application.component.controller');
@@ -43,18 +43,20 @@ function mostrar()
  */
 function buscar()
 {
-$model = $this->getModel('securitycheckpros');
-if(!$model->buscar()) {
-	$msg = JText::_( 'COM_SECURITYCHECKPRO_CHECK_FAILED' );
-	JError::errorNotice(500,$msg);
-} else {
-	$eliminados = $jinput->get('comp_eliminados',0,int);
-	$core_actualizado = $jinput->get('core_actualizado',0,int);
-	$comps_actualizados = $jinput->get('componentes_actualizados',0,int);	
-	$comp_ok = JText::_( 'COM_SECURITYCHECKPRO_CHECK_OK ');
-	$msg = JText::_( $eliminados ."</li><li>" .$core_actualizado ."</li><li>" .$comps_actualizados ."</li><li>" .$comp_ok );
-}
-$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=securitycheckpro', $msg );
+	$model = $this->getModel('securitycheckpros');
+	if (!$model->buscar()) 
+	{
+		$msg = JText::_('COM_SECURITYCHECKPRO_CHECK_FAILED');
+		JError::errorNotice(500,$msg);
+	} else
+	{
+		$eliminados = $jinput->get('comp_eliminados',0,int);
+		$core_actualizado = $jinput->get('core_actualizado',0,int);
+		$comps_actualizados = $jinput->get('componentes_actualizados',0,int);	
+		$comp_ok = JText::_('COM_SECURITYCHECKPRO_CHECK_OK ');
+		$msg = JText::_($eliminados ."</li><li>" .$core_actualizado ."</li><li>" .$comps_actualizados ."</li><li>" .$comp_ok);
+	}
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro', $msg);
 }
 
 /* Ver los logs almacenados por el plugin */
@@ -69,23 +71,25 @@ function view_logs()
 /* Redirecciona las peticiones al componente */
 function redireccion()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1' );
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1');
 }
 
 /* Redirecciona las peticiones al Panel de Control */
 function redireccion_control_panel()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro' );
+	$this->setRedirect('index.php?option=com_securitycheckpro');
 }
 
 /* Filtra los logs según el término de búsqueda especificado*/
 function search()
 {
 	$model = $this->getModel('logs');
-	if(!$model->search()) {
-		$msg = JText::_( 'COM_SECURITYCHECKPRO_CHECK_FAILED' );
+	if (!$model->search())
+	{
+		$msg = JText::_('COM_SECURITYCHECKPRO_CHECK_FAILED');
 		JError::errorNotice(500,$msg);
-	} else {
+	} else
+	{
 		$this->view_logs();
 	}
 	
@@ -98,9 +102,6 @@ function view()
 {
 	$jinput->set('view', 'securitycheckpro');
 	$jinput->set('layout', 'form');
-	/*JRequest::setVar( 'view', 'securitycheckpro' );
-	JRequest::setVar( 'layout', 'form'  );*/	
-
 	parent::display();
 }
 	
@@ -110,8 +111,8 @@ function view()
  */
 function cancel()
 {
-	$msg = JText::_( 'Operación cancelada' );
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=securitycheckpro', $msg );
+	$msg = JText::_('Operación cancelada');
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro', $msg);
 }
  
 /**
@@ -121,22 +122,25 @@ function csv_export()
 {
 	$db = JFactory::getDBO();
 	$query = 'SELECT * FROM #__securitycheckpro_logs';
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$rows = $db->loadRowList();
 	$csv_export = "";
 			
 	// Cabecera del archivo
-	$headers = array('Id','Ip',JText::_( 'COM_SECURITYCHECKPRO_GEOLOCATION_LABEL'),JText::_( 'COM_SECURITYCHECKPRO_USER' ),JText::_('COM_SECURITYCHECKPRO_LOG_TIME'),JText::_('COM_SECURITYCHECKPRO_LOG_DESCRIPTION'),JText::_('COM_SECURITYCHECKPRO_DETAILED_DESCRIPTION'), JText::_('COM_SECURITYCHECKPRO_LOG_TYPE'), JText::_('COM_SECURITYCHECKPRO_LOG_URI'),JText::_( 'COM_SECURITYCHECKPRO_TYPE_COMPONENT' ),JText::_('COM_SECURITYCHECKPRO_LOG_READ'),JText::_('COM_SECURITYCHECKPRO_ORIGINAL_STRING_CSV'));
+	$headers = array('Id','Ip',JText::_('COM_SECURITYCHECKPRO_GEOLOCATION_LABEL'),JText::_('COM_SECURITYCHECKPRO_USER'),JText::_('COM_SECURITYCHECKPRO_LOG_TIME'),JText::_('COM_SECURITYCHECKPRO_LOG_DESCRIPTION'),JText::_('COM_SECURITYCHECKPRO_DETAILED_DESCRIPTION'), JText::_('COM_SECURITYCHECKPRO_LOG_TYPE'), JText::_('COM_SECURITYCHECKPRO_LOG_URI'),JText::_('COM_SECURITYCHECKPRO_TYPE_COMPONENT'),JText::_('COM_SECURITYCHECKPRO_LOG_READ'),JText::_('COM_SECURITYCHECKPRO_ORIGINAL_STRING_CSV'));
 	$csv_export .= implode(",",$headers);
 
-	for ($i = 0 , $n = count($rows) ; $i < $n ; $i++) {
-		$rows[$i][5] = JText::_( 'COM_SECURITYCHECKPRO_' .$rows[$i][5] );
-		$rows[$i][7] = JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$rows[$i][7] );
+	for ($i = 0 , $n = count($rows) ; $i < $n ; $i++)
+	{
+		$rows[$i][5] = JText::_('COM_SECURITYCHECKPRO_' .$rows[$i][5]);
+		$rows[$i][7] = JText::_('COM_SECURITYCHECKPRO_TITLE_' .$rows[$i][7]);
 		//$rows[$i][11] = base64_decode($rows[$i][11]);
-		if ($rows[$i][10] == 0) {
-			$rows[$i][10] = JText::_( 'COM_SECURITYCHECKPRO_NO' );
-		} else {
-			$rows[$i][10] = JText::_( 'COM_SECURITYCHECKPRO_YES' );
+		if ($rows[$i][10] == 0)
+		{
+			$rows[$i][10] = JText::_('COM_SECURITYCHECKPRO_NO');
+		} else
+		{
+			$rows[$i][10] = JText::_('COM_SECURITYCHECKPRO_YES');
 		}
 		$csv_export .= "\n" .implode(",",$rows[$i]);
 	}
@@ -150,8 +154,8 @@ function csv_export()
 	$filename = "securitycheckpro_logs_" . $sitename . "_" . $timestamp . ".csv";
 	@ob_end_clean();	
 	ob_start();	
-	header( 'Content-Type: text/csv' );
-	header( 'Content-Disposition: attachment;filename=' . $filename );
+	header('Content-Type: text/csv');
+	header('Content-Disposition: attachment;filename=' . $filename);
 	print $csv_export;
 	exit();
 	
@@ -200,7 +204,7 @@ function add_to_blacklist()
 /* Redirecciona las peticiones a System Info */
 function redireccion_system_info()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1' );
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1');
 }
 
 /**

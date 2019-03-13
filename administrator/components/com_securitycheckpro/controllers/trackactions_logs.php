@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 JLoader::register('TrackActionsHelper', JPATH_ROOT . '/plugins/system/trackactions/helpers/trackactions.php');
 
 // Load framework base classes

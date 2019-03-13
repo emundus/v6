@@ -9,8 +9,8 @@
 
 // Chequeamos si el archivo está incluido en Joomla!
 defined('_JEXEC') or die();
-jimport( 'joomla.application.component.view' );
-jimport( 'joomla.plugin.helper' );
+jimport('joomla.application.component.view');
+jimport('joomla.plugin.helper');
 
 /**
 * FileManager View
@@ -36,7 +36,7 @@ function display($tpl = null)
 $document = JFactory::getDocument();
 $document->addStyleDeclaration('.icon-48-securitycheckpro {background-image: url(../media/com_securitycheckpro/images/tick_48x48.png);}');
 
-JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'), 'securitycheckpro' );
+JToolBarHelper::title(JText::_('Securitycheck Pro').' | ' .JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'), 'securitycheckpro');
 
 // Extraemos el tipo de tablas que serán mostradas
 $params = JComponentHelper::getParams('com_securitycheckpro');

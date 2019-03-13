@@ -57,12 +57,12 @@ protected function populateState()
 /*  Función para la paginación */
 function getPagination()
 {
-// Cargamos el contenido si es que no existe todavía
-if (empty($this->_pagination)) {
-	jimport('joomla.html.pagination');
-$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit') );
-}
-return $this->_pagination;
+	// Cargamos el contenido si es que no existe todavía
+	if (empty($this->_pagination)) {
+		jimport('joomla.html.pagination');
+		$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit') );
+	}
+	return $this->_pagination;
 }
 
 /* Función para cargar los logs de confianza */
@@ -78,7 +78,8 @@ function load_rules_logs()
 		
 	// Filtramos los comentarios de las búsquedas si existen
 	$search = $this->getState('filter.rules_search');
-	if (!empty($search)) {
+	if (!empty($search))
+	{
 		$search = $db->quote('%' . $db->escape($search, true) . '%');
 		$query->where('(a.ip LIKE ' . $search . ' OR a.username LIKE '. $search . ' OR a.last_entry LIKE '. $search . ' OR a.reason LIKE '. $search .')');
 	}

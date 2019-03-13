@@ -8,8 +8,8 @@
 
 // Chequeamos si el archivo está incluido en Joomla!
 defined('_JEXEC') or die();
-jimport( 'joomla.application.component.view' );
-jimport( 'joomla.plugin.helper' );
+jimport('joomla.application.component.view');
+jimport('joomla.plugin.helper');
 
 // Load plugin language
 $lang = JFactory::getLanguage();
@@ -24,7 +24,7 @@ protected $state;
 function __construct() 	{
 	parent::__construct();
 	
-	JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('PLG_SECURITYCHECKPRO_CRON_SCHEDULE_LABEL'), 'securitycheckpro' );	
+	JToolBarHelper::title(JText::_('Securitycheck Pro').' | ' .JText::_('PLG_SECURITYCHECKPRO_CRON_SCHEDULE_LABEL'), 'securitycheckpro');	
 }
 
 /**
@@ -33,45 +33,46 @@ function __construct() 	{
 function display($tpl = null)
 {
 
-// Filtro
-$this->state= $this->get('State');
-$lists = $this->state->get('filter.lists_search');
+	// Filtro
+	$this->state= $this->get('State');
+	$lists = $this->state->get('filter.lists_search');
 
-// Obtenemos el modelo
-$model = $this->getModel();
+	// Obtenemos el modelo
+	$model = $this->getModel();
 
-//  Parámetros del plugin
-$items= $model->getCronConfig();
+	//  Parámetros del plugin
+	$items= $model->getCronConfig();
 
-// Información para la barra de navegación
-$logs_pending = $model->LogsPending();
-$trackactions_plugin_exists = $model->PluginStatus(8);
-$this->logs_pending = $logs_pending;
-$this->trackactions_plugin_exists = $trackactions_plugin_exists;
+	// Información para la barra de navegación
+	$logs_pending = $model->LogsPending();
+	$trackactions_plugin_exists = $model->PluginStatus(8);
+	$this->logs_pending = $logs_pending;
+	$this->trackactions_plugin_exists = $trackactions_plugin_exists;
 
-// Extraemos los elementos que nos interesan...
-$tasks= null;
-$launch_time = null;
-$periodicity = null;
+	// Extraemos los elementos que nos interesan...
+	$tasks= null;
+	$launch_time = null;
+	$periodicity = null;
 
-if ( !is_null($items['tasks']) ) {
-	$tasks = $items['tasks'];	
-}
+	if (!is_null($items['tasks']))
+	{
+		$tasks = $items['tasks'];	
+	}
 
-if ( !is_null($items['launch_time']) ) {
-	$launch_time = $items['launch_time'];	
-}
+	if (!is_null($items['launch_time']))
+	{
+		$launch_time = $items['launch_time'];	
+	}
 
-if ( !is_null($items['periodicity']) ) {
-	$periodicity = $items['periodicity'];	
-}
+	if (!is_null($items['periodicity']))
+	{
+		$periodicity = $items['periodicity'];	
+	}
+	// ... y los ponemos en el template
+	$this->tasks = $tasks;
+	$this->launch_time = $launch_time;
+	$this->periodicity = $periodicity;
 
-
-// ... y los ponemos en el template
-$this->tasks = $tasks;
-$this->launch_time = $launch_time;
-$this->periodicity = $periodicity;
-
-parent::display($tpl);
+	parent::display($tpl);
 }
 }

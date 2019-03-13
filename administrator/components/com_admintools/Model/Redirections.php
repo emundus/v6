@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -14,6 +14,7 @@ use FOF30\Container\Container;
 use FOF30\Model\DataModel;
 
 /**
+ * @property   int	   $id
  * @property   string  $source
  * @property   string  $dest
  * @property   int     $published

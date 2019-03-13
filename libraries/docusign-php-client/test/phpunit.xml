@@ -1,0 +1,8 @@
+<phpunit bootstrap="./bootstrap.php">
+  <testsuites>
+    <testsuite name="DocuSign eSign Test Suite">
+      <directory>./</directory>
+      <exclude></exclude>
+    </testsuite>
+  </testsuites>
+</phpunit>

@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 // Load framework base classes
 jimport('joomla.application.component.controller');
@@ -26,9 +26,11 @@ public function save()
 	$model = $this->getModel('firewallspam');
 	$jinput = JFactory::getApplication()->input;
 	$data = $jinput->get('post');
-	if ( !is_numeric($data['spammer_limit']) ) {
+	if (!is_numeric($data['spammer_limit']))
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_INVALID_VALUE'),'error');
-	} else {
+	} else
+	{
 		$model->saveConfig($data, 'pro_plugin');
 	}
 

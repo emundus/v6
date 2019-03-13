@@ -123,7 +123,7 @@ $doc->setTitle($page_title);
                     <div class="em-themes em-theme-title em-theme-<?php echo $category['color']; ?>">
                         <?php echo $category['label']; ?>
                     </div>
-                    <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+                    <a href="/recherche"><span aria-hidden="true">&times;</span></a>
                 </div>
             <?php endif; ?>
 
@@ -132,7 +132,7 @@ $doc->setTitle($page_title);
                     <div class="em-filter-cible">
                         <?php echo $cible; ?>
                     </div>
-                    <a href="/rechercher?resetfilters=0&clearordering=0&clearfilters=0"><span aria-hidden="true">&times;</span></a>
+                    <a href="/rechercher"><span aria-hidden="true">&times;</span></a>
                 </div>
             <?php endif; ?>
 
@@ -230,7 +230,7 @@ $doc->setTitle($page_title);
                                             </div>
 
                                             <div class="em-themes em-theme-title em-theme-<?php echo $theme_color; ?>">
-                                                <a href="rechercher?category=<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $theme_title))));?>"><?php echo $theme_label; ?></a>
+                                                <a href="/formations/<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $category['title']))));?>"><?php echo $theme_label; ?></a>
                                             </div>
                                         </div>
 

@@ -4,14 +4,16 @@
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2010-2018 Nicholas K. Dionysopoulos</copyright>
+	<copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU General Public License version 3, or later</license>
-	<creationDate>2018-11-16</creationDate>
-	<version>5.2.0</version>
+	<creationDate>2019-03-12</creationDate>
+	<version>5.3.0</version>
 	<description>PLG_SYSTEM_ADMINTOOLS_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="admintools">admintools.php</filename>
-		<filename plugin="admintools">autoloader.php</filename>
+		<filename>autoloader.php</filename>
+		<filename>.htaccess</filename>
+		<filename>web.config</filename>
 		<folder>admintools</folder>
 		<folder>feature</folder>
 		<folder>util</folder>

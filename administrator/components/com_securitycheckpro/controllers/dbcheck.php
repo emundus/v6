@@ -15,7 +15,8 @@ jimport('joomla.application.component.controller');
 class SecuritycheckprosControllerDbCheck extends JControllerLegacy
 {
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct();
 		
 		
@@ -25,9 +26,11 @@ class SecuritycheckprosControllerDbCheck extends JControllerLegacy
 		$app 	= JFactory::getApplication();
 		$model 	= $this->getModel('DbCheck');
 		
-		if (!($result = $model->optimizeTables())) {
+		if (!($result = $model->optimizeTables()))
+		{
 			echo $model->getError();
-		} else {
+		} else
+		{
 			echo JText::sprintf('COM_SECURITYCHECKPRO_DB_OPTIMIZE_RESULT', $result['optimize'], $result['repair']);
 		}
 		

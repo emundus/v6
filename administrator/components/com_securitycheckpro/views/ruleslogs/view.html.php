@@ -8,8 +8,8 @@
 
 // Chequeamos si el archivo está incluido en Joomla!
 defined('_JEXEC') or die();
-jimport( 'joomla.application.component.view' );
-jimport( 'joomla.plugin.helper' );
+jimport('joomla.application.component.view');
+jimport('joomla.plugin.helper');
 
 /**
 * Logs View
@@ -26,11 +26,9 @@ protected $state;
 function display($tpl = null)
 {
 
-JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_RULES_VIEW_LOGS'), 'securitycheckpro' );
+	JToolBarHelper::title(JText::_('Securitycheck Pro').' | ' .JText::_('COM_SECURITYCHECKPRO_RULES_VIEW_LOGS'), 'securitycheckpro');
 
-
-// Obtenemos los datos del modelo
-		
+	// Obtenemos los datos del modelo		
 	$this->state= $this->get('State');
 	$search = $this->state->get('filter.rules_search');
 	
@@ -49,10 +47,11 @@ JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECU
 	// Ponemos los datos y la paginación en el template
 	$this->log_details = $log_details;
 		
-	if ( !empty($log_details) ) {
+	if (!empty($log_details)) 
+	{
 		$this->pagination = $this->get('Pagination');	
 	}
 
-parent::display($tpl);
+	parent::display($tpl);
 }
 }

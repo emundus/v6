@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -440,13 +440,47 @@ class Ip
 
 				if (self::$useFirstIpInChain)
 				{
-					return $ip;
+					return self::cleanIP($ip);
 				}
 			}
 		}
-		else
+
+		return self::cleanIP($ip);
+	}
+
+	protected static function cleanIP($ip)
+	{
+		$ip = trim($ip);
+		$ip = strtoupper($ip);
+
+		/**
+		 * Work around IPv4-mapped addresses.
+		 *
+		 * IPv4 addresses may be embedded in an IPv6 address. This is always 80 zeroes, 16 ones and the IPv4 address.
+		 * In all possible IPv6 notations this is:
+		 * 0:0:0:0:0:FFFF:192.168.1.1
+		 * ::FFFF:192.168.1.1
+		 * ::FFFF:C0A8:0101
+		 *
+		 * @see http://www.tcpipguide.com/free/t_IPv6IPv4AddressEmbedding-2.htm
+		 */
+		if ((strpos($ip, '::FFFF:') === 0) || (strpos($ip, '0:0:0:0:0:FFFF:') === 0))
 		{
-			$ip = trim($ip);
+			// Fast path: the embedded IPv4 is in decimal notation.
+			if (strstr($ip, '.') !== false)
+			{
+				return substr($ip, strrpos($ip, ':') + 1);
+			}
+
+			// Get the embedded IPv4 (in hex notation)
+			$ip = substr($ip, strpos($ip, ':FFFF:') + 6);
+			// Convert each 16-bit WORD to decimal
+			list($word1, $word2) = explode(':', $ip);
+			$word1 = hexdec($word1);
+			$word2 = hexdec($word2);
+			$longIp = $word1 * 65536 + $word2;
+
+			return long2ip($longIp);
 		}
 
 		return $ip;

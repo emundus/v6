@@ -7,7 +7,7 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 // Load framework base classes
 jimport('joomla.application.component.controller');
@@ -90,30 +90,35 @@ public function save()
 	// Look for super users groups
 	$db = JFactory::getDBO();
 	$query = "SELECT id from `#__usergroups` where `title`='Super Users'" ;			
-	$db->setQuery( $query );
+	$db->setQuery($query);
 	$super_user_group = $db->loadResult();
 		
 	// Establecemos el grupo "Super users" por defecto para aplicar la protección de sesión
-	if ( (!array_key_exists("session_protection_groups",$data)) || (is_null($data['session_protection_groups'])) ) {
+	if ((!array_key_exists("session_protection_groups",$data)) || (is_null($data['session_protection_groups'])))
+	{
 		$data['session_protection_groups'] = array('0' => $super_user_group);
 	}
 	
 	/* Continentes seleccionados */
-	if ( array_key_exists('continent',$data) ) {
+	if (array_key_exists('continent',$data))
+	{
 		$continents = $data['continent'];		
 		$continents = array_keys($continents);
 		$continents = implode(',', $continents);
-	} else {
+	} else
+	{
 		$continents = '';
 	}
 	
 
 	/* Países seleccionados */
-	if ( array_key_exists('country',$data) ) {
+	if (array_key_exists('country',$data))
+	{
 		$countries = $data['country'];		
 		$countries = array_keys($countries);
 		$countries = implode(',', $countries);
-	} else {
+	} else
+	{
 		$countries = '';
 	}
 
@@ -129,9 +134,11 @@ public function save()
 	$emails_array = explode(",",$data['email_to']);
 	
 	/* Chequeamos si los emails introducidos son válidos */
-	foreach($emails_array as $email) {
-		$valid = filter_var(trim($email), FILTER_VALIDATE_EMAIL );
-		if ( !$valid ) {
+	foreach($emails_array as $email)
+	{
+		$valid = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
+		if (!$valid)
+		{
 			$emails_valid = false;
 			break;
 		}
@@ -139,16 +146,21 @@ public function save()
 	
 	$data['inspector_forbidden_words'] = $model->clearstring($data['inspector_forbidden_words'], 1);
 	
-	if ( !array_key_exists('loggable_extensions',$data) ) {
+	if (!array_key_exists('loggable_extensions',$data))
+	{
 		$data['loggable_extensions'] = explode(',',"com_banners,com_cache,com_categories,com_config,com_contact,com_content,com_installer,com_media,com_menus,com_messages,com_modules,com_newsfeeds,com_plugins,com_redirect,com_tags,com_templates,com_users");
 	}
 	
-	if ( (!$emails_valid) || (!filter_var($data['email_from_domain'], FILTER_VALIDATE_EMAIL )) || (!is_numeric($data['email_max_number'])) ) {
+	if ((!$emails_valid) || (!filter_var($data['email_from_domain'], FILTER_VALIDATE_EMAIL)) || (!is_numeric($data['email_max_number'])))
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_INVALID_EMAIL_FORMAT'),'error');
-	} else {
-		if ( ( array_key_exists('spammer_limit',$data) ) && (!is_numeric($data['spammer_limit']) ) || ( array_key_exists('delete_period',$data) && !is_numeric($data['delete_period']) ) ) {
+	} else
+	{
+		if ((array_key_exists('spammer_limit',$data)) && (!is_numeric($data['spammer_limit'])) || (array_key_exists('delete_period',$data) && !is_numeric($data['delete_period'])))
+		{
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_INVALID_VALUE'),'error');
-		} else {
+		} else
+		{
 			$model->saveConfig($data, 'pro_plugin');
 		} 		
 	}
@@ -183,7 +195,8 @@ public function import_blacklist()
 }
 
 /* Acciones al pulsar el botón para exportar las Ips en la lista negra */
-function Export_blacklist(){
+function Export_blacklist()
+{
 	$db = JFactory::getDBO();
 		
 	// Obtenemos los valores de las distintas opciones del Firewall Web
@@ -194,9 +207,11 @@ function Export_blacklist(){
 	$db->setQuery($query);
 	$params = $db->loadAssocList();
 	
-	if ( empty($params) ) {
+	if (empty($params))
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'),error);
-	} else {
+	} else
+	{
 			
 		// Extraemos los valores de los array...
 		$json_string = array_values($params);
@@ -216,8 +231,8 @@ function Export_blacklist(){
 		$filename = "securitycheckpro_blacklist_" . $sitename . "_" . $timestamp . ".txt";
 		@ob_end_clean();	
 		ob_start();	
-		header( 'Content-Type: text/plain' );
-		header( 'Content-Disposition: attachment;filename=' . $filename );
+		header('Content-Type: text/plain');
+		header('Content-Disposition: attachment;filename=' . $filename);
 		print $blacklist;
 		exit();
 	}
@@ -235,7 +250,8 @@ public function import_whitelist()
 }
 
 /* Acciones al pulsar el botón para exportar las Ips en la lista negra */
-function Export_whitelist(){
+function Export_whitelist()
+{
 	$db = JFactory::getDBO();
 		
 	// Obtenemos los valores de las distintas opciones del Firewall Web
@@ -246,9 +262,11 @@ function Export_whitelist(){
 	$db->setQuery($query);
 	$params = $db->loadAssocList();
 	
-	if ( empty($params) ) {
+	if (empty($params))
+	{
 		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'),error);
-	} else {
+	} else
+	{
 			
 		// Extraemos los valores de los array...
 		$json_string = array_values($params);
@@ -268,8 +286,8 @@ function Export_whitelist(){
 		$filename = "securitycheckpro_whitelist_" . $sitename . "_" . $timestamp . ".txt";
 		@ob_end_clean();	
 		ob_start();	
-		header( 'Content-Type: text/plain' );
-		header( 'Content-Disposition: attachment;filename=' . $filename );
+		header('Content-Type: text/plain');
+		header('Content-Disposition: attachment;filename=' . $filename);
 		print $blacklist;
 		exit();
 	}
@@ -286,7 +304,8 @@ public function send_email_test()
 }
 
 /* Acciones al pulsar el botón 'Enable' en la pestaña url inspector*/
-function enable_url_inspector(){
+function enable_url_inspector()
+{
 		
 	require_once JPATH_ROOT. DIRECTORY_SEPARATOR .'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'cpanel.php';
 	$cpanelmodel = new SecuritycheckprosModelCpanel();

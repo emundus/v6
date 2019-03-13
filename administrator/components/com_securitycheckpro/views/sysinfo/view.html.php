@@ -7,9 +7,9 @@
 */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
-jimport( 'joomla.application.component.view' );
+jimport('joomla.application.component.view');
 
 /**
  * Securitycheck View
@@ -21,7 +21,7 @@ class SecuritycheckprosViewsysinfo extends JViewLegacy
 	 **/
 	function display($tpl = null)
 	{
-		JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | '.JText::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'), 'securitycheckpro' );
+		JToolBarHelper::title(JText::_('Securitycheck Pro').' | '.JText::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'), 'securitycheckpro');
 						
 		// Obtenemos los datos del modelo
 		$model = $this->getModel("sysinfo");

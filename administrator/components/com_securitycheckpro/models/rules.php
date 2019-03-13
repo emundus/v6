@@ -60,12 +60,13 @@ protected function populateState()
 /*  Función para la paginación */
 function getPagination()
 {
-// Cargamos el contenido si es que no existe todavía
-if (empty($this->_pagination)) {
-	jimport('joomla.html.pagination');
-$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit') );
-}
-return $this->_pagination;
+	// Cargamos el contenido si es que no existe todavía
+	if (empty($this->_pagination))
+	{
+		jimport('joomla.html.pagination');
+		$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit'));
+	}
+	return $this->_pagination;
 }
 
 /* Función para cargar los grupos del sistema */
@@ -88,7 +89,8 @@ function load()
 	$date = JFactory::getDate();
 	
 	// Comprobamos si hay que añadir algún grupo a la tabla '#__securitycheckpro_rules'
-	foreach ($joomla_groups as $element){
+	foreach ($joomla_groups as $element)
+	{
 		$array_val = get_object_vars($element);
 		$group_id = (int) $array_val["id"];
 		$title = $array_val["title"];
@@ -96,16 +98,18 @@ function load()
 				
 		$query_rules = 'SELECT * FROM ' . $db->quoteName("#__securitycheckpro_rules") . ' WHERE  group_id = ' . $group_id;
 		
-		$db->setQuery( $query_rules );
+		$db->setQuery($query_rules);
 		$element_exists = $db->loadObjectList();
 		
 		// Al grupo 'Super Users' nunca se le deberían aplicar las reglas.
-		if ( $title == 'Super Users' ) {
+		if ($title == 'Super Users')
+		{
 			$rules_applied = 0;
 		}
 		
 		// Si no existe, lo añadimos
-		if ( empty($element_exists) ) {
+		if (empty($element_exists))
+		{
 			$valor = (object) array(
 						'group_id' => $group_id,
 						'rules_applied' => $rules_applied,
@@ -130,11 +134,14 @@ function load()
 		
 	// Filtramos los comentarios de las búsquedas si existen
 	$search = $this->getState('filter.acl_search');
-	if (!empty($search)) {
-		if (stripos($search, 'id:') === 0) {
+	if (!empty($search)) 
+	{
+		if (stripos($search, 'id:') === 0)
+		{
 			$query->where('a.id = ' . (int) substr($search, 3));
 		}
-		else {
+		else
+		{
 			$search = $db->quote('%' . $db->escape($search, true) . '%');
 			$query->where('a.title LIKE ' . $search);
 		}
@@ -171,12 +178,15 @@ function apply_rules()
 	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 		
 	$db = $this->getDbo();
-	foreach($uids as $uid) {
-		try {
+	foreach($uids as $uid) 
+	{
+		try 
+		{
 			$sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=1,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
 			$db->setQuery($sql);
 			$db->execute();	
-		} catch (Exception $e){
+		} catch (Exception $e)
+		{
 			$resultado = false;
 			break(1);
 		}
@@ -201,12 +211,15 @@ function not_apply_rules()
 	Joomla\Utilities\ArrayHelper::toInteger($uids, array());
 		
 	$db = $this->getDbo();
-	foreach($uids as $uid) {
-		try {
+	foreach($uids as $uid)
+	{
+		try 
+		{
 			$sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=0,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
 			$db->setQuery($sql);
 			$db->execute();
-		}	catch (Exception $e){
+		}	catch (Exception $e)
+		{
 			$resultado = false;
 			break(1);
 		}

@@ -31,7 +31,7 @@ function filter_data($array_data,&$pagination)
 	$upper_limit = $this->getState('limitstart');
 	$lower_limit = $this->getState('limit');
 		
-	if ( $lower_limit == 0 ) {
+	if ($lower_limit == 0) {
 		$lower_limit=500;
 	}
 	
@@ -43,8 +43,8 @@ function filter_data($array_data,&$pagination)
 		
 	$filtered_array = array();
 	/* Si el campo 'search' no está vacío, buscamos en todos los campos del array */			
-	if (!empty($search) ) {
-		$filtered_array = array_values(array_filter($array_data, function ($element) use ($search) { return (strstr($element,$search) );} ));
+	if (!empty($search)) {
+		$filtered_array = array_values(array_filter($array_data, function ($element) use ($search) { return (strstr($element,$search));}));
 		/* Cortamos el array para mostrar sólo los valores mostrados por la paginación */
 		$array_data = array_splice($filtered_array, $upper_limit, $lower_limit);
 	} else {
@@ -74,9 +74,9 @@ function deleteip_dynamic_blacklist() {
 		$ip_to_delete = $db->Quote($db->escape($uid));
 		// Borramos la IP de la tabla
 		$query = "DELETE FROM `#__securitycheckpro_dynamic_blacklist` WHERE (ip = {$ip_to_delete})";
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		$result = $db->execute();
-		if ( $result ) {
+		if ($result) {
 			$deleted_elements++;
 		}		
 	}
@@ -111,39 +111,47 @@ function deleteip_dynamic_blacklist() {
 	}
 
 /* Función que añade una ip al fichero que será consumido por el control center si el plugin 'Connect' está habilitado */
-	function añadir_info_control_center($ip,$option) {
+function añadir_info_control_center($ip,$option) 
+{
 		// Ruta al fichero de información
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
 		
-		$str=file_get_contents($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php');
-		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
-		$str = str_replace("#<?php die('Forbidden.'); ?>",'',$str);
-		$info_to_add = json_decode($str,true);
-		
-		if (!$info_to_add) {
-			$info_to_add = array(
-				'dynamic_blacklist'	=>	array(),
-				'blacklist'		=> array(),		
-				'whitelist'		=> array()
-			);
+		if (@file_exists(($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php')))
+		{			
+			$str=file_get_contents($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php');
+			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+			$str = str_replace("#<?php die('Forbidden.'); ?>",'',$str);
+			$info_to_add = json_decode($str,true);
 			
-			array_push($info_to_add[$option],$ip);
-			$info_to_add = json_encode($info_to_add);
-		} else {
-			try{
-				array_push($info_to_add[$option],$ip);					
+			if (!$info_to_add) 
+			{
+				$info_to_add = array(
+					'dynamic_blacklist'	=>	array(),
+					'blacklist'		=> array(),		
+					'whitelist'		=> array()
+				);
+				
+				array_push($info_to_add[$option],$ip);
 				$info_to_add = json_encode($info_to_add);
-			} catch (Exception $e) {				
-				return false;	
-			}
+			} else
+			{
+				try
+				{
+					array_push($info_to_add[$option],$ip);					
+					$info_to_add = json_encode($info_to_add);
+				} catch (Exception $e)
+				{				
+					return false;	
+				}
+			}			
+			// Sobreescribimos el contenido del fichero
+			file_put_contents($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php', "#<?php die('Forbidden.'); ?>" . PHP_EOL . $info_to_add);	
 		}
-		
-		// Sobreescribimos el contenido del fichero
-		file_put_contents($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php', "#<?php die('Forbidden.'); ?>" . PHP_EOL . $info_to_add);	
 	}
 
 /* Función para añadir una ip a una lista */
-function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
+function manage_list($type,$action,$ip=null,$check_own=true,$remote=false)
+{
 
 	// Inicializamos las variables
 	$query = null;
@@ -156,7 +164,7 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 	$db = JFactory::getDBO();
 	
 	// Podemos pasar la IP como argumento; en ese caso no necesitamos capturar los valores del formulario
-	if ( is_null($ip) ) {
+	if (is_null($ip)) {
 		// Creamos el objeto JInput para obtener las variables del formulario
 		$jinput = JFactory::getApplication()->input;
 	} 
@@ -167,14 +175,14 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 	switch ($action) {
 		case "add":
 			// Obtenemos el valor de la IP introducida
-			if ( $type == 'blacklist' ) {
-				if ( is_null($ip) ) {
+			if ($type == 'blacklist') {
+				if (is_null($ip)) {
 					$ip_to_add = $jinput->get('blacklist_add_ip','0.0.0.0','string');
 				} else {
 					$ip_to_add = $ip;
 				}				
-			} else if ( $type == 'whitelist' ) {
-				if ( is_null($ip) ) {
+			} else if ($type == 'whitelist') {
+				if (is_null($ip)) {
 					$ip_to_add = $jinput->get('whitelist_add_ip','0.0.0.0','string');
 				} else {
 					$ip_to_add = $ip;
@@ -183,11 +191,11 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 			
 			// Chequeamos el formato de la entrada
 			//IPv4
-			if ( strstr($ip_to_add,'*') ) { // Si existe algún comodín, lo reemplazamos por el dígito '0'
+			if (strstr($ip_to_add,'*')) { // Si existe algún comodín, lo reemplazamos por el dígito '0'
 				$ip_to_add_filtered= str_replace('*','0',$ip_to_add);
 				$ip_valid = filter_var($ip_to_add_filtered,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4);
 			} //IPv4/IPv6 CIDR
-			else if ( strstr($ip_to_add,'/') ) { // Formato CIDR
+			else if (strstr($ip_to_add,'/')) { // Formato CIDR
 				$ip_without_cidr = strstr($ip_to_add,'/',true);
 				$ip_valid = filter_var($ip_without_cidr,FILTER_VALIDATE_IP);				
 			}		
@@ -195,7 +203,7 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 				$ip_valid = filter_var($ip_to_add,FILTER_VALIDATE_IP);				
 			}
 			
-			if ( !$ip_valid ) {
+			if (!$ip_valid) {
 				if (!$remote) {
 					JError::raiseWarning(100,JText::_('COM_SECURITYCHECKPRO_INVALID_FORMAT'));
 					break;
@@ -206,18 +214,18 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 						
 			// Get the client IP to see if the user wants to block his own IP
 			$client_ip = "";
-			if ( isset($_SERVER["REMOTE_ADDR"]) ) {
+			if (isset($_SERVER["REMOTE_ADDR"])) {
 				$client_ip = $db->escape($_SERVER["REMOTE_ADDR"]);
-			} else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ) {
+			} else if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
 				$client_ip = $db->escape($_SERVER["HTTP_X_FORWARDED_FOR"]);
-			} else if ( isset($_SERVER["HTTP_CLIENT_IP"]) ) {
+			} else if (isset($_SERVER["HTTP_CLIENT_IP"])) {
 				$client_ip = $db->escape($_SERVER["HTTP_CLIENT_IP"]);
 			} 
 						
 			// Si la IP es la del cliente no la añadimos para no bloquearnos, excepto cuando la petición provenga del url inspector
-			if ( $check_own ){
-				if ( ($ip_to_add == $client_ip) && ($type == 'blacklist') ){
-					if ( is_null($ip) ) {
+			if ($check_own){
+				if (($ip_to_add == $client_ip) && ($type == 'blacklist')){
+					if (is_null($ip)) {
 						JError::raiseWarning(100,JText::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP'));						
 						break;
 					} else {
@@ -231,7 +239,7 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 						
 			$aparece_lista = $this->chequear_ip_en_lista($ip_to_add,$params[$type]);
 			if (!$aparece_lista) {
-				if ( $params[$type] != '' ) {
+				if ($params[$type] != '') {
 					$params[$type] .= ',' .$ip_to_add;
 				} else {
 					$params[$type] .= $ip_to_add;
@@ -245,12 +253,12 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 					// Chequeamos si hemos de añadir la ip al fichero que será consumido por el plugin 'connect'
 					$control_center_enabled = $this->control_center_enabled();
 				
-					if ( $control_center_enabled ) {
+					if ($control_center_enabled) {
 						$this->añadir_info_control_center($ip_to_add,$type);
 					}
 				} 
 			} else {
-				if ( is_null($ip) ) {
+				if (is_null($ip)) {
 					if (!$remote) {
 						JError::raiseNotice(100,JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED',1));
 					}
@@ -259,19 +267,19 @@ function manage_list($type,$action,$ip=null,$check_own=true,$remote=false){
 			break;
 		case "delete":
 			// Obtenemos los valores de las IPs que serán introducidas en la lista negra
-			if ( $type == 'blacklist' ) {
+			if ($type == 'blacklist') {
 				$uids = $jinput->get('cid','0','array');
-			} else if ( $type == 'whitelist' ) {
+			} else if ($type == 'whitelist') {
 				$uids = $jinput->get('whitelist_cid','0','array');
 			}
 						
 			// Obtenemos los valores que ya existen en la lista negra (eliminamos los espacios porque si la ip no se puede determinar su valor es 'Not set'
 			$list_to_array = explode(',',$params[$type]);
-			$list_to_array = array_map( function ($element) { return str_replace(' ', '', $element); },$list_to_array );
-			if ( $uids != 0 ) {
+			$list_to_array = array_map(function ($element) { return str_replace(' ', '', $element); },$list_to_array);
+			if ($uids != 0) {
 				foreach($uids as $uid) {
 					$key = array_search($uid,$list_to_array);
-					if ( $key !== false ) {
+					if ($key !== false) {
 						// Eliminamos el elemento del array
 						array_splice($list_to_array, $key, 1);
 						$deleted_elements++;
@@ -303,14 +311,14 @@ function geolocation($ip,$bycountry=null) {
 			
 	if(@file_exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'GeoLite2-Country.mmdb')) {
 		/* Chequeamos si existen las funciones necesarias para manejar el fichero de geolocalización. Si cargamos nuestro fichero y estas funciones ya están definidas, obtendremos un error fatal */
-		if ( !function_exists('getCountryCode') ) {
+		if (!function_exists('getCountryCode')) {
 			require_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'geoipv2.php';
 		}
 							
 		$db = JFactory::getDBO();
 		
 		// Does the autoload class exist?
-		if ( !class_exists('ComposerAutoloaderInit8375bfc27eeada0fbde4b984aec19527') ) {
+		if (!class_exists('ComposerAutoloaderInit8375bfc27eeada0fbde4b984aec19527')) {
 			require_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'autoload.php';				
 		}
 						
@@ -332,7 +340,7 @@ function geolocation($ip,$bycountry=null) {
 	// Construimos el contenido del campo 'geolocation' que será mostrado
 	$geolocation = $lang->_('COM_SECURITYCHECKPRO_COUNTRY_LABEL') . ': ' . $db->escape($country_name) . ' | ' . $lang->_('COM_SECURITYCHECKPRO_CONTINENT_LABEL') . ': ' . $db->escape($continent_name);
 	
-	if ( empty($bycountry) ) {
+	if (empty($bycountry)) {
 		// Devolvemos el resultado
 		return $geolocation;
 	} else {
@@ -348,7 +356,7 @@ function change_wildcards($ip){
 		
 	if (strrchr($ip,'*')){ // Chequeamos si existe el carácter '*' en el string; si no existe podemos ignorar esta ip
 		$k = 0;
-		while ( $k <= 3 )  {
+		while ($k <= 3)  {
 			if ($array_ip_peticionaria[$k] == '*') {
 				$array_ip_peticionaria[$k] = 0;					
 			}
@@ -387,7 +395,7 @@ function import_blacklist()
 	}
 	
 	//First check if the file has the right extension, we need txt only
-	if ( !(strtolower(JFile::getExt($userfile['name']) ) == 'txt') ) {
+	if (!(strtolower(JFile::getExt($userfile['name'])) == 'txt')) {
 		JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_EXTENSION'));
 		return false;
 	}
@@ -440,7 +448,7 @@ function import_blacklist()
 				
 		try {
 			// Añadimos los datos a la BBDD	
-			if ( is_null($storage_value) ) {
+			if (is_null($storage_value)) {
 				$insert = true;
 				// Establecemos los valores por defecto del plugin
 				$storage_value = "{\"blacklist\":\"\",\"whitelist\":\"\",\"dynamic_blacklist\":1,\"dynamic_blacklist_time\":600,\"dynamic_blacklist_counter\":5,\"blacklist_email\":0,\"priority1\":\"Geoblock\",\"priority2\":\"Whitelist\",\"priority3\":\"DynamicBlacklist\",\"priority4\":\"Blacklist\",\"methods\":\"GET,POST,REQUEST\",\"mode\":1,\"logs_attacks\":1,\"log_limits_per_ip_and_day\":0,\"redirect_after_attack\":1,\"redirect_options\":1,\"redirect_url\":\"\",\"custom_code\":\"\",\"second_level\":1,\"second_level_redirect\":1,\"second_level_limit_words\":3,\"second_level_words\":\"drop,update,set,admin,select,user,password,concat,login,load_file,ascii,char,union,from,group by,order by,insert,values,pass,where,substring,benchmark,md5,sha1,schema,version,row_count,compress,encode,information_schema,script,javascript,img,src,input,body,iframe,frame\",\"email_active\":0,\"email_subject\":\"Securitycheck Pro alert!\",\"email_body\":\"Securitycheck Pro has generated a new alert. Please, check your logs.\",\"email_add_applied_rule\":1,\"email_to\":\"youremail@yourdomain.com\",\"email_from_domain\":\"me@mydomain.com\",\"email_from_name\":\"Your name\",\"email_max_number\":20,\"check_header_referer\":1,\"check_base_64\":1,\"base64_exceptions\":\"com_hikashop\",\"strip_tags_exceptions\":\"com_jdownloads,com_hikashop,com_phocaguestbook\",\"duplicate_backslashes_exceptions\":\"com_kunena\",\"line_comments_exceptions\":\"com_comprofiler\",\"sql_pattern_exceptions\":\"\",\"if_statement_exceptions\":\"\",\"using_integers_exceptions\":\"com_dms,com_comprofiler,com_jce,com_contactenhanced\",\"escape_strings_exceptions\":\"com_kunena,com_jce\",\"lfi_exceptions\":\"\",\"second_level_exceptions\":\"\",\"session_protection_active\":1,\"session_hijack_protection\":1,\"tasks\":\"alternate\",\"launch_time\":2,\"periodicity\":24,\"control_center_enabled\":\"0\",\"secret_key\":\"\",\"add_geoblock_logs\":0,\"upload_scanner_enabled\":1,\"check_multiple_extensions\":1,\"extensions_blacklist\":\"php,js,exe,xml\",\"delete_files\":1,\"actions_upload_scanner\":0,\"exclude_exceptions_if_vulnerable\":1,\"track_failed_logins\":1,\"write_log\":1,\"logins_to_monitorize\":2,\"actions_failed_login\":1,\"session_protection_groups\":[\"8\"],\"backend_exceptions\":\"\",\"email_on_admin_login\":0,\"forbid_admin_frontend_login\":0,\"add_access_attempts_logs\":0,\"check_if_user_is_spammer\":1,\"spammer_action\":1,\"spammer_write_log\":0,\"spammer_limit\":3,\"forbid_new_admins\":0,\"spammer_what_to_check\":[\"Email\",\"IP\",\"Username\"]}";				
@@ -456,13 +464,13 @@ function import_blacklist()
 			$object->storage_key = "pro_plugin";
 			$object->storage_value = $storage_value;
 			
-			if ( $insert ) {
+			if ($insert) {
 				$res = $db->insertObject('#__securitycheckpro_storage', $object);
 			} else {
 				$res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
 			}
 									
-			if ( !$res ) {
+			if (!$res) {
 				JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'));
 				return false;
 			}
@@ -471,7 +479,7 @@ function import_blacklist()
 			return false;
 		}
 		
-		if ( $res ) {
+		if ($res) {
 			// Borramos el archivo subido...
 			JFile::delete($tmp_dest);
 			// ... y mostramos un mensaje de éxito
@@ -510,7 +518,7 @@ function import_whitelist()
 	}
 	
 	//First check if the file has the right extension, we need txt only
-	if ( !(strtolower(JFile::getExt($userfile['name']) ) == 'txt') ) {
+	if (!(strtolower(JFile::getExt($userfile['name'])) == 'txt')) {
 		JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_INVALID_FILE_EXTENSION'));
 		return false;
 	}
@@ -563,7 +571,7 @@ function import_whitelist()
 				
 		try {
 			// Añadimos los datos a la BBDD	
-			if ( is_null($storage_value) ) {
+			if (is_null($storage_value)) {
 				$insert = true;
 				// Establecemos los valores por defecto del plugin
 				$storage_value = "{\"blacklist\":\"\",\"whitelist\":\"\",\"dynamic_blacklist\":1,\"dynamic_blacklist_time\":600,\"dynamic_blacklist_counter\":5,\"blacklist_email\":0,\"priority1\":\"Geoblock\",\"priority2\":\"Whitelist\",\"priority3\":\"DynamicBlacklist\",\"priority4\":\"Blacklist\",\"methods\":\"GET,POST,REQUEST\",\"mode\":1,\"logs_attacks\":1,\"log_limits_per_ip_and_day\":0,\"redirect_after_attack\":1,\"redirect_options\":1,\"redirect_url\":\"\",\"custom_code\":\"\",\"second_level\":1,\"second_level_redirect\":1,\"second_level_limit_words\":3,\"second_level_words\":\"drop,update,set,admin,select,user,password,concat,login,load_file,ascii,char,union,from,group by,order by,insert,values,pass,where,substring,benchmark,md5,sha1,schema,version,row_count,compress,encode,information_schema,script,javascript,img,src,input,body,iframe,frame\",\"email_active\":0,\"email_subject\":\"Securitycheck Pro alert!\",\"email_body\":\"Securitycheck Pro has generated a new alert. Please, check your logs.\",\"email_add_applied_rule\":1,\"email_to\":\"youremail@yourdomain.com\",\"email_from_domain\":\"me@mydomain.com\",\"email_from_name\":\"Your name\",\"email_max_number\":20,\"check_header_referer\":1,\"check_base_64\":1,\"base64_exceptions\":\"com_hikashop\",\"strip_tags_exceptions\":\"com_jdownloads,com_hikashop,com_phocaguestbook\",\"duplicate_backslashes_exceptions\":\"com_kunena\",\"line_comments_exceptions\":\"com_comprofiler\",\"sql_pattern_exceptions\":\"\",\"if_statement_exceptions\":\"\",\"using_integers_exceptions\":\"com_dms,com_comprofiler,com_jce,com_contactenhanced\",\"escape_strings_exceptions\":\"com_kunena,com_jce\",\"lfi_exceptions\":\"\",\"second_level_exceptions\":\"\",\"session_protection_active\":1,\"session_hijack_protection\":1,\"tasks\":\"alternate\",\"launch_time\":2,\"periodicity\":24,\"control_center_enabled\":\"0\",\"secret_key\":\"\",\"add_geoblock_logs\":0,\"upload_scanner_enabled\":1,\"check_multiple_extensions\":1,\"extensions_blacklist\":\"php,js,exe,xml\",\"delete_files\":1,\"actions_upload_scanner\":0,\"exclude_exceptions_if_vulnerable\":1,\"track_failed_logins\":1,\"write_log\":1,\"logins_to_monitorize\":2,\"actions_failed_login\":1,\"session_protection_groups\":[\"8\"],\"backend_exceptions\":\"\",\"email_on_admin_login\":0,\"forbid_admin_frontend_login\":0,\"add_access_attempts_logs\":0,\"check_if_user_is_spammer\":1,\"spammer_action\":1,\"spammer_write_log\":0,\"spammer_limit\":3,\"forbid_new_admins\":0,\"spammer_what_to_check\":[\"Email\",\"IP\",\"Username\"]}";				
@@ -579,13 +587,13 @@ function import_whitelist()
 			$object->storage_key = "pro_plugin";
 			$object->storage_value = $storage_value;
 			
-			if ( $insert ) {
+			if ($insert) {
 				$res = $db->insertObject('#__securitycheckpro_storage', $object);
 			} else {
 				$res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
 			}
 									
-			if ( !$res ) {
+			if (!$res) {
 				JError::raiseWarning('', JText::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'));
 				return false;
 			}
@@ -594,7 +602,7 @@ function import_whitelist()
 			return false;
 		}
 		
-		if ( $res ) {
+		if ($res) {
 			// Borramos el archivo subido...
 			JFile::delete($tmp_dest);
 			// ... y mostramos un mensaje de éxito
@@ -782,7 +790,7 @@ private function downloadDatabase()
 		
 		// Generic check on valid HTTP code
 		if($response->code > 299) {
-			throw new Exception(JText::_('COM_SECURITYCHECKPRO_ERR_MAXMIND_GENERIC') . " (" . $response->code . ")" );
+			throw new Exception(JText::_('COM_SECURITYCHECKPRO_ERR_MAXMIND_GENERIC') . " (" . $response->code . ")");
 		}
 		
 
@@ -833,7 +841,7 @@ function get_latest_database_update() {
 	$latest = $db->loadResult();
 	
 	// Si no hay ningún valor establecemos la fecha actual
-	if ( empty($latest) ) {
+	if (empty($latest)) {
 		$params = utf8_encode(json_encode($now));			
 		$object = (object)array(
 			'storage_key'		=> 'geoip_database_update',
@@ -920,11 +928,11 @@ public function is_plugin_installed($folder,$plugin_name) {
 	// Inicializamos las variables
 	$installed= false;
 	
-	jimport( 'joomla.application.plugin.helper' );	
+	jimport('joomla.application.plugin.helper');	
 	$plugin = JpluginHelper::getPlugin($folder,$plugin_name);
 	
 	// Si el valor devuelto es un array, entonces el plugin no existe o no está habilitado
-	if ( !is_array($plugin) ) {
+	if (!is_array($plugin)) {
 		$installed = true;		
 	}
 	
@@ -932,7 +940,8 @@ public function is_plugin_installed($folder,$plugin_name) {
 }
 
 /* Función que chequea si el plugin pasado como argumento está instalado */
-public function logs_by_country() {
+public function logs_by_country()
+{
 	// Iso2 json string
 	$iso2_json = '{"BD": "BGD", "BE": "BEL", "BF": "BFA", "BG": "BGR", "BA": "BIH", "BB": "BRB", "WF": "WLF", "BL": "BLM", "BM": "BMU", "BN": "BRN", "BO": "BOL", "BH": "BHR", "BI": "BDI", "BJ": "BEN", "BT": "BTN", "JM": "JAM", "BV": "BVT", "BW": "BWA", "WS": "WSM", "BQ": "BES", "BR": "BRA", "BS": "BHS", "JE": "JEY", "BY": "BLR", "BZ": "BLZ", "RU": "RUS", "RW": "RWA", "RS": "SRB", "TL": "TLS", "RE": "REU", "TM": "TKM", "TJ": "TJK", "RO": "ROU", "TK": "TKL", "GW": "GNB", "GU": "GUM", "GT": "GTM", "GS": "SGS", "GR": "GRC", "GQ": "GNQ", "GP": "GLP", "JP": "JPN", "GY": "GUY", "GG": "GGY", "GF": "GUF", "GE": "GEO", "GD": "GRD", "GB": "GBR", "GA": "GAB", "SV": "SLV", "GN": "GIN", "GM": "GMB", "GL": "GRL", "GI": "GIB", "GH": "GHA", "OM": "OMN", "TN": "TUN", "JO": "JOR", "HR": "HRV", "HT": "HTI", "HU": "HUN", "HK": "HKG", "HN": "HND", "HM": "HMD", "VE": "VEN", "PR": "PRI", "PS": "PSE", "PW": "PLW", "PT": "PRT", "SJ": "SJM", "PY": "PRY", "IQ": "IRQ", "PA": "PAN", "PF": "PYF", "PG": "PNG", "PE": "PER", "PK": "PAK", "PH": "PHL", "PN": "PCN", "PL": "POL", "PM": "SPM", "ZM": "ZMB", "EH": "ESH", "EE": "EST", "EG": "EGY", "ZA": "ZAF", "EC": "ECU", "IT": "ITA", "VN": "VNM", "SB": "SLB", "ET": "ETH", "SO": "SOM", "ZW": "ZWE", "SA": "SAU", "ES": "ESP", "ER": "ERI", "ME": "MNE", "MD": "MDA", "MG": "MDG", "MF": "MAF", "MA": "MAR", "MC": "MCO", "UZ": "UZB", "MM": "MMR", "ML": "MLI", "MO": "MAC", "MN": "MNG", "MH": "MHL", "MK": "MKD", "MU": "MUS", "MT": "MLT", "MW": "MWI", "MV": "MDV", "MQ": "MTQ", "MP": "MNP", "MS": "MSR", "MR": "MRT", "IM": "IMN", "UG": "UGA", "TZ": "TZA", "MY": "MYS", "MX": "MEX", "IL": "ISR", "FR": "FRA", "IO": "IOT", "SH": "SHN", "FI": "FIN", "FJ": "FJI", "FK": "FLK", "FM": "FSM", "FO": "FRO", "NI": "NIC", "NL": "NLD", "NO": "NOR", "NA": "NAM", "VU": "VUT", "NC": "NCL", "NE": "NER", "NF": "NFK", "NG": "NGA", "NZ": "NZL", "NP": "NPL", "NR": "NRU", "NU": "NIU", "CK": "COK", "XK": "XKX", "CI": "CIV", "CH": "CHE", "CO": "COL", "CN": "CHN", "CM": "CMR", "CL": "CHL", "CC": "CCK", "CA": "CAN", "CG": "COG", "CF": "CAF", "CD": "COD", "CZ": "CZE", "CY": "CYP", "CX": "CXR", "CR": "CRI", "CW": "CUW", "CV": "CPV", "CU": "CUB", "SZ": "SWZ", "SY": "SYR", "SX": "SXM", "KG": "KGZ", "KE": "KEN", "SS": "SSD", "SR": "SUR", "KI": "KIR", "KH": "KHM", "KN": "KNA", "KM": "COM", "ST": "STP", "SK": "SVK", "KR": "KOR", "SI": "SVN", "KP": "PRK", "KW": "KWT", "SN": "SEN", "SM": "SMR", "SL": "SLE", "SC": "SYC", "KZ": "KAZ", "KY": "CYM", "SG": "SGP", "SE": "SWE", "SD": "SDN", "DO": "DOM", "DM": "DMA", "DJ": "DJI", "DK": "DNK", "VG": "VGB", "DE": "DEU", "YE": "YEM", "DZ": "DZA", "US": "USA", "UY": "URY", "YT": "MYT", "UM": "UMI", "LB": "LBN", "LC": "LCA", "LA": "LAO", "TV": "TUV", "TW": "TWN", "TT": "TTO", "TR": "TUR", "LK": "LKA", "LI": "LIE", "LV": "LVA", "TO": "TON", "LT": "LTU", "LU": "LUX", "LR": "LBR", "LS": "LSO", "TH": "THA", "TF": "ATF", "TG": "TGO", "TD": "TCD", "TC": "TCA", "LY": "LBY", "VA": "VAT", "VC": "VCT", "AE": "ARE", "AD": "AND", "AG": "ATG", "AF": "AFG", "AI": "AIA", "VI": "VIR", "IS": "ISL", "IR": "IRN", "AM": "ARM", "AL": "ALB", "AO": "AGO", "AQ": "ATA", "AS": "ASM", "AR": "ARG", "AU": "AUS", "AT": "AUT", "AW": "ABW", "IN": "IND", "AX": "ALA", "AZ": "AZE", "IE": "IRL", "ID": "IDN", "UA": "UKR", "QA": "QAT", "MZ": "MOZ"}'; 
 	
@@ -953,7 +962,8 @@ public function logs_by_country() {
 	// Creamos el array que contendrá el string en formato json
 	$data = array();	
 	
-	foreach ( $logs_stored as $entrada ) {
+	foreach ($logs_stored as $entrada) 
+	{
 		
 		// Obtenemos el país truncando la entrada de la geolocalización, que tiene este formato : 'Country: United States | Continent: North America'
 		$primera_parte = strpos($entrada[1],":");
@@ -964,21 +974,27 @@ public function logs_by_country() {
 		$country_code = array_search($country,$iso2_country_names_array);
 		
 		// Si no encontramos el código de dos dígitos, usamos la geolocalización sobre la ip
-		if ( $country_code === false ) {
+		if ($country_code === false)
+		{
 			$country_code = $this->geolocation($entrada[0],true);			
 		}
 		
-		if ( array_key_exists($country_code,$iso2_array) ) {
+		if ((!empty($country_code)) && (array_key_exists($country_code,$iso2_array)))
+		{
 			$three_letter_iso = $iso2_array[$country_code];			
 			
-			if ( array_key_exists($three_letter_iso,$data) ) {
+			if (array_key_exists($three_letter_iso,$data))
+			{
 				$data[$three_letter_iso]["numberOfThings"] += 1;
-				if ( ($data[$three_letter_iso]["numberOfThings"]) > 20 &&  ($data[$three_letter_iso]["numberOfThings"]) < 40 )  {
+				if (($data[$three_letter_iso]["numberOfThings"]) > 20 &&  ($data[$three_letter_iso]["numberOfThings"]) < 40)
+				{
 					$data[$three_letter_iso]["fillKey"] = "MEDIUM";
-				} else if ( ($data[$three_letter_iso]["numberOfThings"]) > 40 ) {
+				} else if (($data[$three_letter_iso]["numberOfThings"]) > 40)
+				{
 					$data[$three_letter_iso]["fillKey"] = "HIGH";
 				}
-			} else {
+			} else 
+			{
 				$data[$three_letter_iso] = array(
 					"fillKey" => "LOW",
 					"numberOfThings"	=>	1,		

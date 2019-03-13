@@ -20,7 +20,7 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 {
 	function display($tpl = NULL)
 	{
-		JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_CONTROLPANEL'), 'securitycheckpro' );
+		JToolBarHelper::title(JText::_('Securitycheck Pro').' | ' .JText::_('COM_SECURITYCHECKPRO_CONTROLPANEL'), 'securitycheckpro');
 		
 		
 		// Obtenemos los datos del modelo...
@@ -32,7 +32,8 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		// Extraemos los elementos de las distintas listas...
 		$blacklist_elements= array();
 		$pagination_blacklist = null;
-		if ( (!is_null($items['blacklist'])) && ($items['blacklist'] != '') ) {
+		if ((!is_null($items['blacklist'])) && ($items['blacklist'] != ''))
+		{
 			$items['blacklist'] = str_replace(' ','',$items['blacklist']);
 			$blacklist_elements = explode(',',trim($items['blacklist']));
 		}
@@ -42,7 +43,8 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$whitelist_elements= array();
 		$pagination_whitelist = null;
 
-		if ( (!is_null($items['whitelist'])) && ($items['whitelist'] != '') ) {	
+		if ((!is_null($items['whitelist'])) && ($items['whitelist'] != ''))
+		{	
 			$items['whitelist'] = str_replace(' ','',$items['whitelist']);
 			$whitelist_elements = explode(',',trim($items['whitelist']));
 		}
@@ -75,11 +77,13 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$easy_config_applied = $model->Get_Easy_Config();
 		// Versiones de los componentes instalados
 		$version_scp = $model->get_version('securitycheckpro');
-		if ($update_database_plugin_exists) {
+		if ($update_database_plugin_exists)
+		{
 			$version_update_database = $model->get_version('databaseupdate');
 			$this->version_update_database =  $version_update_database;
 		}
-		if ($trackactions_plugin_exists) {
+		if ($trackactions_plugin_exists)
+		{
 			$version_trackactions = $model->get_version('trackactions');
 			$this->version_trackactions = $version_trackactions;
 		}
@@ -96,7 +100,8 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$geoip_database_update = $instance->get_latest_database_update();
 		$geolite_automatic_updates = $params->get('geoip_automatic_updates');
 		
-		if ( ($geoip_database_update > 30) && ($geolite_automatic_updates == 1) ) {
+		if (($geoip_database_update > 30) && ($geolite_automatic_updates == 1))
+		{
 			$instance->update_geoblock_database();
 		}
 		
@@ -130,6 +135,7 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$this->geoip_database_update =  $geoip_database_update;
 		$this->geolite_automatic_updates =  $geolite_automatic_updates;
 		$this->version_scp =  $version_scp;
+		$this->lock_status = $model->lock_status();
 				
 		parent::display();
 	}

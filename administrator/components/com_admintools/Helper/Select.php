@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -9,34 +9,16 @@ namespace Akeeba\AdminTools\Admin\Helper;
 
 defined('_JEXEC') or die;
 
+use JAccess;
 use JHtml;
 use Joomla\Utilities\ArrayHelper;
 use JText;
 
 class Select
 {
-	protected static function genericlist($list, $name, $attribs, $selected, $idTag)
-	{
-		if (empty($attribs))
-		{
-			$attribs = null;
-		}
-		else
-		{
-			$temp = '';
-			foreach ($attribs as $key => $value)
-			{
-				$temp .= $key . ' = "' . $value . '"';
-			}
-			$attribs = $temp;
-		}
-
-		return JHtml::_('FEFHelper.select.genericlist', $list, $name, $attribs, 'value', 'text', $selected, $idTag);
-	}
-
 	public static function valuelist($options, $name, $attribs = null, $selected = null, $ignoreKey = false)
 	{
-		$list = array();
+		$list = [];
 		foreach ($options as $k => $v)
 		{
 			if ($ignoreKey)
@@ -51,9 +33,9 @@ class Select
 
 	public static function booleanlist($name, $attribs = null, $selected = null, $showEmpty = true)
 	{
-		$options = array();
+		$options = [];
 
-		if($showEmpty)
+		if ($showEmpty)
 		{
 			$options[] = JHtml::_('FEFHelper.select.option', '-1', '---');
 		}
@@ -66,31 +48,31 @@ class Select
 
 	public static function csrflist($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '-1', '---'),
 			JHtml::_('FEFHelper.select.option', '0', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CSRFSHIELD_NO')),
 			JHtml::_('FEFHelper.select.option', '1', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CSRFSHIELD_BASIC')),
-			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CSRFSHIELD_ADVANCED'))
-		);
+			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CSRFSHIELD_ADVANCED')),
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function autoroots($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '-1', '---'),
 			JHtml::_('FEFHelper.select.option', '0', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_AUTOROOT_OFF')),
 			JHtml::_('FEFHelper.select.option', '1', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_AUTOROOT_STD')),
-			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_AUTOROOT_ALT'))
-		);
+			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_AUTOROOT_ALT')),
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
-	public static function published($selected = null, $id = 'enabled', $attribs = array())
+	public static function published($selected = null, $id = 'enabled', $attribs = [])
 	{
-		$options = array();
+		$options   = [];
 		$options[] = JHtml::_('FEFHelper.select.option', '', '- ' . JText::_('COM_ADMINTOOLS_LBL_COMMON_SELECTPUBLISHSTATE') . ' -');
 		$options[] = JHtml::_('FEFHelper.select.option', 0, JText::_('JUNPUBLISHED'));
 		$options[] = JHtml::_('FEFHelper.select.option', 1, JText::_('JPUBLISHED'));
@@ -98,17 +80,17 @@ class Select
 		return self::genericlist($options, $id, $attribs, $selected, $id);
 	}
 
-	public static function reasons($id = 'reason', $selected = null, $attribs = array())
+	public static function reasons($id = 'reason', $selected = null, $attribs = [])
 	{
-		$options = array();
+		$options = [];
 
-		$reasons = array(
+		$reasons = [
 			'other', 'adminpw', 'ipwl', 'ipbl', 'sqlishield', 'antispam',
 			'tmpl', 'template', 'muashield', 'csrfshield',
 			'geoblocking', 'rfishield', 'dfishield', 'uploadshield',
 			'httpbl', 'loginfailure', 'external', 'awayschedule', 'admindir',
-			'nonewadmins', 'nonewfrontendadmins', 'phpshield', '404shield', 'wafblacklist'
-		);
+			'nonewadmins', 'nonewfrontendadmins', 'phpshield', '404shield', 'wafblacklist',
+		];
 
 		foreach ($reasons as $reason)
 		{
@@ -160,26 +142,28 @@ class Select
 
 	public static function wwwredirs($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '-1', '---'),
 			JHtml::_('FEFHelper.select.option', '0', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_WWWREDIR_NO')),
 			JHtml::_('FEFHelper.select.option', '1', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_WWWREDIR_WWW')),
-			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_WWWREDIR_NONWWW'))
-		);
+			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_WWWREDIR_NONWWW')),
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function perms($name, $attribs = null, $selected = null)
 	{
-		$rawperms = array(0400, 0440, 0444, 0600, 0640, 0644, 0660, 0664, 0700, 0740, 0744, 0750, 0754, 0755, 0757, 0770, 0775, 0777);
+		$rawperms = [
+			0400, 0440, 0444, 0600, 0640, 0644, 0660, 0664, 0700, 0740, 0744, 0750, 0754, 0755, 0757, 0770, 0775, 0777,
+		];
 
-		$options = array();
+		$options   = [];
 		$options[] = JHtml::_('FEFHelper.select.option', '', '---');
 
 		foreach ($rawperms as $perm)
 		{
-			$text = decoct($perm);
+			$text      = decoct($perm);
 			$options[] = JHtml::_('FEFHelper.select.option', '0' . $text, $text);
 		}
 
@@ -188,13 +172,13 @@ class Select
 
 	public static function trsfreqlist($name, $attribs = null, $selected = null)
 	{
-		$freqs = array('second', 'minute', 'hour', 'day');
+		$freqs = ['second', 'minute', 'hour', 'day'];
 
-		$options = array();
+		$options   = [];
 		$options[] = JHtml::_('FEFHelper.select.option', '', '---');
 		foreach ($freqs as $freq)
 		{
-			$text = JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_FREQ' . strtoupper($freq));
+			$text      = JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_FREQ' . strtoupper($freq));
 			$options[] = JHtml::_('FEFHelper.select.option', $freq, $text);
 		}
 
@@ -203,42 +187,42 @@ class Select
 
 	public static function deliverymethod($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '-1', '---'),
 			JHtml::_('FEFHelper.select.option', 'plugin', JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_OPT_JSDELIVERY_PLUGIN')),
-			JHtml::_('FEFHelper.select.option', 'direct', JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_OPT_JSDELIVERY_DIRECT'))
-		);
+			JHtml::_('FEFHelper.select.option', 'direct', JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_OPT_JSDELIVERY_DIRECT')),
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function httpschemes($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', 'http', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_IPLOOKUPSCHEME_HTTP')),
-			JHtml::_('FEFHelper.select.option', 'https', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_IPLOOKUPSCHEME_HTTPS'))
-		);
+			JHtml::_('FEFHelper.select.option', 'https', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_IPLOOKUPSCHEME_HTTPS')),
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function scanresultstatus($name, $selected = null, $attribs = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '', '- ' . JText::_('COM_ADMINTOOLS_LBL_COMMON_SELECTPUBLISHSTATE') . ' -'),
 			JHtml::_('FEFHelper.select.option', 'new', JText::_('COM_ADMINTOOLS_LBL_SCANALERTS_STATUS_NEW')),
 			JHtml::_('FEFHelper.select.option', 'suspicious', JText::_('COM_ADMINTOOLS_LBL_SCANALERTS_STATUS_SUSPICIOUS')),
 			JHtml::_('FEFHelper.select.option', 'modified', JText::_('COM_ADMINTOOLS_LBL_SCANALERTS_STATUS_MODIFIED')),
-		);
+		];
 
-		return self::genericlist($options, $name, $attribs, $selected, $name.'_id');
+		return self::genericlist($options, $name, $attribs, $selected, $name . '_id');
 	}
 
 	public static function markedsafe($name, $selected = null, $attribs = null)
 	{
-		$options = array();
+		$options = [];
 
-		$options[] = JHtml::_('FEFHelper.select.option', '', '- '.JText::_('COM_ADMINTOOLS_LBL_SCANALERTS_ACKNOWLEDGED').' -');
+		$options[] = JHtml::_('FEFHelper.select.option', '', '- ' . JText::_('COM_ADMINTOOLS_LBL_SCANALERTS_ACKNOWLEDGED') . ' -');
 		$options[] = JHtml::_('FEFHelper.select.option', '0', JText::_('JNO'));
 		$options[] = JHtml::_('FEFHelper.select.option', '1', JText::_('JYES'));
 
@@ -247,20 +231,20 @@ class Select
 
 	public static function symlinks($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '0', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_SYMLINKS_OFF')),
 			JHtml::_('FEFHelper.select.option', '1', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_SYMLINKS_FOLLOW')),
 			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_SYMLINKS_IFOWNERMATCH')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
-	public static function languages($id = 'language', $selected = null, $attribs = array())
+	public static function languages($id = 'language', $selected = null, $attribs = [])
 	{
 		\JLoader::import('joomla.language.helper');
 		$languages = \JLanguageHelper::getLanguages('lang_code');
-		$options = array();
+		$options   = [];
 
 		if (isset($attribs['allow_empty']))
 		{
@@ -284,19 +268,19 @@ class Select
 
 	public static function keepUrlParamsList($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '', '- - -'),
 			JHtml::_('FEFHelper.select.option', '0', JText::_('COM_ADMINTOOLS_REDIRECTION_KEEPURLPARAMS_LBL_OFF')),
 			JHtml::_('FEFHelper.select.option', '1', JText::_('COM_ADMINTOOLS_REDIRECTION_KEEPURLPARAMS_LBL_ALL')),
 			JHtml::_('FEFHelper.select.option', '2', JText::_('COM_ADMINTOOLS_REDIRECTION_KEEPURLPARAMS_LBL_ADD')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function httpVerbs($name = '', $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '', '- - -'),
 			JHtml::_('FEFHelper.select.option', 'GET', 'GET'),
 			JHtml::_('FEFHelper.select.option', 'POST', 'POST'),
@@ -304,37 +288,37 @@ class Select
 			JHtml::_('FEFHelper.select.option', 'DELETE', 'DELETE'),
 			JHtml::_('FEFHelper.select.option', 'HEAD', 'HEAD'),
 			JHtml::_('FEFHelper.select.option', 'TRACE', 'TRACE'),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function wafApplication($name = '', $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', 'site', JText::_('COM_ADMINTOOLS_LBL_WAFBLACKLISTEDREQUEST_APPLICATION_SITE')),
 			JHtml::_('FEFHelper.select.option', 'admin', JText::_('COM_ADMINTOOLS_LBL_WAFBLACKLISTEDREQUEST_APPLICATION_ADMIN')),
 			JHtml::_('FEFHelper.select.option', 'both', JText::_('COM_ADMINTOOLS_LBL_WAFBLACKLISTEDREQUEST_APPLICATION_BOTH')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function queryParamType($name = '', $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '', '- - -'),
 			JHtml::_('FEFHelper.select.option', 'E', JText::_('COM_ADMINTOOLS_LBL_WAFBLACKLISTEDREQUEST_QUERY_CONTENT_EXACT')),
 			JHtml::_('FEFHelper.select.option', 'P', JText::_('COM_ADMINTOOLS_LBL_WAFBLACKLISTEDREQUEST_QUERY_CONTENT_PARTIAL')),
 			JHtml::_('FEFHelper.select.option', 'R', JText::_('COM_ADMINTOOLS_LBL_WAFBLACKLISTEDREQUEST_QUERY_CONTENT_REGEX')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function referrerpolicy($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '-1', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERERPOLICY_DISABLED')),
 			JHtml::_('FEFHelper.select.option', '', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERERPOLICY_EMPTY')),
 			JHtml::_('FEFHelper.select.option', 'no-referrer', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERERPOLICY_NOREF')),
@@ -345,41 +329,41 @@ class Select
 			JHtml::_('FEFHelper.select.option', 'origin-when-cross-origin', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERERPOLICY_ORIGINCROSS')),
 			JHtml::_('FEFHelper.select.option', 'strict-origin-when-cross-origin', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERERPOLICY_STRICTORIGINGCROSS')),
 			JHtml::_('FEFHelper.select.option', 'unsafe-url', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_REFERERPOLICY_UNSAFE')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function etagtype($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', 'default', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_DEFAULT')),
 			JHtml::_('FEFHelper.select.option', 'full', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_FULL')),
 			JHtml::_('FEFHelper.select.option', 'sizetime', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_SIZETIME')),
 			JHtml::_('FEFHelper.select.option', 'size', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_SIZE')),
 			JHtml::_('FEFHelper.select.option', 'none', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_NONE')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function etagtypeIIS($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', 'default', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_DEFAULT')),
 			JHtml::_('FEFHelper.select.option', 'none', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_NONE')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
 	public static function etagtypeNginX($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', '-1', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_DEFAULT')),
 			JHtml::_('FEFHelper.select.option', '1', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_FULL')),
 			JHtml::_('FEFHelper.select.option', '0', JText::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_ETAGTYPE_NONE')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
@@ -387,15 +371,15 @@ class Select
 	/**
 	 * Drop down list of CSV delimiter preference
 	 *
-	 * @param   string  $name      The field's name
-	 * @param   int     $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
+	 * @param   string $name     The field's name
+	 * @param   int    $selected Pre-selected value
+	 * @param   array  $attribs  Field attributes
 	 *
 	 * @return  string  The HTML of the drop-down
 	 */
-	public static function csvdelimiters($name = 'csvdelimiters', $selected = 1, $attribs = array())
+	public static function csvdelimiters($name = 'csvdelimiters', $selected = 1, $attribs = [])
 	{
-		$options   = array();
+		$options   = [];
 		$options[] = JHtml::_('FEFHelper.select.option', '1', 'abc, def');
 		$options[] = JHtml::_('FEFHelper.select.option', '2', 'abc; def');
 		$options[] = JHtml::_('FEFHelper.select.option', '3', '"abc"; "def"');
@@ -407,9 +391,9 @@ class Select
 	/**
 	 * Creates a drop-down list with the possible configuration monitor actions
 	 *
-	 * @param   string  $name      Field name
-	 * @param   array   $attribs   Field attributes
-	 * @param   string  $selected  Selected value
+	 * @param   string $name     Field name
+	 * @param   array  $attribs  Field attributes
+	 * @param   string $selected Selected value
 	 *
 	 * @return  string  The HTML of the field
 	 *
@@ -417,11 +401,105 @@ class Select
 	 */
 	public static function configMonitorAction($name, $attribs = null, $selected = null)
 	{
-		$options = array(
+		$options = [
 			JHtml::_('FEFHelper.select.option', 'email', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CONFIGMONITORACTION_EMAIL')),
 			JHtml::_('FEFHelper.select.option', 'block', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CONFIGMONITORACTION_BLOCK')),
-		);
+		];
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
+
+	/**
+	 * Creates a drop-down list with the possible forgotten users actions
+	 *
+	 * @param   string $name     Field name
+	 * @param   array  $attribs  Field attributes
+	 * @param   string $selected Selected value
+	 *
+	 * @return  string  The HTML of the field
+	 *
+	 * @since   5.3.0
+	 */
+	public static function disableObsoleteAdminsAction($name, $attribs = null, $selected = null)
+	{
+		$options = [
+			JHtml::_('FEFHelper.select.option', 'reset', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_DISABLEOBSOLETEADMINS_ACTION_RESET')),
+			JHtml::_('FEFHelper.select.option', 'block', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_DISABLEOBSOLETEADMINS_ACTION_BLOCK')),
+		];
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Creates a drop-down list with backend users. To make sure we won't get a memory error up to 100 users are shown.
+	 *
+	 * @param   string $name     Field name
+	 * @param   array  $attribs  Field attributes
+	 * @param   string $selected Selected value
+	 *
+	 * @return  string  The HTML of the field
+	 *
+	 * @since   5.3.0
+	 */
+	public static function backendUsers($name, $attribs = null, $selected = null)
+	{
+		// Get all groups
+		$db    = \JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select([$db->qn('id')])
+			->from($db->qn('#__usergroups'));
+
+		$groups = array_filter($db->setQuery($query)->loadColumn(0), function ($group) {
+			// First try to see if the group has explicit backend login privileges
+			if (JAccess::checkGroup($group, 'core.login.admin', 1))
+			{
+				return true;
+			}
+
+			// If not, is it a Super Admin (ergo inherited privileges)?
+			return (bool) JAccess::checkGroup($group, 'core.admin', 1);
+		});
+
+		// Get all applicable user IDs
+		$users = [];
+
+		foreach ($groups as $group)
+		{
+			$users = array_unique(array_merge($users, JAccess::getUsersByGroup($group)));
+		}
+
+		// Get all applicable admin users
+		$query = $db->getQuery(true)
+			->select([
+				$db->qn('id', 'value'),
+				$db->qn('username', 'text')
+			])
+			->from($db->qn('#__users'))
+			->where($db->qn('id') . ' IN(' . implode(',', array_map([$db, 'q'], $users)) . ')')
+			->order($db->qn('username') . ' ASC');
+
+		return self::genericlist(array_map(function($data) {
+			return JHtml::_('FEFHelper.select.option', $data['value'], $data['text']);
+		}, $db->setQuery($query, 0, 100)->loadAssocList()), $name, $attribs, $selected, $name);
+	}
+
+	protected static function genericlist($list, $name, $attribs, $selected, $idTag)
+	{
+		if (empty($attribs))
+		{
+			$attribs = null;
+		}
+		else
+		{
+			$temp = '';
+			foreach ($attribs as $key => $value)
+			{
+				$temp .= $key . ' = "' . $value . '"';
+			}
+			$attribs = $temp;
+		}
+
+		return JHtml::_('FEFHelper.select.genericlist', $list, $name, $attribs, 'value', 'text', $selected, $idTag);
+	}
+
 }

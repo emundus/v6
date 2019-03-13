@@ -25,21 +25,25 @@ public function save()
 	
 		
 	/* Continentes seleccionados */
-	if ( array_key_exists('continent',$data) ) {
+	if (array_key_exists('continent',$data)) 
+	{
 		$continents = $data['continent'];		
 		$continents = array_keys($continents);
 		$continents = implode(',', $continents);
-	} else {
+	} else 
+	{
 		$continents = '';
 	}
 	
 
 	/* Países seleccionados */
-	if ( array_key_exists('country',$data) ) {
+	if (array_key_exists('country',$data))
+	{
 		$countries = $data['country'];		
 		$countries = array_keys($countries);
 		$countries = implode(',', $countries);
-	} else {
+	} else
+	{
 		$countries = '';
 	}
 

@@ -10,51 +10,39 @@
 defined('_JEXEC') or die('Restricted access');
 JSession::checkToken( 'get' ) or die( 'Invalid Token' );
 
-// Cargamos el comportamiento modal para mostrar las ventanas para exportar
-JHtml::_('behavior.modal');
-
-// Eliminamos la carga de las librerías mootools
+// Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
+$document->addScript(JURI::root().'media/system/js/core.js');
+
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
+// Bootstrap core JavaScript
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+
+// Chosen scripts
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
+$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
+
+// Add style declaration
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
+$chosen = "media/com_securitycheckpro/new/vendor/chosen/chosen.css";
+JHTML::stylesheet($chosen);
+
 ?>
 
-  <!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
-
 <?php 
-// Cargamos el contenido común
+// Cargamos el contenido común...
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/upload.php';
 ?>
 
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sweetalert.min.js"></script>
-
-<?php 
-if ( version_compare(JVERSION, '3.20', 'lt') ) {
-?>
-<!-- Bootstrap core CSS-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-<?php } else { ?>
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">
-<?php } ?>
-<!-- Custom fonts for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
- <!-- Custom styles for this template-->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
- <!-- Chosen styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel="stylesheet">
- <!-- Cpanel styles -->
-<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet">
-
-<form enctype="multipart/form-data" method="post" style="margin-top: -18px;" name="adminForm" id="adminForm">
+<form enctype="multipart/form-data" method="post" class="margin-top-minus18" name="adminForm" id="adminForm">
 
 			<?php 
 			// Cargamos la navegación
@@ -83,19 +71,13 @@ if ( version_compare(JVERSION, '3.20', 'lt') ) {
 						  <span class="custom-file-control"></span>
 						</label>
 						
-						<input class="btn btn-primary" style="margin-left: 20px;" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" onclick="Joomla.submitbutton('read_file')" />
+						<input class="btn btn-primary" class="margin-left-20" type="button" id="read_file_button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />
 						
 					</fieldset>
 				</div>
 			</div>
 		</div>
 </div>
-
-<!-- Bootstrap core JavaScript -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- Custom scripts for all pages -->
-<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

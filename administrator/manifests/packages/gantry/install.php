@@ -21,11 +21,11 @@ class Pkg_GantryInstallerScript
     protected $versions = array(
         'PHP' => array (
             '5.2' => '5.2.17',
-            '0' => '7.0.19' // Preferred version
+            '0' => '7.0.30' // Preferred version
         ),
         'Joomla!' => array (
             '2.5' => '2.5.0',
-            '0' => '3.7.2' // Preferred version
+            '0' => '3.9.3' // Preferred version
         )
     );
     /**
@@ -93,6 +93,8 @@ class Pkg_GantryInstallerScript
 
     public function postflight($type, $parent)
     {
+        $this->removeOldLibrary();
+
         // Clear Joomla system cache.
         /** @var JCache|JCacheController $cache */
         $cache = JFactory::getCache();
@@ -131,6 +133,23 @@ class Pkg_GantryInstallerScript
     }
 
     // Internal functions
+
+    protected function removeOldLibrary()
+    {
+        $name = 'lib_gantry';
+
+        // Joomla 3.9 does not like libraries with prefix, because of this library manifest file was renamed.
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->delete('#__extensions')->where("{$db->quoteName('element')}={$db->quote($name)}");
+        $db->setQuery($query);
+        $db->execute();
+
+        $filename = JPATH_ADMINISTRATOR . "/manifests/libraries/{$name}.xml";
+        if (file_exists($filename)) {
+            JFile::delete($filename);
+        }
+    }
 
     protected function prepareExtensions($manifest, $state = 1)
     {

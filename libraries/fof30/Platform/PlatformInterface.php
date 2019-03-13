@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -367,6 +367,17 @@ interface PlatformInterface
 	 * @return  void
 	 */
 	public function logDebug($message);
+
+	/**
+	 * Adds a message
+	 *
+	 * @param	string	$title
+	 * @param	string	$logText
+	 * @param	string	$extension
+	 *
+	 * @return void
+	 */
+	public function logUserAction($title, $logText, $extension);
 
 	/**
 	 * Returns the root URI for the request.

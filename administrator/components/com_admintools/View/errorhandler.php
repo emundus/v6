@@ -1,12 +1,12 @@
 <?php
 /**
- * @package   AkeebaCommon
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   admintools
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
- *
- * Common exception handler to deal with the unhandled exceptions in our software and provide useful information to us and the
- * user.
  */
+
+// Protect from unauthorized access
+defined('_JEXEC') or die();
 
 /** @var Throwable $e */
 /** @var string $title */
