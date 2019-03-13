@@ -68,8 +68,8 @@ else {
         'SITE_NAME'     => $config->get('sitename'),
         'USER_EMAIL'    => $email,
         'BASE_URL'      => JURI::root(),
-        'USER_PASSWORD' => $this->data["jos_emundus_users___password_verification"],
-        'USER_PASSWORD_2' => $this->data["jos_emundus_users___password_verification_raw"]
+        'USER_PASSWORD' => $this->data["jos_emundus_users___password"],
+        'USER_PASSWORD_2' => $this->data["jos_emundus_users___password_raw"]
     ];
 
     $emailTemplate = 'associate_new_user';
