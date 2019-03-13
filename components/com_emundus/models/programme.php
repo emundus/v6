@@ -15,8 +15,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
 
-class EmundusModelProgramme extends JModelList
-{
+class EmundusModelProgramme extends JModelList {
     /**
      * Method to get article data.
      *
@@ -227,7 +226,6 @@ class EmundusModelProgramme extends JModelList
         $db = JFactory::getDbo();
 
         $query = $db->getQuery(true);
-
         $query->select($db->quoteName('code'))
                 ->from($db->quoteName('#__emundus_setup_programmes'))
                 ->order('id DESC')
@@ -242,8 +240,170 @@ class EmundusModelProgramme extends JModelList
             JLog::add('Error getting latest programme at model/programme at query :'.$query, JLog::ERROR, 'com_emundus');
             return '';
         }
-
     }
 
+
+    /**
+     * Checks if the user has this programme in his favorites.
+     *
+     * @param      $programme_id Int The ID of the programme to be favorited.
+     * @param null $user_id      Int The user ID, if null: the current user ID.
+     *
+     * @return bool True if favorited.
+     */
+    function isFavorite($programme_id, $user_id = null) {
+
+        if (empty($user_id))
+            $user_id = JFactory::getUser()->id;
+
+        if (empty($user_id) || empty($programme_id))
+        	return false;
+
+	    $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('1')
+            ->from($db->quoteName('#__emundus_favorite_programmes'))
+            ->where($db->quoteName('user_id').' = '.$user_id.' AND '.$db->quoteName('programme_id').' = '.$programme_id);
+        $db->setQuery($query);
+        
+        try {
+            return $db->loadResult() == 1;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+
+	/**
+	 * Adds a programme to the user's list of favorites.
+	 *
+	 * @param      $programme_id Int The ID of the programme to be favorited.
+	 * @param null $user_id      Int The user ID, if null: the current user ID.
+	 *
+	 * @return bool
+	 */
+	public function favorite($programme_id, $user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		if (empty($user_id) || empty($programme_id))
+			return false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->insert($db->quoteName('#__emundus_favorite_programmes'))
+			->columns($db->quoteName(['user_id', 'programme_id']))
+			->values($user_id.','.$programme_id);
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+
+	/**
+	 * Removes a programme from the user's list of favorites.
+	 *
+	 * @param      $programme_id Int The ID of the programme to be unfavorited.
+	 * @param null $user_id      Int The user ID, if null: the current user ID.
+	 *
+	 * @return bool
+	 */
+	public function unfavorite($programme_id, $user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		if (empty($user_id) || empty($programme_id))
+			return false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__emundus_favorite_programmes'))
+			->where($db->quoteName('user_id').' = '.$user_id.' AND '.$db->quoteName('programme_id').' = '.$programme_id);
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+
+	/**
+	 * Get's the upcoming sessions of the user's favorite programs.
+	 *
+	 * @param null $user_id
+	 *
+	 * @return mixed
+	 */
+	public function getUpcomingFavorites($user_id = null) {
+
+		if (empty($user_id))
+			$user_id = JFactory::getUser()->id;
+
+		if (empty($user_id))
+			return false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select(['t.*', $db->quoteName('c.id','cid'), $db->quoteName('p.id', 'pid'), $db->quoteName('p.url')])
+			->from($db->quoteName('#__emundus_favorite_programmes','f'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON '.$db->quoteName('p.id').' = '.$db->quoteName('f.programme_id'))
+			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity','t').' ON '.$db->quoteName('t.code').' LIKE '.$db->quoteName('p.code'))
+			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->quoteName('c.session_code').' LIKE '.$db->quoteName('t.session_code'))
+			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('t.published').'= 1 AND '.$db->quoteName('t.date_start').' >= NOW()')
+			->order($db->quoteName('t.date_start').' ASC');
+		$db->setQuery($query);
+
+		try {
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+
+	/**
+	 * Get's the user's favorite programs.
+	 *
+	 * @param null $user_id
+	 *
+	 * @return mixed
+	 */
+	public function getFavorites($user_id = null) {
+
+		if (empty($user_id)) {
+			$user_id = JFactory::getUser()->id;
+		}
+
+		if (empty($user_id)) {
+			return false;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select(['p.*', $db->quoteName('t.label', 'title')])
+			->from($db->quoteName('#__emundus_favorite_programmes','f'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON '.$db->quoteName('p.id').' = '.$db->quoteName('f.programme_id'))
+			->leftJoin($db->quoteName('#__emundus_setup_thematiques', 'th').' ON '.$db->quoteName('th.id').' = '.$db->quoteName('p.programmes'))
+			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't').' ON '.$db->quoteName('t.code').' LIKE '.$db->quoteName('p.code'))
+			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('p.published').'= 1 AND '.$db->quoteName('t.date_start').' > NOW() AND '.$db->quoteName('t.published').'= 1 AND '.$db->quoteName('th.published').'= 1')
+			->group($db->quoteName('p.id'));
+		$db->setQuery($query);
+
+		try {
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
 }
-?>

@@ -949,6 +949,25 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+	/**
+	 *
+	 */
+	public function removefile() {
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->post->getString('fnum', null);
+
+		$m_files = $this->getModel('Files');
+		if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $fnum)) {
+			$res = $m_files->deleteFile($fnum);
+		} else {
+			$res = false;
+		}
+
+		$result = array('status' => $res);
+		echo json_encode((object)$result);
+		exit;
+	}
+
     /**
      *
      */
@@ -3185,8 +3204,8 @@ class EmundusControllerFiles extends JControllerLegacy
 		    '/{EFFECTIFS}/' => 'Mini : '.$product[0]['min_o'].' - Maxi : '.$product[0]['max_o'],
 		    '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
 		    '/{PEDAGOGIE}/' => $product[0]['pedagogie'],
-		    '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">CPF</h2><p style="padding-left: 30px;">code CPF : '.$product[0]['cpf'].' </p>':'',
-		    '/{EVALUATION}/' => nl2br($product[0]['evaluation'])
+		    '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">'.JText::_('CODE').'</h2><p style="padding-left: 30px;">'.$product[0]['cpf'].' </p>':'',
+		    '/{EVALUATION}/' => $product[0]['evaluation']
 	    ];
 
 	    $export_date = strftime('%e')." ".strftime('%B')." ".date('Y');

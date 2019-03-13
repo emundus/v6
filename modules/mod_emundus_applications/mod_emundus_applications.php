@@ -17,6 +17,7 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -51,8 +52,18 @@ $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
 $admission_status           = explode(',', $params->get('admission_status'));
 
-// We send the layout as a param because Hesam needs different information.
-$applications = modemundusApplicationsHelper::getApplications($layout);
+// Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
+if ($layout == '_:ccirs-drh') {
+	$applications = modemundusApplicationsHelper::getDrhApplications();
+	$cc_list_url = $params->get('cc_list_url', 'index.php');
+} elseif ($layout == '_:ccirs') {
+    $cc_list_url = $params->get('cc_list_url', 'index.php');
+	$applications = modemundusApplicationsHelper::getApplications($layout);
+} else {
+	// We send the layout as a param because Hesam needs different information.
+	$applications = modemundusApplicationsHelper::getApplications($layout);
+}
+
 
 $linknames 			= $params->get('linknames', 0);
 $moduleclass_sfx 	= htmlspecialchars($params->get('moduleclass_sfx'));
@@ -61,11 +72,17 @@ if (empty($user)) {
 	$user = new stdClass();
 	$user->id = JFactory::getUser()->id;
 }
-$user->fnums = $applications;
 
-$m_application = new EmundusModelApplication;
-$m_profile = new EmundusModelProfile;
-$m_checklist = new EmundusModelChecklist;
+$user->fnums 	= $applications;
+
+if (empty($user->profile)) {
+	$h_list = new EmundusHelperList();
+	$user->profile = $h_list->getProfile($user->id);
+}
+
+$m_application 	= new EmundusModelApplication;
+$m_profile		= new EmundusModelProfile;
+$m_checklist 	= new EmundusModelChecklist;
 
 // show application files if applicant profile like current profile and nothing if not
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
@@ -117,15 +134,16 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 		$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 		$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 		$now = $dateTime->format('Y-m-d H:i:s');
-		//echo "::".$this->now;
 	} catch (Exception $e) {
 		echo $e->getMessage() . '<br />';
 	}
 
-	if (!empty($user->end_date))
-		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
-	if (!empty($user->status))
-		$is_app_sent = ($user->status != 0)? true : false;
+	if (!empty($user->end_date)) {
+		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date));
+	}
+	if (!empty($user->status)) {
+		$is_app_sent = ($user->status != 0);
+	}
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }
