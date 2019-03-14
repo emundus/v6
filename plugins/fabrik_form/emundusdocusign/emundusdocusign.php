@@ -242,8 +242,17 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			chmod(EMUNDUS_PATH_ABS.$student->id, 0755);
 		}
 		$profile_id = $m_profile->getProfileByFnum($student->fnum);
-		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+
+		// This bit of code gets some custom pdf code based on the programme.
+		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$fnum['training'].'.php';
+		if (!file_exists($file)) {
+			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+		}
+
+		require_once($file);
 		application_form_pdf($student->id, $student->fnum, false, 1, null, null, null, $profile_id, $attachment_label);
+
+
 		$fileName = $student->fnum.$attachment_label.'.pdf';
 		$fileNamePath = EMUNDUS_PATH_ABS.$student->id.DS.$fileName;
 		$base64FileContent = base64_encode(file_get_contents($fileNamePath));
