@@ -230,7 +230,7 @@ $doc->setTitle($page_title);
                                             </div>
 
                                             <div class="em-themes em-theme-title em-theme-<?php echo $theme_color; ?>">
-                                                <a href="/formations/<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $category['title']))));?>"><?php echo $theme_label; ?></a>
+                                                <a href="/formations/<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $d['jos_emundus_setup_thematiques___title_raw']))));?>"><?php echo $theme_label; ?></a>
                                             </div>
                                         </div>
 
