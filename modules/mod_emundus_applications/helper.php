@@ -151,7 +151,7 @@ class modemundusApplicationsHelper {
 					SELECT '.$db->quoteName('eu.cid').' 
 					FROM '.$db->quoteName('#__emundus_user_entreprise','euu').' WHERE '.$db->quoteName('euu.user').' = '.$user->id.' AND '.$db->quoteName('euu.profile').' = 1002 
 					)
-				) AND '.$db->quoteName('p.published').' = 1 AND '.$db->quoteName('t.published').' = 1 AND '.$db->quoteName('th.published').' = 1')
+				) AND '.$db->quoteName('p.published').' = 1 AND '.$db->quoteName('t.published').' = 1 AND '.$db->quoteName('th.published').' = 1 AND '. $db->quoteName('ecc.company_id') . ' IS NOT NULL ')
 			->group([$db->quoteName('esc.id')])
 			->order($db->quoteName('ecc.date_submitted').' DESC');
 
