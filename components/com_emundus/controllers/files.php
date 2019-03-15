@@ -1406,7 +1406,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($vOpt=="forms" || $vOpt=="attachment")
                     $line .= $vOpt . "(%)\t";
                 else
-                    $line .= $vOpt . "\t";
+                    $line .= '"'.preg_replace("/\r|\n|\t/", "", $vOpt).'"' . "\t";
                 $nbcol++;
             }
 
@@ -1454,10 +1454,10 @@ class EmundusControllerFiles extends JControllerLegacy
                     } else{
                         if($v == "")
                             $line .= " "."\t";
-                        elseif($v[0] == "=")
+                        elseif($v[0] == "=" || $v[0] == "-")
                             $line .= " ".$v."\t";
                         else
-                            $line .= JText::_($v)."\t";
+                            $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
                     }
 
                 }
