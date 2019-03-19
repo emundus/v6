@@ -215,12 +215,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						$fields = array();
 
 						// In case the programme has been unpublished (has gone through the DELETE procedure): republish it.
-						if ($db_item['published'] == '0') {
-							$fields[] = $db->quoteName('p.published').' = 1';
-							if ($update_item['publicationsession'] == false) {
-								$fields[] = $db->quoteName('c.published').' = 1';
-								$fields[] = $db->quoteName('t.published').' = 1';
-							}
+						if ($db_item['published'] == '0' && $update_item['publicationsession'] == false) {
+							$fields[] = $db->quoteName('c.published').' = 1';
+							$fields[] = $db->quoteName('t.published').' = 1';
 						}
 
 						// Items which are set to NOT be displayed need to be unpublished.

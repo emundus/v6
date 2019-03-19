@@ -34,7 +34,7 @@ $m_formations = new EmundusModelFormations();
 $formations = $m_formations->getUserFormationByRH($this->data["jos_emundus_users___user_id_raw"], $user->id);
 ?>
 <div class="page-header">
-    <h1><?php echo JText::_("COM_EMUNDUS_APPLICATIONS_FOR") . strtoupper($this->data["jos_emundus_users___lastname_raw"]) . " " . ucfirst($this->data["jos_emundus_users___firstname_raw"]); ?></h1>
+    <h1><?php echo JText::_("COM_EMUNDUS_APPLICATIONS_FOR") . ucfirst($this->data["jos_emundus_users___firstname_raw"] . " " . strtoupper($this->data["jos_emundus_users___lastname_raw"])); ?></h1>
 </div>
 <?php
 
@@ -148,14 +148,14 @@ $i = 0;
     </div>
 <?php
 endforeach; ?>
-
+<!--
     <div class="em-no-find-formation">
         <h3><?php echo JText::_('COM_EMUNDUS_NO_FIND_FORMATION');?><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_HERE");?></a></h3>
         <?php if (!empty($this->data["jos_emundus_users___user_id_raw"])) :?>
             <div class="em-inscrire-col"></div>
         <?php endif; ?>
     </div>
-
+-->
 <?php else: ?>
     <div class="em-no-formations">
         <h2><?php echo JText::_('COM_EMUNDUS_HAS_NO_FORMATIONS');?><a href="/inscription?user=<?php echo $this->data["jos_emundus_users___user_id_raw"]; ?>"><?php echo JText::_("COM_EMUNDUS_HERE");?></a></h2>

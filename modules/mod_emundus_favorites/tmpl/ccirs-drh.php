@@ -90,25 +90,52 @@ endif; ?>
 
 
     function unfavorite(programme_id) {
-        jQuery.ajax({
-            type: 'POST',
-            url: 'index.php?option=com_emundus&controller=programme&task=unfavorite',
-            data: {
-                programme_id: programme_id,
-                user_id: <?php echo $user->id; ?>
-            },
-            success: function(result) {
-                result = JSON.parse(result);
-                if (result.status) {
-                    document.getElementById('row'+programme_id).remove();
-                } else {
-                    document.getElementById('unf-'+programme_id).style.color = '#d91e18';
-                }
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR.responseText);
+        Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_REMOVE_FAVOURITE'); ?>",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#dc3545",
+                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                cancelButtonText: "<?php echo JText::_('JNO');?>"
             }
-        });
+        ).then(
+            isConfirm => {
+                if (isConfirm.value == true) {
+                    jQuery.ajax({
+                        type: 'POST',
+                        url: 'index.php?option=com_emundus&controller=programme&task=unfavorite',
+                        data: {
+                            programme_id: programme_id,
+                            user_id: <?php echo $user->id; ?>
+                        },
+                        success: function (result) {
+                            result = JSON.parse(result);
+                            if (result.status) {
+                                document.getElementById('row' + programme_id).remove();
+                                Swal.fire({
+                                    type: 'success',
+                                    title: "<?php echo JText::_('COM_EMUNDUS_FAVOURITE_REMOVED'); ?>"
+                                });
+                            } else {
+                                document.getElementById('unf-' + programme_id).style.color = '#d91e18';
+                                Swal.fire({
+                                    type: 'error',
+                                    text: "<?php echo JText::_('COM_EMUNDUS_FAVOURITE_NOT_REMOVED'); ?>"
+                                });
+                            }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                            Swal.fire({
+                                type: 'error',
+                                text: "<?php echo JText::_('COM_EMUNDUS_FAVOURITE_NOT_REMOVED'); ?>"
+                            });
+                        }
+                    });
+                }
+            }
+        );
     }
 </script>
 

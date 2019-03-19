@@ -102,6 +102,9 @@ if ($pageClass !== '') : ?>
                             }
                         }
                     }
+
+                    $numItems = sizeof($data);
+                    $i = 0;
                     ?>
 
                     <div class="em-search-engine-data">
@@ -185,9 +188,12 @@ if ($pageClass !== '') : ?>
 
                                     </div>
                                     <div class="g-block size-30 em-status">
-                                    <span class="label label-<?php echo $d['jos_emundus_setup_status___class_raw']; ?>">
-                                        <?php echo $d['jos_emundus_setup_status___value']; ?>
-                                    </span>
+                                        <span class="label label-<?php echo $d['jos_emundus_setup_status___class_raw']; ?>">
+                                            <?php echo $d['jos_emundus_setup_status___value']; ?>
+                                        </span>
+                                        <div class="em-button-see-formation">
+                                            <a href="<?php echo '/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw']; ?>" target="_blank"><?php echo JText::_("COM_EMUNDUS_SEE_FORMATION"); ?></a>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -207,7 +213,7 @@ if ($pageClass !== '') : ?>
                                                         <!-- TODO: Display n°Stagiaire FROM GESCOF? -->
                                                         <div class="em-delete-application"
                                                              onclick="deleteApplication('<?php echo $applicant->fnum; ?>')">
-                                                            <i class="fas fa-times fa-2x"></i></div>
+                                                            +</div>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="row-fluid">
@@ -228,9 +234,7 @@ if ($pageClass !== '') : ?>
                                         <a href="<?php echo '/inscription?session=' . $d['jos_emundus_setup_teaching_unity___session_code_raw']; ?>"><?php echo JText::_("COM_EMUNDUS_ADD_ASSOCIATE"); ?></a>
                                     </div>
                                     <?php endif; ?>
-                                    <div class="em-button-see-formation">
-                                        <a href="<?php echo '/formation?rowid=' . $d['jos_emundus_setup_programmes___id_raw']; ?>" target="_blank"><?php echo JText::_("COM_EMUNDUS_SEE_FORMATION"); ?></a>
-                                    </div>
+
                                     <hr class="add-candidate-breaker">
 
                                     <!-- TODO: If the status is a certain step, don't show this (cancelled, + maybe other steps) -->
@@ -251,7 +255,9 @@ if ($pageClass !== '') : ?>
                                         </div>
                                     </div>
                                 </div>
-                                <hr class="formation-breaker">
+                                <?php if(++$i != $numItems) :?>
+                                    <hr class="formation-breaker">
+                                <?php endif; ?>
                             </div>
 
 

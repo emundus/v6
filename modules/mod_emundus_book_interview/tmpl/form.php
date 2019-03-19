@@ -6,7 +6,7 @@ defined('_JEXEC') or die;
 <form class="alert alert-info">
     <div class="panel-title"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW"); ?></div>
     <div class="panel-body">
-        <label for="em-calendar-title"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_SELECT"); ?></label>
+        <label for="em-book-interview"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_SELECT"); ?></label>
         <select class="form-control" name="em-book-interview" id="em-book-interview" aria-describedby="bookHelp">
             <option value=""><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_PICK_A_DATE"); ?></option>
             <?php foreach ($available_events as $event) :?>
@@ -21,8 +21,8 @@ defined('_JEXEC') or die;
 
         <?php foreach ($contact_info as $type => $text) :?>
             <div class="form-group">
-                <label for="<?php echo $type.'-input' ?>"><?php echo $text; ?></label>
-                <input type="text" class="form-control" name="<?php echo $type.'-input' ?>" id="<?php echo $type.'-input' ?>">
+                <label for="<?php echo $type.'-input'; ?>"><?php echo $text; ?></label>
+                <input type="text" class="form-control" name="<?php echo $type.'-input'; ?>" id="<?php echo $type.'-input'; ?>">
             </div>
         <?php endforeach; ?>
 

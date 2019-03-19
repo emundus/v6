@@ -15,10 +15,7 @@ if (isset($user->fnum)) {
     // First we need to check if the user has booked.
     // If the user has not, we will display a button that opens a modal allowing them to book an event (and so we need to get the event info).
     // If the user has we will display the date of their interview.
-    $user_booked = $helper->hasUserbooked($user->id);
-
-    // We then need to get the user's status, this will determine if he is elligible for an interview.
-    $status = $helper->getStatus($user->fnum);
+    $user_booked = $helper->hasUserbooked($user->id, $user->start_date);
 
     if ($user_booked) {
 
@@ -32,26 +29,28 @@ if (isset($user->fnum)) {
 
         require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview_'.$params->get('mod_em_book_interview_layout')));
 
-    } elseif ($status == $evaluated_status) {
+    } elseif ($user->status == $evaluated_status) {
 
         $available_events = $helper->getEvents($user);
 
         $offset = JFactory::getConfig()->get('offset');
 
         $contact_info = array();
-        if ($params->get('skype') == 1)
-            $contact_info['skype'] = JText::_('ENTER_SKYPE_ID');
-        if ($params->get('facetime') == 1)
-            $contact_info['facetime'] = JText::_('ENTER_FACETIME_ID');
-        if ($params->get('whatsapp') == 1)
-            $contact_info['whatsapp'] = JText::_('ENTER_FACETIME_ID');
-        if ($params->get('google') == 1)
-            $contact_info['google'] = JText::_('ENTER_GOOGLE_ID');
+        if ($params->get('skype') == 1) {
+	        $contact_info['skype'] = JText::_('ENTER_SKYPE_ID');
+        }
+        if ($params->get('facetime') == 1) {
+	        $contact_info['facetime'] = JText::_('ENTER_FACETIME_ID');
+        }
+        if ($params->get('whatsapp') == 1) {
+	        $contact_info['whatsapp'] = JText::_('ENTER_FACETIME_ID');
+        }
+        if ($params->get('google') == 1) {
+	        $contact_info['google'] = JText::_('ENTER_GOOGLE_ID');
+        }
 
         require(JModuleHelper::getLayoutPath('mod_emundus_book_interview', $params->get('mod_em_book_interview_layout')));
 
     }
 
 }
-
-?>

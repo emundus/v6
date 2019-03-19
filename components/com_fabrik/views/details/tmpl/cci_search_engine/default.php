@@ -35,7 +35,7 @@ require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'format
 $m_formations = new EmundusModelFormations();
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
-if ($m_formations->checkHRUser($user->id)) {
+if ($m_formations->checkHRUser($user->id, $user->id)) {
     $applied = [];
 } else {
 	$applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___code_raw']);
