@@ -92,7 +92,7 @@ endif; ?>
     function unfavorite(programme_id) {
         Swal.fire({
                 title: "<?php echo JText::_('COM_EMUNDUS_REMOVE_FAVOURITE'); ?>",
-                type: "warning",
+                type: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#dc3545",

@@ -245,7 +245,7 @@ endif;
 
         Swal.fire({
                 title: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_CONFIRM') : JText::_('REMOVE_COMPANY_CONFIRM'); ?>",
-                type: "warning",
+                type: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#dc3545",

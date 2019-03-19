@@ -179,7 +179,7 @@ echo $this->pluginend;
     function deleteApplication(fnum) {
         Swal.fire({
                 title: "<?php echo JText::_('COM_EMUNDUS_REMOVE_ASSOCIATE'); ?>",
-                type: "warning",
+                type: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#dc3545",
