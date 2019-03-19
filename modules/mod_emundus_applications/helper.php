@@ -148,15 +148,21 @@ class modemundusApplicationsHelper {
 			->where($db->quoteName('ecc.applicant_id').' IN (
 				SELECT '.$db->quoteName('user').'
 				FROM '.$db->quoteName('#__emundus_user_entreprise','eu').' WHERE '.$db->quoteName('eu.cid').' IN (
-					SELECT '.$db->quoteName('eu.cid').' 
+					SELECT '.$db->quoteName('euu.cid').' 
 					FROM '.$db->quoteName('#__emundus_user_entreprise','euu').' WHERE '.$db->quoteName('euu.user').' = '.$user->id.' AND '.$db->quoteName('euu.profile').' = 1002 
 					)
 				) AND '.$db->quoteName('p.published').' = 1 AND '.$db->quoteName('t.published').' = 1 AND '.$db->quoteName('th.published').' = 1 AND '. $db->quoteName('ecc.company_id') . ' IS NOT NULL ')
 			->group([$db->quoteName('esc.id')])
 			->order($db->quoteName('ecc.date_submitted').' DESC');
 
-		$db->setQuery($query);
-		return $db->loadAssocList('fnum');
+		try {
+            $db->setQuery($query);
+            return $db->loadAssocList('fnum');
+        } catch (Exception $e) {
+            JLog::add("Error at query : ".$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
 	}
 
 

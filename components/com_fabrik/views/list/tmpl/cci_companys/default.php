@@ -87,9 +87,9 @@ echo $this->table->intro;
         <div class="g-block size-100">
             <?php if ($this->navigation->total < 1) :?>
                 <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
-                    <h2><?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?></h2>
+                    <h3><?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?></h3>
                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
-                    <h2><?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?></h2>
+                    <h3><?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?></h3>
                 <?php endif; ?>
             <?php else: ?>
                 <?php

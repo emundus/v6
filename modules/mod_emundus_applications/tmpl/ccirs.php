@@ -61,10 +61,11 @@ echo $description;
 
                 <div class="col-md-2 main-page-file-progress">
                     <div class="main-page-file-progress-label">
+                        <span class="label label-<?php echo $application->class; ?>">
+                            <?php echo $application->value; ?>
+                        </span>
                         <a href="<?php echo $cc_list_url; ?>">
-                            <span class="label label-<?php echo $application->class; ?>">
-                                <?php echo $application->value; ?>
-                            </span>
+                            <i class="fas fa-eye"></i>
                         </a>
                     </div>
                 </div>
