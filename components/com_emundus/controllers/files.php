@@ -2831,7 +2831,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             foreach ($idFabrik as $id) {
                                 if (isset($fabrikValues[$id][$fnum])) {
                                     $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-                                    $preprocess->setValue($id, $value);
+                                    $preprocess->setValue($id, htmlspecialchars($value));
                                 } else {
                                     $preprocess->setValue($id, '');
                                 }
