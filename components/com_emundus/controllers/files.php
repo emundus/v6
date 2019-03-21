@@ -2609,18 +2609,34 @@ class EmundusControllerFiles extends JControllerLegacy
 
 	        case 1:
                 // Simple FILE.
-				// TODO: Actually add the file generation code...
-                $res->status = false;
-                $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                $file = JPATH_BASE.$tmpl[0]['file'];
+                if (file_exists($file)) {
+                    foreach ($fnumsArray as $fnum) {
+                        if (isset($fnumsInfos[$fnum])) {
+                            $name = $attachInfos['lbl'].'_'.date('Y-m-d_H-i-s').'.'.pathinfo($file)['extension'];
+                            $path = EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$name;
+                            if (copy($file, $path)) {
+                                $url  = EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/';
+                                $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url, );
+                            }
+                        }
+                    }
+                }
+                else {
+                    $res->status = false;
+                    $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                }
+
                 echo json_encode($res);
-                break;
+            break;
 
 	        case 2:
 
 	        	// PDF From HTML.
 	            foreach ($fnumsArray as $fnum) {
 		            if (isset($fnumsInfos[$fnum])) {
-
 			            $post = [
 			            	'TRAINING_CODE' => $fnumsInfos[$fnum]['campaign_code'],
                             'TRAINING_PROGRAMME' => $fnumsInfos[$fnum]['campaign_label'],
