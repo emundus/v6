@@ -134,9 +134,9 @@ echo $this->table->intro;
                                                 <span><?php echo str_replace('Title-', '',$k); ?></span>
                                             </div>
                                         <?php else: ?>
-                                            <div class="em-element <?php echo str_replace(' ','-', $k);?>">
-                                                <div class="em-element-label"><?php echo $k; ?></div>
-                                            <div class="em-element-value"><?php echo $v; ?></div>
+                                            <div class="em-element <?php echo str_replace(['(', ')', ' '], '-', $k);?>">
+                                                <div class="em-element-label"><?php echo $k; ?> : </div>
+                                            <div class="em-element-value <?php echo empty($v)?"em-empty-value":"";?>"><?php echo $v; ?></div>
                                             </div>
                                         <?php endif; ?>
                                     <?php endif;?>
