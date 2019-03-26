@@ -59,7 +59,6 @@ foreach ($users as $user) {
 	}
 	
 	$users_registered[] = $user_id;
-	$continue = false;
 	switch ($applicant_can_renew) {
 
 	    // Cannot create new campaigns at all.
@@ -71,7 +70,7 @@ foreach ($users as $user) {
 			    if (!empty($db->loadResult())) {
 				    JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
 				    $application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
-				    $continue = true;
+				    continue 2;
 			    }
 		    } catch(Exception $e) {
 			    JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -89,8 +88,8 @@ foreach ($users as $user) {
 			try {
 				if (in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus');
-					$application->enqueueMessage('User already has a file for this campaign.', 'error');
-					$continue = true;
+					$application->enqueueMessage(JText::_('COM_EMUNDUS_USER_ALREADY_SIGNED_UP'), 'error');
+					continue 2;
 				}
 			} catch (Exception $e) {
 				JLog::add('plugin/emundus_campaign SQL error at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -116,7 +115,7 @@ foreach ($users as $user) {
 				if (!in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus');
 					$application->enqueueMessage('User already has a file for this year.', 'error');
-					$continue = true;
+					continue 2;
 				}
 			} catch (Exception $e) {
 				JLog::add('plugin/emundus_campaign SQL error at query :'.$years_query, JLog::ERROR, 'com_emundus');
@@ -127,12 +126,6 @@ foreach ($users as $user) {
 			break;
 	}
 
-	// This is required due to continue GOTO not being usable in the context of the switch when trying to reinterate on the foreach.
-	if ($continue) {
-		continue;
-	}
-
-
 	if (!empty($company_id) && $company_id != -1) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
 		$m_formations = new EmundusModelFormations();
@@ -140,14 +133,14 @@ foreach ($users as $user) {
 		// Check that the user is in a company that we can add fnums to.
 		if (!$m_formations->checkHRUser($current_user->id, $user_id)) {
 			JLog::add('User: '.$current_user->id.' does not have the rights to add this user: '.$user_id, JLog::ERROR, 'com_emundus');
-			$application->enqueueMessage('You do not have the rights to register this user.', 'error');
+			$application->enqueueMessage(JTEXT::_('COM_EMUNDUS_NO_RIGHTS_TO_REGISTER'), 'error');
 			continue;
 		}
 
 		// Check that the user is in the company we are adding the fnum for.
 		if (!$m_formations->checkCompanyUser($user_id, $company_id)) {
 			JLog::add('User: '.$user_id.' is not in the company: '.$company_id, JLog::ERROR, 'com_emundus');
-			$application->enqueueMessage('The user is not a part of the company you are adding for.', 'error');
+			$application->enqueueMessage(JTEXT::_('COM_EMUNDUS_USER_NOT_IN_COMPANY'), 'error');
 			continue;
 		}
 	}
@@ -271,7 +264,7 @@ try {
 // If the person is signed up under a company, that's the societe, if they are alone, it's themselves.
 if (!empty($company_id) && $company_id != -1) {
 	$query->clear()
-		->select([$db->quoteName('raison_sociale'), $db->quoteName('telephone'), $db->quoteName('civility'), $db->quoteName('prenom'), $db->quoteName('nom'), $db->quoteName('email'), $db->quoteName('adresse'), $db->quoteName('code_postal'), $db->quoteName('ville')])
+		->select([$db->quoteName('raison_sociale'), $db->quoteName('telephone'), $db->quoteName('civility'), $db->quoteName('prenom'), $db->quoteName('nom'), $db->quoteName('email'), $db->quoteName('adresse'), $db->quoteName('code_postal'), $db->quoteName('ville'), $db->quoteName('fonction')])
 		->from($db->quoteName('#__emundus_entreprise'))
 		->where($db->quoteName('id').' = '.$company_id);
 	$db->setQuery($query);
@@ -285,7 +278,7 @@ if (!empty($company_id) && $company_id != -1) {
 	// Assign the company values as ovverides to the user values. This preserves the order of the array as well.
 	$inscription['Societe_Lib'] = $company['raison_sociale'];
 	$inscription['TelSociete'] = $company['telephone'];
-	$inscription['Contact'] = strtoupper($company['nom']).'/'.ucfirst(strtolower($company['prenom'])).'#'.$company['civility'];
+	$inscription['Contact'] = strtoupper($company['nom']).'/'.ucfirst(strtolower($company['prenom'])).'#'.strtoupper($company['civility']);
 	$inscription['TelContact'] = $company['telephone'];
 	$inscription['EmailContact'] = $company['email'];
 	$inscription['SocieteAdresse1'] = $company['adresse'];
@@ -294,30 +287,45 @@ if (!empty($company_id) && $company_id != -1) {
 
 } else {
 	$inscription['Societe_Lib'] = $inscription['Societe_Lib'].' '.$inscription['firstname'];
-	$inscription['Contact'] = strtoupper($inscription['Societe_Lib']).'/'.ucfirst(strtolower($inscription['firstname'])).'#'.$inscription['civility'];
+	$inscription['Contact'] = strtoupper($inscription['Societe_Lib']).'/'.ucfirst(strtolower($inscription['firstname'])).'#'.strtoupper($inscription['civility']);
 }
 
 // We need to add the participants now, this is done by breaking down the array and adding the corresponding data in its' place.
-$inscription['Nbparticipant'] = count($users_registered);
-foreach ($users_registered as $i => $user_registered) {
+$participants = [];
+for ($i = 0; $i <= 10; $i++) {
+
 	// TODO: We do not have the numeroStagiaire, how do we get it ?
-	$inscription['NomParticipant_'.$i.'/PrenomParticipant_'.$i.'#TitreParticipant_'.$i]  = strtoupper($user_registered['lastname']).'/'.ucfirst(strtolower($user_registered['firstname'])).'#'.$user_registered['civility'];
-	$inscription['EmailParticipant_'.$i] = $user_registered['email'];
-	$inscription['FonctionParticipant_'.$i] = $user_registered['position'];
+	$participants['NumParticipant_'.($i+1)] = '';
+
+	if (!empty($users_registered[$i]['lastname']) && !empty($users_registered[$i]['firstname'])) {
+
+		// This is because the civilities actually need to be the IDs found in gesCOF for retro-compatibility reasons.
+		if ($users_registered[$i]['civility'] == 'M') {
+			$civility = 1;
+		} elseif (strtoupper($users_registered[$i]['civility']) == 'MME') {
+			// TODO: Verify if MME = 2 or 3.
+			$civility = 2;
+		} else {
+			$civility = '';
+		}
+
+		$participants['NomParticipant_'.($i+1).'/PrenomParticipant_'.($i+1).'#TitreParticipant_'.($i+1)] = strtoupper($users_registered[$i]['lastname']).'/'.ucfirst(strtolower($users_registered[$i]['firstname'])).'#'.$civility;
+		$participants['EmailParticipant_'.($i+1)] = $users_registered[$i]['email'];
+		$participants['FonctionParticipant_'.($i+1)] = $users_registered[$i]['position'];
+	} else {
+		$participants['NomParticipant_'.($i+1).'/PrenomParticipant_'.($i+1).'#TitreParticipant_'.($i+1)] = '';
+		$participants['EmailParticipant_'.($i+1)] = '';
+		$participants['FonctionParticipant_'.($i+1)] = '';
+	}
+
+	$participants['NumcParticipant_'.($i+1)] = '';
 }
 
-// Deleting the extra values in the inscription object gives us a final array that is the correct format for the .log file.
-unset($inscription['firstname'], $inscription['civility']);
-
-// TODO: Are initialsCom the initials of the current user ?
-// TODO: What is Typestage: inter and intra ?
-// TODO: What is budget global: prive * users ?
-// TODO: What is date de realisation: date_time in CC or date of session ?
-// TODO: What is percentage ?
-// TODO: What are the PersoParticipants ?
-
-// TODO: format the data to be exactly like the example .log file.
-/* $export = [
+/*
+ * This is the formatting of the export file so that it has the same format as the .log file.
+ * Some precisions: the type of internship is INTRA, for now?
+ */
+$export = [
 	'IdResa' => $inscription['IdResa'],
 	'NumSession' => $inscription['NumSession'],
 	'DossierCom' => '',
@@ -328,13 +336,50 @@ unset($inscription['firstname'], $inscription['civility']);
 	'Contact' => $inscription['Contact'],
 	'TelContact' => $inscription['TelContact'],
 	'EmailContact' => $inscription['EmailContact'],
-]; */
+	'Typestage' => 'INTER',
+	'Nbjours' => $inscription['Nbjours'],
+	'Lieuforma' => $inscription['Lieuforma'],
+	'Budgetglobal' => '',
+	'Dateprevis' => date('Y-m-d H:i:s'),
+	'Pourcentage' => '',
+	'Observation' => '',
+	'Nbparticipant' => count($users_registered)
+];
+$export = array_merge($export, $participants);
+$export = array_merge($export, [
+	'dateresa' => date('Y-m-d H:i:s'),
+	'PaimentEnLigne' => '',
+	'PaiementEnLigneDate' => '',
+	'PaiementEnLigneRef' => '',
+	'FaxSociete' => '',
+	'SocieteAdresse1' => $inscription['SocieteAdresse1'],
+	'SocieteAdresse2' => '',
+	'SocieteAdresse3' => '',
+	'SocieteCP' => $inscription['SocieteCP'],
+	'SocieteVille' => $inscription['SocieteVille'],
+	'SocietePays' => '',
+	'FaxContact' => '',
+	'FonctionContact' => isset($company['fonction'])?$company['fonction']:'',
+	'NumFinanceur' => '',
+	'FiRS' => '',
+	'FiAdresse1' => '',
+	'FiAdresse2' => '',
+	'FiAdresse3' => '',
+	'FiCP' => '',
+	'FiVille' => '',
+	'FiPays' => '',
+	'FiTel' => '',
+	'FiFax' => ''
+]);
 
-// TODO: Name the .log file.
-$log_file_name = '';
+// The Migal file has a LOT of lines such as PersoParticipantX_X which I don't think are useful.
+// We are padding the array with some empty strings to get it to the right length, I don't know if that's useful but hey... why not ¯\_(ツ)_/¯
+$export = array_pad($export, 178, '');
+
+// Log file is named using today's date and a unique ID.
+$log_file_name = DS.'datas'.DS.'xml'.DS.'export'.DS.'inscription'.DS.uniqid(date('Y-m-d-H-i-s').'-').'.log';
 ob_start();
 $df = fopen($log_file_name, 'w');
-fputcsv($df, array_keys($inscription));
-fputcsv($df, $inscription);
+fputcsv($df, $export , ';');
 fclose($df);
 ob_get_clean();
