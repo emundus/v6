@@ -126,7 +126,6 @@ foreach ($users as $user) {
 			break;
 	}
 
-
 	if (!empty($company_id) && $company_id != -1) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
 		$m_formations = new EmundusModelFormations();
@@ -264,7 +263,6 @@ try {
 // We need to make any programmatic changes to data before import.
 // If the person is signed up under a company, that's the societe, if they are alone, it's themselves.
 if (!empty($company_id) && $company_id != -1) {
-
 	$query->clear()
 		->select([$db->quoteName('raison_sociale'), $db->quoteName('telephone'), $db->quoteName('civility'), $db->quoteName('prenom'), $db->quoteName('nom'), $db->quoteName('email'), $db->quoteName('adresse'), $db->quoteName('code_postal'), $db->quoteName('ville'), $db->quoteName('fonction')])
 		->from($db->quoteName('#__emundus_entreprise'))

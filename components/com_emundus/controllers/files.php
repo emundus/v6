@@ -2584,21 +2584,21 @@ class EmundusControllerFiles extends JControllerLegacy
 	 */
     public function generatedoc() {
         $jinput = JFactory::getApplication()->input;
-        $fnums  = $jinput->post->getString('fnums', "");
-        $code   = $jinput->post->getString('code', "");
+        $fnums = $jinput->post->getString('fnums', "");
+        $code = $jinput->post->getString('code', "");
         $idTmpl = $jinput->post->getString('id_tmpl', "");
 
         $fnumsArray = explode(",", $fnums);
 
-        $m_files        = $this->getModel('Files');
-        $m_evalutaion   = $this->getModel('Evaluation');
-        $m_emails       = $this->getModel('Emails');
+        $m_files = $this->getModel('Files');
+        $m_evalutaion = $this->getModel('Evaluation');
+        $m_emails = $this->getModel('Emails');
 
         $user = JFactory::getUser();
 
         $fnumsArray = $m_files->checkFnumsDoc($code, $fnumsArray);
-        $tmpl       = $m_evalutaion->getLettersTemplateByID($idTmpl);
-        $attachInfos= $m_files->getAttachmentInfos($tmpl[0]['attachment_id']);
+        $tmpl = $m_evalutaion->getLettersTemplateByID($idTmpl);
+        $attachInfos = $m_files->getAttachmentInfos($tmpl[0]['attachment_id']);
 
         $res = new stdClass();
         $res->status = true;
@@ -2607,17 +2607,97 @@ class EmundusControllerFiles extends JControllerLegacy
 
         switch ($tmpl[0]['template_type']) {
 
-        	case 1:
-                //Simple FILE
-                $res->status = false;
-                $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
-                echo json_encode($res);
-                break;
+	        case 1:
+                // Simple FILE.
+                $file = JPATH_BASE.$tmpl[0]['file'];
+                if (file_exists($file)) {
+                    foreach ($fnumsArray as $fnum) {
+                        if (isset($fnumsInfos[$fnum])) {
+                            $name = $attachInfos['lbl'].'_'.date('Y-m-d_H-i-s').'.'.pathinfo($file)['extension'];
+                            $path = EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$name;
+                            if (copy($file, $path)) {
+                                $url  = EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/';
+                                $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
-            case 2:
-                //Generate PDF
-                $res->status = false;
-                $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE_FROM_HTML_TEMPLATE");
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url, );
+                            }
+                        }
+                    }
+                }
+                else {
+                    $res->status = false;
+                    $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                }
+
+                echo json_encode($res);
+            break;
+
+	        case 2:
+
+	        	// PDF From HTML.
+	            foreach ($fnumsArray as $fnum) {
+		            if (isset($fnumsInfos[$fnum])) {
+			            $post = [
+			            	'TRAINING_CODE' => $fnumsInfos[$fnum]['campaign_code'],
+                            'TRAINING_PROGRAMME' => $fnumsInfos[$fnum]['campaign_label'],
+                            'USER_NAME' => $fnumsInfos[$fnum]['applicant_name'],
+                            'USER_EMAIL' => $fnumsInfos[$fnum]['applicant_email'],
+                            'FNUM' => $fnum
+			            ];
+
+			            // Generate PDF
+			            $tags = $m_emails->setTags($fnumsInfos[$fnum]['applicant_id'], $post, $fnum);
+			            $htmldata = "";
+
+			            require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'MYPDF.php');
+			            $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+			            $pdf->SetCreator(PDF_CREATOR);
+			            $pdf->SetAuthor($user->name);
+			            $pdf->SetTitle($tmpl[0]['title']);
+
+			            // Set margins
+			            $pdf->SetMargins(5, 40, 5);
+			            $pdf->footer = $tmpl[0]["footer"];
+
+			            // Get logo
+			            preg_match('#src="(.*?)"#i', $tmpl[0]['header'], $tab);
+			            $pdf->logo = JPATH_BASE.DS.$tab[1];
+
+			            // Get footer.
+			            preg_match('#src="(.*?)"#i', $tmpl[0]['footer'], $tab);
+			            $pdf->logo_footer = JPATH_BASE.DS.@$tab[1];
+			            unset($logo, $logo_footer);
+
+			            $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+
+			            // Set default monospaced font
+			            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+			            // Set default font subsetting mode
+			            $pdf->setFontSubsetting(true);
+
+			            // Set font
+			            $pdf->SetFont('freeserif', '', 8);
+			            $tmpl[0]["body"] = $m_emails->setTagsFabrik($tmpl[0]["body"], array($fnum));
+
+			            $htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $tmpl[0]["body"]))));
+			            $pdf->AddPage();
+
+			            // Print text using writeHTMLCell()
+			            $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
+			            @chdir('tmp');
+
+			            $name = $attachInfos['lbl'].'_'.date('Y-m-d_H-i-s').'.pdf';
+			            $path = EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$name;
+			            $url  = EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/';
+			            $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+
+			            $pdf->Output($path, 'F');
+			            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url, );
+		            }
+	            }
+	            unset($pdf, $path, $name, $url, $upIdn);
                 echo json_encode($res);
                 break;
 
@@ -2645,7 +2725,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
 
-                    if (!empty($idFabrik)) {
+	                if (!empty($idFabrik)) {
 	                    $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
                     } else {
 	                    $fabrikElts = array();
@@ -2767,7 +2847,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             foreach ($idFabrik as $id) {
                                 if (isset($fabrikValues[$id][$fnum])) {
                                     $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-                                    $preprocess->setValue($id, $value);
+                                    $preprocess->setValue($id, htmlspecialchars($value));
                                 } else {
                                     $preprocess->setValue($id, '');
                                 }
@@ -2797,6 +2877,8 @@ class EmundusControllerFiles extends JControllerLegacy
                     exit();
                 }
                 break;
+	        default:
+		        break;
         }
         exit();
 

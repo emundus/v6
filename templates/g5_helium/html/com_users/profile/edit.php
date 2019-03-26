@@ -70,7 +70,7 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 							<?php echo $field->input; ?>
 						<?php else : ?>
                             <?php if($field->fieldname != "name" && $field->fieldname != "username") :?>
-                                <div class="control-group" id="em-profile-<?php echo $field->fieldname; ?>">
+                                <div class="control-group">
                                     <div class="control-label">
                                         <?php echo $field->label; ?>
                                         <?php if (!$field->required && $field->type !== 'Spacer') : ?>
