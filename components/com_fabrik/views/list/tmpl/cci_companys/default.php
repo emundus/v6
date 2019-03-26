@@ -87,9 +87,9 @@ echo $this->table->intro;
         <div class="g-block size-100">
             <?php if ($this->navigation->total < 1) :?>
                 <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
-                    <h2><?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?></h2>
+                    <h3><?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?></h3>
                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
-                    <h2><?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?></h2>
+                    <h3><?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?></h3>
                 <?php endif; ?>
             <?php else: ?>
                 <?php
@@ -134,9 +134,9 @@ echo $this->table->intro;
                                                 <span><?php echo str_replace('Title-', '',$k); ?></span>
                                             </div>
                                         <?php else: ?>
-                                            <div class="em-element <?php echo str_replace(' ','-', $k);?>">
-                                                <div class="em-element-label"><?php echo $k; ?></div>
-                                            <div class="em-element-value"><?php echo $v; ?></div>
+                                            <div class="em-element <?php echo str_replace(['(', ')', ' '], '-', $k);?>">
+                                                <div class="em-element-label"><?php echo $k; ?> : </div>
+                                            <div class="em-element-value <?php echo empty($v)?"em-empty-value":"";?>"><?php echo $v; ?></div>
                                             </div>
                                         <?php endif; ?>
                                     <?php endif;?>
@@ -245,7 +245,7 @@ endif;
 
         Swal.fire({
                 title: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_CONFIRM') : JText::_('REMOVE_COMPANY_CONFIRM'); ?>",
-                type: "warning",
+                type: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#dc3545",

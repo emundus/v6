@@ -59,7 +59,6 @@ foreach ($users as $user) {
 	}
 	
 	$users_registered[] = $user_id;
-	$continue = false;
 	switch ($applicant_can_renew) {
 
 	    // Cannot create new campaigns at all.
@@ -71,7 +70,7 @@ foreach ($users as $user) {
 			    if (!empty($db->loadResult())) {
 				    JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
 				    $application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
-				    $continue = true;
+				    continue 2;
 			    }
 		    } catch(Exception $e) {
 			    JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -89,8 +88,8 @@ foreach ($users as $user) {
 			try {
 				if (in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus');
-					$application->enqueueMessage('User already has a file for this campaign.', 'error');
-					$continue = true;
+					$application->enqueueMessage(JText::_('COM_EMUNDUS_USER_ALREADY_SIGNED_UP'), 'error');
+					continue 2;
 				}
 			} catch (Exception $e) {
 				JLog::add('plugin/emundus_campaign SQL error at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -116,7 +115,7 @@ foreach ($users as $user) {
 				if (!in_array($campaign_id, $db->loadColumn())) {
 					JLog::add('User: '.$user_id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus');
 					$application->enqueueMessage('User already has a file for this year.', 'error');
-					$continue = true;
+					continue 2;
 				}
 			} catch (Exception $e) {
 				JLog::add('plugin/emundus_campaign SQL error at query :'.$years_query, JLog::ERROR, 'com_emundus');
@@ -127,11 +126,6 @@ foreach ($users as $user) {
 			break;
 	}
 
-	// This is required due to continue GOTO not being usable in the context of the switch when trying to reinterate on the foreach.
-	if ($continue) {
-		continue;
-	}
-
 
 	if (!empty($company_id) && $company_id != -1) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formations.php');
@@ -140,14 +134,14 @@ foreach ($users as $user) {
 		// Check that the user is in a company that we can add fnums to.
 		if (!$m_formations->checkHRUser($current_user->id, $user_id)) {
 			JLog::add('User: '.$current_user->id.' does not have the rights to add this user: '.$user_id, JLog::ERROR, 'com_emundus');
-			$application->enqueueMessage('You do not have the rights to register this user.', 'error');
+			$application->enqueueMessage(JTEXT::_('COM_EMUNDUS_NO_RIGHTS_TO_REGISTER'), 'error');
 			continue;
 		}
 
 		// Check that the user is in the company we are adding the fnum for.
 		if (!$m_formations->checkCompanyUser($user_id, $company_id)) {
 			JLog::add('User: '.$user_id.' is not in the company: '.$company_id, JLog::ERROR, 'com_emundus');
-			$application->enqueueMessage('The user is not a part of the company you are adding for.', 'error');
+			$application->enqueueMessage(JTEXT::_('COM_EMUNDUS_USER_NOT_IN_COMPANY'), 'error');
 			continue;
 		}
 	}
