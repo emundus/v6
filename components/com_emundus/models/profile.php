@@ -142,7 +142,7 @@ class EmundusModelProfile extends JModelList
         catch(Exception $e)
         {
             JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus');
-            JError::raiseError(500, $e->getMessage());
+            return null;
         }
     }
 
