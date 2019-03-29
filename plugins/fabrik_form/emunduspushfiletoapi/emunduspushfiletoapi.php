@@ -90,9 +90,10 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 		$api_url = $this->getParam('api_url');
 		$api_route = $this->getParam('api_route');
+		$api_user = $this->getParam('api_user');
 		$api_token = $this->getParam('api_token');
 
-		if (empty($api_url) || empty($api_route) || empty($api_token)) {
+		if (empty($api_url) || empty($api_route) || empty($api_token) || empty($api_user)) {
 			return false;
 		}
 
@@ -384,8 +385,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 		if (!empty($data)) {
 
-			// TODO: Finish post.
-			$response = $http->post($api_url.$api_route, json_encode($data));
+			$response = $http->setOption('Authorization', 'Basic '.base64_encode($api_user.':'.$api_token))->post($api_url.$api_route, json_encode($data));
 
 		}
 
