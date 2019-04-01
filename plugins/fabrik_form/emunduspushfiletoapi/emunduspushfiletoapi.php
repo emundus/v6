@@ -385,7 +385,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 		if (!empty($data)) {
 
-			$response = $http->setOption('Authorization', 'Basic '.base64_encode($api_user.':'.$api_token))->post($api_url.$api_route, json_encode($data));
+			$response = $http->post($api_url.$api_route, json_encode($data), ['Authorization' => 'Basic '.base64_encode($api_user.':'.$api_token), 'Content-Type' => 'application/json']);
 
 		}
 
