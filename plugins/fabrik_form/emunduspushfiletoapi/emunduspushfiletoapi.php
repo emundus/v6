@@ -79,7 +79,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 	 * @return  bool
 	 * @throws Exception
 	 */
-	public function onAfterSave() {
+	public function onAfterProcess() {
 
 		jimport('joomla.utilities.utility');
 		jimport('joomla.log.log');
