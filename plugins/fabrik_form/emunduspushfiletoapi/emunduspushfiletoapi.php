@@ -152,6 +152,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$data = $db->loadAssoc();
 			} catch (Exception $e) {
+				JLog::add('Error getting user data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 
@@ -165,6 +166,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$data = array_merge($data, $db->loadAssoc());
 			} catch (Exception $e) {
+				JLog::add('Error getting file data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 
@@ -190,6 +192,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$tableuser = $db->loadObjectList();
 			} catch(Exception $e) {
+				JLog::add('Error getting Fabrik data in query: '.$query, JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 			
@@ -203,6 +206,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$tableuser[] = $db->loadObject();
 			} catch(Exception $e) {
+				JLog::add('Error getting Fabrik data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 			
@@ -215,8 +219,12 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
 				$db->setQuery($query);
-				$groups = $db->loadObjectList();
 
+				try {
+					$groups = $db->loadObjectList();
+				} catch (Exception $e) {
+					JLog::add('Error getting Fabrik group data in query: '.$query, JLog::ERROR, 'com_emundus');
+				}
 				foreach ($groups as $group) {
 					
 					$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
@@ -225,7 +233,11 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
                                       fe.group_id = "'.$group->group_id.'"
                                 ORDER BY fe.ordering';
 					$db->setQuery($query);
-					$elements = $db->loadObjectList();
+					try {
+						$elements = $db->loadObjectList();
+					} catch (Exception $e) {
+						JLog::add('Error getting Fabrik element data in query: '.$query, JLog::ERROR, 'com_emundus');
+					}
 
 					if (count($elements) > 0) {
 
@@ -278,7 +290,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 							try {
 								$repeated_elements = $db->loadObjectList();
 							} catch (Exception $e) {
-								JLog::Add('ERROR getting repeated elements in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+								JLog::Add('ERROR getting repeated elements at query: '.$query, JLog::ERROR, 'com_emundus');
 							}
 
 							unset($t_elt);
@@ -360,8 +372,14 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 			$response = $http->post($api_url.$api_route, json_encode($data), ['Authorization' => 'Basic '.base64_encode($api_user.':'.$api_token), 'Content-Type' => 'application/json']);
 
-		}
+			if ($response->code === 200) {
+				return true;
+			} else {
+				JLog::add('Error ('.$response->code.') from client API : '.$response->body);
+				return false;
+			}
 
+		}
 		return true;
 	}
 
