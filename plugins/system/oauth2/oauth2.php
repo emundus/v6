@@ -54,7 +54,7 @@ class PlgSystemOauth2 extends JPlugin {
 					$app->setUserState('users.login.form.data', array());
 
 					if ($return = JArrayHelper::getValue($data, 'return'))
-						$app->redirect(JRoute::_(base64_decode($return), false));
+						$app->redirect(JRoute::_($return, false));
 					else
 						$app->redirect(JRoute::_(JUri::current(), false));
 
