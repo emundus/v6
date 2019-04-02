@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3093" />
-    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3133" />
+    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3091" />
+    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3131" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/layouts/list/filter/fabrik-filter-checkbox.php" line="13" />
     <bookmark url="file://$PROJECT_DIR$/plugins/fabrik_element/radiobutton/layouts/fabrik-element-radiobutton-form.php" line="6" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/details/tmpl/search_engine/default.php" line="0" />
     <bookmark url="file://$PROJECT_DIR$/plugins/fabrik_cron/migal_ftp/migal_ftp.php" line="185" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_search_engine/default.php" line="325" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_search_engine/default.php" line="313" />
-    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3106" />
+    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3104" />
     <bookmark url="file://$PROJECT_DIR$/plugins/fabrik_cron/migal_ftp/migal_ftp.php" line="397" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_search_engine/default.php" line="191" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/details/tmpl/cci_search_engine/default.php" line="68" />
@@ -21,7 +21,172 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/MD5SUMS" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/MD5SUMS" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/admin/templates/pages/about/about.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/admin/templates/pages/about/about.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/above.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/above.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/accent.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/accent.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/base.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/base.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/breakpoints.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/breakpoints.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/expanded.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/expanded.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/features.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/features.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/font.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/font.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/footer.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/footer.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/header.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/header.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/intro.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/intro.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/link.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/link.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/menu.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/menu.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/navigation.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/navigation.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/offcanvas.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/offcanvas.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/testimonials.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/testimonials.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/utility.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/blueprints/styles/utility.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/component.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/component.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/config/default/page/body.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/config/default/page/body.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/branding.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/branding.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/copyright.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/copyright.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/logo.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/logo.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/social.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/social.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/totop.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/config/default/particles/totop.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/custom/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/custom/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/error.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/error.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fields/warning.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fields/warning.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-black/lato-black-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-black/lato-black-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-blackitalic/lato-blackitalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-blackitalic/lato-blackitalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-bold/lato-bold-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-bold/lato-bold-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-bolditalic/lato-bolditalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-bolditalic/lato-bolditalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-italic/lato-italic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-italic/lato-italic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-light/lato-light-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-light/lato-light-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-lightitalic/lato-lightitalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-lightitalic/lato-lightitalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-regular/lato-regular-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/lato/lato-regular/lato-regular-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-black/raleway-black-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-black/raleway-black-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-blackitalic/raleway-blackitalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-blackitalic/raleway-blackitalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-bold/raleway-bold-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-bold/raleway-bold-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-bolditalic/raleway-bolditalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-bolditalic/raleway-bolditalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-italic/raleway-italic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-italic/raleway-italic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-light/raleway-light-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-light/raleway-light-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-lightitalic/raleway-lightitalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-lightitalic/raleway-lightitalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-medium/raleway-medium-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-medium/raleway-medium-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-mediumitalic/raleway-mediumitalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-mediumitalic/raleway-mediumitalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-regular/raleway-regular-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-regular/raleway-regular-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-semibold/raleway-semibold-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-semibold/raleway-semibold-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-semibolditalic/raleway-semibolditalic-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/raleway/raleway-semibolditalic/raleway-semibolditalic-webfont.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/fonts/rockettheme-apps/rockettheme-apps.svg" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/fonts/rockettheme-apps/rockettheme-apps.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/gantry/presets.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/gantry/presets.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/gantry/theme.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/gantry/theme.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default_login.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default_login.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default_logout.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/default_logout.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/logout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/logout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/view.html.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/login/view.html.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default_core.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default_core.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default_custom.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default_custom.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default_params.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/default_params.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/edit.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/edit.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/edit.xml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/edit.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/view.html.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/profile/view.html.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/complete.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/complete.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/registration.xml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/com_users/registration/registration.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/layouts/joomla/system/message.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/layouts/joomla/system/message.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/html/modules.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/html/modules.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/includes/gantry.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/includes/gantry.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/includes/theme.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/includes/theme.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/install.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/install.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/install/menus.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/install/menus.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/install/outlines.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/install/outlines.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/install/templates/install.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/install/templates/install.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/install/templates/style.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/install/templates/style.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/install/templates/update.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/install/templates/update.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/js/juitabs.js" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/js/juitabs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/js/owl.carousel.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/js/owl.carousel.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/js/owlcarousel.js" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/js/owlcarousel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/language/en-GB/en-GB.tpl_g5_helium.ini" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/language/en-GB/en-GB.tpl_g5_helium.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/language/en-GB/en-GB.tpl_g5_helium.sys.ini" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/language/en-GB/en-GB.tpl_g5_helium.sys.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/layouts/_body_only.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/layouts/_body_only.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/layouts/_error.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/layouts/_error.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/layouts/_offline.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/layouts/_offline.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/layouts/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/layouts/default.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/layouts/home_-_particles.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/layouts/home_-_particles.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/offline.php" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/offline.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/contentcubes.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/contentcubes.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/contentcubes.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/contentcubes.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/contenttabs.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/contenttabs.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/contenttabs.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/contenttabs.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/copyright.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/copyright.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/copyright.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/copyright.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/horizontalmenu.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/horizontalmenu.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/horizontalmenu.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/horizontalmenu.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/owlcarousel.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/owlcarousel.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/owlcarousel.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/owlcarousel.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/particles/totop.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/particles/totop.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/_dependencies.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/_dependencies.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_base.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_base.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_colors.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_colors.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_core.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_core.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_nav.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_nav.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_offcanvas.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_offcanvas.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_typography.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/configuration/_typography.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_contact.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_contact.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_content.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_content.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_search.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_search.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_users.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/components/_users.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/particles/_popupmodule.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/particles/_popupmodule.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_buttons.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_buttons.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_core.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_core.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_forms.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_forms.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_modules.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_modules.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_tabs.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_tabs.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_tags.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_tags.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_typography.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_typography.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_utilities.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium-joomla/styles/_utilities.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/layouts/_error.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/layouts/_error.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/layouts/_offline.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/layouts/_offline.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_contentarray.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_contentarray.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_contentcubes.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_contentcubes.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_contenttabs.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_contenttabs.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_horizontalmenu.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_horizontalmenu.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_logo.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_logo.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_owlcarousel.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_owlcarousel.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_social.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_social.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_totop.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/particles/_totop.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_above.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_above.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_aside.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_aside.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_expanded.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_expanded.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_features.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_features.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_footer.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_footer.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_header.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_header.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_intro.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_intro.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_main.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_main.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_mainnav.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_mainnav.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_navigation.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_navigation.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_offcanvas.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_offcanvas.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_pagesurround.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_pagesurround.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_sidebar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_sidebar.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_testimonials.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_testimonials.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_utility.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/sections/_utility.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_buttons.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_buttons.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_core.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_core.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_dropdownanimations.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_dropdownanimations.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_fonts.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_fonts.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_forms.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_forms.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_helium-style.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_helium-style.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_hyperlinks.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_hyperlinks.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_tables.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_tables.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_typography.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_typography.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_utilities.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_utilities.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_variations.scss" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/scss/helium/styles/_variations.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/g5_helium/templateDetails.xml" beforeDir="false" afterPath="$PROJECT_DIR$/templates/g5_helium/templateDetails.xml" afterDir="false" />
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -73,165 +238,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-102349">
-              <caret line="327" selection-start-line="327" selection-end-line="327" />
-              <folding>
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#289#295#0" expanded="true" />
-                <element signature="n#style#0;n#th#1;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#486#492#0" expanded="true" />
-                <element signature="n#style#0;n#th#2;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#686#692#0" expanded="true" />
-                <element signature="n#style#0;n#th#3;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#890#896#0" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#3;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#3;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#h5#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#h5#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#2;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#3;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#4;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#b#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#b#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#2;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#3;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#4;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#156#162#1" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#274#280#0" expanded="true" />
-                <element signature="e#280#286#0" expanded="true" />
-                <element signature="e#286#292#0" expanded="true" />
-                <element signature="e#335#341#0" expanded="true" />
-                <element signature="e#341#347#0" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#2;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#3;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#4;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#156#162#1" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#274#280#0" expanded="true" />
-                <element signature="e#280#286#0" expanded="true" />
-                <element signature="e#286#292#0" expanded="true" />
-                <element signature="e#335#341#0" expanded="true" />
-                <element signature="e#341#347#0" expanded="true" />
-                <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#0;n#form#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#form#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#210#216#0" expanded="true" />
-                <element signature="e#216#222#0" expanded="true" />
-                <element signature="e#222#228#0" expanded="true" />
-                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="e#126#132#0" expanded="true" />
-                <element signature="e#132#138#0" expanded="true" />
-                <element signature="e#147#153#0" expanded="true" />
-                <element signature="e#153#159#0" expanded="true" />
-                <element signature="e#159#165#0" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#p#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="502">
-              <caret line="27" selection-start-line="27" selection-end-line="27" />
+            <state relative-caret-position="654">
+              <caret line="3051" column="21" lean-forward="true" selection-start-line="3051" selection-start-column="21" selection-end-line="3051" selection-end-column="21" />
+              <folding>
+                <element signature="n#style#0;n#h2#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#p#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -240,8 +255,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getAdm</find>
-      <find>$plugin</find>
       <find>inst</find>
       <find>instr</find>
       <find>addU</find>
@@ -270,6 +283,8 @@
       <find>create_fil</find>
       <find>generate_p</find>
       <find>getA</find>
+      <find>generatedoc</find>
+      <find>JPATH_LIBRARIES</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -319,7 +334,6 @@
         <option value="$PROJECT_DIR$/components/com_emundus/helpers/access.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/models/users.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/helpers/files.php" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
         <option value="$PROJECT_DIR$/plugins/user/emundus_registration_email/language/en-GB/en-GB.plg_user_emundus_registration_email.ini" />
         <option value="$PROJECT_DIR$/plugins/user/emundus_registration_email/emundus_registration_email.php" />
         <option value="$PROJECT_DIR$/plugins/user/emundus_registration_email/language/fr-FR/fr-FR.plg_user_emundus_registration_email.ini" />
@@ -334,6 +348,7 @@
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
       </list>
     </option>
   </component>
@@ -392,11 +407,14 @@
       <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php71" />
       <path value="$PROJECT_DIR$/libraries/vendor/google/recaptcha" />
       <path value="$PROJECT_DIR$/libraries/vendor/typo3/phar-stream-wrapper" />
+      <path value="$PROJECT_DIR$/libraries/vendor/brumann/polyfill-unserialize" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="2560" />
-    <option name="height" value="1440" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1912" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1096" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -425,36 +443,52 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="v6" type="462c0819:PsiDirectoryNode" />
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_emundus_applications" type="462c0819:PsiDirectoryNode" />
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="v6" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_emundus_applications" type="462c0819:PsiDirectoryNode" />
-              <item name="tmpl" type="462c0819:PsiDirectoryNode" />
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="libraries" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="g5_helium" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -612,6 +646,7 @@
       <workItem from="1547806180756" duration="2500000" />
       <workItem from="1548062561164" duration="630000" />
       <workItem from="1551780456553" duration="4433000" />
+      <workItem from="1554198613916" duration="7047000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog.">
       <created>1525445467750</created>
@@ -645,7 +680,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="254875000" />
+    <option name="totallyTimeSpent" value="261922000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -668,10 +703,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
+    <frame x="1912" y="-8" width="1936" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13780779" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1108742" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -817,13 +852,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusconfirmpost/emundusconfirmpost.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="639">
-          <caret line="87" lean-forward="true" selection-start-line="87" selection-end-line="87" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/en-GB/en-GB.plg_fabrik_form_emundusreferentletter.sys.ini">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -1005,13 +1033,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="1657" column="23" selection-start-line="1657" selection-start-column="23" selection-end-line="1657" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-confirm_post.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
@@ -1173,162 +1194,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-102349">
-          <caret line="327" selection-start-line="327" selection-end-line="327" />
-          <folding>
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#289#295#0" expanded="true" />
-            <element signature="n#style#0;n#th#1;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#486#492#0" expanded="true" />
-            <element signature="n#style#0;n#th#2;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#686#692#0" expanded="true" />
-            <element signature="n#style#0;n#th#3;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#890#896#0" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#3;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#3;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#h5#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#h5#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#2;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#3;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#4;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#b#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#b#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#2;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#3;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#4;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#156#162#1" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#274#280#0" expanded="true" />
-            <element signature="e#280#286#0" expanded="true" />
-            <element signature="e#286#292#0" expanded="true" />
-            <element signature="e#335#341#0" expanded="true" />
-            <element signature="e#341#347#0" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#2;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#3;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#4;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#156#162#1" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#274#280#0" expanded="true" />
-            <element signature="e#280#286#0" expanded="true" />
-            <element signature="e#286#292#0" expanded="true" />
-            <element signature="e#335#341#0" expanded="true" />
-            <element signature="e#341#347#0" expanded="true" />
-            <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#0;n#form#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#form#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#210#216#0" expanded="true" />
-            <element signature="e#216#222#0" expanded="true" />
-            <element signature="e#222#228#0" expanded="true" />
-            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="e#126#132#0" expanded="true" />
-            <element signature="e#132#138#0" expanded="true" />
-            <element signature="e#147#153#0" expanded="true" />
-            <element signature="e#153#159#0" expanded="true" />
-            <element signature="e#159#165#0" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#p#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
+        <state relative-caret-position="459">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="502">
-          <caret line="27" selection-start-line="27" selection-end-line="27" />
+        <state relative-caret-position="17">
+          <caret line="327" selection-start-line="327" selection-end-line="327" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/phpspreadsheet.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="654">
+          <caret line="3051" column="21" lean-forward="true" selection-start-line="3051" selection-start-column="21" selection-end-line="3051" selection-end-column="21" />
+          <folding>
+            <element signature="n#style#0;n#h2#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#p#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

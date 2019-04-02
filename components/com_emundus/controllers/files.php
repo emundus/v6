@@ -16,6 +16,8 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
     use PhpOffice\PhpWord\TemplateProcessor;
 }
 */
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -2861,6 +2863,186 @@ class EmundusControllerFiles extends JControllerLegacy
                             $filename = str_replace(' ', '', $fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".docx";
 
                             $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename);
+
+                            $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+
+                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/', );
+                        }
+                        unset($preprocess);
+                    }
+                    echo json_encode($res);
+                
+                } catch(Exception $e) {
+                    $res->status = false;
+                    $res->msg = JText::_("AN_ERROR_OCURRED").':'. $e->getMessage();
+                    echo json_encode($res);
+                    exit();
+                }
+                break;
+
+                case 4:
+                // template XLS
+
+                    require_once(JPATH_LIBRARIES.DS.'phpspreadsheet'.DS.'phpspreadsheet.php');
+
+
+                $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+
+                // Special tags which require a bit more work.
+	            $special = ['user_dob_age', 'evaluation_radar'];
+
+                try {
+
+
+                    $preprocess = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE.$tmpl[0]['file']);
+                    $tags = $preprocess->getActiveSheet();
+                    $idFabrik = array();
+                    $setupTags = array();
+                    foreach ($tags as $i => $val) {
+                        $tag = strip_tags($val);
+                        if (is_numeric($tag)) {
+	                        $idFabrik[] = $tag;
+                        } else {
+	                        $setupTags[] = $tag;
+                        }
+                    }
+
+	                if (!empty($idFabrik)) {
+	                    $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
+                    } else {
+	                    $fabrikElts = array();
+                    }
+
+                    $fabrikValues = array();
+                    foreach ($fabrikElts as $elt) {
+                        $params = json_decode($elt['params']);
+                        $groupParams = json_decode($elt['group_params']);
+                        $isDate = ($elt['plugin'] == 'date');
+                        $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+
+                        if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                            $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
+                        } else {
+                            if ($isDate) {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                            } else {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                            }
+                        }
+
+                        if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
+
+                        	foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+
+                            	if ($elt['plugin'] == "checkbox") {
+	                                $val = json_decode($val['val']);
+                                } else {
+	                                $val = explode(',', $val['val']);
+                                }
+
+                            	if (count($val) > 0) {
+                                    foreach ($val as $k => $v) {
+                                        $index = array_search(trim($v),$params->sub_options->sub_values);
+                                        $val[$k] = $params->sub_options->sub_labels[$index];
+                                    }
+                                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                                } else {
+                                    $fabrikValues[$elt['id']][$fnum]['val'] = "";
+                                }
+
+                        	}
+
+                        } elseif ($elt['plugin'] == "birthday") {
+
+                            foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                $val = explode(',', $val['val']);
+                                foreach ($val as $k => $v) {
+                                    $val[$k] = date($params->details_date_format, strtotime($v));
+                                }
+                                $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+                            }
+
+                        } else {
+                            if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
+                            } else {
+	                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                            }
+                        }
+                    }
+
+                    foreach ($fnumsArray as $fnum) {
+
+                    	$preprocess = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE.$tmpl[0]['file']);
+                    	if (isset($fnumsInfos[$fnum])) {
+                            foreach ($setupTags as $tag) {
+                                $val = "";
+                                $lowerTag = strtolower($tag);
+
+                                if (array_key_exists($lowerTag, $const)) {
+
+	                                $preprocess->setValue($tag, $const[$lowerTag]);
+
+                                } elseif (in_array($lowerTag, $special)) {
+
+                                	// Each tag has it's own logic requiring special work.
+                                	switch ($lowerTag) {
+
+                                		// dd-mm-YYYY (YY)
+		                                case 'user_dob_age':
+											$birthday = $m_files->getBirthdate($fnum, 'd/m/Y', true);
+											$preprocess->setValue($tag, $birthday->date.' ('.$birthday->age.')');
+		                                	break;
+
+	                                    // This is a special radar style element of the evaluation values.
+		                                case 'evaluation_radar':
+		                                	$preprocess->setValue($tag, '');
+
+		                                	// The code below cannot work as of right now, objects cannot be inserted in a template file being parsed.
+		                                    // TODO: Retry doing this when a new version of PHPOffice is available.
+		                                	/*$evaluation = $m_evalutaion->getScore($fnum);
+			                                $section = $phpWord->addSection();
+			                                $section->addChart('radar', array_keys($evaluation), $evaluation);
+			                                $section->addTextBreak();*/
+		                                	break;
+
+		                                default:
+			                                $preprocess->setValue($tag, '');
+		                                break;
+	                                }
+
+                                } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
+                                	$preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
+                                } else {
+                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                    $i = 0;
+                                    foreach ($tags['patterns'] as $value) {
+                                        if ($value == $tag) {
+                                            $val = $tags['replacements'][$i];
+                                            break;
+                                        }
+                                        $i++;
+                                    }
+                                    $preprocess->setValue($tag, htmlspecialchars($val));
+                                }
+                            }
+                            foreach ($idFabrik as $id) {
+                                if (isset($fabrikValues[$id][$fnum])) {
+                                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                    $preprocess->setValue($id, htmlspecialchars($value));
+                                } else {
+                                    $preprocess->setValue($id, '');
+                                }
+                            }
+
+                            $rand = rand(0, 1000000);
+                            if (!file_exists(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'])) {
+                                mkdir(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'], 0775);
+                            }
+
+                            $filename = str_replace(' ', '', $fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".docx";
+                            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($preprocess, 'Xls');
+                            $writer->save(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename);
 
                             $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
