@@ -15,10 +15,10 @@ JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 
                     <?php if($this->com_emundus_programme_showlink) :?>
                         <p class="<?php echo !empty($this->com_emundus_programme_showlink_class) ? $this->com_emundus_programme_showlink_class : "";?>">
-                            <a href="<?php echo $this->com_emundus_programme_showlink ;?>"><?php echo JText::_('MORE_INFO');?></a>
+                            <a href="<?php echo $this->campaign['link'] ;?>"><?php echo JText::_('MORE_INFO');?></a>
                         </p>
                     <?php endif; ?>
-                    
+
                 </div>
                  <div <?php if (!empty($this->com_emundus_programme_campdesc_class)) { echo "class=\"".$this->com_emundus_programme_campdesc_class."\""; } ?>>
                     <p> <?php if ($this->com_emundus_programme_showcampaign) {  echo $this->campaign['description']; } ?></p>
