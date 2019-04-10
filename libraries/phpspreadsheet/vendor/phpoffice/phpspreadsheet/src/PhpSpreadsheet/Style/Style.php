@@ -176,6 +176,11 @@ class Style extends Supervisor
      *                 ]
      *             ]
      *         ],
+     *         'alignment' => [
+     *             'horizontal' => Alignment::HORIZONTAL_CENTER,
+     *             'vertical' => Alignment::VERTICAL_CENTER,
+     *             'wrapText' => true,
+     *         ],
      *         'quotePrefix'    => true
      *     ]
      * );
@@ -332,6 +337,9 @@ class Style extends Supervisor
                         $this->getActiveSheet()->getStyle($range)->applyFromArray($regionStyles, false);
                     }
                 }
+
+                // restore initial cell selection range
+                $this->getActiveSheet()->getStyle($pRange);
 
                 return $this;
             }
