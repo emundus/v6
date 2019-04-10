@@ -14,6 +14,7 @@
 
 			<field name="api_url" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_URL_LABEL" />
 			<field name="api_route" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_ROUTE_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_ROUTE_LABEL" />
+			<field name="api_user" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_USER_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_USER_LABEL" />
 			<field name="api_token" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_TOKEN_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_TOKEN_LABEL" />
 		</fieldset>
 	</fields>

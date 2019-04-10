@@ -27,7 +27,7 @@ class EmundusModelProgramme extends JModelList {
     {
         $db = JFactory::getDbo();
         $query  = $db->getQuery(true);
-        $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
+        $query->select('pr.*,ca.*');
         $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
         $query->where('ca.training = pr.code AND ca.published=1 AND ca.id='.$id);
         $db->setQuery($query);

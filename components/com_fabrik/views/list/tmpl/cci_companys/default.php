@@ -87,9 +87,9 @@ echo $this->table->intro;
         <div class="g-block size-100">
             <?php if ($this->navigation->total < 1) :?>
                 <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
-                    <h3><?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?></h3>
+                    <?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?>
                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
-                    <h3><?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?></h3>
+                    <?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?>
                 <?php endif; ?>
             <?php else: ?>
                 <?php
@@ -97,17 +97,18 @@ echo $this->table->intro;
                     foreach ($data as $d) :?>
                         <div class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
                             <div class="article-title article-title-<?php echo $this->table->renderid; ?>">
+                                <div class="article-name">
                                 <i class="fas fa-caret-right"></i>
                                 <?php if ($this->table->db_table_name == 'jos_emundus_entreprise') :?>
                                     <?php if (!empty($d["Raison sociale"])) :?>
-                                        <h4><?php echo $d["Raison sociale"]; ?></h4>
+                                    <h4><?php echo $d["Raison sociale"]; ?></h4></div>
                                     <?php endif; ?>
                                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
 
                                     <?php if (!empty($d["lastname"]) && !empty($d["firstname"])) :?>
-                                        <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4>
+                                        <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4></div>
                                     <?php elseif (!empty($d["Nom"]) && !empty($d["Prénom"])) :?>
-                                        <h4><?php echo $d["Nom"]. " " .$d["Prénom"]; ?></h4>
+                                        <h4><?php echo $d["Nom"]. " " .$d["Prénom"]; ?></h4></div>
                                     <?php endif; ?>
 
 	                                <?php if (!empty($d['user_id'])) :?>
