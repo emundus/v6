@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3091" />
-    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3131" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/layouts/list/filter/fabrik-filter-checkbox.php" line="13" />
     <bookmark url="file://$PROJECT_DIR$/plugins/fabrik_element/radiobutton/layouts/fabrik-element-radiobutton-form.php" line="6" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/details/tmpl/search_engine/default.php" line="0" />
     <bookmark url="file://$PROJECT_DIR$/plugins/fabrik_cron/migal_ftp/migal_ftp.php" line="185" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_search_engine/default.php" line="325" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_search_engine/default.php" line="313" />
-    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3104" />
     <bookmark url="file://$PROJECT_DIR$/plugins/fabrik_cron/migal_ftp/migal_ftp.php" line="397" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_search_engine/default.php" line="191" />
     <bookmark url="file://$PROJECT_DIR$/components/com_fabrik/views/details/tmpl/cci_search_engine/default.php" line="68" />
@@ -18,10 +15,160 @@
     <bookmark url="file://$PROJECT_DIR$/components/com_emundus/models/application.php" line="1008" />
     <bookmark url="file://$PROJECT_DIR$/components/com_emundus/models/application.php" line="942" />
     <bookmark url="file://$PROJECT_DIR$/components/com_emundus/models/application.php" line="1039" />
+    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3392" />
+    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3365" />
+    <bookmark url="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php" line="3352" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_emundus/models/files.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/models/files.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/phpspreadsheet.xml" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/phpspreadsheet.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/composer/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/composer/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/composer/installed.json" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/composer/installed.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.github/ISSUE_TEMPLATE.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.github/ISSUE_TEMPLATE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.github/support.yml" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.github/support.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.php_cs.dist" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.php_cs.dist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/.travis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/CHANGELOG.PHPExcel.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/CHANGELOG.PHPExcel.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/CONTRIBUTING.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/CONTRIBUTING.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Architecture.cd" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Architecture.cd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/ClassDiagrams.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/ClassDiagrams.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/ClassDiagrams.sln" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/ClassDiagrams.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/IReader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/IReader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/IWriter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/IWriter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_IOFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_IOFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Reader_Excel2007.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Reader_Excel2007.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Reader_Excel5.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Reader_Excel5.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Reader_Serialized.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Reader_Serialized.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Writer_Excel2007.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Writer_Excel2007.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Writer_Serialized.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/PHPExcel_Writer_Serialized.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/Worksheet.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/Classes/Worksheet.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/ReaderWriter.cd" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/assets/ClassDiagrams/ReaderWriter.cd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/references/features-cross-reference.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/references/features-cross-reference.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/references/function-list-by-category.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/references/function-list-by-category.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/references/function-list-by-name.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/references/function-list-by-name.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/accessing-cells.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/accessing-cells.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/autofilters.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/autofilters.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/calculation-engine.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/calculation-engine.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/file-formats.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/file-formats.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/memory_saving.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/memory_saving.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/migration-from-PHPExcel.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/migration-from-PHPExcel.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/reading-and-writing-to-file.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/reading-and-writing-to-file.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/recipes.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/recipes.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/worksheets.md" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/docs/topics/worksheets.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/mkdocs.yml" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/mkdocs.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Autofilter/10_Autofilter_selection_1.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Autofilter/10_Autofilter_selection_1.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Autofilter/10_Autofilter_selection_2.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Autofilter/10_Autofilter_selection_2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Autofilter/10_Autofilter_selection_display.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Autofilter/10_Autofilter_selection_display.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Basic/08_Conditional_formatting.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Basic/08_Conditional_formatting.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Basic/08_Conditional_formatting_2.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Basic/08_Conditional_formatting_2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/32_Chart_read_write_HTML.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/32_Chart_read_write_HTML.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/32_Chart_read_write_PDF.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/32_Chart_read_write_PDF.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_area.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_area.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_bar_stacked.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_bar_stacked.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_column.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_column.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_column_2.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_column_2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_composite.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_composite.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_line.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_line.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_multiple_charts.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_multiple_charts.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_pie.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_pie.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_radar.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_radar.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_scatter.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_scatter.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_stock.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Chart/33_Chart_create_stock.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reader/11_Reading_a_workbook_in_chunks_using_a_configurable_read_filter_(version_1).php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reader/11_Reading_a_workbook_in_chunks_using_a_configurable_read_filter_(version_1).php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reader/12_Reading_a_workbook_in_chunks_using_a_configurable_read_filter_(version_2).php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reader/12_Reading_a_workbook_in_chunks_using_a_configurable_read_filter_(version_2).php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reader/sampleData/example1.tsv" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reader/sampleData/example1.tsv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reading_workbook_data/Custom_properties.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reading_workbook_data/Custom_properties.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/templates/Excel2003XMLTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/templates/Excel2003XMLTest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/templates/SylkTest.slk" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/templates/SylkTest.slk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/templates/chartSpreadsheet.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/templates/chartSpreadsheet.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Calculation.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Calculation.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/DateTime.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/DateTime.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Engineering.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Engineering.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Financial.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Financial.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/FormulaParser.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/FormulaParser.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/FormulaToken.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/FormulaToken.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Functions.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Logical.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Logical.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/LookupRef.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/LookupRef.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/MathTrig.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/MathTrig.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Statistical.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/Statistical.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/TextData.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/TextData.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/functionlist.txt" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/functionlist.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/cs/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/cs/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/da/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/da/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/de/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/de/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/es/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/es/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/fi/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/fi/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/fr/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/fr/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/hu/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/hu/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/it/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/it/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/nl/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/nl/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/no/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/no/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/pl/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/pl/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/tr/functions" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Calculation/locale/tr/functions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Cell/Coordinate.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Cell/Coordinate.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Cell/DefaultValueBinder.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Cell/DefaultValueBinder.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Cell/Hyperlink.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Cell/Hyperlink.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Chart/DataSeriesValues.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Chart/DataSeriesValues.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Chart/Renderer/JpGraph.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Chart/Renderer/JpGraph.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Chart/Renderer/PHP Charting Libraries.txt" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Chart/Renderer/PHP Charting Libraries.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Collection/Cells.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Collection/Cells.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Document/Properties.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Document/Properties.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Helper/Migrator.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Helper/Migrator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Helper/Sample.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Helper/Sample.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/NamedRange.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/NamedRange.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/BaseReader.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/BaseReader.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Csv.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Csv.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Gnumeric.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Gnumeric.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Html.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Html.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Ods.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Ods.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xls.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xls.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx/Chart.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx/Chart.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xml.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xml.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/ReferenceHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/ReferenceHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/RichText/ITextElement.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/RichText/ITextElement.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/RichText/Run.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/RichText/Run.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/RichText/TextElement.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/RichText/TextElement.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/JAMA/Matrix.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/JAMA/Matrix.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/JAMA/QRDecomposition.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/JAMA/QRDecomposition.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/OLE.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/OLE.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/OLERead.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/OLERead.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/StringHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/StringHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/Trend/PolynomialBestFit.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Shared/Trend/PolynomialBestFit.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Spreadsheet.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Spreadsheet.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Style/NumberFormat.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Style/NumberFormat.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Style/Style.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Style/Style.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/AutoFilter.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/AutoFilter.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/BaseDrawing.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/BaseDrawing.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/ColumnCellIterator.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/ColumnCellIterator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/ColumnIterator.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/ColumnIterator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/Iterator.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/Iterator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/RowCellIterator.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/RowCellIterator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/RowIterator.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/RowIterator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/Worksheet.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Worksheet/Worksheet.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Html.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Html.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Pdf/Mpdf.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Pdf/Mpdf.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xls/Parser.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xls/Parser.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xls/Worksheet.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xls/Worksheet.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Chart.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Chart.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Drawing.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Drawing.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Rels.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Rels.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Workbook.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Workbook.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Worksheet.php" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/Xlsx/Worksheet.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" afterDir="false" />
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -76,9 +223,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="3051" column="21" lean-forward="true" selection-start-line="3051" selection-start-column="21" selection-end-line="3051" selection-end-column="21" />
+            <state relative-caret-position="-2818">
+              <caret line="3131" lean-forward="true" selection-start-line="3131" selection-end-line="3131" />
               <folding>
+                <element signature="e#351#392#0#PHP" expanded="true" />
                 <element signature="n#style#0;n#h2#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#p#0;n#!!top" expanded="true" />
               </folding>
@@ -90,36 +238,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>inst</find>
-      <find>instr</find>
-      <find>addU</find>
-      <find>$this-&gt;logo</find>
-      <find>getfile</find>
-      <find>groups</find>
-      <find>getSt</find>
-      <find>getFnum</find>
-      <find>img</find>
-      <find>getFormsPD</find>
-      <find>buildMe</find>
-      <find>getAttachmentsProgress</find>
-      <find>getForms</find>
-      <find>pdf</find>
-      <find>getFormsp</find>
-      <find>application_</find>
-      <find>getValue</find>
-      <find>phpOffi</find>
-      <find>exporton</find>
-      <find>getCurrentCampaignInfoByApplicant</find>
-      <find>init</find>
-      <find>getCurrentProfile</find>
-      <find>geth</find>
       <find>insert(</find>
       <find>saveE</find>
       <find>create_fil</find>
       <find>generate_p</find>
       <find>getA</find>
-      <find>generatedoc</find>
       <find>JPATH_LIBRARIES</find>
+      <find>item</find>
+      <find>select</find>
+      <find>return</find>
+      <find>$m_files</find>
+      <find>getValueFabrikByIds</find>
+      <find>$setupTags</find>
+      <find>echo</find>
+      <find>getCoordinate()</find>
+      <find>excel</find>
+      <find>col</find>
+      <find>27</find>
+      <find>exportExcel</find>
+      <find>generate</find>
+      <find>$objPHPExcel</find>
+      <find>getDefaultStyle</find>
+      <find>setCellValue</find>
+      <find>export</find>
+      <find>xls</find>
+      <find>generatedoc</find>
+      <find>getFromZipArchive</find>
+      <find>load</find>
+      <find>$fileName</find>
+      <find>getFR</find>
+      <find>generated</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -133,12 +281,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/components/com_emundus/helpers/export.php" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/emunduscampaign.php" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/emundusreferentletter.xml" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/en-GB/en-GB.plg_fabrik_form_emundusreferentletter.sys.ini" />
-        <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/fr-FR/fr-FR.plg_fabrik_form_emundusreferentletter.sys.ini" />
-        <option value="$PROJECT_DIR$/components/com_emundus/helpers/menu.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/application_form.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_send_application/mod_emundus_send_application.xml" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_send_application/language/en-GB/en-GB.mod_emundus_send_application.ini" />
@@ -156,7 +298,6 @@
         <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/emundusreferentletter.php" />
         <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/en-GB/en-GB.plg_fabrik_form_emundusreferentletter.ini" />
         <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/fr-FR/fr-FR.plg_fabrik_form_emundusreferentletter.ini" />
-        <option value="$PROJECT_DIR$/components/com_emundus/models/files.php" />
         <option value="$PROJECT_DIR$/libraries/vendor/composer/installed.json" />
         <option value="$PROJECT_DIR$/libraries/vendor/phpoffice/phpword/src/PhpWord/Element/AbstractContainer.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/evaluation.php" />
@@ -183,6 +324,13 @@
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/files.php" />
+        <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
+        <option value="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/composer.json" />
+        <option value="$PROJECT_DIR$/libraries/phpspreadsheet/composer.json" />
+        <option value="$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx.php" />
+        <option value="$PROJECT_DIR$/configuration.php" />
+        <option value="$PROJECT_DIR$/libraries/composer.json" />
         <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
       </list>
     </option>
@@ -246,10 +394,10 @@
     </include_path>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1912" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1096" />
+    <option name="x" value="-15" />
+    <option name="y" value="-20" />
+    <option name="width" value="1920" />
+    <option name="height" value="1080" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -289,36 +437,19 @@
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
               <item name="libraries" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="libraries" type="462c0819:PsiDirectoryNode" />
+              <item name="PHPExcel" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="g5_helium" type="462c0819:PsiDirectoryNode" />
+              <item name="libraries" type="462c0819:PsiDirectoryNode" />
+              <item name="phpspreadsheet" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -481,7 +612,15 @@
       <workItem from="1547806180756" duration="2500000" />
       <workItem from="1548062561164" duration="630000" />
       <workItem from="1551780456553" duration="4433000" />
-      <workItem from="1554198613916" duration="7639000" />
+      <workItem from="1554198613916" duration="13109000" />
+      <workItem from="1554215489291" duration="3163000" />
+      <workItem from="1554276634958" duration="23755000" />
+      <workItem from="1554363227230" duration="30002000" />
+      <workItem from="1554449621102" duration="22478000" />
+      <workItem from="1554708439695" duration="3923000" />
+      <workItem from="1554718945373" duration="18863000" />
+      <workItem from="1554794824401" duration="24412000" />
+      <workItem from="1554881556345" duration="2295000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog.">
       <created>1525445467750</created>
@@ -515,7 +654,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="262514000" />
+    <option name="totallyTimeSpent" value="396875000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -538,10 +677,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1096" extended-state="6" />
+    <frame x="-7" y="-7" width="1550" height="878" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1108742" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2033557" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -687,201 +826,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/en-GB/en-GB.plg_fabrik_form_emundusreferentletter.sys.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="5" selection-start-line="5" selection-end-line="6" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/en-GB/en-GB.plg_fabrik_form_emundusreferentletter.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="11" selection-start-line="11" selection-end-line="12" selection-end-column="108" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/forms/fields.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="9" column="144" selection-start-line="9" selection-start-column="89" selection-end-line="9" selection-end-column="144" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/emundusreferentletter.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3098">
-          <caret line="121" column="45" selection-start-line="121" selection-start-column="45" selection-end-line="121" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/fr-FR/fr-FR.plg_fabrik_form_emundusreferentletter.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="12" column="81" selection-start-line="12" selection-start-column="81" selection-end-line="12" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/vendor/composer/installed.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="1998" column="20" lean-forward="true" selection-start-line="1998" selection-start-column="20" selection-end-line="1998" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/vendor/phpoffice/phpword/src/PhpWord/Element/AbstractContainer.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
-          <caret line="214" column="48" lean-forward="true" selection-start-line="214" selection-start-column="48" selection-end-line="214" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/evaluation.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_cron/migal_ftp/migal_ftp.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1232">
-          <caret line="554" column="63" selection-start-line="554" selection-start-column="63" selection-end-line="554" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-SOPRO_assign_to_groups.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="936">
-          <caret line="26" selection-start-line="26" selection-end-line="38" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-access.php">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationSent.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="27" column="6" lean-forward="true" selection-start-line="19" selection-start-column="4" selection-end-line="27" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-NORMANDY_assign_to_groups.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="707">
-          <caret line="62" column="26" lean-forward="true" selection-start-line="62" selection-start-column="26" selection-end-line="62" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/tmpl/showrights.php">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/controlfiles/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-274" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emunduspanel/mod_emunduspanel.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4031">
-          <caret line="122" column="34" lean-forward="true" selection-start-line="122" selection-start-column="34" selection-end-line="122" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1230">
-          <caret line="192" column="22" selection-start-line="192" selection-start-column="22" selection-end-line="192" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="664">
-          <caret line="92" column="70" selection-start-line="92" selection-start-column="70" selection-end-line="92" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/tmpl/esiea.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2700">
-          <caret line="80" column="179" selection-start-line="80" selection-start-column="179" selection-end-line="80" selection-end-column="179" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/user/emundus/emundus.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7632">
-          <caret line="219" column="26" selection-start-line="219" selection-start-column="26" selection-end-line="219" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/profile.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18360">
-          <caret line="515" column="8" selection-start-line="515" selection-start-column="8" selection-end-line="515" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-CCIRS-DHR-create-associate.php" />
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/ccirs-drh-new-user.php" />
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/emunduscampaign/emunduscampaign.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-431">
-          <caret line="115" column="31" selection-start-line="115" selection-start-column="16" selection-end-line="115" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-csv_import.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6537">
-          <caret line="71" column="13" lean-forward="true" selection-start-line="71" selection-start-column="13" selection-end-line="71" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/files.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="259" column="38" selection-start-line="259" selection-start-column="38" selection-end-line="259" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/files.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="412">
-          <caret line="2407" lean-forward="true" selection-start-line="2407" selection-end-line="2407" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/access.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="747">
-          <caret line="153" column="39" selection-start-line="153" selection-start-column="39" selection-end-line="153" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/users.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4">
-          <caret line="1568" column="33" selection-start-line="1568" selection-start-column="33" selection-end-line="1568" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-confirm_post.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/export.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="150" column="10" selection-start-line="150" selection-start-column="10" selection-end-line="150" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/plugins/user/emundus_registration_email/language/fr-FR/fr-FR.plg_user_emundus_registration_email.ini">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="72">
@@ -1036,21 +980,200 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/emundus.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5205" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.html.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-156" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/docs.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-102" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/filters.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_graphs/mod_emundus_graphs.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-204" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/access.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="119" column="36" selection-start-line="119" selection-start-column="30" selection-end-line="119" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="21" column="21" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="21" />
+          <folding>
+            <element signature="e#6#213#0#PHP" expanded="true" />
+            <element signature="n#style#0;n#ul#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#li#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/trombinoscope.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2839">
+          <caret line="173" column="31" selection-start-line="173" selection-start-column="31" selection-end-line="173" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/composer/ClassLoader.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1122" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/composer/installed.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-153" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/ReferenceHelper.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1938" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/php-google-api-client/vendor/google/apiclient-services/src/Google/Service/Sheets/PasteDataRequest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="30" column="18" selection-start-line="30" selection-start-column="18" selection-end-line="30" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/router.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-186" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/bin/migrate-from-phpexcel">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/psr/simple-cache/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="119">
+            <caret line="7" column="160" lean-forward="true" selection-start-line="7" selection-start-column="160" selection-end-line="7" selection-end-column="160" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/psr/simple-cache/src/CacheInterface.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-153" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx/Chart.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx/Theme.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="49300">
+          <caret line="2907" column="27" selection-start-line="2907" selection-start-column="27" selection-end-line="2907" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="425">
+            <caret line="25" column="3" lean-forward="true" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="72" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="68" column="44" selection-start-line="68" selection-start-column="44" selection-end-line="68" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/stubs/SimpleXML/SimpleXML.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="6" selection-start-line="8" selection-start-column="6" selection-end-line="8" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="42" selection-start-line="2" selection-start-column="42" selection-end-line="2" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="327" selection-start-line="327" selection-end-line="327" />
+        <state relative-caret-position="664">
+          <caret line="1646" column="115" selection-start-line="1646" selection-start-column="104" selection-end-line="1646" selection-end-column="115" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/phpspreadsheet.php">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/samples/Reader/02_Simple_file_reader_using_a_specified_reader.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="77" selection-start-line="11" selection-start-column="77" selection-end-line="11" selection-end-column="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/phpspreadsheet/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Reader/Xlsx.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6511">
+          <caret line="410" column="28" selection-start-line="410" selection-start-column="18" selection-end-line="410" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="22" column="35" selection-start-line="22" selection-start-column="35" selection-end-line="22" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="3051" column="21" lean-forward="true" selection-start-line="3051" selection-start-column="21" selection-end-line="3051" selection-end-column="21" />
+        <state relative-caret-position="-2818">
+          <caret line="3131" lean-forward="true" selection-start-line="3131" selection-end-line="3131" />
           <folding>
+            <element signature="e#351#392#0#PHP" expanded="true" />
             <element signature="n#style#0;n#h2#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#p#0;n#!!top" expanded="true" />
           </folding>

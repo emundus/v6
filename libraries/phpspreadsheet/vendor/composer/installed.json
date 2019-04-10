@@ -1,17 +1,17 @@
 [
     {
         "name": "phpoffice/phpspreadsheet",
-        "version": "1.3.1",
-        "version_normalized": "1.3.1.0",
+        "version": "1.6.0",
+        "version_normalized": "1.6.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-            "reference": "aa5b0d0236c907fd8dba0883f3ceb97cc52e46ec"
+            "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/aa5b0d0236c907fd8dba0883f3ceb97cc52e46ec",
-            "reference": "aa5b0d0236c907fd8dba0883f3ceb97cc52e46ec",
+            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
+            "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
             "shasum": ""
         },
         "require": {

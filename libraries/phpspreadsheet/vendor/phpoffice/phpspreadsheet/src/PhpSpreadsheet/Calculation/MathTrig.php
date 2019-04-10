@@ -2,8 +2,8 @@
 
 namespace PhpOffice\PhpSpreadsheet\Calculation;
 
-use PhpOffice\PhpSpreadsheet\Exception as PhpSpreadsheetException;
-use PhpOffice\PhpSpreadsheet\Shared\JAMA\Matrix;
+use Matrix\Exception as MatrixException;
+use Matrix\Matrix;
 
 class MathTrig
 {
@@ -498,7 +498,7 @@ class MathTrig
                 if ((is_string($matrixCell)) || ($matrixCell === null)) {
                     return Functions::VALUE();
                 }
-                $matrixData[$column][$row] = $matrixCell;
+                $matrixData[$row][$column] = $matrixCell;
                 ++$column;
             }
             if ($column > $maxColumn) {
@@ -506,15 +506,15 @@ class MathTrig
             }
             ++$row;
         }
-        if ($row != $maxColumn) {
+
+        $matrix = new Matrix($matrixData);
+        if (!$matrix->isSquare()) {
             return Functions::VALUE();
         }
 
         try {
-            $matrix = new Matrix($matrixData);
-
-            return $matrix->det();
-        } catch (PhpSpreadsheetException $ex) {
+            return $matrix->determinant();
+        } catch (MatrixException $ex) {
             return Functions::VALUE();
         }
     }
@@ -550,7 +550,7 @@ class MathTrig
                 if ((is_string($matrixCell)) || ($matrixCell === null)) {
                     return Functions::VALUE();
                 }
-                $matrixData[$column][$row] = $matrixCell;
+                $matrixData[$row][$column] = $matrixCell;
                 ++$column;
             }
             if ($column > $maxColumn) {
@@ -558,17 +558,19 @@ class MathTrig
             }
             ++$row;
         }
-        foreach ($matrixValues as $matrixRow) {
-            if (count($matrixRow) != $maxColumn) {
-                return Functions::VALUE();
-            }
+
+        $matrix = new Matrix($matrixData);
+        if (!$matrix->isSquare()) {
+            return Functions::VALUE();
+        }
+
+        if ($matrix->determinant() == 0.0) {
+            return Functions::NAN();
         }
 
         try {
-            $matrix = new Matrix($matrixData);
-
-            return $matrix->inverse()->getArray();
-        } catch (PhpSpreadsheetException $ex) {
+            return $matrix->inverse()->toArray();
+        } catch (MatrixException $ex) {
             return Functions::VALUE();
         }
     }
@@ -629,8 +631,8 @@ class MathTrig
                 return Functions::VALUE();
             }
 
-            return $matrixA->times($matrixB)->getArray();
-        } catch (PhpSpreadsheetException $ex) {
+            return $matrixA->multiply($matrixB)->toArray();
+        } catch (MatrixException $ex) {
             return Functions::VALUE();
         }
     }
@@ -1088,9 +1090,9 @@ class MathTrig
             function ($index) use ($cellReference) {
                 list(, $row, $column) = explode('.', $index);
                 if ($cellReference->getWorksheet()->cellExists($column . $row)) {
-                    //take this cell out if it contains the SUBTOTAL formula
+                    //take this cell out if it contains the SUBTOTAL or AGGREGATE functions in a formula
                     $isFormula = $cellReference->getWorksheet()->getCell($column . $row)->isFormula();
-                    $cellFormula = !preg_match('/^=.*\bSUBTOTAL\s*\(/', strtoupper($cellReference->getWorksheet()->getCell($column . $row)->getValue()));
+                    $cellFormula = !preg_match('/^=.*\b(SUBTOTAL|AGGREGATE)\s*\(/i', $cellReference->getWorksheet()->getCell($column . $row)->getValue());
 
                     return !$isFormula || $cellFormula;
                 }
@@ -1222,8 +1224,10 @@ class MathTrig
             }
 
             $testCondition = '=' . $arg . $condition;
-            if (Calculation::getInstance()->_calculateFormulaValue($testCondition)) {
-                // Is it a value within our criteria
+
+            if (is_numeric($sumArgs[$key]) &&
+                Calculation::getInstance()->_calculateFormulaValue($testCondition)) {
+                // Is it a value within our criteria and only numeric can be added to the result
                 $returnValue += $sumArgs[$key];
             }
         }
@@ -1254,26 +1258,36 @@ class MathTrig
         $returnValue = 0;
 
         $sumArgs = Functions::flattenArray(array_shift($arrayList));
+        $aArgsArray = [];
+        $conditions = [];
 
         while (count($arrayList) > 0) {
             $aArgsArray[] = Functions::flattenArray(array_shift($arrayList));
             $conditions[] = Functions::ifCondition(array_shift($arrayList));
         }
 
-        // Loop through each set of arguments and conditions
-        foreach ($conditions as $index => $condition) {
-            $aArgs = $aArgsArray[$index];
+        // Loop through each sum and see if arguments and conditions are true
+        foreach ($sumArgs as $index => $value) {
+            $valid = true;
 
-            // Loop through arguments
-            foreach ($aArgs as $key => $arg) {
+            foreach ($conditions as $cidx => $condition) {
+                $arg = $aArgsArray[$cidx][$index];
+
+                // Loop through arguments
                 if (!is_numeric($arg)) {
                     $arg = Calculation::wrapResult(strtoupper($arg));
                 }
                 $testCondition = '=' . $arg . $condition;
-                if (Calculation::getInstance()->_calculateFormulaValue($testCondition)) {
-                    // Is it a value within our criteria
-                    $returnValue += $sumArgs[$key];
+                if (!Calculation::getInstance()->_calculateFormulaValue($testCondition)) {
+                    // Is not a value within our criteria
+                    $valid = false;
+
+                    break; // if false found, don't need to check other conditions
                 }
+            }
+
+            if ($valid) {
+                $returnValue += $value;
             }
         }
 
@@ -1457,5 +1471,179 @@ class MathTrig
         }
 
         return ((int) ($value * $adjust)) / $adjust;
+    }
+
+    /**
+     * SEC.
+     *
+     * Returns the secant of an angle.
+     *
+     * @param float $angle Number
+     *
+     * @return float|string The secant of the angle
+     */
+    public static function SEC($angle)
+    {
+        $angle = Functions::flattenSingleValue($angle);
+
+        if (!is_numeric($angle)) {
+            return Functions::VALUE();
+        }
+
+        $result = cos($angle);
+
+        return ($result == 0.0) ? Functions::DIV0() : 1 / $result;
+    }
+
+    /**
+     * SECH.
+     *
+     * Returns the hyperbolic secant of an angle.
+     *
+     * @param float $angle Number
+     *
+     * @return float|string The hyperbolic secant of the angle
+     */
+    public static function SECH($angle)
+    {
+        $angle = Functions::flattenSingleValue($angle);
+
+        if (!is_numeric($angle)) {
+            return Functions::VALUE();
+        }
+
+        $result = cosh($angle);
+
+        return ($result == 0.0) ? Functions::DIV0() : 1 / $result;
+    }
+
+    /**
+     * CSC.
+     *
+     * Returns the cosecant of an angle.
+     *
+     * @param float $angle Number
+     *
+     * @return float|string The cosecant of the angle
+     */
+    public static function CSC($angle)
+    {
+        $angle = Functions::flattenSingleValue($angle);
+
+        if (!is_numeric($angle)) {
+            return Functions::VALUE();
+        }
+
+        $result = sin($angle);
+
+        return ($result == 0.0) ? Functions::DIV0() : 1 / $result;
+    }
+
+    /**
+     * CSCH.
+     *
+     * Returns the hyperbolic cosecant of an angle.
+     *
+     * @param float $angle Number
+     *
+     * @return float|string The hyperbolic cosecant of the angle
+     */
+    public static function CSCH($angle)
+    {
+        $angle = Functions::flattenSingleValue($angle);
+
+        if (!is_numeric($angle)) {
+            return Functions::VALUE();
+        }
+
+        $result = sinh($angle);
+
+        return ($result == 0.0) ? Functions::DIV0() : 1 / $result;
+    }
+
+    /**
+     * COT.
+     *
+     * Returns the cotangent of an angle.
+     *
+     * @param float $angle Number
+     *
+     * @return float|string The cotangent of the angle
+     */
+    public static function COT($angle)
+    {
+        $angle = Functions::flattenSingleValue($angle);
+
+        if (!is_numeric($angle)) {
+            return Functions::VALUE();
+        }
+
+        $result = tan($angle);
+
+        return ($result == 0.0) ? Functions::DIV0() : 1 / $result;
+    }
+
+    /**
+     * COTH.
+     *
+     * Returns the hyperbolic cotangent of an angle.
+     *
+     * @param float $angle Number
+     *
+     * @return float|string The hyperbolic cotangent of the angle
+     */
+    public static function COTH($angle)
+    {
+        $angle = Functions::flattenSingleValue($angle);
+
+        if (!is_numeric($angle)) {
+            return Functions::VALUE();
+        }
+
+        $result = tanh($angle);
+
+        return ($result == 0.0) ? Functions::DIV0() : 1 / $result;
+    }
+
+    /**
+     * ACOT.
+     *
+     * Returns the arccotangent of a number.
+     *
+     * @param float $number Number
+     *
+     * @return float|string The arccotangent of the number
+     */
+    public static function ACOT($number)
+    {
+        $number = Functions::flattenSingleValue($number);
+
+        if (!is_numeric($number)) {
+            return Functions::VALUE();
+        }
+
+        return (M_PI / 2) - atan($number);
+    }
+
+    /**
+     * ACOTH.
+     *
+     * Returns the hyperbolic arccotangent of a number.
+     *
+     * @param float $number Number
+     *
+     * @return float|string The hyperbolic arccotangent of the number
+     */
+    public static function ACOTH($number)
+    {
+        $number = Functions::flattenSingleValue($number);
+
+        if (!is_numeric($number)) {
+            return Functions::VALUE();
+        }
+
+        $result = log(($number + 1) / ($number - 1)) / 2;
+
+        return is_nan($result) ? Functions::NAN() : $result;
     }
 }
