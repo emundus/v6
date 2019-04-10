@@ -63,22 +63,14 @@ if (isset($searchword) && !empty($searchword)) {
 
 switch ($mod_em_campaign_groupby) {
     case 'month':
-        if ($order == "start_date")
-            $condition .= ' ORDER BY start_date';
-        else
-            $condition .= ' ORDER BY end_date';
+        $condition .= ' ORDER BY '.$mod_em_campaign_order;
         break;
     case 'program':
-        if ($order == "start_date")
-            $condition .= ' ORDER BY training, start_date';
-        else
-            $condition .= ' ORDER BY training, end_date';
+        $condition .= ' ORDER BY training, '.$mod_em_campaign_order;
         break;
     case 'ordering':
-        if ($order == "start_date")
-            $condition .= ' ORDER BY ordering, start_date';
-        else
-            $condition .= ' ORDER BY ordering, end_date';
+        $condition .= ' ORDER BY ordering, '.$mod_em_campaign_order;
+        break;
 }
 
 
@@ -106,10 +98,13 @@ $helper = new modEmundusCampaignHelper;
 $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
 $futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
-$allCampaign        = $helper->getProgram($condition);
+$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
 //$teachingUnity      = $helper->getTeachingUnity();
 
+
 $now = $helper->now;
+
+
 
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();

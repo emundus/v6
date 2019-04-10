@@ -34,9 +34,11 @@
                         <option value="program">LIST_PROGRAM</option>
 						<option value="ordering">LIST_ORDERING</option>
                     </field>
-					<field type="list" name="mod_em_campaign_orderby" default="" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
+					<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
 						<option value="start_date">LIST_DATE_START</option>
 						<option value="end_date">LIST_DATE_END</option>
+						<option value="formation_start">FORMATION_DATE_START</option>
+						<option value="formation_end">FORMATION_DATE_END</option>
 					</field>
 					<field type="list" name="mod_em_campaign_order_type" default="" label="MOD_EM_CAMPAIGN_ORDER_TYPE" description="MOD_EM_CAMPAIGN_ORDER_TYPE_DESC">
 						<option value="asc">ASC</option>

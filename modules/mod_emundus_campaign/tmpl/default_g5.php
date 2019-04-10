@@ -13,6 +13,7 @@ if ($locallang == "fr-FR") {
 } else {
 	setlocale (LC_ALL, 'en_GB');
 }
+
 ?>
 
 <form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
@@ -32,15 +33,15 @@ if ($locallang == "fr-FR") {
 			</ul>
 		</div>
 		<div class="g-block size-30 navorder">
-			<p><?php if ($order == "start_date") :?>
+			<p><?php if ($order != "end_date") :?>
 					<?php if ($ordertime == "desc") :?>
-						<a href="index.php?order_date=start_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i>
+						<a href="index.php?order_date=<?php echo $order ;?>&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i>
 					<?php else :?>
-							<a href="index.php?order_date=start_date&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i>
+							<a href="index.php?order_date=<?php echo $order ;?>&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i>
 					<?php endif; ?>
 					<b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
 				<?php else :?>
-					<a href="index.php?order_date=start_date&order_time=<?php echo $ordertime ?>"><?php echo JText::_("CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime=="desc") {?><a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("LIST_DATE_END");?></b></a>
+					<a href="index.php?order_date=<?php echo $mod_em_campaign_order ;?>&order_time=<?php echo $ordertime ?>"><?php echo JText::_("CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime=="desc") {?><a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("LIST_DATE_END");?></b></a>
 				<?php endif; ?>
 			</p>
 		</div>

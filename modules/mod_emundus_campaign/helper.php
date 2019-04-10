@@ -44,7 +44,7 @@
                 $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
                 $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
             }
-            //
+            
             $db->setQuery($query);
             //die(str_replace('#_', 'jos', $db->getQuery()));
             $list = (array) $db->loadObjectList();
@@ -119,12 +119,24 @@
 
 
         /* **** ALL **** */
-        public function getProgram($condition) {
+        public function getProgram($condition, $teachingUnityDates = null) {
             $db = JFactory::getDbo();
             $query  = $db->getQuery(true);
-            $query->select('ca.*, pr.apply_online, pr.code');
-            $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
-            $query->where('ca.training = pr.code AND ca.published=1 '.$condition);
+
+            if ($teachingUnityDates) {
+                $query
+                    ->select('ca.*, pr.*, tu.date_start as formation_start, tu.date_end as formation_end')
+                    ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
+                    ->join('LEFT', $db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
+                    ->join('LEFT', $db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training'))
+                    ->where('ca.training = pr.code AND ca.published=1 '.$condition);
+            }
+            else {
+                $query
+                    ->select('ca.*, pr.apply_online, pr.code')
+                    ->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
+                    ->where('ca.training = pr.code AND ca.published=1 '.$condition);
+            }
 
             $db->setQuery($query);
             $list = (array) $db->loadObjectList();
