@@ -64,6 +64,20 @@ class modemundusApplicationsHelper {
 		return (array) $result;
 	}
 
+    static function getStatusFiles(){
+        $user = JFactory::getUser();
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select([$db->quoteName('published'),$db->quoteName('fnum')])
+            ->from($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('applicant_id').'='.$user->id);
+
+        $db->setQuery($query);
+        return $db->loadAssocList('fnum');
+
+    }
+
 	// get poll id of the appllicant
 	static function getPoll() {
 		$user 	= JFactory::getUser();
