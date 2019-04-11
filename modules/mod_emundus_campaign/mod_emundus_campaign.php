@@ -21,6 +21,13 @@ $mod_em_campaign_order=$params->get('mod_em_campaign_orderby');
 $mod_em_campaign_order_type=$params->get('mod_em_campaign_order_type');
 $mod_em_campaign_itemid=$params->get('mod_em_campaign_itemid');
 $mod_em_campaign_itemid2=$params->get('mod_em_campaign_itemid2');
+$mod_em_campaign_date_format = $params->get('mod_em_campaign_date_format');
+$mod_em_campaign_show_camp_start_date = $params->get('mod_em_campaign_show_camp_start_date');
+$mod_em_campaign_show_camp_end_date = $params->get('mod_em_campaign_show_camp_end_date');
+$mod_em_campaign_get_teaching_unity =$params->get('mod_em_campaign_get_teaching_unity');
+$mod_em_campaign_get_link =$params->get('mod_em_campaign_get_link');
+$mod_em_campaign_show_formation_start_date = $params->get('mod_em_campaign_show_formation_start_date');
+$mod_em_campaign_show_formation_end_date = $params->get('mod_em_campaign_show_formation_end_date');
 $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $redirect_url=$params->get('mod_em_campaign_link', 'registration');
@@ -56,22 +63,14 @@ if (isset($searchword) && !empty($searchword)) {
 
 switch ($mod_em_campaign_groupby) {
     case 'month':
-        if ($order == "start_date")
-            $condition .= ' ORDER BY start_date';
-        else
-            $condition .= ' ORDER BY end_date';
+        $condition .= ' ORDER BY '.$mod_em_campaign_order;
         break;
     case 'program':
-        if ($order == "start_date")
-            $condition .= ' ORDER BY training, start_date';
-        else
-            $condition .= ' ORDER BY training, end_date';
+        $condition .= ' ORDER BY training, '.$mod_em_campaign_order;
         break;
     case 'ordering':
-        if ($order == "start_date")
-            $condition .= ' ORDER BY ordering, start_date';
-        else
-            $condition .= ' ORDER BY ordering, end_date';
+        $condition .= ' ORDER BY ordering, '.$mod_em_campaign_order;
+        break;
 }
 
 
@@ -96,11 +95,16 @@ switch ($ordertime) {
 
 $helper = new modEmundusCampaignHelper;
 
-$currentCampaign    = $helper->getCurrent($condition);
-$pastCampaign       = $helper->getPast($condition);
-$futurCampaign      = $helper->getFutur($condition);
-$allCampaign        = $helper->getProgram($condition);
+$currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
+$pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
+$futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
+$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
+//$teachingUnity      = $helper->getTeachingUnity();
+
+
 $now = $helper->now;
+
+
 
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();
