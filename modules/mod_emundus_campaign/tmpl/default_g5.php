@@ -114,7 +114,7 @@ if ($locallang == "fr-FR") {
 						</p>
 					</div>
 					<div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
-						<br class="campaingapplycontent">
+						<div class="campaingapplycontent">
 							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
 
 							<?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
@@ -122,7 +122,7 @@ if ($locallang == "fr-FR") {
                                 <?php
                                     echo JFactory::getDate(strtotime($result->start_date))->format($mod_em_campaign_date_format);
                                 ?>
-                                <br>
+                                <br/>
                             <?php endif; ?>
 
                             <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
@@ -130,7 +130,7 @@ if ($locallang == "fr-FR") {
                                 <?php
                                     echo JFactory::getDate(strtotime($result->end_date))->format($mod_em_campaign_date_format);
                                 ?>
-                                </br>
+                                <br/>
                             <?php endif; ?>
 
                             <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
@@ -138,7 +138,7 @@ if ($locallang == "fr-FR") {
                                 <?php
                                     echo JFactory::getDate(strtotime($result->formation_start))->format($mod_em_campaign_date_format);
                                 ?>
-                                </br>
+                                <br/>
                             <?php endif;?>
 
                             <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
@@ -146,7 +146,7 @@ if ($locallang == "fr-FR") {
                                 <?php
                                 echo JFactory::getDate(strtotime($result->formation_end))->format($mod_em_campaign_date_format);
                                 ?>
-                                </br>
+                                <br/>
                             <?php endif; ?>
 
                             <hr>
@@ -401,115 +401,6 @@ if ($locallang == "fr-FR") {
 		<?php } ?>
 	</div><!-- Close campaigns-list -->
 </div><!-- Close past tab -->
-
-<div id="all" class="tab-pane fade in active">
-	<div class="campaigns-list">
-		<?php echo $paginationTotal->getResultsCounter(); ?>
-		<?php if (empty($allCampaign)) { ?>
-			<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
-		<?php } else {
-			$oldmonth = '';
-
-			foreach ($allCampaign as $result) {
-					if ($order == "start_date") {
-						$month = utf8_encode(strftime("%B %Y", strtotime($result->start_date)));
-					} else {
-						$month = utf8_encode(strftime("%B %Y", strtotime($result->end_date)));
-					}
-
-					if ($oldmonth != $month) {
-						if (!empty($oldmonth)) { ?>
-							</div> <!-- close campaign block (rt12 toclose) -->
-						</div> <!-- close campaignbymonth block -->
-						<?php } ?>
-						<div class="g-block size-100 campaignbymonth">
-							<div class="campaign-month-label">
-								<div class="position-me">
-									<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
-										<p><?php echo ucfirst($month); ?></p>
-									</div>
-								</div>
-							</div>
-							<div class="campaign-month-campaigns"><!-- rt12 toclose -->
-								<?php } ?>
-								<div class="campaign-content">
-									<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-										<h4><a href="/index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online == 1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
-										<p>
-											<?php
-												$text = '';
-												$textprog = '';
-												$textcamp = '';
-												if ($showcampaign) {
-													$textcamp = $result->short_description;
-												}
-												echo $textcamp;
-											?>
-										</p>
-									</div>
-									<div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
-										<div class="campaingapplycontent">
-											<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                            <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
-                                                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
-                                                <?php
-                                                echo JFactory::getDate(strtotime($result->start_date))->format($mod_em_campaign_date_format);
-                                                ?>
-                                                <br>
-                                            <?php endif; ?>
-
-                                            <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-                                                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
-                                                <?php
-                                                echo JFactory::getDate(strtotime($result->end_date))->format($mod_em_campaign_date_format);
-                                                ?>
-                                                </br>
-                                            <?php endif; ?>
-
-                                            <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
-                                                <strong><?php echo JText::_('FORMATION_START_DATE'); ?>:</strong>
-                                                <?php
-                                                echo JFactory::getDate(strtotime($result->formation_start))->format($mod_em_campaign_date_format);
-                                                ?>
-                                                </br>
-                                            <?php endif;?>
-
-                                            <?php if ($mod_em_campaign_show_formation_end_date  && $result->formation_end !== '0000-00-00 00:00:00') :?>
-                                                <strong><?php echo JText::_('FORMATION_END_DATE'); ?>:</strong>
-                                                <?php
-                                                echo JFactory::getDate(strtotime($result->formation_end))->format($mod_em_campaign_date_format);
-                                                ?>
-                                                </br>
-                                            <?php endif; ?>
-										</div>
-									</div>
-									<div class="below-content">
-										<?php if ($result->apply_online == 1) :?>
-                                            <?php if ($mod_em_campaign_get_link) :?>
-                                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid ; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                            <?php else :?>
-                                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                            <?php endif; ?>
-											<?php if (date('Y/m/d H:i', strtotime($result->start_date)) <= date('Y/m/d H:i') && date('Y/m/d H:i', strtotime($result->end_date)) >= date('Y/m/d H:i')) :?>
-												<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
-											<?php endif; ?>
-										<?php else :?>
-                                            <?php if ($mod_em_campaign_get_link) :?>
-                                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid ; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                            <?php else :?>
-                                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-									</div>
-								</div><!-- Close campaign-content -->
-								<?php
-									$oldmonth = $month;
-								} ?>
-							</div> <!-- close last campaign block -->
-						</div> <!-- close last campaignbymonth block -->
-					<?php } ?>
-				</div><!-- Close campaigns-list -->
-			</div><!-- Close all tab -->
 		</div><!-- Close tab-content -->
 	</form>
 <script type="text/javascript">
