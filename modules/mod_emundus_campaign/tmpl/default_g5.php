@@ -117,7 +117,7 @@ if ($locallang == "fr-FR") {
 						<br class="campaingapplycontent">
 							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
 
-							<?php if ($mod_em_campaign_show_camp_start_date) :?>
+							<?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
                                 <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                 <?php
                                     echo JFactory::getDate(strtotime($result->start_date))->format($mod_em_campaign_date_format);
@@ -125,7 +125,7 @@ if ($locallang == "fr-FR") {
                                 <br>
                             <?php endif; ?>
 
-                            <?php if ($mod_em_campaign_show_camp_end_date) :?>
+                            <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
 							    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
                                 <?php
                                     echo JFactory::getDate(strtotime($result->end_date))->format($mod_em_campaign_date_format);
@@ -133,7 +133,7 @@ if ($locallang == "fr-FR") {
                                 </br>
                             <?php endif; ?>
 
-                            <?php if ($mod_em_campaign_show_formation_start_date) :?>
+                            <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
                                 <strong><?php echo JText::_('FORMATION_START_DATE'); ?>:</strong>
                                 <?php
                                     echo JFactory::getDate(strtotime($result->formation_start))->format($mod_em_campaign_date_format);
@@ -141,7 +141,7 @@ if ($locallang == "fr-FR") {
                                 </br>
                             <?php endif;?>
 
-                            <?php if ($mod_em_campaign_show_formation_end_date) :?>
+                            <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
                                 <strong><?php echo JText::_('FORMATION_END_DATE'); ?>:</strong>
                                 <?php
                                 echo JFactory::getDate(strtotime($result->formation_end))->format($mod_em_campaign_date_format);
@@ -344,7 +344,7 @@ if ($locallang == "fr-FR") {
 				<div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
 					<div class="campaingapplycontent">
 						<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                        <?php if ($mod_em_campaign_show_camp_start_date) :?>
+                        <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
                             <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                             <?php
                             echo JFactory::getDate(strtotime($result->start_date))->format($mod_em_campaign_date_format);
@@ -352,7 +352,7 @@ if ($locallang == "fr-FR") {
                             <br>
                         <?php endif; ?>
 
-                        <?php if ($mod_em_campaign_show_camp_end_date) :?>
+                        <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
                             <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
                             <?php
                             echo JFactory::getDate(strtotime($result->end_date))->format($mod_em_campaign_date_format);
@@ -360,7 +360,7 @@ if ($locallang == "fr-FR") {
                             </br>
                         <?php endif; ?>
 
-                        <?php if ($mod_em_campaign_show_formation_start_date) :?>
+                        <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
                             <strong><?php echo JText::_('FORMATION_START_DATE'); ?>:</strong>
                             <?php
                             echo JFactory::getDate(strtotime($result->formation_start))->format($mod_em_campaign_date_format);
@@ -368,7 +368,7 @@ if ($locallang == "fr-FR") {
                             </br>
                         <?php endif;?>
 
-                        <?php if ($mod_em_campaign_show_formation_end_date) :?>
+                        <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
                             <strong><?php echo JText::_('FORMATION_END_DATE'); ?>:</strong>
                             <?php
                             echo JFactory::getDate(strtotime($result->formation_end))->format($mod_em_campaign_date_format);
@@ -411,10 +411,11 @@ if ($locallang == "fr-FR") {
 			$oldmonth = '';
 
 			foreach ($allCampaign as $result) {
-					if ($order == "start_date")
+					if ($order == "start_date") {
 						$month = utf8_encode(strftime("%B %Y", strtotime($result->start_date)));
-					else
+					} else {
 						$month = utf8_encode(strftime("%B %Y", strtotime($result->end_date)));
+					}
 
 					if ($oldmonth != $month) {
 						if (!empty($oldmonth)) { ?>
@@ -442,7 +443,6 @@ if ($locallang == "fr-FR") {
 												if ($showcampaign) {
 													$textcamp = $result->short_description;
 												}
-												//$text = $textprog."<br />".$textcamp;
 												echo $textcamp;
 											?>
 										</p>
@@ -450,7 +450,7 @@ if ($locallang == "fr-FR") {
 									<div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
 										<div class="campaingapplycontent">
 											<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                            <?php if ($mod_em_campaign_show_camp_start_date) :?>
+                                            <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
                                                 <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                                 <?php
                                                 echo JFactory::getDate(strtotime($result->start_date))->format($mod_em_campaign_date_format);
@@ -458,7 +458,7 @@ if ($locallang == "fr-FR") {
                                                 <br>
                                             <?php endif; ?>
 
-                                            <?php if ($mod_em_campaign_show_camp_end_date) :?>
+                                            <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
                                                 <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
                                                 <?php
                                                 echo JFactory::getDate(strtotime($result->end_date))->format($mod_em_campaign_date_format);
@@ -466,7 +466,7 @@ if ($locallang == "fr-FR") {
                                                 </br>
                                             <?php endif; ?>
 
-                                            <?php if ($mod_em_campaign_show_formation_start_date) :?>
+                                            <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
                                                 <strong><?php echo JText::_('FORMATION_START_DATE'); ?>:</strong>
                                                 <?php
                                                 echo JFactory::getDate(strtotime($result->formation_start))->format($mod_em_campaign_date_format);
@@ -474,7 +474,7 @@ if ($locallang == "fr-FR") {
                                                 </br>
                                             <?php endif;?>
 
-                                            <?php if ($mod_em_campaign_show_formation_end_date) :?>
+                                            <?php if ($mod_em_campaign_show_formation_end_date  && $result->formation_end !== '0000-00-00 00:00:00') :?>
                                                 <strong><?php echo JText::_('FORMATION_END_DATE'); ?>:</strong>
                                                 <?php
                                                 echo JFactory::getDate(strtotime($result->formation_end))->format($mod_em_campaign_date_format);
