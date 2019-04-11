@@ -20,6 +20,9 @@ echo $description;
 <?php if (!empty($applications)) : ?>
 <div class="<?php echo $moduleclass_sfx ?>"> 
   <?php foreach($applications as $application) : ?>
+    <?php $state=$states[$application->fnum]['published'];?>
+    <?php if ($show_remove_files == 1 && $state == '1' || $show_remove_files == 0 && $state == '1' ) : ?>
+        <?php if ($show_archive_files == 1 && $state == '1' || $show_archive_files == 0 && $state == '1' ) : ?>
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-xs-6 col-md-4">
       <p class="">
@@ -125,6 +128,124 @@ echo $description;
     </div>
   </div>
   <hr>
+        <?php endif; ?>
+    <?php endif; ?>
+    <?php if ($show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0') : ?>
+    <div class="row" id="row<?php echo $application->fnum; ?>">
+        <div class="col-xs-6 col-md-4">
+            <p class="">
+                <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
+                    <?php
+                    echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label;
+                    ?>
+                </a>
+        </div>
+
+        <div class="col-xs-6 col-md-4">
+            <p>
+                <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
+            </p>
+            <a class="btn btn-secondary btn-xs" disabled="disabled" data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('MOD_EMUNDUS_APPLICATION_TOOLTIP_REMOVE_OR_ARCHIVE_FILES'); ?>"  role="button">
+                <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
+            </a>
+
+            <?php if (!empty($attachments) && ((int)($attachments[$application->fnum])>=100 && $application->status==0 && !$is_dead_line_passed) || in_array($user->id, $applicants) ) : ?>
+                <a class="btn btn-success btn-xs" disabled="disabled" data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('MOD_EMUNDUS_APPLICATION_TOOLTIP_REMOVE_OR_ARCHIVE_FILES'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+            <?php endif; ?>
+
+            <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+
+            <?php if ($application->status<=1) : ?>
+                <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
+
+
+            <?php endif; ?>
+        </div>
+
+        <div class="col-xs-6 col-md-4">
+            <?php echo JText::_('STATUS'); ?> :
+            <span class="label label-<?php echo $application->class; ?>">
+        <?php echo $application->value; ?>
+      </span>
+            <section class="container" style="width:150px; float: left;">
+                <?php if ($show_progress == 1) : ?>
+                    <div id="file<?php echo $application->fnum; ?>"></div>
+                    <script type="text/javascript">
+                        $( document ).ready(function() {
+                            $("#file<?php echo $application->fnum; ?>").circliful({
+                                animation: 1,
+                                animationStep: 5,
+                                foregroundBorderWidth: 15,
+                                backgroundBorderWidth: 15,
+                                percent: <?php echo (int)(($forms[$application->fnum]+$attachments[$application->fnum]))/2; ?>,
+                                textStyle: 'font-size: 12px;',
+                                textColor: '#000',
+                                foregroundColor:'<?php echo $show_progress_color; ?>'
+                            });
+                        });
+                    </script>
+                <?php endif; ?>
+
+                <?php if ($show_progress_forms == 1) : ?>
+                    <div id="forms<?php echo $application->fnum; ?>"></div>
+                    <script type="text/javascript">
+                        $( document ).ready(function() {
+                            $("#forms<?php echo $application->fnum; ?>").circliful({
+                                animation: 1,
+                                animationStep: 5,
+                                foregroundBorderWidth: 15,
+                                backgroundBorderWidth: 15,
+                                percent: <?php echo (int)($forms[$application->fnum]); ?>,
+                                text: '<?php echo JText::_("FORMS"); ?>',
+                                textStyle: 'font-size: 12px;',
+                                textColor: '#000',
+                                foregroundColor:'<?php echo $show_progress_color_forms; ?>'
+                            });
+                        });
+                    </script>
+                <?php endif; ?>
+
+                <?php if ($show_progress_documents == 1) : ?>
+                    <div id="documents<?php echo $application->fnum; ?>"></div>
+                    <script type="text/javascript">
+                        $( document ).ready(function() {
+                            $("#documents<?php echo $application->fnum; ?>").circliful({
+                                animation: 1,
+                                animationStep: 5,
+                                foregroundBorderWidth: 15,
+                                backgroundBorderWidth: 15,
+                                percent: <?php echo (int)($attachments[$application->fnum]); ?>,
+                                text: '<?php echo JText::_("DOCUMENTS"); ?>',
+                                textStyle: 'font-size: 12px;',
+                                textColor: '#000',
+                                foregroundColor:'<?php echo $show_progress_color_documents; ?>'
+                            });
+                        });
+                    </script>
+                <?php endif; ?>
+            </section>
+        </div>
+    </div>
+    <hr>
+      <?php endif; ?>
+      <?php if ($show_remove_files == 0 && $state == '-1' || $show_archive_files == 0 && $state == '0') : ?>
+
+          <div class="ui segments">
+              <div class="ui yellow segment">
+                  <div class="container-fluid">
+                      <div class="col-md-10">
+                          <?= JTEXT::sprintf('Mod_emundus_application_info_remove_or_archive_files', $application->label);?>
+                      </div>
+                      <div class="col-md-2">
+                          <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
+                      </div>
+
+                  </div>
+              </div>
+          </div>
+
+          <hr>
+      <?php endif; ?>
   <?php endforeach;  ?>
  </div> 
 <?php else : 
@@ -169,4 +290,9 @@ function deletefile(fnum){
   }
 }
 
+</script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>
