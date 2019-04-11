@@ -1,10 +1,10 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2014 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v4.3.0
- * @build-date      2015/03/19
+ * @version         Release v8.0.5
+ * @build-date      2019/01/14
  */
 
 // no direct access
@@ -27,6 +27,7 @@ class modSCLoginHelper
     var $forgotPasswordLink;
     var $registerLink;
     var $profileLink;
+    var $customRegisterComponent;
 
     var $user;
     var $tfaLoaded = false;
@@ -51,9 +52,9 @@ class modSCLoginHelper
     {
         // Load our CSS and Javascript files
         if (!$this->isJFBConnectInstalled)
-            $this->doc->addStyleSheet('media/sourcecoast/css/sc_bootstrap.css');
+            $this->doc->addStyleSheet(JURI::base(true) . '/media/sourcecoast/css/sc_bootstrap.css');
 
-        $this->doc->addStyleSheet('media/sourcecoast/css/common.css');
+        $this->doc->addStyleSheet(JURI::base(true) . '/media/sourcecoast/css/common.css');
 
         $paths = array();
         $paths[] = JPATH_ROOT . '/templates/' . JFactory::getApplication()->getTemplate() . '/html/mod_sclogin/themes/';
@@ -74,7 +75,7 @@ class modSCLoginHelper
             if (($browserType == 'msie') && ($browserVersion <= 9))
             {
                 // Using addCustomTag to ensure this is the last section added to the head, which ensures that jfbcJQuery has been defined
-                $this->doc->addCustomTag('<script src="' . JURI::base(true) . 'media/sourcecoast/js/jquery.placeholder.js" type="text/javascript"> </script>');
+                $this->doc->addCustomTag('<script src="' . JURI::base(true) . '/media/sourcecoast/js/jquery.placeholder.js" type="text/javascript"> </script>');
                 $this->doc->addCustomTag("<script>jfbcJQuery(document).ready(function() { jfbcJQuery('input').placeholder(); });</script>");
             }
         }
@@ -86,20 +87,42 @@ class modSCLoginHelper
         $jVersion = new JVersion();
         if (version_compare($jVersion->getShortVersion(), '3.2.0', '>=') && ($this->user->guest))
         {
-            $db = JFactory::getDbo();
+            /** $db = JFactory::getDbo();
             // Check if TFA is enabled. If not, just return false
             $query = $db->getQuery(true)
-                ->select('COUNT(*)')
-                ->from('#__extensions')
-                ->where('enabled=' . $db->q(1))
-                ->where('folder=' . $db->q('twofactorauth'));
+            ->select('COUNT(*)')
+            ->from('#__extensions')
+            ->where('enabled=' . $db->q(1))
+            ->where('folder=' . $db->q('twofactorauth'));
             $db->setQuery($query);
             $tfaCount = $db->loadResult();
+             **/
 
-            if ($tfaCount > 0)
+            $this->tfaLoaded = false;
+            $plugins = JPluginHelper::getPlugin('twofactorauth');
+
+            if (count($plugins))
             {
-                $this->tfaLoaded = true;
+                //check section
+                // site = 1, administrator = 2, both = 3
+                foreach($plugins as $plugin)
+                {
+                    if($plugin->params != '')
+                    {
+                        $temp = new JRegistry($plugin->params);
+                        $tempO = $temp->toObject();
+
+                        //set TFA to true if section params is either 1, 3 or empty
+                        if(in_array($tempO->section, array(1, 3)) || !isset($tempO->section))
+                        {
+                            $this->tfaLoaded = true;
+                        }
+                    }
+                    else
+                        $this->tfaLoaded = true;
+                }
             }
+
         }
     }
 
@@ -110,21 +133,21 @@ class modSCLoginHelper
         if (!$this->isJFBConnectInstalled)
         {
             if ($this->params->get('loadJQuery'))
-                $this->doc->addScript('media/jui/js/bootstrap.min.js');
+                $this->doc->addScript(JURI::base(true) . '/media/sourcecoast/js/jq-bootstrap-1.8.3.js');
             if  ($needsBootstrap || $this->tfaLoaded)
                 $this->doc->addScriptDeclaration('if (typeof jfbcJQuery == "undefined") jfbcJQuery = jQuery;');
         }
 
         if ($this->tfaLoaded)
         {
-            $this->doc->addScript('media/sourcecoast/js/mod_sclogin.js');
+            $this->doc->addScript(Juri::base(true) . '/media/sourcecoast/js/mod_sclogin.js');
             $this->doc->addScriptDeclaration('sclogin.token = "' . JSession::getFormToken() . '";' .
                 //"jfbcJQuery(window).on('load',  function() {
                 // Can't use jQuery here because we don't know if jfbcJQuery has been loaded or not.
                 "window.onload = function() {
                     sclogin.init();
                 };
-                sclogin.base = '" . JURI::base(true) . "';\n"
+                sclogin.base = '" . JURI::base() . "';\n"
             );
         }
 
@@ -172,7 +195,8 @@ class modSCLoginHelper
             $jspath = JPATH_BASE . '/components/com_community';
             include_once($jspath . '/libraries/core.php');
             $this->registerLink = CRoute::_('index.php?option=com_community&view=register');
-            $this->profileLink = CRoute::_('index.php?option=com_community');
+            $user = JFactory::getUser();
+            $this->profileLink = CRoute::_('index.php?option=com_community&view=profile&userid='. $user->id);
         }
         else if ($registerType == 'easysocial' && file_exists(JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php'))
         {
@@ -222,10 +246,29 @@ class modSCLoginHelper
         {
             $this->profileLink = '';
             $this->registerLink = $this->getLoginRedirect('registrationlink', false);
+
+            //Custom link - determine what component we're in
+            $uri = JURI::getInstance($this->registerLink);
+            $uriParts = $uri->getQuery(true);
+            if(isset($uriParts['option']))
+            {
+                switch($uriParts['option'])
+                {
+                    case 'com_community':
+                        $this->customRegisterComponent = 'jomsocial';
+                        break;
+                    case 'com_comprofiler':
+                        $this->customRegisterComponent = 'communitybuilder';
+                        break;
+                    default:
+                        $this->customRegisterComponent = str_replace('com_', '', $uriParts['option']);
+                        break;
+                }
+            }
         }
         else
         {
-            $this->profileLink = '';
+            $this->profileLink = JRoute::_('index.php?option=com_users&view=profile', false);
             $this->registerLink = JRoute::_('index.php?option=com_users&view=registration', false);
         }
 // common for J!, JomSocial, and Virtuemart
@@ -247,8 +290,7 @@ class modSCLoginHelper
         // If no URL determined from the Itemid set, use the current page
         if (!$url)
         {
-            $uri = JURI::getInstance();
-            $url = $uri->toString(array('path', 'query'));
+            $url = JURI::getInstance()->toString();
         }
 
         // Finally, if we're getting the logout URL, make sure we're not going back to a registered page
@@ -265,7 +307,7 @@ class modSCLoginHelper
                 if ($menuItem && $menuItem->access != "1")
                 {
                     $default = JFactory::getApplication()->getMenu()->getDefault();
-                    $url = JRoute::_($default->link . '&Itemid=' . $default->id, false);
+                    $url = 'index.php?Itemid=' . $default->id;
                 }
             }
         }
@@ -290,14 +332,9 @@ class modSCLoginHelper
                     if ($item->type == 'alias')
                         $itemId = $item->params->get('aliasoptions');
 
-                    $router = JFactory::getApplication()->getRouter();
                     if ($item->link)
                     {
-                        if ($router->getMode() == JROUTER_MODE_SEF)
-                            $url = 'index.php?Itemid=' . $itemId;
-                        else
-                            $url = $item->link . '&Itemid=' . $itemId;
-                        $url = JRoute::_($url, false);
+                        $url = 'index.php?Itemid=' . $itemId;
                     }
                 }
             }
@@ -346,10 +383,14 @@ class modSCLoginHelper
     function getJoomlaAvatar($registerType, $profileLink, $user)
     {
         $html = '';
+
+        if($registerType == 'custom' && !empty($this->customRegisterComponent))
+            $registerType = $this->customRegisterComponent;
+
         if ($registerType == 'jomsocial' && file_exists(JPATH_BASE . '/components/com_community/libraries/core.php'))
         {
             $jsUser = CFactory::getUser($user->id);
-            $avatarURL = $jsUser->getAvatar();
+            $avatarURL = $jsUser->getThumbAvatar();
             $html = $this->getAvatarHtml($avatarURL, $profileLink, "_self");
         }
         else if ($registerType == 'easysocial' && file_exists(JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php'))
@@ -374,6 +415,11 @@ class modSCLoginHelper
                 $avatarURL = JRoute::_('media/kunena/avatars/' . $avatarURL, false);
             $html = $this->getAvatarHtml($avatarURL, $profileLink, "_self");
         }
+        else if ($registerType == 'k2' && JFile::exists(JPATH_SITE . '/components/com_k2/helpers/utilities.php'))
+        {
+            include_once(JPATH_SITE.'/components/com_k2/helpers/utilities.php');
+            $html =  $this->getAvatarHtml( K2HelperUtilities::getAvatar($user->id) , '', '');
+        }
         return $html;
     }
 
@@ -397,7 +443,7 @@ class modSCLoginHelper
                 }
             }
         }
-        else // 'joomla')
+        if($html == '') //Joomla avatar is selected or no social network avatar is found, so fall back to Joomla avatar
         {
             $html = $this->getJoomlaAvatar($registerType, $profileLink, $this->user);
         }
@@ -479,11 +525,11 @@ class modSCLoginHelper
 
             if ($registerType == "communitybuilder" && file_exists(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php'))
             {
-                $forgotButton = '<a href="' . $forgotSharedLink . '" class="forgot btn width-auto hasTooltip" tabindex="-1" data-placement="right" data-original-title="' . $forgotSharedText . '"><i class="icon-question-sign' . $buttonImageColor . '" title="' . $forgotSharedText . '"></i></a>';
+                $forgotButton = '<a href="' . $forgotSharedLink . '" class="forgot btn width-auto hasTooltip" tabindex="-1" data-placement="right" title="' . $forgotSharedText . '"><i class="icon-question-sign' . $buttonImageColor . '"></i></a>';
             }
             else
             {
-                $forgotButton = '<a href="' . $forgotButtonLink . '" class="forgot btn width-auto hasTooltip" tabindex="-1" data-placement="right" data-original-title="' . $forgotButtonText . '"><i class="icon-question-sign' . $buttonImageColor . '" title="' . $forgotButtonText . '"></i></a>';
+                $forgotButton = '<a href="' . $forgotButtonLink . '" class="forgot btn width-auto hasTooltip" tabindex="-1" data-placement="right" title="' . $forgotButtonText . '"><i class="icon-question-sign' . $buttonImageColor . '"></i></a>';
             }
         }
         return $forgotButton;
@@ -535,7 +581,10 @@ class modSCLoginHelper
                 //$menuNav .= '<ul class="dropdown-menu">';
                 $menuNav .= '<ul class="flat-list">';
                 foreach ($menu_items as $menuItem)
-                    $menuNav .= $this->getUserMenuItem($menuItem);
+                {
+                    if($menuItem->params->get('menu_show', '1'))
+                        $menuNav .= $this->getUserMenuItem($menuItem);
+                }
                 $menuNav .= '</ul>';
                 $menuNav .= '</li></ul>';
                 $menuNav .= '</div>';
@@ -552,7 +601,10 @@ class modSCLoginHelper
                 $menuNav .= '<a class="btn dropdown-toggle" data-toggle="' . $ddName . '" href="#">' . $parentTitle . '<span class="caret"></span></a>';
                 $menuNav .= '<ul class="dropdown-menu">';
                 foreach ($menu_items as $menuItem)
-                    $menuNav .= $this->getUserMenuItem($menuItem);
+                {
+                    if($menuItem->params->get('menu_show', '1'))
+                        $menuNav .= $this->getUserMenuItem($menuItem);
+                }
                 $menuNav .= '</ul>';
                 $menuNav .= '</div>';
                 $menuNav .= '</div>';
@@ -582,7 +634,11 @@ class modSCLoginHelper
             }
         }
         $target = $item->browserNav == 1 ? ' target="_blank" ' : '';
-        return '<li><a href="' . $url . '"' . $target . '>' . $item->title . '</a></li>';
+        $image = $item->params->get('menu_image');
+        if($image)
+            $image = '<img src="'. JURI::root().$image .'" height="30" width="30" />&nbsp;&nbsp;';
+
+        return '<li><a href="' . $url . '"' . $target . '>' . $image . $item->title . '</a></li>';
     }
 
     public function getRememberMeValue()

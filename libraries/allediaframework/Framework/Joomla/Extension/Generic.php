@@ -114,7 +114,7 @@ class Generic
         $this->type      = $type;
         $this->element   = strtolower($namespace);
         $this->folder    = $folder;
-        $this->basePath  = $basePath;
+        $this->basePath  = rtrim($basePath, '/\\');
         $this->namespace = $namespace;
 
         $this->getManifest();
