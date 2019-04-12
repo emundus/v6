@@ -22,12 +22,12 @@ $mod_em_campaign_order_type=$params->get('mod_em_campaign_order_type');
 $mod_em_campaign_itemid=$params->get('mod_em_campaign_itemid');
 $mod_em_campaign_itemid2=$params->get('mod_em_campaign_itemid2');
 $mod_em_campaign_date_format = $params->get('mod_em_campaign_date_format');
-$mod_em_campaign_show_camp_start_date = $params->get('mod_em_campaign_show_camp_start_date');
-$mod_em_campaign_show_camp_end_date = $params->get('mod_em_campaign_show_camp_end_date');
-$mod_em_campaign_get_teaching_unity =$params->get('mod_em_campaign_get_teaching_unity');
-$mod_em_campaign_get_link =$params->get('mod_em_campaign_get_link');
-$mod_em_campaign_show_formation_start_date = $params->get('mod_em_campaign_show_formation_start_date');
-$mod_em_campaign_show_formation_end_date = $params->get('mod_em_campaign_show_formation_end_date');
+$mod_em_campaign_show_camp_start_date = $params->get('mod_em_campaign_show_camp_start_date', 1);
+$mod_em_campaign_show_camp_end_date = $params->get('mod_em_campaign_show_camp_end_date', 1);
+$mod_em_campaign_get_teaching_unity =$params->get('mod_em_campaign_get_teaching_unity', 0);
+$mod_em_campaign_get_link =$params->get('mod_em_campaign_get_link', 0);
+$mod_em_campaign_show_formation_start_date = $params->get('mod_em_campaign_show_formation_start_date', 0);
+$mod_em_campaign_show_formation_end_date = $params->get('mod_em_campaign_show_formation_end_date', 0);
 $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $redirect_url=$params->get('mod_em_campaign_link', 'registration');
@@ -44,15 +44,17 @@ $order_date = $app->input->getString('order_date', null);
 $order_time = $app->input->getString('order_time', null);
 $searchword = $app->input->getString('searchword', null);
 
-if (isset($order_date) && !empty($order_date))
-    $session->set('order_date', $order_date);
-elseif (empty($order))
-    $session->set('order_date', $mod_em_campaign_order);
+if (isset($order_date) && !empty($order_date)) {
+	$session->set('order_date', $order_date);
+} elseif (empty($order)) {
+	$session->set('order_date', $mod_em_campaign_order);
+}
 
-if (isset($order_time) && !empty($order_time))
-    $session->set('order_time', $order_time);
-elseif (empty($order))
-    $session->set('order_time', $mod_em_campaign_order_type);
+if (isset($order_time) && !empty($order_time)) {
+	$session->set('order_time', $order_time);
+} elseif (empty($order)) {
+	$session->set('order_time', $mod_em_campaign_order_type);
+}
 
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
@@ -83,28 +85,14 @@ switch ($ordertime) {
         break;
 }
 
-/*case 'out':
-        $config = JFactory::getConfig();
-        $jdate = JFactory::getDate();
-        $timezone = new DateTimeZone( $config->get('offset') );
-        $jdate->setTimezone($timezone);
-        $now = $jdate->toSql();
-
-    $condition =' AND "'.$now.'" >= ca.end_date and "'.$now.'"<= ca.start_date';
-    break;*/
-
 $helper = new modEmundusCampaignHelper;
 
 $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
 $futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
 $allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
-//$teachingUnity      = $helper->getTeachingUnity();
-
 
 $now = $helper->now;
-
-
 
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();
