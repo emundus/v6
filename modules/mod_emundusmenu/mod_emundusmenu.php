@@ -33,7 +33,7 @@ $display_applicant_menu = $params->get('display_applicant_menu', 1);
 
 $user = JFactory::getSession()->get('emundusUser');
 
-if (!empty($user->fnum) && $display_applicant_menu==0)
+if (!empty($user->applicant) && $display_applicant_menu==0)
 	return;
 
 $list = array();
