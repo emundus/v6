@@ -120,7 +120,7 @@ function getSelectedRegions($headRegions) {
         return $db->loadColumn();
     }
     else {
-        return false;
+        return array();
     }
 }
 
@@ -154,7 +154,7 @@ function getSelectedDepartments($headDepartments) {
         return $db->loadColumn();
     }
     else {
-        return false;
+        return array();
     }
 }
 
@@ -188,10 +188,6 @@ function getActeurDepartments($fnum) {
     }
 }
 
-
-
-
-
 // Intro outside of form to allow for other lists/forms to be injected.
 echo $this->table->intro;
 
@@ -219,7 +215,8 @@ echo $this->table->intro;
                 $i = 0;
                 if (!empty($this->rows[0])) {
                     foreach ($this->rows[0] as $k => $v) {
-                        if(($getSelectedRegions && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) || $getSelectedDepartments && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments)) || !$getSelectedRegions ) {
+                        if (in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) || in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments)) {
+                        ///if(($getSelectedRegions && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) || $getSelectedDepartments && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments)) || !$getSelectedRegions ) {
                                 foreach ($this->headings as $key => $val) {
                                     $raw = $key.'_raw';
                                     if (array_key_exists($key, $v->data)) {
@@ -414,12 +411,11 @@ echo $this->table->intro;
     jQuery(document).ready(function(){
         //region and department object
         $allRegions= <?php echo json_encode(getAllRegions()); ?>;
-
         $allDepartments= <?php echo json_encode(getAllDepartments()); ?>;
 
-        $regionArray = <?php echo !empty($headRegions) ? json_encode($selectedHeadRegions) : "[]"; ?>;
+        $regionArray = <?php echo json_encode($selectedHeadRegions); ?>;
 
-        $departmentArray = <?php echo !empty($headDepartments) ? json_encode($selectedHeadDepartments) : "[]"; ?>;
+        $departmentArray = <?php echo json_encode($selectedHeadDepartments);?>;
 
         //add region select
         $regionSelect = '<tr><td>Dans quelle(s) région(s)</td><td><select id="data_regions___name_0value" class="chosen chosen-region" multiple="true" style="width:400px;">';
