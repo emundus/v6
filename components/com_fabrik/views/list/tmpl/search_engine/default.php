@@ -34,6 +34,15 @@ $pageClass = $this->params->get('pageclass_sfx', '');
 
 $user = JFactory::getSession()->get('emundusUser');
 
+$jinput = JFactory::getApplication()->input;
+// GET REGIONS FROM HEADER
+$headRegions = $jinput->post->getVal('regions');
+$selectedHeadRegions = explode(',', $headRegions);
+
+// GET DEPARTMENTS FROM HEADER
+$headDepartments = $jinput->post->getVal('departments');
+$selectedHeadDepartments = explode(",", $headDepartments);
+
 if ($pageClass !== '') :
     echo '<div class="' . $pageClass . '">';
 endif;
@@ -55,14 +64,107 @@ if ($this->params->get('show_page_heading')) :?>
     </div>
 <?php endif;
 
-// Intro outside of form to allow for other lists/forms to be injected.
-echo $this->table->intro;
+////// PAGE FUNCTIONS
 
-// GETS DEPARTMENTS
+// GET ALL REGIONS
+function getAllRegions() {
+    $db = JFactory::getDBO();
+    $query = $db->getquery('true');
+
+    $query
+        ->select("*")
+        ->from($db->qn('data_regions'));
+
+    $db->setQuery($query);
+    return $db->loadObjectList();
+}
+
+// GET ALL DEPATMENTS
+function getAllDepartments() {
+    $db = JFactory::getDBO();
+    $query = $db->getquery('true');
+
+    $query
+        ->select("*")
+        ->from($db->qn('data_departements'));
+
+    $db->setQuery($query);
+    return $db->loadObjectList();
+}
+
+// GET SELECTED REGIONS
+function getSelectedRegions($headRegions) {
+    if(!empty($headRegions)) {
+        $db = JFactory::getDBO();
+        $query = $db->getquery('true');
+        $query2 = $db->getquery('true');
+
+
+        $query2
+            ->select("cc2.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc2'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er2') . ' ON ' . $db->qn('er2.fnum') . ' = ' . $db->qn('cc2.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_744_repeat', 'err744') . ' ON ' . $db->qn('err744.parent_id') . ' = ' . $db->qn('er2.id'))
+            ->where($db->qn('err744.region') . ' IN (' . $headRegions . ')');
+
+        $query
+            ->select("cc1.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc1'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er1') . ' ON ' . $db->qn('er1.fnum') . ' = ' . $db->qn('cc1.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat', 'err630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
+            ->where($db->qn('err630.region') . ' IN (' . $headRegions . ')')
+            ->union($query2);
+
+        $db->setQuery($query);
+
+        return $db->loadColumn();
+    }
+    else {
+        return false;
+    }
+}
+
+
+// GET SELECTED REGIONS
+function getSelectedDepartments($headDepartments) {
+    if(!empty($headDepartments)) {
+        $db = JFactory::getDBO();
+        $query = $db->getquery('true');
+        $query2 = $db->getquery('true');
+
+
+        $query2
+            ->select("cc2.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc2'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er2') . ' ON ' . $db->qn('er2.fnum') . ' = ' . $db->qn('cc2.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_744_repeat', 'err744') . ' ON ' . $db->qn('err744.parent_id') . ' = ' . $db->qn('er2.id'))
+            ->join('INNER', $db->qn('#__emundus_recherche_744_repeat_repeat_department', 'errd744') . ' ON ' . $db->qn('errd744.parent_id') . ' = ' . $db->qn('err744.id'))
+            ->where($db->qn('errd744.department') . ' IN (' . $headDepartments . ')');
+
+        $query
+            ->select("cc1.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc1'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er1') . ' ON ' . $db->qn('er1.fnum') . ' = ' . $db->qn('cc1.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat', 'err630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
+            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat_repeat_department', 'errd630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
+            ->where($db->qn('errd630.department') . ' IN (' . $headDepartments . ')')
+            ->union($query2);
+
+        $db->setQuery($query);
+        return $db->loadColumn();
+    }
+    else {
+        return false;
+    }
+}
+
+
+
+// GETS DEPARTMENTS FOR ACTEUR PUBLIQUE
 function getActeurDepartments($fnum) {
     $db = JFactory::getDBO();
 
-    
+
     $query = $db->getquery('true');
 
     $query
@@ -76,7 +178,7 @@ function getActeurDepartments($fnum) {
     $db->setQuery($query);
     try {
 
-        return $db->loadAssocList();
+        return $db->loadObjectList();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -85,6 +187,14 @@ function getActeurDepartments($fnum) {
         die();
     }
 }
+
+
+
+
+
+// Intro outside of form to allow for other lists/forms to be injected.
+echo $this->table->intro;
+
 ?>
 
 <div class="main">
@@ -102,29 +212,34 @@ function getActeurDepartments($fnum) {
                     echo $c;
                 }
 
+                $getSelectedRegions = getSelectedRegions($headRegions);
+                $getSelectedDepartments = getSelectedDepartments($headDepartments);
 
                 $data = array();
                 $i = 0;
                 if (!empty($this->rows[0])) {
                     foreach ($this->rows[0] as $k => $v) {
-                        foreach ($this->headings as $key => $val) {
-                            $raw = $key.'_raw';
-                            if (array_key_exists($key, $v->data)) {
-                                if (strcasecmp($v->data->$key, "1") == 0)
-                                    $data[$i][$val] = $v->data->$key;
-                                else {
-                                    $data[$i][$key] = $v->data->$key;
-                                    if (array_key_exists($raw, $v->data)) {
-                                        $data[$i][$raw] = $v->data->$raw;
+                        if(($getSelectedRegions && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) || $getSelectedDepartments && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments)) || !$getSelectedRegions ) {
+                                foreach ($this->headings as $key => $val) {
+                                    $raw = $key.'_raw';
+                                    if (array_key_exists($key, $v->data)) {
+                                        if (strcasecmp($v->data->$key, "1") == 0)
+                                            $data[$i][$val] = $v->data->$key;
+                                        else {
+                                            $data[$i][$key] = $v->data->$key;
+                                            if (array_key_exists($raw, $v->data)) {
+                                                $data[$i][$raw] = $v->data->$raw;
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                                if (array_key_exists('fabrik_view_url', $v->data)) {
+                                    $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                                }
+                                $i = $i + 1;
                         }
-                        if (array_key_exists('fabrik_view_url', $v->data)) {
-                            $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
-                        }
-                        $i = $i + 1;
                     }
+                    $this->navigation->total = $data;
                 }
                 ?>
 
@@ -295,11 +410,77 @@ function getActeurDepartments($fnum) {
         </form>
     </div>
 </div>
-
 <script>
     jQuery(document).ready(function(){
+        //region and department object
+        $allRegions= <?php echo json_encode(getAllRegions()); ?>;
+
+        $allDepartments= <?php echo json_encode(getAllDepartments()); ?>;
+
+        $regionArray = <?php echo !empty($headRegions) ? json_encode($selectedHeadRegions) : "[]"; ?>;
+
+        $departmentArray = <?php echo !empty($headDepartments) ? json_encode($selectedHeadDepartments) : "[]"; ?>;
+
+        //add region select
+        $regionSelect = '<tr><td>Dans quelle(s) région(s)</td><td><select id="data_regions___name_0value" class="chosen chosen-region" multiple="true" style="width:400px;">';
+        $pushRegions = [];
+            jQuery($allRegions).each(region =>{
+                $allRegions[region]["selected"] = "";
+                jQuery($regionArray).each(selected => {
+                    if ($allRegions[region].id == jQuery($regionArray)[selected]) {
+                        $allRegions[region]["selected"] = "selected";
+                        $pushRegions.push($regionArray);
+                    }
+                });
+                $regionSelect += '<option value="'+jQuery($allRegions)[region].id+'" '+ jQuery($allRegions)[region].selected +'>'+jQuery($allRegions)[region].name+'</option>';
+            });
+        $regionSelect += '</select></td><input type="hidden" id="hidden-regions-input" name="regions" value="'+$regionArray+'"></tr>';
+
+        jQuery(".filtertable tbody .fabrik_row").after($regionSelect);
+
         jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
+        jQuery(".chosen-region").chosen();
+
+        //add department select
+        $departmentSelect = '<tr><td>Dans quel(s) département(s)</td><td><select id="data_departements___departement_nomvalue" class="chosen chosen-department" multiple="true" style="width:400px;">';
+        $pushDepartments = [];
+        jQuery($allDepartments).each(department =>{
+            $allDepartments[department]["selected"] = "";
+                jQuery($departmentArray).each(selected => {
+                    if ($allDepartments[department].departement_id == jQuery($departmentArray)[selected]) {
+                        $allDepartments[department]["selected"] = "selected";
+                        $pushDepartments.push($departmentArray);
+                    }
+                });
+                $departmentSelect += '<option value="'+jQuery($allDepartments)[department].departement_id+'"'+ jQuery($allDepartments)[department].selected +'>'+jQuery($allDepartments)[department].departement_nom+'</option>';
+            });
+        $departmentSelect += '</select></td><input type="hidden" id="hidden-department-input" name="departments" value="'+$departmentArray+'"></tr>';
+        jQuery(".filtertable tbody .fabrik_row").after($departmentSelect);
+        
         jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
+        jQuery(".chosen-department").chosen();
+
+        // chosen change regions
+        jQuery("#data_regions___name_0value").chosen().change(function(event){
+            if (event.target == this){
+                $regionArray = jQuery(this).val();
+                if (jQuery(this).val())
+                    jQuery("#hidden-regions-input").val($regionArray);
+                if ($regionArray == null)
+                    jQuery("#hidden-regions-input").val("");
+            }
+        });
+
+        // chosen change departments
+        jQuery("#data_departements___departement_nomvalue").chosen().change(function(event){
+            if (event.target == this){
+                $departmentArray = (jQuery(this).val());
+                if (jQuery(this).val())
+                    jQuery("#hidden-department-input").val($departmentArray);
+                if ($departmentArray == null)
+                    jQuery("#hidden-department-input").val("");
+            }
+        });
 
         jQuery('select.fabrik_filter[multiple]').chosen({
             placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
@@ -311,12 +492,19 @@ function getActeurDepartments($fnum) {
 
     function selectAllRegions() {
         if(jQuery('.chosen-toggle-region').hasClass('select')) {
+            $regionArray = [];
+            jQuery('#data_regions___name_0value option').each(function() {
+                $regionArray.push(jQuery(this).val());
+            });
             jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+
+            jQuery('#hidden-regions-input').val($regionArray);
             jQuery('.chosen-toggle-region').addClass('deselect');
             jQuery('.chosen-toggle-region').removeClass('select');
             jQuery('.chosen-toggle-region').text("Désélectionnez toutes les régions");
         }
         else if(jQuery('.chosen-toggle-region').hasClass('deselect')) {
+            jQuery('#hidden-regions-input').val("");
             jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
             jQuery('.chosen-toggle-region').addClass('select');
             jQuery('.chosen-toggle-region').removeClass('deselect');
@@ -326,12 +514,18 @@ function getActeurDepartments($fnum) {
     }
     function selectAllDepartments() {
         if(jQuery('.chosen-toggle-department').hasClass('select')) {
+            $departmentArray = [];
+            jQuery('#data_departements___departement_nomvalue option').each(function() {
+                $departmentArray.push(jQuery(this).val());
+            });
+            jQuery('#hidden-department-input').val($departmentArray);
             jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
             jQuery('.chosen-toggle-department').addClass('deselect');
             jQuery('.chosen-toggle-department').removeClass('select');
             jQuery('.chosen-toggle-department').text("Désélectionnez toutes les départements");
         }
         else if(jQuery('.chosen-toggle-department').hasClass('deselect')) {
+            jQuery('#hidden-department-input').val("");
             jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
             jQuery('.chosen-toggle-department').addClass('select');
             jQuery('.chosen-toggle-department').removeClass('deselect');
