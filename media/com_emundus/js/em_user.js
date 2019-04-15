@@ -176,17 +176,17 @@ function exist(fnum) {
 }
 
 function search() {
-	
+
 	var quick = [];
-    $("div[data-value]").each( function () {
-        quick.push($(this).attr("data-value")) ;
-    });
-    var inputs = [{
-        name: 's',
-        value: quick,//$('#text_s').val(),
-        adv_fil : false
-    }];
-    
+	$("div[data-value]").each( function () {
+		quick.push($(this).attr("data-value")) ;
+	});
+	var inputs = [{
+		name: 's',
+		value: quick,//$('#text_s').val(),
+		adv_fil : false
+	}];
+
 	$('.em_filters_filedset .testSelAll').each(function () {
 		inputs.push({
 			name: $(this).attr('name'),
@@ -196,12 +196,12 @@ function search() {
 	});
 
 	$('.em_filters_filedset .search_test').each(function () {
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
-            adv_fil : false
-        });
-    });
+		inputs.push({
+			name: $(this).attr('name'),
+			value: $(this).val(),
+			adv_fil : false
+		});
+	});
 
 	$.ajax({
 		type: 'POST',
@@ -635,9 +635,11 @@ $(document).ready(function () {
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');
+		console.log(id);
 		$('#em-modal-form').modal({
 			backdrop: true
 		}, 'toggle');
+
 
 
 		$('.modal-title').empty();
@@ -659,15 +661,19 @@ $(document).ready(function () {
 
 		$('.modal-dialog').addClass('modal-lg');
 		$(".modal-body").empty();
-		
+
 		$(".modal-body").append('<iframe src="' + url + '" style="width:100%; height:720px; border:none"></iframe>');
+
 	});
 	//
 	// Menu action
 	//
 	$(document).on('click', '.em-actions', function (e) {
+
 		e.preventDefault();
 		var id = parseInt($(this).attr('id').split('|')[3]);
+
+		//console.log(id);
 		$('#em-modal-actions').modal({
 			backdrop: false
 		}, 'toggle');
@@ -677,8 +683,10 @@ $(document).ready(function () {
 		if ($('.modal-dialog').hasClass('modal-lg')) {
 			$('.modal-dialog').removeClass('modal-lg');
 		}
-		$('.modal-body').attr('act-id', id);
 		$('.modal-footer').show();
+
+		$('.modal-body').attr('act-id', id);
+
 
 		var view = $('#view').val();
 		var sid = 0;
@@ -705,9 +713,9 @@ $(document).ready(function () {
 		switch (id) {
 
 			case 19:
-				//create group
+			//create group
 			case 20:
-				//create user
+			//create user
 			case 23:
 				//affect
 				$.ajax({
@@ -742,25 +750,25 @@ $(document).ready(function () {
 				})
 				break;
 
-				/*case 29:
-								// change current profile
-								$.ajax(
-									{
-										type:'get',
-										url:url,
-										dataType:'html',
-										data:{user:sid},
-										success: function(result)
-										{
-											  $('.modal-body').empty();
-											$('.modal-body').append(result);
-										},
-										error: function (jqXHR, textStatus, errorThrown)
-										{
-											console.log(jqXHR.responseText);
-										}
-									})
-							  break;*/
+			/*case 29:
+                            // change current profile
+                            $.ajax(
+                                {
+                                    type:'get',
+                                    url:url,
+                                    dataType:'html',
+                                    data:{user:sid},
+                                    success: function(result)
+                                    {
+                                          $('.modal-body').empty();
+                                        $('.modal-body').append(result);
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown)
+                                    {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                })
+                          break;*/
 
 			case 21:
 				//activate
@@ -775,7 +783,7 @@ $(document).ready(function () {
 						state: 0
 					},
 					success: function (result) {
-						if(result.status)
+						if (result.status)
 							reloadData();
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
@@ -800,7 +808,7 @@ $(document).ready(function () {
 						state: 1
 					},
 					success: function (result) {
-						if(result.status)
+						if (result.status)
 							reloadData();
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
@@ -835,7 +843,13 @@ $(document).ready(function () {
 			case 26:
 				// delete user
 				$('.modal-body').empty();
-				$('.modal-body').append('<div style="padding:26px"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
+				$('.modal-body').append('<div style="padding:26px"><strong>'+ Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
+				break;
+
+			case 32:
+				//regenerate password
+				$('.modal-body').empty();
+				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong><p>test</p>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
 				break;
 		}
 
@@ -1236,6 +1250,39 @@ $(document).ready(function () {
 						console.log(jqXHR.responseText);
 					}
 				});
+				break;
+			case 32 :
+				var usersData = getUserCheck();
+				console.log(usersData);
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_emundus&controller=users&task=regeneratepassword',
+					data: {
+						action:'sendpasswd',
+						user: usersData
+					},
+					dataType: 'JSON',
+					success: function (result) {
+						$('.modal-dialog').close();
+						result = JSON.parse(result);
+						if (result.status) {
+							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+								'<button type="button" class="close" data-dismiss="alert">×</button>' +
+								'<strong>' + result.msg + '</strong> ' +
+								'</div>');
+
+						}
+						else{
+							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+								'<button type="button" class="close" data-dismiss="alert">×</button>' +
+								'<strong>' + result.msg + '</strong> ' +
+								'</div>');
+						}
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						console.log(jqXHR.responseText, textStatus, errorThrown);
+					}
+				})
 				break;
 		}
 	});
