@@ -70,7 +70,7 @@ try {
     die();
 }
 
-
+/*
 // GET project Departments
 function getDepartment($dept) {
     $db = JFactory::getDBO();
@@ -93,23 +93,54 @@ function getDepartment($dept) {
     }
 }
 
-// GET the acteur public Regions
-function getActeurRegions($fnum) {
+*/
+
+
+
+echo $this->plugintop;
+
+echo $this->loadTemplate('relateddata');
+
+$region = "";
+$department = "";
+$chercheur = "";
+$cherches = "";
+$themes = "";
+$chercheur = strtolower($this->data['jos_emundus_setup_profiles___label_raw'][0]);
+$profile = $this->data['jos_emundus_setup_profiles___id_raw'][0];
+
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
+$m_cifre = new EmundusModelCifre();
+
+
+// GET Regions
+function getRegions($fnum, $profile) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
-    $query
-        ->select($db->quoteName('dr.name'))
-        ->from($db->quoteName('#__emundus_recherche', 'er'))
-        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
-        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
-        ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
+    if ($profile == '1008') {
+        $query
+            ->select($db->quoteName('dr.name'))
+            ->from($db->quoteName('#__emundus_recherche', 'er'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
+            ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
+            ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
+    }
+    else {
+        $query
+            ->select($db->quoteName('dr.name'))
+            ->from($db->quoteName('#__emundus_recherche', 'er'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
+            ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
+            ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
+    }
+        
 
     $db->setQuery($query);
     try {
 
-        return $db->loadAssocList();
+        return $db->loadColumn();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -119,24 +150,35 @@ function getActeurRegions($fnum) {
     }
 }
 
-//GET the acteur public Departments
-function getActeurDepartments($fnum) {
+//GET Departments
+function getDepartments($fnum, $profile) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
-    $query
-        ->select($db->quoteName('dd.departement_nom'))
-        ->from($db->quoteName('#__emundus_recherche', 'u'))
-        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
-        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
-        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
-        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+    if ($profile == '1008') {
+        $query
+            ->select($db->quoteName('dd.departement_nom'))
+            ->from($db->quoteName('#__emundus_recherche', 'u'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+            ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+            ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+    }
+    else {
+        $query
+            ->select($db->quoteName('dd.departement_nom'))
+            ->from($db->quoteName('#__emundus_recherche', 'u'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+            ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+            ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+    }
 
     $db->setQuery($query);
     try {
 
-        return $db->loadAssocList();
+        return $db->loadColumn();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -162,7 +204,7 @@ function getProjectDisciplines($fnum) {
     $db->setQuery($query);
     try {
 
-        return $db->loadAssocList();
+        return $db->loadColumn();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -172,24 +214,31 @@ function getProjectDisciplines($fnum) {
     }
 }
 
+//GET the project thematics
+function getProjectThematics($fnum) {
+    $db = JFactory::getDBO();
 
-echo $this->plugintop;
+    $query = $db->getquery('true');
 
-echo $this->loadTemplate('relateddata');
+    $query
+        ->select($db->quoteName('t.thematic'))
+        ->from($db->quoteName('#__emundus_projet', 'ep'))
+        ->leftJoin($db->quoteName('#__emundus_projet_620_repeat', 'pr'). ' ON '.$db->quoteName('pr.parent_id') . ' = ' . $db->quoteName('ep.id'))
+        ->leftJoin($db->quoteName('data_thematics', 't'). ' ON '.$db->quoteName('t.id') . ' = ' . $db->quoteName('pr.themes'))
+        ->where($db->quoteName('ep.fnum') . ' LIKE "' . $fnum. '"');
 
-$region = "";
-$department = "";
-$chercheur = "";
-$cherches = "";
-$themes = "";
-$regions = $this->data['data_regions___name_raw'];
-$departments = $this->data['data_departements___departement_nom_raw'];
-$chercheur = strtolower($this->data['jos_emundus_setup_profiles___label_raw'][0]);
-$profile = $this->data['jos_emundus_setup_profiles___id_raw'][0];
+    $db->setQuery($query);
+    try {
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
-$m_cifre = new EmundusModelCifre();
+        return $db->loadColumn();
 
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
 ?>
 
 
@@ -293,14 +342,14 @@ $m_cifre = new EmundusModelCifre();
         <!-- THEMES -->
         <div class="em-offre-themes">
             <div class="em-offre-subtitle"><?php echo JText::_('COM_EMUNDUS_FABRIK_THEMES'); ?></div>
-            <strong class="em-highlight"> <?php echo !empty($this->data['data_thematics___thematic_raw']) ? is_array($this->data['data_thematics___thematic_raw']) ? implode('</strong>; <strong class="em-highlight">', $this->data['data_thematics___thematic_raw']) : $this->data['data_thematics___thematic_raw'] : '<strong class="em-highlight">' . JText::_('COM_EMUNDUS_FABRIK_NO_THEMES') . '</strong>'; ?></strong>
+            <strong class="em-highlight"><?php echo !empty(getProjectThematics($fnum)) ? implode(', ', getProjectThematics($fnum)) : JText::_('COM_EMUNDUS_FABRIK_NO_THEMES'); ?></strong>
         </div>
 
         <!-- DISCIPLINES -->
         <div class="em-offre-disciplines">
 
             <div class="em-offre-subtitle"><?php echo JText::_('COM_EMUNDUS_FABRIK_DISCIPLINES'); ?></div>
-            <strong class="em-highlight"><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', array_column(getProjectDisciplines($fnum), 'disciplines')) : JText::_('COM_EMUNDUS_FABRIK_NO_DISCIPLINES'); ?> </strong>
+            <strong class="em-highlight"><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', getProjectDisciplines($fnum)) : JText::_('COM_EMUNDUS_FABRIK_NO_DISCIPLINES'); ?></strong>
         </div>
 
         <?php if ($profile != '1008') : ?>
@@ -346,21 +395,13 @@ $m_cifre = new EmundusModelCifre();
                 <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_REGIONS'); ?></strong>
                     <?php
                         if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
-                            if($profile != '1008') {
-                                if(!empty($regions))
+                            $regions = getRegions($fnum, $profile);
+                                if(!empty($regions)) {
                                     echo implode(', ', array_unique($regions));
-                                else
-                                    echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
-                            }
-                            else {
-                                $regions = getActeurRegions($fnum);
-                                if (array_filter(array_column($regions, 'name'))) {
-                                    echo implode(', ', array_unique(array_column($regions, 'name')));
                                 }
                                 else {
                                     echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
                                 }
-                            }
                         }
                         else {
                             echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
@@ -369,51 +410,24 @@ $m_cifre = new EmundusModelCifre();
                     ?>
             </div>
 
-            <?php if ($profile != '1008') :?>
-            <div class="em-departments">
-                <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
-                    <?php
-                        if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
-                            if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
-                                $departmentArray= array();
-                                foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep)
-                                {
-                                    $departmentArray[] = getDepartment($dep);
-                                }
+        <div class="em-departments">
+            <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
+            <?php
+            if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                $departments = getDepartments($fnum,$profile);
+                if (!empty($departments)) {
+                    echo implode(', ', array_unique($departments) );
+                }
+                else {
+                    echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                }
+            }
+            else {
+                echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
+            }
 
-                                echo implode(', ', array_unique($departmentArray) );
-                            }
-                            else {
-                                echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
-                            }
-                        }
-                        else {
-                            echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
-                        }
-
-                    ?>
-            </div>
-            <?php else :?>
-                <div class="em-departments">
-                    <strong><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></strong>
-                    <?php
-                    if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
-                        $departments = getActeurDepartments($fnum);
-                        if (array_filter(array_column($departments, 'departement_nom'))) {
-                            echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
-                        }
-                        else {
-                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
-                        }
-                    }
-                    else {
-                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
-                    }
-
-                    ?>
-                </div>
-            <?php endif; ?>
-
+            ?>
+        </div>
     </div>
 
 

@@ -146,7 +146,7 @@ function getSelectedDepartments($headDepartments) {
             ->from($db->qn('#__emundus_campaign_candidature', 'cc1'))
             ->join('INNER', $db->qn('#__emundus_recherche', 'er1') . ' ON ' . $db->qn('er1.fnum') . ' = ' . $db->qn('cc1.fnum'))
             ->join('INNER', $db->qn('#__emundus_recherche_630_repeat', 'err630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
-            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat_repeat_department', 'errd630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
+            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat_repeat_department', 'errd630') . ' ON ' . $db->qn('errd630.parent_id') . ' = ' . $db->qn('er1.id'))
             ->where($db->qn('errd630.department') . ' IN (' . $headDepartments . ')')
             ->union($query2);
 
@@ -179,6 +179,35 @@ function getActeurDepartments($fnum) {
     try {
 
         return $db->loadObjectList();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+
+// GETS DEPARTMENTS FOR Futur Doc and Chercheurs
+function getOtherDepartments($fnum) {
+    $db = JFactory::getDBO();
+
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dd.departement_nom'))
+        ->from($db->quoteName('#__emundus_recherche', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadColumn();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -234,8 +263,13 @@ echo $this->table->intro;
                                 }
                                 $i = $i + 1;
                         }
+                        else {
+                            unset($this->rows[0][$k]);
+                        }
+                        $v->total = $i;
                     }
-                    $this->navigation->total = $data;
+                    $this->navigation->total = sizeof($data);
+
                 }
                 ?>
 
@@ -288,12 +322,10 @@ echo $this->table->intro;
 									$themes = implode('</div> - <div class="em-highlight">', $themes);
 								}
 							}
-
                             if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
                                 if ($d["jos_emundus_setup_profiles___id_raw"] != "1008") {
-                                    $departments = jsonDecode($d['data_departements___departement_nom_raw']);
-                                    if (is_array($departments)) {
-                                        $departments = array_unique($departments);
+                                    $departments = getOtherDepartments($d["jos_emundus_recherche___fnum_raw"]);
+                                    if ($departments) {
                                         if (sizeof($departments) > 8) {
                                             $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
                                         } else {
