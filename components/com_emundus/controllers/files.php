@@ -3140,8 +3140,12 @@ class EmundusControllerFiles extends JControllerLegacy
             $reader->setIncludeCharts(true);
             $spreadsheet = $reader->load($inputFileName);
 
+            $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
 
-            //$spreadsheet = $reader->load(JPATH_BASE . $tmpl[0]['file']);
+            // Special tags which require a bit more work.
+            $special = ['user_dob_age'];
+
+
 
             foreach ($fnumsArray as $fnum) {
                 if (isset($fnumsInfos[$fnum])) {
@@ -3177,68 +3181,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                 } else {
                                     $fabrikElts = array();
                                 }
-                                $fabrikValues = array();
-                                foreach ($fabrikElts as $elt) {
 
-                                    $params = json_decode($elt['params']);
-                                    $groupParams = json_decode($elt['group_params']);
-                                    $isDate = ($elt['plugin'] == 'date');
-                                    $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
-
-                                    if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                        $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
-                                    } else {
-                                        if ($isDate) {
-                                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                                        } else {
-                                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
-                                        }
-                                    }
-
-                                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
-
-                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-
-                                            if ($elt['plugin'] == "checkbox") {
-                                                $val = json_decode($val['val']);
-                                            } else {
-                                                $val = explode(',', $val['val']);
-                                            }
-
-                                            if (count($val) > 0) {
-                                                foreach ($val as $k => $v) {
-                                                    $index = array_search(trim($v), $params->sub_options->sub_values);
-                                                    $val[$k] = $params->sub_options->sub_labels[$index];
-                                                }
-                                                $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
-                                            } else {
-                                                $fabrikValues[$elt['id']][$fnum]['val'] = "";
-                                            }
-
-                                        }
-
-                                    } elseif ($elt['plugin'] == "birthday") {
-
-                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                            $val = explode(',', $val['val']);
-                                            foreach ($val as $k => $v) {
-                                                $val[$k] = date($params->details_date_format, strtotime($v));
-                                            }
-                                            $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
-                                        }
-
-                                    } else {
-                                        if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                            $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
-                                        } else {
-                                            $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
-                                        }
-                                    }
-                                }
-
+                                $fabrikValues = $this->getValueByFabrikElts($fabrikElts, $fnumsArray);
 
                                 foreach ($setupTags as $tag) {
-                                    //var_dump($tag);
                                     $val = "";
                                     $lowerTag = strtolower($tag);
 
@@ -3257,25 +3203,13 @@ class EmundusControllerFiles extends JControllerLegacy
                                                 $cell->setValue($birthday->date . ' (' . $birthday->age . ')');
                                                 break;
 
-                                            // This is a special radar style element of the evaluation values.
-                                            case 'evaluation_radar':
-                                                $cell->setValue('');
-
-                                                // The code below cannot work as of right now, objects cannot be inserted in a template file being parsed.
-                                                // TODO: Retry doing this when a new version of PHPOffice is available.
-                                                //$evaluation = $m_evalutaion->getScore($fnum);
-                                                //$section = $phpWord->addSection();
-                                                //$section->addChart('radar', array_keys($evaluation), $evaluation);
-                                                //$section->addTextBreak();
-                                                break;
-
                                             default:
                                                 $cell->setValue('');
                                                 break;
                                         }
 
                                     } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
-                                        //var_dump($tag);
+
                                         $cell->setValue(@$fnumsInfos[$fnum][$lowerTag]);
                                     } else {
                                         $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
@@ -3313,8 +3247,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                     $writer->setIncludeCharts(true);
-                    //$filename = "test.xlsx";
-                    //$fnum = '2018102218310500000010000063';
+
                     $writer->save(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $filename);
 
                     $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
@@ -3752,5 +3685,66 @@ class EmundusControllerFiles extends JControllerLegacy
             exit;
         }
 
+    }
+    public function getValueByFabrikElts($fabrikElts, $fnumsArray) {
+        $m_files = $this->getModel('Files');
+        foreach ($fabrikElts as $elt) {
+
+            $params = json_decode($elt['params']);
+            $groupParams = json_decode($elt['group_params']);
+            $isDate = ($elt['plugin'] == 'date');
+            $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+
+            if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
+            } else {
+                if ($isDate) {
+                    $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                } else {
+                    $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                }
+            }
+
+            if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
+
+                foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+
+                    if ($elt['plugin'] == "checkbox") {
+                        $val = json_decode($val['val']);
+                    } else {
+                        $val = explode(',', $val['val']);
+                    }
+
+                    if (count($val) > 0) {
+                        foreach ($val as $k => $v) {
+                            $index = array_search(trim($v), $params->sub_options->sub_values);
+                            $val[$k] = $params->sub_options->sub_labels[$index];
+                        }
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                    } else {
+                        $fabrikValues[$elt['id']][$fnum]['val'] = "";
+                    }
+
+                }
+
+            } elseif ($elt['plugin'] == "birthday") {
+
+                foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                    $val = explode(',', $val['val']);
+                    foreach ($val as $k => $v) {
+                        $val[$k] = date($params->details_date_format, strtotime($v));
+                    }
+                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+                }
+
+            } else {
+                if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                    $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
+                } else {
+                    $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                }
+            }
+        }
+        return $fabrikValues;
     }
 }
