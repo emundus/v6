@@ -668,18 +668,19 @@ class EmundusControllerUsers extends JControllerLegacy {
 
     public function sendpasswd() {
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        jimport('joomla.user.helper');
 
         $current_user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
+        if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) { //$current_user->id
             echo json_encode((object)array('status' => false));
             exit;
         }
-        $uid 		= JFactory::getApplication()->input->getInt('uid', null);
+        $uid 		= JFactory::getApplication()->input->getInt('user', null);
         $recipient 	= JFactory::getUser($uid);
-        $chars 		= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
-        $passwd 	= substr( str_shuffle( $chars ), 0, 8);
-        $passwd_md5 = md5($passwd);
+
+        $passwd = JUserHelper::genRandomPassword(8);
+        $passwd_md5 = JUserHelper::hashPassword($passwd);
 
         $m_users = new EmundusModelUsers();
         $res = $m_users->setNewPasswd($uid, $passwd_md5);

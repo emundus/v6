@@ -167,3 +167,4 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
       });
 	reloadActions('files');
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
