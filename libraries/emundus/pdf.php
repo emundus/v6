@@ -1042,7 +1042,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
         }
 
-        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+        $date_submitted = (!empty($item->date_submitted) && $item->date_submitted != '0000-00-00 00:00:00')?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
         // create a $dt object with the UTC timezone
         $dt = new DateTime('NOW', new DateTimeZone('UTC'));
