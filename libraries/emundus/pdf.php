@@ -1093,6 +1093,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     }
 
     $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
+    $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
     if (!empty($htmldata)) {
         $pdf->startTransaction();
@@ -1358,6 +1359,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     }
 
     $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
+    $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
 
     if (!empty($htmldata)) {
