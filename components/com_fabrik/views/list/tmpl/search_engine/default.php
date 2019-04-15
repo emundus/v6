@@ -215,8 +215,7 @@ echo $this->table->intro;
                 $i = 0;
                 if (!empty($this->rows[0])) {
                     foreach ($this->rows[0] as $k => $v) {
-                        if (in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) || in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments)) {
-                        ///if(($getSelectedRegions && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) || $getSelectedDepartments && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments)) || !$getSelectedRegions ) {
+                        if ((in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) && $getSelectedRegions) || (in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments) && $getSelectedDepartments) || (!$getSelectedDepartments && !$getSelectedRegions)) {
                                 foreach ($this->headings as $key => $val) {
                                     $raw = $key.'_raw';
                                     if (array_key_exists($key, $v->data)) {
@@ -432,7 +431,7 @@ echo $this->table->intro;
             });
         $regionSelect += '</select></td><input type="hidden" id="hidden-regions-input" name="regions" value="'+$regionArray+'"></tr>';
 
-        jQuery(".filtertable tbody .fabrik_row").after($regionSelect);
+        jQuery(".filtertable tbody .fabrik_row").first().after($regionSelect);
 
         jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
         jQuery(".chosen-region").chosen();
@@ -451,7 +450,7 @@ echo $this->table->intro;
                 $departmentSelect += '<option value="'+jQuery($allDepartments)[department].departement_id+'"'+ jQuery($allDepartments)[department].selected +'>'+jQuery($allDepartments)[department].departement_nom+'</option>';
             });
         $departmentSelect += '</select></td><input type="hidden" id="hidden-department-input" name="departments" value="'+$departmentArray+'"></tr>';
-        jQuery(".filtertable tbody .fabrik_row").after($departmentSelect);
+        jQuery(".filtertable tbody .fabrik_row").first().after($departmentSelect);
         
         jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
         jQuery(".chosen-department").chosen();
