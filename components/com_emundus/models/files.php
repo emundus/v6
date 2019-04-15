@@ -1487,12 +1487,12 @@ if (JFactory::getUser()->id == 63)
 
             $evalGroups['groups'] = $db->loadAssocList();
 
-            $query = 'SELECT DISTINCT (eu.user_id), CONCAT( eu.firstname, " ", eu.lastname ) as name
+            $query = 'SELECT DISTINCT(eu.user_id) as user_id, CONCAT( eu.lastname, " ", eu.firstname ) as name, esp.label, u.email
                         FROM #__emundus_users AS eu
+                        LEFT JOIN #__users AS u ON u.id=eu.user_id
                         LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
                         LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
-                        WHERE eu.profile !=1
-                        AND esp.published !=1';
+                        WHERE u.block=0 AND eu.profile !=1 AND esp.published !=1';
             $db->setQuery($query);
 
             $evalGroups['users'] = $db->loadAssocList();
