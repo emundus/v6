@@ -1264,13 +1264,16 @@ $(document).ready(function () {
 
 					dataType: 'json',
 					success: function (result) {
-						//$('.modal-dialog').dialog('close');
+
 
 						if (result.status) {
 							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong>' +
 								'</div>');
+
+							//console.log(result);
+
 
 						}
 						else{

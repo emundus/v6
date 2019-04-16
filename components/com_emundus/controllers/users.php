@@ -704,7 +704,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
                 $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post);
 
-                var_dump($c_messages);
+                
 
 
                 if ($c_messages != true) {
