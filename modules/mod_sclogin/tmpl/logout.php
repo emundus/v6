@@ -1,10 +1,10 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2014 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v4.3.0
- * @build-date      2015/03/19
+ * @version         Release v8.0.5
+ * @build-date      2019/01/14
  */
 
 defined('_JEXEC') or die('Restricted access');
@@ -26,10 +26,15 @@ if ($params->get('greetingName') != 2)
     echo '<div class="sclogin-greeting">' . JText::sprintf('MOD_SCLOGIN_WELCOME', $name) . '</div>';
 }
 
+if($params->get('showProfileLink'))
+{
+    echo '<div class="sclogin-profile-link"><a href="'.$helper->profileLink.'">'.JText::_('MOD_SCLOGIN_LOGOUT_SHOW_PROFILE_LINK').'</a></div>';
+}
+
 if ($params->get('showLogoutButton'))
 {
     if($params->get('showLogoutButton') == 1)
-        $logoutClass='button';
+        $logoutClass='button btn btn-primary';
     else
         $logoutClass='logout-link';
     ?>
@@ -38,8 +43,17 @@ if ($params->get('showLogoutButton'))
             <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure'));?>" method="post" id="sclogin-form">
                 <div class="logout-button" id="scLogoutButton">
                     <input type="submit" name="Submit" class="<?php echo $logoutClass;?>" value="<?php echo JText::_('JLOGOUT');?>" />
+
+                    <?php $option = JFactory::getApplication()->input->get('option');?>
+                    <?php if($option == 'com_easysocial'):?>
+                    <input type="hidden" name="option" value="com_easysocial" />
+                    <input type="hidden" name="controller" value="account" />
+                    <input type="hidden" name="task" value="logout" />
+                    <?php else:?>
                     <input type="hidden" name="option" value="com_users" />
                     <input type="hidden" name="task" value="user.logout" />
+                    <?php endif;?>
+
                     <input type="hidden" name="return" value="<?php echo $jLogoutUrl;?>" />
                     <?php echo JHtml::_('form.token')?>
                 </div>

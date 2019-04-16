@@ -1,10 +1,10 @@
 <?php
 /**
  * @package         SCLogin - 2FA login check. Return true if login credentials are correct and 2FA screen should be shown.
- * @copyright (c)   2009-2014 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v4.3.0
- * @build-date      2015/03/19
+ * @version         Release v8.0.5
+ * @build-date      2019/01/14
  */
 
 // We are a valid entry point.
@@ -22,6 +22,8 @@ require_once JPATH_LIBRARIES . '/cms.php';
 // Configure error reporting to maximum for CLI output.
 error_reporting(0); // We can do this since this is our own (and only) entry-point
 ini_set('display_errors', 0);
+
+require_once JPATH_CONFIGURATION . '/configuration.php';
 
 /**
  * A command line cron job to attempt to remove files that should have been deleted at update.
