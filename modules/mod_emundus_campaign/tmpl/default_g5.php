@@ -26,7 +26,7 @@ if ($locallang == "fr-FR") {
 			<ul id="tabslist" class="nav nav-tabs">
 				<?php if ($mod_em_campaign_param_tab) :?>
 					<?php foreach ($mod_em_campaign_list_tab as $tab) :?>
-						<li role="presentation"><a data-toggle="tab" href="#<?php echo $tab ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_".strtoupper($tab)); ?></a></li>
+						<li role="presentation"><a data-toggle="tab" href="#<?php echo $tab; ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_".strtoupper($tab)); ?></a></li>
 					<?php endforeach; ?>
 				<?php endif; ?>
 			</ul>
@@ -385,9 +385,11 @@ if ($locallang == "fr-FR") {
         var tabsidshow = jQuery.cookie("tabactive");
         if (tabsidshow === undefined) {
             jQuery('#tabslist a[href="#current"]').tab('show');
+            jQuery('#current').addClass('in');
             jQuery.cookie("tabactive", "current");
         } else {
             jQuery('#tabslist a[href="#' + tabsidshow + '"]').tab('show');
+            jQuery('#'+tabsidshow).addClass('in');
         }
 
         jQuery('#tabslist a').click(function (e) {
