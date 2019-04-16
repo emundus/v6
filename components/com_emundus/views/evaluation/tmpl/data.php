@@ -66,28 +66,28 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 								<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
 									<div class="em-cell" >
 										<?php if($k == 'check'): ?>
-											<label for = "<?php echo $line['fnum']->val ?>_check">
-												<input type="checkbox" data-evalid="<?php echo $line['evaluation_id']->val ?>" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+											<label for = "<?php echo $line['fnum']->val; ?>_check">
+												<input type="checkbox" data-evalid="<?php echo $line['evaluation_id']->val; ?>" name="<?php echo $line['fnum']->val; ?>_check" id="<?php echo $line['fnum']->val; ?>_check" class='em-check' style="width:20px !important;"/>
 												<?php
 													$tab = explode('-', $key);
 													echo ($tab[1] + 1 + $this->pagination->limitstart);
 													?>
 											</label>
-										<?php elseif($k == 'status'):?>
-											<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
-										<?php elseif($k == 'fnum'):?>
-											<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
+										<?php elseif ($k == 'status'):?>
+											<span class="label label-<?php echo $value->status_class; ?>" title="<?php echo $value->val; ?>"><?php echo $value->val; ?></span>
+										<?php elseif ($k == 'fnum'):?>
+											<a href="#<?php echo $value->val; ?>|open" id="<?php echo $value->val; ?>" class="em_file_open">
 												<div class="em_list_photo"><?php echo $value->photo; ?></div>
 												<div class="em_list_text">
-													<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+													<span class="em_list_text" title="<?php echo $value->val; ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
 													<div class="em_list_email"><?php echo $value->user->email; ?></div>
 													<div class="em_list_email"><?php echo $value->user->id; ?></div>
 												</div>
 											</a>
-										<?php elseif($k == "access"):?>
-											<?php echo $this->accessObj[$line['fnum']->val]?>
-										<?php elseif($k == "id_tag"):?>
-											<?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
+										<?php elseif ($k == "access"):?>
+											<?php echo $this->accessObj[$line['fnum']->val];?>
+										<?php elseif ($k == "id_tag"):?>
+											<?php echo $this->colsSup['id_tag'][$line['fnum']->val];?>
 										<?php else:?>
 											<?php if ($value->type == 'text' ) :?>
 												<?php echo strip_tags($value->val); ?>

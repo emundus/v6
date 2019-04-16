@@ -338,6 +338,15 @@ class plgUserEmundus extends JPlugin
             return true;
         }
 
+        // Check if the user is using oAuth2 
+        if(JFactory::getUser($user["id"])->getParam('OAuth2')) {
+
+            JPluginHelper::importPlugin('authentication');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onUserAfterLogout', $user['id']);
+            return true;
+        }
+
         // Check to see if we're deleting the current session
         if ($my->get('id') == $user['id'] && $options['clientid'] == $app->getClientId()) {
             // Hit the user last visit field
