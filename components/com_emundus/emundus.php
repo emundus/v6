@@ -162,6 +162,7 @@ JText::script('FILES_GENERATED');
 JText::script('STATE');
 JText::script('SWITCH_PROFILE');
 JText::script('PROFILE_CHOSEN');
+Jtext::script('ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
