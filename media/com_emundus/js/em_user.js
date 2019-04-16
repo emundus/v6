@@ -1252,8 +1252,8 @@ $(document).ready(function () {
 				});
 				break;
 			case 33 :
-				var usersData = getUserCheck();
-				var uid = JSON.parse(usersData);
+				var usersData = getUserCheck();// get objectJson with id et uid
+				var uid = JSON.parse(usersData);// parsing in json to get only the uid
 
 				$.ajax({
 					type: 'POST',
@@ -1265,15 +1265,11 @@ $(document).ready(function () {
 					dataType: 'json',
 					success: function (result) {
 
-
 						if (result.status) {
 							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong>' +
 								'</div>');
-
-							//console.log(result);
-
 
 						}
 						else{

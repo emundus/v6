@@ -21,6 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/users.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/users.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/media/com_emundus/js/em_user.js" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_emundus/js/em_user.js" afterDir="false" />
     </list>
@@ -58,11 +59,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="706" column="18" selection-start-line="706" selection-start-column="18" selection-end-line="706" selection-end-column="18" />
+            <state relative-caret-position="153">
+              <caret line="690" column="73" selection-start-line="690" selection-start-column="73" selection-end-line="690" selection-end-column="73" />
             </state>
           </provider>
         </entry>
@@ -94,11 +95,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_user.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="194">
-              <caret line="1274" column="30" selection-start-line="1274" selection-start-column="30" selection-end-line="1274" selection-end-column="30" />
+            <state relative-caret-position="262">
+              <caret line="1257" column="24" selection-start-line="1257" selection-start-column="24" selection-end-line="1257" selection-end-column="24" />
               <folding>
                 <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
@@ -225,8 +226,8 @@
         <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
         <option value="$PROJECT_DIR$/components/com_emundus/models/users.php" />
         <option value="$PROJECT_DIR$/administrator/components/com_admin/sql/updates/mysql/3.9.5-2019-04-16.sql" />
-        <option value="$PROJECT_DIR$/components/com_emundus/controllers/users.php" />
         <option value="$PROJECT_DIR$/media/com_emundus/js/em_user.js" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controllers/users.php" />
       </list>
     </option>
   </component>
@@ -559,7 +560,7 @@
       <workItem from="1555054106047" duration="27114000" />
       <workItem from="1555314118988" duration="213000" />
       <workItem from="1555399770277" duration="11009000" />
-      <workItem from="1555414547375" duration="9617000" />
+      <workItem from="1555414547375" duration="10359000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog.">
       <created>1525445467750</created>
@@ -593,7 +594,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="325388000" />
+    <option name="totallyTimeSpent" value="326130000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="878" extended-state="6" />
@@ -1111,22 +1112,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="706" column="18" selection-start-line="706" selection-start-column="18" selection-end-line="706" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_user.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="194">
-          <caret line="1274" column="30" selection-start-line="1274" selection-start-column="30" selection-end-line="1274" selection-end-column="30" />
+        <state relative-caret-position="262">
+          <caret line="1257" column="24" selection-start-line="1257" selection-start-column="24" selection-end-line="1257" selection-end-column="24" />
           <folding>
             <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="690" column="73" selection-start-line="690" selection-start-column="73" selection-end-line="690" selection-end-column="73" />
         </state>
       </provider>
     </entry>

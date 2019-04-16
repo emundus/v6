@@ -674,24 +674,21 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         $current_user = JFactory::getUser();
 
-
         if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
             echo json_encode((object)array('status' => false));
             exit;
         }
-        $id 		= JFactory::getApplication()->input->getInt('user', null);
-        $user = new EmundusModelUsers();
-        $users = $user->getUsersById($id);
+        $id 		= JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
+        $user = new EmundusModelUsers(); // Instanciation of object from user model
+        $users = $user->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
-            //var_dump($selectUser->email);
-            //$recipient 	= JFactory::getUser($uid);
 
-            $passwd = JUserHelper::genRandomPassword(8);
-            $passwd_md5 = JUserHelper::hashPassword($passwd);
+            $passwd = JUserHelper::genRandomPassword(8); //generate a random password
+            $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
 
             $m_users = new EmundusModelUsers();
-            $res = $m_users->setNewPasswd($id, $passwd_md5);
-            $post = [
+            $res = $m_users->setNewPasswd($id, $passwd_md5); //update password
+            $post = [ // values tout change in the bdd with key => values
                 'PASSWORD' => $passwd
             ];
             if (!$res) {
@@ -704,23 +701,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 
                 $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post);
 
-                
-
-
                 if ($c_messages != true) {
-
                     $msg = JText::_('EMAIL_NOT_SENT');
 
                 } else {
-                    /*$message = array(
-                        'user_id_from' => $from_id,
-                        'user_id_to' => $recipient->id,
-                        'subject' => $subject,
-                        'message' => $body
-                    );
-                    $emails->logEmail($message);
-
-                    $res = true;*/
                     $msg = JText::_('EMAIL_SENT');
                 }
             }
