@@ -846,10 +846,10 @@ $(document).ready(function () {
 				$('.modal-body').append('<div style="padding:26px"><strong>'+ Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
 				break;
 
-			case 32:
+			case 33:
 				//regenerate password
 				$('.modal-body').empty();
-				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong><p>test</p>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
+				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
 				break;
 		}
 
@@ -1251,24 +1251,24 @@ $(document).ready(function () {
 					}
 				});
 				break;
-			case 32 :
-				var usersData = getUserCheck();
-				console.log(usersData);
+			case 33 :
+				var usersData = getUserCheck();// get objectJson with id et uid
+				var uid = JSON.parse(usersData);// parsing in json to get only the uid
+
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=regeneratepassword',
 					data: {
-						action:'sendpasswd',
-						user: usersData
+						user: uid[1]
 					},
-					dataType: 'JSON',
+
+					dataType: 'json',
 					success: function (result) {
-						$('.modal-dialog').close();
-						result = JSON.parse(result);
+
 						if (result.status) {
 							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
+								'<strong>' + result.msg + '</strong>' +
 								'</div>');
 
 						}
@@ -1280,10 +1280,12 @@ $(document).ready(function () {
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
-						console.log(jqXHR.responseText, textStatus, errorThrown);
+						console.log(jqXHR.responseText, errorThrown);
 					}
-				})
-				break;
+
+				});
+
+			break;
 		}
 	});
 
