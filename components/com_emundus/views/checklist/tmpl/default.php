@@ -36,6 +36,7 @@ if ((!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants)
 
 if (!empty($this->custom_title)) :?>
     <h1 class="em-checklist-title"><?php echo $this->custom_title; ?></h1>
+<?php endif; ?>
 <?php if ($this->show_info_panel) :?>
     <fieldset>
         <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
