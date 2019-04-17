@@ -33,16 +33,16 @@ $email_list = array();
 ?>
 
 <!-- WYSIWYG Editor -->
-<link rel="stylesheet" href="/components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
-<script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/tinymce.min.js"></script>
-<script data-cfasync="false" type="text/javascript" src="/media/editors/tinymce/js/tinymce.min.js"></script>
+<link rel="stylesheet" href="components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
+<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
+<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript">tinyMCE.init({menubar:false,statusbar: false})</script>
 
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
 	<div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
-	<img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
+	<img class="em-sending-email-img" id="em-sending-email-img" src="images/emundus/sending-email.gif">
 </div>
 
 <form id="emailForm"  name="emailForm" style="padding:0px 15px;">
@@ -114,7 +114,7 @@ $email_list = array();
 			<div class="inputbox input-xlarge form-control form-inline">
 				<span class='label label-grey' for="mail_from" ><?php echo JText::_('FROM'); ?>:</span>
 				<div class="form-group" style="display:inline-block !important;" id="mail_from_name" contenteditable="true"><?php echo $current_user->name; ?> </div>
-				<strong> <div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><?php echo $current_user->email; ?></div> </strong>
+				<div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><strong> <?php echo $current_user->email; ?></strong></div>
 			</div>
 		</div>
 		<div class="form-group">
@@ -139,10 +139,10 @@ $email_list = array();
 					<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
 					<option value="upload"> <?php echo JText::_('UPLOAD'); ?> </option>
 					<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-					<option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
+					    <option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
 					<?php endif; ?>
 					<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-					<option value="setup_letters"> <?php echo JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
+					    <option value="setup_letters"> <?php echo JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
 					<?php endif; ?>
 				</select>
 			</div>
@@ -165,7 +165,7 @@ $email_list = array();
 						<!-- Get a file from setup_attachments -->
 						<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
 						<div class="hidden" id="candidate_file">
-							<label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
+							<label for="em-select_candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
 							<select id="em-select_candidate_file" name="candidate_file" class="form-control">
 							<?php if (!$setup_attachments) :?>
 								<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
@@ -182,7 +182,7 @@ $email_list = array();
 						<!-- Get a file from setup_letters -->
 						<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
 						<div class="hidden" id="setup_letters">
-							<label for="setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
+							<label for="em-select_setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
 							<select id="em-select_setup_letters" name="setup_letters" class="form-control">
 							<?php if (!$setup_letters) :?>
 								<option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
