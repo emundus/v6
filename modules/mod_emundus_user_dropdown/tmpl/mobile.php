@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
                 <?php endforeach; ?>
                 <li role="separator" class="divider"></li>
             <?php endif; ?>
-            <li><a href="/index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken(); ?>=1" class="logout-phone-btn" title="<?php echo JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_TITLE'); ?>"><?php echo JText::_('LOGOUT'); ?></a></li>
+            <li><a href="index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken(); ?>=1" class="logout-phone-btn" title="<?php echo JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_TITLE'); ?>"><?php echo JText::_('LOGOUT'); ?></a></li>
         </ul>
     </div>
 </div>
