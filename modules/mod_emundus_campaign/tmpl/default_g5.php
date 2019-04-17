@@ -100,7 +100,7 @@ if ($locallang == "fr-FR") {
 				<?php } // end $oldmonth != $month ?>
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-						<h4><a href="/index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?>&Itemid="<?php echo $mod_em_campaign_itemid2; ?>"><?php echo $result->label; ?></a></h4>
+						<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id; ?>&Itemid="<?php echo $mod_em_campaign_itemid2; ?>"><?php echo $result->label; ?></a></h4>
 						<p>
 							<?php
 								$text = '';
@@ -146,7 +146,7 @@ if ($locallang == "fr-FR") {
 						</div>
 					</div>
 					<div class="below-content">
-                        <?php $formUrl = base64_encode('/index.php?option=com_fabrik&view=form&formid=102&course='.$result->code.'&cid='.$result->id); ?>
+                        <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$result->code.'&cid='.$result->id); ?>
 
 						<?php if ($result->apply_online == 1) :?>
                             <?php if ($mod_em_campaign_get_link) :?>

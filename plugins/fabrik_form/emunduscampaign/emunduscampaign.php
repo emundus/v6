@@ -110,6 +110,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 					return false;
 				}
 
+				$user = JFactory::getUser($user);
+
 				$campaign_id = $jinput->getInt('jos_emundus_users___campaign_id_raw');
 				if (empty($campaign_id)) {
 					return false;
@@ -134,7 +136,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 				$query->clear()
 					->insert($db->quoteName('#__emundus_campaign_candidature'))
 					->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum']))
-					->values($user.', '.$user.', '.$campaign_id.', '.$fnum);
+					->values($user->id.', '.$user->id.', '.$campaign_id.', '.$fnum);
 			break;
 
 			case 'cc':
