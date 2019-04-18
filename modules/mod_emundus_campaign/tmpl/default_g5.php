@@ -100,7 +100,7 @@ if ($locallang == "fr-FR") {
 				<?php } ?>
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-						<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id; ?>&Itemid="<?php echo $mod_em_campaign_itemid2; ?>"><?php echo $result->label; ?></a></h4>
+						<h4><a href="<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>"><?php echo $result->label; ?></a></h4>
 						<p>
 							<?php
 								$text = '';
@@ -115,7 +115,7 @@ if ($locallang == "fr-FR") {
 					</div>
 					<div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
 						<div class="campaingapplycontent">
-							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
+							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br class="campaingapplycontent-breaker"/>
 
 							<?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
                                 <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
