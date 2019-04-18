@@ -2454,6 +2454,8 @@ $(document).ready(function() {
                                         '<label for="form-title">'+Joomla.JText._('COM_EMUNDUS_FORM_TITLE')+'</label> <br/>' +
                                         '<input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" max-height: 20px;/>' +
                                         '<label for="form-group">'+Joomla.JText._('COM_EMUNDUS_FORM_GROUP')+'</label> <br/>' +
+                                        '<input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" max-height: 20px;/>' +
+                                        '<label for="upper-case">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label> <br/>' +
                                     '</div>'+
                                 '</div>'+
                             '</div>' );
