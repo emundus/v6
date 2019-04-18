@@ -572,8 +572,9 @@ thead th:hover {
     padding: 1px;
     position: relative;
     height: 30px;
+    width: 50%;
     border-radius: 3px;
-    margin: 10px;
+    margin: 5px;
     text-align: left;
     background: #fff;
     box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
@@ -613,7 +614,8 @@ thead th:hover {
 label[for="em-file_to_upload"] {
     padding: 0.5em;
     display: inline-block;
-    background: #F2F1EF;
+    background: #e9ecef;
+    border: 1px solid #ced4da;
     cursor: pointer;
 }
 label[for="em-file_to_upload"]:hover {
@@ -622,16 +624,18 @@ label[for="em-file_to_upload"]:hover {
 #em-filename{
     padding: 0.5em;
     float: left;
-    width: 150px;
+    width: 70%;
     white-space: nowrap;
     overflow: hidden;
-    background: #F2F1EF;
+    background: white;
+    border: 1px solid #ced4da;
+
 }
 
 /* Messages sent / failed emails list style. Message recipient list */
 #em-mails-sent, #em-mails-failed, #em-recipitents {
-    overflow: scroll;
-    max-height: 70px;
+    overflow-y: scroll;
+    max-height: 80px;
 }
 
 /* Sending email modal */
@@ -685,3 +689,31 @@ label[for="em-file_to_upload"]:hover {
 .em-nopadding {
     padding: 0 !important;
 }
+
+/* css view message tmpl default */
+
+.upload-file{
+    display:flex;
+    flex-direction:row;
+    margin-top: 30px;
+}
+.file-browse{
+    width: 50%;
+}
+.attachment{
+    width: 57%;
+    float: right;
+    margin-right: 16px;
+}
+.swal2-container{
+    z-index: 99999 !important;
+}
+@media screen and (max-width: 991px){
+    .download{
+        display: inline !important;
+    }
+    .attachment{
+        width: 100%;
+    }
+}
+
