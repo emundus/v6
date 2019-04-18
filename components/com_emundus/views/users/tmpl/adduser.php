@@ -239,13 +239,13 @@ if ($s == '')
 									if (user.exists) {
 										cardColor = 'alert-success';
 										cardInfo = '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span> <p><?php echo JTEXT::_('LDAP_USER_EXISTS'); ?></p>';
-                                        addUser = '<a class="create-user" href="#" >';
                                     } else {
                                         cardColor = 'ldap-card';
                                         cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
                                             '<div class="hide uid">'+username.value+'</div>'+
                                             '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
                                             '</div>';
+                                        addUser = '<a class="create-user" href="#" >';
                                     }
 
 									let userCard = addUser+'<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
@@ -264,7 +264,7 @@ if ($s == '')
 									});
 									userCard += '</div></div>';
 
-                                    if (user.exists) {
+                                    if (!user.exists) {
                                         userCard += '</a>';
                                     }
 
