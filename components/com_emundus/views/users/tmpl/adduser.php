@@ -123,31 +123,27 @@ if ($s == '')
 	</fieldset>
 </form>
 <script type="text/javascript">
-	window.onunload = function() {
+	window.onunload = () => {
 		window.opener.location.reload();
 	};
-	$(document).ready(function() {
+	$(document).ready(() => {
 		var edit = '<?php echo $this->edit?>';
-		$('form').css({padding:"26px"})
-		$('alertes-details').css({padding:"30px"})
+		$('form').css({padding:"26px"});
+		$('alertes-details').css({padding:"30px"});
 		$('.em-chosen').chosen({width:'100%'});
 
-		if (edit == '1')
-		{
-			if($('#profiles option:selected').attr('pub') == 1)
-			{
+		if (edit == '1') {
+			if ($('#profiles option:selected').attr('pub') == 1) {
 				$('.em-hidden-appli-fields').show();
 				$('.em-hidden-nonapli-fields').hide();
-			}
-			else
-			{
+			} else {
 				$('.em-hidden-nonapli-fields').show();
 				$('.em-hidden-appli-fields').hide();
 			}
 		}
 		
 
-		$(document).on('change', '#ldap', function() {
+		$(document).on('change', '#ldap', () => {
 			if ($(this).is(':checked')) {
 				// If the LDAP registration option is selected, we need to modify the window with the LDAP registration interface.
 				$('#ldap-form').show();
@@ -156,12 +152,12 @@ if ($s == '')
 				$('#user-information').children().hide();
 
 				// Select the div where the search results will show.
-				var ldapResult = $('#ldapresult');
+				let ldapResult = $('#ldapresult');
 
 				// The LDAP elements to dipslay and use for the user cards.
 				// Due to the fact that we need the translated text and we dont know what the info to display will be in advance.
 				// We have to create an object containing the translated value and the real value.
-				var ldapElements = [
+				let ldapElements = [
 				<?php
 					foreach(explode(',',$this->ldapElements) as $elt) {
 						echo '["'.$elt.'","'.JText::_(strtoupper($elt)).'"],';
@@ -172,37 +168,37 @@ if ($s == '')
 				function searchLDAP() {
 
 					// Get the value of the search field.
-					search = $('#s')[0].value
+					search = $('#s')[0].value;
 
 					$.ajax({
 						type: "GET",
 						url:'index.php?option=com_emundus&controller=users&task=ldapsearch&search='+search,
 						dataType: 'html',
-						beforeSend: function() {
+						beforeSend: () => {
 							ldapResult.text('<?php echo Jtext::_('SEARCHING'); ?> ['+$('#s')[0].value+']');
 						},
-						success: function(result) {
+						success: result => {
 
-							result = JSON.parse(result)
+							result = JSON.parse(result);
 
-							if (!result.status)
-								ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('AN_ERROR_OCCURED'); ?> </span>")
-							else if (result.count == 0)
-								ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('LDAP_NO_RESULT'); ?> </span>")
-							else {
+							if (!result.status) {
+                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('AN_ERROR_OCCURED'); ?> </span>")
+                            } else if (result.count == 0) {
+                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('LDAP_NO_RESULT'); ?> </span>")
+                            } else {
 								ldapResult.html("");
 								// Foreach user
-								result.ldapUsers.forEach(function(user) {
+								result.ldapUsers.forEach(user => {
 
-									var otherElts = []
+									var otherElts = [];
 
 									// For each LDAP element defined by our param.
-									for (var i = 0; i < ldapElements.length; i++) {
+									for (let i = 0; i < ldapElements.length; i++) {
 										// Initialize the required objects as well as the other elements.
 										// The first 4 elements defined in the params are always required and in the exact order below.
 										if (i === 0) {
-											var username = {}
-											username.value = user[ldapElements[i][0]]
+											var username = {};
+											username.value = user[ldapElements[i][0]];
 											username.label = ldapElements[i][1]
 										} else if (i === 1) {
 											var mail = {};
@@ -210,77 +206,81 @@ if ($s == '')
                                             mail.value = mails.split(",")[0];
                                             mail.label = ldapElements[i][1];
 										} else if (i === 2) {
-											var fname = {}
-											fname.value = user[ldapElements[i][0]]
+											var fname = {};
+											fname.value = user[ldapElements[i][0]];
 											fname.label = ldapElements[i][1]
 										}  else if (i === 3) {
-											var lname = {}
-											lname.value = user[ldapElements[i][0]]
+											var lname = {};
+											lname.value = user[ldapElements[i][0]];
 											lname.label = ldapElements[i][1]
 										} else {
-											let elt = {}
+											let elt = {};
 
 											// If there is no value for the element then we should display --- instead of 'undefined'
-											if (typeof user[ldapElements[i][0]] == 'undefined')
-												elt.value = ' --- '
-											else
-												elt.value = user[ldapElements[i][0]]
+											if (typeof user[ldapElements[i][0]] == 'undefined') {
+                                                elt.value = ' --- ';
+                                            } else {
+                                                elt.value = user[ldapElements[i][0]];
+                                            }
 
-											elt.ldap = ldapElements[i][0]
-											elt.label = ldapElements[i][1]
+											elt.ldap = ldapElements[i][0];
+											elt.label = ldapElements[i][1];
 											otherElts.push(elt)
 										}
 									}
 
-									let cardColor = 'ldap-card'
-									let cardInfo = '<a class="create-user" href="#">'+
-														'<div class="hide uid">'+username.value+'</div>'+
-														'<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
-													'</a> <p><?php echo JText::_('LDAP_USER_NEW'); ?></p>'
-
+									let cardColor = '',
+                                        cardInfo = '';
 									if (user.exists) {
-										cardColor = 'alert-success'
+										cardColor = 'alert-success';
 										cardInfo = '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span> <p><?php echo JTEXT::_('LDAP_USER_EXISTS'); ?></p>'
-									}
+									} else {
+                                        cardColor = 'ldap-card';
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
+                                            '<div class="hide uid">'+username.value+'</div>'+
+                                            '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
+                                            '</a>';
+                                    }
 
-									var userCard = '<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
+									let userCard = '<a class="create-user" href="#">' +
+                                        '<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
 													'<div class="media-left" style="text-align:center; float:left;">'+
 														cardInfo+
 													'</div>'+
-													'<div class="media-body" style="text-align: left;padding-left: 10px;border-left: 1px dashed;margin-left: 155px;height: 100%;">'+
+													'<div class="media-body" style="text-align: left;padding-left: 10px;height: 100%;">'+
 														'<h4 class="media-heading" style="padding-top:15px;"> '+fname.value+' '+lname.value+'</h4>'+
-														'<p class="hide ldap-lname">'+lname.value+'</p>'+
-														'<p class="hide ldap-fname">'+fname.value+'</p>'+
-														'<p class="hide ldap-mail">'+mail.value+'</p>'+
-														'<p class="ldap-username"><strong>'+username.label+':</strong> '+username.value+'</p>'+
-														'<p><strong>'+mail.label+':</strong> '+mail.value+'</p>';
-									otherElts.forEach(function (elt) {
+														'<div class="hide ldap-lname">'+lname.value+'</div>'+
+														'<div class="hide ldap-fname">'+fname.value+'</div>'+
+														'<div class="hide ldap-mail">'+mail.value+'</div>'+
+														'<div class="ldap-username"><strong>'+username.label+':</strong> '+username.value+'</div>'+
+														'<div><strong>'+mail.label+':</strong> '+mail.value+'</div>';
+									otherElts.forEach(elt => {
 										userCard += '<p class="ldap-'+elt.ldap+'"><strong>'+elt.label+':</strong> '+elt.value+'</p>';
 									});
+									userCard += '</div></div></a>';
 
-									userCard += '</div></div>';
 									if (typeof username.value != 'undefined' && typeof mail.value != 'undefined' && typeof fname.value != 'undefined' && typeof lname.value != 'undefined')
 										ldapResult.append(userCard)
 								});
 
-								$('.create-user').on('click', function(e) {
+								$('.create-user').on('click', e => {
+                                    e.preventDefault();
 
-									e.preventDefault()
-									// Get user login name
-									let uid = $(this).find('.uid').text()
+                                    // Get user login name
+									let uid = $(this).find('.uid').text();
 
 									// using the login name: find the user card
-									let userCard = $('#ldap-user-'+uid)
+									let userCard = $('#ldap-user-'+uid);
 
 									// The "create user" form is filled out using the values found in the user card.
 									// This is better than sending an Ajax because if the "create user" form is extended then we don't need to modify this code.
-									$('#fname').val(userCard.find('.ldap-fname').text())
-									$('#lname').val(userCard.find('.ldap-lname').text())
-									$('#login').val(uid)
-									$('#mail').val(userCard.find('.ldap-mail').text())
+									$('#fname').val(userCard.find('.ldap-fname').text());
+									$('#lname').val(userCard.find('.ldap-lname').text());
+									$('#login').val(uid);
+									$('#mail').val(userCard.find('.ldap-mail').text());
 
 									// All user cards have their CSS reset.
-									$("div[id^=ldap-user-]").each(function() {
+									$("div[id^=ldap-user-]").each(() => {
 										$(this).removeAttr('style');
 										$(this).css({
 											'margin': '0 10px 10px 10px',
@@ -298,16 +298,16 @@ if ($s == '')
 								});
 							}
 						},
-						error: function(jqXHR, textStatus, errorThrown) {
+						error: () => {
 							ldapResult.text("<?php echo JText::_('AN_ERROR_OCCURED'); ?>");
 						}
 					});
 				}
 
 				// The delay means that the function will not start until the user has stopped typing.
-				var delay = (function(){
+				var delay = (() => {
 					var timer = 0;
-					return function(callback, ms){
+					return function(callback, ms) {
 						clearTimeout (timer);
 						timer = setTimeout(callback, ms);
 					};
@@ -316,8 +316,8 @@ if ($s == '')
 				// Remove event listeners to avoid having double ajax calls.
 				$('#s').off();
 
-				$('#s').on('keyup', function(e) {
-					delay(function() {
+				$('#s').on('keyup', e => {
+					delay(() => {
 						let input = $('#s')[0];
 						if (input.value.length > 3) {
 							searchLDAP();
@@ -327,7 +327,7 @@ if ($s == '')
 
 				$('#sldap').off();
 
-				$('#sldap').on('click', function(e) {
+				$('#sldap').on('click', e => {
 					searchLDAP();
 				});
 
@@ -335,12 +335,12 @@ if ($s == '')
 				$('#ldap-form').hide();
 				$('#ldapresult').hide();
 				$('#user-information').children().show();
-				$('#fname').val('')
-				$('#lname').val('')
-				$('#login').val('')
-				$('#mail').val('')
+				$('#fname').val('');
+				$('#lname').val('');
+				$('#login').val('');
+				$('#mail').val('');
 				// All user cards have their CSS reset.
-				$("div[id^=ldap-user-]").each(function() {
+				$("div[id^=ldap-user-]").each(() => {
 					$(this).removeAttr('style');
 					$(this).css({
 						'margin': '0 10px 10px 10px',
@@ -350,7 +350,7 @@ if ($s == '')
 			}
 		});
 
-		$(document).on('change', '#profiles', function() {
+		$(document).on('change', '#profiles', () => {
 			if ($('#profiles option[value="'+$(this).val()+'"]').attr('pub') == 1) {
 				$('.em-hidden-appli-fields').show();
 				$('.em-hidden-nonapli-fields').hide();
@@ -358,22 +358,22 @@ if ($s == '')
 				$('.em-hidden-nonapli-fields').show();
 				$('.em-hidden-appli-fields').hide();
 			}
-		})
+		});
 
-		$(document).on('blur', '#mail', function() {
+		$(document).on('blur', '#mail', () => {
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
-			if ($(this).val().length == 0 || !re.test($(this).val())) {
+			if ($(this).val().length === 0 || !re.test($(this).val())) {
 				$(this).parent('.form-group').addClass('has-error');
 				$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
 			}
-		})
+		});
 
-		$(document).on('focus', '#mail', function() {
+		$(document).on('focus', '#mail', () => {
 			$(this).parent('.form-group').removeClass('has-error');
 			$(this).siblings('.help-block').remove();
-		})
+		});
 
-		$(document).on('keyup', '#login', function() {
+		$(document).on('keyup', '#login', () => {
 			var re = /^[0-9a-zA-Z\_\@\-\.]+$/; // /^[a-z0-9]*$/;
 			if (!re.test($('#login').val())) {
 				if (!$(this).parent('.form-group').hasClass('has-error')) {

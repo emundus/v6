@@ -1454,10 +1454,23 @@ class EmundusControllerFiles extends JControllerLegacy
                     } else{
                         if($v == "")
                             $line .= " "."\t";
-                        elseif($v[0] == "=" || $v[0] == "-")
-                            $line .= " ".$v."\t";
-                        else
-                            $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                        elseif($v[0] == "=" || $v[0] == "-") {
+                            if(count($opts) > 0 && in_array("upper-case", $opts)) {
+                                $line .= " ".mb_strtoupper($v)."\t";
+                            }
+                            else {
+                                $line .= " ".$v."\t";
+                            }
+                        }
+                        else {
+                            if(count($opts) > 0 && in_array("upper-case", $opts)) {
+                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
+                            }
+                            else {
+                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                            }
+                        }
+
                     }
 
                 }
