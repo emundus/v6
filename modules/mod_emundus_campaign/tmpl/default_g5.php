@@ -115,7 +115,7 @@ if ($locallang == "fr-FR") {
 					</div>
 					<div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
 						<div class="campaingapplycontent">
-							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
+							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br class="campaingapplycontent-breaker"/>
 
 							<?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
                                 <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>

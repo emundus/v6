@@ -32,7 +32,7 @@
             $query  = $db->getQuery(true);
             if ($teachingUnityDates) {
                 $query
-                    ->select('ca.*, pr.apply_online, pr.code, tu.date_start as formation_start, tu.date_end as formation_end')
+                    ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
                     ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                     ->join('LEFT', $db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                     ->join('LEFT', $db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training'))
@@ -40,7 +40,7 @@
             }
             else {
                 $query  = $db->getQuery(true);
-                $query->select('ca.*, pr.apply_online, pr.code');
+                $query->select('ca.*, pr.apply_online, pr.code, pr.link');
                 $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
                 $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
             }
@@ -69,7 +69,7 @@
             $query  = $db->getQuery(true);
             if ($teachingUnityDates) {
                 $query
-                    ->select('ca.*, pr.apply_online, pr.code, tu.date_start as formation_start, tu.date_end as formation_end')
+                    ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
                     ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                     ->join('LEFT', $db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                     ->join('LEFT', $db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training'))
@@ -77,7 +77,7 @@
             }
             else {
                 $query
-                    ->select('ca.*, pr.apply_online, pr.code')
+                    ->select('ca.*, pr.apply_online, pr.code, pr.link')
                     ->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
                     ->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" >= ca.end_date '.$condition);
             }
@@ -97,7 +97,7 @@
 
             if ($teachingUnityDates) {
                 $query
-                    ->select('ca.*, pr.apply_online, pr.code, tu.date_start as formation_start, tu.date_end as formation_end')
+                    ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
                     ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                     ->join('LEFT', $db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                     ->join('LEFT', $db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training'))
@@ -105,7 +105,7 @@
             }
             else {
                 $query
-                    ->select('ca.*, pr.apply_online')
+                    ->select('ca.*, pr.apply_online, pr.link')
                     ->from('#__emundus_setup_campaigns as ca,#__emundus_setup_programmes as pr')
                     ->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.start_date '.$condition);
             }
@@ -125,7 +125,7 @@
 
             if ($teachingUnityDates) {
                 $query
-                    ->select('ca.*, pr.apply_online, pr.code, tu.date_start as formation_start, tu.date_end as formation_end')
+                    ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
                     ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                     ->join('LEFT', $db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                     ->join('LEFT', $db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training'))
@@ -133,7 +133,7 @@
             }
             else {
                 $query
-                    ->select('ca.*, pr.apply_online, pr.code')
+                    ->select('ca.*, pr.apply_online, pr.code, pr.link')
                     ->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
                     ->where('ca.training = pr.code AND ca.published=1 '.$condition);
             }
