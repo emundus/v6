@@ -100,7 +100,7 @@ if ($locallang == "fr-FR") {
 				<?php } ?>
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-						<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id; ?>&Itemid="<?php echo $mod_em_campaign_itemid2; ?>"><?php echo $result->label; ?></a></h4>
+						<h4><a href="<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>"><?php echo $result->label; ?></a></h4>
 						<p>
 							<?php
 								$text = '';
