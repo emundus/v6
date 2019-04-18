@@ -123,31 +123,27 @@ if ($s == '')
 	</fieldset>
 </form>
 <script type="text/javascript">
-	window.onunload = function() {
+	window.onunload = () => {
 		window.opener.location.reload();
 	};
-	$(document).ready(function() {
+	$(document).ready(() => {
 		var edit = '<?php echo $this->edit?>';
-		$('form').css({padding:"26px"})
-		$('alertes-details').css({padding:"30px"})
+		$('form').css({padding:"26px"});
+		$('alertes-details').css({padding:"30px"});
 		$('.em-chosen').chosen({width:'100%'});
 
-		if (edit == '1')
-		{
-			if($('#profiles option:selected').attr('pub') == 1)
-			{
+		if (edit == '1') {
+			if ($('#profiles option:selected').attr('pub') == 1) {
 				$('.em-hidden-appli-fields').show();
 				$('.em-hidden-nonapli-fields').hide();
-			}
-			else
-			{
+			} else {
 				$('.em-hidden-nonapli-fields').show();
 				$('.em-hidden-appli-fields').hide();
 			}
 		}
 		
 
-		$(document).on('change', '#ldap', function() {
+		$(document).on('change', '#ldap', () => {
 			if ($(this).is(':checked')) {
 				// If the LDAP registration option is selected, we need to modify the window with the LDAP registration interface.
 				$('#ldap-form').show();
@@ -178,10 +174,10 @@ if ($s == '')
 						type: "GET",
 						url:'index.php?option=com_emundus&controller=users&task=ldapsearch&search='+search,
 						dataType: 'html',
-						beforeSend: function() {
+						beforeSend: () => {
 							ldapResult.text('<?php echo Jtext::_('SEARCHING'); ?> ['+$('#s')[0].value+']');
 						},
-						success: function(result) {
+						success: result => {
 
 							result = JSON.parse(result);
 
@@ -192,7 +188,7 @@ if ($s == '')
                             } else {
 								ldapResult.html("");
 								// Foreach user
-								result.ldapUsers.forEach(function(user) {
+								result.ldapUsers.forEach(user => {
 
 									var otherElts = [];
 
@@ -240,13 +236,14 @@ if ($s == '')
 										cardInfo = '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span> <p><?php echo JTEXT::_('LDAP_USER_EXISTS'); ?></p>'
 									} else {
                                         cardColor = 'ldap-card';
-                                        cardInfo = '<a class="create-user" href="#" data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
                                             '<div class="hide uid">'+username.value+'</div>'+
                                             '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
                                             '</a>';
                                     }
 
-									let userCard = '<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
+									let userCard = '<a class="create-user" href="#">' +
+                                        '<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
 													'<div class="media-left" style="text-align:center; float:left;">'+
 														cardInfo+
 													'</div>'+
@@ -260,16 +257,16 @@ if ($s == '')
 									otherElts.forEach(elt => {
 										userCard += '<p class="ldap-'+elt.ldap+'"><strong>'+elt.label+':</strong> '+elt.value+'</p>';
 									});
-									userCard += '</div></div>';
+									userCard += '</div></div></a>';
 
 									if (typeof username.value != 'undefined' && typeof mail.value != 'undefined' && typeof fname.value != 'undefined' && typeof lname.value != 'undefined')
 										ldapResult.append(userCard)
 								});
 
-								$('.create-user').on('click', function(e) {
+								$('.create-user').on('click', e => {
+                                    e.preventDefault();
 
-									e.preventDefault();
-									// Get user login name
+                                    // Get user login name
 									let uid = $(this).find('.uid').text();
 
 									// using the login name: find the user card
@@ -308,9 +305,9 @@ if ($s == '')
 				}
 
 				// The delay means that the function will not start until the user has stopped typing.
-				var delay = (function(){
+				var delay = (() => {
 					var timer = 0;
-					return function(callback, ms){
+					return function(callback, ms) {
 						clearTimeout (timer);
 						timer = setTimeout(callback, ms);
 					};
@@ -319,8 +316,8 @@ if ($s == '')
 				// Remove event listeners to avoid having double ajax calls.
 				$('#s').off();
 
-				$('#s').on('keyup', function(e) {
-					delay(function() {
+				$('#s').on('keyup', e => {
+					delay(() => {
 						let input = $('#s')[0];
 						if (input.value.length > 3) {
 							searchLDAP();
@@ -330,7 +327,7 @@ if ($s == '')
 
 				$('#sldap').off();
 
-				$('#sldap').on('click', function(e) {
+				$('#sldap').on('click', e => {
 					searchLDAP();
 				});
 
@@ -338,12 +335,12 @@ if ($s == '')
 				$('#ldap-form').hide();
 				$('#ldapresult').hide();
 				$('#user-information').children().show();
-				$('#fname').val('')
-				$('#lname').val('')
-				$('#login').val('')
-				$('#mail').val('')
+				$('#fname').val('');
+				$('#lname').val('');
+				$('#login').val('');
+				$('#mail').val('');
 				// All user cards have their CSS reset.
-				$("div[id^=ldap-user-]").each(function() {
+				$("div[id^=ldap-user-]").each(() => {
 					$(this).removeAttr('style');
 					$(this).css({
 						'margin': '0 10px 10px 10px',
@@ -353,7 +350,7 @@ if ($s == '')
 			}
 		});
 
-		$(document).on('change', '#profiles', function() {
+		$(document).on('change', '#profiles', () => {
 			if ($('#profiles option[value="'+$(this).val()+'"]').attr('pub') == 1) {
 				$('.em-hidden-appli-fields').show();
 				$('.em-hidden-nonapli-fields').hide();
@@ -361,22 +358,22 @@ if ($s == '')
 				$('.em-hidden-nonapli-fields').show();
 				$('.em-hidden-appli-fields').hide();
 			}
-		})
+		});
 
-		$(document).on('blur', '#mail', function() {
+		$(document).on('blur', '#mail', () => {
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
-			if ($(this).val().length == 0 || !re.test($(this).val())) {
+			if ($(this).val().length === 0 || !re.test($(this).val())) {
 				$(this).parent('.form-group').addClass('has-error');
 				$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
 			}
-		})
+		});
 
-		$(document).on('focus', '#mail', function() {
+		$(document).on('focus', '#mail', () => {
 			$(this).parent('.form-group').removeClass('has-error');
 			$(this).siblings('.help-block').remove();
-		})
+		});
 
-		$(document).on('keyup', '#login', function() {
+		$(document).on('keyup', '#login', () => {
 			var re = /^[0-9a-zA-Z\_\@\-\.]+$/; // /^[a-z0-9]*$/;
 			if (!re.test($('#login').val())) {
 				if (!$(this).parent('.form-group').hasClass('has-error')) {
