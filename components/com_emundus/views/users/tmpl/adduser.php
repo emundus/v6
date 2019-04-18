@@ -234,19 +234,21 @@ if ($s == '')
 									}
 
 									let cardColor = '',
-                                        cardInfo = '';
+                                        cardInfo = '',
+                                        addUser = '';
 									if (user.exists) {
 										cardColor = 'alert-success';
-										cardInfo = '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span> <p><?php echo JTEXT::_('LDAP_USER_EXISTS'); ?></p>'
-									} else {
+										cardInfo = '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span> <p><?php echo JTEXT::_('LDAP_USER_EXISTS'); ?></p>';
+                                        addUser = '<a class="create-user" href="#" >';
+                                    } else {
                                         cardColor = 'ldap-card';
-                                        cardInfo = '<a class="create-user" href="#" data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
                                             '<div class="hide uid">'+username.value+'</div>'+
                                             '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
-                                            '</a>';
+                                            '</div>';
                                     }
 
-									let userCard = '<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
+									let userCard = addUser+'<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
 													'<div class="media-left" style="text-align:center; float:left;">'+
 														cardInfo+
 													'</div>'+
@@ -257,10 +259,14 @@ if ($s == '')
 														'<div class="hide ldap-mail">'+mail.value+'</div>'+
 														'<div class="ldap-username"><strong>'+username.label+':</strong> '+username.value+'</div>'+
 														'<div><strong>'+mail.label+':</strong> '+mail.value+'</div>';
-									otherElts.forEach(elt => {
+									otherElts.forEach(function(elt) {
 										userCard += '<p class="ldap-'+elt.ldap+'"><strong>'+elt.label+':</strong> '+elt.value+'</p>';
 									});
 									userCard += '</div></div>';
+
+                                    if (user.exists) {
+                                        userCard += '</a>';
+                                    }
 
 									if (typeof username.value != 'undefined' && typeof mail.value != 'undefined' && typeof fname.value != 'undefined' && typeof lname.value != 'undefined')
 										ldapResult.append(userCard)
@@ -283,7 +289,7 @@ if ($s == '')
 									$('#mail').val(userCard.find('.ldap-mail').text());
 
 									// All user cards have their CSS reset.
-									$("div[id^=ldap-user-]").each(() => {
+									$("div[id^=ldap-user-]").each(function() {
 										$(this).removeAttr('style');
 										$(this).css({
 											'margin': '0 10px 10px 10px',
@@ -301,7 +307,7 @@ if ($s == '')
 								});
 							}
 						},
-						error: () => {
+						error: function() {
 							ldapResult.text("<?php echo JText::_('AN_ERROR_OCCURED'); ?>");
 						}
 					});
@@ -338,10 +344,10 @@ if ($s == '')
 				$('#ldap-form').hide();
 				$('#ldapresult').hide();
 				$('#user-information').children().show();
-				$('#fname').val('')
-				$('#lname').val('')
-				$('#login').val('')
-				$('#mail').val('')
+				$('#fname').val('');
+				$('#lname').val('');
+				$('#login').val('');
+				$('#mail').val('');
 				// All user cards have their CSS reset.
 				$("div[id^=ldap-user-]").each(function() {
 					$(this).removeAttr('style');
@@ -361,7 +367,7 @@ if ($s == '')
 				$('.em-hidden-nonapli-fields').show();
 				$('.em-hidden-appli-fields').hide();
 			}
-		})
+		});
 
 		$(document).on('blur', '#mail', function() {
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
@@ -369,12 +375,12 @@ if ($s == '')
 				$(this).parent('.form-group').addClass('has-error');
 				$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
 			}
-		})
+		});
 
 		$(document).on('focus', '#mail', function() {
 			$(this).parent('.form-group').removeClass('has-error');
 			$(this).siblings('.help-block').remove();
-		})
+		});
 
 		$(document).on('keyup', '#login', function() {
 			var re = /^[0-9a-zA-Z\_\@\-\.]+$/; // /^[a-z0-9]*$/;
