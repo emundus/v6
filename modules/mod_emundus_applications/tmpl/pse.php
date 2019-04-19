@@ -18,13 +18,13 @@ echo $description;
 <div class="<?php echo $moduleclass_sfx ?>"> 
  <?php foreach($applications as $application) : ?>
   <fieldset>
-  <a href="<?php echo JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum; ?>" class="list-group-item<?php echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'-active':''; ?>">
+  <a href="<?php echo JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link']); ?>" class="list-group-item<?php echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'-active':''; ?>">
     <h4><?php echo $application->label; ?></h4>
     	<span class="label label-<?php echo $application->class; ?>"> <?php echo $application->value; ?></span> 
     	<?php if (!empty($user->fnum) && $application->fnum == $user->fnum) : ?>
     		<span class="badge <?php echo($progress>=100)?'badge-success':'badge-inverse'; ?>"><?php echo $progress; ?>%</span>
     		<?php if (($progress>=100 && $application->status==0 && !$is_dead_line_passed) || in_array($user->id, $applicants) ) : ?>
-    			<a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+    			<a class="btn btn-mini" href="<?php echo $confirm_form_url[$application->fnum]['link']; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
     		<?php endif; ?>
     	<?php endif; ?>
 
