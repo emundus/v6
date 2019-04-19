@@ -2775,8 +2775,8 @@ td {
 		        ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 		        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
 		        ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
-		        ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype'))
-		        ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).') AND '.$db->quoteName('m.published').'=1 AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+		        ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'=1 AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+		        ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
 		        ->order($db->quoteName('m.lft').' DESC');
 	        $db->setQuery($query);
 
@@ -2839,8 +2839,8 @@ td {
 		    ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 		    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
 		    ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
-		    ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype'))
-		    ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).') AND '.$db->quoteName('m.published').'>=0 AND '.$db->quoteName('m.level').'=1 AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+		    ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'>=0 AND '.$db->quoteName('m.level').'=1 AND '.$db->quoteName('m.link').' <> "" AND '.$db->quoteName('m.link').' <> "#"')
+		    ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
 	        ->order($db->quoteName('m.lft').' ASC');
 
     	$db->setQuery($query);
