@@ -23,7 +23,7 @@ JFactory::getSession()->set('application_layout', 'admission');
                     <?php echo JText::_('COM_EMUNDUS_ADMISSION'); ?>
                     <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                         <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=admission&task=pdf_admission&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-file"></span></button>
+                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                         </a>
                     <?php endif;?>
                 </h3>
@@ -72,3 +72,8 @@ JFactory::getSession()->set('application_layout', 'admission');
             }, 'slow');
         };
     </script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>

@@ -26,11 +26,11 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     <div class="panel panel-default widget">
         <div class="panel-heading">
             <h3 class="panel-title">
-            <span class="glyphicon glyphicon-paperclip"></span> 
+            <span class="glyphicon glyphicon-paperclip"></span>
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
                 <?php if($can_export && count($this->userAttachments) > 0)
-                    echo '<button class="btn btn-default" id="em_export_pdf" title="'.JText::_('PDF').'" link="">
-                        <span class="glyphicon glyphicon-file"></span>
+                    echo '<button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="'.JText::_('EXPORT_FILE_ATTACHMENT').'">
+                        <span class="glyphicon glyphicon-save" ></span>
                     </button>';
                 ?>
             </h3>
@@ -285,15 +285,19 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     {
         var checkedInput = getJsonChecked();
         var checked = getChecked();
+        console.log(checked);
         /*String.prototype.fmt = function (hash) {
             var string = this, key;
             for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
         }*/
         
         //var url = $(this).attr('link')+'&ids='+encodeURIComponent(JSON.stringify(checkedInput));
+        if (Array.isArray(checked) && checked.length){
+
+
         var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
         //url = url.fmt({ids: checkedInput});
-
+        var link = window.open('', '_blank');
         $.ajax({
             type:'get',
             url: url,
@@ -301,7 +305,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
             success: function(result) {
                 if(result.link){
-                    window.open(result.link);
+                    link.location.href = result.link;
                 }
             },
             error: function (jqXHR, textStatus, errorThrown)
@@ -309,7 +313,14 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                 console.log(jqXHR.responseText);
             }
         });
-
+        }
+        else{
+            Swal.fire({
+                title: Joomla.JText._('INFORMATION'),
+                text: Joomla.JText._('SELECT_AT_LEAST_ONE_FILE'),
+                type: 'warning'
+            })
+        }
        /* if(checked.length > 0)
         {
             $('#em-modal-actions .modal-body').empty();
@@ -374,4 +385,11 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                       
 });
+
 </script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>

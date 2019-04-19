@@ -143,6 +143,8 @@ JText::script('PLEASE_SELECT_TAG');
 JText::script('VALID');
 JText::script('INVALID');
 JText::script('UNCHECKED');
+JText::script('SELECT_AT_LEAST_ONE_FILE');
+JText::script('INFORMATION');
 
 
 // view user
