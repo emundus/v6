@@ -43,7 +43,7 @@ $uri = JUri::getInstance();
                         </a>
 
                         <?php if ((!empty($attachments) && (int)($attachments[$application->fnum])>=100 && $application->status==0 && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
-                            <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+                            <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url[$application->fnum]['link'])); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
                         <?php endif; ?>
 
                         <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'les-offres/consultez-les-offres/details/299/'. modemundusApplicationsHelper::getSearchEngineId($application->fnum) .'?format=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i></a>
