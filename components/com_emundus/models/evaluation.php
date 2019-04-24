@@ -1046,13 +1046,11 @@ class EmundusModelEvaluation extends JModelList {
 			$sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 		}
 
-		$query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
-
-		// In case we have no associated files, show nothing.
-		if (count($this->fnum_assoc) == 0 && empty($filt_menu['programme'])) {
-			$query['q'] .= 'AND 1 = 2';
+		if (!empty($sql_code) || !empty($sql_fnum)) {
+			$query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
+		} else {
+			$query['q'] .= ' AND 1=2 ';
 		}
-
 		return $query;
 	}
 
