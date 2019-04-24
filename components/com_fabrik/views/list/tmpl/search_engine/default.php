@@ -268,8 +268,6 @@ echo $this->table->intro;
                         }
                         $v->total = $i;
                     }
-                    $this->navigation->total = sizeof($data);
-
                 }
                 ?>
 
@@ -354,7 +352,7 @@ echo $this->table->intro;
 
 
                             ?>
-                            <tr>
+                            <tr class="em-search-engine-offer">
                                 <td>
                                     <div class="em-search-engine-div-data <?php echo ($status === 2)?'em-closed-offer':''; ?>">
                                         <div class="em-search-engine-result-title"><?php echo $d['jos_emundus_projet___titre']; ?></div>
@@ -419,26 +417,65 @@ echo $this->table->intro;
                                 <?php
                                 endforeach;
                                 ?>
-
                             </tr>
                             </tfoot>
                         <?php endif ?>
                     </table>
                 </div>
-
-                <?php if($user->id != 0) : ?>
-                    <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
-                        <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
-                        <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
-                    </a>
-                <?php endif; ?>
-
-                <?php print_r($this->hiddenFields);?>
             </div>
         </form>
+        <div>
+            <select class="em-number-of-results">
+                <option value="10" selected="selected">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <ul class="list-pagin"></ul>
+        </div>
+        <?php if($user->id != 0) : ?>
+            <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
+                <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
+                <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+            </a>
+        <?php endif; ?>
+
+        <?php print_r($this->hiddenFields);?>
     </div>
 </div>
 <script>
+
+    let data = <?php echo sizeof($data); ?>;
+
+    //Pagination
+    pageSize = jQuery(".em-number-of-results").val();
+
+    var pageCount =  data / pageSize;
+
+    if (pageCount > 1) {
+        for (var i = 0 ; i<pageCount;i++) {
+            jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
+        }
+    }
+
+    jQuery(".list-pagin li").first().find("p").addClass("current");
+    showPage = function(page) {
+        jQuery(".em-search-engine-offer").hide();
+        jQuery(".em-search-engine-offer").each(function(n) {
+            if (n >= pageSize * (page - 1) && n < pageSize * page)
+                jQuery(this).show();
+        });
+    };
+
+    showPage(1);
+
+    jQuery(".list-pagin li p").click(function() {
+        jQuery(".list-pagin li p").removeClass("current");
+        jQuery(this).addClass("current");
+        showPage(parseInt(jQuery(this).text()));
+    });
+
+
     jQuery(document).ready(function(){
         //region and department object
         $allRegions= <?php echo json_encode(getAllRegions()); ?>;
@@ -513,9 +550,44 @@ echo $this->table->intro;
             placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
             placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
             no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
-        })
+        });
     });
 
+
+    jQuery(".em-number-of-results").change(function () {
+        let data = <?php echo sizeof($data); ?>;
+
+        //Pagination
+        pageSize = jQuery(this).val();
+
+        var pageCount =  data / pageSize;
+
+        if (pageCount > 1) {
+            for (var i = 0 ; i<pageCount;i++) {
+                jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
+            }
+        }
+        else {
+            jQuery(".list-pagin li").hide();
+        }
+
+        jQuery(".list-pagin li").first().find("p").addClass("current");
+        showPage = function(page) {
+            jQuery(".em-search-engine-offer").hide();
+            jQuery(".em-search-engine-offer").each(function(n) {
+                if (n >= pageSize * (page - 1) && n < pageSize * page)
+                    jQuery(this).show();
+            });
+        };
+
+        showPage(1);
+
+        jQuery(".list-pagin li p").click(function() {
+            jQuery(".list-pagin li p").removeClass("current");
+            jQuery(this).addClass("current");
+            showPage(parseInt(jQuery(this).text()));
+        });
+    });
 
     function selectAllRegions() {
         if(jQuery('.chosen-toggle-region').hasClass('select')) {

@@ -4831,21 +4831,22 @@ $(document).ready(function() {
                 '</div>');
                 $.ajax({
                     type:'post',
-                    url:'/index.php?option=com_emundus&controller=files&task=generatedoc',
+                    url:'/index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
                     dataType:'json',
                     data:{fnums: fnums, code:code, id_tmpl: idTmpl},
                     success: function(result) {
                         $('.modal-body').empty();
                         if (result.status) {
                             var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
-                            var oneUrl = 'index.php?option=com_emundus&controller=files&task=exportonedoc&ids=';
+                            //var oneUrl = 'index.php?option=com_emundus&controller=files&task=exportonedoc&ids=';
+                            //lien pour le pdf<a href='' class='btn btn-small pull-right' target='_blank'  id='em-doc-one'>"+Joomla.JText._('ALL_IN_ONE_DOC')+"</a>
                             var table = "<h3>" +
                                 Joomla.JText._('FILES_GENERATED')+
                                 "</h3>" +
                                 "<table class='table table-striped' id='em-generated-docs'>" +
                                 "<thead>" +
                                 "<tr>" +
-                                "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a> <a href='' class='btn btn-small pull-right' target='_blank'  id='em-doc-one'>"+Joomla.JText._('ALL_IN_ONE_DOC')+"</a></th>" +
+                                "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
                                 "</tr>" +
                                 "</thead>" +
                                 "<tbody>";
@@ -4855,16 +4856,16 @@ $(document).ready(function() {
                                 "</tr>";
                                 if (i == 0) {
                                     zipUrl += result.files[i].upload;
-                                    oneUrl += result.files[i].upload;
+                                    //oneUrl += result.files[i].upload;
                                 } else {
                                     zipUrl += ','+result.files[i].upload;
-                                    oneUrl += ','+result.files[i].upload;
+                                    //oneUrl += ','+result.files[i].upload;
                                 }
                             }
                             table += "</tbody></table>";
                             $('.modal-body').append(table);
                             $('#em-doc-zip').attr('href', zipUrl);
-                            $('#em-doc-one').attr('href', oneUrl);
+                            /*$('#em-doc-one').attr('href', oneUrl);*/
                         } else {
                             $('.modal-body').append('<div class="alert alert-danger"><h4>'+result.msg+'</h4></div>');
                         }
