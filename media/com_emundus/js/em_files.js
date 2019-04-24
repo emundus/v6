@@ -4831,7 +4831,7 @@ $(document).ready(function() {
                 '</div>');
                 $.ajax({
                     type:'post',
-                    url:'/index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
+                    url:'index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
                     dataType:'json',
                     data:{fnums: fnums, code:code, id_tmpl: idTmpl},
                     success: function(result) {
