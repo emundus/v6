@@ -49,7 +49,6 @@ if (isset($order_date) && !empty($order_date)) {
 } elseif (empty($order)) {
 	$session->set('order_date', $mod_em_campaign_order);
 }
-
 if (isset($order_time) && !empty($order_time)) {
 	$session->set('order_time', $order_time);
 } elseif (empty($order)) {
@@ -60,21 +59,20 @@ $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
 
 if (isset($searchword) && !empty($searchword)) {
-    $condition = ' AND CONCAT(pr.code,ca.label,pr.label,ca.description,ca.short_description) LIKE "%"'.$db->Quote($searchword).'"%"';
+    $condition = ' AND (pr.code LIKE "%"'.$db->Quote($searchword).'"%" OR ca.label LIKE "%"'.$db->Quote($searchword).'"%" OR ca.description LIKE "%"'.$db->Quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->Quote($searchword).'"%")';
 }
 
 switch ($mod_em_campaign_groupby) {
     case 'month':
-        $condition .= ' ORDER BY '.$mod_em_campaign_order;
+        $condition .= ' ORDER BY '.$order;
         break;
     case 'program':
-        $condition .= ' ORDER BY training, '.$mod_em_campaign_order;
+        $condition .= ' ORDER BY training, '.$order;
         break;
     case 'ordering':
-        $condition .= ' ORDER BY ordering, '.$mod_em_campaign_order;
+        $condition .= ' ORDER BY ordering, '.$order;
         break;
 }
-
 
 switch ($ordertime) {
     case 'asc':

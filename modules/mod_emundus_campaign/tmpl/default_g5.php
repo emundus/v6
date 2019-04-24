@@ -34,13 +34,43 @@ if ($locallang == "fr-FR") {
 		<div class="g-block size-30 navorder">
 			<p><?php if ($order != "end_date") :?>
 					<?php if ($ordertime == "desc") :?>
-						<a href="index.php?order_date=<?php echo $order ;?>&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i>
+						<a href="index.php?order_date=<?php echo $order ;?>&order_time=asc">
+                            <i class="icon-chevron-down" aria-hidden="true"></i>
+                            <b>
+                                <?php echo JText::_("CAMPAIGN_START_DATE");?>
+                            </b>
+                        </a>
 					<?php else :?>
-							<a href="index.php?order_date=<?php echo $order ;?>&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i>
+							<a href="index.php?order_date=<?php echo $order ;?>&order_time=desc">
+                                <i class="icon-chevron-up" aria-hidden="true"></i>
+                                <b>
+                                    <?php echo JText::_("CAMPAIGN_START_DATE");?>
+                                </b>
+                            </a>
 					<?php endif; ?>
-					<b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
+                     |
+                    <a href="index.php?order_date=end_date&order_time=<?php echo $ordertime ?>">
+                        <?php echo JText::_("LIST_DATE_END");?>
+                    </a>
 				<?php else :?>
-					<a href="index.php?order_date=<?php echo $mod_em_campaign_order ;?>&order_time=<?php echo $ordertime ?>"><?php echo JText::_("CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime=="desc") {?><a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("LIST_DATE_END");?></b></a>
+					<a href="index.php?order_date=<?php echo $mod_em_campaign_order ;?>&order_time=<?php echo $ordertime ?>">
+                        <?php echo JText::_("CAMPAIGN_START_DATE");?>
+                    </a>  |
+                    <?php if ($ordertime=="desc") :?>
+                            <a href="index.php?order_date=end_date&order_time=asc">
+                                <i class="icon-chevron-down" aria-hidden="true"></i>
+                                <b>
+                                    <?php echo JText::_("LIST_DATE_END");?>
+                                </b>
+                            </a>
+                    <?php else :?>
+                            <a href="index.php?order_date=end_date&order_time=desc">
+                                <i class="icon-chevron-up" aria-hidden="true"></i>
+                                <b>
+                                    <?php echo JText::_("LIST_DATE_END");?>
+                                </b>
+                            </a>
+                    <?php endif;?>
 				<?php endif; ?>
 			</p>
 		</div>
@@ -76,11 +106,23 @@ if ($locallang == "fr-FR") {
 						$j = $dteDiff->format("%a");
 						$h = $dteDiff->format("%H");
 
-						if ($order == "start_date") {
-							$month = utf8_encode(strftime("%B %Y", strtotime($result->start_date)));
-						} else {
-							$month = utf8_encode(strftime("%B %Y", strtotime($result->end_date)));
-						}
+						switch ($order) {
+						    case "start_date":
+						        $month = ($result->start_date !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->start_date))) : "";
+						        break;
+
+                            case "end_date":
+						        $month = ($result->end_date !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->end_date))) : "";
+						        break;
+
+                            case "formation_start":
+						        $month = ($result->formation_start !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->formation_start))) : "";
+						        break;
+
+                            case "formation_end":
+						        $month = ( $result->formation_end !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->formation_end))) : "";
+						        break;
+                        }
 
 						if ($oldmonth != $month) {
 							if (!empty($oldmonth)) {
