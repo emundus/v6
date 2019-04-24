@@ -2847,8 +2847,7 @@ class EmundusControllerFiles extends JControllerLegacy
     /** Generate a new document from the many templates.
      * @throws Exception
      */
-    public function generatedoc()
-    {
+    public function generatedoc() {
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->post->getString('fnums', "");
         $code = $jinput->post->getString('code', "");
@@ -2882,7 +2881,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $name = $attachInfos['lbl'] . '_' . date('Y-m-d_H-i-s') . '.' . pathinfo($file)['extension'];
                             $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
                             if (copy($file, $path)) {
-                                $url = EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
+                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
                                 $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url,);
@@ -2955,11 +2954,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
                         $name = $attachInfos['lbl'] . '_' . date('Y-m-d_H-i-s') . '.pdf';
                         $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
-                        $url = EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
+                        $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
                         $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
                         $pdf->Output($path, 'F');
-                        $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url,);
+                        $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
                     }
                 }
                 unset($pdf, $path, $name, $url, $upIdn);
@@ -3129,7 +3128,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
-                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/',);
+                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/',);
                         }
                         unset($preprocess);
                     }
@@ -3157,8 +3156,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
             // Special tags which require a bit more work.
             $special = ['user_dob_age'];
-
-
 
             foreach ($fnumsArray as $fnum) {
                 if (isset($fnumsInfos[$fnum])) {
@@ -3202,9 +3199,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $lowerTag = strtolower($tag);
 
                                     if (array_key_exists($lowerTag, $const)) {
-
                                         $cell->setValue($const[$lowerTag]);
-
                                     } elseif (in_array($lowerTag, $special)) {
 
                                         // Each tag has it's own logic requiring special work.
@@ -3222,7 +3217,6 @@ class EmundusControllerFiles extends JControllerLegacy
                                         }
 
                                     } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
-
                                         $cell->setValue(@$fnumsInfos[$fnum][$lowerTag]);
                                     } else {
                                         $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
@@ -3265,7 +3259,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
-                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/',);
+                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/',);
                 }
             }
             echo json_encode($res);
