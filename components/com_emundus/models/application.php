@@ -1819,7 +1819,7 @@ td {
                                         elseif($elements[$j]->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$r_elt));
                                         }
-                                        elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
+                                        elseif($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                             $params = json_decode($elements[$j]->params);
                                             $index = array_search($r_elt, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
@@ -1887,7 +1887,7 @@ td {
                                     elseif($element->plugin == 'checkbox') {
                                         $elt = implode(", ", json_decode (@$element->content));
                                     }
-                                    elseif($element->plugin=='dropdown' || $iteme->element=='radiobutton') {
+                                    elseif($element->plugin=='dropdown' || $element->plugin=='radiobutton') {
                                         $params = json_decode($element->params);
                                         $index = array_search($element->content, $params->sub_options->sub_values);
                                         if (strlen($index) > 0) {
