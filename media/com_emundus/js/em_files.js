@@ -2746,9 +2746,6 @@ $(document).ready(function() {
                             $('#forms').css({'width':"49%", 'margin-left':"51%", 'position':"absolute"});
                             $('#exp1').css({'background-color':"#f5f4f4", 'border-color':"#dddddd", 'border-style': "solid",'border-width': "0.5px", 'border-radius':"3px"});
                             $('#forms1').css({'background-color':"#f5f4f4", 'border-color':"#dddddd", 'border-style': "solid",'border-width': "0.5px", 'border-radius':"3px", 'padding-left':"15px"});
-
-                            $('head').append('<link rel="stylesheet" href="media/com_emundus/css/emundus.css" type="text/css" />');
-
                         }
                     },
                     error: function (jqXHR) {
