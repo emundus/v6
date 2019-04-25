@@ -21,20 +21,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/application.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/application.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/emundus.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/emundus.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/models/application.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/models/application.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/form.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/form.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/media/com_emundus/css/emundus_files.css" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_emundus/css/emundus_files.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" afterDir="false" />
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -244,7 +232,7 @@
         <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/admission.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="578">
-              <caret line="50" column="55" selection-start-line="50" selection-start-column="46" selection-end-line="50" selection-end-column="55" />
+              <caret line="50" column="55" selection-start-line="50" selection-start-column="55" selection-end-line="50" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -297,17 +285,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/media/com_emundus/css/emundus_files.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="290">
-              <caret line="753" column="29" lean-forward="true" selection-start-line="753" selection-start-column="3" selection-end-line="753" selection-end-column="29" />
+            <state relative-caret-position="-50">
+              <caret line="791" column="3" selection-start-line="791" selection-start-column="3" selection-end-line="791" selection-end-column="3" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="596">
-              <caret line="122" column="40" selection-start-line="122" selection-start-column="40" selection-end-line="122" selection-end-column="40" />
+            <state relative-caret-position="565">
+              <caret line="125" column="12" selection-start-line="125" selection-start-column="12" selection-end-line="125" selection-end-column="12" />
               <folding>
                 <element signature="n#style#0;n#li#0;n#!!top" expanded="true" />
               </folding>
@@ -315,11 +303,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="25" column="14" lean-forward="true" selection-start-line="25" selection-start-column="14" selection-end-line="25" selection-end-column="14" />
+            <state relative-caret-position="242">
+              <caret line="354" column="8" selection-start-line="354" selection-start-column="8" selection-end-line="354" selection-end-column="49" />
             </state>
           </provider>
         </entry>
@@ -417,11 +405,11 @@
         <option value="$PROJECT_DIR$/components/com_emundus/emundus.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini" />
         <option value="$PROJECT_DIR$/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" />
-        <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php" />
-        <option value="$PROJECT_DIR$/media/com_emundus/css/emundus_files.css" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php" />
         <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php" />
+        <option value="$PROJECT_DIR$/media/com_emundus/css/emundus_files.css" />
+        <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php" />
       </list>
     </option>
   </component>
@@ -793,7 +781,7 @@
       <workItem from="1555667890991" duration="12866000" />
       <workItem from="1556004254008" duration="28256000" />
       <workItem from="1556090916039" duration="28567000" />
-      <workItem from="1556177265112" duration="24201000" />
+      <workItem from="1556177265112" duration="25200000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog.">
       <created>1525445467750</created>
@@ -827,7 +815,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="348765000" />
+    <option name="totallyTimeSpent" value="349764000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1313,27 +1301,10 @@
         <state relative-caret-position="-459" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="596">
-          <caret line="122" column="40" selection-start-line="122" selection-start-column="40" selection-end-line="122" selection-end-column="40" />
-          <folding>
-            <element signature="n#style#0;n#li#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/com_emundus/css/emundus_files.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="753" column="29" lean-forward="true" selection-start-line="753" selection-start-column="3" selection-end-line="753" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/admission.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="578">
-          <caret line="50" column="55" selection-start-line="50" selection-start-column="46" selection-end-line="50" selection-end-column="55" />
+          <caret line="50" column="55" selection-start-line="50" selection-start-column="55" selection-end-line="50" selection-end-column="55" />
         </state>
       </provider>
     </entry>
@@ -1498,8 +1469,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="25" column="14" lean-forward="true" selection-start-line="25" selection-start-column="14" selection-end-line="25" selection-end-column="14" />
+        <state relative-caret-position="242">
+          <caret line="354" column="8" selection-start-line="354" selection-start-column="8" selection-end-line="354" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/com_emundus/css/emundus_files.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-50">
+          <caret line="791" column="3" selection-start-line="791" selection-start-column="3" selection-end-line="791" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="565">
+          <caret line="125" column="12" selection-start-line="125" selection-start-column="12" selection-end-line="125" selection-end-column="12" />
+          <folding>
+            <element signature="n#style#0;n#li#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

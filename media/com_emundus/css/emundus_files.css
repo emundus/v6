@@ -787,9 +787,9 @@ label[for="em-file_to_upload"]:hover {
     margin-top: 5px;
     margin-bottom: 5px;
 }
-.selectAll > label > input[type=checkbox]{
+/*.selectAll > label > input[type=checkbox]{
     display: none;
-}
+}*/
 .selectAll > label > span{
     color: black;
     display: flex;
