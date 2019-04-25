@@ -91,21 +91,26 @@ class EmundusViewFiles extends JViewLegacy {
 			// get Menu actions
 			case 'menuactions':
 				$fnum = $app->input->getString("fnum", "0");
+
 				$display = $app->input->getString('display', 'none');
 				$menu = @JFactory::getApplication()->getMenu();
 				$current_menu = $menu->getActive();
+
 				$Itemid = $app->input->getInt('Itemid', $current_menu->id);
 
 				if (isset($current_menu) && !empty($current_menu)) {
+
 					$params = $menu->getParams($Itemid);
 
 					if ($fnum === "0")
-						$items = $h_files->getMenuList($params);
+                        $items = $h_files->getMenuList($params);
 					else
-						$items = $h_files->getMenuList($params, $fnum);
+                        $items = $h_files->getMenuList($params, $fnum);
+
 
 					$this->assignRef('items', $items);
 					$this->assignRef('display', $display);
+					$this->assignRef('fnum', $fnum);
 				} else {
 					echo JText::_('ERROR_MENU_ID_NOT_FOUND');
 					return false;

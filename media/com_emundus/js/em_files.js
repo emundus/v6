@@ -1,6 +1,7 @@
 /**
  * Created by yoan on 23/05/14.
  */
+
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
     var id = 0, Q = {};
@@ -179,6 +180,11 @@ function reloadActions(view, fnum, onCheck, async) {
     //addDimmer();
 
     var multi = $('.em-check:checked').length;
+    if(multi === 0 && fnum != 0 ){
+        multi = 1;
+    }
+
+
     $.ajax({
         type: 'GET',
         async: async,
@@ -189,6 +195,7 @@ function reloadActions(view, fnum, onCheck, async) {
             //$(".col-md-9 .panel.panel-default").remove();
             $('.navbar.navbar-inverse').empty();
             $('.navbar.navbar-inverse').append(data);
+
             if (onCheck === true) {
                 menuBar1();
             }
@@ -430,7 +437,9 @@ function openFiles(fnum) {
 
             $('.em-open-files').remove();
             var panel = result;
-            $('.main-panel').append('<div class="em-close-minimise"><div class="btn-group pull-right"><button id="em-close-file" class="btn btn-danger btn-xxl"><strong>X</strong></button></div></div><div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
+
+            $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
+
             $('#em-synthesis .panel-body').empty();
             $('#em-synthesis .panel-body').append(panel);
         },
@@ -808,7 +817,7 @@ function back() {
 }
 
 $(document).ready(function() {
-    $('.em-check-all-all').hide();
+    //$('.em-check-all-all').hide();
     $('#check').removeClass('em-check-all-all');
 
     var lastVal = new Object();
@@ -1347,8 +1356,8 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '.em-check', function(e) {
-        if (($(this).attr('id') == 'em-check-all') || ($(this).attr('id') == 'em-check-all-all')) {
-            $('.em-check-all-all').show();
+        if ($(this).attr('id') == 'em-check-all') {
+            //$('.em-check-all-all').show();
             $('.em-actions[multi="1"]').show();
             $('.em-actions[multi="1"]').removeClass('em-hidden');
 
@@ -1370,7 +1379,7 @@ $(document).ready(function() {
 
             } else {
 
-                $('.em-check-all-all').hide();
+                //$('.em-check-all-all').hide();
                 $(this).prop('checked', false);
                 $('.em-check').prop('checked', false);
                 $('.em-actions[multi="0"]').show();

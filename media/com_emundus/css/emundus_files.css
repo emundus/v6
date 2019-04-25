@@ -6,8 +6,20 @@ p {
     margin-top: 0;
 }
 
+.navbar-brand{
+    padding: 0;
+    height: 37px;
+    margin-top: 5px;
+}
+.navbar-collapse.collapse{
+    overflow: hidden;
+}
+.container-nav{
+    height: 37px;
+    width: 100%;
+}
 .em-close-minimise {
-    margin: -49px 0px 0px 0px;
+   align-self: flex-end;
 }
 
 #check {
@@ -685,3 +697,133 @@ label[for="em-file_to_upload"]:hover {
 .em-nopadding {
     padding: 0 !important;
 }
+
+/* title form */
+
+.TitlePersonalInfo{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.marginRightbutton{
+    margin-right: 14vh;
+}
+.Marginpanel-body{
+    margin-right: 10vh;
+}
+/* Title admission */
+
+.TitleAdmission{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* checkbox page selection on data.php */
+
+.selectContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+}
+.selectPage{
+    height: 35px;
+    width: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.selectPage:hover{
+    background-color: #dadada;
+    border-radius: 5px;
+
+}
+.selectPage > input[type=checkbox] { display:none; } /* to hide the checkbox itself */
+.selectPage > input[type=checkbox] + label:before {
+    font-family: FontAwesome;
+    font-size: 1.2rem;
+    color : #5f6368;
+    position: relative;
+    top: 5px;
+}
+
+.selectPage > input[type=checkbox] + label:before { content: "\f096"; font-size: 1.2rem; } /* unchecked icon */
+.selectPage > input[type=checkbox]:checked + label:before { content: "\f046"; font-size: 1.2rem; } /* checked icon */
+
+.selectDropdown{
+    height: 35px;
+    width: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.selectDropdown:hover{
+    background-color: #dadada;
+    border-radius: 5px;
+
+}
+.selectAll{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background-color:white;
+    height: auto;
+    width: 150px;
+    position: absolute;
+    top: 140px;
+}
+.selectAll>label{
+    color: black;
+    width: 150px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.selectAll > label > input[type=checkbox]{
+    display: none;
+}
+.selectAll > label > span{
+    color: black;
+    display: flex;
+    justify-content: space-around;
+    font-size: .875rem;
+    letter-spacing: .2px;
+    font-family: "Raleway", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    font-weight: 400;
+}
+.selectAll>label:hover{
+    background-color: #dadada;
+}
+#tooltipSelect{
+    display:none;
+    transition:opacity 1s ease-out;
+    opacity:0;
+    position: absolute;
+    z-index: 1;
+    justify-content: center;
+    align-items: center;
+    top:45px;
+}
+.borderSelect{
+    background-color: #dadada;
+    border: 2px solid #5f6368;
+    border-radius: 5px
+}
+.container-result{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.countCheckedCheckbox{
+    margin-left: 30%;
+}
+
