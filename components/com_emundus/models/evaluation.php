@@ -271,28 +271,23 @@ class EmundusModelEvaluation extends JModelList {
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-    public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array())
-    {
+    public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array()) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 
-        $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('cfnums', null);
-        $view = $jinput->getString('view', null);
-
         $elements = array();
 
-        if ($session->has('filt_params'))
-        {
+        if ($session->has('filt_params')) {
 
             $filt_params = $session->get('filt_params');
             
-            if(!empty($code))
-            	$programmes = array_unique($code);
-            elseif ( $filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
-            	$programmes = array_unique($filt_params['programme']);
-            else
-            	return array();
+            if (!empty($code)) {
+	            $programmes = array_unique($code);
+            } elseif ($filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
+	            $programmes = array_unique($filt_params['programme']);
+            } else {
+	            return array();
+            }
 
             foreach ($programmes as $value) { 
                 $groups = $this->getGroupsEvalByProgramme($value);
@@ -302,10 +297,11 @@ class EmundusModelEvaluation extends JModelList {
                 } else {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
                     
-                    if (count($eval_elt_list)>0) {
+                    if (count($eval_elt_list) > 0) {
                         foreach ($eval_elt_list as $eel) {
-                            if(isset($eel->element_id) && !empty($eel->element_id))
-                                $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
+                            if (isset($eel->element_id) && !empty($eel->element_id)) {
+	                            $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
+                            }
                         }
                     }
                 }

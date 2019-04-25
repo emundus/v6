@@ -519,12 +519,13 @@ class EmundusHelperFiles
         return $current_filter;
     }
 
-    /**
-     * @param array $code
-     * @param array $years
-     * @param array $fabrik_elements
-     * @return array
-     */
+	/**
+	 * @param array $code
+	 * @param array $camps
+	 * @param array $fabrik_elements
+	 *
+	 * @return array
+	 */
     public static function getElements($code = array(), $camps = array(), $fabrik_elements = array()) {
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
@@ -536,30 +537,26 @@ class EmundusHelperFiles
         $m_user     = new EmundusModelUsers;
         $m_profile  = new EmundusModelProfile;
         $m_campaign = new EmundusModelCampaign;
-        $h_files    = new EmundusHelperFiles;
 
         $db = JFactory::getDBO();
-       // var_dump($camp);
+
         if (count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
-           
 
-            if (empty($programme) && empty($campaigns))
-                $programme = $m_campaign->getLatestCampaign();
-
+            if (empty($programme) && empty($campaigns)) {
+	            $programme = $m_campaign->getLatestCampaign();
+            }
             
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
-
-            
             
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
         }
-        //var_dump($plist);
+
         if ($plist) {
             // get Fabrik list ID for profile_id
             $fl = array();
@@ -570,21 +567,18 @@ class EmundusHelperFiles
 
 
             foreach ($profiles as $profile) {
-                if (is_array($plist)) {
-
-                    if (count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
-                        $menu_list = $h_menu->buildMenuQuery($profile->id);
-                        foreach ($menu_list as $m) {
-                            $fl[] = $m->table_id;
-                            $menutype[$profile->id] = $m->menutype;
-                        }
+                if (is_array($plist) && count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
+                 	$menu_list = $h_menu->buildMenuQuery($profile->id);
+                    foreach ($menu_list as $m) {
+                        $fl[] = $m->table_id;
+                        $menutype[$profile->id] = $m->menutype;
                     }
                 }
             }
-            
 
-            if (count($fl) == 0)
-                return array();
+            if (count($fl) == 0) {
+	            return array();
+            }
 
             $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
                     INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
@@ -598,7 +592,6 @@ class EmundusHelperFiles
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1';
-
 
             if (count($fabrik_elements) > 0 ) {
 
@@ -616,18 +609,20 @@ class EmundusHelperFiles
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
 
-
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
-//echo str_replace('#_', 'jos', $query);
 
             try {
 
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
+                
                 $elts = array();
-                if (count($elements)>0) {
+                if (count($elements) > 0) {
                     foreach ($elements as $key => $value) {
                         $value->id = $key;
+                        $value->table_label = JText::_($value->table_label);
+                        $value->group_label = JText::_($value->group_label);
+                        $value->element_label = JText::_($value->element_label);
                         $elts[] = $value;
                     }
                 }
@@ -638,7 +633,9 @@ class EmundusHelperFiles
                 return array();
             }
 
-        } else return array();
+        } else {
+        	return array();
+        }
     }
 
     /**

@@ -809,21 +809,20 @@ class EmundusControllerEvaluation extends JControllerLegacy
         exit;
     }
 
-    public function getformelem()
-    {
+    public function getformelem() {
         //Filters
         $jinput = JFactory::getApplication()->input;
         $code   = $jinput->getVar('code', null);
         $code = explode(',', $code);
         $m_evaluation = $this->getModel('Evaluation');
         $defaultElements = $m_evaluation->getEvaluationElementsName(0, 1, $code);
-        if(!empty($defaultElements)){
+        if (!empty($defaultElements)) {
             foreach ($defaultElements as $kde => $de) {
-                if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id')
-                    unset($defaultElements[$kde]);
+                if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id') {
+	                unset($defaultElements[$kde]);
+                }
             }
         }
-        //var_dump($defaultElements);die();
         $elements = EmundusHelperFiles::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
