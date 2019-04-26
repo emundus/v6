@@ -30,7 +30,9 @@ class EmundusControllerMessages extends JControllerLegacy {
     function __construct($config = array()) {
         require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-        parent::__construct($config);
+	    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+	    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+	    parent::__construct($config);
     }
 
     /**
@@ -736,14 +738,34 @@ class EmundusControllerMessages extends JControllerLegacy {
      */
     public function sendMessage() {
 
+	    $user = JFactory::getSession()->get('emundusUser');
         $m_messages = new EmundusModelMessages();
         $jinput = JFactory::getApplication()->input;
         $message = $jinput->post->getRaw('message', null);
         $receiver = $jinput->post->get('receiver', null);
         $message = str_replace("&nbsp;", "", $message);
 
-        echo json_encode((object)['status' => $m_messages->sendMessage($receiver, $message)]);
-        exit;
+        // Get receiver info
+	    $m_profile = new EmundusModelProfile();
+	    $receiver_profile = $m_profile->getProfileByApplicant($receiver);
+	    $email = JFactory::getUser($receiver)->email;
+
+        // Send notification email to the receiver
+	    $post = [
+		    'USER_NAME' => strtoupper($receiver_profile["lastname"]). ' '.ucfirst($receiver_profile["firstname"]),
+		    'SENDER' => strtoupper($user->lastname). ' '.ucfirst($user->firstname)
+	    ];
+	    
+	    // check if the receiver is online
+	    // IF he isn't connected we send them a notification email
+	    $m_user = new EmundusModelUsers();
+	    $online_users = $m_user->getOnlineUsers();
+		if (!in_array($receiver, $online_users)) {
+			$this->sendEmailNoFnum($email, 'notification_mail', $post);
+		}
+
+	    echo json_encode((object) ['status' => $m_messages->sendMessage($receiver, $message)]);
+	    exit;
     }
 
     /** update message list
