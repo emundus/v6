@@ -89,7 +89,7 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 </div>
                 <div class="panel-footer download" id="div-download">
                     <div class="row print">
-                        <a class="btn .btn-link" id="trombi_download" title="<?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?>" href="" target="_blank">
+                        <a class="btn btn-link" id="trombi_download" title="<?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?>" href="" target="_blank">
                             <span class="glyphicon glyphicon-download-alt"></span>
                             <span><?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?></span>
                         </a>

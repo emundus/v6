@@ -99,7 +99,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<?php else: ?>
 												<?php
 													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-													echo $formatted_date->format("M j, Y, H:i");
+													//echo $formatted_date->format("M j, Y, H:i");
+													echo JFactory::getDate($value->val)->format("M j, Y, H:i");
 												?>
 											<?php endif; ?>
 										</strong>

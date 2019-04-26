@@ -53,7 +53,7 @@ $db = JFactory::getDBO();
 $user = JFactory::getSession()->get('emundusUser');
 
 $query = $db->getquery('true');
-$user_to = $m_users->getUserById($this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0]);
+$user_to = $m_users->getUserById($this->data["jos_emundus_campaign_candidature___applicant_id_raw"]);
 
 
 // Get all uploaded files
@@ -139,7 +139,6 @@ function getDepartments($fnum, $profile) {
 
     $db->setQuery($query);
     try {
-
         return $db->loadColumn();
 
     } catch (Exception $e) {
@@ -204,276 +203,284 @@ function getProjectThematics($fnum) {
 }
 
 ?>
+<table class="em-pdf-group">
+    <tr>
+        <td>
+            <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;" width="252" height="90">
+        </td>
+    </tr>
 
-<button onclick="window.history.back();" >Retour</button>
-<div class="em-pdf-group">
-    <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
-         width="252" height="90">
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_RECAP'); ?><a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
-    </div>
+    <tr class="em-pdf-title-div">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_RECAP'); ?><a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
+        </td>
+    </tr>
 
     <?php if($user->id == $user_to[0]->user_id) :?>
 
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_campaign_candidature___fnum_raw"][0]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER'); ?></p>
-        </div>
+        <td class="em-pdf-element-label">
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER_DATE'); ?></p>
+        </td>
 
-        <div class="em-pdf-element-value">
-            <p><?php echo date("d/m/Y", strtotime($this->data["jos_emundus_campaign_candidature___date_submitted_raw"][0])); ?></p>
-        </div>
+        <td class="em-pdf-element-value">
+            <p><?php echo JFactory::getDate($this->data["jos_emundus_campaign_candidature___date_submitted_raw"])->format('d/m/Y'); ?></p>
+        </td>
 
-    </div>
-</div>
+    </tr>
+
+</table>
 
 
-<div class="em-pdf-group">
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR'); ?></h3>
-    </div>
+<table class="em-pdf-group">
+    <tr class="em-pdf-title-div" width="700px">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR'); ?></h3>
+        </td>
+    </tr>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
+        <td class="em-pdf-element-label">
             <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_TYPE'); ?></p>
-        </div>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p><?php echo $this->data["jos_emundus_setup_profiles___label_raw"][0]; ?></p>
-        </div>
+        </td>
 
-    </div>
-
+    </tr>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
         <?php if($user->id == $user_to[0]->user_id) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_CIVILITY'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo ($user_to[0]->gender == "M") ? "Monsieur" : "Madame"; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
 
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('LAST_NAME'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo ucfirst($user_to[0]->lastname); ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
 
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('FIRST_NAME'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo ucfirst($user_to[0]->firstname); ?></p>
-                </div>
-            </div>
+                </td>
+            </tr>
         <?php endif; ?>
     <?php else: ?>
 
         <?php $institution = $m_cifre->getUserInstitution($user_to[0]->user_id);?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_INSTITUTE_NAME'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $institution->nom_de_structure; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
     <?php if($user->id == $user_to[0]->user_id) :?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('EMAIL_FORM'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><a href="mailto:<?php echo $user_to[0]->email; ?>"><?php echo $user_to[0]->email; ?></a></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
         <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) : ?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('TELEPHONENUMBER'); ?></p>
-                </div>
-                <div class="em-pdf-element-value">
+                </td>
+                <td class="em-pdf-element-value">
                     <p><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php endif; ?>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007') : ?>
 
         <?php $laboratoire = $m_cifre->getUserLaboratory($author->id);
-            if (!empty($laboratoire)) :?>
-                <div class="em-pdf-element">
+        if (!empty($laboratoire)) :?>
+            <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
-                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_RESEARCH_UNIT'); ?></p>
-                    </div>
+                <td class="em-pdf-element-label">
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_RESEARCH_UNIT'); ?></p>
+                </td>
 
-                    <div class="em-pdf-element-value">
-                        <p><?php echo $laboratoire->name; ?></p>
-                    </div>
+                <td class="em-pdf-element-value">
+                    <p><?php echo $laboratoire->name; ?></p>
+                </td>
 
-                </div>
+            </tr>
         <?php endif; ?>
 
         <?php $ecoleDoctorale = $m_cifre->getDoctorale($laboratoire->id); ?>
 
         <?php if (!empty($ecoleDoctorale)) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_SCHOOL'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo $ecoleDoctorale; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php endif; ?>
 
     <?php if (!empty($this->data['jos_emundus_projet___limit_date_raw'][0])) : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DISPO_DATE'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_projet___limit_date_raw"][0]; ?></p>
-            </div>
+            <td class="em-pdf-element-value">
+                <p><?php echo JFactory::getDate($this->data["jos_emundus_projet___limit_date_raw"][0])->format('d/m/Y'); ?></p>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
-</div>
+</table>
 
-<div class="em-pdf-group breaker">
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></h3>
-    </div>
+<table class="em-pdf-group breaker">
+    <tr class="em-pdf-title-div">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></h3>
+        </td>
+    </tr>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_NAME'); ?></p>
-        </div>
+        <td class="em-pdf-element-label">
+            <p style="width: 50px;"><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_NAME'); ?></p>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p><?php echo $this->data["jos_emundus_projet___titre_raw"][0]; ?></p>
-        </div>
+        </td>
 
-    </div>
+    </tr>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') :?>
         <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label" style="width: 20%;">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_ENJEU'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value" style="width: 75%;">
                     <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php else :?>
 
         <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_TERRITOIRE'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php endif; ?>
 
 
     <?php if (!empty($this->data['jos_emundus_projet___question_raw'][0])) :?>
         <?php
-            if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006')
-                $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_FUTURE_DOC');
-            elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007')
-                $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_CHERCHEUR');
-            elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008')
-                $questionText = JText::_('COM_EMUNDUS_FABRIK_GRAND_DEFI');
+        if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006')
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_FUTURE_DOC');
+        elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007')
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_CHERCHEUR');
+        elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008')
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_GRAND_DEFI');
         ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo $questionText; ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_projet___question_raw"][0]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
 
     <?php if (!empty($this->data['jos_emundus_projet___methodologie_raw'][0])) : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_METHODOLOGIE'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
     <?php endif; ?>
 
@@ -481,114 +488,116 @@ function getProjectThematics($fnum) {
 
     <?php if (!empty($this->data['data_thematics___thematic_raw'][0])) : ?>
 
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_THEMES'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo !empty(getProjectThematics($fnum)) ? implode(', ', getProjectThematics($fnum)) : JText::_('COM_EMUNDUS_FABRIK_NO_THEMES'); ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
     <?php endif; ?>
     <?php if (!empty($this->data["em_discipline___disciplines_raw"])) : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DISCIPLINES'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', getProjectDisciplines($fnum)) : JText::_('COM_EMUNDUS_FABRIK_NO_DISCIPLINES'); ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
+        <td class="em-pdf-element-label">
             <p><?php echo JText::_('COM_EMUNDUS_FABRIK_REGIONS'); ?></p>
-        </div>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p>
                 <?php
-                    if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
-                        $departments = getDepartments($fnum,$this->data["jos_emundus_setup_profiles___id_raw"][0]);
-                        echo !empty($regions) ? implode(', ', array_unique($regions)) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
-                    }
-                    else {
-                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
-                    }
+                if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                    $regions = getRegions($fnum,$this->data["jos_emundus_setup_profiles___id_raw"][0]);
+                    echo !empty($regions) ? implode(', ', array_unique($regions)) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                }
+                else {
+                    echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
+                }
 
                 ?>
             </p>
-        </div>
+        </td>
 
-    </div>
+    </tr>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
+        <td class="em-pdf-element-label">
             <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></p>
-        </div>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p><?php
                 if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
                     $departments = getDepartments($fnum, $this->data["jos_emundus_setup_profiles___id_raw"][0]);
-                        echo !empty($departments) ? implode(', ', $departments, 'departement_nom') : JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
+                    echo !empty($departments) ? implode(', ', array_unique($departments)) : JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
                 }
                 else {
                     echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
                 }
                 ?>
             </p>
-        </div>
+        </td>
 
-    </div>
+    </tr>
 
-</div>
+</table>
 
-<div class="em-pdf-group breaker">
+<table class="em-pdf-group breaker">
 
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PARTENAIRES'); ?></h3>
-    </div>
+    <tr class="em-pdf-title-div">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PARTENAIRES'); ?></h3>
+        </td>
+    </tr>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1006') : ?>
 
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_recherche___futur_doctorant_yesno"]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
 
         <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___futur_doctorant_nom_raw"]) && !empty($this->data["jos_emundus_recherche___futur_doctorant_prenom_raw"])) : ?>
             <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user->id == $user_to[0]->user_id) :?>
-            <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
-                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC_NAME'); ?></p>
-                </div>
+                    <td class="em-pdf-element-label">
+                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC_NAME'); ?></p>
+                    </td>
 
-                <div class="em-pdf-element-value">
-                    <p><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?></p>
-                </div>
+                    <td class="em-pdf-element-value">
+                        <p><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?></p>
+                    </td>
 
-            </div>
+                </tr>
             <?php endif; ?>
         <?php endif; ?>
 
@@ -596,31 +605,31 @@ function getProjectThematics($fnum) {
     <?php endif; ?>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1007') : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
         <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"])) : ?>
             <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user->id == $user_to[0]->user_id) :?>
-                <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
+                    <td class="em-pdf-element-label">
                         <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE_NAME'); ?></p>
-                    </div>
+                    </td>
 
-                    <div class="em-pdf-element-value">
+                    <td class="em-pdf-element-value">
                         <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?></p>
-                    </div>
+                    </td>
 
-                </div>
+                </tr>
             <?php endif; ?>
         <?php endif; ?>
 
@@ -629,76 +638,77 @@ function getProjectThematics($fnum) {
 
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
         <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0 && $user->id == $user_to[0]->user_id) : ?>
 
             <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_type_raw"])) : ?>
-                <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
+                    <td class="em-pdf-element-label">
                         <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_TYPE'); ?></p>
-                    </div>
+                    </td>
 
-                    <div class="em-pdf-element-value">
+                    <td class="em-pdf-element-value">
                         <p><?php echo $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?></p>
-                    </div>
+                    </td>
 
-                </div>
+                </tr>
             <?php endif; ?>
 
             <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"])) : ?>
 
-                <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
+                    <td class="em-pdf-element-label">
                         <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_NAME'); ?></p>
-                    </div>
+                    </td>
 
-                    <div class="em-pdf-element-value">
+                    <td class="em-pdf-element-value">
                         <p><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?></p>
-                    </div>
+                    </td>
 
-                </div>
+                </tr>
             <?php endif; ?>
 
         <?php endif; ?>
 
     <?php endif; ?>
-</div>
-<div class="em-pdf-group breaker">
+</table>
+<table class="em-pdf-group breaker">
     <?php if (!empty($files)) : ?>
-        <div class="em-pdf-title-div">
-            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_ATTACHED_FILES'); ?></h3>
-        </div>
+        <tr class="em-pdf-title-div">
+            <td colspan="2">
+                <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_ATTACHED_FILES'); ?></h3>
+            </td>
+        </tr>
 
         <?php foreach ($files as $file) : ?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo $file["value"]; ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p>
                         <a target="_blank" href="<?php echo JURI::root().'images'.DS.'emundus'.DS.'files'.DS.$this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0].DS.$this->data["jos_emundus_cifre_links___document_raw"]; ?>"><?php echo $file["filename"]; ?></a>
                     </p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endforeach; ?>
 
     <?php endif; ?>
 
-</div>
-
+</table>

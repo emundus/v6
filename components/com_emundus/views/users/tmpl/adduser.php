@@ -238,13 +238,16 @@ if ($s == '')
                                         addUser = '';
 									if (user.exists) {
 										cardColor = 'alert-success';
-										cardInfo = '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span> <p><?php echo JTEXT::_('LDAP_USER_EXISTS'); ?></p>';
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_EXISTS'); ?>">'+
+                                                        '<div class="hide uid">'+username.value+'</div>'+
+                                                        '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span>'+
+                                                    '</div>';
                                     } else {
                                         cardColor = 'ldap-card';
                                         cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
-                                            '<div class="hide uid">'+username.value+'</div>'+
-                                            '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
-                                            '</div>';
+                                                        '<div class="hide uid">'+username.value+'</div>'+
+                                                        '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
+                                                    '</div>';
                                         addUser = '<a class="create-user" href="#" >';
                                     }
 
