@@ -423,6 +423,7 @@ echo $this->table->intro;
                     </table>
                 </div>
             </div>
+	        <?php print_r($this->hiddenFields);?>
         </form>
         <div>
             <select class="em-number-of-results">
@@ -440,7 +441,7 @@ echo $this->table->intro;
             </a>
         <?php endif; ?>
 
-        <?php print_r($this->hiddenFields);?>
+
     </div>
 </div>
 <script>
