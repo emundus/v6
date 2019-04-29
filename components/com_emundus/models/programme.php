@@ -395,7 +395,7 @@ class EmundusModelProgramme extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON '.$db->quoteName('p.id').' = '.$db->quoteName('f.programme_id'))
 			->leftJoin($db->quoteName('#__emundus_setup_thematiques', 'th').' ON '.$db->quoteName('th.id').' = '.$db->quoteName('p.programmes'))
 			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't').' ON '.$db->quoteName('t.code').' LIKE '.$db->quoteName('p.code'))
-			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('p.published').'= 1 AND '.$db->quoteName('t.date_start').' > NOW() AND '.$db->quoteName('t.published').'= 1 AND '.$db->quoteName('th.published').'= 1')
+			->where($db->quoteName('f.user_id').' = '.$user_id.' AND '.$db->quoteName('p.id').' NOT IN (SELECT p.id FROM `jos_emundus_setup_programmes` AS `p` LEFT JOIN `jos_emundus_setup_teaching_unity` AS `t` ON `t`.`code` LIKE `p`.`code` LEFT JOIN `jos_emundus_setup_campaigns` AS `c` ON `c`.`session_code` LIKE `t`.`session_code` LEFT JOIN `jos_emundus_campaign_candidature` AS `cc` ON `cc`.`campaign_id` LIKE `t`.`id` WHERE `cc`.`user_id` = '.$user_id.' AND `cc`.`published`= 1) AND '.$db->quoteName('p.published').'= 1 AND '.$db->quoteName('t.date_start').' > NOW() AND '.$db->quoteName('t.published').'= 1 AND '.$db->quoteName('th.published').'= 1')
 			->group($db->quoteName('p.id'));
 		$db->setQuery($query);
 
