@@ -5128,4 +5128,14 @@ $(document).ready(function() {
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
         }
     });
+
+
+    $(document).on('change', '#select_multiple_campaigns', function() {
+        if ($("#select_multiple_campaigns :selected").length > 0) {
+            $("#add-filter").prop("disabled", false);
+        }
+        else {
+            $("#add-filter").prop("disabled", true);
+        }
+    });
 });
