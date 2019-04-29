@@ -88,16 +88,31 @@ class plgUserEmundus extends JPlugin
 	 * @param boolean $success True if user was succesfully stored in the database.
 	 * @param string  $msg     Message.
 	 *
-	 * @return  void
+	 * @return  bool
 	 * @throws Exception
 	 * @since   1.6
 	 */
     public function onUserAfterSave($user, $isnew, $success, $msg) {
         // Initialise variables.
-	    $db             = JFactory::getDBO();
-	    $app            = JFactory::getApplication();
-        $jinput         = $app->input;
-        $details        = $jinput->post->get('jform', null, 'none');
+	    $db = JFactory::getDBO();
+	    $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $details = $jinput->post->get('jform', null, 'none');
+		$fabrik = $jinput->post->get('listid', null);
+
+        // If the details are empty, we are probably signing in via LDAP for the first time.
+        if ($isnew && empty($details) && empty($fabrik) && JPluginHelper::getPlugin('authentication','ldap')) {
+
+        	require_once (JPATH_BASE.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+	        $m_users = new EmundusModelusers();
+	        $return = $m_users->searchLDAP($user['username']);
+	        if (!empty($return->users[0])) {
+		        $params = JComponentHelper::getParams('com_emundus');
+		        $ldapElements = explode(',', $params->get('ldapElements'));
+		        $details['firstname'] = $return->users[0][$ldapElements[2]];
+		        $details['name'] = $return->users[0][$ldapElements[3]];
+	        }
+        }
 
         if (count($details) > 0) {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
