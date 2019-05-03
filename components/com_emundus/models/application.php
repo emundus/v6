@@ -122,27 +122,54 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadObjectList();
     }
 
-    function getUserAttachmentsByFnum($fnum) {
+    function getUserAttachmentsByFnum($fnum, $search = '') {
 
         if (EmundusHelperAccess::isExpert($this->_user->id)) {
-            $eMConfig = JComponentHelper::getParams('com_emundus');
-            $expert_document_id = $eMConfig->get('expert_document_id', '36');
-
+            if(isset($search) && !empty($search)) {
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $expert_document_id = $eMConfig->get('expert_document_id', '36');
             $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
             LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND (eu.attachment_id != '.$expert_document_id.')
-            ORDER BY esa.ordering, eu.timedate ASC';
+            WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+            AND (eu.attachment_id != '. $expert_document_id .') 
+            AND (esa.value like "%'. $search .'%"
+            OR esa.description like "%'. $search .'%")
+            ORDER BY esa.category ASC, eu.timedate DESC';
+            }
+            else{
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                FROM #__emundus_uploads AS eu
+                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+                AND (eu.attachment_id != ' . $expert_document_id . ') 
+                ORDER BY esa.category ASC, eu.timedate DESC';
+            }
         } else {
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
-            FROM #__emundus_uploads AS eu
-            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.fnum like '.$this->_db->Quote($fnum).'
-            ORDER BY esa.ordering, eu.timedate ASC';
-        }
+            if(isset($search) && !empty($search)) {
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                FROM #__emundus_uploads AS eu
+                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+                WHERE eu.fnum like '. $this->_db->Quote($fnum) .'
+                AND (esa.value like "%'. $search .'%"
+                OR esa.description like "%'. $search .'%")
+                ORDER BY esa.category ASC, eu.timedate DESC';
+            }
+            else{
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                FROM #__emundus_uploads AS eu
+                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . '
+                ORDER BY esa.category ASC, eu.timedate DESC';
+            }
 
+        }
+        //var_dump(isset($search) && !empty($search));
+        //echo $query;
         $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
     }
@@ -2798,5 +2825,19 @@ td {
         {
             throw $e;
         }
+    }
+    public function searchFilesByKeywords($fnum){
+        $db = $this->getDbo();
+        $jinput = JFactory::getApplication()->input;
+        $search = $jinput->get('search');
+
+        $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+            FROM #__emundus_uploads AS eu
+            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+            WHERE eu.fnum like '.$this->_db->Quote($fnum).'
+            AND $where LIKE '.$search;
+
+        $db->setQuery($query);
+        return $db->execute();
     }
 }

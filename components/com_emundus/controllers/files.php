@@ -3310,4 +3310,5 @@ class EmundusControllerFiles extends JControllerLegacy
 	    }
 
     }
+
 }

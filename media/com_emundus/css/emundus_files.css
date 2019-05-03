@@ -685,3 +685,101 @@ label[for="em-file_to_upload"]:hover {
 .em-nopadding {
     padding: 0 !important;
 }
+
+/* collapse in Files */
+.em-collapse-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.em-utilitize{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.em-select-all-files{
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    align-items: center;
+}
+.em-select-all-files>p {
+    margin-top: 0;
+}
+
+.em-searchbar{
+    width: 30%;
+    margin-top: 20px;
+    align-self: end;
+    margin-right: 5vh;;
+}
+.em-collapse{
+    margin-right: 5vh;
+    margin-top: 20px;
+
+}
+.fileCollapse{
+    background: #B2B2B2 !important;
+    color: black!important;
+    border: 1px solid black !important;
+    border-top-left-radius: 10px 10px !important;
+    border-top-right-radius: 10px 10px !important;
+    height: 60px;
+}
+.borderContentCollapse{
+    border-left: 1px solid black !important;
+    border-right: 1px solid black !important;
+    border-bottom: 1px solid black !important;
+    display: block;
+    height: auto;
+}
+.em-arrow-up{
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 5px 8.7px 5px;
+    border-color: transparent transparent #000000 transparent;
+    padding: 0 !important;
+}
+.em-arrow-up:hover{
+    color:black;
+    transform: scale(1.5) ;
+}
+.em-arrow-down{
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8.7px 5px 0 5px;
+    border-color: #000000 transparent transparent transparent;
+    padding: 0 !important;
+}
+.em-arrow-down:hover{
+    color:black;
+    transform: scale(1.5) ;
+}
+.em-title-collapse{
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+.em-tr-collapse{
+    background: white !important;
+    border-bottom: 2px solid #B2B2B2;
+}
+.em-container-loader{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    height: 100vh;
+    position: relative;
+    top: 20%;
+    opacity: 0.5;
+}
+.em-button{
+    cursor: pointer;
+}
+
