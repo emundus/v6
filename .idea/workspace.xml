@@ -61,6 +61,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" afterDir="false" />
 =======
 <<<<<<< HEAD
@@ -100,6 +101,14 @@
       <change beforePath="$PROJECT_DIR$/media/com_emundus/css/emundus_files.css" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_emundus/css/emundus_files.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" beforeDir="false" afterPath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" afterDir="false" />
 >>>>>>> EmailInfo2
+=======
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" afterDir="false" />
+>>>>>>> Mod_Application_State2
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -136,6 +145,7 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
@@ -221,11 +231,29 @@
               <folding>
                 <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+=======
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="696" column="65" lean-forward="true" selection-start-line="696" selection-start-column="65" selection-end-line="696" selection-end-column="65" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="544">
+              <caret line="142" column="94" selection-start-line="142" selection-start-column="94" selection-end-line="142" selection-end-column="94" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+>>>>>>> Mod_Application_State2
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
           <provider selected="true" editor-type-id="text-editor">
@@ -431,11 +459,22 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="272">
               <caret line="791" column="1" lean-forward="true" selection-start-line="791" selection-start-column="1" selection-end-line="791" selection-end-column="1" />
+=======
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="425">
+              <caret line="135" column="57" selection-start-line="135" selection-start-column="57" selection-end-line="135" selection-end-column="57" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+              </folding>
+>>>>>>> Mod_Application_State2
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+<<<<<<< HEAD
         <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="565">
@@ -443,6 +482,14 @@
               <folding>
 >>>>>>> CheckboxFiles
                 <element signature="n#style#0;n#li#0;n#!!top" expanded="true" />
+=======
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="391">
+              <caret line="124" column="18" lean-forward="true" selection-start-line="115" selection-start-column="12" selection-end-line="124" selection-end-column="18" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+>>>>>>> Mod_Application_State2
               </folding>
             </state>
           </provider>
@@ -493,6 +540,7 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+<<<<<<< HEAD
         <entry file="file://$PROJECT_DIR$/components/com_emundus/views/message/tmpl/default.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-1445">
@@ -504,6 +552,43 @@
                 <element signature="n#style#0;n#a#0;n#span#0;n#div#2;n#div#6;n#div#0;n#form#0;n#!!top" expanded="true" />
               </folding>
 >>>>>>> EmailInfo2
+=======
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="170">
+              <caret line="126" column="37" lean-forward="true" selection-start-line="126" selection-start-column="37" selection-end-line="126" selection-end-column="37" />
+              <folding>
+                <element signature="n#style#0;n#section#0;n#div#2;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="298">
+              <caret line="34" column="24" selection-start-line="34" selection-start-column="24" selection-end-line="34" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="31" column="25" selection-start-line="31" selection-start-column="25" selection-end-line="31" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="191">
+              <caret line="55" lean-forward="true" selection-start-line="55" selection-end-line="55" selection-end-column="19" />
+>>>>>>> Mod_Application_State2
             </state>
           </provider>
         </entry>
@@ -515,13 +600,36 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+      <find>getfile</find>
+      <find>groups</find>
+      <find>getSt</find>
+      <find>getFnum</find>
+      <find>img</find>
+      <find>getFormsPD</find>
+      <find>buildMe</find>
+      <find>getAttachmentsProgress</find>
+      <find>getForms</find>
+      <find>pdf</find>
+      <find>getFormsp</find>
+      <find>application_</find>
+      <find>getValue</find>
+      <find>phpOffi</find>
+      <find>exporton</find>
+      <find>getCurrentCampaignInfoByApplicant</find>
+      <find>init</find>
+      <find>getCurrentProfile</find>
+      <find>geth</find>
+>>>>>>> Mod_Application_State2
       <find>insert(</find>
 >>>>>>> EmailInfo2
       <find>saveE</find>
       <find>create_fil</find>
       <find>generate_p</find>
       <find>getA</find>
+<<<<<<< HEAD
 <<<<<<< HEAD
       <find>JPATH_LIBRARIES</find>
       <find>item</find>
@@ -646,7 +754,18 @@
       <find>$mail_body</find>
       <find>tinyMCE.execCommand('mceToggleEditor', false, 'mail_body');return false;</find>
 >>>>>>> EmailInfo2
+=======
+      <find>php echo</find>
+      <find>generated</find>
+      <find>32</find>
+      <find>getState</find>
+      <find>State</find>
+      <find>$applications</find>
+>>>>>>> Mod_Application_State2
     </findStrings>
+    <replaceStrings>
+      <replace>=</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
@@ -662,8 +781,12 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/en-GB/en-GB.plg_fabrik_form_emundusreferentletter.sys.ini" />
+>>>>>>> Mod_Application_State2
         <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/fr-FR/fr-FR.plg_fabrik_form_emundusreferentletter.sys.ini" />
         <option value="$PROJECT_DIR$/components/com_emundus/helpers/menu.php" />
 >>>>>>> DropdownDocuments
@@ -708,10 +831,20 @@
         <option value="$PROJECT_DIR$/modules/mod_emundus_user_dropdown/tmpl/mobile.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_user_dropdown/tmpl/nostyle.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php" />
+<<<<<<< HEAD
+=======
+        <option value="$PROJECT_DIR$/components/com_emundus/models/application.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/pse.php" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/helper.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini" />
+>>>>>>> Mod_Application_State2
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
 <<<<<<< HEAD
@@ -773,6 +906,8 @@
         <option value="$PROJECT_DIR$/components/com_emundus/views/message/tmpl/default.php" />
         <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
 >>>>>>> EmailInfo2
+=======
+>>>>>>> Mod_Application_State2
       </list>
     </option>
   </component>
@@ -834,6 +969,7 @@
       <path value="$PROJECT_DIR$/libraries/vendor/brumann/polyfill-unserialize" />
     </include_path>
   </component>
+<<<<<<< HEAD
   <component name="ProjectFrameBounds" extendedState="6">
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -865,6 +1001,11 @@
     <option name="width" value="1920" />
     <option name="height" value="1080" />
 >>>>>>> EmailInfo2
+=======
+  <component name="ProjectFrameBounds">
+    <option name="width" value="1920" />
+    <option name="height" value="1080" />
+>>>>>>> Mod_Application_State2
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -901,10 +1042,14 @@
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Mod_Application_State2
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
               <item name="components" type="462c0819:PsiDirectoryNode" />
@@ -914,19 +1059,33 @@
 =======
 >>>>>>> CheckboxFiles
               <item name="cache" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Mod_Application_State2
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 9778091a7b... Change style and the way to use the selection of files
 =======
 >>>>>>> CheckboxFiles
               <item name="components" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_applications" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Mod_Application_State2
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+<<<<<<< HEAD
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
             </path>
@@ -935,11 +1094,16 @@
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_applications" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Mod_Application_State2
               <item name="language" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+<<<<<<< HEAD
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
               <item name="language" type="462c0819:PsiDirectoryNode" />
@@ -950,10 +1114,17 @@
 >>>>>>> DropdownDocuments
 =======
 >>>>>>> CheckboxFiles
+=======
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_applications" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+              <item name="en-GB" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Mod_Application_State2
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+<<<<<<< HEAD
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
 <<<<<<< HEAD
@@ -978,10 +1149,17 @@
 =======
               <item name="models" type="462c0819:PsiDirectoryNode" />
 >>>>>>> DropdownDocuments
+=======
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_applications" type="462c0819:PsiDirectoryNode" />
+              <item name="language" type="462c0819:PsiDirectoryNode" />
+              <item name="fr-FR" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Mod_Application_State2
             </path>
             <path>
               <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+<<<<<<< HEAD
               <item name="components" type="462c0819:PsiDirectoryNode" />
 <<<<<<< HEAD
               <item name="com_users" type="462c0819:PsiDirectoryNode" />
@@ -1023,6 +1201,10 @@
 =======
               <item name="views" type="462c0819:PsiDirectoryNode" />
               <item name="evaluation" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_emundus_applications" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Mod_Application_State2
               <item name="tmpl" type="462c0819:PsiDirectoryNode" />
 >>>>>>> 9778091a7b... Change style and the way to use the selection of files
 >>>>>>> DropdownDocuments
@@ -1286,7 +1468,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="PHP Web Page.localhost">
+  <component name="RunManager" selected="JavaScript Debug.nanomed.php">
     <configuration default="true" type="AppEnginePhpConfigurationType" factoryName="App Engine for PHP">
       <method />
     </configuration>
@@ -1298,6 +1480,9 @@
       <option name="USER_CFG_CLASS" />
       <option name="CONTEXT_PROVIDER" />
       <method />
+    </configuration>
+    <configuration name="nanomed.php" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/emundusProdv6/modules/mod_emundus_applications/tmpl/nanomed.php" useBuiltInWebServerPort="true">
+      <method v="2" />
     </configuration>
     <configuration name="syncs.php" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://sorbonnev3.local/components/com_jcrm/models/syncs.php">
       <RunnerSettings RunnerId="JavascriptDebugRunner" />
@@ -1334,6 +1519,7 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="JavaScript Debug.nanomed.php" />
       <item itemvalue="JavaScript Debug.syncs.php" />
       <item itemvalue="PHP Script.syncs.php" />
       <item itemvalue="PHP Script.view.html.php" />
@@ -1341,6 +1527,7 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.nanomed.php" />
         <item itemvalue="PHP Script.view.html.php" />
         <item itemvalue="PHP Script.syncs.php" />
         <item itemvalue="JavaScript Debug.syncs.php" />
@@ -1472,6 +1659,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="402053000" />
 =======
 <<<<<<< HEAD
@@ -1542,6 +1730,20 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.31903484" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.5474373" />
+=======
+    <option name="totallyTimeSpent" value="278278000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="1536" height="864" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1910569" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.31955308" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.5469169" />
+>>>>>>> Mod_Application_State2
       <window_info anchor="bottom" id="Debug" order="3" weight="0.29008746" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1560,7 +1762,11 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+<<<<<<< HEAD
       <window_info active="true" anchor="right" id="Database" order="3" visible="true" weight="0.12281879" />
+=======
+      <window_info anchor="right" id="Database" order="3" weight="0.020325202" />
+>>>>>>> Mod_Application_State2
     </layout>
     <layout-to-restore>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1602951" />
@@ -1683,6 +1889,7 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2591,6 +2798,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/files.php">
+=======
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-SOPRO_assign_to_groups.php">
+>>>>>>> Mod_Application_State2
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="32963">
           <caret line="1949" column="41" selection-start-line="1949" selection-start-column="41" selection-end-line="1949" selection-end-column="41" />
@@ -2642,6 +2852,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/configuration.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -2650,6 +2861,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/libraries/composer.json">
+=======
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundusflow/mod_emundusflow.php">
+>>>>>>> Mod_Application_State2
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" selection-start-line="3" selection-end-line="3" />
@@ -2724,8 +2938,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="1717">
           <caret line="112" column="52" selection-start-line="112" selection-start-column="52" selection-end-line="112" selection-end-column="52" />
+=======
+        <state relative-caret-position="851">
+          <caret line="3201" selection-start-line="3201" selection-end-line="3201" />
+>>>>>>> Mod_Application_State2
         </state>
       </provider>
     </entry>
@@ -2753,6 +2972,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/form.php">
 >>>>>>> 9778091a7b... Change style and the way to use the selection of files
       <provider selected="true" editor-type-id="text-editor">
@@ -2762,6 +2982,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/emundus.php">
+=======
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-confirm_post.php">
+>>>>>>> Mod_Application_State2
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="629">
           <caret line="150" column="32" selection-start-line="150" selection-start-column="32" selection-end-line="150" selection-end-column="32" />
@@ -2839,6 +3062,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/application/tmpl/form.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -2847,12 +3071,16 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/menuactions.php">
+=======
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/renew_application/tmpl/default.php">
+>>>>>>> Mod_Application_State2
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="174">
           <caret line="102" column="6" selection-start-line="102" selection-start-column="6" selection-end-line="102" selection-end-column="6" />
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3723">
@@ -2960,11 +3188,52 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="12461">
           <caret line="733" column="16" selection-start-line="733" selection-start-column="16" selection-end-line="733" selection-end-column="16" />
+=======
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/hesam.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="502">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="22" column="37" selection-start-line="22" selection-start-column="37" selection-end-line="22" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_user.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1463">
+          <caret line="1153" column="103" selection-start-line="1153" selection-start-column="71" selection-end-line="1153" selection-end-column="103" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/messages.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="436">
+          <caret line="215" column="54" selection-start-line="215" selection-start-column="36" selection-end-line="215" selection-end-column="54" />
+>>>>>>> Mod_Application_State2
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
 <<<<<<< HEAD
         <state relative-caret-position="294">
           <caret line="1211" column="60" selection-start-line="1211" selection-start-column="60" selection-end-line="1211" selection-end-column="60" />
@@ -2973,6 +3242,10 @@
           <caret line="1442" lean-forward="true" selection-start-line="1442" selection-end-line="1442" />
 >>>>>>> 9778091a7b... Change style and the way to use the selection of files
 >>>>>>> DropdownDocuments
+=======
+        <state relative-caret-position="87">
+          <caret line="4546" column="88" selection-start-line="4546" selection-start-column="88" selection-end-line="4546" selection-end-column="88" />
+>>>>>>> Mod_Application_State2
           <folding>
             <element signature="e#351#392#0#PHP" expanded="true" />
             <element signature="n#style#0;n#button#0;n#div#0;n#div#0;n#!!top" expanded="true" />
@@ -3072,6 +3345,7 @@
       </provider>
     </entry>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/data.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
@@ -3083,6 +3357,123 @@
         <state relative-caret-position="272">
           <caret line="791" column="1" lean-forward="true" selection-start-line="791" selection-start-column="1" selection-end-line="791" selection-end-column="1" />
 >>>>>>> CheckboxFiles
+=======
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/messages.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6290">
+          <caret line="378" column="13" selection-start-line="378" selection-start-column="13" selection-end-line="378" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/emundus.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1122" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/pse.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="37" column="110" selection-start-line="37" selection-start-column="110" selection-end-line="37" selection-end-column="110" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2754" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="627" column="28" selection-start-line="627" selection-start-column="23" selection-end-line="627" selection-end-column="28" />
+          <folding>
+            <element signature="n#style#0;n#h2#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#p#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/helper.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="65" column="60" selection-start-line="65" selection-start-column="60" selection-end-line="65" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="69">
+          <caret line="126" column="26" selection-start-line="126" selection-start-column="26" selection-end-line="126" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="55" lean-forward="true" selection-start-line="55" selection-end-line="55" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="696" column="65" lean-forward="true" selection-start-line="696" selection-start-column="65" selection-end-line="696" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="34" column="24" selection-start-line="34" selection-start-column="24" selection-end-line="34" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="31" column="25" selection-start-line="31" selection-start-column="25" selection-end-line="31" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="135" column="57" selection-start-line="135" selection-start-column="57" selection-end-line="135" selection-end-column="57" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="142" column="94" selection-start-line="142" selection-start-column="94" selection-end-line="142" selection-end-column="94" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="124" column="18" lean-forward="true" selection-start-line="115" selection-start-column="12" selection-end-line="124" selection-end-column="18" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="126" column="37" lean-forward="true" selection-start-line="126" selection-start-column="37" selection-end-line="126" selection-end-column="37" />
+          <folding>
+            <element signature="n#style#0;n#section#0;n#div#2;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+>>>>>>> Mod_Application_State2
         </state>
       </provider>
     </entry>
