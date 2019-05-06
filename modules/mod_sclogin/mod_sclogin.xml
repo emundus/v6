@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="1.6" type="module" method="upgrade" client="site">
     <name>SCLogin</name>
-    <version>4.3.0</version>
-    <creationDate>2015/03/19</creationDate>
+    <version>8.0.5</version>
+    <creationDate>2019/01/14</creationDate>
     <author>SourceCoast | www.sourcecoast.com</author>
     <authorEmail>support@sourcecoast.com</authorEmail>
     <authorUrl>http://www.sourcecoast.com</authorUrl>
-    <copyright>Copyright (C) 2009-2014 SourceCoast. All rights reserved.</copyright>
+    <copyright>Copyright (C) 2009-2019 SourceCoast. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <description>
         <![CDATA[Enhanced login module with flexible styles and customizations for Facebook, Google+, Twitter, LinkedIn, Amazon, Github, Instagram, Meetup, VK.com and Windows Live Authentication when combined with <a href='http://www.sourcecoast.com/joomla-facebook/' target='_blank'>JFBConnect</a>.<br/><br/>Please visit <a href='http://www.sourcecoast.com/sclogin/features/' target='_blank'>SourceCoast</a> for more information or <a href='http://www.sourcecoast.com/forums' target='_blank'>our forums</a> for support.<br/><br/>If you use SCLogin, please post a rating and a review at the Joomla! Extensions Directory: <a href='http://extensions.joomla.org/extensions/access-a-security/site-access/authentication/24054' target='_blank'>SCLogin Enhanced Login</a>]]></description>
@@ -43,6 +43,7 @@
     </media>
     <languages folder="translations">
         <language tag="ar-AA">ar-AA.mod_sclogin.ini</language>
+        <language tag="bg-BG">bg-BG.mod_sclogin.ini</language>
         <language tag="ca-ES">ca-ES.mod_sclogin.ini</language>
         <language tag="cs-CZ">cs-CZ.mod_sclogin.ini</language>
         <language tag="da-DK">da-DK.mod_sclogin.ini</language>
@@ -50,6 +51,7 @@
         <language tag="el-GR">el-GR.mod_sclogin.ini</language>
         <language tag="en-GB">en-GB.mod_sclogin.ini</language>
         <language tag="es-ES">es-ES.mod_sclogin.ini</language>
+        <language tag="fa-IR">fa-IR.mod_sclogin.ini</language>
         <language tag="fr-FR">fr-FR.mod_sclogin.ini</language>
         <language tag="he-IL">he-IL.mod_sclogin.ini</language>
         <language tag="hu-HU">hu-HU.mod_sclogin.ini</language>
@@ -63,6 +65,8 @@
         <language tag="pt-PT">pt-PT.mod_sclogin.ini</language>
         <language tag="ro-RO">ro-RO.mod_sclogin.ini</language>
         <language tag="ru-RU">ru-RU.mod_sclogin.ini</language>
+        <language tag="sk-SK">sk-SK.mod_sclogin.ini</language>
+        <language tag="sl-SI">sl-SI.mod_sclogin.ini</language>
         <language tag="sr-YU">sr-YU.mod_sclogin.ini</language>
         <language tag="sv-SE">sv-SE.mod_sclogin.ini</language>
         <language tag="th-TH">th-TH.mod_sclogin.ini</language>
@@ -158,6 +162,15 @@
                     <option value="2">MOD_SCLOGIN_SHOW_REMEMBER_ME_VALUE_HIDE_UNCHECKED</option>
                     <option value="3">MOD_SCLOGIN_SHOW_REMEMBER_ME_VALUE_HIDE_CHECKED</option>
                 </field>
+                <field name="autoFocusUsername"
+                       type="radio"
+                       class="btn-group"
+                       default="0"
+                       label="MOD_SCLOGIN_LOGIN_AUTOFOCUS_USERNAME_LABEL"
+                       description="MOD_SCLOGIN_LOGIN_AUTOFOCUS_USERNAME_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
                 <field name="register_type"
                        type="list"
                        default="joomla"
@@ -167,6 +180,7 @@
                     <option value="easysocial">EasySocial</option>
                     <option value="jomsocial">JomSocial</option>
                     <option value="joomla">Joomla</option>
+                    <option value="k2">K2</option>
                     <option value="kunena">Kunena</option>
                     <option value="virtuemart">Virtuemart</option>
                     <option value="custom">MOD_SCLOGIN_LOGIN_REG_COMPONENT_OPTION_CUSTOM</option>
@@ -229,6 +243,15 @@
                     <option value="0">MOD_SCLOGIN_LOGOUT_GREETING_VALUE_USERNAME</option>
                     <option value="1">MOD_SCLOGIN_LOGOUT_GREETING_VALUE_REALNAME</option>
                     <option value="2">MOD_SCLOGIN_LOGOUT_GREETING_VALUE_NONE</option>
+                </field>
+                <field name="showProfileLink"
+                       type="radio"
+                       class="btn-group"
+                       default="0"
+                       label="MOD_SCLOGIN_LOGOUT_SHOW_PROFILE_LINK_LABEL"
+                       description="MOD_SCLOGIN_LOGOUT_SHOW_PROFILE_LINK_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
                 <field name="showUserMenu"
                        type="menu"

@@ -152,11 +152,12 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$data = $db->loadAssoc();
 			} catch (Exception $e) {
+				JLog::add('Error getting user data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 
 
-			$query->clear()->select([$db->quoteName('cc.fnum','jos_emundus_campaign_candidature___fnum'), 'SUM('.$db->quoteName('cc.status+2').') AS jos_emundus_campaign_candidature___status', $db->quoteName('c.training','jos_emundus_campaign_candidature___level'), $db->quoteName('c.year','jos_emundus_campaign_candidature___year')])
+			$query->clear()->select([$db->quoteName('cc.fnum','jos_emundus_campaign_candidature___fnum'), 'SUM('.$db->quoteName('cc.status').'+2) AS jos_emundus_campaign_candidature___status', $db->quoteName('c.training','jos_emundus_campaign_candidature___level'), $db->quoteName('c.year','jos_emundus_campaign_candidature___year')])
 				->from($db->quoteName('#__emundus_campaign_candidature','cc'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
 				->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
@@ -165,6 +166,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$data = array_merge($data, $db->loadAssoc());
 			} catch (Exception $e) {
+				JLog::add('Error getting file data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 
@@ -190,6 +192,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$tableuser = $db->loadObjectList();
 			} catch(Exception $e) {
+				JLog::add('Error getting Fabrik data in query: '.$query, JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 			
@@ -203,6 +206,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				$db->setQuery($query);
 				$tableuser[] = $db->loadObject();
 			} catch(Exception $e) {
+				JLog::add('Error getting Fabrik data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				throw new $e->getMessage();
 			}
 			
@@ -215,8 +219,12 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
 				$db->setQuery($query);
-				$groups = $db->loadObjectList();
 
+				try {
+					$groups = $db->loadObjectList();
+				} catch (Exception $e) {
+					JLog::add('Error getting Fabrik group data in query: '.$query, JLog::ERROR, 'com_emundus');
+				}
 				foreach ($groups as $group) {
 					
 					$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
@@ -225,7 +233,11 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
                                       fe.group_id = "'.$group->group_id.'"
                                 ORDER BY fe.ordering';
 					$db->setQuery($query);
-					$elements = $db->loadObjectList();
+					try {
+						$elements = $db->loadObjectList();
+					} catch (Exception $e) {
+						JLog::add('Error getting Fabrik element data in query: '.$query, JLog::ERROR, 'com_emundus');
+					}
 
 					if (count($elements) > 0) {
 
@@ -234,19 +246,8 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 							foreach ($elements as &$element) {
 								if (!empty($element->label) && $element->label != ' ') {
 
-									if ($element->plugin == 'date' && $element->content > 0) {
-										$date_params = json_decode($element->params);
-										$elt = date($date_params->date_form_format, strtotime($element->content));
-									}
-
-									elseif ($element->plugin == 'birthday' && $element->content > 0) {
-										$format = 'Y-n-j';
-										$d = DateTime::createFromFormat($format, $element->content);
-										if ($d && $d->format($format) == $element->content) {
-											$elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-										} else {
-											$elt = $element->content;
-										}
+									if (($element->plugin == 'date' || $element->plugin == 'birthday') && $element->content > 0) {
+										$elt = date('Y-m-d H:i:s', strtotime($element->content));
 									}
 
 									elseif ($element->plugin == 'checkbox') {
@@ -265,7 +266,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 								}
 							}
 							
-						} elseif ($group->repeated > 0 || $group->repeated_1 > 0){
+						} elseif ($group->repeated > 0 || $group->repeated_1 > 0) {
 
 							$t_elt = array();
 							foreach ($elements as &$element) {
@@ -289,7 +290,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 							try {
 								$repeated_elements = $db->loadObjectList();
 							} catch (Exception $e) {
-								JLog::Add('ERROR getting repeated elements in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+								JLog::Add('ERROR getting repeated elements at query: '.$query, JLog::ERROR, 'com_emundus');
 							}
 
 							unset($t_elt);
@@ -305,18 +306,8 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 										if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-											if ($elements[$j]->plugin == 'date') {
-												$elt = date($params->date_form_format, strtotime($r_elt));
-											}
-
-											elseif ($elements[$j]->plugin == 'birthday' && $r_elt>0) {
-												$format = 'Y-n-j';
-												$d = DateTime::createFromFormat($format, $r_elt);
-												if ($d && $d->format($format) == $r_elt) {
-													$elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-												} else {
-													$elt = $r_elt;
-												}
+											if ($elements[$j]->plugin == 'date' || ($elements[$j]->plugin == 'birthday' && $r_elt > 0)) {
+												$elt = date('Y-m-d H:i:s', strtotime($r_elt));
 											}
 
 											elseif ($elements[$j]->plugin == 'checkbox') {
@@ -351,28 +342,22 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 									$element->content = @$res[1];
 									$element->content_id = @$res[0];
 
-									if ($element->plugin == 'date' && $element->content > 0) {
-										$date_params = json_decode($element->params);
-										$elt = date($date_params->date_form_format, strtotime($element->content));
+									if (($element->plugin == 'date' || $element->plugin == 'birthday') && $element->content > 0) {
+										$elt = date('Y-m-d H:i:s', strtotime($element->content));
 									}
-									elseif ($element->plugin == 'birthday' && $element->content > 0) {
-										$format = 'Y-n-j';
-										$d = DateTime::createFromFormat($format, $element->content);
-										if ($d && $d->format($format) == $element->content) {
-											$elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-										} else {
-											$elt = $element->content;
-										}
-									}
+
 									elseif ($element->plugin == 'checkbox') {
 										$elt = implode(", ", json_decode (@$element->content));
 									}
+
 									elseif ($element->plugin == 'fileupload') {
 										continue;
 									}
+
 									else {
 										$elt = $element->content;
 									}
+									
 									unset($params);
 									$data[$itemt->db_table_name.'___'.$element->name] = $elt;
 								}
@@ -385,10 +370,16 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 		if (!empty($data)) {
 
-			$response = $http->setOption('Authorization', 'Basic '.base64_encode($api_user.':'.$api_token))->post($api_url.$api_route, json_encode($data));
+			$response = $http->post($api_url.$api_route, json_encode($data), ['Authorization' => 'Basic '.base64_encode($api_user.':'.$api_token), 'Content-Type' => 'application/json']);
+
+			if ($response->code === 200) {
+				return true;
+			} else {
+				JLog::add('Error ('.$response->code.') from client API : '.$response->body);
+				return false;
+			}
 
 		}
-
 		return true;
 	}
 

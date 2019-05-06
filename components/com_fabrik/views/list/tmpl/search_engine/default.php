@@ -34,6 +34,15 @@ $pageClass = $this->params->get('pageclass_sfx', '');
 
 $user = JFactory::getSession()->get('emundusUser');
 
+$jinput = JFactory::getApplication()->input;
+// GET REGIONS FROM HEADER
+$headRegions = $jinput->post->getVal('regions');
+$selectedHeadRegions = explode(',', $headRegions);
+
+// GET DEPARTMENTS FROM HEADER
+$headDepartments = $jinput->post->getVal('departments');
+$selectedHeadDepartments = explode(",", $headDepartments);
+
 if ($pageClass !== '') :
     echo '<div class="' . $pageClass . '">';
 endif;
@@ -55,14 +64,107 @@ if ($this->params->get('show_page_heading')) :?>
     </div>
 <?php endif;
 
-// Intro outside of form to allow for other lists/forms to be injected.
-echo $this->table->intro;
+////// PAGE FUNCTIONS
 
-// GETS DEPARTMENTS
+// GET ALL REGIONS
+function getAllRegions() {
+    $db = JFactory::getDBO();
+    $query = $db->getquery('true');
+
+    $query
+        ->select("*")
+        ->from($db->qn('data_regions'));
+
+    $db->setQuery($query);
+    return $db->loadObjectList();
+}
+
+// GET ALL DEPATMENTS
+function getAllDepartments() {
+    $db = JFactory::getDBO();
+    $query = $db->getquery('true');
+
+    $query
+        ->select("*")
+        ->from($db->qn('data_departements'));
+
+    $db->setQuery($query);
+    return $db->loadObjectList();
+}
+
+// GET SELECTED REGIONS
+function getSelectedRegions($headRegions) {
+    if(!empty($headRegions)) {
+        $db = JFactory::getDBO();
+        $query = $db->getquery('true');
+        $query2 = $db->getquery('true');
+
+
+        $query2
+            ->select("cc2.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc2'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er2') . ' ON ' . $db->qn('er2.fnum') . ' = ' . $db->qn('cc2.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_744_repeat', 'err744') . ' ON ' . $db->qn('err744.parent_id') . ' = ' . $db->qn('er2.id'))
+            ->where($db->qn('err744.region') . ' IN (' . $headRegions . ')');
+
+        $query
+            ->select("cc1.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc1'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er1') . ' ON ' . $db->qn('er1.fnum') . ' = ' . $db->qn('cc1.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat', 'err630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
+            ->where($db->qn('err630.region') . ' IN (' . $headRegions . ')')
+            ->union($query2);
+
+        $db->setQuery($query);
+
+        return $db->loadColumn();
+    }
+    else {
+        return array();
+    }
+}
+
+
+// GET SELECTED REGIONS
+function getSelectedDepartments($headDepartments) {
+    if(!empty($headDepartments)) {
+        $db = JFactory::getDBO();
+        $query = $db->getquery('true');
+        $query2 = $db->getquery('true');
+
+
+        $query2
+            ->select("cc2.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc2'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er2') . ' ON ' . $db->qn('er2.fnum') . ' = ' . $db->qn('cc2.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_744_repeat', 'err744') . ' ON ' . $db->qn('err744.parent_id') . ' = ' . $db->qn('er2.id'))
+            ->join('INNER', $db->qn('#__emundus_recherche_744_repeat_repeat_department', 'errd744') . ' ON ' . $db->qn('errd744.parent_id') . ' = ' . $db->qn('err744.id'))
+            ->where($db->qn('errd744.department') . ' IN (' . $headDepartments . ')');
+
+        $query
+            ->select("cc1.id")
+            ->from($db->qn('#__emundus_campaign_candidature', 'cc1'))
+            ->join('INNER', $db->qn('#__emundus_recherche', 'er1') . ' ON ' . $db->qn('er1.fnum') . ' = ' . $db->qn('cc1.fnum'))
+            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat', 'err630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
+            ->join('INNER', $db->qn('#__emundus_recherche_630_repeat_repeat_department', 'errd630') . ' ON ' . $db->qn('errd630.parent_id') . ' = ' . $db->qn('er1.id'))
+            ->where($db->qn('errd630.department') . ' IN (' . $headDepartments . ')')
+            ->union($query2);
+
+        $db->setQuery($query);
+        return $db->loadColumn();
+    }
+    else {
+        return array();
+    }
+}
+
+
+
+// GETS DEPARTMENTS FOR ACTEUR PUBLIQUE
 function getActeurDepartments($fnum) {
     $db = JFactory::getDBO();
 
-    
+
     $query = $db->getquery('true');
 
     $query
@@ -76,7 +178,7 @@ function getActeurDepartments($fnum) {
     $db->setQuery($query);
     try {
 
-        return $db->loadAssocList();
+        return $db->loadObjectList();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -85,6 +187,39 @@ function getActeurDepartments($fnum) {
         die();
     }
 }
+
+
+// GETS DEPARTMENTS FOR Futur Doc and Chercheurs
+function getOtherDepartments($fnum) {
+    $db = JFactory::getDBO();
+
+
+    $query = $db->getquery('true');
+
+    $query
+        ->select($db->quoteName('dd.departement_nom'))
+        ->from($db->quoteName('#__emundus_recherche', 'u'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+        ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+
+    $db->setQuery($query);
+    try {
+
+        return $db->loadColumn();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+// Intro outside of form to allow for other lists/forms to be injected.
+echo $this->table->intro;
+
 ?>
 
 <div class="main">
@@ -102,28 +237,36 @@ function getActeurDepartments($fnum) {
                     echo $c;
                 }
 
+                $getSelectedRegions = getSelectedRegions($headRegions);
+                $getSelectedDepartments = getSelectedDepartments($headDepartments);
 
                 $data = array();
                 $i = 0;
                 if (!empty($this->rows[0])) {
                     foreach ($this->rows[0] as $k => $v) {
-                        foreach ($this->headings as $key => $val) {
-                            $raw = $key.'_raw';
-                            if (array_key_exists($key, $v->data)) {
-                                if (strcasecmp($v->data->$key, "1") == 0)
-                                    $data[$i][$val] = $v->data->$key;
-                                else {
-                                    $data[$i][$key] = $v->data->$key;
-                                    if (array_key_exists($raw, $v->data)) {
-                                        $data[$i][$raw] = $v->data->$raw;
+                        if ((in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) && $getSelectedRegions) || (in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments) && $getSelectedDepartments) || (!$getSelectedDepartments && !$getSelectedRegions)) {
+                                foreach ($this->headings as $key => $val) {
+                                    $raw = $key.'_raw';
+                                    if (array_key_exists($key, $v->data)) {
+                                        if (strcasecmp($v->data->$key, "1") == 0)
+                                            $data[$i][$val] = $v->data->$key;
+                                        else {
+                                            $data[$i][$key] = $v->data->$key;
+                                            if (array_key_exists($raw, $v->data)) {
+                                                $data[$i][$raw] = $v->data->$raw;
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                                if (array_key_exists('fabrik_view_url', $v->data)) {
+                                    $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                                }
+                                $i = $i + 1;
                         }
-                        if (array_key_exists('fabrik_view_url', $v->data)) {
-                            $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                        else {
+                            unset($this->rows[0][$k]);
                         }
-                        $i = $i + 1;
+                        $v->total = $i;
                     }
                 }
                 ?>
@@ -177,12 +320,10 @@ function getActeurDepartments($fnum) {
 									$themes = implode('</div> - <div class="em-highlight">', $themes);
 								}
 							}
-
                             if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
                                 if ($d["jos_emundus_setup_profiles___id_raw"] != "1008") {
-                                    $departments = jsonDecode($d['data_departements___departement_nom_raw']);
-                                    if (is_array($departments)) {
-                                        $departments = array_unique($departments);
+                                    $departments = getOtherDepartments($d["jos_emundus_recherche___fnum_raw"]);
+                                    if ($departments) {
                                         if (sizeof($departments) > 8) {
                                             $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
                                         } else {
@@ -211,7 +352,7 @@ function getActeurDepartments($fnum) {
 
 
                             ?>
-                            <tr>
+                            <tr class="em-search-engine-offer">
                                 <td>
                                     <div class="em-search-engine-div-data <?php echo ($status === 2)?'em-closed-offer':''; ?>">
                                         <div class="em-search-engine-result-title"><?php echo $d['jos_emundus_projet___titre']; ?></div>
@@ -276,47 +417,194 @@ function getActeurDepartments($fnum) {
                                 <?php
                                 endforeach;
                                 ?>
-
                             </tr>
                             </tfoot>
                         <?php endif ?>
                     </table>
                 </div>
-
-                <?php if($user->id != 0) : ?>
-                    <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
-                        <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
-                        <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
-                    </a>
-                <?php endif; ?>
-
-                <?php print_r($this->hiddenFields);?>
             </div>
+	        <?php print_r($this->hiddenFields);?>
         </form>
+        <div>
+            <select class="em-number-of-results">
+                <option value="10" selected="selected">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <ul class="list-pagin"></ul>
+        </div>
+        <?php if($user->id != 0) : ?>
+            <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
+                <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
+                <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+            </a>
+        <?php endif; ?>
+
+
     </div>
 </div>
-
 <script>
+
+    let data = <?php echo sizeof($data); ?>;
+
+    //Pagination
+    pageSize = jQuery(".em-number-of-results").val();
+
+    var pageCount =  data / pageSize;
+
+    if (pageCount > 1) {
+        for (var i = 0 ; i<pageCount;i++) {
+            jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
+        }
+    }
+
+    jQuery(".list-pagin li").first().find("p").addClass("current");
+    showPage = function(page) {
+        jQuery(".em-search-engine-offer").hide();
+        jQuery(".em-search-engine-offer").each(function(n) {
+            if (n >= pageSize * (page - 1) && n < pageSize * page)
+                jQuery(this).show();
+        });
+    };
+
+    showPage(1);
+
+    jQuery(".list-pagin li p").click(function() {
+        jQuery(".list-pagin li p").removeClass("current");
+        jQuery(this).addClass("current");
+        showPage(parseInt(jQuery(this).text()));
+    });
+
+
     jQuery(document).ready(function(){
+        //region and department object
+        $allRegions= <?php echo json_encode(getAllRegions()); ?>;
+        $allDepartments= <?php echo json_encode(getAllDepartments()); ?>;
+
+        $regionArray = <?php echo json_encode($selectedHeadRegions); ?>;
+
+        $departmentArray = <?php echo json_encode($selectedHeadDepartments);?>;
+
+        //add region select
+        $regionSelect = '<tr><td>Dans quelle(s) région(s)</td><td><select id="data_regions___name_0value" class="chosen chosen-region" multiple="true" style="width:400px;">';
+        $pushRegions = [];
+            jQuery($allRegions).each(region =>{
+                $allRegions[region]["selected"] = "";
+                jQuery($regionArray).each(selected => {
+                    if ($allRegions[region].id == jQuery($regionArray)[selected]) {
+                        $allRegions[region]["selected"] = "selected";
+                        $pushRegions.push($regionArray);
+                    }
+                });
+                $regionSelect += '<option value="'+jQuery($allRegions)[region].id+'" '+ jQuery($allRegions)[region].selected +'>'+jQuery($allRegions)[region].name+'</option>';
+            });
+        $regionSelect += '</select></td><input type="hidden" id="hidden-regions-input" name="regions" value="'+$regionArray+'"></tr>';
+
+        jQuery(".filtertable tbody .fabrik_row").first().after($regionSelect);
+
         jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
+        jQuery(".chosen-region").chosen();
+
+        //add department select
+        $departmentSelect = '<tr><td>Dans quel(s) département(s)</td><td><select id="data_departements___departement_nomvalue" class="chosen chosen-department" multiple="true" style="width:400px;">';
+        $pushDepartments = [];
+        jQuery($allDepartments).each(department =>{
+            $allDepartments[department]["selected"] = "";
+                jQuery($departmentArray).each(selected => {
+                    if ($allDepartments[department].departement_id == jQuery($departmentArray)[selected]) {
+                        $allDepartments[department]["selected"] = "selected";
+                        $pushDepartments.push($departmentArray);
+                    }
+                });
+                $departmentSelect += '<option value="'+jQuery($allDepartments)[department].departement_id+'"'+ jQuery($allDepartments)[department].selected +'>'+jQuery($allDepartments)[department].departement_nom+'</option>';
+            });
+        $departmentSelect += '</select></td><input type="hidden" id="hidden-department-input" name="departments" value="'+$departmentArray+'"></tr>';
+        jQuery(".filtertable tbody .fabrik_row").first().after($departmentSelect);
+        
         jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
+        jQuery(".chosen-department").chosen();
+
+        // chosen change regions
+        jQuery("#data_regions___name_0value").chosen().change(function(event){
+            if (event.target == this){
+                $regionArray = jQuery(this).val();
+                if (jQuery(this).val())
+                    jQuery("#hidden-regions-input").val($regionArray);
+                if ($regionArray == null)
+                    jQuery("#hidden-regions-input").val("");
+            }
+        });
+
+        // chosen change departments
+        jQuery("#data_departements___departement_nomvalue").chosen().change(function(event){
+            if (event.target == this){
+                $departmentArray = (jQuery(this).val());
+                if (jQuery(this).val())
+                    jQuery("#hidden-department-input").val($departmentArray);
+                if ($departmentArray == null)
+                    jQuery("#hidden-department-input").val("");
+            }
+        });
 
         jQuery('select.fabrik_filter[multiple]').chosen({
             placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
             placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
             no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
-        })
+        });
     });
 
 
+    jQuery(".em-number-of-results").change(function () {
+        let data = <?php echo sizeof($data); ?>;
+
+        //Pagination
+        pageSize = jQuery(this).val();
+
+        var pageCount =  data / pageSize;
+
+        if (pageCount > 1) {
+            for (var i = 0 ; i<pageCount;i++) {
+                jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
+            }
+        }
+        else {
+            jQuery(".list-pagin li").hide();
+        }
+
+        jQuery(".list-pagin li").first().find("p").addClass("current");
+        showPage = function(page) {
+            jQuery(".em-search-engine-offer").hide();
+            jQuery(".em-search-engine-offer").each(function(n) {
+                if (n >= pageSize * (page - 1) && n < pageSize * page)
+                    jQuery(this).show();
+            });
+        };
+
+        showPage(1);
+
+        jQuery(".list-pagin li p").click(function() {
+            jQuery(".list-pagin li p").removeClass("current");
+            jQuery(this).addClass("current");
+            showPage(parseInt(jQuery(this).text()));
+        });
+    });
+
     function selectAllRegions() {
         if(jQuery('.chosen-toggle-region').hasClass('select')) {
+            $regionArray = [];
+            jQuery('#data_regions___name_0value option').each(function() {
+                $regionArray.push(jQuery(this).val());
+            });
             jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
+
+            jQuery('#hidden-regions-input').val($regionArray);
             jQuery('.chosen-toggle-region').addClass('deselect');
             jQuery('.chosen-toggle-region').removeClass('select');
             jQuery('.chosen-toggle-region').text("Désélectionnez toutes les régions");
         }
         else if(jQuery('.chosen-toggle-region').hasClass('deselect')) {
+            jQuery('#hidden-regions-input').val("");
             jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
             jQuery('.chosen-toggle-region').addClass('select');
             jQuery('.chosen-toggle-region').removeClass('deselect');
@@ -326,12 +614,18 @@ function getActeurDepartments($fnum) {
     }
     function selectAllDepartments() {
         if(jQuery('.chosen-toggle-department').hasClass('select')) {
+            $departmentArray = [];
+            jQuery('#data_departements___departement_nomvalue option').each(function() {
+                $departmentArray.push(jQuery(this).val());
+            });
+            jQuery('#hidden-department-input').val($departmentArray);
             jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
             jQuery('.chosen-toggle-department').addClass('deselect');
             jQuery('.chosen-toggle-department').removeClass('select');
             jQuery('.chosen-toggle-department').text("Désélectionnez toutes les départements");
         }
         else if(jQuery('.chosen-toggle-department').hasClass('deselect')) {
+            jQuery('#hidden-department-input').val("");
             jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
             jQuery('.chosen-toggle-department').addClass('select');
             jQuery('.chosen-toggle-department').removeClass('deselect');

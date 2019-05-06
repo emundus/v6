@@ -1231,6 +1231,25 @@ class EmundusModelUsers extends JModelList {
     }
 
 
+    // Get a list of user IDs that are currently connected
+	public function getOnlineUsers() {
+    	$db = $this->getDbo();
+    	$query = $db->getQuery(true);
+
+    	$query
+		    ->select("userid")
+		    ->from("#__session");
+
+		$db->setQuery($query);
+    	try {
+    		return $db->loadColumn();
+	    } catch (Exception $e) {
+		    JLog::add('Error getting online users in model/users at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    return false;
+	    }
+
+	}
+
     // Get groups of user
     public function getUserGroups($uid, $return = 'AssocList') {
         try {

@@ -376,7 +376,7 @@ class EmundusViewApplication extends JViewLegacy
                         // get admission form ID
                         $formid = $m_admission->getAdmissionFormByProgramme($fnumInfos['training']);
 						if (empty($myEval))
-							$html_form = "<p>User has no admission information</p>";
+							$html_form = '<p>'.JText::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM').'</p>';
 						else
 							$html_form = $m_application->getFormByFabrikFormID($myAdmission, $student->id, $fnum);
 
