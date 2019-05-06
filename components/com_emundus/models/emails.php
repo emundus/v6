@@ -167,30 +167,23 @@ class EmundusModelEmails extends JModelList
         return $emails_tmpl;
     }
 
-    /**
-     * Send email triggered for Status
-     * @param   $step           INT The status of application
-     * @param   $code           ARRAY of programme code
-     * @param   $to_applicant   INT define if trigger concern selected fnum or not
-     * @param   $student        Object Joomla user
-     * @return  array           Emails templates and recipient to trigger
-     */
-    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student)
-    {
+	/**
+	 * Send email triggered for Status
+	 *
+	 * @param   $step           INT The status of application
+	 * @param   $code           ARRAY of programme code
+	 * @param   $to_applicant   INT define if trigger concern selected fnum or not
+	 * @param   $student        Object Joomla user
+	 *
+	 * @return  bool           Emails templates and recipient to trigger
+	 * @throws Exception
+	 */
+    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null) {
         $app = JFactory::getApplication();
         $email_from_sys = $app->getCfg('mailfrom');
 
-
         jimport('joomla.log.log');
-        JLog::addLogger(
-            array(
-                // Sets file name
-                'text_file' => 'com_emundus.email.php'
-            ),
-            // Sets messages of all log levels to be sent to the file
-            JLog::ALL,
-            array('com_emundus')
-        );
+        JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
 
         $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant);
 
@@ -213,12 +206,11 @@ class EmundusModelEmails extends JModelList
                 'FNUM'          => $student->fnum
             );
 
-            foreach ($trigger_emails as $key => $trigger_email) {
+            foreach ($trigger_emails as $trigger_email) {
 
-                foreach ($trigger_email[$student->code]['to']['recipients'] as $key => $recipient) {
+                foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
                     $mailer = JFactory::getMailer();
 
-                    //$post = array();
                     $tags = $this->setTags($student->id, $post, $student->fnum);
 
                     $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
@@ -229,16 +221,17 @@ class EmundusModelEmails extends JModelList
                     $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
                     $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
                     $body = $this->setTagsFabrik($body, array($student->fnum));
-                    //$attachment[] = $path_file;
 
-	                if ($trigger_email[$student->code]['tmpl']['Template'] != false)
+	                if ($trigger_email[$student->code]['tmpl']['Template']) {
 		                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['Template']);
+	                }
 
                     // If the email sender has the same domain as the system sender address.
-                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                        $mail_from_address = $from;
-                    else
-                        $mail_from_address = $email_from_sys;
+                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+	                    $mail_from_address = $from;
+                    } else {
+	                    $mail_from_address = $email_from_sys;
+                    }
 
                     // Set sender
                     $sender = [
