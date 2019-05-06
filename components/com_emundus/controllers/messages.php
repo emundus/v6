@@ -157,7 +157,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Move the uploaded file to the server directory.
         $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
 
-        
+
         if (file_exists($target)) {
 	        unlink($target);
         }
@@ -300,7 +300,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             $toAttach = [];
 
             $post = [
-                'FNUM'      => $fnum->fnum,
+                'FNUM' => $fnum->fnum,
                 'USER_NAME' => $fnum->name,
                 'COURSE_LABEL' => $programme->label,
                 'CAMPAIGN_LABEL' => $fnum->label,
@@ -331,14 +331,18 @@ class EmundusControllerMessages extends JControllerLegacy {
             if ($bcc === 'true')
                 $mailer->addBCC($user->email);
 
+
             // Files uploaded from the frontend.
             if (!empty($attachments['upload'])) {
 
                 // In the case of an uploaded file, just add it to the email.
                 foreach ($attachments['upload'] as $upload) {
-                    if (file_exists(JPATH_BASE.DS.$upload))
-                        $toAttach[] = JPATH_BASE.DS.$upload;
+                    if (file_exists(JPATH_BASE . DS . $upload)) {
+                        $toAttach[] = JPATH_BASE . DS . $upload;
+
+                    }
                 }
+
 
             }
 
@@ -354,7 +358,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                         if ($filename != false) {
 
                             // Build the path to the file we are searching for on the disk.
-                            $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
+                            $path = EMUNDUS_PATH_ABS . $fnum->applicant_id . DS . $filename;
 
                             if (file_exists($path)) {
                                 $toAttach[] = $path;
@@ -377,10 +381,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                         $letter = $m_messages->get_letter($setup_letter);
 
                         // We only get the letters if they are for that particular programme.
-                        if ($letter != false && in_array($fnum->training, explode('","',$letter->training))) {
+                        if ($letter != false && in_array($fnum->training, explode('","', $letter->training))) {
 
                             // Some letters are only for files of a certain status, this is where we check for that.
-                            if ($letter->status != null && !in_array($fnum->step, explode(',',$letter->status)))
+                            if ($letter->status != null && !in_array($fnum->step, explode(',', $letter->status)))
                                 continue;
 
                             // A different file is to be generated depending on the template type.
@@ -388,19 +392,19 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                                 case '1':
                                     // This is a static file, we just need to find its path add it as an attachment.
-                                    if (file_exists(JPATH_BASE.$letter->file))
-                                        $toAttach[] = JPATH_BASE.$letter->file;
-                                break;
+                                    if (file_exists(JPATH_BASE . $letter->file))
+                                        $toAttach[] = JPATH_BASE . $letter->file;
+                                    break;
 
                                 case '2':
                                     // This is a PDF to be generated from HTML.
-                                    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+                                    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'pdf.php');
 
                                     $path = generateLetterFromHtml($letter, $fnum->fnum, $fnum->applicant_id, $fnum->training);
 
                                     if ($path != false && file_exists($path))
                                         $toAttach[] = $path;
-                                break;
+                                    break;
 
                                 case '3':
                                     // This is a DOC template to be completed with applicant information.
@@ -408,13 +412,47 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                                     if ($path != false && file_exists($path))
                                         $toAttach[] = $path;
-                                break;
+                                    break;
 
                             }
+
                         }
                     }
                 }
             }
+            $files = '';
+
+            if (!empty($toAttach)) {
+
+                $files = '<ul>';
+                foreach ($attachments['upload'] as $attach) {
+                    //var_dump($attach);
+                    $filesName = basename($attach);
+                    $files .= '<li>' . $filesName . '</li>';
+                }
+                foreach ($attachments['candidate_file'] as $attach) {
+
+                    $idTypeFile = $attach;
+                    $typeAttachments = $this->getTypeAttachment($idTypeFile);
+                    foreach ($typeAttachments as $typeAttachment) {
+                        $nameType = $typeAttachment->value;
+                    }
+
+                    //var_dump($nameType);
+                    $files .= '<li>' . $nameType . '</li>';
+                }
+                foreach ($attachments['setup_letters'] as $attach) {
+                    $idTypeFile = $attach;
+                    $typeAttachments = $this->getTypeLetters($idTypeFile);
+                    foreach ($typeAttachments as $typeAttachment) {
+                        $nameType = $typeAttachment->title;
+                    }
+                    $files .= '<li>' . $nameType . '</li>';
+                }
+            }
+
+            $files .= '</ul>';
+
 
             $mailer->addAttachment($toAttach);
 
@@ -427,18 +465,18 @@ class EmundusControllerMessages extends JControllerLegacy {
             } else {
                 $sent[] = $fnum->email;
                 $log = [
-                    'user_id_from'  => $user->id,
-                    'user_id_to'    => $fnum->applicant_id,
-                    'subject'       => $subject,
-                    'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$fnum->email.'</i><br>'.$body,
-                    'type'          => $template->type
+                    'user_id_from' => $user->id,
+                    'user_id_to' => $fnum->applicant_id,
+                    'subject' => $subject,
+                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
+                    'type' => $template->type
                 ];
                 $m_emails->logEmail($log);
-	            // Log the email in the eMundus logging system.
-	            EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+                // Log the email in the eMundus logging system.
+                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
             }
-        }
 
+        }
         echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
         exit;
 
@@ -508,6 +546,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        $toAttach = $attachments;
 	    } else {
 		    $toAttach[] = $attachments;
+
 	    }
 
 	    // In case no post value is supplied
@@ -789,6 +828,32 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
 
         exit;
+    }
+    public function getTypeAttachment($id) {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('esa.*')
+            ->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
+            ->where($db->quoteName('esa.id')  . ' = ' . $id);
+
+        $db->setQuery($query);
+        return $db->loadObjectList() ;
+    }
+    public function getTypeLetters($id) {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('esl.*')
+            ->from($db->quoteName('#__emundus_setup_letters', 'esl'))
+            ->where($db->quoteName('esl.id')  . ' = ' . $id);
+
+        $db->setQuery($query);
+        return $db->loadObjectList() ;
     }
 
 }

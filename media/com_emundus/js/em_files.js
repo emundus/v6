@@ -4516,21 +4516,39 @@ $(document).ready(function() {
                         $('#em-modal-sending-emails').css('display', 'none');
 
                         result = JSON.parse(result);
+                        console.log(result);
                         if (result.status) {
 
                             if (result.sent.length > 0) {
                                 // Block containing the email adresses of the sent emails.
-                                $("#em-email-messages").append('<div class="alert alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
+                                /*$("#em-email-messages").append('<div class="alert alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
                                                             '<ul class="list-group" id="em-mails-sent"></ul>');
 
                                 result.sent.forEach(function (element) {
                                     $('#em-mails-sent').append('<li class="list-group-item alert-success">'+element+'</li>');
                                 });
 
-                                $('#em-email-messages').append('</div>');
+                                $('#em-email-messages').append('</div>');*/
+
+                                var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                                result.sent.forEach(function (element) {
+                                    sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
+                                    console.log(element);
+                                })
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                                    html:  sent_to + '</ul>'
+                                });
+
 
                             } else {
-                                $("#em-email-messages").append('<span class="alert alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');
+                                Swal.fire({
+                                    type: 'error',
+                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                })
+                                /*$("#em-email-messages").append('<span class="alert alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');*/
                             }
 
                             if (result.failed.length > 0) {
