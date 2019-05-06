@@ -27,15 +27,10 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
-<<<<<<< HEAD
-                <?php if ($can_export && count($this->userAttachments) > 0)
-                    echo '<button class="btn btn-default" id="em_export_pdf" title="'.JText::_('PDF').'" link="">
-                        <span class="glyphicon glyphicon-file"></span>
-=======
+
                 <?php if($can_export && count($this->userAttachments) > 0)
                     echo '<button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="'.JText::_('EXPORT_FILE_ATTACHMENT').'">
                         <span class="glyphicon glyphicon-save" ></span>
->>>>>>> ControllerApplication2
                     </button>';
                 ?>
             </h3>
@@ -348,15 +343,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                     $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                     $('#em-modal-actions .modal').show();
                     $('#em-modal-actions').modal({backdrop: false, keyboard: true}, 'toggle');
-<<<<<<< HEAD
-                    $.ajax({
-                        type: 'post',
-                        url: url,
-                        dataType: 'json',
-                        data: {ids: JSON.stringify(checked)},
-                        success: function () {
-                            $('#em-modal-actions').modal('hide');
-=======
+
                     $.ajax(
                         {
                             type: 'post',
@@ -382,7 +369,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                     }
 
                                 });
->>>>>>> DropdownDocuments
 
                             var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
                             $.ajax({
@@ -435,13 +421,9 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             dataType:'json',
 
             success: function(result) {
-<<<<<<< HEAD
-                if (result.link) {
-                    window.open(result.link);
-=======
+
                 if(result.link){
                     link.location.href = result.link;
->>>>>>> ControllerApplication2
                 }
             },
             error: function (jqXHR)
@@ -489,17 +471,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             $("#"+id+" span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
             $("#"+id).attr('title',Joomla.JText._('VALID'));
             state = 1
-<<<<<<< HEAD
-        } else {
-            if ($("#"+id+" span").hasClass("glyphicon-ok")) {
-                $("#"+id+" span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange"); 
-                $("#"+id).attr('title',Joomla.JText._('INVALID'));
-                state = 0     
-            } else {
-                if ($("#"+id+" span").hasClass("glyphicon-warning-sign")) {
-                    $("#"+id+" span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");  
-                    $("#"+id).attr('title',Joomla.JText._('UNCHECKED'));
-=======
+
         }else{
             if($("#"+id+" span").hasClass("glyphicon-ok")){
                 $("#"+id+" span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange");
@@ -508,8 +480,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             }else{
                 if($("#"+id+" span").hasClass("glyphicon-warning-sign")){
                     $("#"+id+" span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");
-                    $("#"+id).attr('title',Joomla.JText._('UNCHECKED'))
->>>>>>> DropdownDocuments
+                    $("#"+id).attr('title',Joomla.JText._('UNCHECKED'));
                     state = -2
                 }
             }
@@ -631,16 +602,10 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         });
     });
 
-<<<<<<< HEAD
-=======
-                      
-});
-
 </script>
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
->>>>>>> ControllerApplication2
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>

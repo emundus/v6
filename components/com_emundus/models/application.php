@@ -2849,7 +2849,7 @@ td {
             throw $e;
         }
     }
-<<<<<<< HEAD
+
 
 
 	/** Gets the URL of the final form in the application in order to submit.
@@ -2857,32 +2857,34 @@ td {
 	 *
 	 * @return Mixed
 	 */
-    function getConfirmUrl($fnums) {
+    function getConfirmUrl($fnums)
+    {
 
-    	if (empty($fnums)) {
-    		return false;
-	    }
+        if (empty($fnums)) {
+            return false;
+        }
 
-    	$db = JFactory::getDbo();
-    	$query = $db->getQuery(true);
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-    	$query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
-		    ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-		    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
-		    ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
-		    ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'>=0 AND '.$db->quoteName('m.level').'=1 AND '.$db->quoteName('m.link').' <> "" AND '.$db->quoteName('m.link').' <> "#"')
-		    ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
-	        ->order($db->quoteName('m.lft').' ASC');
+        $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
+            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esc.profile_id'))
+            ->leftJoin($db->quoteName('#__menu', 'm') . ' ON ' . $db->quoteName('m.menutype') . ' = ' . $db->quoteName('esp.menutype') . ' AND ' . $db->quoteName('m.published') . '>=0 AND ' . $db->quoteName('m.level') . '=1 AND ' . $db->quoteName('m.link') . ' <> "" AND ' . $db->quoteName('m.link') . ' <> "#"')
+            ->where($db->quoteName('cc.fnum') . ' IN(' . implode(',', $fnums) . ')')
+            ->order($db->quoteName('m.lft') . ' ASC');
 
-    	$db->setQuery($query);
-    	try {
-    		return $db->loadAssocList('fnum');
-	    } catch (Exception $e) {
-    		JLog::add('Error getting confirm URLs in model/application at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
-    		return false;
-	    }
+        $db->setQuery($query);
+        try {
+            return $db->loadAssocList('fnum');
+        } catch (Exception $e) {
+            JLog::add('Error getting confirm URLs in model/application at query -> ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
-=======
+
     public function searchFilesByKeywords($fnum){
         $db = $this->getDbo();
         $jinput = JFactory::getApplication()->input;
@@ -2896,6 +2898,5 @@ td {
 
         $db->setQuery($query);
         return $db->execute();
->>>>>>> DropdownDocuments
     }
 }
