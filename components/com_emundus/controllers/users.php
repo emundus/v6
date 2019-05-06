@@ -677,15 +677,14 @@ class EmundusControllerUsers extends JControllerLegacy {
             echo json_encode((object)array('status' => false));
             exit;
         }
-        $id 		= JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
-        $user = new EmundusModelUsers(); // Instanciation of object from user model
-        $users = $user->getUsersById($id); // get user from uid
+        $id = JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
+        $m_user = new EmundusModelUsers(); // Instanciation of object from user model
+        $users = $m_user->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
 
             $passwd = JUserHelper::genRandomPassword(8); //generate a random password
             $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
 
-            $m_users = new EmundusModelUsers();
             $res = $m_users->setNewPasswd($id, $passwd_md5); //update password
             $post = [ // values tout change in the bdd with key => values
                 'PASSWORD' => $passwd
