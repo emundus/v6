@@ -131,7 +131,7 @@ if (!empty($commissions)) {
 	}
 
 	// Using the commission names we can get the groups attached to it.
-	$query = 'SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g WHERE g.commission IN ('.implode(',', $db->Quote($commissions)).')';
+	$query = 'SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g WHERE g.commission IN ('.implode(',', $commissions).')';
 
 	try {
 		$db->setQuery($query);
