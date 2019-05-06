@@ -21,8 +21,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/messages.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_emundus/models/emails.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/models/emails.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_companys/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_companys/default.php" afterDir="false" />
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -59,74 +60,19 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/models/emails.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-169">
-              <caret line="665" column="13" selection-start-line="665" selection-start-column="13" selection-end-line="665" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_user.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="290">
-              <caret line="1153" column="103" selection-start-line="1153" selection-start-column="71" selection-end-line="1153" selection-end-column="103" />
-              <folding>
-                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
+            <state relative-caret-position="-4657">
+              <caret line="671" column="16" selection-start-line="671" selection-start-column="8" selection-end-line="671" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-5169">
-              <caret line="2836" column="29" selection-start-line="2836" selection-start-column="20" selection-end-line="2836" selection-end-column="29" />
-              <folding>
-                <element signature="e#351#392#0#PHP" expanded="true" />
-                <element signature="n#style#0;n#button#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#383#389#0" expanded="true" />
-                <element signature="e#389#395#0" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#1;n#tr#0;n#table#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#button#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="e#383#389#0" expanded="true" />
-                <element signature="e#389#395#0" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#1;n#tr#0;n#table#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#h2#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#p#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="77282">
-              <caret line="4546" column="88" selection-start-line="4546" selection-start-column="88" selection-end-line="4546" selection-end-column="88" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/messages.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3519">
-              <caret line="215" column="54" selection-start-line="215" selection-start-column="36" selection-end-line="215" selection-end-column="54" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/models/messages.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6290">
-              <caret line="378" column="13" selection-start-line="378" selection-start-column="13" selection-end-line="378" selection-end-column="13" />
+            <state relative-caret-position="825">
+              <caret line="305" selection-start-line="305" selection-end-line="305" />
             </state>
           </provider>
         </entry>
@@ -327,75 +273,59 @@
         <subPane>
           <expand>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
               <item name="controllers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="com_users" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="com_users" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+              <item name="fabrik_form" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+              <item name="fabrik_form" type="462c0819:PsiDirectoryNode" />
+              <item name="emundusconfirmpost" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+              <item name="fabrik_form" type="462c0819:PsiDirectoryNode" />
+              <item name="php" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="g5_helium" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
-              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="g5_helium" type="462c0819:PsiDirectoryNode" />
-              <item name="language" type="462c0819:PsiDirectoryNode" />
+              <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundus" type="462c0819:PsiDirectoryNode" />
+              <item name="plugins" type="462c0819:PsiDirectoryNode" />
+              <item name="fabrik_form" type="462c0819:PsiDirectoryNode" />
+              <item name="php" type="462c0819:PsiDirectoryNode" />
+              <item name="scripts" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -456,40 +386,6 @@
       <option name="USER_CFG_CLASS" />
       <option name="CONTEXT_PROVIDER" />
       <method />
-    </configuration>
-    <configuration name="syncs.php" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://sorbonnev3.local/components/com_jcrm/models/syncs.php">
-      <RunnerSettings RunnerId="JavascriptDebugRunner" />
-      <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
-      <method v="2" />
-    </configuration>
-    <configuration name="syncs.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/models/syncs.php">
-      <RunnerSettings RunnerId="PhpScriptDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
-      <method v="2" />
-    </configuration>
-    <configuration name="view.html.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/components/com_jcrm/views/syncs/view.html.php">
-      <RunnerSettings RunnerId="PhpScriptDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="local" start_url="http://sorbonnev3.local/index.php?option=com_jcrm&amp;view=syncs&amp;Itemid=1427">
-      <method v="2" />
-    </configuration>
-    <configuration name="localhost" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="localhost" start_url="http://localhost:8888/index.php/en/evaluations?view=evaluation">
-      <RunnerSettings RunnerId="PhpRunner" />
-      <RunnerSettings RunnerId="PhpWebAppDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpRunner" />
-      <ConfigurationWrapper RunnerId="PhpWebAppDebugRunner" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="js.build_tools.gulp">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <gulpfile />
-      <tasks />
-      <arguments />
-      <pass-parent-envs>true</pass-parent-envs>
-      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="JavaScript Debug.syncs.php" />
@@ -601,7 +497,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="402053000" />
+    <option name="totallyTimeSpent" value="402065000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -624,10 +520,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1536" height="864" extended-state="0" />
+    <frame x="0" y="23" width="2560" height="1417" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27785236" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19435611" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />

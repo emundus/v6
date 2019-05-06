@@ -366,8 +366,10 @@ class EmundusModelEmails extends JModelList
         $params     = $template->params;
         $logo       = $params->get('logo');
 
-        if (!empty($logo))
-            $logo   = json_decode(str_replace("'", "\"", $logo->custom->image), true);
+        if (!empty($logo)) {
+	        $logo   = json_decode(str_replace("'", "\"", $logo->custom->image), true);
+        }
+
         $logo       = !empty($logo['path']) ? $logo['path'] : "";
 
         $patterns = array(
@@ -493,8 +495,7 @@ class EmundusModelEmails extends JModelList
         return $tags;
     }
 
-    public function setTagsFabrik($str, $fnums = array())
-    {
+    public function setTagsFabrik($str, $fnums = array()) {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $file = new EmundusModelFiles();
         
@@ -584,7 +585,7 @@ class EmundusModelEmails extends JModelList
                 foreach ($idFabrik as $id) {
                     $preg['patterns'][] = '/\${' . $id . '\}/';
                     if (isset($fabrikValues[$id][$fnum])) {
-                        $preg['replacements'][] = $fabrikValues[$id][$fnum]['val'];
+                        $preg['replacements'][] = JText::_($fabrikValues[$id][$fnum]['val']);
                     } else {
                         $preg['replacements'][] = '';
                     }
