@@ -135,7 +135,8 @@ class EmundusModelApplication extends JModelList {
             WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
             AND (eu.attachment_id != '. $expert_document_id .') 
             AND (esa.value like "%'. $search .'%"
-            OR esa.description like "%'. $search .'%")
+            OR esa.description like "%'. $search .'%"
+            OR eu.timedate like "%'. $search .'%")
             ORDER BY esa.category ASC, eu.timedate DESC';
             }
             else{
@@ -155,7 +156,8 @@ class EmundusModelApplication extends JModelList {
                 LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
                 WHERE eu.fnum like '. $this->_db->Quote($fnum) .'
                 AND (esa.value like "%'. $search .'%"
-                OR esa.description like "%'. $search .'%")
+                OR esa.description like "%'. $search .'%"
+                OR eu.timedate like "%'. $search .'%")
                 ORDER BY esa.category ASC, eu.timedate DESC';
             }
             else{
@@ -508,14 +510,15 @@ class EmundusModelApplication extends JModelList {
             return $e->getMessage();
         }
 
-        $form .= '<br><hr><h3>';
+        $form .= '<br><hr><div class="TitleAdmission"><h3>';
         $title = explode('-', JText::_($table[0]->label));
+
         if (empty($title[1])) {
 	        $form .= JText::_($table[0]->label);
         } else {
 	        $form .= JText::_($title[1]);
         }
-
+        $form .= '</h3>';
         if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[0]->db_table_name != "#__emundus_training") {
 
             $query = 'SELECT count(id) FROM `'.$table[0]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -530,13 +533,13 @@ class EmundusModelApplication extends JModelList {
 
 
             if ($cpt > 0) {
-                $form .= ' <button type="button" id="'.$table[0]->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
             } else {
-                $form .= ' <button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
             }
         }
 
-        $form .= '</h3>';
+        $form .= '</div>';
 
         // liste des groupes pour le formulaire d'une table
         $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
@@ -863,7 +866,7 @@ class EmundusModelApplication extends JModelList {
 
 	            foreach ($tableuser as $key => $itemt) {
 
-	                $forms .= '<br><hr><h3>';
+	                $forms .= '<br><hr><div class="TitlePersonalInfo"><h3>';
 	                $title = explode('-', JText::_($itemt->label));
 
 	                if (empty($title[1])) {
@@ -871,7 +874,7 @@ class EmundusModelApplication extends JModelList {
 	                } else {
 		                $forms .= JText::_($title[1]);
 	                }
-
+                    $forms .= '</h3>';
 	                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
 	                    $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -896,8 +899,8 @@ class EmundusModelApplication extends JModelList {
 
 	                    }
 	                }
+                    $forms .= '</div>';
 
-	                $forms .= '</h3>';
 	                // liste des groupes pour le formulaire d'une table
 	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg

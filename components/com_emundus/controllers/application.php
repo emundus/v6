@@ -400,6 +400,7 @@ class EmundusControllerApplication extends JControllerLegacy
                 $res = true;
                 $menu_application = array();
                 $i=0;
+                //var_dump($res);
                 foreach($menus as $k => $menu)
                 {
                     $action = explode('|', $menu['note']);

@@ -143,6 +143,13 @@ JText::script('PLEASE_SELECT_TAG');
 JText::script('VALID');
 JText::script('INVALID');
 JText::script('UNCHECKED');
+JText::script('SELECT_AT_LEAST_ONE_FILE');
+JText::script('INFORMATION');
+JText::script('COM_EMUNDUS_YOU_HAVE_SELECT');
+JText::script('COM_EMUNDUS_SELECT_ALL');
+JText::script('COM_EMUNDUS_FILE');
+JText::script('COM_EMUNDUS_FILES');
+
 
 
 // view user

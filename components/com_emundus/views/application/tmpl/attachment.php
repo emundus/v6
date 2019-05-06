@@ -69,12 +69,15 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                         <?php
                         if (count($this->userAttachments) > 0) {
                             if ($can_export)
-                                $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse"/>';?>
+                                $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse" class="em-checkbox-collapse'. $new_cat_id.'"/>';?>
 
                                 <table class="table table-hover attachments_table">
                                     <thead>
-                                        <tr class="em-tr-collapse">
-                                            <th><?= $checkbox; ?> #</th>
+                                        <tr id="em-tr-collapse<?= $new_cat_id; ?>" class="em-tr-collapse">
+                                            <th><?= $checkbox; ?> #
+                                            </th>
+                                            <div class="tooltipSelectAttachments selector<?= $new_cat_id; ?>"><p><?= JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'); ?></p></div>
+
                                             <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
                                             <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
                                             <th><?= JText::_('ATTACHMENT_DESCRIPTION'); ?></th>
@@ -105,6 +108,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                         </div>
                     </div>
                 </div>
+
                 <div class="em-collapse">
                     <div class="panel-heading fileCollapse">
                         <div class="em-title-collapse">
@@ -119,12 +123,14 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                             <?php
                             if (count($this->userAttachments) > 0) {
                             if ($can_export)
-                            $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse"/>';
+                            $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse" class="em-checkbox-collapse'.$attachment->category.'"/>';
 
                             echo '<table class="table table-hover attachments_table">
                                     <thead>
-                                        <tr class="em-tr-collapse">
+                                        <tr id="em-tr-collapse'.$attachment->category.'" class="em-tr-collapse">
                                             <th>' . $checkbox . ' #</th>
+                                            <div class="tooltipSelectAttachments selector'.$attachment->category.'"><p>' . JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'). '</p></div>
+
                                             <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
                                             <th>' . JText::_('ATTACHMENT_DATE') . '</th>
                                             <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
@@ -555,5 +561,36 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         });
     });
 
+
+</script>
+<script>
+    $('.fileCollapse').each(function (i) {
+
+    $('#em-tr-collapse'+i+' th:nth-child(1)')
+        .on("mouseenter",function(){
+
+            $('.selector'+i).css({
+                'height':'30px',
+                'width':'auto',
+                'display':'flex',
+                'opacity':'1',
+                'transition':'display,500ms',
+                'background':'#33332E',
+                'border-radius':'10px'
+            });
+            console.log(i);
+            $('.selector'+i+' p').css({
+                'color':'white',
+                'font-size':'0.6rem',
+            })
+
+        })
+        .on("mouseleave",function(){
+            $('.selector'+i).css({
+                'display':'none',
+                'transition':'display,500ms'
+            })
+        });
+    });
 
 </script>
