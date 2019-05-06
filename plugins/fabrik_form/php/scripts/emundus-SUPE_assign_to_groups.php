@@ -37,10 +37,9 @@ try {
 }
 
 // Using the fac ID we can get the groups attached to it.
-$query = 'SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g WHERE g.fac_rattachement = '.$fac_rattachement;
+$query = 'SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g WHERE g.fac_rattachement LIKE '.$db->Quote($fac_rattachement);
 
 try {
-
 	$db->setQuery($query);
 	$groups = $db->loadColumn();
 
@@ -74,7 +73,6 @@ foreach ($groups as $group) {
 $query = rtrim($query, ',');
 
 try {
-
 	$db->setQuery($query);
 	$db->execute();
 
@@ -104,12 +102,11 @@ if ($fac_rattachement === 'FACSI') {
 } else {
 
 	// Science fac use UFR commission value.
-	$ufr_rattachement = $fabrikFormData['cnu'][0];
+	$ufr_rattachement = $fabrikFormData['ufr_rattachement'][0];
 
 	if (!empty($ufr_rattachement)) {
 		$query = 'SELECT '.$db->quoteName('commission').' FROM '.$db->quoteName('data_faculte_de_rattachement').' WHERE '.$db->quoteName('id').' = '.$ufr_rattachement;
 		try {
-
 			$db->setQuery($query);
 			$commissions = $db->loadColumn();
 
@@ -126,7 +123,6 @@ if (!empty($commissions)) {
 	$query = 'SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g WHERE g.commission IS NOT NULL';
 
 	try {
-
 		$db->setQuery($query);
 		$all_commission_groups = $db->loadColumn();
 
@@ -138,7 +134,6 @@ if (!empty($commissions)) {
 	$query = 'SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g WHERE g.commission IN ('.implode(',', $commissions).')';
 
 	try {
-
 		$db->setQuery($query);
 		$groups = $db->loadColumn();
 
@@ -150,7 +145,6 @@ if (!empty($commissions)) {
 	$query = 'DELETE FROM #__emundus_group_assoc WHERE group_id IN ('.implode(',', $all_commission_groups).') AND fnum LIKE '.$db->Quote($fnum);
 
 	try {
-
 		$db->setQuery($query);
 		$db->execute();
 
@@ -172,7 +166,6 @@ if (!empty($commissions)) {
 	$query = rtrim($query, ',');
 
 	try {
-
 		$db->setQuery($query);
 		$db->execute();
 
