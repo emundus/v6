@@ -310,6 +310,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             }
 
 	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
 	        // If the email sender has the same domain as the system sender address.
 	        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
