@@ -286,12 +286,14 @@ class EmundusControllerMessages extends JControllerLegacy {
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
             $toAttach = [];
-
             $post = [
                 'FNUM' => $fnum->fnum,
                 'USER_NAME' => $fnum->name,
                 'COURSE_LABEL' => $programme->label,
                 'CAMPAIGN_LABEL' => $fnum->label,
+                'CAMPAIGN_YEAR' => $fnum->year,
+                'CAMPAIGN_START' => $fnum->start_date,
+                'CAMPAIGN_END' => $fnum->end_date,
                 'SITE_URL' => JURI::base(),
                 'USER_EMAIL' => $fnum->email
             ];
