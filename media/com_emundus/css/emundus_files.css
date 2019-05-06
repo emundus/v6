@@ -21,6 +21,11 @@ p {
 .em-close-minimise {
    align-self: flex-end;
 }
+/*.navbar .navbar-inverse{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+}*/
 
 #check {
     min-width: 85px !important;
