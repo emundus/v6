@@ -17,13 +17,15 @@ span:hover {
 		<h5>
 			<?php echo $g['label']?>
 		</h5>
-		<ul>
-			<strong><?php echo JText::_('COM_EMUNDUS_GROUP_PROGRAM')?></strong>
-			<?php foreach($g['progs'] as $p):?>
-				<li><?php echo $p['label']?></li>
-			<?php endforeach;?>
-		</ul>
-		<?php if(!empty($g['acl'])):?>
+        <?php if (!empty($g['progs'])) :?>
+            <ul>
+                <strong><?php echo JText::_('COM_EMUNDUS_GROUP_PROGRAM')?></strong>
+                <?php foreach($g['progs'] as $p):?>
+                    <li><?php echo $p['label']?></li>
+                <?php endforeach;?>
+            </ul>
+        <?php endif; ?>
+		<?php if (!empty($g['acl'])) :?>
 			<table id="em-modal-action-table" class="table table-hover" style="color:black !important;">
 				<thead>
 				<tr>

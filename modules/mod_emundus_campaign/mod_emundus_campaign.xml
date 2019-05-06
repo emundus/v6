@@ -34,9 +34,11 @@
                         <option value="program">LIST_PROGRAM</option>
 						<option value="ordering">LIST_ORDERING</option>
                     </field>
-					<field type="list" name="mod_em_campaign_orderby" default="" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
+					<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
 						<option value="start_date">LIST_DATE_START</option>
 						<option value="end_date">LIST_DATE_END</option>
+						<option value="formation_start">FORMATION_DATE_START</option>
+						<option value="formation_end">FORMATION_DATE_END</option>
 					</field>
 					<field type="list" name="mod_em_campaign_order_type" default="" label="MOD_EM_CAMPAIGN_ORDER_TYPE" description="MOD_EM_CAMPAIGN_ORDER_TYPE_DESC">
 						<option value="asc">ASC</option>
@@ -60,6 +62,34 @@
 					<field type="list" name="mod_em_campaign_link" default="registration" label="MOD_EM_CAMPAIGN_LINK" description="MOD_EM_CAMPAIGN_LINK_DESC">
 						<option value="registration">REGISTRATION_URL</option>
 						<option value="login">LOGIN_URL</option>
+					</field>
+
+					<field type="text" name="mod_em_campaign_date_format" label="MOD_EM_CAMPAIGN_DATE_FORMAT" description="MOD_EM_CAMPAIGN_DATE_FORMAT_DESC" default="d/m/Y H:i" hint="d/m/Y H:i"/>
+
+					<field type="list" name="mod_em_campaign_get_teaching_unity" label="MOD_EM_CAMPAIGN_GET_TEACHING_UNITY" description="MOD_EM_CAMPAIGN_GET_TEACHING_UNITY_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_get_link" label="MOD_EM_CAMPAIGN_GET_LINK" description="MOD_EM_CAMPAIGN_GET_LINK_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+
+					<field type="list" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_show_camp_end_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_END_DATE_DESC" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_show_formation_start_date" label="MOD_EM_CAMPAIGN_SHOW_FORMATION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_FORMATION_START_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_show_formation_end_date" label="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
 					</field>
 				</fieldset>
 			</fields>

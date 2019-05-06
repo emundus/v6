@@ -97,11 +97,11 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	
 	if (isset($user->fnum) && !empty($user->fnum)) {
-		$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
-		$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
-
-		// We redirect to the "send application" form, this form will redirect to payment if required.
-		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+		$fnums = array_keys($applications);
+		$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $fnums);
+		$forms = $m_application->getFormsProgress($user->id, $user->profile, $fnums);
+		$confirm_form_url = $m_application->getConfirmUrl($fnums);
+		$first_page = $m_application->getFirstPage('index.php', $fnums);
 
 		// If the user can
 		$profile = $m_profile->getCurrentProfile($user->id);

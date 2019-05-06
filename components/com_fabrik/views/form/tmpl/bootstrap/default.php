@@ -21,15 +21,15 @@ $groupTmpl = $model->editable ? 'group' : 'group_details';
 $active = ($form->error != '') ? '' : ' fabrikHide';
 
 if ($this->params->get('show_page_heading', 1)) : ?>
-    <div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
+	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
 		<?php echo $this->escape($this->params->get('page_heading')); ?>
-    </div>
+	</div>
 <?php
 endif;
 
 if ($this->params->get('show-title', 1)) :?>
 <div class="page-header">
-    <h1><?php $title = explode('-', $form->label); echo !empty($title[1])?$title[1]:$title[0]; ?></h1>
+	<h1><?php $title = explode('-', $form->label); echo !empty($title[1])?$title[1]:$title[0]; ?></h1>
 </div>
 <?php
 endif;

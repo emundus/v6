@@ -38,6 +38,11 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 	 * @var  string[]  Scopes available based on mode settings.
 	 */
 	protected $scopes;
+    /**
+     * @var  string  The authorisation url.
+     */
+    protected $logoutUrl;
+
 
 
 	public function __construct(&$subject, $config) {
@@ -47,6 +52,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 		$this->authUrl = $this->params->get('auth_url');
 		$this->domain = $this->params->get('domain');
 		$this->tokenUrl = $this->params->get('token_url');
+		$this->logoutUrl = $this->params->get('logout_url');
 	}
 
 	/**
@@ -264,4 +270,10 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
             }
         }
 	}
+
+	public function onUserAfterLogout() {
+        $app = JFactory::getApplication();
+        $app->redirect($this->logoutUrl);
+    }
+
 }

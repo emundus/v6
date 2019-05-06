@@ -88,6 +88,7 @@ JText::script('FILTER_DELETED');
 JText::script('SQL_ERROR');
 JText::script('COM_EMUNDUS_FORM_TITLE');
 JText::script('COM_EMUNDUS_FORM_GROUP');
+JText::script('COM_EMUNDUS_TO_UPPER_CASE');
 JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION');
 JText::script('COM_EMUNDUS_CHOOSE_OTHER_OPTION');
 JText::script('GENERATE_ZIP');
@@ -143,6 +144,8 @@ JText::script('PLEASE_SELECT_TAG');
 JText::script('VALID');
 JText::script('INVALID');
 JText::script('UNCHECKED');
+JText::script('SELECT_AT_LEAST_ONE_FILE');
+JText::script('INFORMATION');
 
 
 // view user

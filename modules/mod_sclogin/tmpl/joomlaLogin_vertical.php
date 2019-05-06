@@ -1,10 +1,10 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2014 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v4.3.0
- * @build-date      2015/03/19
+ * @version         Release v8.0.5
+ * @build-date      2019/01/14
  */
 
 defined('_JEXEC') or die('Restricted access');
@@ -19,13 +19,25 @@ if ($params->get('showLoginForm'))
     ?>
 
     <div class="sclogin-joomla-login vertical <?php echo $joomlaSpan; ?>">
-        <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" id="sclogin-form<?php echo $module->id; ?>">
+        <?php
+        $action = JRoute::_('index.php', true, $params->get('usesecure'));
+        $isCB = false;
+        if ($registerType == "communitybuilder" && file_exists(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php')) // Use Community Builder's login
+        {
+            include_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php');
+            require_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/library/cb/cb.database.php');
+            global $_CB_framework;
+            $isCB = true;
+            $action = $_CB_framework->viewUrl( 'login', true, null, 'html', $params->get('usesecure') );
+        }
+        ?>
+        <form action="<?php echo $action; ?>" method="post" id="sclogin-form<?php echo $module->id; ?>">
             <fieldset class="input-block-level userdata">
                 <div class="control-group" id="form-sclogin-username">
                     <div class="controls input-block-level">
                         <div class="input-append input-block-level">
-                            <input name="username" tabindex="0" id="sclogin-username" class="input-block-level" alt="username" type="text"
-                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_USERNAME'); ?>">
+                            <input name="username" tabindex="0" <?php echo $params->get('autoFocusUsername') ? 'autofocus' : '';?> class="sclogin-username input-block-level" alt="username" type="text"
+                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_USERNAME'); ?>" required aria-required="true">
                             <?php echo $helper->getForgotUserButton(); ?>
                         </div>
                     </div>
@@ -33,14 +45,14 @@ if ($params->get('showLoginForm'))
                 <div class="control-group" id="form-sclogin-password">
                     <div class="controls input-block-level">
                         <div class="input-append input-block-level">
-                            <input name="<?php echo $passwordName; ?>" tabindex="0" id="sclogin-passwd" class="input-block-level" alt="password" type="password"
-                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_PASSWORD') ?>">
+                            <input name="<?php echo $passwordName; ?>" tabindex="0" class="sclogin-passwd input-block-level" alt="password" type="password"
+                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_PASSWORD') ?>" required aria-required="true">
                             <?php echo $helper->getForgotPasswordButton(); ?>
                         </div>
                     </div>
                 </div>
                 <div class="control-group" id="form-sclogin-submitcreate">
-                    <button type="submit" name="Submit" class="btn btn-info <?php if (!$showRegisterLinkInLogin)
+                    <button type="submit" name="Submit" class="btn btn-primary <?php if (!$showRegisterLinkInLogin)
                     {
                         echo 'span12';
                     } ?>"><?php echo JText::_('MOD_SCLOGIN_LOGIN') ?></button>
@@ -66,10 +78,8 @@ if ($params->get('showLoginForm'))
 
 
                 <?php
-                if ($registerType == "communitybuilder" && file_exists(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php')) // Use Community Builder's login
+                if($isCB) // Use Community Builder's login
                 {
-                    include_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php');
-                    global $_CB_framework;
                     echo '<input type="hidden" name="option" value="com_comprofiler" />' . "\n";
                     echo '<input type="hidden" name="task" value="login" />' . "\n";
                     echo '<input type="hidden" name="op2" value="login" />' . "\n";

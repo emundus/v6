@@ -9,6 +9,11 @@ p {
 .em-close-minimise {
     margin: -49px 0px 0px 0px;
 }
+/*.navbar .navbar-inverse{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+}*/
 
 #check {
     min-width: 85px !important;
