@@ -121,6 +121,14 @@ endif;
 
 <script>
     $('#countCheckedCheckbox').html('');
+<<<<<<< HEAD
+=======
+    $('#em-close-file').click(function(){
+        $('.em-check').prop('checked',false);
+        $('.em-check-all-all').prop('checked',false);
+        reloadActions('files', undefined, false);
+    })
+>>>>>>> CheckboxFiles
 </script>
 
 

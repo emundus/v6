@@ -698,6 +698,7 @@ label[for="em-file_to_upload"]:hover {
     padding: 0 !important;
 }
 
+<<<<<<< HEAD
 /* collapse in Files */
 .em-collapse-container{
     display: flex;
@@ -794,6 +795,8 @@ label[for="em-file_to_upload"]:hover {
 .em-button {
     cursor: pointer;
 }
+=======
+>>>>>>> CheckboxFiles
 /* title form */
 
 .TitlePersonalInfo{
@@ -922,6 +925,7 @@ label[for="em-file_to_upload"]:hover {
 .countCheckedCheckbox{
     margin-left: 30%;
 }
+<<<<<<< HEAD
 .tooltipSelectAttachments{
     display:none;
     transition:opacity 1s ease-out;
@@ -932,4 +936,6 @@ label[for="em-file_to_upload"]:hover {
     align-items: center;
     margin-top: 52px;
 }
+=======
+>>>>>>> CheckboxFiles
 
