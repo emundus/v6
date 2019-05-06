@@ -120,14 +120,35 @@ class EmundusViewApplication extends JViewLegacy
 						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 4, 'r', 'COM_EMUNDUS_LOGS_ATTACHMENTS_BACKOFFICE');
 						$expert_document_id = $params->get('expert_document_id', '36');
 
-						$userAttachments = $m_application->getUserAttachmentsByFnum($fnum);
+                        $app = JFactory::getApplication();
+                        $jinput = $app->input;
+						 $search = $jinput->getString('search');
+
+                        $c_files = new EmundusModelFiles;
+
+
+                        $userAttachments = $m_application->getUserAttachmentsByFnum($fnum,$search);
+                        //var_dump($search);
+
 						$profile = $m_profiles->getProfileByCampaign($fnumInfos['campaign_id']);
 						$attachmentsProgress = $m_application->getAttachmentsProgress($fnumInfos['applicant_id'], $profile['profile_id'], $fnum);
+                       $nameCategory = $c_files->getParamsNameCategory();
+
+                        //$userAttachments = [];
+                        //foreach($attachments as $key => $attachment) {
+                            //$userAttachments[$attachment->category][$key] = $attachment;
+                            //$userAttachments[$attachment->category][$key]->category = $c_files->getParamsCategory($attachment->category);
+                        //}
+
+
 						$this->assignRef('userAttachments', $userAttachments);
 						$this->assignRef('student_id', $fnumInfos['applicant_id']);
 						$this->assignRef('attachmentsProgress', $attachmentsProgress);
 						$this->assignRef('expert_document_id', $expert_document_id);
-					} else {
+						$this->assignRef('nameCategory', $nameCategory);
+
+
+                    } else {
 						echo JText::_("RESTRICTED_ACCESS");
 						exit();
 					}

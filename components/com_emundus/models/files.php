@@ -3167,4 +3167,59 @@ die();*/
 	    return $birthdate;
     }
 
+    public function getDocumentCategory(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($this->_db->quoteName('esa.*'))
+            ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
+            ->order($this->_db->quoteName('esa.category').'ASC');
+
+        $this->_db->setQuery($query);
+
+        return $this->_db->loadObjectList();
+    }
+
+    public function getParamsCategory($idCategory){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+//        $category = 'category';
+//        $group_id = '47';
+        $query
+            ->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47');
+
+        $db->setQuery($query);
+        $elements = $db->loadObjectList();
+
+        foreach ($elements as $element){
+
+            $params = json_decode($element->params);
+
+        }
+
+        return $params->sub_options->sub_labels[$idCategory];
+    }
+    public function getParamsNameCategory(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+//        $category = 'category';
+//        $group_id = '47';
+        $query
+            ->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47');
+
+        $db->setQuery($query);
+        $elements = $db->loadObjectList();
+
+        foreach ($elements as $element){
+
+            $params = json_decode($element->params);
+
+        }
+        return $params->sub_options->sub_labels;
+    }
+
 }

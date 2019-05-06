@@ -17,39 +17,71 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <input type="hidden" id="view" name="view" value="files">
 <div class="panel panel-default">
 	<?php if (is_array($this->datas)):?>
-	
-		<div>
-			<?php echo $this->pagination->getResultsCounter(); ?>
-		</div>
+        <div class="container-result">
+            <div>
+                <?= $this->pagination->getResultsCounter(); ?>
+            </div>
+            <div id="countCheckedCheckbox" class="countCheckedCheckbox"></div>
+
+        </div>
 		<div class="em-data-container">
 			<table class="table table-striped table-hover" id="em-data">
-				<thead >
+				<thead>
 				<tr>
 					<?php foreach ($this->datas[0] as $kl => $v): ?>
-						<th title="<?php echo JText::_(strip_tags($v))?>" id="<?php echo $kl?>" >
-							<p class="em-cell">
+						<th title="<?= JText::_(strip_tags($v)); ?>" id="<?= $kl; ?>" >
+							<div class="em-cell">
 								<?php if($kl == 'check'): ?>
-									<label for="em-check-all">
+
+                                    <div class="selectContainer" id="selectContainer">
+                                        <div class="selectPage">
+                                            <input type="checkbox" value="-1" id="em-check-all" class="em-hide em-check">
+                                            <label for="em-check-all" class="check-box"></label>
+                                        </div>
+                                        <div class="selectDropdown" id="selectDropdown">
+                                            <i class="fas fa-sort-down"></i>
+                                        </div>
+                                        <div id="tooltipSelect">
+                                            <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
+                                        </div>
+                                    </div>
+                                    <div class="selectAll" id="selectAll">
+                                        <label for="em-check-all">
+                                            <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
+                                            <span id="span-check-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+                                        </label>
+                                        <label class="em-check-all-all" for="em-check-all-all">
+                                            <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
+                                            <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL'); ?></span>
+                                        </label>
+                                        <label class="em-check-none" for="em-check-none">
+                                            <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
+                                        </label>
+                                    </div>
+
+									<!--<label for="em-check-all">
 										<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-										<span><?php echo JText::_('COM_EMUNDUS_CHECK_ALL')?></span>
+										<span><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
 									</label>
+
 									<label class="em-hide em-check-all-all" for="em-check-all-all">
 										<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-										<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
-									</label>
-								<?php elseif ($this->lists['order'] == $kl):?>
-									<?php if ($this->lists['order_dir'] == 'desc'):?>
+										<span class="em-hide em-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL');?></span>
+									</label>-->
+								<?php elseif ($this->lists['order'] == $kl): ?>
+									<?php if ($this->lists['order_dir'] == 'desc'): ?>
 										<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-									<?php else:?>
+									<?php else: ?>
 										<span class="glyphicon glyphicon-sort-by-attributes"></span>
 									<?php endif;?>
 									<strong>
-										<?php echo JText::_($v)?>
+										<?= JText::_($v)?>
 									</strong>
-								<?php else:?>
-									<?php echo JText::_($v)?>
+								<?php else: ?>
+									<?= JText::_($v)?>
 								<?php endif;?>
-							</p>
+
+							</div>
 						</th>
 					<?php endforeach; ?>
 				</tr>
@@ -63,39 +95,39 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 								<td <?php if ($k == 'check'&& $value->class != null) { echo 'class="'.$value->class.'"'; } ?>>
 									<div class="em-cell" >
 										<?php if ($k == 'check'): ?>
-											<label for = "<?php echo $line['fnum']->val ?>_check">
-												<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+											<label for = "<?= $line['fnum']->val ?>_check">
+												<input type="checkbox" name="<?= $line['fnum']->val ?>_check" id="<?= $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
 												<?php
 													$tab = explode('-', $key);
 													echo ($tab[1] + $this->pagination->limitstart);
 												?>
 											</label>
 										<?php elseif ($k == 'status'):?>
-											<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
+											<span class="label label-<?= $value->status_class ?>" title="<?= $value->val ?>"><?= $value->val ?></span>
 										<?php elseif ($k == 'fnum'):?>
-											<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
+											<a href="#<?= $value->val ?>|open" id="<?= $value->val ?>" class="em_file_open">
 												<?php if (isset($value->photo)) :?>
-													<div class="em_list_photo"><?php echo $value->photo; ?></div>
+													<div class="em_list_photo"><?= $value->photo; ?></div>
 												<?php endif; ?>
 												<div class="em_list_text">
-													<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
-													<div class="em_list_email"><?php echo $value->user->email; ?></div>
-													<div class="em_list_email"><?php echo $value->user->id; ?></div>
+													<span class="em_list_text" title="<?= $value->val ?>"> <strong> <?= $value->user->name; ?></strong></span>
+													<div class="em_list_email"><?= $value->user->email; ?></div>
+													<div class="em_list_email"><?= $value->user->id; ?></div>
 												</div>
 											</a>
 									<?php elseif ($k == "access"):?>
-										<?php echo $this->accessObj[$line['fnum']->val]?>
+										<?= $this->accessObj[$line['fnum']->val]?>
 									<?php elseif ($k == "id_tag"):?>
-										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
+										<?= @$this->colsSup['id_tag'][$line['fnum']->val]?>
                                     <?php elseif (array_key_exists($k, $this->colsSup)) :?>
-                                        <?php echo @$this->colsSup[$k][$line['fnum']->val] ?>
+                                        <?= @$this->colsSup[$k][$line['fnum']->val] ?>
 									<?php else :?>
 										<?php if ($value->type == 'text' ) :?>
-											<?php echo strip_tags($value->val); ?>
+											<?= strip_tags($value->val); ?>
 										<?php elseif ($value->type == "date")  :?>
 										<strong>
 											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
-													<span class="em-radio" id="<?php echo $value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
+													<span class="em-radio" id="<?= $value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
 											<?php else: ?>
 												<?php
 													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
@@ -105,7 +137,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<?php endif; ?>
 										</strong>
 										<?php else: ?>
-											<?php echo $value->val; ?>
+											<?= $value->val; ?>
 										<?php endif; ?>
 									<?php endif; ?>
 									</div>
@@ -118,9 +150,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</table>
 		</div>
 		<div class="well">
-			<label for="pager-select" class="em-paginate-label"><?php echo JText::_('DISPLAY') ?></label>
+			<label for="pager-select" class="em-paginate-label"><?= JText::_('DISPLAY') ?></label>
 			<select name="pager-select" class="chzn-select" id="pager-select">
-				<option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?php echo JText::_('ALL')?></option>
+				<option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?= JText::_('ALL')?></option>
 				<option value="5" <?php if ($this->pagination->limit == 5) { echo "selected=true"; } ?>>5</option>
 				<option value="10" <?php if ($this->pagination->limit == 10) { echo "selected=true"; } ?>>10</option>
 				<option value="15" <?php if ($this->pagination->limit == 15) { echo "selected=true"; } ?>>15</option>
@@ -132,37 +164,37 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</select>
 			<div>
 				<ul class="pagination pagination-sm">
-					<li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'} ?>"><<</a></li>
+					<li><a href="#em-data" id="<?= $this->pagination->{'pagesStart'} ?>"><<</a></li>
 					<?php if ($this->pagination->{'pagesTotal'} > 15):?>
 
 						<?php for ($i = 1; $i <= 5; $i++ ):?>
-							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?php echo $i ?>" href="#em-data"><?php echo $i ?></a></li>
+							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 						<?php endfor;?>
 						<li class="disabled"><span>...</span></li>
 						<?php if ($this->pagination->{'pagesCurrent'} <= 5):?>
 							<?php for ($i = 6; $i <= 10; $i++ ):?>
-								<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?php echo $i ?>" href="#em-data"><?php echo $i ?></a></li>
+								<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 							<?php endfor;?>
 						<?php else:?>
 							<?php for ($i = ($this->pagination->{'pagesCurrent'} - 2); $i <= ($this->pagination->{'pagesCurrent'} + 2); $i++ ):?>
-								<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?php echo $i ?>" href="#em-data"><?php echo $i ?></a></li>
+								<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 							<?php endfor;?>
 						<?php endif;?>
 						<li class="disabled"><span>...</span></li>
 						<?php for ($i = ($this->pagination->{'pagesTotal'} - 4); $i <= $this->pagination->{'pagesTotal'}; $i++ ):?>
-							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?php echo $i ?>" href="#em-data"><?php echo $i ?></a></li>
+							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 						<?php endfor;?>
 					<?php else:?>
 						<?php for ($i = 1; $i <= $this->pagination->{'pagesStop'}; $i++ ):?>
-							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?php echo $i ?>" href="#em-data"><?php echo $i ?></a></li>
+							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 						<?php endfor;?>
 					<?php endif;?>
-					<li><a href="#em-data" id="<?php echo $this->pagination->{'pagesTotal'} ?>">>></a></li>
+					<li><a href="#em-data" id="<?= $this->pagination->{'pagesTotal'} ?>">>></a></li>
 				</ul>
 			</div>
 		</div>
 	<?php else:?>
-		<?php echo $this->datas?>
+		<?= $this->datas?>
 	<?php endif;?>
 </div>
 
@@ -191,12 +223,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                         } else {
                             console.log(result);
                             $('.em-dimmer').remove();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR) {
                         $('.em-dimmer').remove();
-                        $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        $("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }
                 })
@@ -212,5 +244,106 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		$('.em-data-container').doubleScroll();
 	});
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
+
+
 </script>
 
+<script>
+
+    $('#selectContainer')
+        .on("mouseenter",function(){
+
+            $('#tooltipSelect').css({
+                'height':'30px',
+                'width':'70px',
+                'display':'flex',
+                'opacity':'1',
+                'transiition':'display,500ms',
+                'background':'#33332E',
+                'border-radius':'10px'
+            });
+            $('#tooltipSelect p').css({
+                'color':'white',
+                'font-size':'0.6rem',
+            });
+
+    })
+    .on("mouseleave",function(){
+        $('#tooltipSelect').css({
+            'display':'none',
+            'transiition':'display,500ms'
+        })
+    });
+</script>
+<script>
+    $('#selectAll').css('display','none');
+    $('#selectDropdown').click(function(e){
+        $('#selectContainer').removeClass('borderSelect');
+        $('#selectAll').slideToggle(function(){
+
+            if($(this).is(':visible')){
+
+                $('#selectContainer').addClass('borderSelect');
+
+                $(document).click(function (e){
+
+                    var container = $("#selectDropdown");
+
+                    if (!container.is(e.target) && container.has(e.target).length === 0){
+
+                        $('#selectAll').slideUp();
+                        $('#selectContainer').removeClass('borderSelect');
+                    }
+                });
+
+            }
+        });
+    });
+
+    $('#selectAll>span').click(function(){
+        $('#selectAll').slideUp();
+    });
+
+
+</script>
+<script>
+
+
+
+    $('#span-check-all-all').click(function(){
+
+        $('.selectAll.em-check-all-all#em-check-all-all').prop('checked',true);// all
+        //$('.em-check#em-check-all').prop('checked',true);//.selectPage Page
+        //$('.em-check-all#em-check-all').prop('checked',true);//.selectAll Page
+        $('.em-check').prop('checked',true);
+
+        reloadActions('files', undefined, true);
+
+    });
+    $('#span-check-none').click(function(){
+        $('#em-check-all-all').prop('checked',false);
+        $('.em-check#em-check-all').prop('checked',false);
+        $('.em-check-all#em-check-all').prop('checked',false);
+        $('.em-check').prop('checked',false);
+        $('#countCheckedCheckbox').html('');
+        reloadActions('files', undefined, false);
+    });
+    $(document).on('change', '.em-check, .em-check-all-all', function() {
+
+
+        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
+        let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
+        console.log(allCheck);
+        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
+
+        let files = countCheckedCheckbox == 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
+        if(countCheckedCheckbox != 0){
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+        }
+        else{
+            $('#countCheckedCheckbox').html('');
+        }
+    console.log(countCheckedCheckbox);
+    });
+
+</script>
