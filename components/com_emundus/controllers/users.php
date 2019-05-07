@@ -669,6 +669,7 @@ class EmundusControllerUsers extends JControllerLegacy {
     public function regeneratepassword() {
 
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
         jimport('joomla.user.helper');
 
         $current_user = JFactory::getUser();
@@ -677,13 +678,14 @@ class EmundusControllerUsers extends JControllerLegacy {
             echo json_encode((object)array('status' => false));
             exit;
         }
-        $id = JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
-        $m_user = new EmundusModelUsers(); // Instanciation of object from user model
-        $users = $m_user->getUsersById($id); // get user from uid
+        $id 		= JFactory::getApplication()->input->get('user', null); //get id from the ajax request
+        $m_users = new EmundusModelUsers();// Instanciation of object from user model
+        $users = $m_users->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
 
             $passwd = JUserHelper::genRandomPassword(8); //generate a random password
             $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
+
 
             $res = $m_users->setNewPasswd($id, $passwd_md5); //update password
             $post = [ // values tout change in the bdd with key => values
