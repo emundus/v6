@@ -727,7 +727,7 @@ label[for="em-file_to_upload"]:hover {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    position: relative;
     width: 40px;
     height: 40px;
 }
