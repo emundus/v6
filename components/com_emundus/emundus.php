@@ -274,7 +274,6 @@ JText::script('ID_CANDIDAT');
 JText::script('FNUM');
 JText::script('APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
-JText::script('ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
 JText::script('ARE_YOU_SURE_TO_DELETE_USERS');
 
 
