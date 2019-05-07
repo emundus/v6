@@ -222,7 +222,8 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
         var headTag = document.getElementsByTagName("head")[0];
         var jqTag = document.createElement('script');
         jqTag.type = 'text/javascript';
-        jqTag.src = '<?php echo JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js'; ?>';
+        /* jqTag.src = '<?php echo JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js'; ?>';*/
+        jqTag.src = '<?php echo JURI::base() . 'media/jui/js/jquery.min.js'; ?>';
         jqTag.onload = jQueryCode;
         headTag.appendChild(jqTag);
     } else {

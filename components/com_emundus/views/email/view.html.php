@@ -57,7 +57,8 @@ class EmundusViewEmail extends JViewLegacy
 	    $document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 		$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
-		$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+		//$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+		$document->addScript("media/jui/js/jquery.min.js" );
 		$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
 /*	    if (is_null($fnums))

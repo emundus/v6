@@ -116,7 +116,8 @@ $stickyToolbar = $params->get('stickyToolbar', '1');
 			}
 		</style>
 	<?php endif; ?>
-	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery.js"></script>
+	<!--<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery.js"></script>-->
+	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery.min.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery-noconflict.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/jui/js/bootstrap.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
