@@ -781,15 +781,17 @@ label[for="em-file_to_upload"]:hover {
     border-bottom: 2px solid #B2B2B2;
 }
 .em-container-loader{
+    height: 100vh;
+    background-color: rgba(0,0,0,0.2);
+    position: relative;
     display: flex;
     flex-direction: row;
+    align-content: center;
     justify-content: center;
-    align-items: center;
-    background: white;
-    height: 100vh;
-    position: relative;
-    top: 20%;
-    opacity: 0.5;
+}
+.em-container-loader img{
+    height: auto;
+    width: 30vh;
 }
 .em-button {
     cursor: pointer;
