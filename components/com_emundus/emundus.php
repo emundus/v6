@@ -88,6 +88,7 @@ JText::script('FILTER_DELETED');
 JText::script('SQL_ERROR');
 JText::script('COM_EMUNDUS_FORM_TITLE');
 JText::script('COM_EMUNDUS_FORM_GROUP');
+JText::script('COM_EMUNDUS_TO_UPPER_CASE');
 JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION');
 JText::script('COM_EMUNDUS_CHOOSE_OTHER_OPTION');
 JText::script('GENERATE_ZIP');
@@ -143,6 +144,8 @@ JText::script('PLEASE_SELECT_TAG');
 JText::script('VALID');
 JText::script('INVALID');
 JText::script('UNCHECKED');
+JText::script('SELECT_AT_LEAST_ONE_FILE');
+JText::script('INFORMATION');
 
 
 // view user
@@ -162,6 +165,7 @@ JText::script('FILES_GENERATED');
 JText::script('STATE');
 JText::script('SWITCH_PROFILE');
 JText::script('PROFILE_CHOSEN');
+Jtext::script('ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -273,6 +277,7 @@ JText::script('ID_CANDIDAT');
 JText::script('FNUM');
 JText::script('APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
+JText::script('ARE_YOU_SURE_TO_DELETE_USERS');
 
 
 //Export ZIP

@@ -7,6 +7,7 @@
 	</layout>
 	<fields name="params">
 		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+			<field name="custom_title" type="field" label="COM_EMUNDUS_CHECKLIST_CUSTOM_TITLE" description="COM_EMUNDUS_CHECKLIST_CUSTOM_TITLE_DESC" />
 			<field
 				name="show_info_panel"
 				type="radio"

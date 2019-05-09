@@ -26,40 +26,42 @@ try {
     echo $e->getMessage() . '<br />';
 }
 
-$is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->end_date)) ? true : false;
-$is_app_sent         = (@$user->status != 0)? true : false;
+$is_dead_line_passed = strtotime(date($now)) > strtotime(@$user->end_date);
+$is_app_sent         = @$user->status != 0;
 
 $block_upload = true;
 if ((!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
     $block_upload = false;
 }
 
-if ($this->show_info_panel) : ?>
+if (!empty($this->custom_title)) :?>
+    <h1 class="em-checklist-title"><?php echo $this->custom_title; ?></h1>
+<?php endif; ?>
+<?php if ($this->show_info_panel) :?>
     <fieldset>
         <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
         <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
             <h3><?php echo $this->title; ?></h3>
             <?php
-                if ($this->sent && count($this->result) == 0)
-                    echo '<h3>'.JText::_('APPLICATION_SENT').'</h3>';
-                else
-                    echo $this->text;
+                if ($this->sent && count($this->result) == 0) {
+	                echo '<h3>' . JText::_('APPLICATION_SENT') . '</h3>';
+                } else {
+	                echo $this->text;
+                }
 
-            if(!$this->need) {
-            ?>
-                    <h3><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a>
-                    </h3>
-                <?php } ?>
+            if (!$this->need) { ?>
+                    <h3><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h3>
+            <?php } ?>
         </div>
     </fieldset>
 
 <?php
-    if(!$this->sent) : ?>
+    if (!$this->sent) :?>
     <p>
-    <div id="instructions">
-        <h3><?php echo $this->instructions->title; ?></h3>
-        <?php echo $this->instructions->text; ?>
-    </div>
+        <div id="instructions">
+            <h3><?php echo $this->instructions->title; ?></h3>
+            <?php echo $this->instructions->text; ?>
+        </div>
     </p>
     <?php endif; ?>
 <?php endif; ?>
@@ -69,7 +71,7 @@ if ($this->show_info_panel) : ?>
     <div id="attachment_list">
         <p><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
-            <div id="legend">
+        <div id="legend">
             <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>,
             <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>,
             <div class="need_missing_fac"><?php echo JText::_('MISSING_DOC_FAC'); ?></div>
@@ -79,11 +81,11 @@ if ($this->show_info_panel) : ?>
         $file_upload = 1;
         $attachment_list_mand = "";
         $attachment_list_opt = "";
-        foreach($this->attachments as $attachment) {
-            if ($attachment->nb==0) {
-                $class= $attachment->mandatory?'need_missing':'need_missing_fac';
+        foreach ($this->attachments as $attachment) {
+            if ($attachment->nb == 0) {
+                $class = $attachment->mandatory?'need_missing':'need_missing_fac';
             } else {
-                $class= 'need_ok';
+                $class = 'need_ok';
             }
             $div = '<fieldset id="a'.$attachment->id.'">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
@@ -93,22 +95,20 @@ if ($this->show_info_panel) : ?>
                 <div class="table-responsive">
                 <table id="'.$attachment->id .'" class="table">';
 
-            if ($attachment->nb > 0)
-                foreach($attachment->liste as $item) {
+            if ($attachment->nb > 0) {
+                foreach ($attachment->liste as $item) {
                     $div .= '<tr class="em-added-files">
                     <td>';
-                    if($item->can_be_viewed==1) {
-                    $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
-                    }
-                    else {
-                    $div .= JText::_('CANT_VIEW') ;
+                    if ($item->can_be_viewed==1) {
+                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
+                    } else {
+                        $div .= JText::_('CANT_VIEW') ;
                     }
                     $div .= '&nbsp;-&nbsp;' ;
-                    if($item->can_be_deleted==1 && !$block_upload) {
-                    $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
-                    }
-                    else {
-                    $div .= JText::_('CANT_DELETE');
+                    if ($item->can_be_deleted==1 && !$block_upload) {
+                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
+                    } else {
+                        $div .= JText::_('CANT_DELETE');
                     }
                     $div .= ' | ';
                     $div .= JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
@@ -118,6 +118,7 @@ if ($this->show_info_panel) : ?>
                     }
                     $div .= '</td></tr>';
                 }
+            }
             // Disable upload UI if
             if (!$block_upload) {
                 
@@ -238,10 +239,9 @@ if ($this->show_info_panel) : ?>
           });
 
         }
-    };
+    }
     </script>';
                     $div .= '</form>';
-                    //$div .= '</div>';
                     $div .= '</td>
                 </tr>
                 <tr class="em-allowed-files">
@@ -263,10 +263,11 @@ if ($this->show_info_panel) : ?>
                 $div .= JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) )));
             }
             $div .= '</table></div></fieldset>';
-            if ($attachment->mandatory)
-                $attachment_list_mand .= $div;
-            else
-                $attachment_list_opt .= $div;
+            if ($attachment->mandatory) {
+	            $attachment_list_mand .= $div;
+            } else {
+	            $attachment_list_opt .= $div;
+            }
 
             $file_upload++;
         }
@@ -276,7 +277,7 @@ if ($this->show_info_panel) : ?>
     <div class="row">
       <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
     <?php
-        if ($attachment_list_mand!='') {
+        if ($attachment_list_mand != '') {
            echo '<div id="attachment_list_mand"><h1>'.JText::_('MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
         }
     ?>
@@ -288,7 +289,7 @@ if ($this->show_info_panel) : ?>
     ?>
       <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
     <?php
-        if ($attachment_list_opt!='') {
+        if ($attachment_list_opt != '') {
            echo '<div id="attachment_list_opt"><h1>'.JText::_('OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
         }
     ?>

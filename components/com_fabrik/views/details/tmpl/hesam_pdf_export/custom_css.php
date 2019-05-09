@@ -48,118 +48,58 @@ echo <<<EOT
 
 /* BEGIN - Your CSS styling starts here */
 
-#$form .foobar {
-	display: none;
-}
-.fabrikForm.fabrikDetails {
-        display: block;
-        width: 750px;
-}
-
-button {
-    font-size: 0.8rem !important;
-    line-height: 0.15;
-    letter-spacing: 0.1rem !important;
-    text-transform: uppercase !important;
-    background: #bb0e29 !important;
-    color: #fff !important;
-    border: 1px solid transparent !important;
-    border-radius: 0rem !important;
-    margin: 0 0 0.5rem 0 !important;
-    padding: 1rem 1.5rem !important;
-    vertical-align: middle !important;
-    text-shadow: none !important;
-    position: fixed;
-      top: 0;
-      left: 0;
-}
-
-    .em-pdf-group {
-    	right: 0;
-    	top: 0;
-        margin-bottom: 20px;
-/*page-break-inside: avoid;*/
-    }
-   .breaker {
-      page-break-before: always;
-   }
-    .em-pdf-title-div {
+    .em-pdf-title-div{
         background-color: #e9E9E9;
         border-top: 1px solid;
         border-bottom: 1px solid;
-	margin-bottom: 0px;
     }
+
+    table {
+        table-layout:fixed;
+        width: 100%;
+    }
+
+    .em-pdf-group {
+        margin-bottom: 20px;
+    }
+
+    .em-pdf-title-div {
+        background-color: #e9E9E9;
+	    margin-bottom: 0px;
+    }
+    
+    .em-pdf-title-div td {
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+    }
+    
     .em-pdf-title-div h3 {
         margin: 0px 0px 0px 10px;
     }
-    .em-pdf-element {
-        font-size: 16px;
-        border-bottom: 1px solid;
-        display: block;
-        width: 745px;
-	    margin: 10px 0px;
-    }
-    .em-pdf-element-label {
-        vertical-align: top;
-        display: inline-block;
-        width: 245px;
-        font-weight: bold;
-    }
+
     .em-pdf-element-label p {
         margin: 0px 0px 0px 10px;
     }
-    .em-pdf-element-value {
-        display: inline-block;
-        width: 495px;
-	margin-top: 5px;
-    }
-    .em-pdf-title-div a {
-    font-size: 20px !important;
-    color: #bb0E29 !important;
-}
-.fabrikForm.fabrikDetails {
-    display: block !important;
-    width: 850px !important;
-}
+
+
 .em-pdf-element {
     font-size: 16px !important;
-    border-bottom: 1px solid !important;
-    display: block !important;
-    width: auto !important;
+    
     margin: 10px 0px !important;
 }
 .em-pdf-element-label {
-    vertical-align: top !important;
-    display: inline-block !important;
-    width: 29% !important;
-    font-weight: bold !important;
+border-bottom: 1px solid !important;
+    vertical-align: top ;
+    width: 26% ;
+    font-weight: bold;
 }
 .em-pdf-element-value {
-    display: inline-block !important;
-    width: 70% !important;
+border-bottom: 1px solid !important;
+    width: 74%;
     margin-top: 0px !important;
 }
 
-@media only screen and (min-width: 769px) and (max-width:850px) {
-    .fabrikForm.fabrikDetails {
-        display: block !important;
-        width: 750px !important;
-    }
-}
 
-@media only screen and (max-width: 768px) {
-    .fabrikForm.fabrikDetails {
-        display: block !important;
-        width: 100% !important;
-    }
-}
-
-@media print {
-  button {
-    display: none;
-  }
-}
-    
 /* END - Your CSS styling ends here */
 
 EOT;

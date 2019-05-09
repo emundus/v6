@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 /**
  * Create a Joomla user from the forms data
  *
@@ -872,6 +873,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 		$user = JFactory::getUser();
 		$db = JFactory::getDbo();
 
+		$m_users = new EmundusModelUsers;
 		if ((int) $user->get('id') !== 0)
 		{
 			return;
@@ -880,6 +882,8 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 		/*
 		 * Update emundus_users table
 		 */
+
+		$profile = $m_users->getCurrentUserProfile($this->user_id);
 		$q = 'UPDATE #__emundus_users SET profile='.$this->profile.', user_id='.$this->user_id.' WHERE user_id=1 AND email like '.$db->quote($this->emailvalue);
 		$db->setQuery($q);
 		$db->execute();
@@ -888,6 +892,18 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 		{
 			$this->autoLogin();
 		}
+
+		$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$this->user_id.",".$profile.",'','')";
+		$db->setQuery($query);
+		$db->execute();
+
+		$query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id = ' . $profile;
+		$db->setQuery($query);
+
+
+		$group = $db->loadColumn();
+
+		JUserHelper::addUserToGroup($user->user_id,$group[0]);
 	}
 
 	/**

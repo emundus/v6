@@ -406,6 +406,13 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
+	public function getEmundusUserByEmail($email) {
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM #__emundus_users WHERE email like "'.$email.'"';
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
+
     public function getProfileIDByCampaignID($cid) {
         $db = JFactory::getDBO();
         $query = 'SELECT `profile_id` FROM `#__emundus_setup_campaigns` WHERE id='.$cid;
@@ -1231,6 +1238,25 @@ class EmundusModelUsers extends JModelList {
     }
 
 
+    // Get a list of user IDs that are currently connected
+	public function getOnlineUsers() {
+    	$db = $this->getDbo();
+    	$query = $db->getQuery(true);
+
+    	$query
+		    ->select("userid")
+		    ->from("#__session");
+
+		$db->setQuery($query);
+    	try {
+    		return $db->loadColumn();
+	    } catch (Exception $e) {
+		    JLog::add('Error getting online users in model/users at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    return false;
+	    }
+
+	}
+
     // Get groups of user
     public function getUserGroups($uid, $return = 'AssocList') {
         try {
@@ -1680,9 +1706,16 @@ class EmundusModelUsers extends JModelList {
         return $ret;
     }
 
-    public function getUserById($uid) {
+    public function getUserById($uid) { // user of emundus
         $db = JFactory::getDBO();
         $query = 'SELECT * FROM #__emundus_users WHERE user_id = '.$uid;
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+
+    public function getUsersById($id){ //user of application
+        $db = JFactory::getDBO();
+        $query = 'SELECT * FROM #__users WHERE id = '.$id;
         $db->setQuery($query);
         return $db->loadObjectList();
     }

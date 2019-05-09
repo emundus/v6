@@ -1819,7 +1819,7 @@ td {
                                         elseif($elements[$j]->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$r_elt));
                                         }
-                                        elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
+                                        elseif($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                             $params = json_decode($elements[$j]->params);
                                             $index = array_search($r_elt, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
@@ -1887,7 +1887,7 @@ td {
                                     elseif($element->plugin == 'checkbox') {
                                         $elt = implode(", ", json_decode (@$element->content));
                                     }
-                                    elseif($element->plugin=='dropdown' || $iteme->element=='radiobutton') {
+                                    elseif($element->plugin=='dropdown' || $element->plugin=='radiobutton') {
                                         $params = json_decode($element->params);
                                         $index = array_search($element->content, $params->sub_options->sub_values);
                                         if (strlen($index) > 0) {
@@ -2754,49 +2754,102 @@ td {
         return true;
     }
 
-    /**
-     * Gets the first page of the application form. Used for opening a file.
-     * @param String the URL to redirect to if it fails.
-     * @return String The URL to the form.
-     * @since 3.8.8
-     */
-    function getFirstPage($redirect = 'index.php') {
+	/**
+	 * Gets the first page of the application form. Used for opening a file.
+	 *
+	 * @param string $redirect
+	 * @param null   $fnums
+	 *
+	 * @return String The URL to the form.
+	 * @since 3.8.8
+	 */
+    function getFirstPage($redirect = 'index.php', $fnums = null) {
 
         $user = JFactory::getSession()->get('emundusUser');
         $db = JFactory::getDBo();
+	    $query = $db->getQuery(true);
 
-        if (empty($user->menutype))
-            return $redirect;
+        if (!empty($fnums)) {
 
-        $query = $db->getQuery(true);
-        $query->select(['id','link'])
-            ->from($db->quoteName('#__menu'))
-            ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"');
+	        $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
+		        ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+		        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
+		        ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
+		        ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'=1 AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+		        ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
+		        ->order($db->quoteName('m.lft').' DESC');
+	        $db->setQuery($query);
 
-        try {
-            $db->setQuery($query);
-            $res = $db->loadObject();
-            return $res->link.'&Itemid='.$res->id;
-        } catch (Exception $e) {
-            JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
-            return $redirect;
+	        try {
+		        return $db->loadAssocList('fnum');
+	        } catch (Exception $e) {
+		        JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        return $redirect;
+	        }
+		        
+        } else {
+
+	        if (empty($user->menutype)) {
+		        return $redirect;
+	        }
+	        
+	        $query->select(['id','link'])
+		        ->from($db->quoteName('#__menu'))
+		        ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"');
+
+	        try {
+		        $db->setQuery($query);
+		        $res = $db->loadObject();
+		        return $res->link.'&Itemid='.$res->id;
+	        } catch (Exception $e) {
+		        JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        return $redirect;
+	        }
+
         }
-
     }
 
-    public function attachment_validation($attachment_id, $state)
-    {
+    public function attachment_validation($attachment_id, $state) {
         $dbo = $this->getDbo();
-        try
-        {
+        try {
             $query = 'UPDATE #__emundus_uploads  SET `is_validated` = '.(int) $state.' WHERE `id` = '.(int) $attachment_id;
-            #die($query);
             $dbo->setQuery($query);
             return $dbo->execute();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             throw $e;
         }
+    }
+
+
+	/** Gets the URL of the final form in the application in order to submit.
+	 * @param $fnums
+	 *
+	 * @return Mixed
+	 */
+    function getConfirmUrl($fnums) {
+
+    	if (empty($fnums)) {
+    		return false;
+	    }
+
+    	$db = JFactory::getDbo();
+    	$query = $db->getQuery(true);
+
+    	$query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
+		    ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+		    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
+		    ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
+		    ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'>=0 AND '.$db->quoteName('m.level').'=1 AND '.$db->quoteName('m.link').' <> "" AND '.$db->quoteName('m.link').' <> "#"')
+		    ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
+	        ->order($db->quoteName('m.lft').' ASC');
+
+    	$db->setQuery($query);
+    	try {
+    		return $db->loadAssocList('fnum');
+	    } catch (Exception $e) {
+    		JLog::add('Error getting confirm URLs in model/application at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+    		return false;
+	    }
+
     }
 }

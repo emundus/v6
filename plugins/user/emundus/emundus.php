@@ -34,8 +34,9 @@ class plgUserEmundus extends JPlugin
      * @since   1.6
      */
     public function onUserAfterDelete($user, $succes, $msg) {
-        if (!$succes)
-            return false;
+        if (!$succes) {
+	        return false;
+        }
 
         $db = JFactory::getDbo();
         $db->setQuery(
@@ -77,40 +78,47 @@ class plgUserEmundus extends JPlugin
         return true;
     }
 
-    /**
-     * Utility method to act on a user after it has been saved.
-     *
-     * This method sends a registration email to new users created in the backend.
-     *
-     * @param   array       $user       Holds the new user data.
-     * @param   boolean     $isnew      True if a new user is stored.
-     * @param   boolean     $success    True if user was succesfully stored in the database.
-     * @param   string      $msg        Message.
-     *
-     * @return  void
-     * @since   1.6
-     */
+	/**
+	 * Utility method to act on a user after it has been saved.
+	 *
+	 * This method sends a registration email to new users created in the backend.
+	 *
+	 * @param array   $user    Holds the new user data.
+	 * @param boolean $isnew   True if a new user is stored.
+	 * @param boolean $success True if user was succesfully stored in the database.
+	 * @param string  $msg     Message.
+	 *
+	 * @return  bool
+	 * @throws Exception
+	 * @since   1.6
+	 */
     public function onUserAfterSave($user, $isnew, $success, $msg) {
         // Initialise variables.
-	    $db             = JFactory::getDBO();
-	    $config         = JFactory::getConfig();
-	    $app            = JFactory::getApplication();
-        $jinput         = $app->input;
+	    $db = JFactory::getDBO();
+	    $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $details = $jinput->post->get('jform', null, 'none');
+		$fabrik = $jinput->post->get('listid', null);
 
-        $details        = $jinput->post->get('jform', null, 'none');
+        // If the details are empty, we are probably signing in via LDAP for the first time.
+        if ($isnew && empty($details) && empty($fabrik) && JPluginHelper::getPlugin('authentication','ldap')) {
 
-        $mail_to_user   = $this->params->get('mail_to_user', 1);
+        	require_once (JPATH_BASE.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+	        $m_users = new EmundusModelusers();
+	        $return = $m_users->searchLDAP($user['username']);
+	        if (!empty($return->users[0])) {
+		        $params = JComponentHelper::getParams('com_emundus');
+		        $ldapElements = explode(',', $params->get('ldapElements'));
+		        $details['firstname'] = $return->users[0][$ldapElements[2]];
+		        $details['name'] = $return->users[0][$ldapElements[3]];
+	        }
+        }
 
         if (count($details) > 0) {
-            //$profile = @isset($details['emundus_profile']['profile'])?@$details['emundus_profile']['profile']:@$details['profile'];
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
-            $name = @isset($details['emundus_profile']['name'])?$details['emundus_profile']['name']:$details['name'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
-            $email = @isset($details['emundus_profile']['email'])?$details['emundus_profile']['email']:@$details['email'];
             $schoolyear = @isset($details['emundus_profile']['schoolyear'])?$details['emundus_profile']['schoolyear']:@$details['schoolyear'];
-            $university_id = @isset($details['emundus_profile']['university_id'])?$details['emundus_profile']['university_id']:@$details['university_id'];
-            $group = @isset($details['emundus_profile']['group'])?$details['emundus_profile']['group']:@$details['group'];
 
             if ($isnew) {
                 // @TODO    Suck in the frontend registration emails here as well. Job for a rainy day.
@@ -127,7 +135,6 @@ class plgUserEmundus extends JPlugin
                     // catch any database errors.
                 }
 
-
                 if (isset($campaign_id) && !empty($campaign_id)) {
                     // Get the profile ID from the campaign selected
                     $db->setQuery('SELECT * FROM #__emundus_setup_campaigns WHERE id='.$campaign_id);
@@ -140,12 +147,7 @@ class plgUserEmundus extends JPlugin
                     $profile = 0;
                 }
 
-                /*
-                $db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id='.$profile);
-                $schoolyear = $db->loadResult(); */
-
                 // Insert data in #__emundus_users
-                // $db->setQuery('INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate) VALUES ('.$user['id'].',"'.ucfirst($firstname).'","'.strtoupper($lastname).'",'.$profile.',"'.$schoolyear.'","'.$user['registerDate'].'")');
                 $query = $db->getQuery(true);
                 $columns = array('user_id', 'firstname', 'lastname', 'profile', 'schoolyear', 'registerDate');
                 $values = array($user['id'], $db->quote(ucfirst($firstname)), $db->quote(strtoupper($lastname)), $profile, $db->quote($schoolyear), $db->quote($user['registerDate']));
@@ -162,7 +164,6 @@ class plgUserEmundus extends JPlugin
                 }
 
                 // Insert data in #__emundus_users_profiles
-                // $db->setQuery('INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user['id'].','.$profile.')');
                 $query = $db->getQuery(true);
                 $columns = array('user_id', 'profile_id');
                 $values = array($user['id'], $profile);
@@ -190,9 +191,8 @@ class plgUserEmundus extends JPlugin
                     }
                 }
 
-            }
-            elseif (!empty($lastname) && !empty($firstname)) { //die(print_r($details));
-                // Update name and fistname from #__users
+            } elseif (!empty($lastname) && !empty($firstname)) {
+                // Update name and firstname from #__users
                 $db->setQuery('UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'" WHERE id='.$user['id']);
                 $db->Query();
 
@@ -204,22 +204,24 @@ class plgUserEmundus extends JPlugin
 
                 $this->onUserLogin($user);
 
-                if (!$app->isAdmin()) 
+                if (!$app->isAdmin()) {
                     $app->redirect('index.php?option=com_users&view=profile&user_id='.$user['id']);
+                }
             }
         }
     }
 
-   
-    /**
-     * This method should handle any login logic and report back to the subject
-     *
-     * @param   array   $user       Holds the user data
-     * @param   array   $options    Array holding options (remember, autoregister, group)
-     *
-     * @return  boolean True on success
-     * @since   1.5
-     */
+
+	/**
+	 * This method should handle any login logic and report back to the subject
+	 *
+	 * @param array $user    Holds the user data
+	 * @param array $options Array holding options (remember, autoregister, group)
+	 *
+	 * @return  boolean True on success
+	 * @throws Exception
+	 * @since   1.5
+	 */
     public function onUserLogin($user, $options = array()) {
         // Here you would do whatever you need for a login routine with the credentials
         // Remember, this is not the authentication routine as that is done separately.
@@ -249,7 +251,7 @@ class plgUserEmundus extends JPlugin
 	        if ($user['type'] == 'OAuth2') {
 
 	        	// Insert the eMundus user info into the DB.
-		        if ($user['isnew'] == true) {
+		        if ($user['isnew']) {
 			        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 			        $m_users = new EmundusModelUsers();
 			        $user_params = [
@@ -301,23 +303,24 @@ class plgUserEmundus extends JPlugin
 	        $user = JFactory::getSession()->get('emundusUser');
 	        EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
 
-	        if (!empty($previous_url))
-	            $app->redirect($previous_url);
+	        if (!empty($previous_url)) {
+		        $app->redirect($previous_url);
+	        }
         }
         return true;
     }
 
-    /**
-     * This method should handle any logout logic and report back to the subject
-     *
-     * @param   array   $user       Holds the user data.
-     * @param   array   $options    Array holding options (client, ...).
-     *
-     * @return  object  True on success
-     * @since   1.5
-     */
-    public function onUserLogout($user, $options = array())
-    {
+	/**
+	 * This method should handle any logout logic and report back to the subject
+	 *
+	 * @param array $user    Holds the user data.
+	 * @param array $options Array holding options (client, ...).
+	 *
+	 * @return  Bool  True on success
+	 * @throws Exception
+	 * @since   1.5
+	 */
+    public function onUserLogout($user, $options = array()) {
         $my         = JFactory::getUser();
         $session    = JFactory::getSession();
         $app        = JFactory::getApplication();
@@ -327,14 +330,24 @@ class plgUserEmundus extends JPlugin
         $m_profile = new EmundusModelProfile;
 
         $campaign = $m_profile->getCurrentCampaignInfoByApplicant($user['id']);
-//die(var_dump($campaign));
-        if ($campaign["training"] == "pepite")
-            $url = "https://ideepepite.sorbonne-universites.fr/";
-        else
-            $url = '/';
+
+        if ($campaign["training"] == "pepite") {
+	        $url = "https://ideepepite.sorbonne-universites.fr/";
+        } else {
+	        $url = 'index.php';
+        }
 
         // Make sure we're a valid user first
         if ($user['id'] == 0 && !$my->get('tmp_user')) {
+            return true;
+        }
+
+        // Check if the user is using oAuth2 
+        if (JFactory::getUser($user["id"])->getParam('OAuth2')) {
+
+            JPluginHelper::importPlugin('authentication');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onUserAfterLogout', $user['id']);
             return true;
         }
 
@@ -356,9 +369,7 @@ class plgUserEmundus extends JPlugin
         );
         $db->query();
 
-
         $app->redirect($url);
-
         return true;
     }
 
@@ -373,8 +384,7 @@ class plgUserEmundus extends JPlugin
      * @return  object  A JUser object
      * @since   1.5
      */
-    protected function _getUser($user, $options = array())
-    {
+    protected function _getUser($user, $options = array()) {
         $instance = JUser::getInstance();
         if ($id = intval(JUserHelper::getUserId($user['username'])))  {
             $instance->load($id);
@@ -387,15 +397,13 @@ class plgUserEmundus extends JPlugin
         // Default to Registered.
         $defaultUserGroup = $config->get('new_usertype', 2);
 
-        $acl = JFactory::getACL();
-
-        $instance->set('id'         , 0);
-        $instance->set('name'           , $user['fullname']);
-        $instance->set('username'       , $user['username']);
-        $instance->set('password_clear' , $user['password_clear']);
-        $instance->set('email'          , $user['email']);  // Result should contain an email (check)
-        $instance->set('usertype'       , 'deprecated');
-        $instance->set('groups'     , array($defaultUserGroup));
+        $instance->set('id', 0);
+        $instance->set('name', $user['fullname']);
+        $instance->set('username', $user['username']);
+        $instance->set('password_clear', $user['password_clear']);
+        $instance->set('email', $user['email']);  // Result should contain an email (check)
+        $instance->set('usertype', 'deprecated');
+        $instance->set('groups', array($defaultUserGroup));
 
         //If autoregister is set let's register the user
         $autoregister = isset($options['autoregister']) ? $options['autoregister'] :  $this->params->get('autoregister', 1);
@@ -404,8 +412,7 @@ class plgUserEmundus extends JPlugin
             if (!$instance->save()) {
                 return JError::raiseWarning('SOME_ERROR_CODE', $instance->getError());
             }
-        }
-        else {
+        } else {
             // No existing user and autoregister off, this is a temporary user.
             $instance->set('tmp_user', true);
         }

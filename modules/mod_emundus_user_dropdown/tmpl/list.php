@@ -19,7 +19,7 @@
             <?php endif; ?>
             <?php
             $userToken = JSession::getFormToken();
-            echo '<li class="user-logout"><a href="/index.php?option=com_users&task=user.logout&' . $userToken . '=1">'.JText::_('LOGOUT').'</a></li>';
+            echo '<li class="user-logout"><a href="index.php?option=com_users&task=user.logout&' . $userToken . '=1">'.JText::_('LOGOUT').'</a></li>';
             ?>
         </ul>
     </div>

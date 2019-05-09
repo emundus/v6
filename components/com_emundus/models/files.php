@@ -396,10 +396,14 @@ class EmundusModelFiles extends JModelLegacy
      * @param $joined
      * @return bool
      */
-    public function isJoined($tab, $joined)
-    {
-        foreach ($joined as $j)
-            if ($tab == $j) return true;
+    public function isJoined($tab, $joined) {
+
+        foreach ($joined as $j) {
+	        if ($tab == $j) {
+	        	return true;
+	        }
+        }
+
         return false;
     }
 
@@ -446,94 +450,84 @@ class EmundusModelFiles extends JModelLegacy
      * @param array $tableAlias
      * @return array
      */
-    private function _buildWhere($tableAlias = array())
-    {
+    private function _buildWhere($tableAlias = array()) {
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params'); // came from search box
         $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
 
         $db = JFactory::getDBO();
 
-        if (!is_numeric(@$params['published']) || is_null(@$params['published']))
-            $params['published'] = 1;
+        if (!is_numeric(@$params['published']) || is_null(@$params['published'])) {
+	        $params['published'] = 1;
+        }
 
         $query = array('q' => '', 'join' => '');
-        if (!empty($params))
-        {
-            foreach ($params as $key => $value)
-            {
+        if (!empty($params)) {
+            foreach ($params as $key => $value) {
 
-                switch ($key)
-                {
+                switch ($key) {
                     case 'elements':
-                        if (!empty($value))
-                        {
-                            foreach ($value as $k => $v)
-                            {
+                        if (!empty($value)) {
+                            foreach ($value as $k => $v) {
                                 $tab = explode('.', $k);
 
-                                if (count($tab)>1)
-                                {
-                                    if (!empty($v))
-                                    {
-                                        if ($tab[0] == 'jos_emundus_training')
-                                        {
-                                            $query['q'] .= ' AND ';
-                                            $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
-                                        }
-                                        else
-                                        {
-                                            $query['q'] .= ' AND ';
-                                            // Check if it is a join table
-                                            $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
-                                            $db->setQuery($sql);
-                                            $join_from_table = $db->loadResult();
-                                        
-                                            if (!empty($join_from_table))
-                                            {
-                                                $table = $join_from_table;
-                                                $table_join = $tab[0];
+                                if (count($tab)>1 && !empty($v)) {
 
-                                                $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
-                                                
-                                                if (!isset($query[$table]))
-                                                {
-                                                    $query[$table] = true;
-                                                    if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias))
-                                                        $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jos_emundus_campaign_candidature.fnum ';
-                                                }
-                                                
-                                                if (!isset($query[$table_join]))
-                                                {
-                                                    $query[$table_join] = true;
-                                                    try {
-                                                        $db->setQuery('SELECT parent_id FROM '.$table_join);
-                                                        $col_exists = $db->loadResult();
+                                    if ($tab[0] == 'jos_emundus_training') {
+                                        $query['q'] .= ' AND ';
+                                        $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
+                                    } else {
+                                        $query['q'] .= ' AND ';
+                                        // Check if it is a join table
+                                        $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
+                                        $db->setQuery($sql);
+                                        $join_from_table = $db->loadResult();
 
-                                                        if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
-                                                            $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
-                                                    } catch(Exception $e) {
-                                                        if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
-                                                            $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
-                                                    }
-                                                    
+                                        if (!empty($join_from_table)) {
+                                            $table = $join_from_table;
+                                            $table_join = $tab[0];
+
+                                            $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
+
+                                            if (!isset($query[$table])) {
+                                                $query[$table] = true;
+                                                if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
+                                                    $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                 }
                                             }
-                                            else {
-                                                $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
-                                                $db->setQuery($sql);
-                                                $res = $db->loadResult();
-                                                if ($res == "radiobutton" || $res == "dropdown")
-                                                    $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
-                                                else
-                                                    $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
 
-                                                if (!isset($query[$tab[0]]))
-                                                {
-                                                    $query[$tab[0]] = true;
-                                                    if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)){
+                                            if (!isset($query[$table_join])) {
+                                                $query[$table_join] = true;
+                                                try {
+                                                    $db->setQuery('SELECT parent_id FROM '.$table_join);
+                                                    $col_exists = $db->loadResult();
+
+                                                    if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
+                                                        $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
+                                                    }
+                                                } catch(Exception $e) {
+                                                    if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
                                                         $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                     }
+                                                }
+
+                                            }
+
+                                        } else {
+
+                                        	$sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
+                                            $db->setQuery($sql);
+                                            $res = $db->loadResult();
+                                            if ($res == "radiobutton" || $res == "dropdown") {
+                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
+                                            } else {
+                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+                                            }
+
+                                            if (!isset($query[$tab[0]])) {
+                                                $query[$tab[0]] = true;
+                                                if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)) {
+                                                    $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                 }
                                             }
                                         }
@@ -544,35 +538,24 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
-                    case 'elements_other':
-                        if (!empty($value))
-                        {
-                            if (!empty($value))
-                            {
-                                foreach ($value as $k => $v)
-                                {
-                                    if (!empty($value))
-                                    {
-                                        if (!empty($v))
-                                        {
-                                            $tab = explode('.', $k);
-                                            if (count($tab)>1) {
-                                                if ($tab[0]=='jos_emundus_training')
-                                                {
-                                                    $query['q'] .= ' AND ';
-                                                    $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
-                                                }
-                                                else
-                                                {
-                                                    $query['q'] .= ' AND ';
-                                                    $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
 
-                                                    if (!isset($query[$tab[0]]))
-                                                    {
-                                                        $query[$tab[0]] = true;
-                                                        if (!array_key_exists($tab[0], $tableAlias))
-                                                            $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
-                                                    }
+                    case 'elements_other':
+                        if (!empty($value)) {
+                            foreach ($value as $k => $v) {
+                                if (!empty($v)) {
+                                    $tab = explode('.', $k);
+                                    if (count($tab) > 1) {
+                                        if ($tab[0]=='jos_emundus_training') {
+                                            $query['q'] .= ' AND ';
+                                            $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
+                                        } else {
+                                            $query['q'] .= ' AND ';
+                                            $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+
+                                            if (!isset($query[$tab[0]])) {
+                                                $query[$tab[0]] = true;
+                                                if (!array_key_exists($tab[0], $tableAlias)) {
+                                                    $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                 }
                                             }
                                         }
@@ -583,122 +566,96 @@ class EmundusModelFiles extends JModelLegacy
                         break;
 
                     case 's':
-                        if (!empty($value))
-                        {
+                        if (!empty($value)) {
                             $q = $this->_buildSearch($value, $tableAlias);
-                            foreach ($q['q'] as $v)
+                            foreach ($q['q'] as $v) {
                                 $query['q'] .= $v;
+                            }
 
-                            foreach ($q['join'] as $u)
-                                $query['join'] .= $u;
+                            foreach ($q['join'] as $u) {
+	                            $query['join'] .= $u;
+                            }
 
-                            if (isset($q['users']))
-                            {
+                            if (isset($q['users'])) {
                                 $query['users'] = true;
                             }
-                            if (isset($q['em_user']))
-                            {
+                            if (isset($q['em_user'])) {
                                 $query['em_user'] = true;
-
                             }
                         }
                         break;
 
                     case 'finalgrade':
-                        if (!empty($value))
-                        {
+                        if (!empty($value)) {
                             $query['q'] .= ' and fg.final_grade like "%' . $value . '%"';
-                            if (!isset($query['final_g']))
-                            {
+                            if (!isset($query['final_g'])) {
                                 $query['final_g'] = true;
-                                if (!array_key_exists('jos_emundus_final_grade', $tableAlias))
-                                    $query['join'] .=' left join #__emundus_final_grade as fg on fg.fnum like jos_emundus_campaign_candidature.fnum ';
+                                if (!array_key_exists('jos_emundus_final_grade', $tableAlias)) {
+	                                $query['join'] .= ' left join #__emundus_final_grade as fg on fg.fnum like jos_emundus_campaign_candidature.fnum ';
+                                }
                             }
                         }
                         break;
 
                     case 'schoolyear':
-                        if (!empty($value))
-                        {
-                            if (($value[0] == "%") || empty($value[0]))
-                                $query['q'] .= '';
-                            else
-                            {
+                        if (!empty($value)) {
+                            if (($value[0] == "%") || empty($value[0])) {
+	                            $query['q'] .= '';
+                            } else {
                                 $query['q'] .= ' and esc.year IN ("' . implode('","', $value) . '") ';
-                                /*if(!isset($query['campaign']))
-                                {
-                                    $query['campaign'] = true;
-                                    if (!array_key_exists('jos_emundus_setup_campaigns', $tableAlias))
-                                        $query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id ';
-                                }*/
                             }
                         }
                         break;
 
                     case 'programme':
-                        if (!empty($value))
-                        {
-                            if ($value[0] == "%" || empty($value[0]))
-                                $query['q'] .= ' ';
-                            else
-                            {
+                        if (!empty($value)) {
+                            if ($value[0] == "%" || empty($value[0])) {
+	                            $query['q'] .= ' ';
+                            } else {
                                 $query['q'] .= ' and sp.code IN ("' . implode('","', $value) . '") ';
-                                /*if (!isset($query['campaign']))
-                                {
-                                    $query['campaign'] = true;
-                                    if (!in_array('jos_emundus_setup_campaigns', $tableAlias))
-                                        $query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id ';
-                                }*/
-                                /*if (!in_array('jos_emundus_setup_programmes', $tableAlias))
-                                    $query['join'] .= ' left join #__emundus_setup_programmes as esp on esp.code like esc.training ';*/
                             }
-
                         }
                         break;
 
                     case 'campaign':
-                        if ($value)
-                        {
+                        if ($value) {
                             $query['q'] .= ' AND esc.published=1 ';
 
-                            if ($value[0] == "%" || empty($value[0]))
-                                $query['q'] .= ' ';
-                            else
-                            {
+                            if ($value[0] == "%" || empty($value[0])) {
+	                            $query['q'] .= ' ';
+                            } else {
                                 $query['q'] .= ' AND esc.id IN (' . implode(',', $value) . ') ';
                             }
                         }
                         break;
 
                     case 'groups':
-                        if (!empty($value))
-                        {
+                        if (!empty($value)) {
                             $query['q'] .= ' and  (ge.group_id=' . $db->Quote($value) . ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .$db->Quote($value) . ')) ';
 
-                            if (!isset($query['group_eval']))
-                            {
+                            if (!isset($query['group_eval'])) {
                                 $query['group_eval'] = true;
-                                if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
-                                    $query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jos_emundus_campaign_candidature.applicant_id and ge.campaign_id = jos_emundus_campaign_candidature.campaign_id ';
+                                if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
+	                                $query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jos_emundus_campaign_candidature.applicant_id and ge.campaign_id = jos_emundus_campaign_candidature.campaign_id ';
+                                }
                             }
-
                         }
                         break;
 
                     case 'user':
-                        if (!empty($value))
-                        {
+                        if (!empty($value)) {
                             $query['q'] .= ' and (ge.user_id=' . $db->Quote($value) .
                                 ' OR ge.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id=' .
                                 $db->Quote($value) . '))';
-                            if (!isset($query['group_eval']))
-                            {
+                            if (!isset($query['group_eval'])) {
                                 $query['group_eval'] = true;
-                                if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
-                                    $query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jos_emundus_campaign_candidature.applicant_id and ge.campaign_id = jos_emundus_campaign_candidature.campaign_id ';
+                                if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
+	                                $query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jos_emundus_campaign_candidature.applicant_id and ge.campaign_id = jos_emundus_campaign_candidature.campaign_id ';
+                                }
                             }
                         }
                         break;
+
                     /*case 'profile':
                         if(!empty($value) && @$value[0]!=0)
                         {
@@ -722,67 +679,70 @@ class EmundusModelFiles extends JModelLegacy
                         break;*/
 
                     case 'missing_doc':
-                        if (!empty($value))
-                        {
+                        if (!empty($value)) {
                             $query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
-                            if (!array_key_exists('jos_emundus_uploads', $tableAlias))
-                                $query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = jos_emundus_campaign_candidature.applicant_id ';
+                            if (!array_key_exists('jos_emundus_uploads', $tableAlias)) {
+	                            $query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = jos_emundus_campaign_candidature.applicant_id ';
+                            }
                         }
                         break;
 
                     case 'complete':
-                        if (!empty($value))
-                        {
-                            if ($value == 1)
-                                $query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
-                            else
-                                $query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
+                        if (!empty($value)) {
+                            if ($value == 1) {
+	                            $query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
+                            } else {
+	                            $query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
+                            }
                         }
                         break;
 
                     case 'validate':
-                        if (!empty($value))
-                        {
-                            if ($value == 1)
-                                $query['q'] .= ' and #__emundus_declaration.validated = 1 ';
-                            else
-                                $query['q'] .= ' and #__emundus_declaration.validated = 0 ';
+                        if (!empty($value)) {
+                            if ($value == 1) {
+	                            $query['q'] .= ' and #__emundus_declaration.validated = 1 ';
+                            } else {
+	                            $query['q'] .= ' and #__emundus_declaration.validated = 0 ';
+                            }
                         }
                         break;
 
                     case 'status':
-                        if ($value)
-                        {
+                        if ($value) {
                             $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
 
                             // session filter is empty
                             if ($value[0] == "%" || !isset($value[0]) || $value[0] == '') {
-                                if (!$filt_menu_defined)
-                                    $query['q'] .= ' ';
-                                else
-                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
-                            }
-                            else
-                            {
+                                if (!$filt_menu_defined) {
+	                                $query['q'] .= ' ';
+                                } else {
+	                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                }
+
+                            } else {
+
                                 // Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
                                 $diff = array();
-                                if (is_array($value) && $filt_menu_defined) 
-                                    $diff = array_diff($value, $filt_menu['status']);
+                                if (is_array($value) && $filt_menu_defined) {
+	                                $diff = array_diff($value, $filt_menu['status']);
+                                }
                                 
-                                if (count($diff) == 0)
-                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
-                                else
-                                    $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                if (count($diff) == 0) {
+	                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
+                                } else {
+	                                $query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                }
                             }
                         }
                         break;
 
                     case 'tag':
                         if ($value) {
-                            if ( $value[0] == "%" || !isset($value[0]) )
-                                $query['q'] .= ' ';
-                            else
-                                $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+                            if ($value[0] == "%" || !isset($value[0])) {
+	                            $query['q'] .= ' ';
+                            } else {
+	                            $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+                            }
                         }
                         break;
 
@@ -818,12 +778,17 @@ class EmundusModelFiles extends JModelLegacy
 		        $and = ' AND ';
 	        }
         }
+
         $sql_fnum = '';
         if (count($this->fnum_assoc) > 0) {
             $sql_fnum = $and.' jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
         }
 
-        $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+        if (!empty($sql_code) || !empty($sql_fnum)) {
+	        $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
+        } else {
+        	$query['q'] .= ' AND 1=2 ';
+        }
         return $query;
     }
 
@@ -1522,12 +1487,12 @@ if (JFactory::getUser()->id == 63)
 
             $evalGroups['groups'] = $db->loadAssocList();
 
-            $query = 'SELECT DISTINCT (eu.user_id), CONCAT( eu.firstname, " ", eu.lastname ) as name
+            $query = 'SELECT DISTINCT(eu.user_id) as user_id, CONCAT( eu.lastname, " ", eu.firstname ) as name, esp.label, u.email
                         FROM #__emundus_users AS eu
+                        LEFT JOIN #__users AS u ON u.id=eu.user_id
                         LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
                         LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
-                        WHERE eu.profile !=1
-                        AND esp.published !=1';
+                        WHERE u.block=0 AND eu.profile !=1 AND esp.published !=1';
             $db->setQuery($query);
 
             $evalGroups['users'] = $db->loadAssocList();
@@ -2910,6 +2875,8 @@ die();*/
 
         return $matches[1];
     }
+
+
 
     /**
      * Return a date format from php to MySQL.

@@ -20,8 +20,7 @@ jimport( 'joomla.application.component.view');
  * @package    Emundus
  */
 
-class EmundusViewExport_select_columns extends JViewLegacy
-{
+class EmundusViewExport_select_columns extends JViewLegacy {
 	var $_user = null;
 	var $_db = null;
 
@@ -44,29 +43,22 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
 
         $jinput = JFactory::getApplication()->input;
-        $prg    = $jinput->getVar('code', null);
-        $view   = $jinput->getVar('viewcall', null);
-        $form   = $jinput->getVar('form', null);
+        $prg = $jinput->getVar('code', null);
+        $form = $jinput->getVar('form', null);
         
-        $camp   = $jinput->getVar('camp', null);
+        $camp = $jinput->getVar('camp', null);
 
-        $program    = $m_program->getProgramme($prg);
-        $code       = array();
-        $camps       = array();
-        $code[]     = $prg;
-        $camps[]     = $camp;
-        //var_dump($camps);
+        $program = $m_program->getProgramme($prg);
+        $code = array();
+        $camps = array();
+        $code[] = $prg;
+        $camps[] = $camp;
+
         $current_user = JFactory::getUser();
-       
-        /*if ($view == "evaluation" || $form == "decision" || $form == "admission") {
-            $session = JFactory::getSession();
-            $params['programme'] = $code;
-            $session->set('filt_params', $params);
-        }*/
 
-        
-        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die(JText::_('ACCESS_DENIED'));
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+	        die(JText::_('ACCESS_DENIED'));
+        }
 
         $m_admission = new EmundusModelAdmission;
         $m_decision = new EmundusModelDecision;
@@ -77,15 +69,16 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	    // When displaying the results: make tabs or panels separating the different forms for the programme.
 
 
-        if ($form == "decision")
-            $elements = $m_decision->getDecisionElementsName(0, 0, $code);
-            //$elements = $m_admission->getAdmissionElementsName(0, 0, $code);
-        elseif ($form == "admission")
-            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
-        elseif ($form == "evaluation")
-            $elements = $m_eval->getEvaluationElementsName(0, 0, $code);
-        else
-		    $elements = EmundusHelperFiles::getElements($code, $camps);
+        if ($form == "decision") {
+	        $elements = $m_decision->getDecisionElementsName(0, 0, $code);
+	        //$elements = $m_admission->getAdmissionElementsName(0, 0, $code);
+        } elseif ($form == "admission") {
+	        $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
+        } elseif ($form == "evaluation") {
+	        $elements = $m_eval->getEvaluationElementsName(0, 0, $code);
+        } else {
+	        $elements = EmundusHelperFiles::getElements($code, $camps);
+        }
         
         $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
@@ -93,4 +86,3 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		parent::display($tpl);
     }
 }
-?>

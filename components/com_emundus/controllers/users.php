@@ -65,25 +65,25 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 
-		$jinput      = JFactory::getApplication()->input;
-		$itemid 	 = $jinput->post->get('Itemid', null, null);
-		$firstname 	 = $jinput->post->get('firstname', null, null);
-		$lastname  	 = $jinput->post->get('lastname', null, null);
-		$username 	 = $jinput->post->get('login', null, null);
-		$name 		 = strtolower($firstname).' '.strtoupper($lastname);
-		$email 		 = $jinput->post->get('email', null, null);
-		$profile 	 = $jinput->post->get('profile', null, null);
-		$oprofiles 	 = $jinput->post->get('oprofiles', null, 'string');
-		$jgr 		 = $jinput->post->get('jgr', null, null);
-		$univ_id 	 = $jinput->post->get('university_id', null, null);
-		$groups 	 = $jinput->post->get('groups', null, 'string');
-		$campaigns 	 = $jinput->post->get('campaigns', null, 'string');
-		$news		 = $jinput->post->get('newsletter', null, 'string');
-		$ldap		 = $jinput->post->get('ldap', 0, null);
+		$jinput = JFactory::getApplication()->input;
+		$firstname = $jinput->post->get('firstname', null, null);
+		$lastname = $jinput->post->get('lastname', null, null);
+		$username = $jinput->post->get('login', null, null);
+		$name = strtolower($firstname).' '.strtoupper($lastname);
+		$email = $jinput->post->get('email', null, null);
+		$profile = $jinput->post->get('profile', null, null);
+		$oprofiles = $jinput->post->get('oprofiles', null, 'string');
+		$jgr = $jinput->post->get('jgr', null, null);
+		$univ_id = $jinput->post->get('university_id', null, null);
+		$groups = $jinput->post->get('groups', null, 'string');
+		$campaigns = $jinput->post->get('campaigns', null, 'string');
+		$news = $jinput->post->get('newsletter', null, 'string');
+		$ldap = $jinput->post->get('ldap', 0, null);
 
 		// If we are creating a new user from the LDAP system, he does not have a password.
-		if ($ldap == 0)
+		if ($ldap == 0) {
 			$password = JUserHelper::genRandomPassword();
+		}
 
 		$user = clone(JFactory::getUser(0));
 
@@ -99,8 +99,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user->name = $name;
 		$user->username = $username;
 		$user->email = $email;
-		if ($ldap == 0)
+		if ($ldap == 0) {
 			$user->password = md5($password);
+		}
 		$user->registerDate = date('Y-m-d H:i:s');
 		$user->lastvisitDate = date('Y-m-d H:i:s');
 		$user->groups = array($jgr);
@@ -129,18 +130,20 @@ class EmundusControllerUsers extends JControllerLegacy {
 			echo json_encode((object) $uid);
 			exit;
 		}
-			//echo $uid;
-		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html'))
-			echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
+
+		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
+			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
+		}
 
 		// Envoi de la confirmation de création de compte par email
 		$m_emails = $this->getModel('emails');
 
 		// If we are creating an ldap account, we need to send a different email.
-		if ($ldap == 1)
+		if ($ldap == 1) {
 			$email = $m_emails->getEmail('new_ldap_account');
-		else
+		} else {
 			$email = $m_emails->getEmail('new_account');
+		}
 
 		$mailer = JFactory::getMailer();
 		if ($ldap == 0) {
@@ -150,20 +153,25 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$tags = $m_emails->setTags($user->id, array(), null, null);
 		}
 
-        $from 		= preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-        $fromname 	= preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-        $subject 	= preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-        $body 		= preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-        $body 		= $m_emails->setTagsFabrik($body);
+        $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+        $body = $m_emails->setTagsFabrik($body);
+
+        if (!empty($email->Template)) {
+	        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
+        }
 
         $app = JFactory::getApplication();
 		$email_from_sys = $app->getCfg('mailfrom');
 
 		// If the email sender has the same domain as the system sender address.
-		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-			$mail_from_address = $email->emailfrom;
- 		else
+		if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+			$mail_from_address = $from;
+		} else {
 			$mail_from_address = $email_from_sys;
+		}
 
         $sender = [
             $mail_from_address,
@@ -173,7 +181,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         $mailer->setSender($sender);
         $mailer->addReplyTo($email->emailfrom, $email->name);
         $mailer->addRecipient($user->email);
-        $mailer->setSubject($email->subject);
+        $mailer->setSubject($subject);
         $mailer->isHTML(true);
         $mailer->Encoding = 'base64';
         $mailer->setBody($body);
@@ -196,11 +204,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 			}
 
 		} catch (Exception $e) {
-
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
 			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
 			exit();
-
 		}
 
 		echo json_encode((object)array('status' => true, 'msg' => JText::_('USER_CREATED')));
@@ -666,8 +672,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-    public function sendpasswd() {
+    public function regeneratepassword() {
+
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+        jimport('joomla.user.helper');
 
         $current_user = JFactory::getUser();
 
@@ -675,80 +684,42 @@ class EmundusControllerUsers extends JControllerLegacy {
             echo json_encode((object)array('status' => false));
             exit;
         }
-        $uid 		= JFactory::getApplication()->input->getInt('uid', null);
-        $recipient 	= JFactory::getUser($uid);
-        $chars 		= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
-        $passwd 	= substr( str_shuffle( $chars ), 0, 8);
-        $passwd_md5 = md5($passwd);
+        $id 		= JFactory::getApplication()->input->get('user', null); //get id from the ajax request
+        $m_users = new EmundusModelUsers();// Instanciation of object from user model
+        $users = $m_users->getUsersById($id); // get user from uid
+        foreach ($users as $selectUser) {
 
-        $m_users = new EmundusModelUsers();
-        $res = $m_users->setNewPasswd($uid, $passwd_md5);
+            $passwd = JUserHelper::genRandomPassword(8); //generate a random password
+            $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
 
-        if (!$res) {
-            $msg = JText::_('COM_EMUNDUS_CANNOT_SET_NEW_PASSWORD');
-            echo json_encode((object)array('status' => $res, 'msg' => $msg));
-            exit;
-        } else {
-            $emails = new EmundusModelEmails;
-            $mailer = JFactory::getMailer();
-            $email = $emails->getEmail("new_account");
 
-            $post = array();
-            $tags = $emails->setTags($uid, $post, null, $passwd);
-
-            $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-            $from_id = $current_user->id;
-            $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-            $to = $recipient->email;
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-            $body = $emails->setTagsFabrik($body);
-
-            $app = JFactory::getApplication();
-	        $email_from_sys = $app->getCfg('mailfrom');
-
-	        // If the email sender has the same domain as the system sender address.
-            if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                $mail_from_address = $email->emailfrom;
-            else
-				$mail_from_address = $email_from_sys;
-
-            // Set sender
-            $sender = [
-                $mail_from_address,
-                $fromname
+            $res = $m_users->setNewPasswd($id, $passwd_md5); //update password
+            $post = [ // values tout change in the bdd with key => values
+                'PASSWORD' => $passwd
             ];
-
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($from, $fromname);
-            $mailer->addRecipient($to);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
-
-            $send = $mailer->Send();
-            if ($send !== true) {
-                $res = false;
-                $msg = JText::_('COM_EMUNDUS_ERROR_CANNOT_SEND_EMAIL').' : '.$send->__toString();
-	            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+            if (!$res) {
+                $msg = JText::_('COM_EMUNDUS_CANNOT_SET_NEW_PASSWORD');
+                echo json_encode((object)array('status' => false, 'msg' => $msg));
+                exit;
             } else {
-                $message = array(
-                    'user_id_from' => $from_id,
-                    'user_id_to' => $recipient->id,
-                    'subject' => $subject,
-                    'message' => $body
-                );
-                $emails->logEmail($message);
+                $c_messages = new EmundusControllerMessages();
+                $lbl = 'regenerate_password';
 
-                $res = true;
-                $msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
+                $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post);
+
+                if ($c_messages != true) {
+                    $msg = JText::_('EMAIL_NOT_SENT');
+
+                } else {
+                    $msg = JText::_('EMAIL_SENT');
+                }
             }
         }
 
-        echo json_encode((object)array('status' => $res, 'msg' => $msg));
+        echo json_encode((object)array('status' => true, 'msg'=>$msg));
         exit;
     }
+
 	// Edit actions rights for group
 	public function setgrouprights() {
 		$current_user = JFactory::getUser();
