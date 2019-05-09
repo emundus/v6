@@ -21,9 +21,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="Fabrik tags no longer display the label if the value is null (this resolves '--- Please Select ---' appearing in emails).">
+<<<<<<< Updated upstream
       <change beforePath="$PROJECT_DIR$/components/com_emundus/controllers/messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/messages.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/com_emundus/models/emails.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_emundus/models/emails.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_companys/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/components/com_fabrik/views/list/tmpl/cci_companys/default.php" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.xml" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
     <ignored path="sorbonnev3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -62,17 +73,78 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/models/emails.php">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
             <state relative-caret-position="-4657">
               <caret line="671" column="16" selection-start-line="671" selection-start-column="8" selection-end-line="671" selection-end-column="16" />
+=======
+            <state relative-caret-position="527">
+              <caret line="696" column="65" selection-start-line="696" selection-start-column="65" selection-end-line="696" selection-end-column="65" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="272">
+              <caret line="123" column="26" lean-forward="true" selection-start-line="123" selection-start-column="26" selection-end-line="123" selection-end-column="26" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="357">
+              <caret line="131" column="14" selection-start-line="131" selection-start-column="14" selection-end-line="131" selection-end-column="14" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="548">
+              <caret line="151" column="63" selection-start-line="151" selection-start-column="31" selection-end-line="151" selection-end-column="63" />
+>>>>>>> Stashed changes
+            </state>
+          </provider>
+        </entry>
+      </file>
+<<<<<<< Updated upstream
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/messages.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="825">
               <caret line="305" selection-start-line="305" selection-end-line="305" />
+=======
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="374">
+              <caret line="126" column="25" lean-forward="true" selection-start-line="126" selection-start-column="25" selection-end-line="126" selection-end-column="25" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="141" column="14" lean-forward="true" selection-start-line="141" selection-start-column="14" selection-end-line="141" selection-end-column="14" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+              </folding>
+>>>>>>> Stashed changes
             </state>
           </provider>
         </entry>
@@ -127,6 +199,11 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+<<<<<<< Updated upstream
+=======
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/emundusreferentletter/language/fr-FR/fr-FR.plg_fabrik_form_emundusreferentletter.sys.ini" />
+        <option value="$PROJECT_DIR$/components/com_emundus/helpers/menu.php" />
+>>>>>>> Stashed changes
         <option value="$PROJECT_DIR$/components/com_emundus/views/checklist/tmpl/application_form.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_send_application/mod_emundus_send_application.xml" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_send_application/language/en-GB/en-GB.mod_emundus_send_application.ini" />
@@ -162,16 +239,19 @@
         <option value="$PROJECT_DIR$/modules/mod_emundus_user_dropdown/tmpl/default.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_user_dropdown/tmpl/mobile.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_user_dropdown/tmpl/nostyle.php" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/models/application.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/pse.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/helper.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.xml" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/language/fr-FR/fr-FR.mod_emundus_applications.ini" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php" />
+<<<<<<< Updated upstream
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
@@ -183,6 +263,8 @@
         <option value="$PROJECT_DIR$/configuration.php" />
         <option value="$PROJECT_DIR$/libraries/composer.json" />
         <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
+=======
+>>>>>>> Stashed changes
       </list>
     </option>
   </component>
@@ -290,6 +372,7 @@
               <item name="components" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
+<<<<<<< Updated upstream
               <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
               <item name="emundus" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
@@ -301,6 +384,11 @@
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="com_emundus" type="462c0819:PsiDirectoryNode" />
               <item name="controllers" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="emundusProdv6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="emundusProdv6" type="462c0819:PsiDirectoryNode" />
+              <item name="modules" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Stashed changes
             </path>
             <path>
               <item name="emundus" type="b2602c69:ProjectViewProjectNode" />
@@ -465,6 +553,7 @@
       <workItem from="1547806180756" duration="2500000" />
       <workItem from="1548062561164" duration="630000" />
       <workItem from="1551780456553" duration="4433000" />
+<<<<<<< Updated upstream
       <workItem from="1554198613916" duration="13109000" />
       <workItem from="1554215489291" duration="3163000" />
       <workItem from="1554276634958" duration="23755000" />
@@ -474,6 +563,9 @@
       <workItem from="1554718945373" duration="18863000" />
       <workItem from="1554794824401" duration="24412000" />
       <workItem from="1554881556345" duration="2295000" />
+=======
+      <workItem from="1557389868041" duration="1076000" />
+>>>>>>> Stashed changes
     </task>
     <task id="LOCAL-00001" summary="Fixed a bug causing evaluations to not display for Coordinators who have multiple profiles. Fixed another bug which broke the Evaluation elements list in the XLS export dialog.">
       <created>1525445467750</created>
@@ -507,6 +599,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< Updated upstream
     <option name="totallyTimeSpent" value="402065000" />
   </component>
   <component name="TodoView" selected-index="0">
@@ -528,12 +621,19 @@
       <flatten-packages value="false" />
       <is-autoscroll-to-source value="false" />
     </todo-panel>
+=======
+    <option name="totallyTimeSpent" value="279354000" />
+>>>>>>> Stashed changes
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="2560" height="1417" extended-state="6" />
     <editor active="true" />
     <layout>
+<<<<<<< Updated upstream
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19435611" />
+=======
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19376694" />
+>>>>>>> Stashed changes
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -904,6 +1004,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/router.php">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
         <state relative-caret-position="-186" />
       </provider>
     </entry>
@@ -952,11 +1053,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
           <caret line="68" column="44" selection-start-line="68" selection-start-column="44" selection-end-line="68" selection-end-column="44" />
+=======
+        <state relative-caret-position="548">
+          <caret line="151" column="63" selection-start-line="151" selection-start-column="31" selection-end-line="151" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/language/en-GB/en-GB.mod_emundus_applications.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="31" column="113" lean-forward="true" selection-start-line="31" selection-start-column="113" selection-end-line="31" selection-end-column="113" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/mod_emundus_applications.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="56" selection-start-line="56" selection-end-line="56" selection-end-column="17" />
+>>>>>>> Stashed changes
         </state>
       </provider>
     </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/stubs/SimpleXML/SimpleXML.php">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
         <state relative-caret-position="136">
           <caret line="8" column="6" selection-start-line="8" selection-start-column="6" selection-end-line="8" selection-end-column="6" />
         </state>
@@ -1043,6 +1163,56 @@
             <element signature="n#style#0;n#td#1;n#tr#0;n#table#0;n#div#1;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#h2#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#p#0;n#!!top" expanded="true" />
+=======
+        <state relative-caret-position="281">
+          <caret line="33" column="63" selection-start-line="33" selection-start-column="63" selection-end-line="33" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/ti.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="141" column="14" lean-forward="true" selection-start-line="141" selection-start-column="14" selection-end-line="141" selection-end-column="14" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/esiea.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="126" column="25" lean-forward="true" selection-start-line="126" selection-start-column="25" selection-end-line="126" selection-end-column="25" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="131" column="14" selection-start-line="131" selection-start-column="14" selection-end-line="131" selection-end-column="14" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="696" column="65" selection-start-line="696" selection-start-column="65" selection-end-line="696" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_applications/tmpl/nanomed.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="123" column="26" lean-forward="true" selection-start-line="123" selection-start-column="26" selection-end-line="123" selection-end-column="26" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+>>>>>>> Stashed changes
           </folding>
         </state>
       </provider>

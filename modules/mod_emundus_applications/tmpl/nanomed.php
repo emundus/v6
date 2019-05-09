@@ -123,14 +123,16 @@ echo $description;
                     </div>
                     <div class="col-xs-12 col-md-4 main-page-file-info">
                         <div class="main-page-file-progress-label">
-                            <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?>
+                            <?php if($show_state_files == 1): ?>
+                            <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?> </strong>
                                 <?php if ($state == 1):?>
                                     <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
                                 <?php elseif ($state == 0):?>
                                     <span class="label alert-secondary" role="alert"> <?= JText::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
                                 <?php else: ?>
                                     <span class="label alert-danger" role="alert"><?= JText::_('MOD_EMUNDUS_DELETE'); ?></span>
-                                <?php endif; ?>
+                                <?php endif;
+                            endif; ?>
                         </div>
 
 

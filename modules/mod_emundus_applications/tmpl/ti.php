@@ -129,7 +129,7 @@ echo $description;
           <span class="label label-<?= $application->class; ?>">
         <?= $application->value; ?>
       </span>
-
+          <?php if($show_state_files == 1): ?>
           <p><?= JText::_('MOD_EMUNDUS_STATE'); ?>
           <?php if ($state == 1):?>
               <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
@@ -137,7 +137,8 @@ echo $description;
               <span class="label alert-secondary" role="alert"> <?= JText::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
           <?php else: ?>
               <span class="label alert-danger" role="alert"><?= JText::_('MOD_EMUNDUS_DELETE'); ?></span>
-          <?php endif; ?>
+          <?php endif;
+          endif; ?>
           </p>
       </div>
     </div>
