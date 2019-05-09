@@ -16,7 +16,7 @@ $comments       = $session->get('comments');
 if (!empty($s_elements)) {
     foreach ($s_elements as $s) {
         $t = explode('.',$s);
-        $table_name[]   = $t[0];
+        $table_name[] = $t[0];
         $element_name[] = $t[1];
     }
 }
@@ -106,7 +106,9 @@ if (!empty($s_elements)) {
                     }
                 }
                 echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$this->form.'_'.$t->group_id.' otherForm" onClick="javascript:check_all(\'emundus_elm_'.$t->id.'\')" ';
-                if ((!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name))) echo "checked=checked";
+                if (!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) {
+	                echo "checked=checked";
+                }
                 echo ' value="'.$t->id.'"/><label class="label-element" for="emundus_elm_'.$t->id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label> ';
 
                 $tbl_tmp=$t->table_id;
@@ -127,39 +129,51 @@ if (!empty($s_elements)) {
                 if ($tbl_tmp == '') {
                     echo '<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
                             <div class="panel-heading"><div><input type="checkbox" ';
-                    if ($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
+                    if ($t->created_by_alias == 'comment' && $comments == 1) {
+	                    echo "checked=checked";
+                    }
                     $label = explode("-", $t->table_label);
-                    $label = !empty($label[1]) ? $label[1] : $label;
+                    $label = !empty($label[1]) ? $label[1] : $label[0];
                     echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.' <i>['.$t->label.']</i></label></div></div><div class="panel-body">
                         <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
                             <div class="panel-heading"><div><input type="checkbox" ';
 
-                    if ($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
+                    if ($t->created_by_alias == 'comment' && $comments == 1) {
+	                    echo "checked=checked";
+                    }
                     echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</label></div></div><div class="panel-body">';
                 } elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
                         echo '</div></div></div></div>
                             <div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
                                 <div class="panel-heading"><div><input type="checkbox" ';
-                        if ($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
+                        if ($t->created_by_alias == 'comment' && $comments == 1) {
+	                        echo "checked=checked";
+                        }
                     $label = explode("-", $t->table_label);
-                    $label = !empty($label[1]) ? $label[1] : $label;
+                    $label = !empty($label[1]) ? $label[1] : $label[0];
                         echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.' <i>['.$t->label.']</i></label></div></div><div class="panel-body">
                             <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
                                 <div class="panel-heading"><div><input type="checkbox" ';
 
-                        if ($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
+                        if ($t->created_by_alias == 'comment' && $comments == 1) {
+	                        echo "checked=checked";
+                        }
                         echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</label></div></div><div class="panel-body">';
                 } else {
                     if ($t->group_id != $grp_tmp && $grp_tmp != '') {
                             echo '</div></div><div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
                                     <div class="panel-heading"><div><input type="checkbox" ';
 
-                            if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
+                            if ($t->created_by_alias == 'comment' && $comments == 1) {
+	                            echo "checked=checked";
+                            }
                             echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')"/><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</div></div><div class="panel-body">';
                     }
                 }
                 echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_elm_'.$t->id.'\')" ';
-                if ((!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) echo "checked=checked";
+                if ((!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) {
+	                echo "checked=checked";
+                }
                 echo ' value="'.$t->id.'"/><label class="label-element" for="emundus_elm_'.$t->id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label> ';
 
                 $tbl_tmp=$t->table_id;

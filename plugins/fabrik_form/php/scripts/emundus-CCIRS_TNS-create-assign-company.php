@@ -20,7 +20,7 @@ jimport('joomla.log.log');
 JLog::addLogger(array('text_file' => 'com_emundus.createassigncompany.php'), JLog::ALL, array('com_emundus'));
 
 
-if ($fabrikFormData['vous_etes'] != 3) {
+if ($fabrikFormData['vous_etes'] != 3 && $fabrikFormData['vous_etes'] != 1) {
 	return false;
 }
 
@@ -84,10 +84,17 @@ try {
 // If a link already exists, it's up to the DRH to handle it.
 if (empty($link)) {
 
-	$query->clear()
-		->insert($db->quoteName('#__emundus_user_entreprise'))
-		->columns($db->quoteName(['cid', 'user', 'profile', 'position']))
-		->values($db->quote($company_id).', '.$db->quote($user_id).', '.$db->quote('1002').', '.$db->quote('TNS'));
+	if ($fabrikFormData['vous_etes'] == 3) {
+		$query->clear()
+			->insert($db->quoteName('#__emundus_user_entreprise'))
+			->columns($db->quoteName(['cid', 'user', 'profile', 'position']))
+			->values($db->quote($company_id).', '.$db->quote($user_id).', '.$db->quote('1002').', '.$db->quote('TNS'));
+	} else {
+		$query->clear()
+			->insert($db->quoteName('#__emundus_user_entreprise'))
+			->columns($db->quoteName(['cid', 'user', 'profile', 'position']))
+			->values($db->quote($company_id).', '.$db->quote($user_id).', '.$db->quote('1001').', '.$db->quote('Salarié'));
+	}
 
 	try {
 

@@ -102,7 +102,5 @@ foreach ($viewArray as $key => $value) {
     }
 }
 
-//
-
 
 require(JModuleHelper::getLayoutPath('mod_emundus_graphs','default.php'));

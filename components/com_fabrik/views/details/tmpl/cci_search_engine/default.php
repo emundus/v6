@@ -118,7 +118,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <?php if ($is_favorite) :?>
                     <i class="fas fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE'); ?>" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php else :?>
-                    <i class="far fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE'); ?>" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                    <i class="far fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php endif; ?>
             <?php endif; ?>
         </h1>

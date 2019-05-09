@@ -49,13 +49,11 @@ echo $this->plugintop;
 echo $this->loadTemplate('buttons');
 echo $this->loadTemplate('relateddata');
 
-$regions = $this->data['data_regions___name_raw'];
-
 $db = JFactory::getDBO();
 $user = JFactory::getSession()->get('emundusUser');
 
 $query = $db->getquery('true');
-$user_to = $m_users->getUserById($this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0]);
+$user_to = $m_users->getUserById($this->data["jos_emundus_campaign_candidature___applicant_id_raw"]);
 
 
 // Get all uploaded files
@@ -77,19 +75,72 @@ try {
 }
 
 
-
-function getDepartment($dept) {
+// GET Regions
+function getRegions($fnum, $profile) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
-    $query->select($db->quoteName('departement_nom'))
-        ->from($db->quoteName('data_departements'))
-        ->where($db->quoteName('departement_id') . ' = ' . $dept);
+    if ($profile == '1008') {
+        $query
+            ->select($db->quoteName('dr.name'))
+            ->from($db->quoteName('#__emundus_recherche', 'er'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
+            ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
+            ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
+    }
+    else {
+        $query
+            ->select($db->quoteName('dr.name'))
+            ->from($db->quoteName('#__emundus_recherche', 'er'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
+            ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
+            ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
+    }
+
 
     $db->setQuery($query);
     try {
-        return $db->loadResult();
+
+        return $db->loadColumn();
+
+    } catch (Exception $e) {
+        echo "<pre>";
+        var_dump($query->__toString());
+        echo "</pre>";
+        die();
+    }
+}
+
+//GET Departments
+function getDepartments($fnum, $profile) {
+    $db = JFactory::getDBO();
+
+    $query = $db->getquery('true');
+
+    if ($profile == '1008') {
+        $query
+            ->select($db->quoteName('dd.departement_nom'))
+            ->from($db->quoteName('#__emundus_recherche', 'u'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+            ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+            ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+    }
+    else {
+        $query
+            ->select($db->quoteName('dd.departement_nom'))
+            ->from($db->quoteName('#__emundus_recherche', 'u'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
+            ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
+            ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
+            ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+    }
+
+    $db->setQuery($query);
+    try {
+        return $db->loadColumn();
+
     } catch (Exception $e) {
         echo "<pre>";
         var_dump($query->__toString());
@@ -99,23 +150,23 @@ function getDepartment($dept) {
 }
 
 
-// GET the acteur public Regions
-function getActeurRegions($fnum) {
+//GET the project disciplines
+function getProjectDisciplines($fnum) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
     $query
-        ->select($db->quoteName('dr.name'))
-        ->from($db->quoteName('#__emundus_recherche', 'er'))
-        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'err'). ' ON '.$db->quoteName('err.parent_id') . ' = ' . $db->quoteName('er.id'))
-        ->leftJoin($db->quoteName('data_regions', 'dr'). ' ON '.$db->quoteName('dr.id') . ' = ' . $db->quoteName('err.region'))
-        ->where($db->quoteName('er.fnum') . ' LIKE "' . $fnum . '"');
+        ->select($db->quoteName('d.disciplines'))
+        ->from($db->quoteName('#__emundus_projet', 'ep'))
+        ->leftJoin($db->quoteName('#__emundus_projet_621_repeat', 'pr'). ' ON '.$db->quoteName('pr.parent_id') . ' = ' . $db->quoteName('ep.id'))
+        ->leftJoin($db->quoteName('em_discipline', 'd'). ' ON '.$db->quoteName('d.id') . ' = ' . $db->quoteName('pr.disciplines'))
+        ->where($db->quoteName('ep.fnum') . ' LIKE "' . $fnum. '"');
 
     $db->setQuery($query);
     try {
 
-        return $db->loadAssocList();
+        return $db->loadColumn();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -125,24 +176,23 @@ function getActeurRegions($fnum) {
     }
 }
 
-//GET the acteur public Departments
-function getActeurDepartments($fnum) {
+//GET the project thematics
+function getProjectThematics($fnum) {
     $db = JFactory::getDBO();
 
     $query = $db->getquery('true');
 
     $query
-        ->select($db->quoteName('dd.departement_nom'))
-        ->from($db->quoteName('#__emundus_recherche', 'u'))
-        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
-        ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
-        ->leftJoin($db->quoteName('data_departements', 'dd'). ' ON '.$db->quoteName('dd.departement_id') . ' = ' . $db->quoteName('urd.department'))
-        ->where($db->quoteName('u.fnum') . ' LIKE "' . $fnum . '"');
+        ->select($db->quoteName('t.thematic'))
+        ->from($db->quoteName('#__emundus_projet', 'ep'))
+        ->leftJoin($db->quoteName('#__emundus_projet_620_repeat', 'pr'). ' ON '.$db->quoteName('pr.parent_id') . ' = ' . $db->quoteName('ep.id'))
+        ->leftJoin($db->quoteName('data_thematics', 't'). ' ON '.$db->quoteName('t.id') . ' = ' . $db->quoteName('pr.themes'))
+        ->where($db->quoteName('ep.fnum') . ' LIKE "' . $fnum. '"');
 
     $db->setQuery($query);
     try {
 
-        return $db->loadAssocList();
+        return $db->loadColumn();
 
     } catch (Exception $e) {
         echo "<pre>";
@@ -151,277 +201,286 @@ function getActeurDepartments($fnum) {
         die();
     }
 }
+
 ?>
+<table class="em-pdf-group">
+    <tr>
+        <td>
+            <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;" width="252" height="90">
+        </td>
+    </tr>
 
-<button onclick="window.history.back();" >Retour</button>
-<div class="em-pdf-group">
-    <img src="images/custom/Hesam/Logo_1000doctorants.JPG" alt="Logo 1000doctorants" style="vertical-align: top;"
-         width="252" height="90">
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_RECAP'); ?><a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
-    </div>
+    <tr class="em-pdf-title-div">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_RECAP'); ?><a href="<?php echo JURI::root(); ?>"><?php echo JURI::root(); ?></a></h3>
+        </td>
+    </tr>
 
     <?php if($user->id == $user_to[0]->user_id) :?>
 
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_campaign_candidature___fnum_raw"][0]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER'); ?></p>
-        </div>
+        <td class="em-pdf-element-label">
+            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DOSSIER_DATE'); ?></p>
+        </td>
 
-        <div class="em-pdf-element-value">
-            <p><?php echo date("d/m/Y", strtotime($this->data["jos_emundus_campaign_candidature___date_submitted_raw"][0])); ?></p>
-        </div>
+        <td class="em-pdf-element-value">
+            <p><?php echo JFactory::getDate($this->data["jos_emundus_campaign_candidature___date_submitted_raw"])->format('d/m/Y'); ?></p>
+        </td>
 
-    </div>
-</div>
+    </tr>
+
+</table>
 
 
-<div class="em-pdf-group">
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR'); ?></h3>
-    </div>
+<table class="em-pdf-group">
+    <tr class="em-pdf-title-div" width="700px">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR'); ?></h3>
+        </td>
+    </tr>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
+        <td class="em-pdf-element-label">
             <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_TYPE'); ?></p>
-        </div>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p><?php echo $this->data["jos_emundus_setup_profiles___label_raw"][0]; ?></p>
-        </div>
+        </td>
 
-    </div>
-
+    </tr>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
         <?php if($user->id == $user_to[0]->user_id) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_CIVILITY'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo ($user_to[0]->gender == "M") ? "Monsieur" : "Madame"; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
 
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('LAST_NAME'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo ucfirst($user_to[0]->lastname); ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
 
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('FIRST_NAME'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo ucfirst($user_to[0]->firstname); ?></p>
-                </div>
-            </div>
+                </td>
+            </tr>
         <?php endif; ?>
     <?php else: ?>
 
         <?php $institution = $m_cifre->getUserInstitution($user_to[0]->user_id);?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_INSTITUTE_NAME'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $institution->nom_de_structure; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
     <?php if($user->id == $user_to[0]->user_id) :?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('EMAIL_FORM'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><a href="mailto:<?php echo $user_to[0]->email; ?>"><?php echo $user_to[0]->email; ?></a></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
         <?php if (!empty($this->data['jos_emundus_projet___contact_tel_raw'][0])) : ?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('TELEPHONENUMBER'); ?></p>
-                </div>
-                <div class="em-pdf-element-value">
+                </td>
+                <td class="em-pdf-element-value">
                     <p><?php echo $this->data['jos_emundus_projet___contact_tel_raw'][0]; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php endif; ?>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007') : ?>
 
         <?php $laboratoire = $m_cifre->getUserLaboratory($author->id);
-            if (!empty($laboratoire)) :?>
-                <div class="em-pdf-element">
+        if (!empty($laboratoire)) :?>
+            <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
-                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_RESEARCH_UNIT'); ?></p>
-                    </div>
+                <td class="em-pdf-element-label">
+                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_RESEARCH_UNIT'); ?></p>
+                </td>
 
-                    <div class="em-pdf-element-value">
-                        <p><?php echo $laboratoire->name; ?></p>
-                    </div>
+                <td class="em-pdf-element-value">
+                    <p><?php echo $laboratoire->name; ?></p>
+                </td>
 
-                </div>
+            </tr>
         <?php endif; ?>
 
         <?php $ecoleDoctorale = $m_cifre->getDoctorale($laboratoire->id); ?>
 
         <?php if (!empty($ecoleDoctorale)) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_AUTHOR_SCHOOL'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo $ecoleDoctorale; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php endif; ?>
 
     <?php if (!empty($this->data['jos_emundus_projet___limit_date_raw'][0])) : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DISPO_DATE'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
-                <p><?php echo $this->data["jos_emundus_projet___limit_date_raw"][0]; ?></p>
-            </div>
+            <td class="em-pdf-element-value">
+                <p><?php echo JFactory::getDate($this->data["jos_emundus_projet___limit_date_raw"][0])->format('d/m/Y'); ?></p>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
-</div>
+</table>
 
-<div class="em-pdf-group breaker">
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></h3>
-    </div>
+<table class="em-pdf-group breaker">
+    <tr class="em-pdf-title-div">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_TITLE'); ?></h3>
+        </td>
+    </tr>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
-            <p><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_NAME'); ?></p>
-        </div>
+        <td class="em-pdf-element-label">
+            <p style="width: 50px;"><?php echo JText::_('COM_EMUNDUS_FABRIK_PROJECT_NAME'); ?></p>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p><?php echo $this->data["jos_emundus_projet___titre_raw"][0]; ?></p>
-        </div>
+        </td>
 
-    </div>
+    </tr>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') :?>
         <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label" style="width: 20%;">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_ENJEU'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value" style="width: 75%;">
                     <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php else :?>
 
         <?php if (!empty($this->data['jos_emundus_projet___contexte_raw'][0])) :?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo JText::_('COM_EMUNDUS_FABRIK_TERRITOIRE'); ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p><?php echo $this->data["jos_emundus_projet___contexte_raw"][0]; ?></p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endif; ?>
     <?php endif; ?>
 
 
     <?php if (!empty($this->data['jos_emundus_projet___question_raw'][0])) :?>
         <?php
-            if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006')
-                $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_FUTURE_DOC');
-            elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007')
-                $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_CHERCHEUR');
-            elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008')
-                $questionText = JText::_('COM_EMUNDUS_FABRIK_GRAND_DEFI');
+        if ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1006')
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_FUTURE_DOC');
+        elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1007')
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_PROBLEMATIQUE_CHERCHEUR');
+        elseif ($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008')
+            $questionText = JText::_('COM_EMUNDUS_FABRIK_GRAND_DEFI');
         ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo $questionText; ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_projet___question_raw"][0]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
 
     <?php if (!empty($this->data['jos_emundus_projet___methodologie_raw'][0])) : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_METHODOLOGIE'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_projet___methodologie_raw"][0]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
     <?php endif; ?>
 
@@ -429,144 +488,116 @@ function getActeurDepartments($fnum) {
 
     <?php if (!empty($this->data['data_thematics___thematic_raw'][0])) : ?>
 
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_THEMES'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
-                <p><?php echo implode(", ", $this->data["data_thematics___thematic_raw"]); ?></p>
-            </div>
+            <td class="em-pdf-element-value">
+                <p><?php echo !empty(getProjectThematics($fnum)) ? implode(', ', getProjectThematics($fnum)) : JText::_('COM_EMUNDUS_FABRIK_NO_THEMES'); ?></p>
+            </td>
 
-        </div>
+        </tr>
 
     <?php endif; ?>
-
     <?php if (!empty($this->data["em_discipline___disciplines_raw"])) : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DISCIPLINES'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
-                <p><?php echo is_array($this->data["em_discipline___disciplines_raw"]) ? implode(', ', $this->data["em_discipline___disciplines_raw"]) : $this->data["em_discipline___disciplines_raw"]; ?></p>
-            </div>
+            <td class="em-pdf-element-value">
+                <p><?php echo !empty(getProjectDisciplines($fnum)) ? implode(', ', getProjectDisciplines($fnum)) : JText::_('COM_EMUNDUS_FABRIK_NO_DISCIPLINES'); ?></p>
+            </td>
 
-        </div>
+        </tr>
     <?php endif; ?>
 
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
+        <td class="em-pdf-element-label">
             <p><?php echo JText::_('COM_EMUNDUS_FABRIK_REGIONS'); ?></p>
-        </div>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p>
                 <?php
-                    if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
-                        if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
-                            echo !empty($regions) ? implode(', ', array_unique($regions)) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
-                        }
-                        else {
-                            $regions = getActeurRegions($fnum);
-                            if (array_filter(array_column($regions, 'name'))) {
-                                echo implode(', ', array_unique(array_column($regions, 'name')));
-                            }
-                            else {
-                                echo JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
-                            }
-                        }
-                    }
-                    else {
-                        echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
-                    }
+                if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+                    $regions = getRegions($fnum,$this->data["jos_emundus_setup_profiles___id_raw"][0]);
+                    echo !empty($regions) ? implode(', ', array_unique($regions)) : JText::_('COM_EMUNDUS_FABRIK_NO_REGIONS');
+                }
+                else {
+                    echo JText::_('COM_EMUNDUS_FABRIK_ALL_REGIONS');
+                }
 
                 ?>
             </p>
-        </div>
+        </td>
 
-    </div>
+    </tr>
 
-    <div class="em-pdf-element">
+    <tr class="em-pdf-element">
 
-        <div class="em-pdf-element-label">
+        <td class="em-pdf-element-label">
             <p><?php echo JText::_('COM_EMUNDUS_FABRIK_DEPARTMENTS'); ?></p>
-        </div>
+        </td>
 
-        <div class="em-pdf-element-value">
+        <td class="em-pdf-element-value">
             <p><?php
                 if ($this->data["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
-                    if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') {
-                        if (!empty($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"])) {
-                            $departmentArray = array();
-                            foreach ($this->data["jos_emundus_recherche_630_repeat_repeat_department___department"] as $dep) {
-                                $departmentArray[] = getDepartment($dep);
-                            }
-                            echo implode(', ', array_unique($departmentArray));
-                        }
-                        else {
-                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
-                        }
-                    }
-                    else {
-                        $departments = getActeurDepartments($fnum);
-                        if (array_filter(array_column($departments, 'departement_nom'))) {
-                            echo implode(', ', array_unique(array_column($departments, 'departement_nom')));
-                        }
-                        else {
-                            echo JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
-                        }
-                    }
+                    $departments = getDepartments($fnum, $this->data["jos_emundus_setup_profiles___id_raw"][0]);
+                    echo !empty($departments) ? implode(', ', array_unique($departments)) : JText::_('COM_EMUNDUS_FABRIK_NO_DEPARTMENTS');
                 }
                 else {
                     echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
                 }
                 ?>
             </p>
-        </div>
+        </td>
 
-    </div>
+    </tr>
 
-</div>
+</table>
 
-<div class="em-pdf-group breaker">
+<table class="em-pdf-group breaker">
 
-    <div class="em-pdf-title-div">
-        <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PARTENAIRES'); ?></h3>
-    </div>
+    <tr class="em-pdf-title-div">
+        <td colspan="2">
+            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_PARTENAIRES'); ?></h3>
+        </td>
+    </tr>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1006') : ?>
 
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_recherche___futur_doctorant_yesno"]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
 
         <?php if ($this->data["jos_emundus_recherche___futur_doctorant_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___futur_doctorant_nom_raw"]) && !empty($this->data["jos_emundus_recherche___futur_doctorant_prenom_raw"])) : ?>
             <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user->id == $user_to[0]->user_id) :?>
-            <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
-                    <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC_NAME'); ?></p>
-                </div>
+                    <td class="em-pdf-element-label">
+                        <p><?php echo JText::_('COM_EMUNDUS_FABRIK_FUTUR_DOC_NAME'); ?></p>
+                    </td>
 
-                <div class="em-pdf-element-value">
-                    <p><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?></p>
-                </div>
+                    <td class="em-pdf-element-value">
+                        <p><?php echo strtoupper($this->data["jos_emundus_recherche___futur_doctorant_nom"]) . " " . $this->data["jos_emundus_recherche___futur_doctorant_prenom"]; ?></p>
+                    </td>
 
-            </div>
+                </tr>
             <?php endif; ?>
         <?php endif; ?>
 
@@ -574,31 +605,31 @@ function getActeurDepartments($fnum) {
     <?php endif; ?>
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1007') : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
         <?php if ($this->data["jos_emundus_recherche___equipe_de_recherche_direction_yesno"] == 0 && !empty($this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"])) : ?>
             <?php if($this->data["jos_emundus_setup_profiles___id_raw"][0] == '1008' && $user->id == $user_to[0]->user_id) :?>
-                <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
+                    <td class="em-pdf-element-label">
                         <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_RECHERCHE_NAME'); ?></p>
-                    </div>
+                    </td>
 
-                    <div class="em-pdf-element-value">
+                    <td class="em-pdf-element-value">
                         <p><?php echo $this->data["jos_emundus_recherche___equipe_direction_equipe_de_recherche_raw"]; ?></p>
-                    </div>
+                    </td>
 
-                </div>
+                </tr>
             <?php endif; ?>
         <?php endif; ?>
 
@@ -607,77 +638,77 @@ function getActeurDepartments($fnum) {
 
 
     <?php if ($this->data["jos_emundus_setup_profiles___id_raw"][0] != '1008') : ?>
-        <div class="em-pdf-element">
+        <tr class="em-pdf-element">
 
-            <div class="em-pdf-element-label">
+            <td class="em-pdf-element-label">
                 <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB'); ?></p>
-            </div>
+            </td>
 
-            <div class="em-pdf-element-value">
+            <td class="em-pdf-element-value">
                 <p><?php echo $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?></p>
-            </div>
+            </td>
 
-        </div>
+        </tr>
 
         <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0 && $user->id == $user_to[0]->user_id) : ?>
 
             <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_type_raw"])) : ?>
-                <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
+                    <td class="em-pdf-element-label">
                         <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_TYPE'); ?></p>
-                    </div>
+                    </td>
 
-                    <div class="em-pdf-element-value">
+                    <td class="em-pdf-element-value">
                         <p><?php echo $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?></p>
-                    </div>
+                    </td>
 
-                </div>
+                </tr>
             <?php endif; ?>
 
             <?php if (!empty($this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"])) : ?>
 
-                <div class="em-pdf-element">
+                <tr class="em-pdf-element">
 
-                    <div class="em-pdf-element-label">
+                    <td class="em-pdf-element-label">
                         <p><?php echo JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_NAME'); ?></p>
-                    </div>
+                    </td>
 
-                    <div class="em-pdf-element-value">
+                    <td class="em-pdf-element-value">
                         <p><?php echo $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?></p>
-                    </div>
+                    </td>
 
-                </div>
+                </tr>
             <?php endif; ?>
 
         <?php endif; ?>
 
     <?php endif; ?>
-</div>
-
-<div class="em-pdf-group breaker">
+</table>
+<table class="em-pdf-group breaker">
     <?php if (!empty($files)) : ?>
-        <div class="em-pdf-title-div">
-            <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_ATTACHED_FILES'); ?></h3>
-        </div>
+        <tr class="em-pdf-title-div">
+            <td colspan="2">
+                <h3><?php echo JText::_('COM_EMUNDUS_FABRIK_ATTACHED_FILES'); ?></h3>
+            </td>
+        </tr>
 
         <?php foreach ($files as $file) : ?>
-            <div class="em-pdf-element">
+            <tr class="em-pdf-element">
 
-                <div class="em-pdf-element-label">
+                <td class="em-pdf-element-label">
                     <p><?php echo $file["value"]; ?></p>
-                </div>
+                </td>
 
-                <div class="em-pdf-element-value">
+                <td class="em-pdf-element-value">
                     <p>
                         <a target="_blank" href="<?php echo JURI::root().'images'.DS.'emundus'.DS.'files'.DS.$this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0].DS.$this->data["jos_emundus_cifre_links___document_raw"]; ?>"><?php echo $file["filename"]; ?></a>
                     </p>
-                </div>
+                </td>
 
-            </div>
+            </tr>
         <?php endforeach; ?>
 
     <?php endif; ?>
 
-</div>
-
+</table>

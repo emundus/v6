@@ -70,7 +70,8 @@
 }
 
 .sourcecoast .modal-body {
-    overflow-y:visible;
+    overflow-y:auto; /* Change from visible to scroll the modal for mobile */
+    width: 94%;
 }
 
 .sourcecoast .form-horizontal .control-group {
