@@ -406,6 +406,13 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
+	public function getEmundusUserByEmail($email) {
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM #__emundus_users WHERE email like "'.$email.'"';
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
+
     public function getProfileIDByCampaignID($cid) {
         $db = JFactory::getDBO();
         $query = 'SELECT `profile_id` FROM `#__emundus_setup_campaigns` WHERE id='.$cid;
