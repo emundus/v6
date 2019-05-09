@@ -1706,9 +1706,16 @@ class EmundusModelUsers extends JModelList {
         return $ret;
     }
 
-    public function getUserById($uid) {
+    public function getUserById($uid) { // user of emundus
         $db = JFactory::getDBO();
         $query = 'SELECT * FROM #__emundus_users WHERE user_id = '.$uid;
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+
+    public function getUsersById($id){ //user of application
+        $db = JFactory::getDBO();
+        $query = 'SELECT * FROM #__users WHERE id = '.$id;
         $db->setQuery($query);
         return $db->loadObjectList();
     }

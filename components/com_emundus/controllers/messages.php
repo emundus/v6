@@ -735,7 +735,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		// Send and log the email.
 		$send = $mailer->Send();
 		if ($send !== true) {
-			JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add($send->getMessage(), JLog::ERROR, 'com_emundus');
 			return false;
 		} else {
 			return true;
