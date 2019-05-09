@@ -41,9 +41,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                         <div class="selectDropdown" id="selectDropdown">
                                             <i class="fas fa-sort-down"></i>
                                         </div>
-                                        <div id="tooltipSelect">
-                                            <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
-                                        </div>
+
+                                    </div>
+                                    <div id="tooltipSelect">
+                                        <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
                                     </div>
                                     <div class="selectAll" id="selectAll">
                                         <label for="em-check-all">
