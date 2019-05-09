@@ -116,7 +116,7 @@ echo $description;
       </div>
     </div>
 
-    <div class="col-md-12">
+    <div class="col-md-12 ui-segment-container">
       <?php
       if (!empty($forms) && $forms[$application->fnum] == 0) {
         echo '
