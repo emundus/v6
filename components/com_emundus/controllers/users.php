@@ -538,7 +538,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res !== false) {
 			$res = true;
-			$msg = JText::_('');
+			$msg = JText::_('COM_EMUNDUS_ACTIVATE_ACCOUNT');
 		} else $msg = JText::_('AN_ERROR_OCCURED');
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
