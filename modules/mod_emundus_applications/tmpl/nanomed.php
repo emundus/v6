@@ -158,7 +158,6 @@ echo $description;
             <?php endif; ?>
 
         <?php endforeach;  ?>
-
     </div>
 <?php else :
     echo JText::_('NO_FILE');

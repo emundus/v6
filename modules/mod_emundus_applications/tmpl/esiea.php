@@ -116,7 +116,6 @@ echo $description;
             <div class="main-page-file-progress-label">
                 <?php if($show_state_files == 1): ?>
                 <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?></strong>
-
                     <?php if ($state == 1):?>
                         <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
                     <?php elseif ($state == 0):?>
