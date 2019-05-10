@@ -112,7 +112,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 
 				$user = JFactory::getUser($user);
 
-				$campaign_id = $jinput->getInt('jos_emundus_users___campaign_id_raw');
+				$campaign_id = is_array($jinput->getInt('jos_emundus_users___campaign_id_raw')) ? $jinput->getInt('jos_emundus_users___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_users___campaign_id_raw');
+				echo "<pre>";var_dump($campaign_id); echo "</pre>"; die();
 				if (empty($campaign_id)) {
 					return false;
 				}
