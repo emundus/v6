@@ -31,7 +31,7 @@ echo $description;
                             </a>
                     </div>
 
-                    <div class="col-xs-12 col-md-4 main-page-file-info">
+                    <div class="col-xs-12 col-md-6 main-page-file-info">
                         <p>
                             <?= JText::_('FILE_NUMBER'); ?> : <i><?= $application->fnum; ?></i>
                         </p>
@@ -52,7 +52,7 @@ echo $description;
                         <?php endif; ?>
                     </div>
 
-                    <div class="col-xs-12 col-md-4 main-page-file-progress">
+                    <div class="col-xs-12 <?= ($show_state_files == 1) ? "col-md-3" : "col-md-6" ?> main-page-file-progress">
                         <div class="main-page-file-progress-label">
                             <strong><?= JText::_('STATUS'); ?> :</strong>
                         </div>
@@ -121,9 +121,10 @@ echo $description;
 
 
                     </div>
-                    <div class="col-xs-12 col-md-4 main-page-file-info">
+                    <?php if($show_state_files == 1): ?>
+                    <div class="col-xs-12 col-md-3 main-page-file-info">
                         <div class="main-page-file-progress-label">
-                            <?php if($show_state_files == 1): ?>
+
                             <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?> </strong>
                                 <?php if ($state == 1):?>
                                     <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
