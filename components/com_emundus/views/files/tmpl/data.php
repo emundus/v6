@@ -209,9 +209,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
             fnum.fnum = url[0];
             if (fnum != null && fnum.fnum != "close") {
                 addDimmer();
+
                 $.ajax({
                     type:'get',
                     url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                    async: true,
                     dataType:"json",
                     data:({fnum: fnum.fnum}),
                     success: function(result) {
@@ -232,6 +234,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                         console.log(jqXHR.responseText);
                     }
                 })
+
             }
         }
 
