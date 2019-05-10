@@ -50,6 +50,7 @@ $show_progress_documents 	= $params->get('show_progress_documents', 0);
 $show_progress_color 		= $params->get('show_progress_color', '#EA5012');
 $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
+$file_status 	            = $params->get('file_status', 1);
 $admission_status           = explode(',', $params->get('admission_status'));
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
