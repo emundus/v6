@@ -30,7 +30,6 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                                 <input type="radio" class="trombi_format" name="trombi_format" value="trombi" <?php echo $this->trombi_checked;?>>
                                 <?php echo JText::_('COM_EMUNDUS_TROMBI_WHOSWHO');?>
                             </label>
-                            <br />
                             <label>
                                 <input type="radio" class="trombi_format" name="trombi_format" value="badge" <?php echo $this->badge_checked;?>>
                                 <?php echo JText::_('COM_EMUNDUS_TROMBI_BADGE');?>

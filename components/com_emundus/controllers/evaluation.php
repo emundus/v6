@@ -1625,8 +1625,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
             foreach($fnunLine as $k => $v)
             {
-                if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id') {
-
+                if ($k != 'code' && strpos($k, 'campaign_id')===false) {
                     if($k === 'fnum')
                     {
                         $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow($col, $line, (string) $v, PHPExcel_Cell_DataType::TYPE_STRING);

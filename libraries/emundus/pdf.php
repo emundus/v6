@@ -897,8 +897,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     if (!empty($params->get('logo')->custom->image)) {
 	    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+	    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
     }
-    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+    else {
+    	$logo_module = JModuleHelper::getModuleById('90');
+	    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+	    $logo = JPATH_BASE.DS.$tab[1];
+    }
 
     // manage logo by programme
     $ext = substr($logo, -3);
@@ -1014,7 +1019,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
             $htmldata .= '<div class="sent">'.JText::_('PDF_STATUS').' : '.$status[$fnum]['value'].'</div>';
         }
-        if (in_array("tags", $options)) {
+
+	    if (in_array("tags", $options)) {
             $tags = $m_files->getTagsByFnum(explode(',', $fnum));
             $htmldata .='<br/><table><tr><td style="display: inline;"> ';
             foreach($tags as $tag){
@@ -1265,7 +1271,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	.label-darkred { background-color: #96281B }
 
 	</style>';
-    //var_dump($options[0]);die;
+
+	//var_dump($options[0]);die;
     if(!empty($options) && $options[0] != "" && $options[0] != "0"){
         $htmldata .= '<div class="card">
 					<table width="100%"><tr>';
