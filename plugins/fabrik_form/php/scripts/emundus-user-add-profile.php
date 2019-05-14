@@ -18,6 +18,8 @@ $emundusPath = JPATH_SITE.DS.'components'.DS.'com_emundus'.DS;
 require_once ($emundusPath.'models'.DS.'users.php');
 require_once ($emundusPath.'controllers'.DS.'messages.php');
 
+$lang = \JFactory::getLanguage();
+
 $db = JFactory::getDBO();
 
 jimport('joomla.log.log');
@@ -67,6 +69,7 @@ if (!empty($user)) {
 			}
 		}
 		// notify the user that his account already exists, but we created them a new profile for this account
+		$formModel->getForm()->error = JText::_('ACCOUNT_ALREADY_EXISTS');
 		$c_messages->sendEmailNoFnum($formModel->getElementData('jos_emundus_users___email'), $this->params->get('email', 'account_already_exist'));
 	}
 
