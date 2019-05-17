@@ -3688,11 +3688,13 @@ class EmundusControllerFiles extends JControllerLegacy
             echo json_encode((object)['status' => false, 'msg' => 'Error generating PDF.']);
             exit;
         } else {
-            echo json_encode((object)['status' => true, 'filename' => $filename]);
+            echo json_encode((object)['status' => true, 'filename' => $filename.'?'.uniqid()]);
             exit;
         }
 
     }
+
+
     public function getValueByFabrikElts($fabrikElts, $fnumsArray) {
         $m_files = $this->getModel('Files');
         foreach ($fabrikElts as $elt) {
