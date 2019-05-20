@@ -45,7 +45,11 @@ $uri = JUri::getInstance();
                             <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url[$application->fnum]['link'])); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
                         <?php endif; ?>
 
-                        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'les-offres/consultez-les-offres/details/299/'. modemundusApplicationsHelper::getSearchEngineId($application->fnum) .'?format=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i></a>
+                        <?php if ($application->status == 1) : ?>
+                            <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'les-offres/consultez-les-offres/details/299/'. modemundusApplicationsHelper::getSearchEngineId($application->fnum) .'?format=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i></a>
+                        <?php else: ?>
+                            <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                        <?php endif; ?>
 
                         <?php if ($application->status != 3) : ?>
                             <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
@@ -124,14 +128,14 @@ $uri = JUri::getInstance();
 
     function completefile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_COMPLETE_FILE'); ?>")) {
-            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=completefile&fnum='; ?>";
+            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=completefile&status=2&fnum='; ?>";
             document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
         }
     }
 
     function publishfile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_PUBLISH_FILE'); ?>")) {
-            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=publishfile&fnum='; ?>";
+            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=publishfile&status=1&fnum='; ?>";
             document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
         }
     }

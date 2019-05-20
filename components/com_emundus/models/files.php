@@ -1820,26 +1820,41 @@ if (JFactory::getUser()->id == 63)
 	    	$profile = null;
 	    }
 
+
     	try {
+		    if (is_array($fnums)) {
+			    foreach ($fnums as $fnum) {
+				    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
+				    $db->setQuery($query);
+				    $res = $db->execute();
 
-            foreach ($fnums as $fnum) {
+				    if (!empty($profile)) {
 
-            	$query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
-                $db->setQuery($query);
-                $res = $db->execute();
+					    $query = $db->getQuery(true);
+					    $query->update($db->quoteName('#__emundus_users'))
+						    ->set($db->quoteName('profile').' = '.$profile)
+						    ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+					    $db->setQuery($query);
+					    $db->execute();
 
-                if (!empty($profile)) {
+				    }
+			    }
+		    }
+		    else {
+			    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnums) ;
+			    $db->setQuery($query);
+-			    $res = $db->execute();
 
-                	$query = $db->getQuery(true);
-                	$query->update($db->quoteName('#__emundus_users'))
-		                ->set($db->quoteName('profile').' = '.$profile)
-		                ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
-                	$db->setQuery($query);
-                	$db->execute();
+			    if (!empty($profile)) {
+				    $query = $db->getQuery(true);
+				    $query->update($db->quoteName('#__emundus_users'))
+					    ->set($db->quoteName('profile').' = '.$profile)
+					    ->where($db->quoteName('user_id').' = '.substr($fnums, -7));
+				    $db->setQuery($query);
+				    $db->execute();
+			    }
+		    }
 
-                }
-
-            }
             return $res;
 
     	} catch (Exception $e) {
