@@ -29,16 +29,17 @@ class PlgFabrik_FormEmundusconfirmrgpd extends plgFabrik_Form
         $formModel = $this->getModel();
         $current_user = JFactory::getUser();
 
-        $status = $this->selectRequest($formModel->formData['jos_privacy_requests___email']);
 
+        $status = $this->selectRequest($formModel->formData['jos_privacy_requests___email'],$formModel->formData['jos_privacy_requests___confirm_token']);
 
+        //var_dump($status->status).die();
         // A request can only be confirmed if it is in a pending status and has a confirmation token
         if ($status->status != '0' || !$status->confirm_token) {
             $this->setError(JText::_('COM_PRIVACY_ERROR_NO_PENDING_REQUESTS'));
 
             return false;
         }
-        
+
         // A request can only be confirmed if the token is less than 24 hours old
         $confirmTokenCreatedAt = new JDate($formModel->formData['jos_privacy_requests___confirm_token_created_at']);
         $confirmTokenCreatedAt->add(new DateInterval('P1D'));
@@ -63,6 +64,7 @@ class PlgFabrik_FormEmundusconfirmrgpd extends plgFabrik_Form
 
         }
         if($status->request_type == 'remove'){
+
             $this->updateConsent($current_user->id,2);
             $this->updateRequest($formModel->formData['jos_privacy_requests___email'], 1,$status->request_type);
 
@@ -88,7 +90,7 @@ class PlgFabrik_FormEmundusconfirmrgpd extends plgFabrik_Form
         $coordinatorMail = $this->params->get('emundusdpo_email');
         $c_messages = new EmundusControllerMessages();
 
-        $c_messages->sendEmailNoFnum($coordinatorMail, $lbl, $post);
+        $c_messagesUser = $c_messages->sendEmailNoFnum($coordinatorMail, $lbl, $post);
 
         /*$messageModel->notifySuperUsers(
             JText::_('COM_PRIVACY_ADMIN_NOTIFICATION_USER_CONFIRMED_REQUEST_SUBJECT'),
@@ -97,18 +99,35 @@ class PlgFabrik_FormEmundusconfirmrgpd extends plgFabrik_Form
 
         JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_actionlogs/models', 'ActionlogsModel');
 
-        $message = array(
-            'action' => 'request-confirmed',
-            'subjectemail' => $formModel->formData['jos_privacy_requests___email'],
-            'id' => $formModel->formData['jos_privacy_requests___id'],
-            'itemlink' => 'index.php?option=com_privacy&view=request&id=' . $formModel->formData['jos_privacy_requests___id'],
-        );
+       $table = $this->getTable();
 
+        $message = array(
+            'action'       => 'request-created',
+            'requesttype'  => $table->request_type,
+            'subjectemail' => $table->email,
+            'id'           => $table->id,
+            'itemlink'     => 'index.php?option=com_privacy&view=request&id=' . $table->id,
+        );
         /** @var ActionlogsModelActionlog $model */
         $model = JModelLegacy::getInstance('Actionlog', 'ActionlogsModel');
-        $model->addLog(array($message), 'COM_PRIVACY_ACTION_LOG_CONFIRMED_REQUEST', 'com_privacy.request');
-        $app->redirect(JRoute::_('index.php'));
-        return true;
+        $model->addLog(array($message), 'COM_PRIVACY_ACTION_LOG_CREATED_REQUEST', 'com_privacy.request');
+
+        if ($c_messagesUser instanceof JException)
+        {
+            // JError was already called so we just need to return now
+            return false;
+        }
+        elseif ($c_messagesUser === false)
+        {
+            $message = $this->setError($c_messagesUser->ErrorInfo);
+            $app->redirect(JRoute::_('index.php?option=com_privacy&view=request', false), $message, 'error');
+            return false;
+        }
+        else{
+            $app->redirect(JRoute::_(JUri::root()), JText::_('COM_PRIVACY_CONFIRM_REQUEST_SUCCEEDED'), 'info');
+            return true;
+        }
+
     }
 
     public function updateRequest($email,$state,$request_type){
@@ -153,18 +172,18 @@ class PlgFabrik_FormEmundusconfirmrgpd extends plgFabrik_Form
 
         $db->execute();
     }
-    protected function selectRequest($email){
+    protected function selectRequest($email, $confirm_token){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         // Conditions for which records should be updated.
-        $conditions = $db->quoteName('email') . ' = ' . $db->quote($email);
+        $conditions = $db->quoteName('email') . 'LIKE' . $db->quote($email). ' AND ' .$db->quoteName('confirm_token'). ' LIKE ' .$db->quote($confirm_token) ;
 
         $query
             ->select($db->quoteName(array('pr.*')))
             ->from($db->quoteName('#__privacy_requests', 'pr'))
             ->where($conditions);
-
+        //die($query->__toString());
         $db->setQuery($query);
 
         return $db->loadObject();

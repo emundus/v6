@@ -25,14 +25,15 @@ class PlgFabrik_FormEmundusrequestrgpd extends plgFabrik_Form {
 
             $token       = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
             $hashedToken = JUserHelper::hashPassword($token);
-
             $formModel->formData['confirm_token']            = $hashedToken;
             $formModel->formData['confirm_token_created_at'] = JFactory::getDate()->toSql();
+            $this->updateRequest($formModel->formData['email'],$formModel->formData['request_type'][0],$token );
+
+        //var_dump($formModel->formData).die();
+
             $app = JFactory::getApplication();
 
             $linkMode = $app->get('force_ssl', 0) == 2 ? 1 : -1;
-
-
 
             switch ($formModel->formData['request_type'][0])
             {
@@ -79,22 +80,14 @@ class PlgFabrik_FormEmundusrequestrgpd extends plgFabrik_Form {
                 'EMAIL' => $formModel->formData['email'],
             ];
 
-
-
             $coordinatorMail = $this->params->get('emundusdpo_email');
 
             $c_messages = new EmundusControllerMessages();
             $c_messagesUser = new EmundusControllerMessages();
             $c_messages->sendEmailNoFnum($coordinatorMail, $lbl, $post);
-        //var_dump($coordinatorMail,$lbl,$post).die();
 
             $c_messagesUser->sendEmailNoFnum($formModel->formData['email'],$lblUser,$postUser);
-            //$mailer = JFactory::getMailer();
-            //$mailer->setSubject($emailSubject);
-            //$mailer->setBody($emailBody);
-            //$mailer->addRecipient($formModel->formData['email']);
 
-            //$mailResult = $mailer->Send();
             if ($c_messagesUser instanceof JException)
             {
                 // JError was already called so we just need to return now
@@ -137,7 +130,7 @@ class PlgFabrik_FormEmundusrequestrgpd extends plgFabrik_Form {
             $model->addLog(array($message), 'COM_PRIVACY_ACTION_LOG_CREATED_REQUEST', 'com_privacy.request');
 
             // The email sent and the record is saved, everything is good to go from here
-            $app->redirect(JRoute::_('index.php'));
+            //$app->redirect(JRoute::_('index.php'));
             return true;
 
 
@@ -157,5 +150,26 @@ class PlgFabrik_FormEmundusrequestrgpd extends plgFabrik_Form {
     public function getTable($name = 'Request', $prefix = 'PrivacyTable', $options = array())
     {
         return parent::getTable($name, $prefix, $options);
+    }
+    public function updateRequest($email,$request_type,$confirm_token){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        // Fields to update.
+        $fields = array(
+            $db->quoteName('confirm_token') . ' = ' . $db->quote($confirm_token)
+        );
+
+        // Conditions for which records should be updated.
+        $conditions = array(
+            $db->quoteName('email') . ' LIKE ' . $db->quote($email),
+            $db->quoteName('request_type') . ' LIKE ' . $db->quote($request_type)
+        );
+
+        $query->update($db->quoteName('#__privacy_requests'))->set($fields)->where($conditions);
+
+        $db->setQuery($query);
+
+        $db->execute();
     }
 }
