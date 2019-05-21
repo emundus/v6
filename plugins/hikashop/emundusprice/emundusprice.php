@@ -32,25 +32,24 @@ class PlgHikashopEmundusPrice extends JPlugin
 
         $price = $this->selectPrice($userFnum);// Function to find the price by fnum
 
-
         if (!empty($price)) {
             foreach ($cart->cart_products as $cartProduct_id => $cartProduct){
                 $cart->cart_products[$cartProduct_id]->cart_product_ref_price=$price;
             }
-            //change the unit price of the product
+
             foreach ($cart->products as $product_id => $product){
+                //change the unit price of the product
                 $cart->products[$product_id]->product_sort_price=$price;
                 $cart->products[$product_id]->prices[0]->price_value=$price;
-                $cart->products[$product_id]->prices[0]->price_value_with_tax=$price;
                 $cart->products[$product_id]->prices[0]->unit_price->price_value=$price;
+                //change the unit price with tax 
+                $cart->products[$product_id]->prices[0]->price_value_with_tax=$price;
                 $cart->products[$product_id]->prices[0]->unit_price->price_value_with_tax=$price;
             }
             // Change the total price
             $cart->full_total->prices[0]->price_value = $price;
             $cart->full_total->prices[0]->price_value_with_tax = $price;
         }
-
-
     }
 
     public function selectPrice($fnum){
@@ -65,7 +64,7 @@ class PlgHikashopEmundusPrice extends JPlugin
             ->select($db->quoteName(array($field)))
             ->from($db->quoteName($table))
             ->where($conditions);
-
+        //die($query->__toString());
         $db->setQuery($query);
 
         return $db->loadResult();
