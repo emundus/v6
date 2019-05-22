@@ -99,11 +99,14 @@ class plgUserEmundus extends JPlugin
         $jinput = $app->input;
         $details = $jinput->post->get('jform', null, 'none');
 		$fabrik = $jinput->post->get('listid', null);
+		$option = $jinput->get->get('option', null);
+		$controller = $jinput->get->get('controller', null);
+		$task = $jinput->get->get('task', null);
 
         // If the details are empty, we are probably signing in via LDAP for the first time.
-        if ($isnew && empty($details) && empty($fabrik) && JPluginHelper::getPlugin('authentication','ldap')) {
+        if ($isnew && empty($details) && empty($fabrik) && JPluginHelper::getPlugin('authentication','ldap') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
 
-        	require_once (JPATH_BASE.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 	        $m_users = new EmundusModelusers();
 	        $return = $m_users->searchLDAP($user['username']);
 	        if (!empty($return->users[0])) {
