@@ -51,12 +51,12 @@ if (!empty($status)) {
 			$query->clear()->select($db->quoteName('cc.status'))
 				->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
-				->where($db->quoteName('c.training').' IN ('.$db->quote('FCESHU').', '.$db->quote('FCSEXO').') AND '.$db->quoteName('cc.status').' = 2');
+				->where($db->quoteName('c.training').' IN ('.$db->quote('FCESHU').', '.$db->quote('FCSEXO').') AND '.$db->quoteName('cc.status').' IN (2,9,12,13,14)');
 		} else {
 			// To get the number of people registered in a class : count all status 2.
 			$query->clear()->select($db->quoteName('cc.status'))
 				->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-				->where($db->quoteName('cc.campaign_id').' = '.$res->campaign_id.' AND '.$db->quoteName('cc.status').' = 2');
+				->where($db->quoteName('cc.campaign_id').' = '.$res->campaign_id.' AND '.$db->quoteName('cc.status').' IN (2,9,12,13,14)');
 		}
 
 		$db->setQuery($query);
