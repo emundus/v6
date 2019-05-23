@@ -486,7 +486,7 @@ function getProjectThematics($fnum) {
         <?php foreach ($files as $file) : ?>
 
             <p class="em-attached-element">
-            <div class="em-partenaires-subtitle"><?php echo $file["value"] . ' : '; ?></div><a target="_blank" href="<?php echo JURI::root() . DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $this->data["jos_emundus_campaign_candidature___applicant_id"][0] . DS . $file["filename"]; ?>"><?php echo $file["filename"]; ?></a>
+            <div class="em-partenaires-subtitle"><?php echo $file["value"] . ' : '; ?></div><a target="_blank" href="<?php echo JURI::root() . 'images' . DS . 'emundus' . DS . 'files' . DS . $this->data['jos_emundus_campaign_candidature___applicant_id_raw'] . DS . $file['filename']; ?>"><?php echo $file['filename']; ?></a>
             </p>
 
         <?php endforeach; ?>

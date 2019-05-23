@@ -437,9 +437,8 @@ function openFiles(fnum) {
 
             $('.em-open-files').remove();
             var panel = result;
-
-            $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
-
+            //.main-panel
+            $('.main-panel').append('<div class="em-close-minimise"><div class="btn-group pull-right"><button id="em-close-file" class="btn btn-danger btn-xxl"><strong>X</strong></button></div></div><div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
             $('#em-synthesis .panel-body').empty();
             $('#em-synthesis .panel-body').append(panel);
         },

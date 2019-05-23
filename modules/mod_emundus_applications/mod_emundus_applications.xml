@@ -145,6 +145,17 @@
 					<option
 							value="1">JYes</option>
 				</field>
+				<field
+						name="show_state_files"
+						type="radio"
+						default="0"
+						label="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS"
+						description="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS_DESC">
+					<option
+							value="0">JNo</option>
+					<option
+							value="1">JYes</option>
+				</field>
 			</fieldset>
 			<fieldset
 					name="advanced">
@@ -183,6 +194,12 @@
 					<option
 							value="static"></option>
 				</field>
+				<field
+						name="file_status"
+						type="number"
+						default="1"
+						label="COM_MODULES_FIELD_FILE_STATUS"
+						description="COM_MODULES_FIELD_FILE_STATUS_DESC" />
 			</fieldset>
 		</fields>
 	</config>

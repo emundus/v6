@@ -75,34 +75,43 @@ $query = rtrim($query, ',');
 try {
 	$db->setQuery($query);
 	$db->execute();
-
 } catch (Exception $e) {
 	JLog::add('Error assigning file to groups in script/SUPE-assign-to-groups at query: '.$query, JLog::ERROR, 'com_emundus');
 }
 
+$ufr_rattachement = $fabrikFormData['ufr_rattachement'][0];
 
 // This is where things get tricky commissions are handled differently for the science fac.
 if ($fac_rattachement === 'FACSI') {
 
-	// Science fac uses CNU commission value.
-	$cnu_rattachement = $fabrikFormData['cnu'][0];
-
-	if (!empty($cnu_rattachement)) {
-		$query = 'SELECT '.$db->quoteName('commission').' FROM '.$db->quoteName('data_cnu').' WHERE '.$db->quoteName('id').' = '.$cnu_rattachement;
+	// Medical students that are in the FACSI need to be put in the appropriate commision.
+	if ($ufr_rattachement == 34) {
+		$query = 'SELECT '.$db->quoteName('commission').' FROM '.$db->quoteName('data_faculte_de_rattachement').' WHERE '.$db->quoteName('id').' = '.$ufr_rattachement;
 		try {
-
 			$db->setQuery($query);
 			$commissions = $db->loadColumn();
 
 		} catch (Exception $e) {
-			JLog::add('Error in script/SUPE-assign-to-groups getting comissions by CNU at query: '.$query, JLog::ERROR, 'com_emundus');
+			JLog::add('Error in script/SUPE-assign-to-groups getting comissions by UFR at query: '.$query, JLog::ERROR, 'com_emundus');
+		}
+	} else {
+		// Science fac uses CNU commission value.
+		$cnu_rattachement = $fabrikFormData['cnu'][0];
+
+		if (!empty($cnu_rattachement)) {
+			$query = 'SELECT '.$db->quoteName('commission').' FROM '.$db->quoteName('data_cnu').' WHERE '.$db->quoteName('id').' = '.$cnu_rattachement;
+			try {
+
+				$db->setQuery($query);
+				$commissions = $db->loadColumn();
+
+			} catch (Exception $e) {
+				JLog::add('Error in script/SUPE-assign-to-groups getting comissions by CNU at query: '.$query, JLog::ERROR, 'com_emundus');
+			}
 		}
 	}
 
 } else {
-
-	// Science fac use UFR commission value.
-	$ufr_rattachement = $fabrikFormData['ufr_rattachement'][0];
 
 	if (!empty($ufr_rattachement)) {
 		$query = 'SELECT '.$db->quoteName('commission').' FROM '.$db->quoteName('data_faculte_de_rattachement').' WHERE '.$db->quoteName('id').' = '.$ufr_rattachement;

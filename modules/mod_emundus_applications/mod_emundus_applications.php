@@ -54,7 +54,9 @@ $admission_status          = explode(',', $params->get('admission_status'));
 
 $show_remove_files         = $params->get('show_remove_files', 1);
 $show_archive_files        = $params->get('show_archived_files', 1);
+$show_state_files          = $params->get('show_state_files', 0);
 
+$file_status 	            = $params->get('file_status', 1);
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 if ($layout == '_:ccirs-drh') {
@@ -67,7 +69,6 @@ if ($layout == '_:ccirs-drh') {
 	// We send the layout as a param because Hesam needs different information.
 	$applications = modemundusApplicationsHelper::getApplications($layout);
     $states = modemundusApplicationsHelper::getStatusFiles();
-
 }
 
 

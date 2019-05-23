@@ -27,7 +27,6 @@ JLog::addLogger(
     JLog::ALL,
     array('com_emundus')
 );
-//echo "<pre>";print_r($data);echo "<hr>";
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $copy_application_form = $eMConfig->get('copy_application_form', 0);
@@ -38,14 +37,6 @@ $db 	= JFactory::getDBO();
 include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 $m_profile = new EmundusModelProfile();
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
-
-
-/*if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
-	echo "<hr>";
-	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
-	echo "<hr>";
-	exit();
-}*/
 
 
 // duplication is defined
@@ -276,6 +267,19 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 				$db->setQuery( $query );
 				$link = $db->loadResult();
 				} 
+			catch (Exception $e){
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+		}
+		if(empty($link)) {
+			try{
+				$query = 'SELECT CONCAT(link,"&Itemid=",id) 
+				FROM #__menu 
+				WHERE published=1 AND menutype = "'.$user->menutype.'" AND type LIKE "component" AND published=1 AND level = 1 ORDER BY id ASC';
+				$db->setQuery( $query );
+				$link = $db->loadResult();
+			}
 			catch (Exception $e){
 				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 				JLog::add($error, JLog::ERROR, 'com_emundus');

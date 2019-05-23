@@ -152,7 +152,6 @@ JText::script('COM_EMUNDUS_FILE');
 JText::script('COM_EMUNDUS_FILES');
 
 
-
 // view user
 JText::script('NOT_A_VALID_EMAIL');
 JText::script('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER');
@@ -170,6 +169,7 @@ JText::script('FILES_GENERATED');
 JText::script('STATE');
 JText::script('SWITCH_PROFILE');
 JText::script('PROFILE_CHOSEN');
+Jtext::script('ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -281,6 +281,7 @@ JText::script('ID_CANDIDAT');
 JText::script('FNUM');
 JText::script('APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
+JText::script('ARE_YOU_SURE_TO_DELETE_USERS');
 
 
 //Export ZIP

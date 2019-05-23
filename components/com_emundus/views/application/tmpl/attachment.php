@@ -27,7 +27,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
-
                 <?php if($can_export && count($this->userAttachments) > 0)
                     echo '<button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="'.JText::_('EXPORT_FILE_ATTACHMENT').'">
                         <span class="glyphicon glyphicon-save" ></span>
@@ -421,7 +420,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             dataType:'json',
 
             success: function(result) {
-
                 if(result.link){
                     link.location.href = result.link;
                 }

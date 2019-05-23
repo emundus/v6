@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 echo $description;
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?= JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102">
+    <a id="add-application" class="btn btn-success" href="<?= JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102">
         <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
     </a>
     <hr>
@@ -23,12 +23,12 @@ echo $description;
         <?php if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
     <div class="row" id="row<?= $application->fnum; ?>">
         <div class="col-md-12 main-page-application-title">
-            <a href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>">
+            <a href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>">
                 <?= (in_array($application->status, $admission_status))?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
             </a>
         </div>
 
-        <div class="col-xs-12 col-md-4 main-page-file-info">
+        <div class="col-xs-12 col-md-6 main-page-file-info">
             <p>
                 <?= JText::_('FILE_NUMBER'); ?> : <i><?= $application->fnum; ?></i>
             </p>
@@ -36,18 +36,17 @@ echo $description;
                 <i class="folder open outline icon"></i> <?= (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
             </a>
 
-            <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && $application->status == 0 && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
-                <a class="btn" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url)); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+            <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && $application->status == 0 && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
+                <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url)); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
             <?php endif; ?>
 
             <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
-
-            <?php if ($application->status <= 1) : ?>
+					  <?php if ($application->status <= $file_status) : ?>
                 <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
-            <?php endif; ?>
+					  <?php endif; ?>
         </div>
 
-        <div class="col-xs-12 col-md-4 main-page-file-progress">
+        <div class="col-xs-12 <?= ($show_state_files == 1) ? "col-md-3" : "col-md-6" ?> main-page-file-progress">
             <section class="container" style="width:150px; float: left;">
                 <?php if ($show_progress == 1) : ?>
                     <div id="file<?= $application->fnum; ?>"></div>
@@ -112,16 +111,18 @@ echo $description;
                         </span>
             </div>
         </div>
-        <div class="col-xs-12 col-md-4 main-page-file-progress">
+        <?php if($show_state_files == 1): ?>
+        <div class="col-xs-12 col-md-3 main-page-file-progress">
             <div class="main-page-file-progress-label">
-                <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?>
+                <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?></strong>
                     <?php if ($state == 1):?>
                         <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
                     <?php elseif ($state == 0):?>
                         <span class="label alert-secondary" role="alert"> <?= JText::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
                     <?php else: ?>
                         <span class="label alert-danger" role="alert"><?= JText::_('MOD_EMUNDUS_DELETE'); ?></span>
-                    <?php endif; ?>
+                    <?php endif;
+                endif; ?>
             </div>
         </div>
 

@@ -1224,7 +1224,7 @@ class EmundusModelApplication extends JModelList {
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
-
+		$em_breaker = JComponentHelper::getParams('com_emundus')->get('export_application_pdf_breaker', '0');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list     = new EmundusHelperList;
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
@@ -1244,11 +1244,16 @@ class EmundusModelApplication extends JModelList {
                         background-color: #FFFFFF;
                         padding:5px;
                     }
+                    @media print {
+                    	.breaker{ 
+							page-break-before: always;
+						}
+                    }
                     </style>";
 
         if (isset($tableuser)) {
             foreach ($tableuser as $key => $itemt) {
-
+            	$breaker= ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -1272,8 +1277,8 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 if (count($groupes) > 0) {
-                    $forms .= '<br><br>';
-                    $forms .= '<hr><h3>';
+                    $forms .= '<br>';
+                    $forms .= '<hr><h3 '.$breaker.'>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
 	                    $forms .= JText::_($itemt->label);
