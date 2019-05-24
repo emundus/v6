@@ -65,10 +65,12 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 			// Special columns such as the campaign ID can be inserted.
 			if ($column[0] == 'campaign') {
 				$campaign_column = $column_number;
-			}
-
-			if ($column[0] == 'status') {
+			} else if ($column[0] == 'status') {
 				$status_column = $column_number;
+			} else if ($column[0] == 'cas_username') {
+				// TODO: Adapt this column name to be the real CAS username column name.
+				// Be careful that the provided cas_username not contain ___.
+				$cas_column = $column_number;
 			}
 
 			$bad_columns[] = $column_number;
@@ -151,6 +153,8 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 		} elseif ($column_number === $status_column) {
 			$status_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 			continue;
+		} elseif ($column_number === $cas_column) {
+			$cas_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 		}
 
 		if (in_array($column_number, $bad_columns)) {
@@ -195,8 +199,12 @@ $ldap_elements  = explode(',', $emundus_params->get('ldapElements'));
 $ldap_params = new JRegistry($ldap_plugin->params);
 $ldap = new JLDAP($ldap_params);
 
+// Check if the CAS auth plugin is activated.
+$cas_plugin = JPluginHelper::getPlugin('system','caslogin');
+
 $totals = [
 	'ldap' => 0,
+	'cas' => 0,
 	'user' => 0,
 	'fnum' => 0,
 	'write' => 0
@@ -240,6 +248,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 	// We need a user
 	if (!empty($insert_row['jos_emundus_users']['user_id'])) {
 
+		// In the case of a user id already provided in the CSV
 		$user = (int)$insert_row['jos_emundus_users']['user_id'];
 		if (JFactory::getUser($user)->guest) {
 			unset($user);
@@ -317,6 +326,20 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			}
 		}
 
+		$cas_user = false;
+		// If CAS is active, manage the following case: we need a user object already in the DB that can be logged into via CAS.
+		if ($cas_plugin && !empty($cas_row[$row_id])) {
+
+			$username = $cas_row[$row_id];
+			$cas_user = true;
+
+			// Check if any data is missing.
+			if (empty($username) || empty($email) || empty($firstname) || empty($lastname)) {
+				JLog::add('ERROR: Missing some user details, cannot create user.', JLog::ERROR, 'com_emundus');
+				continue;
+			}
+		}
+
 		$user = clone(JFactory::getUser(0));
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
 			JLog::add('ERROR: Username format not OK.', JLog::ERROR, 'com_emundus');
@@ -333,7 +356,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 		// If our user comes from the LDAP system, he has no password.
 		// If he doesn't, he needs one generated.
-		if (!$ldap_user) {
+		if (!$ldap_user && !$cas_user) {
 			$password = JUserHelper::genRandomPassword();
 			$user->password = md5($password);
 		}
@@ -370,13 +393,33 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			continue;
 		}
 
+		// If we are adding our user via CAS, we need to register him in the extLogin table.
+		if ($cas_user) {
+
+			$query->insert($db->quoteName('#__externallogin_users'))
+				->columns($db->quoteName(['server_id','user_id']))
+				->values('1,'.$uid);
+			$db->setQuery($query);
+
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('ERROR: Could not add user to list of CAS users for extLogin plugin.', JLog::ERROR, 'com_emundus');
+				continue;
+			}
+		}
+
 		// Send email indicating account creation.
 		$m_emails = new EmundusModelEmails();
 
-		// If we are creating an ldap account, we need to send a different email.
+		// If we are creating an ldap or cas account, we need to send a different email.
 		if ($ldap_user) {
 			$totals['ldap']++;
 			$email = $m_emails->getEmail('new_ldap_account');
+			$tags = $m_emails->setTags($user->id, null, null, null);
+		} else if ($cas_user) {
+			$totals['cas']++;
+			$email = $m_emails->getEmail('new_cas_account');
 			$tags = $m_emails->setTags($user->id, null, null, null);
 		} else {
 			$totals['user']++;
@@ -554,6 +597,10 @@ if (!empty($totals)) {
 
 	if (!empty($totals['ldap'])) {
 		$summary .= 'Added '.$totals['ldap'].' users found in the LDAP system. <br>';
+	}
+
+	if (!empty($totals['cas'])) {
+		$summary .= 'Added '.$totals['cas'].' users using the CAS system. <br>';
 	}
 
 	if (!empty($totals['fnum'])) {
