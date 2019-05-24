@@ -769,20 +769,32 @@ class EmundusControllerUsers extends JControllerLegacy {
 			foreach ($return->users as $user) {
 
 				// TODO: Implement getting the user photo.
-				if (!empty($user['jpegPhoto']))
+				if (!empty($user['jpegPhoto'])) {
 					$user['jpegPhoto'] = null;
+				}
 
-				if (JUserHelper::getUserId($user['uid'][0]) > 0)
+				// Certain users have a binary certificate file which breaks the JSON parsing as it is not UTF-8.
+				if (!empty($user['userCertificate;binary'])) {
+					$user["userCertificate;binary"] = null;
+				}
+
+				if (JUserHelper::getUserId($user['uid'][0]) > 0) {
 					$user['exists'] = true;
-				else
+				} else {
 					$user['exists'] = false;
+				}
 
 				$users[] = $user;
 			}
 		}
 
-		echo json_encode((object) ['status' => $return->status, 'ldapUsers' => $users, 'count' => count($users)]);
-		exit;
+		$response = json_encode((object) ['status' => $return->status, 'ldapUsers' => $users, 'count' => count($users)]);
+		if (!$response) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Information retrieved from LDAP is of incorrect format.']);
+			exit;
+		}
 
+		echo $response;
+		exit;
 	}
 }
