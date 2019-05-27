@@ -41,7 +41,6 @@ echo $description;
             <?php endif; ?>
 
             <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
-
 					  <?php if ($application->status <= $file_status) : ?>
                 <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
 					  <?php endif; ?>

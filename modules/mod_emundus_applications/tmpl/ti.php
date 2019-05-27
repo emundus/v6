@@ -63,7 +63,6 @@ echo $description;
       <?php endif; ?>
     </div>
 
-
       <section class="col-xs-6 col-md-2" style="width:180px; float: left;">
       <?php if ($show_progress == 1) : ?>
           <div class="col-12"><div id="file<?= $application->fnum; ?>"></div>

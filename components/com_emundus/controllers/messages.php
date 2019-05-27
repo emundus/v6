@@ -157,7 +157,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Move the uploaded file to the server directory.
         $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
 
-        
+
         if (file_exists($target)) {
 	        unlink($target);
         }
@@ -339,6 +339,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	            $mailer->addBCC($user->email);
             }
 
+
             // Files uploaded from the frontend.
             if (!empty($attachments['upload'])) {
 
@@ -358,9 +359,10 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                     $filename = $m_messages->get_upload($fnum->fnum, $candidate_file);
 
-                    if ($filename) {
+                      if ($filename != false) {
+
                         // Build the path to the file we are searching for on the disk.
-                        $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
+                        $path = EMUNDUS_PATH_ABS . $fnum->applicant_id . DS . $filename;
 
                         if (file_exists($path)) {
                             $toAttach[] = $path;
@@ -421,6 +423,39 @@ class EmundusControllerMessages extends JControllerLegacy {
                     }
                 }
             }
+            $files = '';
+
+            if (!empty($toAttach)) {
+
+                $files = '<ul>';
+                foreach ($attachments['upload'] as $attach) {
+                    //var_dump($attach);
+                    $filesName = basename($attach);
+                    $files .= '<li>' . $filesName . '</li>';
+                }
+                foreach ($attachments['candidate_file'] as $attach) {
+
+                    $idTypeFile = $attach;
+                    $typeAttachments = $this->getTypeAttachment($idTypeFile);
+                    foreach ($typeAttachments as $typeAttachment) {
+                        $nameType = $typeAttachment->value;
+                    }
+
+                    //var_dump($nameType);
+                    $files .= '<li>' . $nameType . '</li>';
+                }
+                foreach ($attachments['setup_letters'] as $attach) {
+                    $idTypeFile = $attach;
+                    $typeAttachments = $this->getTypeLetters($idTypeFile);
+                    foreach ($typeAttachments as $typeAttachment) {
+                        $nameType = $typeAttachment->title;
+                    }
+                    $files .= '<li>' . $nameType . '</li>';
+                }
+            }
+
+            $files .= '</ul>';
+
 
             $mailer->addAttachment($toAttach);
 
@@ -433,18 +468,18 @@ class EmundusControllerMessages extends JControllerLegacy {
             } else {
                 $sent[] = $fnum->email;
                 $log = [
-                    'user_id_from'  => $user->id,
-                    'user_id_to'    => $fnum->applicant_id,
-                    'subject'       => $subject,
-                    'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$fnum->email.'</i><br>'.$body,
-                    'type'          => $template->type
+                    'user_id_from' => $user->id,
+                    'user_id_to' => $fnum->applicant_id,
+                    'subject' => $subject,
+                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
+                    'type' => $template->type
                 ];
                 $m_emails->logEmail($log);
-	            // Log the email in the eMundus logging system.
-	            EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+                // Log the email in the eMundus logging system.
+                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
             }
-        }
 
+        }
         echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
         exit;
     }
@@ -526,6 +561,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        $toAttach = $attachments;
 	    } else {
 		    $toAttach[] = $attachments;
+
 	    }
 
 	    $message = $m_emails->setTagsFabrik($template->message, [$fnum['fnum']]);
@@ -800,6 +836,32 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
 
         exit;
+    }
+    public function getTypeAttachment($id) {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('esa.*')
+            ->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
+            ->where($db->quoteName('esa.id')  . ' = ' . $id);
+
+        $db->setQuery($query);
+        return $db->loadObjectList() ;
+    }
+    public function getTypeLetters($id) {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('esl.*')
+            ->from($db->quoteName('#__emundus_setup_letters', 'esl'))
+            ->where($db->quoteName('esl.id')  . ' = ' . $id);
+
+        $db->setQuery($query);
+        return $db->loadObjectList() ;
     }
 
 }

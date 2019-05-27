@@ -3182,5 +3182,60 @@ die();*/
 	    return $birthdate;
     }
 
+    public function getDocumentCategory() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($this->_db->quoteName('esa.*'))
+            ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
+            ->order($this->_db->quoteName('esa.category').'ASC');
+
+        $this->_db->setQuery($query);
+
+        return $this->_db->loadObjectList();
+    }
+
+    public function getParamsCategory($idCategory) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47');
+
+        $db->setQuery($query);
+        $elements = $db->loadObjectList();
+
+        foreach ($elements as $element){
+            $params = json_decode($element->params);
+        }
+
+        return $params->sub_options->sub_labels[$idCategory];
+    }
+
+	/** Gets the category names for the different attachment types.
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+    public function getAttachmentCategories() {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47 AND '.$db->quoteName('fe.name').' LIKE '.$db->quote('category'));
+        $db->setQuery($query);
+        $element = $db->loadColumn();
+        
+        $params = json_decode($element[0]);
+
+        $return = [];
+        foreach ($params->sub_options->sub_values as $key => $value) {
+        	$return[$value] = $params->sub_options->sub_labels[$key];
+        }
+        return $return;
+    }
 
 }

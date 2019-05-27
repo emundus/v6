@@ -1,6 +1,7 @@
 /**
  * Created by yoan on 23/05/14.
  */
+
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
     var id = 0, Q = {};
@@ -179,6 +180,11 @@ function reloadActions(view, fnum, onCheck, async) {
     //addDimmer();
 
     var multi = $('.em-check:checked').length;
+    if(multi === 0 && fnum != 0 ){
+        multi = 1;
+    }
+
+
     $.ajax({
         type: 'GET',
         async: async,
@@ -189,6 +195,7 @@ function reloadActions(view, fnum, onCheck, async) {
             //$(".col-md-9 .panel.panel-default").remove();
             $('.navbar.navbar-inverse').empty();
             $('.navbar.navbar-inverse').append(data);
+
             if (onCheck === true) {
                 menuBar1();
             }
@@ -809,7 +816,7 @@ function back() {
 }
 
 $(document).ready(function() {
-    $('.em-check-all-all').hide();
+    //$('.em-check-all-all').hide();
     $('#check').removeClass('em-check-all-all');
 
     var lastVal = new Object();
@@ -1348,8 +1355,8 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '.em-check', function(e) {
-        if (($(this).attr('id') == 'em-check-all') || ($(this).attr('id') == 'em-check-all-all')) {
-            $('.em-check-all-all').show();
+        if ($(this).attr('id') == 'em-check-all') {
+            //$('.em-check-all-all').show();
             $('.em-actions[multi="1"]').show();
             $('.em-actions[multi="1"]').removeClass('em-hidden');
 
@@ -1371,7 +1378,7 @@ $(document).ready(function() {
 
             } else {
 
-                $('.em-check-all-all').hide();
+                //$('.em-check-all-all').hide();
                 $(this).prop('checked', false);
                 $('.em-check').prop('checked', false);
                 $('.em-actions[multi="0"]').show();
@@ -4508,21 +4515,39 @@ $(document).ready(function() {
                         $('#em-modal-sending-emails').css('display', 'none');
 
                         result = JSON.parse(result);
+                        console.log(result);
                         if (result.status) {
 
                             if (result.sent.length > 0) {
                                 // Block containing the email adresses of the sent emails.
-                                $("#em-email-messages").append('<div class="alert alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
+                                /*$("#em-email-messages").append('<div class="alert alert-success">'+Joomla.JText._('EMAILS_SENT')+'<span class="badge">'+result.sent.length+'</span>'+
                                                             '<ul class="list-group" id="em-mails-sent"></ul>');
 
                                 result.sent.forEach(function (element) {
                                     $('#em-mails-sent').append('<li class="list-group-item alert-success">'+element+'</li>');
                                 });
 
-                                $('#em-email-messages').append('</div>');
+                                $('#em-email-messages').append('</div>');*/
+
+                                var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                                result.sent.forEach(function (element) {
+                                    sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
+                                    console.log(element);
+                                })
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                                    html:  sent_to + '</ul>'
+                                });
+
 
                             } else {
-                                $("#em-email-messages").append('<span class="alert alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');
+                                Swal.fire({
+                                    type: 'error',
+                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                })
+                                /*$("#em-email-messages").append('<span class="alert alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');*/
                             }
 
                             if (result.failed.length > 0) {

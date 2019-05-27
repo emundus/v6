@@ -30,7 +30,7 @@ echo $description;
         </a>
     </div>
 
-    <div class="col-xs-12 col-md-6 main-page-file-info">
+    <div class="col-xs-12 col-md-4 main-page-file-info">
       <p>
         <?= JText::_('FILE_NUMBER'); ?> : <i><?= $application->fnum; ?></i>
       </p>
