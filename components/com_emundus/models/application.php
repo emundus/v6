@@ -1393,7 +1393,9 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $params = json_decode($elements[$j]->params);
-                                                $elt = date($params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1517,7 +1519,9 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $date_params = json_decode($elements[$j]->params);
-                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($date_params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1618,7 +1622,9 @@ class EmundusModelApplication extends JModelList {
                                     if (!empty($element->label) && $element->label!=' ') {
 
                                         if ($element->plugin=='date' && $element->content>0) {
-                                            $elt = date($params->date_form_format, strtotime($element->content));
+	                                        $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                        $elt = $dt->format($params->date_form_format);
                                         }
 
                                         elseif ($element->plugin=='birthday' && $element->content>0) {
