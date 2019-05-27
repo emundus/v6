@@ -35,140 +35,121 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             </h3>
         </div>
 
-        <?php $j = 1; $i = 1;
+        <?php $i = 1;
         $new_cat_id = $this->userAttachments[0]->category;
-        //var_dump($new_cat_id);
         $nameCategory = $this->nameCategory[$new_cat_id]; ?>
         <div class="em-collapse-container">
             <div class="em-utilitize">
                 <div class="em-select-all-files">
-
                     <input type="checkbox" name="em_application_attachments_all" id="em_application_attachments_all" />
                     <p><?= JText::_('SELECT_ALL_FILES') ?></p>
                 </div>
 
                 <div class="input-group em-searchbar">
-                        <input type="text" id="em-searchbar" class="form-control" placeholder="<?= JText::_('KEYWORDS') ?>">
-                        <span class="input-group-btn">
-                            <button id="btn-em-searchbar" class="btn btn-default" type="button"><?= JText::_('SEARCH') ?></button>
-                        </span>
+                    <input type="text" id="em-searchbar" class="form-control" placeholder="<?= JText::_('KEYWORDS') ?>">
+                    <span class="input-group-btn">
+                        <button id="btn-em-searchbar" class="btn btn-default" type="button"><?= JText::_('SEARCH') ?></button>
+                    </span>
                 </div>
             </div>
                 <div class="em-collapse">
-                    <div class="panel-heading fileCollapse" role="tab" id="heading<?= $new_cat_id ?>">
+                    <div class="panel-heading fileCollapse" role="tab" id="heading<?= $new_cat_id; ?>">
                         <div class="panel-title em-title-collapse">
                             <p><strong><?= JText::_($nameCategory); ?></strong></p>
-                            <a id="em-button" class="em-button<?= $new_cat_id ?>" role="button">
-                                <p id="em-arrow-down<?= $new_cat_id ?>" class='em-arrow-up'></p>
+                            <a id="em-button" class="em-button<?= $new_cat_id; ?>" role="button">
+                                <p id="em-arrow-down<?= $new_cat_id; ?>" class='em-arrow-up'></p>
                             </a>
                         </div>
                     </div>
-                    <div id="collapse<?= $new_cat_id ?>" class="borderContentCollapse">
+                    <div id="collapse<?= $new_cat_id; ?>" class="borderContentCollapse">
                         <div class="panel-body">
                         <?php
                         if (count($this->userAttachments) > 0) {
-                            if ($can_export)
-                                $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse" class="em-checkbox-collapse'. $new_cat_id.'"/>';?>
+                            if ($can_export) {
+                                $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse" class="em-checkbox-collapse'. $new_cat_id.'"/>';
+                            } ?>
 
-                                <table class="table table-hover attachments_table">
-                                    <thead>
-                                        <tr id="em-tr-collapse<?= $new_cat_id; ?>" class="em-tr-collapse">
-                                            <th><?= $checkbox; ?> #
-                                            </th>
-                                            <div class="tooltipSelectAttachments selector<?= $new_cat_id; ?>"><p><?= JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'); ?></p></div>
+                            <table class="table table-hover attachments_table">
+                                <thead>
+                                    <tr id="em-tr-collapse<?= $new_cat_id; ?>" class="em-tr-collapse">
+                                        <th><?= $checkbox; ?> #
+                                        </th>
+                                        <div class="tooltipSelectAttachments selector<?= $new_cat_id; ?>"><p><?= JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'); ?></p></div>
 
-                                            <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
-                                            <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
-                                            <th><?= JText::_('ATTACHMENT_DESCRIPTION'); ?></th>
-                                            <th><?= JText::_('CAMPAIGN'); ?></th>
-                                            <th><?= JText::_('ACADEMIC_YEAR'); ?></th>
-                                            <th><?= JText::_('VALIDATION_STATE'); ?></th>
-                                        </tr>
-                                     </thead>
-                                    <tbody>
-                            <?php
-                        } else echo JText::_('NO_ATTACHMENT');
+                                        <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
+                                        <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
+                                        <th><?= JText::_('ATTACHMENT_DESCRIPTION'); ?></th>
+                                        <th><?= JText::_('CAMPAIGN'); ?></th>
+                                        <th><?= JText::_('ACADEMIC_YEAR'); ?></th>
+                                        <th><?= JText::_('VALIDATION_STATE'); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                } else echo JText::_('NO_ATTACHMENT');
 
-
-        foreach ($this->userAttachments as $cat => $attachment){
-            //var_dump($attachment->category);
-            if($new_cat_id != $attachment->category){
-                $i = 1;
-                ?>
+                        foreach ($this->userAttachments as $cat => $attachment) {
+                            if ($new_cat_id != $attachment->category) {
+                                $i = 1; ?>
                                     </tbody>
                                 </table>
-                            <?php
-                                if (count($this->userAttachments) > 0) {
-                                    if (EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
+                                <?php if (count($this->userAttachments) > 0 && EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
                                     echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
-                                            <span class="glyphicon glyphicon-trash"></span></button></div> ';
-                                    }
+                                        <span class="glyphicon glyphicon-trash"></span></button></div> ';
                                 } ?>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="em-collapse">
-                    <div class="panel-heading fileCollapse">
-                        <div class="em-title-collapse">
-                            <p><strong><?= JText::_($this->nameCategory[$attachment->category]); ?></strong></p>
-                            <a id="em-button" class="em-button<?= $attachment->category ?>" role="button">
-                                <p id="em-arrow-down<?= $attachment->category ?>" class='em-arrow-up'></p>
-                            </a>
-                        </div>
-                    </div>
-                    <div id="collapse<?= $attachment->category ?>" class="borderContentCollapse">
-                        <div class="panel-body">
-                            <?php
-                            if (count($this->userAttachments) > 0) {
-                            if ($can_export)
-                            $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse" class="em-checkbox-collapse'.$attachment->category.'"/>';
+                        <div class="em-collapse">
+                            <div class="panel-heading fileCollapse">
+                                <div class="em-title-collapse">
+                                    <p><strong><?= JText::_($this->nameCategory[$attachment->category]); ?></strong></p>
+                                    <a id="em-button" class="em-button<?= $attachment->category; ?>" role="button">
+                                        <p id="em-arrow-down<?= $attachment->category; ?>" class='em-arrow-up'></p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="collapse<?= $attachment->category; ?>" class="borderContentCollapse">
+                                <div class="panel-body">
+                                    <?php if (count($this->userAttachments) > 0) {
+                                        if ($can_export) {
+                                            $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em-checkbox-collapse" class="em-checkbox-collapse'.$attachment->category.'"/>';
+                                        }
 
-                            echo '<table class="table table-hover attachments_table">
-                                    <thead>
-                                        <tr id="em-tr-collapse'.$attachment->category.'" class="em-tr-collapse">
-                                            <th>' . $checkbox . ' #</th>
-                                            <div class="tooltipSelectAttachments selector'.$attachment->category.'"><p>' . JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'). '</p></div>
-
-                                            <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
-                                            <th>' . JText::_('ATTACHMENT_DATE') . '</th>
-                                            <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
-                                            <th>' . JText::_('CAMPAIGN') . '</th>
-                                            <th>' . JText::_('ACADEMIC_YEAR') . '</th>
-                                            <th>' . JText::_('VALIDATION_STATE') . '</th>
-        
-                                        </tr>
-                                    </thead>
-                                    <tbody>';
+                                        echo '<table class="table table-hover attachments_table">
+                                                <thead>
+                                                    <tr id="em-tr-collapse'.$attachment->category.'" class="em-tr-collapse">
+                                                        <th>' . $checkbox . ' #</th>
+                                                        <div class="tooltipSelectAttachments selector'.$attachment->category.'"><p>' . JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'). '</p></div>
+                                                        <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
+                                                        <th>' . JText::_('ATTACHMENT_DATE') . '</th>
+                                                        <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
+                                                        <th>' . JText::_('CAMPAIGN') . '</th>
+                                                        <th>' . JText::_('ACADEMIC_YEAR') . '</th>
+                                                        <th>' . JText::_('VALIDATION_STATE') . '</th>
+                                                    </tr>
+                                                </thead>
+                                            <tbody>';
+                                    }
                             }
-                }
-                $new_cat_id = $attachment->category;
-
-        ?>
-
-                        <?php
+                            $new_cat_id = $attachment->category;
 
                         if (count($this->userAttachments) > 0) {
-
-
-                            //var_dump($this->userAttachments);
 
                                 $path = $attachment->lbl == "_archive" ? EMUNDUS_PATH_REL . "archives/" . $attachment->filename : EMUNDUS_PATH_REL . $this->student_id . '/' . $attachment->filename;
                                 $img_missing = (!file_exists($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
                                 $img_dossier = (is_dir($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
                                 $img_locked = (strpos($attachment->filename, "_locked") > 0) ? '<img src="media/com_emundus/images/icones/encrypted.png" />' : "";
 
-                                if ($can_export)
+                                if ($can_export) {
                                     $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid' . $attachment->aid . '" value="' . $attachment->aid . '" />';
+                                }
 
                                 $class = "";
                                 $color = "";
                                 $meaning = "";
-                                if ($attachment->is_validated == -2) {
-                                    $class = "glyphicon-unchecked";
-                                    $color = "gray";
-                                    $meaning = JText::_('UNCHECKED');
-                                } elseif ($attachment->is_validated == null) {
+                                if ($attachment->is_validated == -2 || $attachment->is_validated == null) {
                                     $class = "glyphicon-unchecked";
                                     $color = "gray";
                                     $meaning = JText::_('UNCHECKED');
@@ -181,6 +162,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                     $color = "orange";
                                     $meaning = JText::_('INVALID');
                                 }
+
                                 echo '<tr class="em-tr-collapse">
                                           <td>' . $checkbox . ' ' . $i . '</td>
                                           <td><a href="' . JURI::base() . $path . '" target="_blank">' . $img_dossier . ' ' . $img_locked . ' ' . $img_missing . ' ' . $attachment->value . '</a></td>
@@ -191,19 +173,15 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                           <td><p class="is-validated" id="' . $attachment->aid . '" title="' . $meaning . '"><span class="glyphicon ' . $class . '" style="color:' . $color . '"></span></p></td>
                                       </tr>';
 
-
                             $i++;
-                            }  else echo JText::_('NO_ATTACHMENT');
-
-                            $j++;
-                            //var_dump($new_cat_id);
+                            } else {
+                                echo JText::_('NO_ATTACHMENT');
+                            }
                         }
                         echo '</tbody></table>';
-                        if (count($this->userAttachments) > 0) {
-                            if (EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
-                                echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
-                                <span class="glyphicon glyphicon-trash"></span></button></div> ';
-                            }
+                        if (count($this->userAttachments) > 0 && EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
+                            echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
+                                    <span class="glyphicon glyphicon-trash"></span></button></div> ';
                         } ?>
                         </div>
                     </div>
@@ -248,7 +226,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
 <script type="text/javascript">
    function getChecked() {
-        var checkedInput = new Array();
+        var checkedInput = [];
         $('.em_application_attachments:checked').each(function() {
                 checkedInput.push($(this).val());
             });
@@ -277,24 +255,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         $('td').css('vertical-align', 'inherit');
     });
 
-    /*$(document).on('click', '#em-modal-actions', function(e)
-    {
-        var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
-        $.ajax({
-            type:'get',
-            url:url,
-            dataType:'html',
-            success: function(result)
-            {
-                $('#em-appli-block').empty();
-                $('#em-appli-block').append(result);
-            },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log(jqXHR.responseText);
-            }
-        });
-    });*/
     $(document).off('click', '#em_application_attachments_all');
     $(document).on('click', '#em_application_attachments_all', function() {
         if ($(this).is(':checked')) {
@@ -305,24 +265,16 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     });
 
     let j = 0;
-    $('.fileCollapse').each(function(j){
-
-       $(document).off('click', '#collapse'+j+' #em-checkbox-collapse');
-       $(document).on('click', '#collapse'+j+' #em-checkbox-collapse', function(e)
-       {
-           console.log(j);
-           if($(this).is(':checked'))
-           {
-
-
-               $('#collapse'+j+' .em_application_attachments').prop('checked', true);
-           }
-           else
-           {
-               $('#collapse'+j+' .em_application_attachments').prop('checked', false);
+    $('.borderContentCollapse').each(function() {
+        var elt_id = this.id;
+        $(document).off('click', '#'+elt_id+' #em-checkbox-collapse');
+        $(document).on('click', '#'+elt_id+' #em-checkbox-collapse', function() {
+           if ($(this).is(':checked')) {
+               $('#'+elt_id+' .em_application_attachments').prop('checked', true);
+           } else {
+               $('#'+elt_id+' .em_application_attachments').prop('checked', false);
            }
        });
-
     });
 
     $(document).off('click', '#em_delete_attachments');
@@ -343,32 +295,13 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                     $('#em-modal-actions .modal').show();
                     $('#em-modal-actions').modal({backdrop: false, keyboard: true}, 'toggle');
 
-                    $.ajax(
-                        {
-                            type: 'post',
-                            url: url,
-                            dataType: 'json',
-                            data: {ids: JSON.stringify(checked)},
-                            success: function (result) {
-                                $('#em-modal-actions').modal('hide');
-
-                                var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
-                                $.ajax({
-                                    type:'get',
-                                    url:url,
-                                    dataType:'html',
-                                    success: function(result)
-                                    {
-                                        $('#em-appli-block').empty();
-                                        $('#em-appli-block').append(result);
-                                    },
-                                    error: function (jqXHR, textStatus, errorThrown)
-                                    {
-                                        console.log(jqXHR.responseText);
-                                    }
-
-                                });
-
+                    $.ajax({
+                        type: 'post',
+                        url: url,
+                        dataType: 'json',
+                        data: { ids: JSON.stringify(checked) },
+                        success: function () {
+                            $('#em-modal-actions').modal('hide');
                             var url = "index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>";
                             $.ajax({
                                 type:'get',
@@ -381,9 +314,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                 error: function (jqXHR) {
                                     console.log(jqXHR.responseText);
                                 }
-
                             });
-                            //$('.list-group-item#1318').click();
                         },
                         error: function (jqXHR) {
                             console.log(jqXHR.responseText);
@@ -410,7 +341,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         //var url = $(this).attr('link')+'&ids='+encodeURIComponent(JSON.stringify(checkedInput));
         if (Array.isArray(checked) && checked.length){
 
-
         var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
         //url = url.fmt({ids: checkedInput});
         var link = window.open('', '_blank');
@@ -424,41 +354,18 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                     link.location.href = result.link;
                 }
             },
-            error: function (jqXHR)
-            {
+            error: function (jqXHR) {
                 console.log(jqXHR.responseText);
             }
         });
-        }
-        else{
+
+        } else {
             Swal.fire({
                 title: Joomla.JText._('INFORMATION'),
                 text: Joomla.JText._('SELECT_AT_LEAST_ONE_FILE'),
                 type: 'warning'
             })
         }
-       /* if(checked.length > 0)
-        {
-            $('#em-modal-actions .modal-body').empty();
-            $('#em-modal-actions-title').empty();
-            $('#em-modal-actions-title').append('<?php echo JText::_('GENERATE_PDF') ?>');
-            $('#em-modal-actions .modal-body').append('<div class="well">' +
-            '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked/>' +
-            '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/>' +
-            '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment" checked/>' +
-            '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/>' +
-            '</div>' +
-            '<a class="btn btn-default btn-attach" id="em_generate" href=\''+url+'\' target="_blank"><?php echo JText::_('GENERATE_PDF') ?></a><div id="attachement_res"></div></div>');
-            $('#em-modal-actions .modal-footer').hide();
-            $('#em-modal-actions .modal-dialog').addClass('modal-lg');
-            $('#em-modal-actions .modal').show();
-            $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
-        }
-        else
-        {
-            $('.em_application_attachments').prop('checked', false);
-            alert("<?php //echo JText::_('YOU_MUST_SELECT_ATTACHMENT')?>");
-        }*/
     });
 
 
@@ -470,12 +377,12 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             $("#"+id).attr('title',Joomla.JText._('VALID'));
             state = 1
 
-        }else{
-            if($("#"+id+" span").hasClass("glyphicon-ok")){
+        } else {
+            if ($("#"+id+" span").hasClass("glyphicon-ok")) {
                 $("#"+id+" span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange");
                 $("#"+id).attr('title',Joomla.JText._('INVALID'));
                 state = 0
-            }else{
+            } else {
                 if($("#"+id+" span").hasClass("glyphicon-warning-sign")){
                     $("#"+id+" span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");
                     $("#"+id).attr('title',Joomla.JText._('UNCHECKED'));
@@ -497,28 +404,27 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                 console.log(jqXHR.responseText);
             }
         });
+    });
 
-
-});
     //disabled the enter key for the searchbar
-   $('#em-searchbar').on('keyup keypress',function(event){
+   $('#em-searchbar').on('keyup keypress', function(event) {
 
        // Compatibilité IE / Firefox
        if(!event && window.event) {
            event = window.event;
        }
        // IE
-       if(event.keyCode == 13) {
+       if (event.keyCode == 13) {
            event.returnValue = false;
            event.cancelBubble = true;
        }
        // DOM
-       if(event.which == 13) {
+       if (event.which == 13) {
            event.preventDefault();
            event.stopPropagation();
        }
-
    });
+
    // function which update the files with keyword
    $('#btn-em-searchbar').click(function(){
 
@@ -529,7 +435,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             url:"index.php?option=com_emundus&view=application&format=raw&layout=attachment&fnum=<?php echo $this->fnum; ?>",
             data:{search: search},
 
-            beforeSend: function(){
+            beforeSend: function() {
                 $('#em-appli-block').empty();
                 $('#em-appli-block').append('<div class="em-container-loader"><img src="http://emundus.local/media/com_emundus/images/icones/loader.gif"></div>');
             },
@@ -538,14 +444,11 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                     $('#em-appli-block').append(result);
                     $('#em-searchbar').val(search);
             },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
+            error: function (jqXHR) {
                 console.log(jqXHR.responseText);
             }
         });
     })
-
-
 </script>
 
 <script>
@@ -556,26 +459,20 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             $('#collapse'+i).animate({
                 height: 'toggle',
                 display: 'none'
-            },500);
+            }, 500);
 
-            if($('#em-arrow-down'+i).hasClass('em-arrow-down')){
-
+            if ($('#em-arrow-down'+i).hasClass('em-arrow-down')) {
                 $('#em-arrow-down'+i).removeClass('em-arrow-down').addClass('em-arrow-up');
-            }
-            else{
+            } else {
                 $('#em-arrow-down'+i).removeClass('em-arrow-up').addClass('em-arrow-down');
             }
         });
     });
-
-
 </script>
+
 <script>
     $('.fileCollapse').each(function (i) {
-
-    $('#em-tr-collapse'+i+' th:nth-child(1)')
-        .on("mouseenter",function(){
-
+        $('#em-tr-collapse'+i+' th:nth-child(1)').on("mouseenter",function() {
             $('.selector'+i).css({
                 'height':'30px',
                 'width':'auto',
@@ -585,22 +482,19 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                 'background':'#33332E',
                 'border-radius':'10px'
             });
-            console.log(i);
             $('.selector'+i+' p').css({
                 'color':'white',
                 'font-size':'0.6rem',
             })
-
-        })
-        .on("mouseleave",function(){
+        }).on("mouseleave",function(){
             $('.selector'+i).css({
                 'display':'none',
                 'transition':'display,500ms'
             })
         });
     });
-
 </script>
+
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()

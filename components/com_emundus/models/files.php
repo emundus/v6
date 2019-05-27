@@ -3182,7 +3182,7 @@ die();*/
 	    return $birthdate;
     }
 
-    public function getDocumentCategory(){
+    public function getDocumentCategory() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query
@@ -3195,11 +3195,9 @@ die();*/
         return $this->_db->loadObjectList();
     }
 
-    public function getParamsCategory($idCategory){
+    public function getParamsCategory($idCategory) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-//        $category = 'category';
-//        $group_id = '47';
         $query
             ->select($db->quoteName('fe.params'))
             ->from($db->quoteName('#__fabrik_elements' , 'fe'))
@@ -3209,32 +3207,35 @@ die();*/
         $elements = $db->loadObjectList();
 
         foreach ($elements as $element){
-
             $params = json_decode($element->params);
-
         }
 
         return $params->sub_options->sub_labels[$idCategory];
     }
-    public function getParamsNameCategory(){
+
+	/** Gets the category names for the different attachment types.
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+    public function getAttachmentCategories() {
         $db = JFactory::getDbo();
+
         $query = $db->getQuery(true);
-//        $category = 'category';
-//        $group_id = '47';
-        $query
-            ->select($db->quoteName('fe.params'))
+        $query->select($db->quoteName('fe.params'))
             ->from($db->quoteName('#__fabrik_elements' , 'fe'))
-            ->where($db->quoteName('fe.group_id') . ' = 47');
-
+            ->where($db->quoteName('fe.group_id') . ' = 47 AND '.$db->quoteName('fe.name').' LIKE '.$db->quote('category'));
         $db->setQuery($query);
-        $elements = $db->loadObjectList();
+        $element = $db->loadColumn();
+        
+        $params = json_decode($element[0]);
 
-        foreach ($elements as $element){
-
-            $params = json_decode($element->params);
-
+        $return = [];
+        foreach ($params->sub_options->sub_values as $key => $value) {
+        	$return[$value] = $params->sub_options->sub_labels[$key];
         }
-        return $params->sub_options->sub_labels;
+        return $return;
     }
 
 }
