@@ -59,7 +59,7 @@ foreach ($files as $file) {
 		$query->clear()
 			->update($db->quoteName('#__emundus_uploads'))
 			->set($db->qn('filename') . " = " . $db->q($fileName))
-			->where($db->qn($campaign_id) . ' = ' . $cid . " AND " . $db->qn($attachment_id) . " = " . $attachmentId);
+			->where($db->qn($campaign_id) . ' = ' . $cid . " AND " . $db->qn($attachment_id) . " = " . $attachmentId . " AND " . $db->qn($fnum) . " LIKE " . $db->q($fnum));
 
 		$db->setQuery($query);
 
