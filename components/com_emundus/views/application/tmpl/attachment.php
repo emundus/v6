@@ -332,7 +332,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     $(document).on('click', '#em_export_pdf', function() {
         var checkedInput = getJsonChecked();
         var checked = getChecked();
-        console.log(checked);
         /*String.prototype.fmt = function (hash) {
             var string = this, key;
             for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
