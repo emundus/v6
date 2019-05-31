@@ -3221,5 +3221,55 @@ die();*/
         }
         return $params->sub_options->sub_labels;
     }
+    public function selectCity($insee){
+        $db = JFactory::getDBO();
 
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('insee_code') . ' LIKE ' . $db->quote($insee);
+
+        $query
+            ->select($db->quoteName('name'))
+            ->from($db->quoteName('#__emundus_french_cities'))
+            ->where($conditions);
+
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    public function selectNameCity($name){
+        $db = JFactory::getDBO();
+
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('name') . ' LIKE ' . $db->quote($name);
+
+        $query
+            ->select($db->quoteName('insee_code'))
+            ->from($db->quoteName('#__emundus_french_cities'))
+            ->where($conditions);
+
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    public function selectMultiplePayment($fnum){
+        $db = JFactory::getDBO();
+
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum);
+
+        $query
+            ->select('multiple_payment, method_payment, sampling_mode')
+            ->from($db->quoteName('#__emundus_declaration'))
+            ->where($conditions);
+
+
+        $db->setQuery($query);
+
+        return $db->loadObject();
+    }
 }

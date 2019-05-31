@@ -96,7 +96,7 @@ class EmundusController extends JControllerLegacy {
 
         // Here we call the profile by fnum function, which will get the candidate's profile in the status table
         $profile_id = $m_profile->getProfileByFnum($fnum);
-
+        //die($file);
         
 
 
