@@ -132,7 +132,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<?php
 													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
 													//echo $formatted_date->format("M j, Y, H:i");
-													echo JFactory::getDate($value->val)->format("M j, Y, H:i");
+													echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
 												?>
 											<?php endif; ?>
 										</strong>
