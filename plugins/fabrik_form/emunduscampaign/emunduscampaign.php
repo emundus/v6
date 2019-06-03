@@ -136,7 +136,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 				$query->clear()
 					->insert($db->quoteName('#__emundus_campaign_candidature'))
 					->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum']))
-					->values($user->id.', '.$user->id.', '.$campaign_id.', '.$fnum);
+					->values($user->id.', '.$user->id.', '.$campaign_id.', '.$db->quote($fnum));
 			break;
 
 			case 'cc':
