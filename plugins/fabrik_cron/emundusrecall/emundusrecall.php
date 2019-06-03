@@ -44,7 +44,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 	 * @return  int  number of records updated
 	 * @throws Exception
 	 */
-	public function process(&$data) {
+	public function process(&$data, &$listModel) {
 		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
 
