@@ -517,7 +517,7 @@ class EmundusModelCifre extends JModelList {
 			->from($this->db->quoteName('#__emundus_users', 'eu'))
 			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat', 'eur').' ON '.$this->db->quoteName('eur.parent_id').' = '.$this->db->quoteName('eu.id'))
 			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('eur.id'))
-			->where($this->db->quoteName('eu.user_id').' = '.$user_id);
+			->where($this->db->quoteName('eu.user_id').' = '.$user_id.' AND dep.department IS NOT NULL');
 		$this->db->setQuery($query);
 
 		try {
@@ -531,7 +531,7 @@ class EmundusModelCifre extends JModelList {
 			->select($this->db->quoteName('t.thematic','thematics'))
 			->from($this->db->quoteName('#__emundus_users', 'eu'))
 			->leftJoin($this->db->quoteName('#__emundus_users_600_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('eu.id'))
-			->where($this->db->quoteName('eu.user_id').' = '.$user_id);
+			->where($this->db->quoteName('eu.user_id').' = '.$user_id.' AND t.thematic IS NOT NULL');
 		$this->db->setQuery($query);
 
 		try {
