@@ -542,11 +542,11 @@ class EmundusModelCifre extends JModelList {
 
 		// Dynamically build a WHERE based on information about the user.
 		$fallbackWhere = $this->db->quoteName('eu.profile').' != '.$user_profile.' AND '.$this->db->quoteName('cc.status').' = 1';
-/*
+
 		if (!empty($time_ago)) {
 		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.$this->db->quote(date('Y-m-d H:i:s', $time_ago));
         }
-
+/*
 		if ($user_profile == 1006) {
 			$fallbackWhere .= ' AND '.$this->db->quoteName('er.futur_doctorant_yesno').' = 1 ';
 		} elseif ($user_profile == 1007) {
