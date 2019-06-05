@@ -1,1 +1,1 @@
-ALTER TABLE `jos_emundus_setup_status` ADD `profile` INT NULL DEFAULT NULL AFTER `class`;
+ALTER TABLE `#__emundus_setup_status` ADD COLUMN `profile` INT NULL DEFAULT NULL AFTER `class`;
