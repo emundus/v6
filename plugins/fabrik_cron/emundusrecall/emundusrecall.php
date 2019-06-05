@@ -44,7 +44,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 	 * @return  int  number of records updated
 	 * @throws Exception
 	 */
-	public function process(&$data) {
+	public function process(&$data, &$listModel) {
 		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
 
@@ -62,7 +62,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.status = 0 AND u.block = 0 AND esc.published = 1 AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
+					WHERE ecc.published = 1 AND ecc.status = 0 AND u.block = 0 AND esc.published = 1 AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
 
 		if (isset($reminder_programme_id) && !empty($reminder_programme_id)) {
 			$query .= ' AND esc.training IN ('.$reminder_programme_code.')';

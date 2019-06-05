@@ -676,6 +676,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
         require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+
         jimport('joomla.user.helper');
 
         $current_user = JFactory::getUser();
@@ -684,15 +685,15 @@ class EmundusControllerUsers extends JControllerLegacy {
             echo json_encode((object)array('status' => false));
             exit;
         }
-        $id 		= JFactory::getApplication()->input->get('user', null); //get id from the ajax request
-        $m_users = new EmundusModelUsers();// Instanciation of object from user model
-        $users = $m_users->getUsersById($id); // get user from uid
+        $id 		= JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
+        $user = new EmundusModelUsers(); // Instanciation of object from user model
+        $users = $user->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
 
             $passwd = JUserHelper::genRandomPassword(8); //generate a random password
             $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
 
-
+            $m_users = new EmundusModelUsers();
             $res = $m_users->setNewPasswd($id, $passwd_md5); //update password
             $post = [ // values tout change in the bdd with key => values
                 'PASSWORD' => $passwd
@@ -769,20 +770,32 @@ class EmundusControllerUsers extends JControllerLegacy {
 			foreach ($return->users as $user) {
 
 				// TODO: Implement getting the user photo.
-				if (!empty($user['jpegPhoto']))
+				if (!empty($user['jpegPhoto'])) {
 					$user['jpegPhoto'] = null;
+				}
 
-				if (JUserHelper::getUserId($user['uid'][0]) > 0)
+				// Certain users have a binary certificate file which breaks the JSON parsing as it is not UTF-8.
+				if (!empty($user['userCertificate;binary'])) {
+					$user["userCertificate;binary"] = null;
+				}
+
+				if (JUserHelper::getUserId($user['uid'][0]) > 0) {
 					$user['exists'] = true;
-				else
+				} else {
 					$user['exists'] = false;
+				}
 
 				$users[] = $user;
 			}
 		}
 
-		echo json_encode((object) ['status' => $return->status, 'ldapUsers' => $users, 'count' => count($users)]);
-		exit;
+		$response = json_encode((object) ['status' => $return->status, 'ldapUsers' => $users, 'count' => count($users)]);
+		if (!$response) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Information retrieved from LDAP is of incorrect format.']);
+			exit;
+		}
 
+		echo $response;
+		exit;
 	}
 }

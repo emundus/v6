@@ -921,6 +921,7 @@ class EmundusControllerFiles extends JControllerLegacy
     public function getfnuminfos() {
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->get->getString('fnum', null);
+
         $res = false;
         $fnumInfos = null;
 
@@ -1246,47 +1247,45 @@ class EmundusControllerFiles extends JControllerLegacy
         return $objs;
     }
 
-    /**
-     * Add lines to temp CSV file
-     * @return String json
-     */
+	/**
+	 * Add lines to temp CSV file
+	 * @return String json
+	 * @throws Exception
+	 */
     public function generate_array() {
         $current_user = JFactory::getUser();
 
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
             die(JText::_('RESTRICTED_ACCESS'));
+        }
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $eval_can_see_eval = $eMConfig->get('evaluators_can_see_other_eval', 0);
 
-
         $m_files        = $this->getModel('Files');
         $m_application  = $this->getModel('Application');
         $m_profile      = $this->getModel('Profile');
-        $m_evaluation   = $this->getModel('Evaluation');
         $m_users        = $this->getModel('Users');
 
         $session = JFactory::getSession();
-        $fnumss = array();
         $fnums = $session->get('fnums_export');
 
-        if (count($fnums) == 0)
+        if (count($fnums) == 0) {
             $fnums = array($session->get('application_fnum'));
+        }
 
         $jinput     = JFactory::getApplication()->input;
-        $file       = $jinput->getVar('file', null, 'STRING');
-        $totalfile  = $jinput->getVar('totalfile', null);
+        $file       = $jinput->get('file', null, 'STRING');
+        $totalfile  = $jinput->get('totalfile', null);
         $start      = $jinput->getInt('start', 0);
         $limit      = $jinput->getInt('limit', 0);
-        $nbcol      = $jinput->getVar('nbcol', 0);
+        $nbcol      = $jinput->get('nbcol', 0);
         $elts       = $jinput->getString('elts', null);
         $objs       = $jinput->getString('objs', null);
         $opts       = $jinput->getString('opts', null);
         $methode    = $jinput->getString('methode', null);
-        $objclass   = $jinput->getVar('objclass', null);
-        $excel_file_name = $jinput->getVar('excelfilename', null);
-
-        //var_dump($elts); die();
+        $objclass   = $jinput->get('objclass', null);
+        $excel_file_name = $jinput->get('excelfilename', null);
 
         $opts = $this->getcolumn($opts);
 
@@ -1313,7 +1312,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         // On met a jour la liste des fnums traités
         $fnums = array();
-
         foreach ($fnumsArray as $fnum) {
             array_push($fnums, $fnum['fnum']);
         }
@@ -3688,11 +3686,13 @@ class EmundusControllerFiles extends JControllerLegacy
             echo json_encode((object)['status' => false, 'msg' => 'Error generating PDF.']);
             exit;
         } else {
-            echo json_encode((object)['status' => true, 'filename' => $filename]);
+            echo json_encode((object)['status' => true, 'filename' => $filename.'?'.uniqid()]);
             exit;
         }
 
     }
+
+
     public function getValueByFabrikElts($fabrikElts, $fnumsArray) {
         $m_files = $this->getModel('Files');
         foreach ($fabrikElts as $elt) {
@@ -3754,4 +3754,5 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         return $fabrikValues;
     }
+
 }

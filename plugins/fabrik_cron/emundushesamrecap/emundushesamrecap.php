@@ -49,7 +49,7 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
      * @since 6.9.3
      * @throws Exception
      */
-	public function process(&$data) {
+	public function process(&$data, &$listModel) {
 		jimport('joomla.mail.helper');
 
         // LOGGER
@@ -80,8 +80,8 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
 
 		// Generate emails from template and store it in message table
 		if (!empty($users)) {
-            require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
-            require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
 			$c_messages = new EmundusControllerMessages();
 			$m_cifre = new EmundusModelCifre();
 

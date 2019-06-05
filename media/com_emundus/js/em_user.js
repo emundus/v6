@@ -635,6 +635,7 @@ $(document).ready(function () {
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');
+		console.log(id);
 		$('#em-modal-form').modal({
 			backdrop: true
 		}, 'toggle');
@@ -1334,6 +1335,4 @@ $(document).ready(function () {
 		}
 
 	})
-
-
 })

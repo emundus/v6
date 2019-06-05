@@ -1820,26 +1820,41 @@ if (JFactory::getUser()->id == 63)
 	    	$profile = null;
 	    }
 
+
     	try {
+		    if (is_array($fnums)) {
+			    foreach ($fnums as $fnum) {
+				    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
+				    $db->setQuery($query);
+				    $res = $db->execute();
 
-            foreach ($fnums as $fnum) {
+				    if (!empty($profile)) {
 
-            	$query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
-                $db->setQuery($query);
-                $res = $db->execute();
+					    $query = $db->getQuery(true);
+					    $query->update($db->quoteName('#__emundus_users'))
+						    ->set($db->quoteName('profile').' = '.$profile)
+						    ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+					    $db->setQuery($query);
+					    $db->execute();
 
-                if (!empty($profile)) {
+				    }
+			    }
+		    }
+		    else {
+			    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnums) ;
+			    $db->setQuery($query);
+-			    $res = $db->execute();
 
-                	$query = $db->getQuery(true);
-                	$query->update($db->quoteName('#__emundus_users'))
-		                ->set($db->quoteName('profile').' = '.$profile)
-		                ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
-                	$db->setQuery($query);
-                	$db->execute();
+			    if (!empty($profile)) {
+				    $query = $db->getQuery(true);
+				    $query->update($db->quoteName('#__emundus_users'))
+					    ->set($db->quoteName('profile').' = '.$profile)
+					    ->where($db->quoteName('user_id').' = '.substr($fnums, -7));
+				    $db->setQuery($query);
+				    $db->execute();
+			    }
+		    }
 
-                }
-
-            }
             return $res;
 
     	} catch (Exception $e) {
@@ -3165,6 +3180,62 @@ die();*/
 	    }
 
 	    return $birthdate;
+    }
+
+    public function getDocumentCategory() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($this->_db->quoteName('esa.*'))
+            ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
+            ->order($this->_db->quoteName('esa.category').'ASC');
+
+        $this->_db->setQuery($query);
+
+        return $this->_db->loadObjectList();
+    }
+
+    public function getParamsCategory($idCategory) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47');
+
+        $db->setQuery($query);
+        $elements = $db->loadObjectList();
+
+        foreach ($elements as $element){
+            $params = json_decode($element->params);
+        }
+
+        return $params->sub_options->sub_labels[$idCategory];
+    }
+
+	/** Gets the category names for the different attachment types.
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+    public function getAttachmentCategories() {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47 AND '.$db->quoteName('fe.name').' LIKE '.$db->quote('category'));
+        $db->setQuery($query);
+        $element = $db->loadColumn();
+        
+        $params = json_decode($element[0]);
+
+        $return = [];
+        foreach ($params->sub_options->sub_values as $key => $value) {
+        	$return[$value] = $params->sub_options->sub_labels[$key];
+        }
+        return $return;
     }
 
 }

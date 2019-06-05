@@ -136,7 +136,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 				$query->clear()
 					->insert($db->quoteName('#__emundus_campaign_candidature'))
 					->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum']))
-					->values($user->id.', '.$user->id.', '.$campaign_id.', '.$fnum);
+					->values($user->id.', '.$user->id.', '.$campaign_id.', '.$db->quote($fnum));
 			break;
 
 			case 'cc':
@@ -153,7 +153,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 				$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
 				$query = $db->getQuery(true);
 				$query->update($db->quoteName('#__emundus_campaign_candidature'))
-					->set($db->quoteName('fnum'))
+					->set($db->quoteName('fnum').' = '.$db->Quote($fnum))
 					->where($db->quoteName('id').' = '.$id.' AND '.$db->quoteName('fnum').' LIKE '.$db->Quote($fnum_tmp).' AND '.$db->quoteName('campaign_id').'='.$campaign_id);
 				break;
 

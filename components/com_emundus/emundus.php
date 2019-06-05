@@ -146,6 +146,10 @@ JText::script('INVALID');
 JText::script('UNCHECKED');
 JText::script('SELECT_AT_LEAST_ONE_FILE');
 JText::script('INFORMATION');
+JText::script('COM_EMUNDUS_YOU_HAVE_SELECT');
+JText::script('COM_EMUNDUS_SELECT_ALL');
+JText::script('COM_EMUNDUS_FILE');
+JText::script('COM_EMUNDUS_FILES');
 
 
 // view user
@@ -291,6 +295,7 @@ JText::script('NO_EMAILS_SENT');
 JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
 JText::script('SEND_FAILED');
+JText::script('SEND_TO');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');

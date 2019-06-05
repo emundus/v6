@@ -23,7 +23,7 @@ JFactory::getSession()->set('application_layout', 'form');
                 <?php endif;?>
             </h3>
         </div>
-        <div class="panel-body">
+        <div class="panel-body Marginpanel-body">
             <div class="active content">
                 <?php echo $this->forms; ?>
             </div>

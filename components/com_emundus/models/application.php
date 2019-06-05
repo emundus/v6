@@ -29,6 +29,7 @@ class EmundusModelApplication extends JModelList {
         parent::__construct();
         global $option;
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -122,25 +123,50 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadObjectList();
     }
 
-    function getUserAttachmentsByFnum($fnum) {
+    function getUserAttachmentsByFnum($fnum, $search = '') {
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $expert_document_id = $eMConfig->get('expert_document_id', '36');
 
         if (EmundusHelperAccess::isExpert($this->_user->id)) {
-            $eMConfig = JComponentHelper::getParams('com_emundus');
-            $expert_document_id = $eMConfig->get('expert_document_id', '36');
-
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
-            FROM #__emundus_uploads AS eu
-            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND (eu.attachment_id != '.$expert_document_id.')
-            ORDER BY esa.ordering, eu.timedate ASC';
+        	if (isset($search) && !empty($search)) {
+	            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+				            FROM #__emundus_uploads AS eu
+				            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+				            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+				            WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+				            AND (eu.attachment_id != '. $expert_document_id .') 
+				            AND (esa.value like "%'. $search .'%"
+				            OR esa.description like "%'. $search .'%"
+				            OR eu.timedate like "%'. $search .'%")
+				            ORDER BY esa.category ASC, eu.timedate DESC';
+            } else {
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+			                FROM #__emundus_uploads AS eu
+			                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+			                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+			                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+			                AND (eu.attachment_id != ' . $expert_document_id . ') 
+			                ORDER BY esa.category ASC, eu.timedate DESC';
+            }
         } else {
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
-            FROM #__emundus_uploads AS eu
-            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.fnum like '.$this->_db->Quote($fnum).'
-            ORDER BY esa.ordering, eu.timedate ASC';
+            if (isset($search) && !empty($search)) {
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                FROM #__emundus_uploads AS eu
+                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+                WHERE eu.fnum like '. $this->_db->Quote($fnum) .'
+                AND (esa.value like "%'. $search .'%"
+                OR esa.description like "%'. $search .'%"
+                OR eu.timedate like "%'. $search .'%")
+                ORDER BY esa.category ASC, eu.timedate DESC';
+            } else {
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                FROM #__emundus_uploads AS eu
+                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . '
+                ORDER BY esa.category ASC, eu.timedate DESC';
+            }
         }
 
         $this->_db->setQuery($query);
@@ -481,14 +507,15 @@ class EmundusModelApplication extends JModelList {
             return $e->getMessage();
         }
 
-        $form .= '<br><hr><h3>';
+        $form .= '<br><hr><div class="TitleAdmission"><h3>';
         $title = explode('-', JText::_($table[0]->label));
+
         if (empty($title[1])) {
 	        $form .= JText::_($table[0]->label);
         } else {
 	        $form .= JText::_($title[1]);
         }
-
+        $form .= '</h3>';
         if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[0]->db_table_name != "#__emundus_training") {
 
             $query = 'SELECT count(id) FROM `'.$table[0]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -503,13 +530,13 @@ class EmundusModelApplication extends JModelList {
 
 
             if ($cpt > 0) {
-                $form .= ' <button type="button" id="'.$table[0]->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
             } else {
-                $form .= ' <button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
             }
         }
 
-        $form .= '</h3>';
+        $form .= '</div>';
 
         // liste des groupes pour le formulaire d'une table
         $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
@@ -836,7 +863,7 @@ class EmundusModelApplication extends JModelList {
 
 	            foreach ($tableuser as $key => $itemt) {
 
-	                $forms .= '<br><hr><h3>';
+	                $forms .= '<br><hr><div class="TitlePersonalInfo"><h3>';
 	                $title = explode('-', JText::_($itemt->label));
 
 	                if (empty($title[1])) {
@@ -844,7 +871,7 @@ class EmundusModelApplication extends JModelList {
 	                } else {
 		                $forms .= JText::_($title[1]);
 	                }
-
+                    $forms .= '</h3>';
 	                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
 	                    $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -869,8 +896,8 @@ class EmundusModelApplication extends JModelList {
 
 	                    }
 	                }
+                    $forms .= '</div>';
 
-	                $forms .= '</h3>';
 	                // liste des groupes pour le formulaire d'une table
 	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -1062,6 +1089,8 @@ class EmundusModelApplication extends JModelList {
 	                                                $index = array_search($r_elt, $params->sub_options->sub_values);
 	                                                if (strlen($index) > 0) {
 	                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                                } elseif (!empty($params->dropdown_populate)) {
+		                                                $elt = $r_elt;
 	                                                } else {
 	                                                    $elt = "";
 	                                                }
@@ -1156,6 +1185,8 @@ class EmundusModelApplication extends JModelList {
 	                                        $index = array_search($element->content, $params->sub_options->sub_values);
 	                                        if (strlen($index) > 0) {
 	                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                        } elseif (!empty($params->dropdown_populate)) {
+		                                        $elt = $element->content;
 	                                        } else {
 	                                            $elt = "";
 	                                        }
@@ -1367,7 +1398,9 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $params = json_decode($elements[$j]->params);
-                                                $elt = date($params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1491,7 +1524,9 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $date_params = json_decode($elements[$j]->params);
-                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($date_params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1592,7 +1627,9 @@ class EmundusModelApplication extends JModelList {
                                     if (!empty($element->label) && $element->label!=' ') {
 
                                         if ($element->plugin=='date' && $element->content>0) {
-                                            $elt = date($params->date_form_format, strtotime($element->content));
+	                                        $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                        $elt = $dt->format($params->date_form_format);
                                         }
 
                                         elseif ($element->plugin=='birthday' && $element->content>0) {
@@ -2826,35 +2863,52 @@ td {
     }
 
 
+
 	/** Gets the URL of the final form in the application in order to submit.
 	 * @param $fnums
 	 *
 	 * @return Mixed
 	 */
-    function getConfirmUrl($fnums) {
+    function getConfirmUrl($fnums)
+    {
 
-    	if (empty($fnums)) {
-    		return false;
-	    }
+        if (empty($fnums)) {
+            return false;
+        }
 
-    	$db = JFactory::getDbo();
-    	$query = $db->getQuery(true);
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-    	$query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
-		    ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-		    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
-		    ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
-		    ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'>=0 AND '.$db->quoteName('m.level').'=1 AND '.$db->quoteName('m.link').' <> "" AND '.$db->quoteName('m.link').' <> "#"')
-		    ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
-	        ->order($db->quoteName('m.lft').' ASC');
+        $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
+            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esc.profile_id'))
+            ->leftJoin($db->quoteName('#__menu', 'm') . ' ON ' . $db->quoteName('m.menutype') . ' = ' . $db->quoteName('esp.menutype') . ' AND ' . $db->quoteName('m.published') . '>=0 AND ' . $db->quoteName('m.level') . '=1 AND ' . $db->quoteName('m.link') . ' <> "" AND ' . $db->quoteName('m.link') . ' <> "#"')
+            ->where($db->quoteName('cc.fnum') . ' IN(' . implode(',', $fnums) . ')')
+            ->order($db->quoteName('m.lft') . ' ASC');
 
-    	$db->setQuery($query);
-    	try {
-    		return $db->loadAssocList('fnum');
-	    } catch (Exception $e) {
-    		JLog::add('Error getting confirm URLs in model/application at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
-    		return false;
-	    }
+        $db->setQuery($query);
+        try {
+            return $db->loadAssocList('fnum');
+        } catch (Exception $e) {
+            JLog::add('Error getting confirm URLs in model/application at query -> ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
+
+    public function searchFilesByKeywords($fnum){
+        $db = $this->getDbo();
+        $jinput = JFactory::getApplication()->input;
+        $search = $jinput->get('search');
+
+        $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+            FROM #__emundus_uploads AS eu
+            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+            WHERE eu.fnum like '.$this->_db->Quote($fnum).'
+            AND $where LIKE '.$search;
+
+        $db->setQuery($query);
+        return $db->execute();
     }
 }
