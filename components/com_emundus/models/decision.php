@@ -987,16 +987,20 @@ class EmundusModelDecision extends JModelList
 	        }
 		}
 		$sql_fnum = '';
-		if(count($this->fnum_assoc)>0)
+		if (count($this->fnum_assoc) > 0) {
 			$sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+		}
 
-        $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+		if (!empty($sql_code) || !empty($sql_fnum)) {
+            $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+        } else {
+			$query['q'] .= ' AND (1=2) ';
+		}
 
         return $query;
 	}
 
-	private function _buildSearch($str_array, $tableAlias = array())
-	{
+	private function _buildSearch($str_array, $tableAlias = array()) {
 		$q = array('q' => array(), 'join' => array());
 		$all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
 		
