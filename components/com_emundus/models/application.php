@@ -29,6 +29,7 @@ class EmundusModelApplication extends JModelList {
         parent::__construct();
         global $option;
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -1088,6 +1089,8 @@ class EmundusModelApplication extends JModelList {
 	                                                $index = array_search($r_elt, $params->sub_options->sub_values);
 	                                                if (strlen($index) > 0) {
 	                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                                } elseif (!empty($params->dropdown_populate)) {
+		                                                $elt = $r_elt;
 	                                                } else {
 	                                                    $elt = "";
 	                                                }
@@ -1182,6 +1185,8 @@ class EmundusModelApplication extends JModelList {
 	                                        $index = array_search($element->content, $params->sub_options->sub_values);
 	                                        if (strlen($index) > 0) {
 	                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                        } elseif (!empty($params->dropdown_populate)) {
+		                                        $elt = $element->content;
 	                                        } else {
 	                                            $elt = "";
 	                                        }
