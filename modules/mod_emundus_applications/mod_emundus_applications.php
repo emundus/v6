@@ -50,13 +50,9 @@ $show_progress_documents 	= $params->get('show_progress_documents', 0);
 $show_progress_color 		= $params->get('show_progress_color', '#EA5012');
 $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
-$admission_status          = explode(',', $params->get('admission_status'));
-
-$show_remove_files         = $params->get('show_remove_files', 1);
-$show_archive_files        = $params->get('show_archived_files', 1);
-$show_state_files          = $params->get('show_state_files', 0);
-
 $file_status 	            = $params->get('file_status', 1);
+$admission_status           = explode(',', $params->get('admission_status'));
+$status_for_send 			= explode(',', $params->get('status_for_send', 0));
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 if ($layout == '_:ccirs-drh') {
@@ -68,7 +64,6 @@ if ($layout == '_:ccirs-drh') {
 } else {
 	// We send the layout as a param because Hesam needs different information.
 	$applications = modemundusApplicationsHelper::getApplications($layout);
-    $states = modemundusApplicationsHelper::getStatusFiles();
 }
 
 
@@ -86,7 +81,6 @@ if (empty($user->profile)) {
 	$h_list = new EmundusHelperList();
 	$user->profile = $h_list->getProfile($user->id);
 }
-
 
 $m_application 	= new EmundusModelApplication;
 $m_profile		= new EmundusModelProfile;

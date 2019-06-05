@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension
-		type="module"
-		version="2.5"
-		client="site"
-		method="upgrade">
+	type="module"
+	version="2.5"
+	client="site"
+	method="upgrade">
 	<name>MOD_EMUNDUS_APPLICATIONS_XML</name>
 	<author>Benjamin Rivalland</author>
 	<creationDate>June 2015</creationDate>
@@ -31,168 +31,141 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field
-						name="description"
-						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-						default=""
-						label="MOD_EMUNDUS_DESCRIPTION"
-						description="MOD_EMUNDUS_DESCRIPTION_DESC">
+					name="description"
+					type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+					default=""
+					label="MOD_EMUNDUS_DESCRIPTION"
+					description="MOD_EMUNDUS_DESCRIPTION_DESC">
 				</field>
 				<field
-						name="show_add_application"
-						type="radio"
-						default="0"
-						label="MOD_EMUNDUS_APPLICATIONS_LABEL"
-						description="MOD_EMUNDUS_APPLICATIONS_DESC">
-					<option
-							value="0">JNo</option>
-					<option
-							value="1">JYes</option>
-				</field>
-				<field
-						name="position_add_application"
-						type="radio"
-						default="0"
-						label="MOD_EMUNDUS_BTN_LABEL"
-						description="MOD_EMUNDUS_BTN_DESC">
-					<option
-							value="0">TOP</option>
-					<option
-							value="1">BOTTOM</option>
-					<option
-							value="2">BOTH</option>
-				</field>
-				<field
-						name="show_progress"
-						type="radio"
-						default="1"
-						label="MOD_EMUNDUS_SHOW_PROGRESS"
-						description="MOD_EMUNDUS_SHOW_PROGRESS_DESC">
-					<option
-							value="0">JNo</option>
-					<option
-							value="1">JYes</option>
-				</field>
-				<field
-						name="show_progress_color"
-						type="text"
-						label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR"
-						description=""
-						default="#EA5012" />
-				<field
-						name="show_progress_forms"
-						type="radio"
-						default="0"
-						label="MOD_EMUNDUS_SHOW_PROGRESS_FORMS"
-						description="MOD_EMUNDUS_SHOW_PROGRESS_FORMS_DESC">
-					<option
-							value="0">JNo</option>
-					<option
-							value="1">JYes</option>
-				</field>
-				<field
-						name="show_progress_color_forms"
-						type="text"
-						label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_FORMS"
-						description=""
-						default="#EA5012" />
-				<field
-						name="show_progress_documents"
-						type="radio"
-						default="0"
-						label="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS"
-						description="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS_DESC">
-					<option
-							value="0">JNo</option>
-					<option
-							value="1">JYes</option>
-				</field>
-				<field
-						name="show_progress_color_documents"
-						type="text"
-						label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_DOCUMENTS"
-						description=""
-						default="#EA5012" />
-				<field
-						name="cc_list_url"
-						type="text"
-						label="MOD_EMUNDUS_CC_LIST_URL"
-						description=""
-						default="index.php" />
-				<field
-						name="admission_status"
-						type="text"
-						label="MOD_EMUNDUS_ADMISSION_STATUS"
-						description="MOD_EMUNDUS_ADMISSION_STATUS_DESC" />
-				<field
-					name="show_remove_files"
+					name="show_add_application"
 					type="radio"
-					default="1"
-					label="MOD_EMUNDUS_SHOW_REMOVE_DOCUMENTS"
-					description="MOD_EMUNDUS_SHOW_REMOVE_DOCUMENTS_DESC">
-				<option
+					default="0"
+					label="MOD_EMUNDUS_APPLICATIONS_LABEL"
+					description="MOD_EMUNDUS_APPLICATIONS_DESC">
+					<option
 						value="0">JNo</option>
-				<option
+					<option
 						value="1">JYes</option>
 				</field>
 				<field
-						name="show_archived_files"
-						type="radio"
-						default="1"
-						label="MOD_EMUNDUS_SHOW_ARCHIVED_DOCUMENTS"
-						description="MOD_EMUNDUS_SHOW_ARCHIVED_DOCUMENTS_DESC">
+					name="position_add_application"
+					type="radio"
+					default="0"
+					label="MOD_EMUNDUS_BTN_LABEL"
+					description="MOD_EMUNDUS_BTN_DESC">
 					<option
-							value="0">JNo</option>
+						value="0">TOP</option>
 					<option
-							value="1">JYes</option>
+						value="1">BOTTOM</option>
+					<option
+						value="2">BOTH</option>
 				</field>
 				<field
-						name="show_state_files"
-						type="radio"
-						default="0"
-						label="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS"
-						description="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS_DESC">
+					name="show_progress"
+					type="radio"
+					default="1"
+					label="MOD_EMUNDUS_SHOW_PROGRESS"
+					description="MOD_EMUNDUS_SHOW_PROGRESS_DESC">
 					<option
-							value="0">JNo</option>
+						value="0">JNo</option>
 					<option
-							value="1">JYes</option>
+						value="1">JYes</option>
 				</field>
+				<field
+					name="show_progress_color"
+					type="text"
+					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR"
+					description=""
+					default="#EA5012" />
+				<field
+					name="show_progress_forms"
+					type="radio"
+					default="0"
+					label="MOD_EMUNDUS_SHOW_PROGRESS_FORMS"
+					description="MOD_EMUNDUS_SHOW_PROGRESS_FORMS_DESC">
+					<option
+						value="0">JNo</option>
+					<option
+						value="1">JYes</option>
+				</field>
+				<field
+					name="show_progress_color_forms"
+					type="text"
+					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_FORMS"
+					description=""
+					default="#EA5012" />
+				<field
+					name="show_progress_documents"
+					type="radio"
+					default="0"
+					label="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS"
+					description="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS_DESC">
+					<option
+						value="0">JNo</option>
+					<option
+						value="1">JYes</option>
+				</field>
+				<field
+					name="show_progress_color_documents"
+					type="text"
+					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_DOCUMENTS"
+					description=""
+					default="#EA5012" />
+				<field
+					name="cc_list_url"
+					type="text"
+					label="MOD_EMUNDUS_CC_LIST_URL"
+					description=""
+					default="index.php" />
+		        <field
+		            name="admission_status"
+					type="text"
+					label="MOD_EMUNDUS_ADMISSION_STATUS"
+					description="MOD_EMUNDUS_ADMISSION_STATUS_DESC" />
+				<field
+					name="status_for_send"
+					type="text"
+					default="0"
+					label="MOD_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND"
+					description="MOD_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND_DESC" />
 			</fieldset>
 			<fieldset
-					name="advanced">
+				name="advanced">
 				<field
-						name="layout"
-						type="modulelayout"
-						label="JFIELD_ALT_LAYOUT_LABEL"
-						description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
 				<field
-						name="moduleclass_sfx"
-						type="text"
-						label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-						description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
-						default="list-group" />
+					name="moduleclass_sfx"
+					type="text"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
+					default="list-group" />
 				<field
-						name="cache"
-						type="list"
-						default="1"
-						label="COM_MODULES_FIELD_CACHING_LABEL"
-						description="COM_MODULES_FIELD_CACHING_DESC">
+					name="cache"
+					type="list"
+					default="1"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					description="COM_MODULES_FIELD_CACHING_DESC">
 					<option
-							value="1">JGLOBAL_USE_GLOBAL</option>
+						value="1">JGLOBAL_USE_GLOBAL</option>
 					<option
-							value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+						value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
 				</field>
 				<field
-						name="cache_time"
-						type="text"
-						default="900"
-						label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
-						description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
+					name="cache_time"
+					type="text"
+					default="900"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
 				<field
-						name="cachemode"
-						type="hidden"
-						default="static">
+					name="cachemode"
+					type="hidden"
+					default="static">
 					<option
-							value="static"></option>
+						value="static"></option>
 				</field>
 				<field
 						name="file_status"
