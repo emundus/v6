@@ -48,10 +48,12 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
 
-		$reminder_mail_id = $app->getCfg('reminder_mail_id', '15');
-		$reminder_programme_code = $app->getCfg('reminder_programme_code', '');
-		$reminder_days = $app->getCfg('reminder_days', '30');
-		$reminder_deadline = $app->getCfg('reminder_deadline', '30, 15, 7, 1, 0');
+		$params = $this->getParams();
+
+		$reminder_mail_id = $params->get('reminder_mail_id', '15');
+		$reminder_programme_code = $params->get('reminder_programme_code', '');
+		$reminder_days = $params->get('reminder_days', '30');
+		$reminder_deadline = $params->get('reminder_deadline', '30, 15, 7, 1, 0');
 
 		$this->log = '';
 
