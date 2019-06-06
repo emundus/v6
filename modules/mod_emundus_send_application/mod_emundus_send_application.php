@@ -19,10 +19,10 @@ if (!empty($user->fnum)) {
 	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 
 	$layout = $params->get('layout', 'default');
-	$status_for_send = explode(',', $params->get('status_for_send', 0));
 	$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 	$eMConfig = JComponentHelper::getParams('com_emundus');
+	$status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 	$id_applicants = $eMConfig->get('id_applicants', '0');
 	$applicants = explode(',',$id_applicants);
 
