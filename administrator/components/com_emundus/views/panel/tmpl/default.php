@@ -2,7 +2,7 @@
 /**
 * @package Joomla
 * @subpackage eMundus
-* @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
+* @copyright Copyright (C) 2019 emundus.fr. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
 */
 
