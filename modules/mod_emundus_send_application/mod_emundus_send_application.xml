@@ -29,15 +29,6 @@
 	<help key="EMUNDUS_SITE" />
 	<config>
 		<fields name="params">
-			<fieldset name="basic">
-				<field
-					name="status_for_send"
-					type="text"
-					default="0"
-					label="COM_MODULES_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND"
-					description="COM_MODULES_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND_DESC">
-				</field>
-			</fieldset>
 			<fieldset name="advanced">
 				<field
 					name="layout"

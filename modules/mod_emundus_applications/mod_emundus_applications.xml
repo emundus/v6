@@ -167,12 +167,7 @@
 					<option
 						value="static"></option>
 				</field>
-				<field
-						name="file_status"
-						type="number"
-						default="1"
-						label="COM_MODULES_FIELD_FILE_STATUS"
-						description="COM_MODULES_FIELD_FILE_STATUS_DESC" />
+				
 			</fieldset>
 		</fields>
 	</config>
