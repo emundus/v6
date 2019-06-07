@@ -2842,6 +2842,20 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    /*
+    * transforme base64 image to a file
+    */
+    function data_to_img($match) {
+        list(, $img, $type, $base64, $end) = $match;
+
+        $bin = base64_decode($base64);
+        $md5 = md5($bin);   // generate a new temporary filename
+        $fn = "tmp/$md5.$type";
+        file_exists($fn) or file_put_contents($fn, $bin);
+
+        return "$img$fn$end";  // new <img> tag
+    }
+
     /** Generate a new document from the many templates.
      * @throws Exception
      */
@@ -2943,6 +2957,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         $tmpl[0]["body"] = $m_emails->setTagsFabrik($tmpl[0]["body"], array($fnum));
 
                         $htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $tmpl[0]["body"]))));
+                        $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
+                        $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
+                        
                         $pdf->AddPage();
 
                         // Print text using writeHTMLCell()
