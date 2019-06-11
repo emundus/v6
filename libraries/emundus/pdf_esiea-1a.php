@@ -1,3 +1,6 @@
+
+
+
 <?php
 function age($naiss) {
     @list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
@@ -880,7 +883,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $payment = $m_application->getHikashopOrder($fnumInfo,true);
 
         // Users informations
-        $query = 'SELECT u.id AS user_id,u.email as user_email, c.civility, c.firstname, c.lastname,c.mobile_phone, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.nationality, epd.birth_date, epd.street_1, epd.city_1, epd.city_other, epd.zipcode_1, epd.country_1, ed.user, ea.*
+        $query = 'SELECT u.id AS user_id,u.email as user_email, c.civility, c.firstname, c.lastname,c.mobile_phone, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.nationality, epd.birth_date, epd.street_1, epd.city_1, epd.city_other, epd.zipcode_1, epd.country_1, ed.user, ed.campus, ea.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
@@ -1103,7 +1106,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
                         En indiquant la référence : <b>'.$item['student_code'].'-'.$item['lastname'].'</b></span><br><br>
                         
-                       <span> <img class="button"  src="/images/custom/CaseCoche.png" alt="boutton radio"> Par <b>carte bleue </b></span><br>
+                       <span> <img class="button"  src="/images/custom/CaseCoche.png" alt="boutton radio"> Par <b>carte bleue </b>sur le site: <a href="https://paiement-en-ligne.esiea.fr">paiement-en-ligne.esiea.fr</a></span><br>
                         
                     </ul>
                     <br>
@@ -1226,7 +1229,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             <u>'.JText::_("SCHOOLYEAR").'</u>: <b>'.@$item['label'].'</b><br><br>
                             <span><img class="legend" src="/images/custom/legend.png" alt=""> Informations modifiées par le candidat</span>
                         </td>
-                        <td> Campus </td>
+                        <td> Campus de '.$item['campus'].' </td>
                     </tr>
                     </table>
                    
