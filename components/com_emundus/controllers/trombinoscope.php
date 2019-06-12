@@ -63,23 +63,28 @@ class EmundusControllerTrombinoscope extends EmundusController
         $margin = (isset($_POST['margin'])) ? $_POST['margin'] : '';
         $template = (isset($_POST['template'])) ? $_POST['template'] : '';
         $string_fnums = (isset($_POST['string_fnums'])) ? $_POST['string_fnums'] : '';
+        $generate = (isset($_POST['string_generate'])) ? $_POST['string_generate'] : '';
+
 
         $fnums = $this->fnums_json_decode($string_fnums);
         // Génération du HTML
-        $html_content = $this->generate_data_for_pdf($fnums, $grid, $margin, $template, false);
+        $html_content = $this->generate_data_for_pdf($fnums, $grid, $margin, $template, $generate, false);
 
         $value =  array(
             'html_content' => $html_content
         );
+
         $return = json_encode($value);
         echo $return;
+
+        //echo $html_content;
         exit;
     }
 
     /*
      * Génération du code HTML qui sera envoyé soit pour cosntruire le pdf, soit pour afficher la prévisualisation
      */
-    public function generate_data_for_pdf($fnums, $grid, $margin, $template, $preview = false) {
+    public function generate_data_for_pdf($fnums, $grid, $margin, $template,  $generate, $preview = false) {
 
         // Traitement du nombre de colonnes max par ligne
         $tab_grid = explode('x', $grid);
@@ -149,14 +154,48 @@ class EmundusControllerTrombinoscope extends EmundusController
         // Hauteur d'une cellule
         $cell_height = (int)(($hauteur_px - $marge_y - ( ($marge_css_bottom * $nb_li_max) + ($marge_css_top * $nb_li_max)) ) / $nb_li_max -10 );
 
-       
+        $trombi = new EmundusModelTrombinoscope();
+        $htmlLetters = $trombi->selectHTMLLetters();
+        $templ = [];
+
+        foreach ($htmlLetters as $letter){
+            $templ[$letter['title']] = $letter;
+        }
+        $format = $_POST['format'];
+
+
+        if($generate == 1) {
+            $header = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#',
+                function ($match) {
+                    list(, $img, $type, $base64, $end) = $match;
+
+                    $bin = base64_decode($base64);
+                    $md5 = md5($bin);   // generate a new temporary filename
+                    $fn = "tmp/$md5.$type";
+                    file_exists($fn) or file_put_contents($fn, $bin);
+
+                    return "$img$fn$end";  // new <img> tag
+                }, $templ[$format]['header']);
+
+            $footer = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#',
+                function ($match) {
+                    list(, $img, $type, $base64, $end) = $match;
+
+                    $bin = base64_decode($base64);
+                    $md5 = md5($bin);   // generate a new temporary filename
+                    $fn = "tmp/$md5.$type";
+                    file_exists($fn) or file_put_contents($fn, $bin);
+
+                    return "$img$fn$end";  // new <img> tag
+                }, $templ[$format]['footer']);
+        }
+
         $body = '<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta name="author" lang="fr" content="EMUNDUS SAS - http://www.emundus.fr" />
 <meta name="generator" content="EMUNDUS SAS - http://www.emundus.fr" />
 <title>'.$programme['label'].'</title>
-<body>
 <style>
 body {  
     font-family: "Helvetica";
@@ -174,7 +213,30 @@ body {
     height: '.$cell_height.'px;
     margin: '. implode(' ', $tab_margin).';
 }
+header {
+ position: fixed;
+ top: -60px;
+ left: 0px;
+ right: 0px;
+ background-color: lightblue;
+ height: 50px;
+  }
+footer {
+ position: fixed;
+ bottom: -60px;
+ left: 0px; 
+ right: 0px;
+ background-color: lightblue;
+ height: 50px;
+  }
+.logo{ width: 100px; height: auto; position: relative; margin-top: 20px; display: inline;}
+.title{text-align: center; font-size: }
 </style>
+</head>
+<body>
+
+<header>'.$header.'</header>
+<footer>'.$footer.'</footer>
 ';
 
         $ind_cell = 0;
@@ -195,6 +257,7 @@ body {
             //$body .= '</div>';
         }
         $body .= '</body></html>';
+
         return $body;
     }
 
@@ -205,11 +268,14 @@ body {
         $template = (isset($_POST['template'])) ? $_POST['template'] : '';
         $format = (isset($_POST['format'])) ? $_POST['format'] : '';      
         $string_fnums = (isset($_POST['string_fnums'])) ? $_POST['string_fnums'] : '';
+        $generate = (isset($_POST['generate'])) ? $_POST['generate'] : '';
+
+
         $fnums_obj = (array) json_decode(stripslashes($string_fnums));
         
         $fnums = $this->fnums_json_decode($string_fnums);
 
-        $html_content = $this->generate_data_for_pdf($fnums, $grid, $margin, $template, false);
+        $html_content = $this->generate_data_for_pdf($fnums, $grid, $margin, $template, $generate, false);
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
         $trombi = new EmundusModelTrombinoscope();
@@ -221,4 +287,6 @@ body {
         echo $return_value;
         exit();
     }
+
+
 }

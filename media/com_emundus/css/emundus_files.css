@@ -300,10 +300,10 @@ thead th:hover {
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
 */
 
-.modal {
+/*.modal {
     background-color: rgba(0, 0, 0, 0.78) !important;
     color: #9EA4AB !important;
-}
+}*/
 
 .label {
     display: inline !important;
@@ -969,5 +969,39 @@ label[for="em-file_to_upload"]:hover {
     .attachment{
         width: 100%;
     }
+}
+
+.em-container-trombi{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+.em-col-trombi{
+    flex: 1 1 33%;
+    margin-right: 5vh;
+}
+.trombi_margin{
+    width: 43% !important;
+}
+.trombi_margin_desc{
+    padding: 0 !important;
+}
+.trombi-col-button{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.trombi_button{
+    width: 33% !important;
+    margin-top: 2vh;
+}
+.trombi_download{
+    margin-top: 2vh;
+    padding: 1.5vh 8.5vh 1.5vh 8.5vh !important;
+}
+.title_wysiwyg{
+    margin-top: 5vh !important;
 }
 
