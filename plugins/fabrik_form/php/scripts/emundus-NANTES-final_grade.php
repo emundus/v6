@@ -88,7 +88,7 @@ if (!empty($status)) {
 	include_once(JPATH_BASE.'/components/com_emundus/models/files.php');
 	$m_email = new EmundusModelEmails;
 	$m_files = new EmundusModelFiles;
-	$trigger_emails = $m_email->getEmailTrigger($status, $res->training, 1);
+	$trigger_emails = $m_email->getEmailTrigger($status, array($res->training), 1);
 
 	if (count($trigger_emails) > 0) {
 
