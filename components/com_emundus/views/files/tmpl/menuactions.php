@@ -28,7 +28,7 @@ if (!empty($this->items)) :
 
                     if ($item->level == 1) {
 
-                        echo '<li class="dropdown" style="background-color:none"><a class="em-dropdown" id="em-menu-' . $i . '" href="#">' . @$item->title . '<b class="caret"></b></a>';
+                        echo '<li class="dropdown" style="background-color:transparent"><a class="em-dropdown" id="em-menu-' . $i . '" href="#">' . @$item->title . '<b class="caret"></b></a>';
                     }
                     else {
                         switch ($multiple) {
@@ -110,7 +110,7 @@ endif;
 </div>
 
 <?php if($this->fnum != 0 || $multiple != 0){ ?>
-<div class="em-close-minimise">
+<div id="em-close-multi-file" class="em-close-minimise">
     <div class="btn-group pull-right">
         <button id="em-close-file" class="btn btn-danger btn-xxl">
             <strong>X</strong>

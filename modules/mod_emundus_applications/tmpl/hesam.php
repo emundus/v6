@@ -42,7 +42,7 @@ $uri = JUri::getInstance();
                             <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
                         </a>
 
-                        <?php if ((!empty($attachments) && (int)($attachments[$application->fnum])>=100 && $application->status==0 && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
+                        <?php if ((!empty($attachments) && (int)($attachments[$application->fnum])>=100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
                             <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url[$application->fnum]['link'])); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
                         <?php endif; ?>
 

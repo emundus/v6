@@ -517,7 +517,7 @@ class EmundusModelCifre extends JModelList {
 			->from($this->db->quoteName('#__emundus_users', 'eu'))
 			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat', 'eur').' ON '.$this->db->quoteName('eur.parent_id').' = '.$this->db->quoteName('eu.id'))
 			->leftJoin($this->db->quoteName('#__emundus_users_597_repeat_repeat_department', 'dep').' ON '.$this->db->quoteName('dep.parent_id').' = '.$this->db->quoteName('eur.id'))
-			->where($this->db->quoteName('eu.user_id').' = '.$user_id);
+			->where($this->db->quoteName('eu.user_id').' = '.$user_id.' AND dep.department IS NOT NULL');
 		$this->db->setQuery($query);
 
 		try {
@@ -531,7 +531,7 @@ class EmundusModelCifre extends JModelList {
 			->select($this->db->quoteName('t.thematic','thematics'))
 			->from($this->db->quoteName('#__emundus_users', 'eu'))
 			->leftJoin($this->db->quoteName('#__emundus_users_600_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('eu.id'))
-			->where($this->db->quoteName('eu.user_id').' = '.$user_id);
+			->where($this->db->quoteName('eu.user_id').' = '.$user_id.' AND t.thematic IS NOT NULL');
 		$this->db->setQuery($query);
 
 		try {
@@ -546,7 +546,7 @@ class EmundusModelCifre extends JModelList {
 		if (!empty($time_ago)) {
 		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.$this->db->quote(date('Y-m-d H:i:s', $time_ago));
         }
-
+/*
 		if ($user_profile == 1006) {
 			$fallbackWhere .= ' AND '.$this->db->quoteName('er.futur_doctorant_yesno').' = 1 ';
 		} elseif ($user_profile == 1007) {
@@ -554,7 +554,7 @@ class EmundusModelCifre extends JModelList {
 		} elseif ($user_profile == 1008) {
 			$fallbackWhere .= ' AND '.$this->db->quoteName('er.acteur_publique_yesno').' = 1 ';
 		}
-
+*/
 		// Dynamically add a WHERE clause that can allow for the retrieval of offers, this where can change if not enough results are loaded.
 		$thematicsOrLocations = '';
 		if ((!empty($thematics) && $thematics[0] !== null) || (!empty($departments) && $departments[0] !== null)) {

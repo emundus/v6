@@ -673,7 +673,6 @@ $(document).ready(function () {
 		e.preventDefault();
 		var id = parseInt($(this).attr('id').split('|')[3]);
 
-		//console.log(id);
 		$('#em-modal-actions').modal({
 			backdrop: false
 		}, 'toggle');
@@ -1336,6 +1335,4 @@ $(document).ready(function () {
 		}
 
 	})
-
-
 })

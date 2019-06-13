@@ -63,31 +63,11 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 <span class="glyphicon glyphicon-download-alt"></span>
                 <span><?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?></span>
             </a>
+
             </div>
         </div>
-
-
-
     </div>
-    <!--<div class="row">
-        <div class="col-md-3"><?php echo JText::_('COM_EMUNDUS_TROMBI_GRID')?></div>
-        <div class="col-md-9">
-            <select id="trombi_grid" name="trombi_grid" class="inputbox">
-                <option value="3x3">3 x 3 (<?php echo JText::_('COM_EMUNDUS_TROMBI_WHOSWHO');?>)</option>
-                <option value="2x6">2 x 6 (<?php echo JText::_('COM_EMUNDUS_TROMBI_BADGE');?>)</option>
-                <option value="5x3">5 x 3</option>
-                <option value="5x5">5 x 5</option>
-            </select>
-        </div>
-    </div>-->
-   <!-- <div class="row">
-        <div class="col-md-3"><?php echo JText::_('COM_EMUNDUS_TROMBI_MARGIN')?></div>
-        <div class="col-md-9">
-            <input id="trombi_margin" name="trombi_margin" value="<?php echo $this->default_margin;?>" />&nbsp;(<?php echo JText::_('COM_EMUNDUS_TROMBI_IN_PIXELS')?>)<br />
-            <?php echo JText::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION1')?><br />
-            <?php echo JText::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION2')?>
-        </div>
-    </div>-->
+
     <div class="row">
 
         <div class="col-md-12">
@@ -99,35 +79,6 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         <div class="col-md-12"><a href="<?php echo $this->form_elements_id_list; ?>" target="_blank"><?php echo JText::_('COM_EMUNDUS_TROMBI_ID_LIST')?></a></div>
         <div class="row" id="preview"></div>
     </div>
-
-<!-- <div class="panel-footer">
-    <div class="row">
-        <div class="col-md-3">
-            <button onclick="window.location.hash='preview';" type="button" id="trombi_preview" class="btn btn-info"><?php echo JText::_('COM_EMUNDUS_TROMBI_PREVIEW')?>
-                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-            </button>
-           <button onclick="window.location.hash='trombi_download';" type="button" id="trombi_generate" class="btn btn-primary"><?php echo JText::_('COM_EMUNDUS_TROMBI_GENERATE')?>
-                <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-            </button>
-        </div>
-
-    </div>-->
-
-<!-- <div class="panel-footer preview" id="div-preview">
-    <div class="row print">
-
-    </div>
-    <div class="row" id="preview"></div>
-</div>
-<div class="panel-footer download" id="div-download">
-    <div class="row print">
-        <a class="btn btn-link" id="trombi_download" title="<?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?>" href="" target="_blank">
-            <span class="glyphicon glyphicon-download-alt"></span>
-            <span><?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?></span>
-        </a>
-    </div>
-</div>-->
-
 </form>
 
 

@@ -29,6 +29,7 @@ class EmundusModelApplication extends JModelList {
         parent::__construct();
         global $option;
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -123,33 +124,32 @@ class EmundusModelApplication extends JModelList {
     }
 
     function getUserAttachmentsByFnum($fnum, $search = '') {
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $expert_document_id = $eMConfig->get('expert_document_id', '36');
 
         if (EmundusHelperAccess::isExpert($this->_user->id)) {
-            if(isset($search) && !empty($search)) {
-                $eMConfig = JComponentHelper::getParams('com_emundus');
-                $expert_document_id = $eMConfig->get('expert_document_id', '36');
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
-            FROM #__emundus_uploads AS eu
-            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
-            AND (eu.attachment_id != '. $expert_document_id .') 
-            AND (esa.value like "%'. $search .'%"
-            OR esa.description like "%'. $search .'%"
-            OR eu.timedate like "%'. $search .'%")
-            ORDER BY esa.category ASC, eu.timedate DESC';
-            }
-            else{
+        	if (isset($search) && !empty($search)) {
+	            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+				            FROM #__emundus_uploads AS eu
+				            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+				            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+				            WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+				            AND (eu.attachment_id != '. $expert_document_id .') 
+				            AND (esa.value like "%'. $search .'%"
+				            OR esa.description like "%'. $search .'%"
+				            OR eu.timedate like "%'. $search .'%")
+				            ORDER BY esa.category ASC, eu.timedate DESC';
+            } else {
                 $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
-                FROM #__emundus_uploads AS eu
-                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
-                AND (eu.attachment_id != ' . $expert_document_id . ') 
-                ORDER BY esa.category ASC, eu.timedate DESC';
+			                FROM #__emundus_uploads AS eu
+			                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+			                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+			                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+			                AND (eu.attachment_id != ' . $expert_document_id . ') 
+			                ORDER BY esa.category ASC, eu.timedate DESC';
             }
         } else {
-            if(isset($search) && !empty($search)) {
+            if (isset($search) && !empty($search)) {
                 $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
                 FROM #__emundus_uploads AS eu
                 LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
@@ -159,8 +159,7 @@ class EmundusModelApplication extends JModelList {
                 OR esa.description like "%'. $search .'%"
                 OR eu.timedate like "%'. $search .'%")
                 ORDER BY esa.category ASC, eu.timedate DESC';
-            }
-            else{
+            } else {
                 $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
                 FROM #__emundus_uploads AS eu
                 LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
@@ -168,10 +167,8 @@ class EmundusModelApplication extends JModelList {
                 WHERE eu.fnum like ' . $this->_db->Quote($fnum) . '
                 ORDER BY esa.category ASC, eu.timedate DESC';
             }
-
         }
-        //var_dump(isset($search) && !empty($search));
-        //echo $query;
+
         $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
     }
@@ -1092,6 +1089,8 @@ class EmundusModelApplication extends JModelList {
 	                                                $index = array_search($r_elt, $params->sub_options->sub_values);
 	                                                if (strlen($index) > 0) {
 	                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                                } elseif (!empty($params->dropdown_populate)) {
+		                                                $elt = $r_elt;
 	                                                } else {
 	                                                    $elt = "";
 	                                                }
@@ -1186,6 +1185,8 @@ class EmundusModelApplication extends JModelList {
 	                                        $index = array_search($element->content, $params->sub_options->sub_values);
 	                                        if (strlen($index) > 0) {
 	                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                        } elseif (!empty($params->dropdown_populate)) {
+		                                        $elt = $element->content;
 	                                        } else {
 	                                            $elt = "";
 	                                        }
@@ -1224,7 +1225,7 @@ class EmundusModelApplication extends JModelList {
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
-
+		$em_breaker = JComponentHelper::getParams('com_emundus')->get('export_application_pdf_breaker', '0');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list     = new EmundusHelperList;
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
@@ -1244,11 +1245,16 @@ class EmundusModelApplication extends JModelList {
                         background-color: #FFFFFF;
                         padding:5px;
                     }
+                    @media print {
+                    	.breaker{ 
+							page-break-before: always;
+						}
+                    }
                     </style>";
 
         if (isset($tableuser)) {
             foreach ($tableuser as $key => $itemt) {
-
+            	$breaker= ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -1272,8 +1278,8 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 if (count($groupes) > 0) {
-                    $forms .= '<br><br>';
-                    $forms .= '<hr><h3>';
+                    $forms .= '<br>';
+                    $forms .= '<hr><h3 '.$breaker.'>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
 	                    $forms .= JText::_($itemt->label);
@@ -1392,7 +1398,9 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $params = json_decode($elements[$j]->params);
-                                                $elt = date($params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1516,7 +1524,9 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $date_params = json_decode($elements[$j]->params);
-                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($date_params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1617,7 +1627,9 @@ class EmundusModelApplication extends JModelList {
                                     if (!empty($element->label) && $element->label!=' ') {
 
                                         if ($element->plugin=='date' && $element->content>0) {
-                                            $elt = date($params->date_form_format, strtotime($element->content));
+	                                        $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                        $elt = $dt->format($params->date_form_format);
                                         }
 
                                         elseif ($element->plugin=='birthday' && $element->content>0) {

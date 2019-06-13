@@ -132,7 +132,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<?php
 													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
 													//echo $formatted_date->format("M j, Y, H:i");
-													echo JFactory::getDate($value->val)->format("M j, Y, H:i");
+													echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
 												?>
 											<?php endif; ?>
 										</strong>
@@ -200,14 +200,17 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 <script type="text/javascript">
     function checkurl() {
+
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
+
         if (url[1] != null && url[1].length >= 20) {
             url = url[1].split("|");
-            var fnum = new Object();
+            var fnum = {};
             fnum.fnum = url[0];
-            if (fnum != null && fnum.fnum != "close") {
+
+            if (fnum.fnum != null && fnum.fnum !== "close") {
                 addDimmer();
                 $.ajax({
                     type:'get',
@@ -221,7 +224,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                             fnum.label = fnumInfos.label;
                             openFiles(fnum);
                         } else {
-                            console.log(result);
                             $('.em-dimmer').remove();
                             $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>");
                         }
@@ -236,7 +238,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         }
 
     }
-	$(document).ready(function(){
+	$(document).ready(function() {
         checkurl();
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
@@ -244,31 +246,27 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		$('.em-data-container').doubleScroll();
 	});
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
-
-
 </script>
 
 <script>
 
-    $('#selectContainer')
-        .on("mouseenter",function(){
+    $('#selectContainer').on("mouseenter", function() {
 
-            $('#tooltipSelect').css({
-                'height':'30px',
-                'width':'70px',
-                'display':'flex',
-                'opacity':'1',
-                'transiition':'display,500ms',
-                'background':'#33332E',
-                'border-radius':'10px'
-            });
-            $('#tooltipSelect p').css({
-                'color':'white',
-                'font-size':'0.6rem',
-            });
+        $('#tooltipSelect').css({
+            'height':'30px',
+            'width':'70px',
+            'display':'flex',
+            'opacity':'1',
+            'transiition':'display,500ms',
+            'background':'#33332E',
+            'border-radius':'10px'
+        });
+        $('#tooltipSelect p').css({
+            'color':'white',
+            'font-size':'0.6rem',
+        });
 
-    })
-    .on("mouseleave",function(){
+    }).on("mouseleave", function() {
         $('#tooltipSelect').css({
             'display':'none',
             'transiition':'display,500ms'
@@ -277,49 +275,39 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 </script>
 <script>
     $('#selectAll').css('display','none');
-    $('#selectDropdown').click(function(e){
-        $('#selectContainer').removeClass('borderSelect');
-        $('#selectAll').slideToggle(function(){
+    $('#selectDropdown').click(function() {
 
-            if($(this).is(':visible')){
+        $('#selectContainer').removeClass('borderSelect');
+        $('#selectAll').slideToggle(function() {
+
+            if ($(this).is(':visible')) {
 
                 $('#selectContainer').addClass('borderSelect');
-
-                $(document).click(function (e){
+                $(document).click(function (e) {
 
                     var container = $("#selectDropdown");
 
                     if (!container.is(e.target) && container.has(e.target).length === 0){
-
                         $('#selectAll').slideUp();
                         $('#selectContainer').removeClass('borderSelect');
                     }
                 });
-
             }
         });
     });
 
-    $('#selectAll>span').click(function(){
+    $('#selectAll>span').click(function() {
         $('#selectAll').slideUp();
     });
 
-
-</script>
-<script>
-
-
-
-    $('#span-check-all-all').click(function(){
-
+    $('#span-check-all-all').click(function() {
         $('.selectAll.em-check-all-all#em-check-all-all').prop('checked',true);// all
         //$('.em-check#em-check-all').prop('checked',true);//.selectPage Page
         //$('.em-check-all#em-check-all').prop('checked',true);//.selectAll Page
         $('.em-check').prop('checked',true);
-
         reloadActions('files', undefined, true);
-
     });
+
     $('#span-check-none').click(function(){
         $('#em-check-all-all').prop('checked',false);
         $('.em-check#em-check-all').prop('checked',false);
@@ -328,22 +316,18 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         $('#countCheckedCheckbox').html('');
         reloadActions('files', undefined, false);
     });
-    $(document).on('change', '.em-check, .em-check-all-all', function() {
 
+    $(document).on('change', '.em-check, .em-check-all-all', function() {
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        console.log(allCheck);
         let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
 
-        let files = countCheckedCheckbox == 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
-        if(countCheckedCheckbox != 0){
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
+        if (countCheckedCheckbox !== 0) {
             $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
-        }
-        else{
+        } else {
             $('#countCheckedCheckbox').html('');
         }
-    console.log(countCheckedCheckbox);
     });
-
 </script>
