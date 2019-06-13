@@ -179,6 +179,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 <?php else :?>
 	<?php echo JText::_('NO_RESULT'); ?>
 <?php endif; ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
      $(document).ready(function(){
         $('.em-data-container').doubleScroll();
