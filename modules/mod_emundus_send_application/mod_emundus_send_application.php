@@ -22,6 +22,7 @@ if (!empty($user->fnum)) {
 	$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 	$eMConfig = JComponentHelper::getParams('com_emundus');
+	$status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 	$id_applicants = $eMConfig->get('id_applicants', '0');
 	$applicants = explode(',',$id_applicants);
 

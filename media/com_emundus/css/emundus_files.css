@@ -300,10 +300,10 @@ thead th:hover {
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
 */
 
-.modal {
+/*.modal {
     background-color: rgba(0, 0, 0, 0.78) !important;
     color: #9EA4AB !important;
-}
+}*/
 
 .label {
     display: inline !important;
@@ -708,6 +708,7 @@ label[for="em-file_to_upload"]:hover {
 }
 
 
+
 /* collapse in Files */
 .em-collapse-container{
     display: flex;
@@ -791,15 +792,17 @@ label[for="em-file_to_upload"]:hover {
     border-bottom: 2px solid #B2B2B2;
 }
 .em-container-loader{
+    height: 100vh;
+    background-color: rgba(0,0,0,0.2);
+    position: relative;
     display: flex;
     flex-direction: row;
+    align-content: center;
     justify-content: center;
-    align-items: center;
-    background: white;
-    height: 100vh;
-    position: relative;
-    top: 20%;
-    opacity: 0.5;
+}
+.em-container-loader img{
+    height: auto;
+    width: 30vh;
 }
 .em-button {
     cursor: pointer;
@@ -833,7 +836,7 @@ label[for="em-file_to_upload"]:hover {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    position: relative;
     width: 40px;
     height: 40px;
 }
@@ -885,7 +888,6 @@ label[for="em-file_to_upload"]:hover {
     height: auto;
     width: 150px;
     position: absolute;
-    top: 140px;
 }
 .selectAll>label{
     color: black;
@@ -916,7 +918,6 @@ label[for="em-file_to_upload"]:hover {
     z-index: 1;
     justify-content: center;
     align-items: center;
-    top:45px;
 }
 .borderSelect{
     background-color: #dadada;
@@ -944,6 +945,7 @@ label[for="em-file_to_upload"]:hover {
     margin-top: 52px;
 }
 
+
 /* css view message tmpl default */
 
 .upload-file{
@@ -970,4 +972,45 @@ label[for="em-file_to_upload"]:hover {
         width: 100%;
     }
 }
+
+.em-containerpdf{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.em-container-trombi{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+.em-col-trombi{
+    flex: 1 1 33%;
+    margin-right: 5vh;
+}
+.trombi_margin{
+    width: 43% !important;
+}
+.trombi_margin_desc{
+    padding: 0 !important;
+}
+.trombi-col-button{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.trombi_button{
+    width: 33% !important;
+    margin-top: 2vh;
+}
+.trombi_download{
+    margin-top: 2vh;
+    padding: 1.5vh 8.5vh 1.5vh 8.5vh !important;
+}
+.title_wysiwyg{
+    margin-top: 5vh !important;
+}
+
 

@@ -41,9 +41,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                         <div class="selectDropdown" id="selectDropdown">
                                             <i class="fas fa-sort-down"></i>
                                         </div>
-                                        <div id="tooltipSelect">
-                                            <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
-                                        </div>
+
+                                    </div>
+                                    <div id="tooltipSelect">
+                                        <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
                                     </div>
                                     <div class="selectAll" id="selectAll">
                                         <label for="em-check-all">
@@ -197,7 +198,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		<?= $this->datas?>
 	<?php endif;?>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
     function checkurl() {
 
@@ -212,9 +213,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
             if (fnum.fnum != null && fnum.fnum !== "close") {
                 addDimmer();
+
                 $.ajax({
                     type:'get',
                     url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                    async: true,
                     dataType:"json",
                     data:({fnum: fnum.fnum}),
                     success: function(result) {
@@ -234,6 +237,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                         console.log(jqXHR.responseText);
                     }
                 })
+
             }
         }
 

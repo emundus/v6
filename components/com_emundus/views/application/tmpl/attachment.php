@@ -436,7 +436,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
             beforeSend: function() {
                 $('#em-appli-block').empty();
-                $('#em-appli-block').append('<div class="em-container-loader"><img src="http://emundus.local/media/com_emundus/images/icones/loader.gif"></div>');
+                $('#em-appli-block').append('<div class="em-container-loader"><img src="http://emundus.local/media/com_emundus/images/emundusLogoV2.svg"></div>');
             },
             success: function(result) {
                     $('#em-appli-block').empty();

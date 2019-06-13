@@ -267,7 +267,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id = $jinput->post->getInt('template', null);
-        $message = $jinput->post->get('message', null, 'RAW');
+        $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
 
 
@@ -299,7 +299,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             ];
 
             $tags = $m_emails->setTags($fnum->applicant_id, $post);
-            $message = $m_emails->setTagsFabrik($message, [$fnum->fnum]);
+            $message = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
             $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
@@ -362,7 +362,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                       if ($filename != false) {
 
                         // Build the path to the file we are searching for on the disk.
-                        $path = EMUNDUS_PATH_ABS . $fnum->applicant_id . DS . $filename;
+                        $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
 
                         if (file_exists($path)) {
                             $toAttach[] = $path;

@@ -86,6 +86,17 @@ class EmundusControllerFiles extends JControllerLegacy
         parent::display();
     }
 
+    function data_to_img($match) {
+	    list(, $img, $type, $base64, $end) = $match;
+
+	    $bin = base64_decode($base64);
+	    $md5 = md5($bin);   // generate a new temporary filename
+	    $fn = "tmp/$md5.$type";
+	    file_exists($fn) or file_put_contents($fn, $bin);
+
+	    return "$img$fn$end";  // new <img> tag
+	}
+
 ////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
     /**
      *
@@ -2842,6 +2853,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+
     /** Generate a new document from the many templates.
      * @throws Exception
      */
@@ -2902,6 +2914,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $post = [
                             'TRAINING_CODE' => $fnumsInfos[$fnum]['campaign_code'],
                             'TRAINING_PROGRAMME' => $fnumsInfos[$fnum]['campaign_label'],
+                            'CAMPAIGN_LABEL' => $fnumsInfos[$fnum]['campaign_label'],
+                            'CAMPAIGN_YEAR' => $fnumsInfos[$fnum]['campaign_year'],
                             'USER_NAME' => $fnumsInfos[$fnum]['applicant_name'],
                             'USER_EMAIL' => $fnumsInfos[$fnum]['applicant_email'],
                             'FNUM' => $fnum
@@ -2940,17 +2954,37 @@ class EmundusControllerFiles extends JControllerLegacy
 
                         // Set font
                         $pdf->SetFont('freeserif', '', 8);
-                        $tmpl[0]["body"] = $m_emails->setTagsFabrik($tmpl[0]["body"], array($fnum));
 
-                        $htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $tmpl[0]["body"]))));
+                        $htmldata = $m_emails->setTagsFabrik($tmpl[0]["body"], array($fnum));
+                        // clean html
+                        $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
+                        // base64 images to link
+                        $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function($match) {
+														    list(, $img, $type, $base64, $end) = $match;
+
+														    $bin = base64_decode($base64);
+														    $md5 = md5($bin);   // generate a new temporary filename
+														    $fn = "tmp/$md5.$type";
+														    file_exists($fn) or file_put_contents($fn, $bin);
+
+														    return "$img$fn$end";  // new <img> tag
+														}, $htmldata);
+                        $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
+
                         $pdf->AddPage();
 
                         // Print text using writeHTMLCell()
                         $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
 
-                        @chdir('tmp');
+                        //@chdir('tmp');
+						$rand = rand(0, 1000000);
+						if (!file_exists(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'])) {
+						    mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
+						}
 
-                        $name = $attachInfos['lbl'] . '_' . date('Y-m-d_H-i-s') . '.pdf';
+						$name = str_replace(' ', '', $fnumsInfos[$fnum]['applicant_name']) . $attachInfos['lbl'] . "-" . md5($rand . time()) . ".pdf";
+
+                        //$name = $attachInfos['lbl'] . '_' . date('Y-m-d_H-i-s') . '.pdf';
                         $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
                         $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
                         $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);

@@ -46,7 +46,8 @@ class EmundusViewApplication extends JViewLegacy{
         $document->addStyleSheet("media/com_emundus/css/emundus.css" );
         $document->addStyleSheet("media/com_emundus/css/emundus_application.css" );
 
-        $document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+        //$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+        $document->addScript("media/jui/js/jquery.min.js" );
         $document->addStyleSheet("media/com_emundus/lib/semantic/packaged/css/semantic.min.css" );
         $document->addScript("media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
 

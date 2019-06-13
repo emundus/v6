@@ -275,6 +275,12 @@ class EmundusViewApplication extends JViewLegacy
 	                                $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 
 							}
+							
+							// get evaluation form ID
+                        	$formid_eval = $m_evaluation->getEvaluationFormByProgramme($fnumInfos['training']);
+							if (!empty($formid_eval)) {	
+								$this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
+							}
 	                    }
 
                         $this->assignRef('campaign_id', $fnumInfos['campaign_id']);

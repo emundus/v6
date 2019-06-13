@@ -2,7 +2,7 @@
 /**
 * @package Joomla
 * @subpackage eMundus
-* @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
+* @copyright Copyright (C) 2019 emundus.fr. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
 */
 
@@ -16,7 +16,7 @@ defined('_JEXEC') or die('RESTRICTED');
       <p align="center"><a href="http://www.emundus.fr" target="_blank">www.emundus.fr</a></p></td>
     <td width="20%"><p align="center"><strong><?php echo JText::_("EMUNDUS_COMPONENT"); ?></strong></p>
       <p align="center"><?php echo JText::_("GESTIONNAIRE_CANDIDATURE"); ?></p>
-      <p align="center">Version 6.9.1 - 12/2018</p>
+      <p align="center">Version 6.396 - 06/2019</p>
     </td>
   </tr>
 </table>
