@@ -50,9 +50,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                             <div class="selectDropdown" id="selectDropdown">
                                 <i class="fas fa-sort-down"></i>
                             </div>
-                            <div id="tooltipSelect">
-                                <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
-                            </div>
+
+                        </div>
+                        <div id="tooltipSelect">
+                            <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
                         </div>
                             <div class="selectAll" id="selectAll">
                                 <label for="em-check-all">
@@ -249,7 +250,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 </script>
 
 <script>
-
+$(document).ready(function(){
     $('#selectContainer')
         .on("mouseenter",function(){
 
@@ -274,35 +275,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                 'transiition':'display,500ms'
             })
         });
+});
 </script>
 <script>
-
-    $('#selectContainer')
-        .on("mouseenter",function(){
-
-            $('#tooltipSelect').css({
-                'height':'30px',
-                'width':'70px',
-                'display':'flex',
-                'opacity':'1',
-                'transiition':'display,500ms',
-                'background':'#33332E',
-                'border-radius':'10px'
-            });
-            $('#tooltipSelect p').css({
-                'color':'white',
-                'font-size':'0.6rem',
-            });
-
-        })
-        .on("mouseleave",function(){
-            $('#tooltipSelect').css({
-                'display':'none',
-                'transiition':'display,500ms'
-            })
-        });
-</script>
-<script>
+$(document).ready(function(){
     $('#selectAll').css('display','none');
     $('#selectDropdown').click(function(e){
         $('#selectContainer').removeClass('borderSelect');
@@ -322,7 +298,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                         $('#selectContainer').removeClass('borderSelect');
                     }
                 });
-
             }
         });
     });
@@ -331,11 +306,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         $('#selectAll').slideUp();
     });
 
+});
+
+
 
 </script>
 <script>
-
-
 
     $('#span-check-all-all').click(function(){
 
