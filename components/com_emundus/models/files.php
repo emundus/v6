@@ -3113,15 +3113,33 @@ die();*/
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
                 ->where($db->quoteName('p.id') . ' = ' . $program .
                     ' AND ' . $db->quoteName('t.published') . ' = ' . 1 .
-                    ' AND ' . $db->quoteName('t.date_start') . ' >= ' . date("Y-m-d"))
+                    ' AND ' . $db->quoteName('t.date_end') . ' >= NOW()')
                 ->order('date_start ASC');
-
             $db->setQuery($query);
             return $db->loadAssocList();
         } catch(Exception $e) {
             echo $e->getMessage();
         }
     }
+
+	public function unscheduledSessions($session) {
+		try {
+			$db = JFactory::getDbo();
+
+			$query = $db->getQuery(true);
+			$query
+				->select('t.id')
+				->from($db->quoteName('#__emundus_setup_teaching_unity', 't'))
+				->where($db->quoteName('t.session_code') . ' LIKE "' . $session .'"
+					 AND ' . $db->quoteName('t.published') . ' = ' . 1 .
+					' AND ((' . $db->quoteName('t.date_start') . ' IS NULL 
+					 AND ' . $db->quoteName('t.date_end') . ' IS NULL) OR '. $db->quoteName('t.date_start') .' <= NOW())');
+			$db->setQuery($query);
+			return $db->loadResult();
+		} catch(Exception $e) {
+			echo $e->getMessage();
+		}
+	}
 
     public function getAppliedSessions($program) {
         try {
