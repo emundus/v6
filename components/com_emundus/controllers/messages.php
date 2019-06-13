@@ -28,10 +28,10 @@ class EmundusControllerMessages extends JControllerLegacy {
      * @since 3.8.6
      */
     function __construct($config = array()) {
-        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-	    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-	    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 	    parent::__construct($config);
     }
 
@@ -267,7 +267,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id = $jinput->post->getInt('template', null);
-        $message = $jinput->post->get('message', null, 'RAW');
+        $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
 
 
@@ -299,7 +299,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             ];
 
             $tags = $m_emails->setTags($fnum->applicant_id, $post);
-            $message = $m_emails->setTagsFabrik($message, [$fnum->fnum]);
+            $message = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
             $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
@@ -359,9 +359,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                     $filename = $m_messages->get_upload($fnum->fnum, $candidate_file);
 
-                    if ($filename) {
+                      if ($filename != false) {
+
                         // Build the path to the file we are searching for on the disk.
                         $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
+
                         if (file_exists($path)) {
                             $toAttach[] = $path;
                         }

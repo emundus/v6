@@ -45,6 +45,7 @@ JFactory::getSession()->set('application_layout', 'decision');
                     <?php endif; ?>
                 </div>
               </div>
+              <div class="evaluations" id="evaluations">-----------</div>
             </div>
         </div>
     </div>
@@ -57,7 +58,7 @@ JFactory::getSession()->set('application_layout', 'decision');
     }).show();
 
     function resizeIframe(obj) {
-        obj.style.height = obj.contentWindow.document.body.scrollHeight +400 + 'px';
+        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     }
 
     window.ScrollToTop = function(){
@@ -65,6 +66,23 @@ JFactory::getSession()->set('application_layout', 'decision');
         scrollTop: '0px'
       }, 'slow');
     };
+
+    var url_evaluation = '<?php echo $this->url_evaluation; ?>';
+
+    if (url_evaluation != '') {
+        $.ajax({
+            type: "GET",
+            url: url_evaluation,
+            dataType: 'html',
+            success: function(data) {
+                $("#evaluations").empty();
+                $("#evaluations").append(data);
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
 
 </script>
 <script>

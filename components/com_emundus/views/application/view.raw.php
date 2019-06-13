@@ -104,10 +104,11 @@ class EmundusViewApplication extends JViewLegacy
 				case 'assoc_files':
 					$show_related_files = $params->get('show_related_files', 0);
 
-					if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id))
+					if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
 						$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id']);
-					else
+					} else {
 						$campaignInfo = $m_application->getCampaignByFnum($fnum);
+					}
 
 					$this->synthesis = new stdClass();
 					$this->synthesis->camps = $campaignInfo;
@@ -120,14 +121,25 @@ class EmundusViewApplication extends JViewLegacy
 						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 4, 'r', 'COM_EMUNDUS_LOGS_ATTACHMENTS_BACKOFFICE');
 						$expert_document_id = $params->get('expert_document_id', '36');
 
-						$userAttachments = $m_application->getUserAttachmentsByFnum($fnum);
+                        $app = JFactory::getApplication();
+                        $jinput = $app->input;
+                        $search = $jinput->getString('search');
+
+                        $m_files = new EmundusModelFiles;
+
+                        $userAttachments = $m_application->getUserAttachmentsByFnum($fnum, $search);
+
 						$profile = $m_profiles->getProfileByCampaign($fnumInfos['campaign_id']);
 						$attachmentsProgress = $m_application->getAttachmentsProgress($fnumInfos['applicant_id'], $profile['profile_id'], $fnum);
+                        $nameCategory = $m_files->getAttachmentCategories();
+
 						$this->assignRef('userAttachments', $userAttachments);
 						$this->assignRef('student_id', $fnumInfos['applicant_id']);
 						$this->assignRef('attachmentsProgress', $attachmentsProgress);
 						$this->assignRef('expert_document_id', $expert_document_id);
-					} else {
+						$this->assignRef('nameCategory', $nameCategory);
+
+                    } else {
 						echo JText::_("RESTRICTED_ACCESS");
 						exit();
 					}
@@ -262,6 +274,12 @@ class EmundusViewApplication extends JViewLegacy
 	                            elseif (EmundusHelperAccess::asAccessAction(29, 'r', $this->_user->id, $fnum))
 	                                $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 
+							}
+							
+							// get evaluation form ID
+                        	$formid_eval = $m_evaluation->getEvaluationFormByProgramme($fnumInfos['training']);
+							if (!empty($formid_eval)) {	
+								$this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
 							}
 	                    }
 

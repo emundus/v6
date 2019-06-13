@@ -180,6 +180,11 @@ function reloadActions(view, fnum, onCheck, async) {
     //addDimmer();
 
     var multi = $('.em-check:checked').length;
+    if(multi === 0 && fnum != 0 ){
+        multi = 1;
+    }
+
+
     $.ajax({
         type: 'GET',
         async: async,
@@ -190,6 +195,7 @@ function reloadActions(view, fnum, onCheck, async) {
             //$(".col-md-9 .panel.panel-default").remove();
             $('.navbar.navbar-inverse').empty();
             $('.navbar.navbar-inverse').append(data);
+
             if (onCheck === true) {
                 menuBar1();
             }
@@ -380,6 +386,9 @@ function openFiles(fnum) {
                         $('#accordion .panel.panel-default').show();
                         $('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
                         menuBar1();
+
+                        $('#em-close-multi-file').hide();
+                        $('#em-close-multi-file button').hide();
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
@@ -430,6 +439,7 @@ function openFiles(fnum) {
             }
 
             $('.em-open-files').remove();
+
             var panel = result;
             //.main-panel
             $('.main-panel').append('<div class="em-close-minimise"><div class="btn-group pull-right"><button id="em-close-file" class="btn btn-danger btn-xxl"><strong>X</strong></button></div></div><div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
@@ -810,7 +820,7 @@ function back() {
 }
 
 $(document).ready(function() {
-    $('.em-check-all-all').hide();
+    //$('.em-check-all-all').hide();
     $('#check').removeClass('em-check-all-all');
 
     var lastVal = new Object();
@@ -1349,8 +1359,8 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '.em-check', function(e) {
-        if (($(this).attr('id') == 'em-check-all') || ($(this).attr('id') == 'em-check-all-all')) {
-            $('.em-check-all-all').show();
+        if ($(this).attr('id') == 'em-check-all') {
+            //$('.em-check-all-all').show();
             $('.em-actions[multi="1"]').show();
             $('.em-actions[multi="1"]').removeClass('em-hidden');
 
@@ -1372,7 +1382,7 @@ $(document).ready(function() {
 
             } else {
 
-                $('.em-check-all-all').hide();
+                //$('.em-check-all-all').hide();
                 $(this).prop('checked', false);
                 $('.em-check').prop('checked', false);
                 $('.em-actions[multi="0"]').show();
@@ -4694,21 +4704,33 @@ $(document).ready(function() {
 
                         if (result.status) {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
+                            Swal.fire({
+                                position: 'center',
+                                type: 'success',
+                                title: result.msg,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            /*$('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
                             '<button type="button" class="close" data-dismiss="alert">×</button>' +
                             '<strong>'+result.msg+'</strong> ' +
-                            '</div>');
+                            '</div>');*/
                         } else {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
+                            Swal.fire({
+                                position: 'center',
+                                type: 'warning',
+                                title: result.msg
+                            });
+                            /*$('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
                             '<button type="button" class="close" data-dismiss="alert">×</button>' +
                             '<strong>'+result.msg+'</strong> ' +
-                            '</div>');
+                            '</div>');*/
                         }
 
-                        setTimeout(function(){
-                            $('#em-modal-actions').modal('hide');
-                        }, 800);
+
+                        $('#em-modal-actions').modal('hide');
+
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
@@ -4735,22 +4757,36 @@ $(document).ready(function() {
                             $('.modal-footer').hide();
                             if (result.status) {
                                 $('.modal-body').empty();
-                                $('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
+                                Swal.fire({
+                                    position: 'center',
+                                    type: 'success',
+                                    title: result.msg,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                /*$('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
                                 '<button type="button" class="close" data-dismiss="alert">×</button>' +
                                 '<strong>'+result.msg+'</strong> ' +
-                                '</div>');
+                                '</div>');*/
                             } else {
                                 $('.modal-body').empty();
-                                $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
+                                Swal.fire({
+                                    position: 'center',
+                                    type: 'warning',
+                                    title: result.msg
+                                });
+                                /*$('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
                                 '<button type="button" class="close" data-dismiss="alert">×</button>' +
                                 '<strong>'+result.msg+'</strong> ' +
-                                '</div>');
+                                '</div>');*/
                             }
 
-                            setTimeout(function() {
-                                $('#em-modal-actions').modal('hide');
-                            }, 800);
+
+                            $('#em-modal-actions').modal('hide');
                             reloadData($('#view').val());
+
+                            reloadActions($('#view').val(), undefined, false);
+                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                         },
                         error: function (jqXHR) {
                             console.log(jqXHR.responseText);
@@ -4781,25 +4817,43 @@ $(document).ready(function() {
                     success: function(result) {
                         if (result.status) {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
+                            Swal.fire({
+                                position: 'center',
+                                type: 'success',
+                                title: result.msg,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            /*$('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
                             '<button type="button" class="close" data-dismiss="alert">×</button>' +
                             '<strong>'+result.msg+'</strong> ' +
-                            '</div>');
+                            '</div>');*/
                             for (var i in result.tagged) {
                                 $('#'+result.tagged[i].fnum).parents('td').addClass(result.tagged[i].class);
                                 $('#'+result.tagged[i].fnum+'_check').parents('td').addClass(result.tagged[i].class);
                             }
                         } else {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
+
+                            Swal.fire({
+                                position: 'center',
+                                type: 'warning',
+                                title: result.msg
+                            });
+                            /*$('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
                             '<button type="button" class="close" data-dismiss="alert">×</button>' +
                             '<strong>'+result.msg+'</strong> ' +
-                            '</div>');
+                            '</div>');*/
                         }
-                        setTimeout(function(){
-                            $('#em-modal-actions').modal('hide');
-                        }, 800);
+
+                        $('#em-modal-actions').modal('hide');
+
+
+
                         reloadData($('#view').val());
+                        reloadActions($('#view').val(), undefined, false);
+                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
@@ -4883,21 +4937,36 @@ $(document).ready(function() {
                     success: function(result) {
                         if (result.status) {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
+                            Swal.fire({
+                                position: 'center',
+                                type: 'success',
+                                title: result.msg,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            /*$('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
                             '<button type="button" class="close" data-dismiss="alert">×</button>' +
                             '<strong>'+result.msg+'</strong> ' +
-                            '</div>');
+                            '</div>');*/
                             reloadData($('#view').val());
+
+                            reloadActions($('#view').val(), undefined, false);
+                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                         } else {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
+                            Swal.fire({
+                                position: 'center',
+                                type: 'warning',
+                                title: result.msg
+                            });
+                            /*$('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
                             '<button type="button" class="close" data-dismiss="alert">×</button>' +
                             '<strong>'+result.msg+'</strong> ' +
-                            '</div>');
+                            '</div>');*/
                         }
-                        setTimeout(function(){
-                            $('#em-modal-actions').modal('hide');
-                        }, 800);
+
+                        $('#em-modal-actions').modal('hide');
+
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
@@ -5159,3 +5228,23 @@ $(document).ready(function() {
         }
     });
 });
+function getXMLHttpRequest() {
+    var xhr = null;
+
+    if (window.XMLHttpRequest || window.ActiveXObject) {
+        if (window.ActiveXObject) {
+            try {
+                xhr = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch(e) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        } else {
+            xhr = new XMLHttpRequest();
+        }
+    } else {
+        alert("Votre navigateur ne supporte pas l'objet XMLHTTPRequest...");
+        return null;
+    }
+
+    return xhr;
+}

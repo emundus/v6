@@ -34,6 +34,7 @@ $Itemid 					= $app->input->getInt('Itemid', null, 'int');
 $layout                     = $params->get('layout', 'default');
 
 $eMConfig 					= JComponentHelper::getParams('com_emundus');
+$status_for_send 			= explode(',', $eMConfig->get('status_for_send', 0));
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 $display_poll 				= $eMConfig->get('display_poll', 0);
 $display_poll_id 			= $eMConfig->get('display_poll_id', null);
@@ -50,6 +51,7 @@ $show_progress_documents 	= $params->get('show_progress_documents', 0);
 $show_progress_color 		= $params->get('show_progress_color', '#EA5012');
 $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
+$file_status 	            = $params->get('file_status', 1);
 $admission_status           = explode(',', $params->get('admission_status'));
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.

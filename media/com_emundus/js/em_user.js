@@ -635,6 +635,7 @@ $(document).ready(function () {
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');
+		console.log(id);
 		$('#em-modal-form').modal({
 			backdrop: true
 		}, 'toggle');
@@ -781,12 +782,29 @@ $(document).ready(function () {
 						state: 0
 					},
 					success: function (result) {
-						if (result.status)
+						if (result.status){
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
 							reloadData();
+
+							reloadActions($('#view').val(), undefined, false);
+							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+						}
+
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
 						if (jqXHR.status === 302) {
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
 							window.location.replace('/user');
 						}
 					}
@@ -806,12 +824,28 @@ $(document).ready(function () {
 						state: 1
 					},
 					success: function (result) {
-						if (result.status)
+						if (result.status){
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
 							reloadData();
+						}
+
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
 						if (jqXHR.status === 302) {
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
 							window.location.replace('/user');
 						}
 					}
@@ -976,19 +1010,30 @@ $(document).ready(function () {
 					success: function (result) {
 						$('.modal-body .em-dimmer').remove();
 						if (result.status) {
-							$('#em-add-group').before('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('#em-add-group').before('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
-								$('#em-modal-actions').modal('hide');
-							}, 500);
+								'</div>');*/
+
+							$('#em-modal-actions').modal('hide');
 
 						} else {
-							$('#em-add-group').before('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('#em-add-group').before('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
@@ -1056,19 +1101,34 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
-								$('#em-modal-actions').modal('hide');
-							}, 500);
+								'</div>');*/
+
+							$('#em-modal-actions').modal('hide');
+
 							reloadData();
+
+							reloadActions($('#view').val(), undefined, false);
+							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1107,19 +1167,30 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
+								'</div>');*/
+
 								$('#em-modal-actions').modal('hide');
-							}, 500);
 
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1190,20 +1261,31 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
-								$('#em-modal-actions').modal('hide');
-							}, 500);
+								'</div>');*/
+
+							$('#em-modal-actions').modal('hide');
 							reloadData();
 
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1227,20 +1309,35 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 							reloadData();
+
+							reloadActions($('#view').val());
+							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
 							setTimeout(function () {
 								$('#em-modal-actions').modal('hide');
 							}, 500);
 
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1334,6 +1431,4 @@ $(document).ready(function () {
 		}
 
 	})
-
-
 })

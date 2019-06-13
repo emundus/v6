@@ -33,13 +33,13 @@ echo $description;
                         <i class="folder open outline icon"></i> <?php echo (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
-					<?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && $application->status == 0 && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
+					<?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
                         <a id='send' class="btn btn-xs" href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link'])); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
 					<?php endif; ?>
 
                     <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
 
-					<?php if ($application->status <= 1) : ?>
+					<?php if ($application->status <= $file_status) : ?>
                         <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
 					<?php endif; ?>
                 </div>

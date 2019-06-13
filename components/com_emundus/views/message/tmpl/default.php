@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @package    Joomla
  * @subpackage emundus
@@ -41,8 +41,8 @@ $email_list = array();
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-	<div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
-	<img class="em-sending-email-img" id="em-sending-email-img" src="images/emundus/sending-email.gif">
+    <div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
+    <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
 </div>
 
 <form id="emailForm"  name="emailForm" style="padding:0px 15px;">
@@ -104,7 +104,8 @@ $email_list = array();
                         <span class="label label-grey em-email-label">
 							<?php echo $user['name'].' <em>&lt;'.$user['email'].'&gt;</em>'; ?>
 						</span>
-						<input type="hidden" name="ud[]" id="ud" value="<?php echo $user['id'] ?>"/>
+
+              <input type="hidden" name="ud[]" id="ud" value="<?php echo $user['id'] ?>"/>
 					<?php endif; ?>
 
 				<?php endforeach; ?>

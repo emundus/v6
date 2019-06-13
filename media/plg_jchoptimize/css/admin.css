@@ -1,0 +1,160 @@
+/**
+ * JCH Optimize - Plugin to aggregate and minify external resources for
+ * optmized downloads
+ * @author Samuel Marshall <sdmarshall73@gmail.com>
+ * @copyright Copyright (c) 2010 Samuel Marshall
+ * @license GNU/GPLv3, See LICENSE file
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
+ */
+
+/** Icons **/
+
+
+div.icon{
+
+        text-align: center;
+        margin-right: 12px;
+        float: left;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+}
+
+div.icon label{
+        display: inline-block;
+}
+
+div.icon a {
+        padding: 7px 5px 5px;
+        background-color: white;
+        background-position: -30px;
+        display: block;
+        float: left;
+        height: 97px;
+        width: 108px;
+        color: #565656;
+        vertical-align: middle;
+        text-decoration: none;
+/*        border: 1px solid #CCC;
+        border-radius: 5px;
+        transition-property: none;
+        box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.1), inset 5px 5px 10px rgba(0, 0, 0, 0.05);*/
+}
+
+/*div.icon.enabled a:hover {
+        background-position: 0;
+        -webkit-border-bottom-left-radius: inherit;
+        -moz-border-radius-bottomleft: inherit;
+        border-bottom-left-radius: inherit;
+        box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.1), inset -5px -5px 10px rgba(0, 0, 0, 0.05);
+        position: relative;
+        z-index: 10;
+}*/
+
+div.icon.disabled a{
+        pointer-events: none;
+        text-decoration: none;
+        color: #ccc;
+}
+
+div.icon.disabled a i#toggle:before{
+        content:"(Pro only)";
+        color:#999;
+}
+
+div.icon.enabled[class*="settings"] a i#toggle{
+        color:crimson;
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+        -webkit-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        transform: rotate(180deg);
+}
+
+div.icon.enabled[class*="settings"] a i#toggle:before{
+        content:"\f205";
+}
+
+div.icon.enabled[class*="settings"] a i#toggle.on{
+        filter: none;
+        -webkit-transform: none;
+        -ms-transform: none;
+        transform: none;
+}
+
+div.icon.enabled[class*="settings"] a i#toggle.on:before{
+        color:#60AF2C !important;
+}
+
+.container-icons{
+        float: left;
+}
+
+
+/** Optimize Images **/
+
+#optimize-log{
+        border: 1px #CCC solid;
+        list-style-type: none;
+        padding: 10px;
+        margin: 10px;
+	overflow-y: auto;
+	height:300px;
+}
+
+#optimize-log li{
+        font-size: 11px;
+}
+
+
+#optimize-status{
+	padding: 7px;
+	font-size: 12px;
+	font-style: italic;
+}
+
+
+.collapsible h3 span{
+        margin-left: 10px;
+}
+
+.collapsible.collapse-open h3 span:before {
+        content: "\f151"
+}
+.collapsible.collapse-close h3 span:before {
+        content: "\f150"
+}
+
+
+fieldset[id^=jform_params_pro_staticfiles]{
+        padding:0;
+        margin: 0;
+        display:table;
+        width: 300px;
+}
+
+fieldset[id^=jform_params_pro_staticfiles] ul{
+        margin: 0;
+}
+
+fieldset[id^=jform_params_pro_staticfiles] ul li{
+        display:inline-table;
+        width: 20%;
+}
+
+fieldset[id^=jform_params_pro_staticfiles] label{
+        display:inline-table;
+        width: 12%;
+}
+
+.form-horizontal .control-label .spacer hr {
+        margin: 0 0 15px !important;
+}

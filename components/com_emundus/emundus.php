@@ -146,6 +146,10 @@ JText::script('INVALID');
 JText::script('UNCHECKED');
 JText::script('SELECT_AT_LEAST_ONE_FILE');
 JText::script('INFORMATION');
+JText::script('COM_EMUNDUS_YOU_HAVE_SELECT');
+JText::script('COM_EMUNDUS_SELECT_ALL');
+JText::script('COM_EMUNDUS_FILE');
+JText::script('COM_EMUNDUS_FILES');
 
 
 // view user
@@ -284,6 +288,9 @@ JText::script('ARE_YOU_SURE_TO_DELETE_USERS');
 JText::script('COM_EMUNDUS_ZIP_GENERATION');
 JText::script('COM_EMUNDUS_CREATE_ZIP');
 
+//WHO'S WHO
+JText::script('COM_EMUNDUS_TROMBI_GENERATE');
+JText::script('COM_EMUNDUS_TROMBI_DOWNLOAD');
 
 // Email to applicant
 JText::script('SEND_CUSTOM_EMAIL');

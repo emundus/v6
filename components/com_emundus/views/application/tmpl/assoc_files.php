@@ -37,7 +37,7 @@ JFactory::getSession()->set('application_layout', 'assoc_files');
 						
 						<?php if($camp->submitted==1):?>
 							<li><span><?php echo JText::_('SUBMITTED')?> : <?php echo JText::_('JYES');?></span></li>
-							<li><span><?php echo JText::_('DATE_SUBMITTED')?> : <?php echo JHtml::_('date', $camp->date_submitted, JText::_('DATE_FORMAT_LC2'));?></span></li>
+							<li><span><?php echo JText::_('DATE_SUBMITTED')?> : <?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
 						<?php else:?>
 							<li><span><?php echo JText::_('SUBMITTED')?> : <?php echo JText::_('JNO');?></span></li>
 						<?php endif;?>

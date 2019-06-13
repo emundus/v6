@@ -14,6 +14,7 @@ $itemid = $jinput->get('Itemid', null);
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $copy_application_form = $eMConfig->get('copy_application_form', 0);
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
+$status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 $id_applicants = $eMConfig->get('id_applicants', '0');
 $applicants = explode(',',$id_applicants);
 
@@ -27,7 +28,7 @@ try {
 }
 
 $is_dead_line_passed = strtotime(date($now)) > strtotime(@$user->end_date);
-$is_app_sent         = @$user->status != 0;
+$is_app_sent         = !in_array($user->status, $status_for_send);
 
 $block_upload = true;
 if ((!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
