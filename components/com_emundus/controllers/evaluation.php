@@ -809,21 +809,20 @@ class EmundusControllerEvaluation extends JControllerLegacy
         exit;
     }
 
-    public function getformelem()
-    {
+    public function getformelem() {
         //Filters
         $jinput = JFactory::getApplication()->input;
         $code   = $jinput->getVar('code', null);
         $code = explode(',', $code);
         $m_evaluation = $this->getModel('Evaluation');
         $defaultElements = $m_evaluation->getEvaluationElementsName(0, 1, $code);
-        if(!empty($defaultElements)){
+        if (!empty($defaultElements)) {
             foreach ($defaultElements as $kde => $de) {
-                if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id')
-                    unset($defaultElements[$kde]);
+                if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id') {
+	                unset($defaultElements[$kde]);
+                }
             }
         }
-        //var_dump($defaultElements);die();
         $elements = EmundusHelperFiles::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
@@ -1626,8 +1625,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
             foreach($fnunLine as $k => $v)
             {
-                if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id') {
-
+                if ($k != 'code' && strpos($k, 'campaign_id')===false) {
                     if($k === 'fnum')
                     {
                         $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow($col, $line, (string) $v, PHPExcel_Cell_DataType::TYPE_STRING);

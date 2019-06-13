@@ -5,6 +5,9 @@
  * Date: 16/09/14
  * Time: 09:15
  */
+
+$document = JFactory::getDocument();
+$document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 ?>
 <input type="hidden" id="view" name="view" value="users">
 <?php if (!empty($this->users)) :?>
@@ -176,6 +179,7 @@
 <?php else :?>
 	<?php echo JText::_('NO_RESULT'); ?>
 <?php endif; ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
      $(document).ready(function(){
         $('.em-data-container').doubleScroll();

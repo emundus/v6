@@ -21,6 +21,11 @@ p {
 .em-close-minimise {
    align-self: flex-end;
 }
+/*.navbar .navbar-inverse{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+}*/
 
 #check {
     min-width: 85px !important;
@@ -295,10 +300,10 @@ thead th:hover {
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
 */
 
-.modal {
+/*.modal {
     background-color: rgba(0, 0, 0, 0.78) !important;
     color: #9EA4AB !important;
-}
+}*/
 
 .label {
     display: inline !important;
@@ -584,8 +589,9 @@ thead th:hover {
     padding: 1px;
     position: relative;
     height: 30px;
+    width: 50%;
     border-radius: 3px;
-    margin: 10px;
+    margin: 5px;
     text-align: left;
     background: #fff;
     box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
@@ -625,7 +631,8 @@ thead th:hover {
 label[for="em-file_to_upload"] {
     padding: 0.5em;
     display: inline-block;
-    background: #F2F1EF;
+    background: #e9ecef;
+    border: 1px solid #ced4da;
     cursor: pointer;
 }
 label[for="em-file_to_upload"]:hover {
@@ -634,16 +641,18 @@ label[for="em-file_to_upload"]:hover {
 #em-filename{
     padding: 0.5em;
     float: left;
-    width: 150px;
+    width: 70%;
     white-space: nowrap;
     overflow: hidden;
-    background: #F2F1EF;
+    background: white;
+    border: 1px solid #ced4da;
+
 }
 
 /* Messages sent / failed emails list style. Message recipient list */
 #em-mails-sent, #em-mails-failed, #em-recipitents {
-    overflow: scroll;
-    max-height: 70px;
+    overflow-y: scroll;
+    max-height: 80px;
 }
 
 /* Sending email modal */
@@ -698,6 +707,104 @@ label[for="em-file_to_upload"]:hover {
     padding: 0 !important;
 }
 
+
+
+/* collapse in Files */
+.em-collapse-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.em-utilitize{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.em-select-all-files{
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    align-items: center;
+}
+.em-select-all-files>p {
+    margin-top: 0;
+}
+
+.em-searchbar{
+    width: 30%;
+    margin-top: 20px;
+    align-self: end;
+    margin-right: 5vh;;
+}
+.em-collapse{
+    margin-right: 5vh;
+    margin-top: 20px;
+
+}
+.fileCollapse{
+    background: #e2e2e2 !important;
+    color: black!important;
+    border: 1px solid black !important;
+    border-top-left-radius: 10px 10px !important;
+    border-top-right-radius: 10px 10px !important;
+    height: 60px;
+}
+.borderContentCollapse{
+    border-left: 1px solid black !important;
+    border-right: 1px solid black !important;
+    border-bottom: 1px solid black !important;
+    display: block;
+    height: auto;
+}
+.em-arrow-up{
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 5px 8.7px 5px;
+    border-color: transparent transparent #000000 transparent;
+    padding: 0 !important;
+}
+.em-arrow-up:hover{
+    color:black;
+    transform: scale(1.5) ;
+}
+.em-arrow-down{
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8.7px 5px 0 5px;
+    border-color: #000000 transparent transparent transparent;
+    padding: 0 !important;
+}
+.em-arrow-down:hover{
+    color:black;
+    transform: scale(1.5) ;
+}
+.em-title-collapse{
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+.em-tr-collapse{
+    background: white !important;
+    border-bottom: 2px solid #B2B2B2;
+}
+.em-container-loader{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    height: 100vh;
+    position: relative;
+    top: 20%;
+    opacity: 0.5;
+}
+.em-button {
+    cursor: pointer;
+}
 /* title form */
 
 .TitlePersonalInfo{
@@ -824,4 +931,84 @@ label[for="em-file_to_upload"]:hover {
 .countCheckedCheckbox{
     margin-left: 30%;
 }
+
+.tooltipSelectAttachments{
+    display:none;
+    transition:opacity 1s ease-out;
+    opacity:0;
+    position: absolute;
+    z-index: 1;
+    justify-content: center;
+    align-items: center;
+    margin-top: 52px;
+}
+
+
+/* css view message tmpl default */
+
+.upload-file{
+    display:flex;
+    flex-direction:row;
+    margin-top: 30px;
+}
+.file-browse{
+    width: 50%;
+}
+.attachment{
+    width: 57%;
+    float: right;
+    margin-right: 16px;
+}
+.swal2-container{
+    z-index: 99999 !important;
+}
+@media screen and (max-width: 991px){
+    .download{
+        display: inline !important;
+    }
+    .attachment{
+        width: 100%;
+    }
+}
+
+.em-containerpdf{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.em-container-trombi{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+.em-col-trombi{
+    flex: 1 1 33%;
+    margin-right: 5vh;
+}
+.trombi_margin{
+    width: 43% !important;
+}
+.trombi_margin_desc{
+    padding: 0 !important;
+}
+.trombi-col-button{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.trombi_button{
+    width: 33% !important;
+    margin-top: 2vh;
+}
+.trombi_download{
+    margin-top: 2vh;
+    padding: 1.5vh 8.5vh 1.5vh 8.5vh !important;
+}
+.title_wysiwyg{
+    margin-top: 5vh !important;
+}
+
 

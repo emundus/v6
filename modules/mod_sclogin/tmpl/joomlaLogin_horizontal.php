@@ -1,10 +1,10 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2014 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v4.3.0
- * @build-date      2015/03/19
+ * @version         Release v8.0.5
+ * @build-date      2019/01/14
  */
 
 defined('_JEXEC') or die('Restricted access');
@@ -19,13 +19,25 @@ if ($params->get('showLoginForm'))
     ?>
 
     <div class="sclogin-joomla-login horizontal <?php echo $joomlaSpan; ?>">
-        <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" id="sclogin-form<?php echo $module->id; ?>">
+        <?php
+        $action = JRoute::_('index.php', true, $params->get('usesecure'));
+        $isCB = false;
+        if ($registerType == "communitybuilder" && file_exists(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php')) // Use Community Builder's login
+        {
+            include_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php');
+            require_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/library/cb/cb.database.php');
+            global $_CB_framework;
+            $isCB = true;
+            $action = $_CB_framework->viewUrl( 'login', true, null, 'html', $params->get('usesecure') );
+        }
+        ?>
+        <form action="<?php echo $action; ?>" method="post" id="sclogin-form<?php echo $module->id; ?>">
             <fieldset class="userdata span12">
                 <div class="control-group pull-left" id="form-sclogin-username">
                     <div class="controls">
                         <div class="input-append">
-                            <input name="username" tabindex="0" id="sclogin-username" alt="username" type="text" class="input-small"
-                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_USERNAME'); ?>">
+                            <input name="username" tabindex="0" <?php echo $params->get('autoFocusUsername') ? 'autofocus' : '';?> alt="username" type="text" class="sclogin-username input-small"
+                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_USERNAME'); ?>" required aria-required="true">
                             <?php echo $helper->getForgotUserButton(); ?>
                         </div>
                     </div>
@@ -33,8 +45,8 @@ if ($params->get('showLoginForm'))
                 <div class="control-group pull-left" id="form-sclogin-password">
                     <div class="controls">
                         <div class="input-append">
-                            <input name="<?php echo $passwordName; ?>" tabindex="0" id="sclogin-passwd" alt="password" type="password" class="input-small"
-                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_PASSWORD') ?>">
+                            <input name="<?php echo $passwordName; ?>" tabindex="0" alt="password" type="password" class="sclogin-passwd input-small"
+                                   placeholder="<?php echo JText::_('MOD_SCLOGIN_PASSWORD') ?>" required aria-required="true">
                             <?php echo $helper->getForgotPasswordButton(); ?>
                         </div>
                     </div>
@@ -62,10 +74,8 @@ if ($params->get('showLoginForm'))
                 endif; ?>
 
                 <?php
-                if ($registerType == "communitybuilder" && file_exists(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php')) // Use Community Builder's login
+                if($isCB) // Use Community Builder's login
                 {
-                    include_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php');
-                    global $_CB_framework;
                     echo '<input type="hidden" name="option" value="com_comprofiler" />' . "\n";
                     echo '<input type="hidden" name="task" value="login" />' . "\n";
                     echo '<input type="hidden" name="op2" value="login" />' . "\n";

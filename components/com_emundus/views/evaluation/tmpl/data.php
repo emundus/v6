@@ -195,6 +195,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         <?php echo $this->datas?>
     <?php endif;?>
     </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
     //refreshFilter();
     /*function checkurl() {

@@ -36,10 +36,13 @@ class EmundusViewProgramme extends JViewLegacy
         $this->com_emundus_programme_campdesc_class = '';
         $this->com_emundus_programme_showcampaign = '0';
         $this->com_emundus_programme_showprogramme ='1';
+        $this->com_emundus_programme_showlink ='0';
         $this->com_emundus_programme_showprogramme = $menu_params['com_emundus_programme_showprogramme'];
         $this->com_emundus_programme_showcampaign = $menu_params['com_emundus_programme_showcampaign'];
         $this->com_emundus_programme_progdesc_class = $menu_params['com_emundus_programme_progdesc_class'];
         $this->com_emundus_programme_campdesc_class = $menu_params['com_emundus_programme_campdesc_class'];
+        $this->com_emundus_programme_showlink = $menu_params['com_emundus_programme_showlink'];
+        $this->com_emundus_programme_showlink_class = $menu_params['com_emundus_programme_showlink_class'];
 
         $idcampaign = $jinput->get('id', 0, 'int');
         $campaign = $model->getCampaign($idcampaign);

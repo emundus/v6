@@ -34,6 +34,7 @@ $Itemid 					= $app->input->getInt('Itemid', null, 'int');
 $layout                     = $params->get('layout', 'default');
 
 $eMConfig 					= JComponentHelper::getParams('com_emundus');
+$status_for_send 			= explode(',', $eMConfig->get('status_for_send', 0));
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 $display_poll 				= $eMConfig->get('display_poll', 0);
 $display_poll_id 			= $eMConfig->get('display_poll_id', null);
@@ -50,6 +51,7 @@ $show_progress_documents 	= $params->get('show_progress_documents', 0);
 $show_progress_color 		= $params->get('show_progress_color', '#EA5012');
 $show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
 $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
+$file_status 	            = $params->get('file_status', 1);
 $admission_status           = explode(',', $params->get('admission_status'));
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
@@ -90,11 +92,11 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	
 	if (isset($user->fnum) && !empty($user->fnum)) {
-		$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
-		$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
-
-		// We redirect to the "send application" form, this form will redirect to payment if required.
-		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+		$fnums = array_keys($applications);
+		$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $fnums);
+		$forms = $m_application->getFormsProgress($user->id, $user->profile, $fnums);
+		$confirm_form_url = $m_application->getConfirmUrl($fnums);
+		$first_page = $m_application->getFirstPage('index.php', $fnums);
 
 		// If the user can
 		$profile = $m_profile->getCurrentProfile($user->id);
