@@ -41,9 +41,9 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 <option value="5x3">5 x 3</option>
                 <option value="5x5">5 x 5</option>
             </select>
-            <label for="trombi_margin"><?php echo JText::_('COM_EMUNDUS_TROMBI_GRID')?></label>
+            <label for="trombi_margin"><?php echo JText::_('COM_EMUNDUS_TROMBI_MARGIN')?><span> (<?php echo JText::_('COM_EMUNDUS_TROMBI_IN_PIXELS')?>)</span></label>
             <input id="trombi_margin" name="trombi_margin" value="<?php echo $this->default_margin;?>" class="trombi_margin" />
-            <p class="trombi_margin_desc">(<?php echo JText::_('COM_EMUNDUS_TROMBI_IN_PIXELS')?>)</p>
+
             <p class="trombi_margin_desc"><?php echo JText::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION1')?></p>
             <p class="trombi_margin_desc"><?php echo JText::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION2')?></p>
 
