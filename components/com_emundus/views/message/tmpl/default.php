@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @package    Joomla
  * @subpackage emundus
@@ -104,115 +104,109 @@ $email_list = array();
                         <span class="label label-grey em-email-label">
 							<?php echo $user['name'].' <em>&lt;'.$user['email'].'&gt;</em>'; ?>
 						</span>
-                        <input type="hidden" name="ud[]" id="ud" value="<?php echo $user['id'] ?>"/>
-                    <?php endif; ?>
 
-                <?php endforeach; ?>
+              <input type="hidden" name="ud[]" id="ud" value="<?php echo $user['id'] ?>"/>
+					<?php endif; ?>
+
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="inputbox input-xlarge form-control form-inline">
+				<span class='label label-grey' for="mail_from" ><?php echo JText::_('FROM'); ?>:</span>
+				<div class="form-group" style="display:inline-block !important;" id="mail_from_name" contenteditable="true"><?php echo $current_user->name; ?> </div>
+				<div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><strong> <?php echo $current_user->email; ?></strong></div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="inputbox input-xlarge form-control form-inline">
+				<span class='label label-grey' for="mail_from" ><?php echo JText::_('SUBJECT'); ?>:</span>
+				<div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?php echo JFactory::getConfig()->get('sitename'); ?></div>
+			</div>
+
+			<!-- Email WYSIWYG -->
+			<?php echo $mail_body; ?>
+		</div>
+
+		<div class="form-group">
+			<br>
+			<hr>
+		</div>
+
+		<div class="form-inline row">
+			<div class="form-group col-sm-12 col-md-5">
+				<label for="em-select_attachment_type" ><?php echo JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
+				<select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
+					<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+					<option value="upload"> <?php echo JText::_('UPLOAD'); ?> </option>
+					<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
+					    <option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
+					<?php endif; ?>
+					<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
+					    <option value="setup_letters"> <?php echo JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
+					<?php endif; ?>
+				</select>
+			</div>
+
+			<div class="form-group col-sm-12 col-md-7">
+				<!-- Upload a file from computer -->
+        <div class="hidden upload-file" id="upload_file">
+
+            <div class="file-browse">
+                <span id="em-filename"><?php echo JText::_('FILE_NAME'); ?></span>
+
+                <label for="em-file_to_upload" type="button"><?php echo JText::_('SELECT_FILE_TO_UPLOAD') ?>
+                    <input type="file" id="em-file_to_upload" onChange="addFile();">
+                </label>
+            </div>
+            <div id="em-progress-wrp" class="loading-bar">
+                <div class="progress-bar"></div>
+                <div class="status">0%</div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="inputbox input-xlarge form-control form-inline">
-                <span class='label label-grey' for="mail_from" ><?php echo JText::_('FROM'); ?>:</span>
-                <div class="form-group" style="display:inline-block !important;" id="mail_from_name" contenteditable="true"><?php echo $current_user->name; ?> </div>
-                <strong> <div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><?php echo $current_user->email; ?></div> </strong>
-            </div>
+
+        <!-- Get a file from setup_attachments -->
+        <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
+        <div class="hidden" id="candidate_file">
+          <label for="em-select_candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
+          <select id="em-select_candidate_file" name="candidate_file" class="form-control download">
+          <?php if (!$setup_attachments) :?>
+            <option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
+          <?php else: ?>
+            <option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+            <?php foreach ($setup_attachments as $attachment): ?>
+              <option value="<?php echo $attachment->id; ?>"> <?php echo $attachment->value; ?></option>
+            <?php endforeach; ?>
+          <?php endif; ?>
+          </select>
+          <span class="input-group-btn">
+            <a class="btn btn-grey hidden" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?= JText::_('ADD_ATTACHMENT'); ?></a>
+          </span>
         </div>
-        <div class="form-group">
-            <div class="inputbox input-xlarge form-control form-inline">
-                <span class='label label-grey' for="mail_from" ><?php echo JText::_('SUBJECT'); ?>:</span>
-                <div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?php echo JFactory::getConfig()->get('sitename'); ?></div>
-            </div>
+        <?php endif; ?>
 
-            <!-- Email WYSIWYG -->
-            <?php echo $mail_body; ?>
-        </div>
+        <!-- Get a file from setup_letters -->
+        <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
+          <div class="hidden" id="setup_letters">
+            <label for="em-select_setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
+            <select id="em-select_setup_letters" name="setup_letters" class="form-control">
+            <?php if (!$setup_letters) :?>
+              <option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
+            <?php else: ?>
+              <option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+              <?php foreach ($setup_letters as $letter): ?>
+                <option value="<?php echo $letter->id; ?>"> <?php echo $letter->title; ?></option>
+              <?php endforeach; ?>
+            <?php endif; ?>
+            </select>
+          </div>
+        <?php endif; ?>
 
-        <div class="form-group">
-            <br>
-            <hr>
-        </div>
+        <span class="input-group-btn">
+          <a class="btn btn-grey" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?php echo JText::_('ADD_ATTACHMENT'); ?></a>
+        </span>
 
-        <div class="form-inline row">
-            <div class="form-group col-sm-12 col-md-5">
-                <label for="em-select_attachment_type" ><?php echo JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
-                <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control  download" onChange="toggleAttachmentType(this);">
-                    <option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-                    <option value="upload"> <?php echo JText::_('UPLOAD'); ?> </option>
-                    <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-                        <option value="candidate_file"> <?php echo JText::_('CANDIDATE_FILE'); ?> </option>
-                    <?php endif; ?>
-                    <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-                        <option value="setup_letters"> <?php echo JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
-                    <?php endif; ?>
-                </select>
-            </div>
-
-            <div class="form-group col-sm-12 col-md-7">
-                <!-- Upload a file from computer -->
-                <div class="hidden upload-file" id="upload_file">
-
-                    <div class="file-browse">
-                        <span id="em-filename"><?php echo JText::_('FILE_NAME'); ?></span>
-
-                        <label for="em-file_to_upload" type="button"><?php echo JText::_('SELECT_FILE_TO_UPLOAD') ?>
-                            <input type="file" id="em-file_to_upload" onChange="addFile();">
-                        </label>
-                    </div>
-                    <div id="em-progress-wrp" class="loading-bar">
-                        <div class="progress-bar"></div>
-                        <div class="status">0%</div>
-                    </div>
-                </div>
-
-
-                <!-- Get a file from setup_attachments -->
-                <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-                    <div class="hidden" id="candidate_file">
-
-
-                        <label for="candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
-                        <select id="em-select_candidate_file" name="candidate_file" class="form-control download">
-                            <?php if (!$setup_attachments) :?>
-                                <option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
-                            <?php else: ?>
-                                <option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-                                <?php foreach ($setup_attachments as $attachment): ?>
-                                    <option value="<?php echo $attachment->id; ?>"> <?php echo $attachment->value; ?></option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-
-                        <span class="input-group-btn">
-							        <a class="btn btn-grey hidden" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?= JText::_('ADD_ATTACHMENT'); ?></a>
-						        </span>
-
-                    </div>
-
-
-
-                <?php endif; ?>
-
-                <!-- Get a file from setup_letters -->
-                <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-                <div class="hidden" id="setup_letters">
-
-                    <label for="setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
-                    <select id="em-select_setup_letters" name="setup_letters" class="form-control">
-                        <?php if (!$setup_letters) :?>
-                            <option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
-                        <?php else: ?>
-                            <option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-                            <?php foreach ($setup_letters as $letter): ?>
-                                <option value="<?php echo $letter->id; ?>"> <?php echo $letter->title; ?></option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-
-                    <span class="input-group-btn">
-							<a class="btn btn-grey" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?= JText::_('ADD_ATTACHMENT'); ?></a>
-						</span>
-
-                    <?php endif; ?>
+      <?php endif; ?>
 
                 </div>
             </div>

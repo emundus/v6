@@ -708,6 +708,7 @@ label[for="em-file_to_upload"]:hover {
 }
 
 
+
 /* collapse in Files */
 .em-collapse-container{
     display: flex;
@@ -944,6 +945,7 @@ label[for="em-file_to_upload"]:hover {
     margin-top: 52px;
 }
 
+
 /* css view message tmpl default */
 
 .upload-file{
@@ -970,6 +972,7 @@ label[for="em-file_to_upload"]:hover {
         width: 100%;
     }
 }
+
 .em-containerpdf{
     display: flex;
     flex-direction: row;
@@ -1009,4 +1012,5 @@ label[for="em-file_to_upload"]:hover {
 .title_wysiwyg{
     margin-top: 5vh !important;
 }
+
 

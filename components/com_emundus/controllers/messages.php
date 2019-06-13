@@ -362,7 +362,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                       if ($filename != false) {
 
                         // Build the path to the file we are searching for on the disk.
-                        $path = EMUNDUS_PATH_ABS . $fnum->applicant_id . DS . $filename;
+                        $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
 
                         if (file_exists($path)) {
                             $toAttach[] = $path;
