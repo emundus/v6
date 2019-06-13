@@ -1,6 +1,3 @@
-
-
-
 <?php
 function age($naiss) {
     @list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
@@ -103,7 +100,6 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
                 if (is_file($this->logo_footer))
                     $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 
-                $this->SetLineStyle(array('width' => 0.25 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
             }
         }
     }
@@ -164,7 +160,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
     $pdf->SetTitle($letter->title);
 
     // set margins
-    $pdf->SetMargins(5, 30, 5);
+    $pdf->SetMargins(5, 40, 5);
 
     $pdf->footer = $letter->footer;
 
@@ -188,7 +184,6 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
     $pdf->AddPage();
 
     $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-    $pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
 
     @chdir('tmp');
 
@@ -319,7 +314,6 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             if (is_file($this->logo_footer))
                 $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 
-            $this->SetLineStyle(array('width' => 0.25 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
         }
     }
 
@@ -485,7 +479,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             $pdf->SetTitle($letter['title']);
 
             // set margins
-            $pdf->SetMargins(5, 30, 5);
+            $pdf->SetMargins(5, 40, 5);
             //$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
             //$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -524,7 +518,6 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             //$htmldata .= $letter["footer"];
             //die($htmldata);
             $pdf->AddPage();
-            $pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
 
             // Print text using writeHTMLCell()
             $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
@@ -660,7 +653,6 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             if (is_file($this->logo_footer))
                 $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 
-            $this->SetLineStyle(array('width' => 0.25 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
         }
     }
 
@@ -761,7 +753,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             $pdf->SetTitle($letter['title']);
 
             // set margins
-            $pdf->SetMargins(5, 30, 5);
+            $pdf->SetMargins(5, 40, 5);
             //$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
             //$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -797,7 +789,6 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             //$htmldata .= $letter["footer"];
             //die($htmldata);
             $pdf->AddPage();
-            $pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
 
             // Print text using writeHTMLCell()
             $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
@@ -876,14 +867,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('Decision Publique');
     $pdf->SetTitle('Application Form');
-    $m_files = new EmundusModelFiles();
-    $m_application = new EmundusModelApplication();
+
     try {
-        $fnumInfo = $m_files->getFnumInfos($fnum);
-        $payment = $m_application->getHikashopOrder($fnumInfo,true);
 
         // Users informations
-        $query = 'SELECT u.id AS user_id,u.email as user_email, c.civility, c.firstname, c.lastname,c.mobile_phone, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.nationality, epd.birth_date, epd.street_1, epd.city_1, epd.city_other, epd.zipcode_1, epd.country_1, ed.user, ed.campus, ea.*
+        $query = 'SELECT u.id AS user_id,u.email as user_email, c.civility, c.firstname, c.lastname,c.mobile_phone, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.nationality, epd.birth_date, epd.street_1, epd.city_1, epd.city_other, epd.zipcode_1, epd.country_1, ed.user, ea.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
@@ -896,27 +884,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					WHERE ecc.fnum like '.$db->Quote($fnum).'
 					ORDER BY esc.id DESC';
         $db->setQuery($query);
-        $item = $db->loadAssoc();
-        //var_dump($item).die();
-
-        //Updated data for reinscription
-        $query = $db->getQuery(true);
-        $conditions = $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum);
-
-        $query
-            ->select($db->quoteName('fabrik_element_id'))
-            ->from($db->quoteName('#__emundus_updated'))
-            ->where($conditions);
-        $db->setQuery($query);
-        $result = $db->loadResult();
-
-        $data = json_decode($result);
-        date_default_timezone_set('Europe/Paris');
-// --- La setlocale() fonctionnne pour strftime mais pas pour DateTime->format()
-        setlocale(LC_TIME, 'fr_FR.utf8','fra');// OK
-        $date = strftime('%d %B %Y');
-
-
+        $item = $db->loadObject();
 
     } catch (Exception $e) {
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -945,7 +913,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     // manage logo by programme
     $ext = substr($logo, -3);
-    $logo_prg = substr($logo, 0, -4).'-'.$item['training'].'.'.$ext;
+    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
     if (is_file($logo_prg))
         $logo = $logo_prg;
 
@@ -954,87 +922,34 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     if (is_file($logo))
         $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 
-
     unset($logo);
     unset($title);
 
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
-    $pdf->SetMargins(10, 10);
-    $pdf->SetFooterMargin(10);
-    $pdf->SetHeaderMargin(5);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_RIGHT);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
     $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->SetFont('helvetica', '', 10);
-    $pdf->SetPrintHeader(false);
-    $pdf->SetPrintFooter(true);
     $pdf->AddPage();
-    $pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
     $dimensions = $pdf->getPageDimensions();
     /*** Applicant   ***/
     $htmldata .=
         '<style>
-            .card { border: none; display:block; line-height:5px; }     
+            .card { border: none; display:block; line-height:6px;}     
             .card-table-main {line-height: 4px;}       
-            .blue-box { background-color: #27aae1; display: inline-block; height: 10px; width: 5%;}
-            .inner-table {line-height: 5px; border: 1px solid #27aae1; height: 180px;}
-            .inner-table-payment {line-height: 5px; border: 1px solid #27aae1; height: 100px;}
-            .title {background-color: #27aae1; }
-            .updatedInfo {background-color: #fbff36;}
-            .legend{width: 40px; height: 20px;}
-            p{font-size:7pt}
-            .logo{width: 200px;height: auto;}
-            
-             .underline{
-                text-decoration: underline dotted red;
-                }
-              .button{
-              width: 10px; height: auto;
-              }  
-              li{
-                   list-style-type: none;
-              }
-              .signature{font-size:10pt}
-              hr{color: white;background: white}
+            .blue-box { background-color: #0081c5; display: inline-block; height: 10px; width: 5%;}
+            .inner-table {line-height: 5px; border: 1px solid #0081c5;}
+            .title {background-color: #0081c5;}
 	    </style>';
 
-    $applicant_email = !empty($item['email']) ? $item['email'] : $item['user_email'];
-    $applicant_city = !empty($item['city_1']) ? $item['city_1'] : $item['city_other'];
-    $applicant_city_insee = !empty($item['city_1']) ? $m_files->selectNameCity($applicant_city) : '';
-    $tutor1_city = !empty($item['responsable_ville_1']) ? $m_files->selectCity($item['responsable_ville_1']) : $item['responsable_ville_other_1'];
-    $tutor2_city = !empty($item['responsable_ville_2']) ? $m_files->selectCity($item['responsable_ville_2']) : $item['responsable_ville_other_2'];
-    $financer_city = !empty($item['repondant_financier_city']) ? $m_files->selectCity($item['repondant_financier_city']) : $item['repondant_financier_city_other'];
-    $year = date('Y');
 
-    if(!empty($item['responsable_civility_1']) && $item['responsable_civility_1'] == 'M'){
-        $responsableCivility1 = 'Monsieur';
-    }
-    elseif(!empty($item['responsable_civility_1']) && $item['responsable_civility_1'] == 'Mme'){
-        $responsableCivility1 = 'Madame';
-    }
-    else{
-
-    }
-
-    if(!empty($item['responsable_civility_2']) && $item['responsable_civility_2'] == 'M'){
-        $responsableCivility2 = 'Monsieur';
-    }
-    elseif(!empty($item['responsable_civility_2']) && $item['responsable_civility_2'] == 'Mme'){
-        $responsableCivility2 = 'Madame';
-    }
-    else{
-
-    }
-
-    if(!empty($item['repondant_financier_civility']) && $item['repondant_financier_civility'] == 'M'){
-        $repondantFinancier = 'Monsieur';
-    }
-    elseif(!empty($item['repondant_financier_civility']) && $item['repondant_financier_civility'] == 'Mme'){
-        $repondantFinancier = 'Madame';
-    }
-    else{
-
-    }
+    $applicant_email = !empty($item->user_email) ? $item->user_email : $item->email;
+    $applicant_city = !empty($item->city_1) ? $item->city_1 : $item->city_other;
+    $tutor1_city = !empty($item->responsable_ville_1) ? $item->responsable_ville_1 : $item->responsable_ville_other_1;
+    $tutor2_city = !empty($item->responsable_ville_2) ? $item->responsable_ville_2 : $item->responsable_ville_other_2;
+    $financer_city = !empty($item->repondant_financier_city) ? $item->repondant_financier_city : $item->repondant_financier_city_other;
 
     if($campaign_id == '7') {
         $dossier_label = JText::_('DOSSIER_INSCRIPTION');
@@ -1042,131 +957,24 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     elseif ($campaign_id == '8') {
         $dossier_label = JText::_('DOSSIER_REINSCRIPTION');
     }
-    if($payment->order_payment_method == 'banktransfer') {
-
-        $methodPayment = '
-        <br>
-        <tr>
-            <td class="liste-style"><img class="button"  src="/images/custom/RadioButtonCoche.png" alt="boutton radio coché"> Je procède au virement de '.$item['deposit'].' € sur le compte :</td>
-        </tr>
-        <tr>
-            <td >
-                <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
-                <span >En indiquant la référence : <b>'.$item['student_code'].'-'.$item['lastname'].'</b></span><br>
-            </td>
-        </tr>
-        <tr>
-            <td ctass="liste-style"><img class="button"  src="/images/custom/RadioButtonEsiea.png" alt="boutton radio"> Je souhaite régler par <b>carte bleue</b> le montant de '.$item['deposit'].' €.</td>
-        </tr>';
-     }
-    if($payment->order_payment_method == 'atos') {
-        $methodPayment = '
-        <br>
-        <tr>
-            <td class="liste-style"><img class="button"  src="/images/custom/RadioButtonEsiea.png" alt="boutton radio"> Je procède au virement de '.$item['deposit'].' sur le compte :</td>
-        </tr>
-        <tr>
-            <td ><span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
-            <span >En indiquant la référence : <b>'.$item['student_code'].'-'.$item['lastname'].'</b></span><br>
-            </td>
-        </tr>
-        <tr>
-            <td ctass="liste-style"><img class="button"  src="/images/custom/RadioButtonCoche.png" alt="boutton radio coché"> Je souhaite régler par <b>carte bleue</b> le montant de '.$item['deposit'].'.</td>
-        </tr>';
-     }
-
-    $PayInSeptember = $m_files->selectMultiplePayment($fnum);
-    //var_dump($PayInSeptember).die();
-
-    if($PayInSeptember->multiple_payment == 1){ // Pay in 1 times
-
-        $multiple_payment = '
-                <img class="button"  src="/images/custom/RadioButtonCoche.png" alt="boutton radio coché"> <b> En 1 fois '.$item['upfront'].' € avant le 5 septembre '.$year.' :</b><br>
-                    <ul>';
-        if($PayInSeptember->method_payment == 'virement'){
-            $multiple_payment .= '
-                <span><img class="button"  src="/images/custom/CaseCoche.png" alt="boutton radio"> Par virement sur le compte :<br>
-                            <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
-                        En indiquant la référence : <b>'.$item['student_code'].'-'.$item['lastname'].'</b></span><br><br>
-                        
-                 <span> <img class="button"  src="/images/custom/Case.png" alt="boutton radio"> Par <b>carte bleue </b></span><br>
-                        
-                    </ul>
-                    <br>
-                   <img class="button"  src="/images/custom/RadioButtonEsiea.png" alt="boutton radio"> <b> En 10 fois* '.$item['payin'].' € le 5 de chaque mois à compter du 5 septembre '.$year.' par prélèvement :</b><br>
-                    <ul>
-                        <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> En utilisant <b>mon compte bancaire / mandat SEPA</b> de l\'année passée</span><br>
-                        <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> En joignant le <b>mandat SEPA</b> ESIEA complété ainsi qu\'un IBAN / BIC de ma banque</span>
-                    </ul>
-            ';
-        }
-        if($PayInSeptember->method_payment == 'cb'){
-            $multiple_payment .= '
-            <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> Par virement sur le compte :<br>
-                            <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
-                        En indiquant la référence : <b>'.$item['student_code'].'-'.$item['lastname'].'</b></span><br><br>
-                        
-                       <span> <img class="button"  src="/images/custom/CaseCoche.png" alt="boutton radio"> Par <b>carte bleue </b>sur le site: <a href="https://paiement-en-ligne.esiea.fr">paiement-en-ligne.esiea.fr</a></span><br>
-                        
-                    </ul>
-                    <br>
-                   <img class="button"  src="/images/custom/RadioButtonEsiea.png" alt="boutton radio"> <b> En 10 fois* '.$item['payin'].' € le 5 de chaque mois à compter du 5 septembre '.$year.' par prélèvement :</b><br>
-                    <ul>
-                        <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> En utilisant <b>mon compte bancaire / mandat SEPA</b> de l\'année passée</span><br>
-                        <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> En joignant le <b>mandat SEPA</b> ESIEA complété ainsi qu\'un IBAN / BIC de ma banque</span>
-                    </ul>
-            ';
-        }
-
-    }
-    if($PayInSeptember->multiple_payment == 10){ // Pay in 10 times
-        $multiple_payment .= ' 
-            <img class="button"  src="/images/custom/RadioButtonEsiea.png" alt="boutton radio coché"> <b> En 1 fois '.$item['upfront'].' € avant le 5 septembre '.$year.' :</b><br>
-            <ul>
-            <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> Par virement sur le compte :<br>
-                            <p style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</p><br>
-                        En indiquant la référence : <b>'.$item['student_code'].'-'.$item['lastname'].'</b></span><br><br>
-                        
-             <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> Par <b>carte bleue </b></span><br>
-             </ul>
-             <img class="button"  src="/images/custom/RadioButtonCoche.png" alt="boutton radio"> <b> En 10 fois* '.$item['payin'].' € le 5 de chaque mois à compter du 5 septembre '.$year.' par prélèvement :</b><br>
-                   ';
-        if($PayInSeptember->sampling_mode == 'SEPA-1'){ //année passée
-            $multiple_payment .= '
-             <ul>
-                <span><img class="button"  src="/images/custom/CaseCoche.png" alt="boutton radio"> En utilisant <b>mon compte bancaire / mandat SEPA</b> de l\'année passée </span ><br>
-                <span><img class="button"  src = "/images/custom/Case.png" alt = "boutton radio" > En joignant le <b>mandat SEPA</b> ESIEA complété ainsi qu\'un IBAN / BIC de ma banque</span>
-            </ul>';
-        }
-        else{ //année courante
-            $multiple_payment .= '
-            <ul>
-                <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> En utilisant <b>mon compte bancaire / mandat SEPA</b> de l\'année passée </span >
-                <span><img class="button"  src = "/images/custom/CaseCoche.png" alt = "boutton radio" > En joignant le <b>mandat SEPA</b> ESIEA complété ainsi qu\'un IBAN / BIC de ma banque</span>
-            </ul>';
-        }
-    }
-
-
-
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $htmldata .= '<div class="card">
 					<table width="100%"><tr>';
-        if (file_exists(EMUNDUS_PATH_REL.@$item['user_id'].'/tn_'.@$item['avatar']) && !empty($item['avatar']))
-            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item['user_id'].'/tn_'.@$item['avatar'].'" width="100" align="left" /></td>';
-        elseif (file_exists(EMUNDUS_PATH_REL.@$item['user_id'].'/'.@$item['avatar']) && !empty($item['avatar']))
-            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item['user_id'].'/'.@$item['avatar'].'" width="100" align="left" /></td>';
+        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
+            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
+        elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
+            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
 
         $htmldata .= '
 		<td width="80%">
 
-		<div class="name"><strong>'.@$item['firstname'].' '.strtoupper(@$item['lastname']).'</strong>, '.@$item['label'].' ('.@$item['cb_schoolyear'].')</div>';
+		<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
 
-        if (isset($item['maiden_name']))
-            $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item['maiden_name'].'</div>';
+        if (isset($item->maiden_name))
+            $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 
-        $date_submitted = (!empty($item['date_submitted']) && !strpos($item['date_submitted'], '0000'))?JHTML::_('date',$item['date_submitted']):JText::_('NOT_SENT');
+        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
         // create a $dt object with the UTC timezone
         $dt = new DateTime('NOW', new DateTimeZone('UTC'));
@@ -1174,13 +982,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $dt->setTimezone(new DateTimeZone($offset));
 
         if (in_array("aid", $options)) {
-            $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item['user_id'].'</div>';
+            $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>';
         }
         if (in_array("afnum", $options)) {
             $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
         }
         if (in_array("aemail", $options)) {
-            $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item['email'].'</div>';
+            $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
         }
         if (in_array("aapp-sent", $options)) {
             $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
@@ -1206,13 +1014,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $htmldata .= '';
     } else {
         $htmldata .= '
-                    <div style="background-color: #27aae1; color: white;">
-                    <div class="card" style="background-color: #27aae1; color: white;">
+                    <div style="background-color: #0089d2; color: white;">
+                    <div class="card" style="background-color: #0089d2; color: white;">
                     <table class="card-table-main">
                         <tr>
                             <td><img class="logo" src="/images/custom/logo-esiea.png" alt="ESIEA - Ecole d\'ingénieurs du monde numérique"></td>
                             <td style="font-size:60px;">
-                                '.JText::_("EMUNDUSFILE").'<br>   <b>'.JText::_("REENROLMENT").'</b><br><br>
+                                '.JText::_("FILE").'<br>   <b>'.$dossier_label.'</b><br><br>
                                 <span>'.JText::_("SCHOOLYEARS").'<br>  '. str_replace('-', ' / ', $user->schoolyear).'</span>
                             </td>
                         </tr>
@@ -1221,126 +1029,172 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     </div>
                     
                     <br>
-                    <table width="100%">
-                    <tr>
-                        <td>
-                            <u>'.JText::_("STUDENT_CODE").'</u>: <b>'.$item['student_code'].'</b><br>
-                            <u>'.JText::_("FILE_CODE").'</u>: <b>'.$fnum.'</b><br>
-                            <u>'.JText::_("SCHOOLYEAR").'</u>: <b>'.@$item['label'].'</b><br><br>
-                            <span><img class="legend" src="/images/custom/legend.png" alt=""> Informations modifiées par le candidat</span>
-                        </td>
-                        <td> Campus de '.$item['campus'].' </td>
-                    </tr>
-                    </table>
-                   
-                   
-                    <br>
-                    <table width="100%">
-                    <tr>
-                        <td class="title" width="320px"><b style="color: white"> '.JText::_("APPLICANT_PERSONAL_DETAILS").'</b></td>
-                    </tr> 
-                    <tr>
-                        <td width="100%" class="inner-table">
-                            <table>
-                            
-                                <tr>
-                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
-                                    <td '. (in_array('civility', $data) ? 'class="updatedInfo"' : '') .'>'.$item['civility'] .'</td>
-                                </tr>
-                                <tr>
-                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
-                                    <td '. (in_array('lastname',$data) ? 'class="updatedInfo"' : '') .'>'.$item['lastname'].'</td>
-                                </tr>
-                                <tr>
-                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
-                                    <td '. (in_array('firstname', $data) ? 'class="updatedInfo"' : '') .'>'.$item['firstname'].'</td>
-                                </tr>
-                                 <tr>
-                                    <td><b>'. JText::_("ADDRESS") .' :</b></td>
-                                    <td '.  (in_array('street_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['street_1'].'</td>
-                                </tr>
-                                <tr>
-                                    <td '.  (in_array('zipcode_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' :</b> </td>
-                                    <td>'. $item['zipcode_1'] .'</td>
-                                    
-                                </tr>
-                                <tr>
-                                    <td '.(in_array('city_1', $data) ? 'class="updatedInfo"' : '').'><b>'. JText::_("CITY") .' </b>: </td>
-                                    <td>'.$applicant_city.' ('.$applicant_city_insee.')</td>
-                                </tr>
-                                <tr>
-                                    <td '.  (in_array('country_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .': </b></td>
-                                    <td>'.$item['country_1'].'</td>
-                                </tr>
-                                <tr>
-                                    <td '.  (in_array('mobile_phone', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' </b>: </td>
-                                    <td>'.$item['mobile_phone'].'</td>
-                                </tr>
-                                <tr>
-                                    <td '.  (in_array('email', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("EMAIL") .'</b> : </td>
-                                    <td>'.$applicant_email.'</td>
-                                </tr>
-
-                            </table>
-                        </td>
-                        
-                    </tr>
                     
-                    </table>
-                    
+                    <table class="card-table-contact">
+                        <tr>
+                            <td>
+                                <span><u>'.JText::_("STUDENT_CODE").'</u>: </span> <br> <b>'.$fnum.'</b><br>
+                                <span><u>'.JText::_("SCHOOLYEAR").'</u>: </span><br> <b>'.@$item->label.'</b>
+                            </td>
+                            <td>
+                                '.JText::_("ESIEA_SEND_APPLICATION_ADDRESS").'
+                            </td>
+                        </tr>
+                    </table>    
                     <br>
                     
                     <table width="100%">
                     <tr>
-                        <td class="title" width="320px"><b style="color: white"> '.JText::_("TUTOR_DETAILS").'</b></td>
-                        
+                        <td  class="title" width="200px"><b style="color: white"> '.JText::_("APPLICANT_PERSONAL_DETAILS").'</b></td>
+                        <td width="79px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
                     </tr>
-                    <tr>
-                        <td width="100%" class="inner-table">
+                    <tr >
+                        <td width="280px" class="inner-table">
                             <table>
                                 <tr>
                                     <td><b>'. JText::_("CIVILITY") .' :</b></td>
-                                    <td '.  (in_array('responsable_civility_1',$data) ? 'class="updatedInfo"' : '') .'>'.$responsableCivility1.'</td>
+                                    <td>'.$item->civility.'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("LASTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_nom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_nom_1'].'</td>
+                                    <td>'.$item->lastname.'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_prenom_1',$data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_prenom_1'].'</td>
+                                    <td>'.$item->firstname.'</td>
                                 </tr>
                                  <tr>
-                                    <td><b>'. JText::_("ADDRESS") .' :</b></td>
-                                    <td '.  (in_array('responsable_adresse_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_adresse_1'].'</td>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->street_1.'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_cp_1',  $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' </b> :</td>
-                                    <td>'.$item['responsable_cp_1'].'</td>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->zipcode_1.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$applicant_city.'</td>
                                 </tr>
                                 <tr>
-                                    <td '.((in_array('responsable_ville_1',  $data)|| in_array('responsable_ville_other_1',  $data)) ? 'class="updatedInfo"' : '').' ><b>'. JText::_("CITY") .' </b>:</td>
-                                    <td>'.$tutor1_city.' '. (!empty($item["responsable_ville_1"]) ? '('.$item["responsable_ville_1"].')' : '').'</td>
+                                    <td>'. JText::_("COUNTRY") .' : '.$item->country_1.'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->mobile_phone.'</td>
                                 </tr>
-                                <tr>
-                                    <td '.  (in_array('responsable_pays_1',$data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' </b> :</td>
-                                    <td>'.getSiseCountry($item['responsable_pays_1']).'</td>
-                                </tr>
-                                <tr>
-                                    <td '.  (in_array('responsable_telephone_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' </b>:</td>
-                                    <td>'.$item['responsable_telephone_1'].'</td>
-                                </tr>
-                                <tr>
-                                    <td '.  (in_array('responsable_email_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("EMAIL") .'</b> : </td>
-                                    <td>'.$item['responsable_email_1'].'</td>
-                                </tr>
-                                <tr>
-                                    <td '.  (in_array('responsable_profession_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("PROFESSION") .'* : </b></td>
-                                    <td>'.$item['responsable_profession_1'].'</td>
+                                <tr>'. JText::_("EMAIL") .' : '.$applicant_email.'
                                 </tr>
                             </table>
                         </td>
-                        
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #000;">
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("EMAIL") .' : </td>
+                                </tr>
+                            </table></td>
+                    </tr>
+                    
+                    </table>
+                    
+                    <br>
+                    
+                    <table width="100%">
+                    <tr>
+                        <td class="title" width="250px"><b style="color: white"> '.JText::_("TUTOR_DETAILS").'</b></td>
+                        <td width="29px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
+                    </tr>
+                    <tr>
+                        <td width="280px" class="inner-table">
+                            <table >
+                                <tr>
+                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
+                                    <td>'.$item->responsable_civility_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                    <td>'.$item->responsable_nom_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                    <td>'.$item->responsable_prenom_1.'</td>
+                                </tr>
+                                 <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->responsable_adresse_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->responsable_cp_1.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$tutor1_city.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : '.getSiseCountry($item->responsable_pays_1).'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->responsable_telephone_1.'</td>
+                                </tr>
+                                <tr>'. JText::_("EMAIL") .' : '.$item->responsable_email_1.'
+                                </tr><br>
+                                <tr>  '. JText::_("PROFESSION") .' : '.$item->responsable_profession_1.'
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
+                            <table>
+                                <tr>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #000;">
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("EMAIL") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("PROFESSION") .' : </td>
+                                </tr>
+                                
+                            </table></td>
                     </tr>
                     
                     </table>
@@ -1349,225 +1203,207 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     
                     <table width="100%">
                     <tr>
-                        <td class="title" width="320px"><b style="color: white"> '.JText::_("TUTOR_DETAILS").'</b></td>
+                        <td class="title" width="250px"><b style="color: white"> '.JText::_("TUTOR_DETAILS").'</b></td>
+                        <td width="29px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
                     </tr>
                     <tr>
-                        <td width="100%" class="inner-table">
+                        <td width="280px" class="inner-table">
                             <table>
                                 <tr>
                                     <td><b>'. JText::_("CIVILITY") .' :</b></td>
-                                    <td '.  (in_array('responsable_civility_2',  $data) ? 'class="updatedInfo"' : '') .'>'. $responsableCivility2 .'</td>
+                                    <td>'.$item->responsable_civility_2.'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("LASTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_nom_2',  $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_nom_2'].'</td>
+                                    <td>'.$item->responsable_nom_2.'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_prenom_2', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_prenom_2'].'</td>
+                                    <td>'.$item->responsable_prenom_2.'</td>
                                 </tr>
                                  <tr>
-                                    <td><b>'. JText::_("ADDRESS") .' :</b></td>
-                                    <td '.  (in_array('responsable_adresse_2', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_adresse_2'].'</td>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->responsable_adresse_2.'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_cp_2',  $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' :</b> '.$item['responsable_cp_2'].'</td>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->responsable_cp_2.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$tutor2_city.'</td>
                                 </tr>
                                 <tr>
-                                    <td '.((in_array('responsable_ville_2',  $data)|| in_array('responsable_ville_other_2',  $data)) ? 'class="updatedInfo"' : '').'><b>'. JText::_("CITY") .' :</b> </td>
-                                    <td>'.$tutor2_city.''. (!empty($item["responsable_ville_2"]) ? '('.$item["responsable_ville_2"].')' : '').'</td>
+                                    <td>'. JText::_("COUNTRY") .' : '.getSiseCountry($item->responsable_pays_2).'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->responsable_telephone_2.'</td>
                                 </tr>
-                                <tr>
-                                    <td '.  (in_array('responsable_pays_2',$data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' :</b> </td>
-                                    <td>'.getSiseCountry($item['responsable_pays_2']).'</td>
-                                </tr>
-                                <tr>
-                                    <td '. (in_array('responsable_telephone_2', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' :</b> </td>
-                                    <td>'.$item['responsable_telephone_2'].'</td>
-                                </tr>
-                                <tr>
-                                 <td>'.  (in_array('responsable_email_2', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("EMAIL") .' :</b> </td>
-                                 <td>'.$item['responsable_email_2'].'</td>
-                                </tr>
-                                <tr> 
-                                    <td>'.  (in_array('responsable_profession_2', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("PROFESSION") .'* :</b></td>
-                                    <td>'.$item['responsable_profession_2'].'</td>
+                                <tr>'. JText::_("EMAIL") .' : '.$item->responsable_email_2.'
+                                </tr><br> 
+                                <tr>  '. JText::_("PROFESSION") .' : '.$item->responsable_profession_2.'
                                 </tr>
                             </table>
                         </td>
-                    </tr>
-                    
-                    </table>
-                    <b style="font-size:20px;">*Se référer à la nomenclature INSEE en page 2</b> 
-                        <br>
-                        <br>
-                    
-                    <b style="color: #0081c5;">> NOMENCLATURE INSEE</b><br>'.$pro_list.'
-                    <br>
-                    <br>
-                    <table width="100%">
-                    <tr>
-                        <td class="title" width="320px"><b style="color: white"> '.JText::_("FINANCER_DETAILS").'</b></td>
-                    </tr>
-                    <tr>
-                        <td width="100%" class="inner-table">
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
                             <table>
                                 <tr>
-                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
-                                    <td '.  (in_array('repondant_financier_civility',  $data) ? 'class="updatedInfo"' : '') .'>'.$repondantFinancier.'</td>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
                                 </tr>
-                                <tr>
+                                <tr style="border-bottom: 1px solid #000;">
                                     <td><b>'. JText::_("LASTNAME") .' :</b></td>
-                                    <td '.  (in_array('repondant_financier_nom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_financier_nom_1'].'</td>
+                                
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
-                                    <td '.  (in_array('repondant_financier_prenom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_financier_prenom_1'].'</td>
-                                </tr>
-                                 <tr>
-                                    <td><b>'. JText::_("ADDRESS") .' :</b></td>
-                                    <td '.  (in_array('repondant_address',  $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_address'].'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('repondant_financier_zipcode', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' :</b> </td>
-                                    <td>'.$item['repondant_financier_zipcode'].'</td>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('repondant_financier_city', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("CITY") .' : </b></td>
-                                    <td>'.$financer_city.' '. (!empty($item["repondant_financier_city"]) ? '('.$item["repondant_financier_city"].')' : '').'</td>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('repondant_financier_country', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' :</b> </td>
-                                    <td>'.getSiseCountry($item['repondant_financier_country']).'</td>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
                                 </tr>
                                 <tr>
-                                      <td '.  (in_array('repondant_financier_telephone', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' :</b> </td>
-                                      <td>'.$item['repondant_financier_telephone'].'</td>
+                                    <td>'. JText::_("EMAIL") .' : </td>
                                 </tr>
                                 <tr>
-                                    <td>'.  (in_array('repondant_financier_email', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("EMAIL") .' : </b></td>
-                                    <td>'.$item['repondant_financier_email'].'</td>
+                                    <td>'. JText::_("PROFESSION") .' : </td>
                                 </tr>
-                            </table>
-                        </td>
+                                
+                            </table></td>
                     </tr>
                     
                     </table>
-                    
-                    <br>
-                    
-                    > <b style="color:#0081c5; ">FRAIS DE SCOLARITÉ '. $user->schoolyear .' ('.$item['amount'].' € - '.$item['rate_name'].' ) </b> <br>
-                    
-                     
-                    
-                    <table width="100%">
-                        <tr>
-                            <td class="title" width="320px">
-                                <b style="color: white"> '.JText::_("FRAIS_INSCRIPTION_TABLE_TITLE").'</b>
-                            </td>
-                        </tr>
-                                    
-                        <tr>
-                            <td width="100%" class="inner-table-payment">
-                                <table>
-                                <ul>
-                                    '.$methodPayment.'
-                                </ul>
-                                </table>
-                             </td>
-                        </tr>
-                    </table>
-                    <br>
-                    
-                    <table width="100%">
-                        <tr>
-                            <td class="title" width="320px">
-                                <b style="color: white"> '.JText::_("SOLDE_INSCRIPTION").'</b>
-                            </td>
-                        </tr>      
-                        <tr>
-                            <td width="100%" class="inner-table">
-                                <table>
-                                    <tr>
-                                        <ul>
-                                            '.$multiple_payment.' 
-                                        </ul>
-                                     </tr>
-                                </table>
-                            </td> 
-                        </tr>
-                    </table>
-                    <b style="font-size:20px;">*Cette modalité engendre une majoration des frais de scolarité (130€ en première année et 150€ les autres années du cursus)</b>
-
+                    <br><b style="font-size:20px;">*Se référer à la nomenclature INSEE en page 2</b> 
                     <p style="page-break-after: always;"></p>
-                    <table>
-                    > <b style="color:#0081c5; ">EXTRAIT DU REGLEMENT INTERIEUR</b>  
-                    <p>Les dégradations, volontaires ou non, sont à la charge de l\'étudiant concerné, quelles que soient les sanctions disciplinaires prises par ailleurs. Lorsque le fautif n\'est pas identifié, les étudiants sont déclarés solidairement responsables.</p>
-                    <p>Les programmes des cours et les pédagogies mises en oeuvre sont construits par l\'école en étroite coordination avec le Conseil scientifique ou le Conseil de perfectionnement. Ils peuvent donc évoluer rapidement. Les notices, dépliants, programmes ou autres, édités et diffusés par l\'école sont distribués à titre indicatif et n\'ont pas de caractère contractuel.</p>
-                    <p><strong>Toute réinscription implique l\'acceptation sans réserve des conditions mentionnées dans le présent dossier.</strong></p>
+                    
+                    
+                    <b style="color: #0081c5;">NOMENCLATURE INSEE</b><br>'.$pro_list.'
                     <br>
-                    > <b style="color:#0081c5; ">CONDITIONS GÉNÉRALES DE RÉINSCRIPTION</b> 
-                    <p>Le  montant  des  frais  de  scolarité  constitue  un  forfait  annuel,  comprenant  les  frais  de  réinscription,  d\'études,  de  polycopies,  dedocumentation, de laboratoire, d\'accès illimité à Internet, d\'adhésion à l\'Association des étudiants, d\'un examen de TOEIC par an à l\'école(années 1 à 5) et d\'assurance "accident du travail scolaire".</p>
-                    <p>Tout rejet de prélèvement ou chèque impayé vous sera facturé 25€.</p>
-                    <p>Dès réception des résultats de jury, l\'étudiant dispose d\'un délai de quinze jours pour confirmer sa réinscription par retour du dossier deréinscription, accompagné du règlement des frais de dossier, selon les modalités de règlement choisies. La place est alors réservée jusqu\'au 5 septembre 2018.</p>
-                    <p>En confirmation de la réinscription définitive, l\'étudiant recevra une facture par voie électronique ou par courrier postal.</p>
                     <br>
-                    > <b style="color:#0081c5; ">INTERRUPTION PARTIELLE OU DÉFINITIVE DE LA SCOLARITÉ</b>  
-                    <p>Les  signataires  du  présent  document  de  réinscription  peuvent  décider  de  l\'interruption  partielle  ou  définitive  de  la  scolarité  par  lettre recommandée adressée au Directeur du campus.</p>
-                   <p>Dans tous les cas d\'interruption de la scolarité, définitive ou simplement suspendue, <strong> tout semestre engagé reste dû ; les frais de réinscription restent intégralement acquis à l\'ESIEA ; la date de référence est la date de distribution du courrier recommandé AR demandant l\'interruption.</strong></p>
-                   
-                   <p>Le non-respect du règlement des Études, dont un exemplaire est remis, peut entraîner des sanctions allant jusqu\'à l\'exclusion définitive. Les frais de scolarité dus sont calculés selon les mêmes dispositions.</p>
-                   <p><strong>Dans tous les cas d\'interruption, les sommes dues deviennent immédiatement exigibles.</strong></p>
-                   <br>
-                    > <b style="color:#0081c5; ">RÉSILIATION DE LA RÉINSCRIPTION</b> 
-                   <p>L\'ESIEA accepte les résiliations de réinscription effectuées par lettre recommandée adressée au directeur du campus. Seuls les signataires du présent document de réinscription peuvent décider de la résiliation.</p>
-                    <p><strong>Quand la résiliation de réinscription intervient avant le début des cours, les dispositions suivantes sont applicables :</strong></p>
-                    <ul>
-                        <li> pour cause de non obtention du visa, sur présentation du justificatif nominatif reçu, l\'acompte et les frais de réinscription sont intégralement remboursés par l\'ESIEA ;</li>
-                        <li> dans tout autre cas, les frais de réinscription de '.$item['deposit'].' €, restent acquis à l\'ESIEA ; les autres sommes éventuellement versées sont remboursées.</li>
-                    </ul>
-                    <br>
-                    <p><strong>L\'étudiant (e) et son répondant financier reconnaissent avoir pris connaissance de l\'extrait du règlement intérieur, du règlement des études, du règlement des examens, de la charte informatique, de la charte de non plagiat ainsi que des dispositions  du  présent  dossier  de  réinscription  et  s\'engagent  solidairement  à  les  respecter,  ainsi  qu\'à  assurer  le paiement intégral des frais de scolarité pour toute la durée des études à l\'ESIEA.</strong></p>
-                    <p><strong>Selon le Règlement Général sur la Protection des Données personnelles, vous consentez à ce que les informations recueillies  sur  ce  dossier  soient  enregistrées  dans  un  fichier  informatisé  qui  sera  conservé  pendant  10  ans.  Le responsable de traitement est le directeur de l\'ESIEA et les données sont destinées aux services chargés de la gestion étudiante tout au long de la scolarité. Conformément à la loi «informatique et libertés », vous pouvez exercer votre droit d\'accès aux données vous concernant et les faire rectifier ou supprimer en contactant : </strong><a href="mailto: reinscription-paris@esiea.fr"> reinscription-paris@esiea.fr</a></p>
-                    <table width="100%" >
-                        <tr>
-                            
-                            <td width="50%">
-                                <table>
-                                        <tr>
-                                            <td>
-                                                <p class="signature">Le :<span> '.$date.'</span></p>
-                                            </td>
-                                        </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                        
                     <table width="100%">
-                        <tr>
-                            <td width="500px">
+                    <tr>
+                        <td class="title" width="250px"><b style="color: white"> '.JText::_("FINACER_DETAILS").'</b></td>
+                        <td width="29px"></td>
+                        <td width="30px"></td>
+                        <td width="200px"><b>'.JText::_("UPDATE_INFORMATION").'</b></td>
+                        <td width="109px"></td>
+                    </tr>
+                    <tr>
+                        <td width="280px" class="inner-table">
                             <table>
                                 <tr>
-                                    <td width="130px">
-                                        <p class="signature">Signature obligatoire de l\'étudiant(e)</p>
-                                    </td>
+                                    <td><b>'. JText::_("CIVILITY") .' :</b></td>
+                                    <td>'.$item->repondant_financier_civility.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                    <td>'.$item->repondant_financier_nom_1.'</td>
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                    <td>'.$item->repondant_financier_prenom_1.'</td>
+                                </tr>
+                                 <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td>'.$item->repondant_address.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : '.$item->repondant_financier_zipcode.'</td>
+                                    <td>'. JText::_("CITY") .' : '.$financer_city.'</td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : '.getSiseCountry($item->repondant_financier_country).'</td>
+                                    <td>'. JText::_("TELEPHONE") .' : '.$item->repondant_financier_telephone.'</td>
+                                </tr>
+                                <tr>'. JText::_("EMAIL") .' : '.$item->repondant_financier_email.'
                                 </tr>
                             </table>
-                            </td>
-                            <td width="500px">
+                        </td>
+                        <td width="30px"></td>
+                        <td width="309px" class="inner-table">
                             <table>
                                 <tr>
-                                    <td width="130px">
-                                        <p class="signature">Signature obligatoire du répondant financier</p>
-                                    </td>
+                                    <td>'. JText::_("CIVILITY") .' :</td>
+                                    <td>Madame</td>
+                                    <td>Monsieur</td>
                                 </tr>
-                            </table>
-                            </td>
-                            
-                        </tr>
+                                <tr style="border-bottom: 1px solid #000;">
+                                    <td><b>'. JText::_("LASTNAME") .' :</b></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ADDRESS") .' :</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("ZIPCODE") .' : </td>
+                                    <td>'. JText::_("CITY") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("COUNTRY") .' : </td>
+                                    <td>'. JText::_("TELEPHONE") .' : </td>
+                                </tr>
+                                <tr>
+                                    <td>'. JText::_("EMAIL") .' : </td>
+                                </tr>
+                            </table></td>
+                    </tr>
+                    
                     </table>
-                    ';
+                    
+                    <br>
+                    
+                    <b style="color:#0081c5; ">FRAIS DE SCOLARITÉ '. $user->schoolyear .' () </b> <br>
+                    
+                    
+                    <table>
+                        <tr><td class="title"><b style="color: white"> '.JText::_("FRAIS_INSCRIPTION_TABLE_TITLE").'</b></td><td></td></tr>
+                        <tr><td width="100%">__ Je procède au virement de 1 450.00 € sur le compte :</td></tr><br>
+                        <tr><td width="100%"><span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span></td></tr><br>
+                        <tr><td width="100%">En indiquant la référence : <b>102065-FLEURY</b></td></tr><br> 
+                        <tr><td width="100%"> __ Je joins un chèque de 1 450.00 € à l\'ordre de l\'ESIEA en indiquant la référence 102065-FLEURY au dos</td></tr><br>
+                    </table>
+                    <br>
+                    
+                    <table>
+                        <tr>
+                            <td class="title"><b style="color: white"> '.JText::_("SOLDE_INSCRIPTION").'</b></td><td></td></tr>
+                    </table>
+                    <div>
+                        <ul><li><b>'.JText::_("PAY_IN_ONE_GO").'</b></li>
+                            <ul>
+                                <li>
+                                    Par virement sur le compte :<br>
+                                    <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
+                                    En indiquant la référence : 102065-FLEURY
+                                </li>
+                                <li>
+                                    Par <b>chèque</b> à l\'ordre de l\'ESIEA en indiquant la référence <b>102065-FLEURY</b> au dos
+                                </li>
+                            </ul>
+                            <br>
+                            <li><b>En 10 fois* 700.00 € le 5 de chaque mois à compter du 5 septembre 2018 par prélèvement :</b></li>
+                            <ul>
+                                <li>
+                                    En utilisant mon compte bancaire / mandat SEPA de l\'année passée
+                                </li>
+                                <li>
+                                    En joignant le mandat SEPA ESIEA complété ainsi qu\'un IBAN / BIC de ma banque
+                                </li>
+                            </ul>
+                        </ul>
+                    </div>
+					';
     }
     /**  END APPLICANT   ****/
 
@@ -1612,25 +1448,25 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $htmldata = '';
     }
 
-    if (!file_exists(EMUNDUS_PATH_ABS.@$item['user_id'])) {
-        mkdir(EMUNDUS_PATH_ABS.$item['user_id'], 0777, true);
-        chmod(EMUNDUS_PATH_ABS.$item['user_id'], 0777);
+    if (!file_exists(EMUNDUS_PATH_ABS.@$item->user_id)) {
+        mkdir(EMUNDUS_PATH_ABS.$item->user_id, 0777, true);
+        chmod(EMUNDUS_PATH_ABS.$item->user_id, 0777);
     }
 
     @chdir('tmp');
     if ($output) {
         if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
             $name = 'application_form_'.date('Y-m-d_H-i-s').'.pdf';
-            $pdf->Output(EMUNDUS_PATH_ABS.$item['user_id'].DS.$name, 'FI');
+            $pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
             $attachment = $m_application->getAttachmentByLbl("_application_form");
             $keys 	= array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum' );
-            $values = array($item['user_id'], $attachment['id'], $name, $item['training'].' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
+            $values = array($item->user_id, $attachment['id'], $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
             $data 	= array('key' => $keys, 'value' => $values);
             $m_application->uploadAttachment($data);
         } else
-            $pdf->Output(EMUNDUS_PATH_ABS.@$item['user_id'].DS.$fnum.'_application.pdf', 'FI');
+            $pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'FI');
     } else
-        $pdf->Output(EMUNDUS_PATH_ABS.@$item['user_id'].DS.$fnum.'_application.pdf', 'F');
+        $pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'F');
 }
 
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
@@ -1729,8 +1565,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
-    $pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
-
     $dimensions = $pdf->getPageDimensions();
 
 
@@ -1818,7 +1652,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         }
         if(in_array("tags", $options)){
             $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-            $htmldata .='<br><table><tr><td style="display: inline;"> ';
+            $htmldata .='<br/><table><tr><td style="display: inline;"> ';
             foreach($tags as $tag){
                 $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
             }
@@ -1938,7 +1772,7 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
                 // Set font
                 $this->SetFont('helvetica', 'B', 16);
                 // Title
-                $this->Cell(0, 0, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+                $this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
             }
 
             // Page footer
@@ -1948,13 +1782,11 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
                 // Set font
                 $this->SetFont('helvetica', 'I', 8);
                 // footer
-                $this->writeHTMLCell($w=0, $h=10, $x='', $y=260, $this->footer.' Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages().'</p>', $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+                $this->writeHTMLCell($w=0, $h=0, $x='', $y=260, $this->footer.' Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages().'</p>', $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
                 //logo
                 if (is_file($this->logo_footer))
                     $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 
-                // Page number
-                $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
         }
     }
@@ -1976,16 +1808,18 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
     $pdf->SetAuthor(PDF_AUTHOR);
     $pdf->SetTitle(basename(JPATH_BASE.$path));
     $pdf->footer = $footer;
+
     // set margins
-    $pdf->SetMargins(5, 10, 5);
+    $pdf->SetMargins(15, 40, 15);
 
     $pdf->SetAutoPageBreak(true, 50);
     $pdf->SetFont('helvetica', '', 8);
+
     $pdf->AddPage();
 
     $pdf->writeHTMLCell($w=0, $h=30, $x='', $y=10, $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
     @chdir('tmp');
-    $pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
 
     $pdf->Output(JPATH_BASE.$path, 'F');
 
@@ -1995,8 +1829,3 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
         return false;
 
 }
-
-
-
-
-

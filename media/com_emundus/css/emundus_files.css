@@ -970,6 +970,11 @@ label[for="em-file_to_upload"]:hover {
         width: 100%;
     }
 }
+.em-containerpdf{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 
 .em-container-trombi{
     display: flex;
