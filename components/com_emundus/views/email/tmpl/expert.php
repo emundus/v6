@@ -26,7 +26,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	$evaluations = new EmundusModelEvaluation;
 	$emails = new EmundusModelEmails;
 
-	$campaign = @EmundusHelperfilters::getCampaignByID($this->fnums->campaign_id);
+	$campaign = @EmundusHelperfilters::getCampaignByID($this->fnums->cid);
 
 	$user = JFactory::getUser($student_id);
 
@@ -47,10 +47,10 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 
 	<?php
 
-	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->campaign_id, 0);
+	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->cid, 0);
 	if ( count($attachments) == 0 ) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->campaign_id, 0, "F", $this->fnums->fnum);
+		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->cid, 0, "F", $this->fnums->fnum);
 	} else {
 		if (!empty($attachments)) {
 			$files = array();
