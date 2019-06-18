@@ -88,6 +88,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$firstname = $jinput->get('jos_emundus_files_request___firstname');
 		$lastname = $jinput->get('jos_emundus_files_request___lastname');
 		$group = $this->getParam('group');
+		$profile_id = $this->getParam('profile_id');
 
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -120,29 +121,45 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			exit();
 		}
 
-		$query->clear()
-			->update($db->quoteName('#__emundus_files_request'))
-			->set([$db->quoteName('uploaded').'=1', $db->quoteName('firstname').'='.$db->quote(ucfirst($firstname)), $db->quoteName('lastname').'='.$db->quote(strtoupper($lastname)), $db->quoteName('modified_date').'=NOW()'])
-			->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
-		$db->setQuery($query);
-		$db->execute();
+		try
+        {
+			$query->clear()
+				->update($db->quoteName('#__emundus_files_request'))
+				->set([$db->quoteName('uploaded').'=1', $db->quoteName('firstname').'='.$db->quote(ucfirst($firstname)), $db->quoteName('lastname').'='.$db->quote(strtoupper($lastname)), $db->quoteName('modified_date').'=NOW()'])
+				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
+			$db->setQuery($query);
+			$db->execute();
+		}
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+        }
 
 		// 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
-		$query->clear()
-			->select($db->quoteName('id'))
-			->from($db->quoteName('#__users'))
-			->where($db->quoteName('email').' LIKE '.$db->quote($email));
-		$db->setQuery($query);
-		$uid = $db->loadResult();
-
+		try 
+		{
+			$query->clear()
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__users'))
+				->where($db->quoteName('email').' LIKE '.$db->quote($email));
+			$db->setQuery($query);
+			$uid = $db->loadResult();
+		}
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+        }
+/*
 		$query->clear()
 			->select($db->quoteName('id'))
 			->from($db->quoteName('#__emundus_setup_profiles'))
 			->where($db->quoteName('is_evaluator').'=1');
 		$db->setQuery($query);
 		$profile = $db->loadResult();
-
-		$acl_aro_groups = $m_users->getDefaultGroup($profile);
+*/
+		$acl_aro_groups = $m_users->getDefaultGroup($profile_id);
 
 		if ($uid > 0) {
 
@@ -150,23 +167,36 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$user = JFactory::getUser($uid);
 
 			// 2.0.1 Si Expert déjà déclaré comme candidat :
-			$query->clear()
-				->select('count(id)')
-				->from($db->quoteName('#__emundus_users_profiles'))
-				->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('profile_id').' = '.$profile['profile_id']);
-			$db->setQuery($query);
-			$is_evaluator = $db->loadResult();
+			try {
+				$query->clear()
+					->select('count(id)')
+					->from($db->quoteName('#__emundus_users_profiles'))
+					->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('profile_id').' = '.$profile_id);
+				$db->setQuery($query);
+				$is_evaluator = $db->loadResult();
+			}
+	        catch(Exception $e)
+	        {
+	            echo $e->getMessage();
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        }
 
 			// Ajout d'un nouveau profil dans #__emundus_users_profiles + #__emundus_users_profiles_history
 			if ($is_evaluator == 0) {
 
-				$query->clear()
-					->insert($db->quoteName('#__emundus_users_profiles'))
-					->columns($db->quoteName(['user_id', 'profile_id']))
-					->values($user->id.', '.$profile['profile_id']);
-				$db->setQuery($query);
-				$db->execute();
-
+				try{
+					$query->clear()
+						->insert($db->quoteName('#__emundus_users_profiles'))
+						->columns($db->quoteName(['user_id', 'profile_id']))
+						->values($user->id.', '.$profile_id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+		        catch(Exception $e)
+		        {
+		            echo $e->getMessage();
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        }
 				// Modification du profil courant en profil Expert
 				$user->groups = $acl_aro_groups;
 
@@ -178,48 +208,79 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 					JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
 				}
 
-				$query->clear()
-					->update($db->quoteName('#__emundus_users'))
-					->set([$db->quoteName('firstname').' = '.$db->quote(ucfirst($firstname)), $db->quoteName('lastname').' = '.$db->quote(strtoupper($lastname)), $db->quoteName('profile').' = '.$profile['profile_id']])
-					->where($db->quoteName('user_id').' = '.$user->id);
-				$db->setQuery($query);
-				$db->execute();
+				try
+				{
+					$query->clear()
+						->update($db->quoteName('#__emundus_users'))
+						->set([$db->quoteName('firstname').' = '.$db->quote(ucfirst($firstname)), $db->quoteName('lastname').' = '.$db->quote(strtoupper($lastname)), $db->quoteName('profile').' = '.$profile_id])
+						->where($db->quoteName('user_id').' = '.$user->id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+		        catch(Exception $e)
+		        {
+		            echo $e->getMessage();
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        }
 			}
 
 
 			// 2.0.1 Si Expert déjà déclaré comme expert
 			// 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval)
-			$query->clear()
-				->insert($db->quoteName('#__emundus_users_assoc'))
-				->columns($db->quoteName(['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']))
-				->values([
-					$user->id.', 1, '.$db->Quote($fnum).', 0,1,0,0',
-					$user->id.', 4, '.$db->Quote($fnum).', 0,1,0,0',
-					$user->id.', 5, '.$db->Quote($fnum).', 1,1,1,0',
-					$user->id.', 6, '.$db->Quote($fnum).', 1,0,0,0',
-					$user->id.', 7, '.$db->Quote($fnum).', 1,0,0,0',
-					$user->id.', 8, '.$db->Quote($fnum).', 1,0,0,0',
-					$user->id.', 14, '.$db->Quote($fnum).', 1,1,1,0'
-				]);
-			$db->setQuery($query);
-			$db->execute();
+			try 
+			{
+				$query->clear()
+					->insert($db->quoteName('#__emundus_users_assoc'))
+					->columns($db->quoteName(['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']))
+					->values([
+						$user->id.', 1, '.$db->Quote($fnum).', 0,1,0,0',
+						$user->id.', 4, '.$db->Quote($fnum).', 0,1,0,0',
+						$user->id.', 5, '.$db->Quote($fnum).', 1,1,1,0',
+						$user->id.', 6, '.$db->Quote($fnum).', 1,0,0,0',
+						$user->id.', 7, '.$db->Quote($fnum).', 1,0,0,0',
+						$user->id.', 8, '.$db->Quote($fnum).', 1,0,0,0',
+						$user->id.', 14, '.$db->Quote($fnum).', 1,1,1,0'
+					]);
+				$db->setQuery($query);
+				$db->execute();
+			}
+	        catch(Exception $e)
+	        {
+	            echo $e->getMessage();
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        }
 
 			// 2.1.1B Association du compte utilisateur dans le groupe 'experts' defini dans les paramètres du plugin.
 			if (!empty($group)) {
 
-				$query->clear()
-					->select($db->quoteName('id'))
-					->from($db->quoteName('#__emundus_groups'))
-					->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('group_id').' = '.$group);
-				$db->setQuery($query);
+				try
+				{
+					$query->clear()
+						->select($db->quoteName('id'))
+						->from($db->quoteName('#__emundus_groups'))
+						->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('group_id').' = '.$group);
+					$db->setQuery($query);
+				}
+		        catch(Exception $e)
+		        {
+		            echo $e->getMessage();
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        }
 
 				if (empty($db->loadResult())) {
-					$query->clear()
-						->insert('#__emundus_groups')
-						->columns($db->quoteName(['user_id', 'group_id']))
-						->values($user->id.', '.$group);
-					$db->setQuery($query);
-					$db->execute();
+					try{
+						$query->clear()
+							->insert('#__emundus_groups')
+							->columns($db->quoteName(['user_id', 'group_id']))
+							->values($user->id.', '.$group);
+						$db->setQuery($query);
+						$db->execute();
+					}
+			        catch(Exception $e)
+			        {
+			            echo $e->getMessage();
+			            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			        }
 				}
 			}
 
@@ -297,7 +358,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 			$other_param['firstname'] = ucfirst($firstname);
 			$other_param['lastname'] = strtoupper($lastname);
-			$other_param['profile'] = $profile;
+			$other_param['profile'] = $profile_id;
 			$other_param['univ_id'] = "";
 			$other_param['groups'] = "";
 
@@ -315,37 +376,60 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			}
 
 			// 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval)
-			$query->clear()
-				->insert($db->quoteName('#__emundus_users_assoc'))
-				->columns($db->quoteName(['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']))
-				->values([
-					$user->id.', 1, '.$db->Quote($fnum).', 0,1,0,0',
-					$user->id.', 4, '.$db->Quote($fnum).', 0,1,0,0',
-					$user->id.', 5, '.$db->Quote($fnum).', 1,1,1,0',
-					$user->id.', 6, '.$db->Quote($fnum).', 1,0,0,0',
-					$user->id.', 7, '.$db->Quote($fnum).', 1,0,0,0',
-					$user->id.', 8, '.$db->Quote($fnum).', 1,0,0,0',
-					$user->id.', 14, '.$db->Quote($fnum).', 1,1,1,0'
-				]);
-			$db->setQuery($query);
-			$db->execute();
+			try
+			{
+				$query->clear()
+					->insert($db->quoteName('#__emundus_users_assoc'))
+					->columns($db->quoteName(['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']))
+					->values([
+						$user->id.', 1, '.$db->Quote($fnum).', 0,1,0,0',
+						$user->id.', 4, '.$db->Quote($fnum).', 0,1,0,0',
+						$user->id.', 5, '.$db->Quote($fnum).', 1,1,1,0',
+						$user->id.', 6, '.$db->Quote($fnum).', 1,0,0,0',
+						$user->id.', 7, '.$db->Quote($fnum).', 1,0,0,0',
+						$user->id.', 8, '.$db->Quote($fnum).', 1,0,0,0',
+						$user->id.', 14, '.$db->Quote($fnum).', 1,1,1,0'
+					]);
+				$db->setQuery($query);
+				$db->execute();
+			}
+	        catch(Exception $e)
+	        {
+	            echo $e->getMessage();
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        }
 
 			// 2.1.1B Association du compte utilisateur dans le groupe 'experts' defini dans les paramètres du plugin.
 			if (!empty($group)) {
 
-				$query->clear()
-					->select($db->quoteName('id'))
-					->from($db->quoteName('#__emundus_groups'))
-					->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('group_id').' = '.$group);
-				$db->setQuery($query);
+				try {
+					$query->clear()
+						->select($db->quoteName('id'))
+						->from($db->quoteName('#__emundus_groups'))
+						->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('group_id').' = '.$group);
+					$db->setQuery($query);
+				}
+		        catch(Exception $e)
+		        {
+		            echo $e->getMessage();
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        }
 
 				if (empty($db->loadResult())) {
-					$query->clear()
-						->insert('#__emundus_groups')
-						->columns($db->quoteName(['user_id', 'group_id']))
-						->values($user->id.', '.$group);
-					$db->setQuery($query);
-					$db->execute();
+					try
+					{
+						$query->clear()
+							->insert('#__emundus_groups')
+							->columns($db->quoteName(['user_id', 'group_id']))
+							->values($user->id.', '.$group);
+						$db->setQuery($query);
+						$db->execute();
+					}
+			        catch(Exception $e)
+			        {
+			            echo $e->getMessage();
+			            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			        }
 				}
 			}
 
