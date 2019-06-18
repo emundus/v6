@@ -252,7 +252,7 @@ class EmundusHelperEmails
 						}
 					}
 				};
-				xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
+				xhr.open("GET", "/index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.send("&id="+id);
 			}</script>';
@@ -321,7 +321,7 @@ class EmundusHelperEmails
 						}
 					}
 				};
-				xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
+				xhr.open("GET", "/index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.send("&id="+id);
 			}</script>';
