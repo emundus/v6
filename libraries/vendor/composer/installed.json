@@ -2451,6 +2451,7 @@
             }
         ],
         "description": "Symfony Yaml Component",
-        "homepage": "https://symfony.com"
+
+        "homepage": "https://symfony.com"    
     }
 ]
