@@ -991,10 +991,13 @@ label[for="em-file_to_upload"]:hover {
     margin-right: 5vh;
 }
 .trombi_margin{
-    width: 43% !important;
+    width: 58% !important;
 }
 .trombi_margin_desc{
     padding: 0 !important;
+}
+.trombi_margin_btm{
+    margin-bottom: 10px !important;
 }
 .trombi-col-button{
     display: flex;
@@ -1005,12 +1008,32 @@ label[for="em-file_to_upload"]:hover {
     width: 33% !important;
     margin-top: 2vh;
 }
+#div-download{
+    width: 33%;
+}
 .trombi_download{
     margin-top: 2vh;
-    padding: 1.5vh 8.5vh 1.5vh 8.5vh !important;
+    width: 100%;
 }
 .title_wysiwyg{
     margin-top: 5vh !important;
+}
+.em-container-grid{
+    display:flex;
+    flex-direction: row;
+}
+.em-container-grid select{
+    margin-right: 5vh;
+}
+
+.em-col-trombi>.form-check{
+
+    display: flex;
+    flex-direction: row;
+}
+.em-col-trombi>.form-check>label{
+    display: inline;
+    padding: 5px 0 0 5px;
 }
 
 

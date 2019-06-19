@@ -175,11 +175,9 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $attachmentsId = $this->selectHTMLLetters();
         $templ = [];
 
-        foreach ($attachmentsId as $attachmentId){
-            $templ[$attachmentId['title']] = $attachmentId;
-        }
-        $attachId = $templ[$format]['attachment_id'];
-        $lbl = $this->selectLabelSetupAttachments($attachId);
+
+
+        $lbl = $this->selectLabelSetupAttachments($format);
 
         $fileName = $lbl['lbl']."_".time().".pdf";
         $tmpName = JPATH_BASE.DS.'tmp'.DS.$fileName;
