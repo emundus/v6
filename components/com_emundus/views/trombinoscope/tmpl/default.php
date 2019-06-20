@@ -135,7 +135,7 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
 
         var templ = <?= json_encode($this->templ); ?>;
 
-        console.log(templ);
+        //console.log(templ);
         var actual_tmpl = $('#trombi_tmpl').val();
 
         $('#selected_format').val(selected_format);
@@ -145,11 +145,12 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         var header = templ[selected_format].header;
         var footer = templ[selected_format].footer;
 
-        //console.log(default_tmpl);
-
         $('#trombi_tmpl').val(default_tmpl);
         $('#trombi_header').val(header);
         $('#trombi_footer').val(footer);
+
+        var heightHeader = $('#trombi_header').height();
+        console.log(heightHeader);
 
         tinyMCE.execCommand("mceSetContent", false, default_tmpl);
         tinyMCE.execCommand("mceRepaint");
@@ -211,6 +212,7 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         var selected_tmpl = $('#trombi_tmpl').val();
         var header = $('#trombi_header').val();
         var footer = $('#trombi_footer').val();
+
         var format = $('#selected_format').val();
         //console.log(selected_tmpl);
 
