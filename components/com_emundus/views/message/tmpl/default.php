@@ -187,26 +187,23 @@ $email_list = array();
 
         <!-- Get a file from setup_letters -->
         <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-          <div class="hidden" id="setup_letters">
-            <label for="em-select_setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
-            <select id="em-select_setup_letters" name="setup_letters" class="form-control">
-            <?php if (!$setup_letters) :?>
-              <option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
-            <?php else: ?>
-              <option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-              <?php foreach ($setup_letters as $letter): ?>
-                <option value="<?php echo $letter->id; ?>"> <?php echo $letter->title; ?></option>
-              <?php endforeach; ?>
-            <?php endif; ?>
-            </select>
-          </div>
+            <div class="hidden" id="setup_letters">
+                <label for="em-select_setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
+                <select id="em-select_setup_letters" name="setup_letters" class="form-control">
+                <?php if (!$setup_letters) :?>
+                  <option value="%"> <?php echo JText::_('NO_FILES_FOUND'); ?> </option>
+                <?php else: ?>
+                  <option value="%"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+                  <?php foreach ($setup_letters as $letter): ?>
+                    <option value="<?php echo $letter->id; ?>"> <?php echo $letter->title; ?></option>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+                </select>
+                <span class="input-group-btn">
+                    <a class="btn btn-grey" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?php echo JText::_('ADD_ATTACHMENT'); ?></a>
+                </span>
+            </div>
         <?php endif; ?>
-
-        <span class="input-group-btn">
-          <a class="btn btn-grey" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?php echo JText::_('ADD_ATTACHMENT'); ?></a>
-        </span>
-
-      <?php endif; ?>
 
                 </div>
             </div>
