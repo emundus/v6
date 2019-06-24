@@ -851,24 +851,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
 
-    $m_profile 		= new EmundusModelProfile;
-    $m_application 	= new EmundusModelApplication;
-    $m_files		= new EmundusModelFiles;
+    $m_profile = new EmundusModelProfile;
+    $m_application = new EmundusModelApplication;
+    $m_files = new EmundusModelFiles;
 
-    $db 			= JFactory::getDBO();
-    $app 			= JFactory::getApplication();
-    $current_user 	= JFactory::getUser();
-    $user 			= $m_profile->getEmundusUser($user_id);
-    $fnum 			= empty($fnum)?$user->fnum:$fnum;
+    $db = JFactory::getDBO();
+    $app = JFactory::getApplication();
+    $current_user = JFactory::getUser();
+    $user = $m_profile->getEmundusUser($user_id);
+    $fnum = empty($fnum)?$user->fnum:$fnum;
 
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
 
     // Get form HTML
     $htmldata = '';
-    $forms ='';
-    if ($form_post || !empty($form_ids))
-        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id);
 
     // Create PDF object
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -1133,7 +1130,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             </ul>';
         }
     }
-
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $htmldata .= '<div class="card">
