@@ -822,7 +822,7 @@ function data_to_img($match) {
 }
 
 function getSiseCountry($country) {
-    $db 			= JFactory::getDBO();
+    $db = JFactory::getDBO();
 
     $query = 'SELECT valeur FROM #__emundus_sise_code_pays WHERE code LIKE "'.$country.'"';
     try {
@@ -831,10 +831,10 @@ function getSiseCountry($country) {
     } catch (Exception $e) {
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
     }
-
+	return false;
 }
 
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -843,6 +843,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+    if (empty($file_lbl)) {
+    	$file_lbl = "_application";
+    }
 
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
@@ -853,13 +857,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $db 			= JFactory::getDBO();
     $app 			= JFactory::getApplication();
-    //$eMConfig 		= JComponentHelper::getParams('com_emundus');
     $current_user 	= JFactory::getUser();
     $user 			= $m_profile->getEmundusUser($user_id);
     $fnum 			= empty($fnum)?$user->fnum:$fnum;
-
-    //$export_pdf = $eMConfig->get('export_pdf');
-    //$user_profile = $m_users->getCurrentUserProfile($user_id);
 
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
@@ -878,6 +878,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $pdf->SetTitle('Application Form');
     $m_files = new EmundusModelFiles();
     $m_application = new EmundusModelApplication();
+
     try {
         $fnumInfo = $m_files->getFnumInfos($fnum);
         $payment = $m_application->getHikashopOrder($fnumInfo,true);
@@ -897,14 +898,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					ORDER BY esc.id DESC';
         $db->setQuery($query);
         $item = $db->loadAssoc();
-        //var_dump($item).die();
 
         //Updated data for reinscription
         $query = $db->getQuery(true);
         $conditions = $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum);
 
-        $query
-            ->select($db->quoteName('fabrik_element_id'))
+        $query->select($db->quoteName('fabrik_element_id'))
             ->from($db->quoteName('#__emundus_updated'))
             ->where($conditions);
         $db->setQuery($query);
@@ -915,8 +914,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 // --- La setlocale() fonctionnne pour strftime mais pas pour DateTime->format()
         setlocale(LC_TIME, 'fr_FR.utf8','fra');// OK
         $date = strftime('%d %B %Y');
-
-
 
     } catch (Exception $e) {
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -936,24 +933,26 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     }
 
     //get logo
-    $template 	= $app->getTemplate(true);
-    $params     = $template->params;
+    $template = $app->getTemplate(true);
+    $params = $template->params;
 
-    if (!empty($params->get('logo')->custom->image))
-        $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+    if (!empty($params->get('logo')->custom->image)) {
+        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+    }
+    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
 
     // manage logo by programme
     $ext = substr($logo, -3);
     $logo_prg = substr($logo, 0, -4).'-'.$item['training'].'.'.$ext;
-    if (is_file($logo_prg))
+    if (is_file($logo_prg)) {
         $logo = $logo_prg;
+    }
 
     //get title
     $title = $config->get('sitename');
-    if (is_file($logo))
+    if (is_file($logo)) {
         $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
-
+    }
 
     unset($logo);
     unset($title);
@@ -970,7 +969,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $pdf->SetPrintFooter(true);
     $pdf->AddPage();
     $pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255)));
-    $dimensions = $pdf->getPageDimensions();
     /*** Applicant   ***/
     $htmldata .=
         '<style>
@@ -985,17 +983,17 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             p{font-size:7pt}
             .logo{width: 200px;height: auto;}
             
-             .underline{
+            .underline{
                 text-decoration: underline dotted red;
-                }
-              .button{
-              width: 10px; height: auto;
-              }  
-              li{
-                   list-style-type: none;
-              }
-              .signature{font-size:10pt}
-              hr{color: white;background: white}
+            }
+            .button{
+                width: 10px; height: auto;
+            }  
+            li {
+                list-style-type: none;
+            }
+            .signature{font-size:10pt}
+            hr{color: white;background: white}
 	    </style>';
 
     $applicant_email = !empty($item['email']) ? $item['email'] : $item['user_email'];
@@ -1006,43 +1004,34 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $financer_city = !empty($item['repondant_financier_city']) ? $m_files->selectCity($item['repondant_financier_city']) : $item['repondant_financier_city_other'];
     $year = date('Y');
 
-    if(!empty($item['responsable_civility_1']) && $item['responsable_civility_1'] == 'M'){
+    if (!empty($item['responsable_civility_1']) && $item['responsable_civility_1'] == 'M') {
         $responsableCivility1 = 'Monsieur';
     }
-    elseif(!empty($item['responsable_civility_1']) && $item['responsable_civility_1'] == 'Mme'){
+    elseif (!empty($item['responsable_civility_1']) && $item['responsable_civility_1'] == 'Mme') {
         $responsableCivility1 = 'Madame';
     }
-    else{
 
-    }
-
-    if(!empty($item['responsable_civility_2']) && $item['responsable_civility_2'] == 'M'){
+    if (!empty($item['responsable_civility_2']) && $item['responsable_civility_2'] == 'M') {
         $responsableCivility2 = 'Monsieur';
     }
-    elseif(!empty($item['responsable_civility_2']) && $item['responsable_civility_2'] == 'Mme'){
+    elseif (!empty($item['responsable_civility_2']) && $item['responsable_civility_2'] == 'Mme') {
         $responsableCivility2 = 'Madame';
     }
-    else{
 
-    }
-
-    if(!empty($item['repondant_financier_civility']) && $item['repondant_financier_civility'] == 'M'){
+    if (!empty($item['repondant_financier_civility']) && $item['repondant_financier_civility'] == 'M') {
         $repondantFinancier = 'Monsieur';
     }
-    elseif(!empty($item['repondant_financier_civility']) && $item['repondant_financier_civility'] == 'Mme'){
+    elseif (!empty($item['repondant_financier_civility']) && $item['repondant_financier_civility'] == 'Mme') {
         $repondantFinancier = 'Madame';
     }
-    else{
 
-    }
-
-    if($campaign_id == '7') {
+    if ($campaign_id == '7') {
         $dossier_label = JText::_('DOSSIER_INSCRIPTION');
     }
     elseif ($campaign_id == '8') {
         $dossier_label = JText::_('DOSSIER_REINSCRIPTION');
     }
-    if($payment->order_payment_method == 'banktransfer') {
+    if ($payment->order_payment_method == 'banktransfer') {
 
         $methodPayment = '
         <br>
@@ -1059,7 +1048,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             <td ctass="liste-style"><img class="button"  src="/images/custom/RadioButtonEsiea.png" alt="boutton radio"> Je souhaite régler par <b>carte bleue</b> le montant de '.$item['deposit'].' €.</td>
         </tr>';
      }
-    if($payment->order_payment_method == 'atos') {
+    if ($payment->order_payment_method == 'atos') {
         $methodPayment = '
         <br>
         <tr>
@@ -1076,14 +1065,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
      }
 
     $PayInSeptember = $m_files->selectMultiplePayment($fnum);
-    //var_dump($PayInSeptember).die();
 
-    if($PayInSeptember->multiple_payment == 1){ // Pay in 1 times
+    if ($PayInSeptember->multiple_payment == 1) { // Pay in 1 times
 
         $multiple_payment = '
                 <img class="button"  src="/images/custom/RadioButtonCoche.png" alt="boutton radio coché"> <b> En 1 fois '.$item['upfront'].' € avant le 5 septembre '.$year.' :</b><br>
                     <ul>';
-        if($PayInSeptember->method_payment == 'virement'){
+        if ($PayInSeptember->method_payment == 'virement') {
             $multiple_payment .= '
                 <span><img class="button"  src="/images/custom/CaseCoche.png" alt="boutton radio"> Par virement sur le compte :<br>
                             <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
@@ -1100,7 +1088,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     </ul>
             ';
         }
-        if($PayInSeptember->method_payment == 'cb'){
+        if ($PayInSeptember->method_payment == 'cb') {
             $multiple_payment .= '
             <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> Par virement sur le compte :<br>
                             <span style="font-size: 25px;">Banque : SOCIETE GENERALE - Titulaire : ESIEA Comptabilite - IBAN : FR76 3000 3033 5000 0372 8557 046 - BIC : SOGEFRPP</span><br>
@@ -1119,7 +1107,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         }
 
     }
-    if($PayInSeptember->multiple_payment == 10){ // Pay in 10 times
+    if ($PayInSeptember->multiple_payment == 10) { // Pay in 10 times
         $multiple_payment .= ' 
             <img class="button"  src="/images/custom/RadioButtonEsiea.png" alt="boutton radio coché"> <b> En 1 fois '.$item['upfront'].' € avant le 5 septembre '.$year.' :</b><br>
             <ul>
@@ -1131,14 +1119,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
              </ul>
              <img class="button"  src="/images/custom/RadioButtonCoche.png" alt="boutton radio"> <b> En 10 fois* '.$item['payin'].' € le 5 de chaque mois à compter du 5 septembre '.$year.' par prélèvement :</b><br>
                    ';
-        if($PayInSeptember->sampling_mode == 'SEPA-1'){ //année passée
+        if ($PayInSeptember->sampling_mode == 'SEPA-1') { //année passée
             $multiple_payment .= '
              <ul>
                 <span><img class="button"  src="/images/custom/CaseCoche.png" alt="boutton radio"> En utilisant <b>mon compte bancaire / mandat SEPA</b> de l\'année passée </span ><br>
                 <span><img class="button"  src = "/images/custom/Case.png" alt = "boutton radio" > En joignant le <b>mandat SEPA</b> ESIEA complété ainsi qu\'un IBAN / BIC de ma banque</span>
             </ul>';
-        }
-        else{ //année courante
+        } else { //année courante
             $multiple_payment .= '
             <ul>
                 <span><img class="button"  src="/images/custom/Case.png" alt="boutton radio"> En utilisant <b>mon compte bancaire / mandat SEPA</b> de l\'année passée </span >
@@ -1148,15 +1135,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     }
 
 
-
-
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $htmldata .= '<div class="card">
 					<table width="100%"><tr>';
-        if (file_exists(EMUNDUS_PATH_REL.@$item['user_id'].'/tn_'.@$item['avatar']) && !empty($item['avatar']))
+        if (file_exists(EMUNDUS_PATH_REL.@$item['user_id'].'/tn_'.@$item['avatar']) && !empty($item['avatar'])) {
             $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item['user_id'].'/tn_'.@$item['avatar'].'" width="100" align="left" /></td>';
-        elseif (file_exists(EMUNDUS_PATH_REL.@$item['user_id'].'/'.@$item['avatar']) && !empty($item['avatar']))
+        } elseif (file_exists(EMUNDUS_PATH_REL.@$item['user_id'].'/'.@$item['avatar']) && !empty($item['avatar'])) {
             $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item['user_id'].'/'.@$item['avatar'].'" width="100" align="left" /></td>';
+		}
 
         $htmldata .= '
 		<td width="80%">
@@ -1202,7 +1188,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         }
         $htmldata .= '</td></tr></table></div>';
     } elseif ($options[0] == "0") {
-
         $htmldata .= '';
     } else {
         $htmldata .= '
@@ -1232,7 +1217,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                         <td> Campus de '.$item['campus'].' </td>
                     </tr>
                     </table>
-                   
                    
                     <br>
                     <table width="100%">
@@ -1458,8 +1442,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     
                     > <b style="color:#0081c5; ">FRAIS DE SCOLARITÉ '. $user->schoolyear .' ('.$item['amount'].' € - '.$item['rate_name'].' ) </b> <br>
                     
-                     
-                    
                     <table width="100%">
                         <tr>
                             <td class="title" width="320px">
@@ -1572,34 +1554,32 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     /**  END APPLICANT   ****/
 
     // Listes des fichiers chargés
-    if (!empty($options)) {
-        if (in_array("upload", $options)) {
-            $uploads = $m_application->getUserAttachmentsByFnum($fnum);
-            $nbuploads = 0;
-            foreach ($uploads as $upload) {
-                if (strrpos($upload->filename, "application_form") === false) {
-                    $nbuploads++;
-                }
+    if (!empty($options) && in_array("upload", $options)) {
+        $uploads = $m_application->getUserAttachmentsByFnum($fnum);
+        $nbuploads = 0;
+        foreach ($uploads as $upload) {
+            if (strrpos($upload->filename, "application_form") === false) {
+                $nbuploads++;
             }
-            $titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
-
-            $htmldata .='
-			<h2>'.$titleupload.' : '.$nbuploads.'</h2>';
-
-            $htmldata .='<div class="file_upload">';
-            $htmldata .= '<ol>';
-            foreach ($uploads as $upload) {
-                if (strrpos($upload->filename,"application_form") === false) {
-                    $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
-                    $htmldata .= '<li><b>' . $upload->value . '</b>';
-                    $htmldata .= '<ul>';
-                    $htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
-                    $htmldata .= '</ul>';
-                    $htmldata .= '</li>';
-                }
-            }
-            $htmldata .='</ol></div>';
         }
+        $titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
+
+        $htmldata .='
+		<h2>'.$titleupload.' : '.$nbuploads.'</h2>';
+
+        $htmldata .='<div class="file_upload">';
+        $htmldata .= '<ol>';
+        foreach ($uploads as $upload) {
+            if (strrpos($upload->filename,"application_form") === false) {
+                $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
+                $htmldata .= '<li><b>' . $upload->value . '</b>';
+                $htmldata .= '<ul>';
+                $htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+                $htmldata .= '</ul>';
+                $htmldata .= '</li>';
+            }
+        }
+        $htmldata .='</ol></div>';
     }
 
     $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
@@ -1607,7 +1587,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     if (!empty($htmldata)) {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();
-        $start_page = $pdf->getPage();
         $pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
         $htmldata = '';
     }
@@ -1627,10 +1606,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $values = array($item['user_id'], $attachment['id'], $name, $item['training'].' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
             $data 	= array('key' => $keys, 'value' => $values);
             $m_application->uploadAttachment($data);
-        } else
-            $pdf->Output(EMUNDUS_PATH_ABS.@$item['user_id'].DS.$fnum.'_application.pdf', 'FI');
-    } else
-        $pdf->Output(EMUNDUS_PATH_ABS.@$item['user_id'].DS.$fnum.'_application.pdf', 'F');
+        } else {
+            $pdf->Output(EMUNDUS_PATH_ABS.@$item['user_id'].DS.$fnum.$file_lbl.'.pdf', 'FI');
+        }
+    } else {
+        $pdf->Output(EMUNDUS_PATH_ABS.@$item['user_id'].DS.$fnum.$file_lbl.'.pdf', 'F');
+    }
 }
 
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
