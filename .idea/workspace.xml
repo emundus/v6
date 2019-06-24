@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="132f391e-f7a5-418e-8b5e-d86820b336d6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/libraries/vendor/brumann/polyfill-unserialize/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/composer/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/google/recaptcha/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/ircmaxell/password-compat/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/application/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/archive/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/compat/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/data/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/di/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/event/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/filesystem/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/filter/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/image/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/input/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/ldap/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/registry/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/session/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/string/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/uri/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/joomla/utilities/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/leafo/lessphp/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/paragonie/random_compat/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/paragonie/sodium_compat/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/pclzip/pclzip/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/phpmailer/phpmailer/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/phpoffice/common/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/phpoffice/phpword/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/psr/container/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/psr/log/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/simplepie/simplepie/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-ctype/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php55/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php56/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php71/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php73/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-util/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/symfony/yaml/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/typo3/phar-stream-wrapper/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/zendframework/zend-escaper/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/zendframework/zend-stdlib/" />
+    <ignored path="$PROJECT_DIR$/libraries/vendor/zendframework/zend-validator/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <pharConfigPath>$PROJECT_DIR$/libraries/composer.json</pharConfigPath>
+    <execution>
+      <executable />
+    </execution>
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/configuration.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="333">
+              <caret line="17" column="30" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JoomlaConfiguration" enabled="true">
+    <joomlaConfigPath>$PROJECT_DIR$/configuration.php</joomlaConfigPath>
+    <joomlaPath>$PROJECT_DIR$</joomlaPath>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration">
+    <include_path>
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/application" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/input" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/event" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/ldap" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/composer" />
+      <path value="$PROJECT_DIR$/libraries/vendor/phpmailer/phpmailer" />
+      <path value="$PROJECT_DIR$/libraries/vendor/ircmaxell/password-compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/libraries/vendor/paragonie/sodium_compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/libraries/vendor/leafo/lessphp" />
+      <path value="$PROJECT_DIR$/libraries/vendor/zendframework/zend-escaper" />
+      <path value="$PROJECT_DIR$/libraries/vendor/zendframework/zend-validator" />
+      <path value="$PROJECT_DIR$/libraries/vendor/zendframework/zend-stdlib" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/image" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/data" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/registry" />
+      <path value="$PROJECT_DIR$/libraries/vendor/pclzip/pclzip" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/di" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/string" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/archive" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php55" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/session" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/uri" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-util" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/utilities" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php56" />
+      <path value="$PROJECT_DIR$/libraries/vendor/simplepie/simplepie" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/filter" />
+      <path value="$PROJECT_DIR$/libraries/vendor/joomla/filesystem" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php73" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/libraries/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/libraries/vendor/phpoffice/phpword" />
+      <path value="$PROJECT_DIR$/libraries/vendor/phpoffice/common" />
+      <path value="$PROJECT_DIR$/libraries/vendor/symfony/polyfill-php71" />
+      <path value="$PROJECT_DIR$/libraries/vendor/google/recaptcha" />
+      <path value="$PROJECT_DIR$/libraries/vendor/typo3/phar-stream-wrapper" />
+      <path value="$PROJECT_DIR$/libraries/vendor/brumann/polyfill-unserialize" />
+    </include_path>
+  </component>
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="2560" />
+    <option name="height" value="1440" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="v6" type="b2602c69:ProjectViewProjectNode" />
+              <item name="v6" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="132f391e-f7a5-418e-8b5e-d86820b336d6" name="Default Changelist" comment="" />
+      <created>1561378998390</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1561378998390</updated>
+      <workItem from="1561379006922" duration="232000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="232000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16521049" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
+      <window_info anchor="bottom" id="SonarLint" />
+      <window_info anchor="bottom" id="Database Changes" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Key Promoter X" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/configuration.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="333">
+          <caret line="17" column="30" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

@@ -58,7 +58,6 @@ class EmundusViewEmail extends JViewLegacy
 		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 		$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
 		//$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
-		$document->addScript("media/jui/js/jquery.min.js" );
 		$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
 /*	    if (is_null($fnums))
@@ -83,7 +82,7 @@ class EmundusViewEmail extends JViewLegacy
 	    }
 	    else
 	    {*/
-		   $fnums = (array) json_decode(stripslashes($fnums));
+		   $fnums = (array)json_decode(stripslashes($fnums));
 
 		   if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
 			{
@@ -100,7 +99,7 @@ class EmundusViewEmail extends JViewLegacy
 		    {
 			    require_once(JPATH_BASE . '/components/com_emundus/models/application.php');
 			    $appModel = new EmundusModelApplication();
-			    
+
 			    $tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
 			    foreach ($fnums as $fnum)
 			    {
@@ -135,10 +134,11 @@ class EmundusViewEmail extends JViewLegacy
 		    }
 		    elseif($dest == 3)
 		    {
+
 			   //require_once(JPATH_BASE . '/components/com_emundus/models/users.php');
 			   	require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 			    require_once(JPATH_BASE . '/components/com_emundus/models/application.php');
-			    
+
 			    $appModel = new EmundusModelApplication();
 			    $evaluations = new EmundusModelEvaluation;
 			    $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -150,13 +150,16 @@ class EmundusViewEmail extends JViewLegacy
 			    {
 				    if(EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id, $fnum->fnum))
 				    {
-					    $fnum_array[] = $fnum->fnum;
+				    	$fnum_array[] = $fnum->fnum;
 					    $app_file = $appModel->getApplication($fnum->fnum);
 					    $fnum->status = $app_file->status;
 				    }
 			    }
-			    $this->experts_list = $evaluations->getExperts(@$fnums[0]->fnum, $reference_field, $reference_table);
 
+			   /* if(empty($fnums[0]->status) || !isset($fnums[0]->status))
+			    	exit();
+*/
+			    $this->experts_list = $evaluations->getExperts(@$fnums[0]->fnum, $reference_field, $reference_table);
 			    $this->email = @EmundusHelperEmails::createEmailBlock(array('expert'), $experts_list);
 			    $this->fnums =  $fnums[key($fnums)];
 				$this->default_email_tmpl = $default_email_tmpl;
@@ -166,7 +169,6 @@ class EmundusViewEmail extends JViewLegacy
 
 	  //  }
 	
-
     }
 }
 ?>

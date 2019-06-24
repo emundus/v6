@@ -35,6 +35,24 @@ if ((!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants)
     $block_upload = false;
 }
 
+
+function return_bytes($val) {
+	$val = trim($val);
+	$last = strtolower($val[strlen($val)-1]);
+	switch($last) {
+		// Le modifieur 'G' est disponible depuis PHP 5.1.0
+		case 'g':
+			$val *= 1024;
+		case 'm':
+			$val *= 1024;
+		case 'k':
+			$val *= 1024;
+	}
+
+	return $val;
+}
+
+
 if (!empty($this->custom_title)) :?>
     <h1 class="em-checklist-title"><?php echo $this->custom_title; ?></h1>
 <?php endif; ?>
@@ -350,7 +368,7 @@ function toggleVisu(baliseId)
   document.getElementById('<?php echo $attachment->id; ?>').style.visibility='<?php echo ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
   document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
 <?php } ?>
-*/
+
 function OnSubmitForm() {
     var btn = document.getElementsByName(document.pressed);
     for(i=0 ; i<btn.length ; i++) {
@@ -365,6 +383,26 @@ function OnSubmitForm() {
     }
     return true;
 }
+*/
+
+function OnSubmitForm() {
+    var btn = document.getElementsByName(document.pressed);
+
+    for(i=0 ; i<btn.length ; i++) {
+        btn[i].disabled="disabled";
+        btn[i].value="<?php echo JText::_('SENDING_ATTACHMENT'); ?>";
+    }
+
+    switch(document.pressed) {
+        case 'sendAttachment':
+            document.checklistForm.action ="<?php echo JURI::base();?>index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>";
+            break;
+        default: return false;
+    }
+    return true;
+}
+
+
 
 var hash = window.location.hash;
 if (hash != '') {
@@ -373,23 +411,38 @@ if (hash != '') {
 
 function processSelectedFiles(fileInput) {
     var files = fileInput.files;
+    var max_post_size = <?php echo return_bytes(ini_get('post_max_size'));?>;
+
     var row = fileInput.parentNode.parentNode.parentNode.id;
     var rowId = document.getElementById(row);
-    if($(rowId).find('.em-added-file').length > 0) {
-        if (files.length > 0)
-            $(rowId).find('.em-added-file')[0].innerHTML = files[0].name;
-        else
-            $(rowId).find('.em-added-file')[0].innerHTML = "";
-    } else {
-        var fileParagraphe = document.createElement("p");
-        fileParagraphe.className = "em-added-file";
-        if (files.length > 0)
-            fileParagraphe.innerHTML = files[0].name;
-        else
-            fileParagraphe.innerHTML = "";
-
+    if (files[0].size < max_post_size) {
+        if($(rowId).find('.em-added-file').length > 0) {
+            if (files.length > 0)
+                $(rowId).find('.em-added-file')[0].innerHTML = files[0].name;
+            else
+                $(rowId).find('.em-added-file')[0].innerHTML = "";
+        } else {
+            var fileParagraphe = document.createElement("p");
+            fileParagraphe.className = "em-added-file";
+            if (files.length > 0)
+                fileParagraphe.innerHTML = files[0].name;
+            else
+                fileParagraphe.innerHTML = "";
+            rowId.append(fileParagraphe);
+        }
         $(rowId).find( ".em_send_uploaded_file" ).removeAttr("disabled");
-        rowId.append(fileParagraphe);
     }
+    else {
+        if($(rowId).find('.em-added-file').length > 0) {
+            $(rowId).find('.em-added-file')[0].innerHTML = "<?php echo JText::_('FILE_TOO_BIG')?>";
+        } else {
+            var fileParagraphe = document.createElement("p");
+            fileParagraphe.className = "em-added-file em-added-file-error";
+            fileParagraphe.innerHTML = "<?php echo JText::_('FILE_TOO_BIG')?>";
+            rowId.append(fileParagraphe);
+        }
+        $(rowId).find( ".em_send_uploaded_file" ).attr("disabled","disabled");
+    }
+
 }
 </script>

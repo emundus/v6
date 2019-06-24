@@ -435,8 +435,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
         } elseif ($letter['template_type'] == 3) { // Template file .docx
 
+            require_once JPATH_LIBRARIES . DS . 'vendor' . DS . 'autoload.php';
             $tags = $m_emails->setTagsWord($user_id, $post, $fnum);
-            require_once JPATH_LIBRARIES.DS.'PHPWord.php';
 
             $file_path = explode(DS, $letter['file']);
             $file_type = explode('.', $file_path[count($file_path)-1]);
@@ -444,7 +444,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
             if (file_exists(JPATH_BASE.$letter['file'])) {
 
-                $PHPWord = new PHPWord();
+                $PHPWord = new \PhpOffice\PhpWord\PhpWord();
                 $document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
 
                 for ($i = 0; $i < count($tags['patterns']); $i++) {

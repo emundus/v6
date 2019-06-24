@@ -706,6 +706,8 @@ class EmundusController extends JControllerLegacy {
             if ($format == "raw")
                 echo '{"aid":"0","status":false,"message":"'.$error.' -> empty $_FILES" }';
 
+	        JFactory::getApplication()->enqueueMessage(JText::_('FILE_TOO_BIG'), 'error');
+	        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
             return false;
         }
 
@@ -714,7 +716,6 @@ class EmundusController extends JControllerLegacy {
         $nb = 0;
 
         if (!file_exists(EMUNDUS_PATH_ABS.$user->id)) {
-
             // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
             if (!file_exists(EMUNDUS_PATH_ABS.'index.html'))
                 touch(EMUNDUS_PATH_ABS.'index.html');
@@ -737,6 +738,7 @@ class EmundusController extends JControllerLegacy {
             $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments;
         else
             $url = 'index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments;
+
 
         foreach ($fnums as $fnum) {
 
