@@ -145,16 +145,12 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 				'recipient_id' => "1", 
 				'routing_order' => "1"
 			]);
-			
+
 			$signTab = new DocuSign\eSign\Model\SignHere([
-				'document_id' => '1',
-				'page_number' => '1',
-				'recipient_id' => '1',
-				'tab_label' => 'Signature 1',
-				'anchorString' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_1_ANCHOR'),
-				'anchorXOffset' => '0',
-				'anchorYOffset' => '-10',
-				'anchorUnits' => 'mms'
+				'anchor_string' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_1_ANCHOR'),
+				'anchor_y_offset' => '0',
+				'anchor_x_offset' => '-30',
+				'anchor_units' => 'pixels'
 			]);
 
 			// Add the tabs to the signer object
@@ -178,16 +174,12 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 				'recipient_id' => "2", 
 				'routing_order' => "2"
 			]);
-			
+
 			$signTab = new DocuSign\eSign\Model\SignHere([
-				'document_id' => '1',
-				'page_number' => '1',
-				'recipient_id' => '2',
-				'tab_label' => 'Signature 2',
-				'anchorString' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_2_ANCHOR'),
-				'anchorXOffset' => '0',
-				'anchorYOffset' => '-10',
-				'anchorUnits' => 'mms'
+				'anchor_string' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_2_ANCHOR'),
+				'anchor_y_offset' => '0',
+				'anchor_x_offset' => '-30',
+				'anchor_units' => 'pixels'
 			]);
 
 			// Add the tabs to the signer object
@@ -211,16 +203,12 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 				'recipient_id' => "3", 
 				'routing_order' => "3"
 			]);
-			
+
 			$signTab = new DocuSign\eSign\Model\SignHere([
-				'document_id' => '1',
-				'page_number' => '1',
-				'recipient_id' => '3',
-				'tab_label' => 'Signature 3',
-				'anchorString' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_3_ANCHOR'),
-				'anchorXOffset' => '0',
-				'anchorYOffset' => '-10',
-				'anchorUnits' => 'mms'
+				'anchor_string' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_3_ANCHOR'),
+				'anchor_y_offset' => '0',
+				'anchor_x_offset' => '-30',
+				'anchor_units' => 'pixels'
 			]);
 
 			// Add the tabs to the signer object
