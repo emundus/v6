@@ -4780,10 +4780,13 @@ $(document).ready(function() {
 
 
                             $('#em-modal-actions').modal('hide');
-                            reloadData($('#view').val());
 
+
+
+                            reloadData();
                             reloadActions($('#view').val(), undefined, false);
                             $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                            $('body').removeClass('modal-open');
                         },
                         error: function (jqXHR) {
                             console.log(jqXHR.responseText);
@@ -4847,10 +4850,10 @@ $(document).ready(function() {
 
 
 
-                        reloadData($('#view').val());
+                        reloadData();
                         reloadActions($('#view').val(), undefined, false);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-
+                        $('body').removeClass('modal-open');
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
@@ -4945,10 +4948,11 @@ $(document).ready(function() {
                             '<button type="button" class="close" data-dismiss="alert">×</button>' +
                             '<strong>'+result.msg+'</strong> ' +
                             '</div>');*/
-                            reloadData($('#view').val());
+                            reloadData();
 
                             reloadActions($('#view').val(), undefined, false);
                             $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                            $('body').removeClass('modal-open');
                         } else {
                             $('.modal-body').empty();
                             Swal.fire({
