@@ -1541,7 +1541,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                                 <tr>
                                     <td width="130px">
                                         <p class="signature">Signature obligatoire de l\'étudiant(e)</p>
-                                        <p style="color: white;">signature_1</p>
+                                        <p style="color: white;">signature_2</p>
                                     </td>
                                 </tr>
                             </table>
@@ -1551,7 +1551,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                                 <tr>
                                     <td width="130px">
                                         <p class="signature">Signature obligatoire du répondant financier</p>
-                                        <p style="color: white;">signature_2</p>
+                                        <p style="color: white;">signature_1</p>
                                     </td>
                                 </tr>
                             </table>
