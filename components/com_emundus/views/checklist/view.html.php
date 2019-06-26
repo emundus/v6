@@ -113,7 +113,8 @@ class EmundusViewChecklist extends JViewLegacy
 
 			default :
 			$document = JFactory::getDocument();
-	        $document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+	        //$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+	        $document->addScript("media/jui/js/jquery.min.js" );
 	        $document->addScript("media/com_emundus/lib/dropzone/js/dropzone.min.js" );
 	        $document->addStyleSheet("media/com_emundus/lib/dropzone/css/dropzone.min.css" );
 	        $document->addStyleSheet("media/com_emundus/css/emundus.css" );
@@ -129,6 +130,7 @@ class EmundusViewChecklist extends JViewLegacy
 			$show_info_panel 	  = $menu_params->get('show_info_panel', 1);
 			$show_info_legend 	  = $menu_params->get('show_info_legend', 1);
 			$show_nb_column 	  = $menu_params->get('show_nb_column', 1);
+			$custom_title         = $menu_params->get('custom_title', null);
 
 
 			$forms 				= $this->get('FormsList');
@@ -148,6 +150,7 @@ class EmundusViewChecklist extends JViewLegacy
 			$this->assignRef('title', $title);
 			$this->assignRef('text', $text);
 			$this->assignRef('need', $need);
+			$this->assignRef('custom_title', $custom_title);
 			$this->assignRef('confirm_form_url', $confirm_form_url);
 			$this->assignRef('forms', $forms);
 			$this->assignRef('attachments', $attachments);

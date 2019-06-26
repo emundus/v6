@@ -21,6 +21,11 @@ p {
 .em-close-minimise {
    align-self: flex-end;
 }
+/*.navbar .navbar-inverse{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+}*/
 
 #check {
     min-width: 85px !important;
@@ -295,10 +300,10 @@ thead th:hover {
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
 */
 
-.modal {
+/*.modal {
     background-color: rgba(0, 0, 0, 0.78) !important;
     color: #9EA4AB !important;
-}
+}*/
 
 .label {
     display: inline !important;
@@ -584,8 +589,9 @@ thead th:hover {
     padding: 1px;
     position: relative;
     height: 30px;
+    width: 50%;
     border-radius: 3px;
-    margin: 10px;
+    margin: 5px;
     text-align: left;
     background: #fff;
     box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
@@ -625,7 +631,8 @@ thead th:hover {
 label[for="em-file_to_upload"] {
     padding: 0.5em;
     display: inline-block;
-    background: #F2F1EF;
+    background: #e9ecef;
+    border: 1px solid #ced4da;
     cursor: pointer;
 }
 label[for="em-file_to_upload"]:hover {
@@ -634,16 +641,18 @@ label[for="em-file_to_upload"]:hover {
 #em-filename{
     padding: 0.5em;
     float: left;
-    width: 150px;
+    width: 70%;
     white-space: nowrap;
     overflow: hidden;
-    background: #F2F1EF;
+    background: white;
+    border: 1px solid #ced4da;
+
 }
 
 /* Messages sent / failed emails list style. Message recipient list */
 #em-mails-sent, #em-mails-failed, #em-recipitents {
-    overflow: scroll;
-    max-height: 70px;
+    overflow-y: scroll;
+    max-height: 80px;
 }
 
 /* Sending email modal */
@@ -697,6 +706,8 @@ label[for="em-file_to_upload"]:hover {
 .em-nopadding {
     padding: 0 !important;
 }
+
+
 
 /* collapse in Files */
 .em-collapse-container{
@@ -819,13 +830,15 @@ label[for="em-file_to_upload"]:hover {
 }
 
 /* checkbox page selection on data.php */
-
+.navbar.navbar-inverse{
+    display: flex;
+}
 .selectContainer{
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    position: relative;
     width: 40px;
     height: 40px;
 }
@@ -836,6 +849,13 @@ label[for="em-file_to_upload"]:hover {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+}
+.selectPage>.check-box{
+    color: #9EA4AB !important;
+    margin-bottom: 5px !important;
+    font-weight: bold !important;
+    display: inline;
+    min-width: 0 !important;
 }
 .selectPage:hover{
     background-color: #dadada;
@@ -877,7 +897,6 @@ label[for="em-file_to_upload"]:hover {
     height: auto;
     width: 150px;
     position: absolute;
-    top: 140px;
 }
 .selectAll>label{
     color: black;
@@ -908,7 +927,6 @@ label[for="em-file_to_upload"]:hover {
     z-index: 1;
     justify-content: center;
     align-items: center;
-    top:45px;
 }
 .borderSelect{
     background-color: #dadada;
@@ -924,6 +942,7 @@ label[for="em-file_to_upload"]:hover {
 .countCheckedCheckbox{
     margin-left: 30%;
 }
+
 .tooltipSelectAttachments{
     display:none;
     transition:opacity 1s ease-out;
@@ -934,4 +953,96 @@ label[for="em-file_to_upload"]:hover {
     align-items: center;
     margin-top: 52px;
 }
+
+
+/* css view message tmpl default */
+
+.upload-file{
+    display:flex;
+    flex-direction:row;
+    margin-top: 30px;
+}
+.file-browse{
+    width: 50%;
+}
+.attachment{
+    width: 57%;
+    float: right;
+    margin-right: 16px;
+}
+.swal2-container{
+    z-index: 99999 !important;
+}
+@media screen and (max-width: 991px){
+    .download{
+        display: inline !important;
+    }
+    .attachment{
+        width: 100%;
+    }
+}
+
+.em-containerpdf{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.em-container-trombi{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+.em-col-trombi{
+    flex: 1 1 33%;
+    margin-right: 5vh;
+}
+.trombi_margin{
+    width: 58% !important;
+}
+.trombi_margin_desc{
+    padding: 0 !important;
+}
+.trombi_margin_btm{
+    margin-bottom: 10px !important;
+}
+.trombi-col-button{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.trombi_button{
+    width: 33% !important;
+    margin-top: 2vh;
+}
+#div-download{
+    width: 33%;
+}
+.trombi_download{
+    margin-top: 2vh;
+    width: 100%;
+}
+.title_wysiwyg{
+    margin-top: 5vh !important;
+}
+.em-container-grid{
+    display:flex;
+    flex-direction: row;
+}
+.em-container-grid select{
+    margin-right: 5vh;
+}
+
+.em-col-trombi>.form-check{
+
+    display: flex;
+    flex-direction: row;
+}
+.em-col-trombi>.form-check>label{
+    display: inline;
+    padding: 5px 0 0 5px;
+}
+
 

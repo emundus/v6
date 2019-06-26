@@ -176,17 +176,17 @@ function exist(fnum) {
 }
 
 function search() {
-	
+
 	var quick = [];
-    $("div[data-value]").each( function () {
-        quick.push($(this).attr("data-value")) ;
-    });
-    var inputs = [{
-        name: 's',
-        value: quick,//$('#text_s').val(),
-        adv_fil : false
-    }];
-    
+	$("div[data-value]").each( function () {
+		quick.push($(this).attr("data-value")) ;
+	});
+	var inputs = [{
+		name: 's',
+		value: quick,//$('#text_s').val(),
+		adv_fil : false
+	}];
+
 	$('.em_filters_filedset .testSelAll').each(function () {
 		inputs.push({
 			name: $(this).attr('name'),
@@ -196,12 +196,12 @@ function search() {
 	});
 
 	$('.em_filters_filedset .search_test').each(function () {
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
-            adv_fil : false
-        });
-    });
+		inputs.push({
+			name: $(this).attr('name'),
+			value: $(this).val(),
+			adv_fil : false
+		});
+	});
 
 	$.ajax({
 		type: 'POST',
@@ -635,9 +635,11 @@ $(document).ready(function () {
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');
+		console.log(id);
 		$('#em-modal-form').modal({
 			backdrop: true
 		}, 'toggle');
+
 
 
 		$('.modal-title').empty();
@@ -659,15 +661,18 @@ $(document).ready(function () {
 
 		$('.modal-dialog').addClass('modal-lg');
 		$(".modal-body").empty();
-		
+
 		$(".modal-body").append('<iframe src="' + url + '" style="width:100%; height:720px; border:none"></iframe>');
+
 	});
 	//
 	// Menu action
 	//
 	$(document).on('click', '.em-actions', function (e) {
+
 		e.preventDefault();
 		var id = parseInt($(this).attr('id').split('|')[3]);
+
 		$('#em-modal-actions').modal({
 			backdrop: false
 		}, 'toggle');
@@ -677,8 +682,10 @@ $(document).ready(function () {
 		if ($('.modal-dialog').hasClass('modal-lg')) {
 			$('.modal-dialog').removeClass('modal-lg');
 		}
-		$('.modal-body').attr('act-id', id);
 		$('.modal-footer').show();
+
+		$('.modal-body').attr('act-id', id);
+
 
 		var view = $('#view').val();
 		var sid = 0;
@@ -705,9 +712,9 @@ $(document).ready(function () {
 		switch (id) {
 
 			case 19:
-				//create group
+			//create group
 			case 20:
-				//create user
+			//create user
 			case 23:
 				//affect
 				$.ajax({
@@ -742,25 +749,25 @@ $(document).ready(function () {
 				})
 				break;
 
-				/*case 29:
-								// change current profile
-								$.ajax(
-									{
-										type:'get',
-										url:url,
-										dataType:'html',
-										data:{user:sid},
-										success: function(result)
-										{
-											  $('.modal-body').empty();
-											$('.modal-body').append(result);
-										},
-										error: function (jqXHR, textStatus, errorThrown)
-										{
-											console.log(jqXHR.responseText);
-										}
-									})
-							  break;*/
+			/*case 29:
+                            // change current profile
+                            $.ajax(
+                                {
+                                    type:'get',
+                                    url:url,
+                                    dataType:'html',
+                                    data:{user:sid},
+                                    success: function(result)
+                                    {
+                                          $('.modal-body').empty();
+                                        $('.modal-body').append(result);
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown)
+                                    {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                })
+                          break;*/
 
 			case 21:
 				//activate
@@ -775,12 +782,29 @@ $(document).ready(function () {
 						state: 0
 					},
 					success: function (result) {
-						if(result.status)
+						if (result.status){
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
 							reloadData();
+
+							reloadActions($('#view').val(), undefined, false);
+							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+						}
+
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
 						if (jqXHR.status === 302) {
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
 							window.location.replace('/user');
 						}
 					}
@@ -800,12 +824,28 @@ $(document).ready(function () {
 						state: 1
 					},
 					success: function (result) {
-						if(result.status)
+						if (result.status){
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
 							reloadData();
+						}
+
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
 						if (jqXHR.status === 302) {
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
 							window.location.replace('/user');
 						}
 					}
@@ -835,7 +875,13 @@ $(document).ready(function () {
 			case 26:
 				// delete user
 				$('.modal-body').empty();
-				$('.modal-body').append('<div style="padding:26px"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
+				$('.modal-body').append('<div style="padding:26px"><strong>'+ Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
+				break;
+
+			case 33:
+				//regenerate password
+				$('.modal-body').empty();
+				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
 				break;
 		}
 
@@ -964,19 +1010,30 @@ $(document).ready(function () {
 					success: function (result) {
 						$('.modal-body .em-dimmer').remove();
 						if (result.status) {
-							$('#em-add-group').before('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('#em-add-group').before('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
-								$('#em-modal-actions').modal('hide');
-							}, 500);
+								'</div>');*/
+
+							$('#em-modal-actions').modal('hide');
 
 						} else {
-							$('#em-add-group').before('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('#em-add-group').before('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
@@ -1044,19 +1101,34 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
-								$('#em-modal-actions').modal('hide');
-							}, 500);
+								'</div>');*/
+
+							$('#em-modal-actions').modal('hide');
+
 							reloadData();
+
+							reloadActions($('#view').val(), undefined, false);
+							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1095,19 +1167,30 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
+								'</div>');*/
+
 								$('#em-modal-actions').modal('hide');
-							}, 500);
 
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1178,20 +1261,31 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
-							setTimeout(function () {
-								$('#em-modal-actions').modal('hide');
-							}, 500);
+								'</div>');*/
+
+							$('#em-modal-actions').modal('hide');
 							reloadData();
 
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1215,20 +1309,35 @@ $(document).ready(function () {
 						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: result.msg,
+								showConfirmButton: false,
+								timer: 1500
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 							reloadData();
+
+							reloadActions($('#view').val());
+							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
 							setTimeout(function () {
 								$('#em-modal-actions').modal('hide');
 							}, 500);
 
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: result.msg
+							});
+							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+								'</div>');*/
 						}
 
 					},
@@ -1237,6 +1346,41 @@ $(document).ready(function () {
 					}
 				});
 				break;
+			case 33 :
+				var usersData = getUserCheck();// get objectJson with id et uid
+				var uid = JSON.parse(usersData);// parsing in json to get only the uid
+
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_emundus&controller=users&task=regeneratepassword',
+					data: {
+						user: uid[1]
+					},
+
+					dataType: 'json',
+					success: function (result) {
+
+						if (result.status) {
+							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
+								'<button type="button" class="close" data-dismiss="alert">×</button>' +
+								'<strong>' + result.msg + '</strong>' +
+								'</div>');
+
+						}
+						else{
+							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
+								'<button type="button" class="close" data-dismiss="alert">×</button>' +
+								'<strong>' + result.msg + '</strong> ' +
+								'</div>');
+						}
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						console.log(jqXHR.responseText, errorThrown);
+					}
+
+				});
+
+			break;
 		}
 	});
 
@@ -1287,6 +1431,4 @@ $(document).ready(function () {
 		}
 
 	})
-
-
 })

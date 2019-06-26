@@ -185,10 +185,19 @@ if (!$mainframe->isAdmin()) {
 						foreach ($groups as $key => $group) {
 							$group_params = json_decode($group->gparams);
 							if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+								$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = '.$group->group_id.' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
+								$db->setQuery($query);
+								try {
+									$repeat_table = $db->loadResult();
+								} catch (Exception $e) {
+									$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+									JLog::add($error, JLog::ERROR, 'com_emundus');
+									$repeat_table = $table->db_table_name.'_'.$group->group_id.'_repeat';
+								}
 								$data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
 								$data[$group->group_id]['group_id'] = $group->group_id;
 								$data[$group->group_id]['element_name'][] = $group->name;
-								$data[$group->group_id]['table'] = $table->db_table_name.'_'.$group->group_id.'_repeat';
+								$data[$group->group_id]['table'] = $repeat_table;
 							}
 						}
 						if (count($data) > 0) {
@@ -197,20 +206,23 @@ if (!$mainframe->isAdmin()) {
 								try {
 									$query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
 									$db->setQuery( $query );
-									$stored = $db->loadAssoc();
+									$stored = $db->loadAssocList();
 
 									if (count($stored) > 0) {
-										// update form data
-										unset($stored['id']);
-										unset($stored['parent_id']);
 
-										try {
-											$query = 'INSERT INTO '.$d['table'].' (`parent_id`, `'.implode('`,`', array_keys($stored)).'`) VALUES('.$id.', '.implode(',', $db->Quote($stored)).')';
-											$db->setQuery( $query );
-											$db->execute();
-										} catch (Exception $e) {
-								            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-								            JLog::add($error, JLog::ERROR, 'com_emundus');
+										foreach ($stored as $line) {
+											// update form data
+											unset($line['id']);
+											unset($line['parent_id']);
+
+											try {
+												$query = 'INSERT INTO '.$d['table'].' (`parent_id`, `'.implode('`,`', array_keys($line)).'`) VALUES('.$id.', '.implode(',', $db->Quote($line)).')';
+												$db->setQuery( $query );
+												$db->execute();
+											} catch (Exception $e) {
+									            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+									            JLog::add($error, JLog::ERROR, 'com_emundus');
+									        }
 								        }
 								    }
 

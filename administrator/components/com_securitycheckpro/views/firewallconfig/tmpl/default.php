@@ -124,9 +124,16 @@ function action( $name, $attribs = null, $selected = null, $id=false )
 	return JHTML::_('select.genericlist',  $arr, $name, 'class="chosen-select-no-single"', 'value', 'text', (int) $selected, $id );
 }
 
-// Cargamos los archivos javascript necesarios
+// Esta parte no se puede eliminar porque de lo contrario las pestañas y la navegación "desaparecen" al navegar por ellas
+JHtml::_('behavior.modal');
+
+// Eliminamos la carga de las librerías mootools
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+$rootPath = JURI::root(true);
+$arrHead = $document->getHeadData();
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
+$document->setHeadData($arrHead);
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
@@ -1851,7 +1858,45 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 		<!-- End container fluid -->		
 		</div>
 <!-- End Wrapper -->			
-</div>		
+</div>	
+
+<script>
+	var cont = 1;
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		var target = $(e.target).attr("href") // activated tab
+		
+		var data_json = <?php echo $this->logs_by_country; ?>;
+		
+		if ( target == "#geoblock" ) {			
+			if (cont == 1) {
+				//var map = new Datamap({element: document.getElementById('container')});
+				map = new Datamap({
+					scope: 'world',
+					element: document.getElementById('container'),
+					projection: 'mercator',
+					fills: {
+						HIGH: '#FF0000',
+						LOW: '#F3F781',
+						MEDIUM: '#FF8000',
+						UNKNOWN: 'rgb(0,0,0)',
+						defaultFill: 'green'
+					},
+					data:	data_json
+					,geographyConfig: {
+						popupTemplate: function(geo, data) {
+							return ['<div class="hoverinfo" style="text-align: center;"><strong>',
+									geo.properties.name,
+									'<br/>' + data.numberOfThings,
+									'</strong></div>'].join('');
+						},
+						highlightFillColor: 'blue',
+					}
+				});
+				cont++;
+			}
+		}
+	});
+</script>	
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

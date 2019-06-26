@@ -160,7 +160,7 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 				<button type="submit" class="btn btn-primary validate">
 					<?php echo JText::_('JSUBMIT'); ?>
 				</button>
-				<a class="btn" href="<?php echo JRoute::_('/'); ?>" title="<?php echo JText::_('JCANCEL'); ?>">
+				<a class="btn" href="index.php" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
 				</a>
 				<input type="hidden" name="option" value="com_users" />
@@ -170,3 +170,10 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 </div>
+<?php
+	$user = JFactory::getSession()->get('emundusUser');
+?>
+<script type="text/javascript">
+	document.getElementById("jform_emundus_profile_lastname").value = "<?php echo $user->lastname; ?>";
+	document.getElementById("jform_emundus_profile_firstname").value = "<?php echo $user->firstname; ?>";
+</script>

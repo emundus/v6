@@ -25,7 +25,7 @@ JFactory::getSession()->set('application_layout', 'decision');
                 <?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                 <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                    <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-file"></span></button>
+                    <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                 </a>
                 <?php endif; ?>
             </h3>
@@ -45,6 +45,7 @@ JFactory::getSession()->set('application_layout', 'decision');
                     <?php endif; ?>
                 </div>
               </div>
+              <div class="evaluations" id="evaluations">-----------</div>
             </div>
         </div>
     </div>
@@ -57,7 +58,7 @@ JFactory::getSession()->set('application_layout', 'decision');
     }).show();
 
     function resizeIframe(obj) {
-        obj.style.height = obj.contentWindow.document.body.scrollHeight +400 + 'px';
+        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     }
 
     window.ScrollToTop = function(){
@@ -66,4 +67,26 @@ JFactory::getSession()->set('application_layout', 'decision');
       }, 'slow');
     };
 
+    var url_evaluation = '<?php echo $this->url_evaluation; ?>';
+
+    if (url_evaluation != '') {
+        $.ajax({
+            type: "GET",
+            url: url_evaluation,
+            dataType: 'html',
+            success: function(data) {
+                $("#evaluations").empty();
+                $("#evaluations").append(data);
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+</script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>

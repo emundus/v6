@@ -1,10 +1,10 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2014 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v4.3.0
- * @build-date      2015/03/19
+ * @version         Release v8.0.5
+ * @build-date      2019/01/14
  */
 
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ if ($params->get('displayType') == 'modal')
     $spacer = JText::_('MOD_SCLOGIN_LOGINREG_SEPARATOR');
     if ($params->get('modalButtonStyle') == 'button')
     {
-        $loginClass = 'class="btn btn-info"';
+        $loginClass = 'class="btn btn-primary"';
         $registerClass = 'class="btn"';
         $spacer = "";
     }
@@ -76,13 +76,19 @@ if ($params->get('displayType') == 'modal')
                 '</div></div>';
 
         echo '<script type="text/javascript">
-jfbcJQuery(document).ready(function() {
-    jfbcJQuery("#login-modal").appendTo("body");
-});
-jfbcJQuery("#login-modal").on("show", function() {
-        jfbcJQuery("#login-modal").css({"margin-left": function() {return -(jfbcJQuery("#login-modal").width() / 2)}})
+                jfbcJQuery(document).ready(function() {
+                    jfbcJQuery("#login-modal").appendTo("body");
+                });';
+        if ($params->get('autoFocusUsername')) {
+            echo 'jfbcJQuery("#login-modal").on("shown.bs.modal", function () {
+                jfbcJQuery("#sclogin-username").focus();
+            });';
+        }
+        echo 'jfbcJQuery("#login-modal").on("show", function() {
+            jfbcJQuery("#login-modal").css({"margin-left": function() {return -(jfbcJQuery("#login-modal").width() / 2)}})
         });
-</script>';
+        </script>';
+
     }
 }
 ?>
