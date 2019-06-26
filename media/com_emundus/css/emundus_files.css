@@ -9,7 +9,7 @@ p {
 .navbar-brand{
     padding: 0;
     height: 37px;
-    margin-top: 5px;
+    /*margin-top: 5px;*/
 }
 .navbar-collapse.collapse{
     overflow: hidden;
@@ -337,6 +337,7 @@ thead th:hover {
     top: 50%;
     left: 0;
     background-color: rgba(142, 142, 142, 0.83);
+    z-index: 999;
 }
 
 #em-hide-filters:hover {
@@ -1019,5 +1020,11 @@ label[for="em-file_to_upload"]:hover {
 }
 .title_wysiwyg{
     margin-top: 5vh !important;
+}
+#check > .em-cell{
+    display: block !important;
+}
+.panel-default{
+    padding-left: 0;
 }
 
