@@ -104,7 +104,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 				// To separate the data into 3 parts we need to organize the objects.
 				$to_create = array();
 				$to_update = array();
-				$to_delete = $db_array;
+				//$to_delete = $db_array;
+				$to_delete = array();
 
 				foreach ($json_array as $json_item) {
 
@@ -244,24 +245,44 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						// Product family = programme programmes
 						// Updating the category involves checking if the category exists in the other table.
 						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6'])))), $categories);
-						if ($db_item['categ'] != $category) {
-							if ($category == 0) {
-								// If no category exists: INSERT
-								$query = $db->getQuery(true);
-								$query
-									->insert($db->quoteName('#__emundus_setup_thematiques'))
-									->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
-									->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($update_item['produit6']));
-								$db->setQuery($query);
-								try {
-									$db->execute();
-									$category = $db->insertid();
-									$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6']))));
-								} catch (Exception $e) {
-									JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						$multiple = explode(',-', str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6'])))));
+						if ($db_item['categ'] != $category ) {
+							$category_concat  = array();
+							foreach ($multiple as $t) {
+								if (!in_array($t,$categories)){
+									if ($category == 0) {
+										// If no category exists: INSERT
+										$query = $db->getQuery(true);
+										$query
+											->insert($db->quoteName('#__emundus_setup_thematiques'))
+											->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
+											->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($update_item['produit6']));
+										$db->setQuery($query);
+										try {
+											$db->execute();
+											$category = $db->insertid();
+											$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))));
+										} catch (Exception $e) {
+											JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+										}
+									}
 								}
+								else {
+									$query = $db->getQuery(true);
+									$query
+										->select($db->quoteName('id'))
+										->from($db->quoteName('#__emundus_setup_thematiques'))
+										->where($db->quoteName('title') . ' LIKE ' . $db->quote($t));
+									$db->setQuery($query);
+									try {
+										$category = $db->loadResult();
+									} catch (Exception $e) {
+										JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+									}
+								}
+								array_push($category_concat, $category);
 							}
-							$fields[] = $db->quoteName('p.programmes').' = '.$category;
+							$fields[] = $db->quoteName('p.programmes').' = '.$db->quote(implode(', ', $category_concat));
 						}
 
 						// Product code = programme code
@@ -511,21 +532,41 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						// Array search returns FALSE (0) if it does not find the key.
 						// Else it will return the ID of the category with the name in the JSON.
 						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6'])))), $categories);
-						if ($category == 0) {
-							// If no category exists: INSERT
-							$query = $db->getQuery(true);
-							$query
-								->insert($db->quoteName('#__emundus_setup_thematiques'))
-								->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
-								->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6']))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($item['produit6']));
-							$db->setQuery($query);
-							try {
-								$db->execute();
-								$category = $db->insertid();
-								$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6']))));
-							} catch (Exception $e) {
-								JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						$multiple = explode(',-', str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6'])))));
+						$category_concat  = array();
+						foreach ($multiple as $t) {
+							if (!in_array($t,$categories)){
+								if ($category == 0) {
+									// If no category exists: INSERT
+									$query = $db->getQuery(true);
+									$query
+										->insert($db->quoteName('#__emundus_setup_thematiques'))
+										->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
+										->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($item['produit6']));
+									$db->setQuery($query);
+									try {
+										$db->execute();
+										$category = $db->insertid();
+										$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))));
+									} catch (Exception $e) {
+										JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+									}
+								}
 							}
+							else {
+								$query = $db->getQuery(true);
+								$query
+									->select($db->quoteName('id'))
+									->from($db->quoteName('#__emundus_setup_thematiques'))
+									->where($db->quoteName('title') . ' LIKE ' . $db->quote($t));
+								$db->setQuery($query);
+								try {
+									$category = $db->loadResult();
+								} catch (Exception $e) {
+									JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+								}
+							}
+							array_push($category_concat, $category);
 						}
 
 						// Only add programme if it does not already exist in DB and has not already been added.
@@ -542,7 +583,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['intituleproduit']),
 								$db->quote($item['observations']),
 								'1',
-								$category,
+								$db->quote(implode(', ', $category_concat)),
 								'1',
 								$db->quote($item['libellestageurl']),
 								$db->quote($item['prerequis']),

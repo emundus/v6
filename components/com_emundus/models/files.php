@@ -3122,6 +3122,7 @@ die();*/
         }
     }
 
+    /*
 	public function unscheduledSessions($session) {
 		try {
 			$db = JFactory::getDbo();
@@ -3140,6 +3141,7 @@ die();*/
 			echo $e->getMessage();
 		}
 	}
+    */
 
     public function getAppliedSessions($program) {
         try {
