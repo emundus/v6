@@ -831,8 +831,23 @@ function getSiseCountry($country) {
 	} catch (Exception $e) {
 		JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
 	}
-	return false;
+	return null;
 }
+
+
+function getProfession($profession) {
+	$db = JFactory::getDBO();
+
+	$query = 'SELECT valeur FROM #__emundus_list_profession_insee_sise WHERE code LIKE "'.$profession.'"';
+	try {
+		$db->setQuery($query);
+		return $db->loadResult();
+	} catch (Exception $e) {
+		JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+	}
+	return null;
+}
+
 
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null) {
 	jimport('joomla.html.parameter');
@@ -1280,22 +1295,22 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             <table>
                                 <tr>
                                     <td><b>'. JText::_("CIVILITY") .' :</b></td>
-                                    <td '.  (in_array('responsable_civility_1',$data) ? 'class="updatedInfo"' : '') .'>'.$responsableCivility1.'</td>
+                                    <td '. (in_array('responsable_civility_1',$data) ? 'class="updatedInfo"' : '') .'>'.$responsableCivility1.'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("LASTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_nom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_nom_1'].'</td>
+                                    <td '. (in_array('responsable_nom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_nom_1'].'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_prenom_1',$data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_prenom_1'].'</td>
+                                    <td '. (in_array('responsable_prenom_1',$data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_prenom_1'].'</td>
                                 </tr>
                                  <tr>
                                     <td><b>'. JText::_("ADDRESS") .' :</b></td>
-                                    <td '.  (in_array('responsable_adresse_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_adresse_1'].'</td>
+                                    <td '. (in_array('responsable_adresse_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_adresse_1'].'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_cp_1',  $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' </b> :</td>
+                                    <td '. (in_array('responsable_cp_1',  $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' </b> :</td>
                                     <td>'.$item['responsable_cp_1'].'</td>
                                 </tr>
                                 <tr>
@@ -1303,26 +1318,24 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                                     <td>'.$tutor1_city.' '. (!empty($item["responsable_ville_1"]) ? '('.$item["responsable_ville_1"].')' : '').'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_pays_1',$data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' </b> :</td>
+                                    <td '. (in_array('responsable_pays_1',$data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' </b> :</td>
                                     <td>'.getSiseCountry($item['responsable_pays_1']).'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_telephone_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' </b>:</td>
+                                    <td '. (in_array('responsable_telephone_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' </b>:</td>
                                     <td>'.$item['responsable_telephone_1'].'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_email_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("EMAIL") .'</b> : </td>
+                                    <td '. (in_array('responsable_email_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("EMAIL") .'</b> : </td>
                                     <td>'.$item['responsable_email_1'].'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_profession_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("PROFESSION") .'* : </b></td>
-                                    <td>'.$item['responsable_profession_1'].'</td>
+                                    <td '. (in_array('responsable_profession_1', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("PROFESSION") .'* : </b></td>
+                                    <td>'.getProfession($item['responsable_profession_1']).'</td>
                                 </tr>
                             </table>
                         </td>
-                        
                     </tr>
-                    
                     </table>
                     
                      <br>
@@ -1336,29 +1349,29 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             <table>
                                 <tr>
                                     <td><b>'. JText::_("CIVILITY") .' :</b></td>
-                                    <td '.  (in_array('responsable_civility_2',  $data) ? 'class="updatedInfo"' : '') .'>'. $responsableCivility2 .'</td>
+                                    <td '. (in_array('responsable_civility_2',  $data) ? 'class="updatedInfo"' : '') .'>'. $responsableCivility2 .'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("LASTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_nom_2',  $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_nom_2'].'</td>
+                                    <td '. (in_array('responsable_nom_2',  $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_nom_2'].'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
-                                    <td '.  (in_array('responsable_prenom_2', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_prenom_2'].'</td>
+                                    <td '. (in_array('responsable_prenom_2', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_prenom_2'].'</td>
                                 </tr>
                                  <tr>
                                     <td><b>'. JText::_("ADDRESS") .' :</b></td>
-                                    <td '.  (in_array('responsable_adresse_2', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_adresse_2'].'</td>
+                                    <td '. (in_array('responsable_adresse_2', $data) ? 'class="updatedInfo"' : '') .'>'.$item['responsable_adresse_2'].'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_cp_2',  $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' :</b> '.$item['responsable_cp_2'].'</td>
+                                    <td '. (in_array('responsable_cp_2',  $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' :</b> '.$item['responsable_cp_2'].'</td>
                                 </tr>
                                 <tr>
                                     <td '.((in_array('responsable_ville_2',  $data)|| in_array('responsable_ville_other_2',  $data)) ? 'class="updatedInfo"' : '').'><b>'. JText::_("CITY") .' :</b> </td>
                                     <td>'.$tutor2_city.''. (!empty($item["responsable_ville_2"]) ? '('.$item["responsable_ville_2"].')' : '').'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('responsable_pays_2',$data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' :</b> </td>
+                                    <td '. (in_array('responsable_pays_2',$data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' :</b> </td>
                                     <td>'.getSiseCountry($item['responsable_pays_2']).'</td>
                                 </tr>
                                 <tr>
@@ -1366,12 +1379,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                                     <td>'.$item['responsable_telephone_2'].'</td>
                                 </tr>
                                 <tr>
-                                 <td>'.  (in_array('responsable_email_2', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("EMAIL") .' :</b> </td>
+                                 <td>'. (in_array('responsable_email_2', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("EMAIL") .' :</b> </td>
                                  <td>'.$item['responsable_email_2'].'</td>
                                 </tr>
                                 <tr> 
-                                    <td>'.  (in_array('responsable_profession_2', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("PROFESSION") .'* :</b></td>
-                                    <td>'.$item['responsable_profession_2'].'</td>
+                                    <td>'. (in_array('responsable_profession_2', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("PROFESSION") .'* :</b></td>
+                                    <td>'.getProfession($item['responsable_profession_2']).'</td>
                                 </tr>
                             </table>
                         </td>
@@ -1394,44 +1407,43 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             <table>
                                 <tr>
                                     <td><b>'. JText::_("CIVILITY") .' :</b></td>
-                                    <td '.  (in_array('repondant_financier_civility',  $data) ? 'class="updatedInfo"' : '') .'>'.$repondantFinancier.'</td>
+                                    <td '. (in_array('repondant_financier_civility',  $data) ? 'class="updatedInfo"' : '') .'>'.$repondantFinancier.'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("LASTNAME") .' :</b></td>
-                                    <td '.  (in_array('repondant_financier_nom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_financier_nom_1'].'</td>
+                                    <td '. (in_array('repondant_financier_nom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_financier_nom_1'].'</td>
                                 </tr>
                                 <tr>
                                     <td><b>'. JText::_("FIRSTNAME") .' :</b></td>
-                                    <td '.  (in_array('repondant_financier_prenom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_financier_prenom_1'].'</td>
+                                    <td '. (in_array('repondant_financier_prenom_1', $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_financier_prenom_1'].'</td>
                                 </tr>
                                  <tr>
                                     <td><b>'. JText::_("ADDRESS") .' :</b></td>
-                                    <td '.  (in_array('repondant_address',  $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_address'].'</td>
+                                    <td '. (in_array('repondant_address',  $data) ? 'class="updatedInfo"' : '') .'>'.$item['repondant_address'].'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('repondant_financier_zipcode', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' :</b> </td>
+                                    <td '. (in_array('repondant_financier_zipcode', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("ZIPCODE") .' :</b> </td>
                                     <td>'.$item['repondant_financier_zipcode'].'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('repondant_financier_city', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("CITY") .' : </b></td>
+                                    <td '. (in_array('repondant_financier_city', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("CITY") .' : </b></td>
                                     <td>'.$financer_city.' '. (!empty($item["repondant_financier_city"]) ? '('.$item["repondant_financier_city"].')' : '').'</td>
                                 </tr>
                                 <tr>
-                                    <td '.  (in_array('repondant_financier_country', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' :</b> </td>
+                                    <td '. (in_array('repondant_financier_country', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("COUNTRY") .' :</b> </td>
                                     <td>'.getSiseCountry($item['repondant_financier_country']).'</td>
                                 </tr>
                                 <tr>
-                                      <td '.  (in_array('repondant_financier_telephone', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' :</b> </td>
+                                      <td '. (in_array('repondant_financier_telephone', $data) ? 'class="updatedInfo"' : '') .'><b>'. JText::_("TELEPHONE") .' :</b> </td>
                                       <td>'.$item['repondant_financier_telephone'].'</td>
                                 </tr>
                                 <tr>
-                                    <td>'.  (in_array('repondant_financier_email', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("EMAIL") .' : </b></td>
+                                    <td>'. (in_array('repondant_financier_email', $data) ? 'class="updatedInfo"' : '') .'<b>'. JText::_("EMAIL") .' : </b></td>
                                     <td>'.$item['repondant_financier_email'].'</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
-                    
                     </table>
                     
                     <br>
@@ -1529,6 +1541,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                                 <tr>
                                     <td width="130px">
                                         <p class="signature">Signature obligatoire de l\'étudiant(e)</p>
+                                        <p style="color: white;">signature_1</p>
                                     </td>
                                 </tr>
                             </table>
@@ -1538,6 +1551,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                                 <tr>
                                     <td width="130px">
                                         <p class="signature">Signature obligatoire du répondant financier</p>
+                                        <p style="color: white;">signature_2</p>
                                     </td>
                                 </tr>
                             </table>
