@@ -925,6 +925,7 @@ label[for="em-file_to_upload"]:hover {
     z-index: 1;
     justify-content: center;
     align-items: center;
+    margin-top: 0;
 }
 .borderSelect{
     background-color: #dadada;

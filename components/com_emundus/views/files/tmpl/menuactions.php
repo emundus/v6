@@ -120,9 +120,10 @@ endif;
 <?php } ?>
 
 <script>
-    $('#countCheckedCheckbox').html('');
+    //$('#countCheckedCheckbox').html('');
 
     $('#em-close-file').click(function(){
+        $('#countCheckedCheckbox').html('');
         $('.em-check').prop('checked',false);
         $('.em-check-all-all').prop('checked',false);
         reloadActions('files', undefined, false);
