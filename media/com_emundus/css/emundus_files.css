@@ -828,7 +828,9 @@ label[for="em-file_to_upload"]:hover {
 }
 
 /* checkbox page selection on data.php */
-
+.navbar.navbar-inverse{
+    display: flex;
+}
 .selectContainer{
     display: flex;
     flex-direction: row;
@@ -845,6 +847,13 @@ label[for="em-file_to_upload"]:hover {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+}
+.selectPage>.check-box{
+    color: #9EA4AB !important;
+    margin-bottom: 5px !important;
+    font-weight: bold !important;
+    display: inline;
+    min-width: 0 !important;
 }
 .selectPage:hover{
     background-color: #dadada;
