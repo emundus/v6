@@ -230,7 +230,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
                     $('#em-email').empty();
 
                     result = JSON.parse(result);
-                    console.log(result);
+
                     if (result.status) {
 
                         if (result.sent.length > 0) {
