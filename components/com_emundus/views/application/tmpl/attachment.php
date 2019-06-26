@@ -36,8 +36,10 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         </div>
 
         <?php $i = 1;
-        $new_cat_id = $this->userAttachments[0]->category;
-        $nameCategory = $this->nameCategory[$new_cat_id]; ?>
+        $new_cat_id = ($this->userAttachments[0]->category == null) ?  0 : $this->userAttachments[0]->category;
+        $cat_id = $this->userAttachments[0]->category;
+        //var_dump($this->nameCategory).die();
+        $nameCategory = $this->nameCategory[$cat_id]; ?>
         <div class="em-collapse-container">
             <div class="em-utilitize">
                 <div class="em-select-all-files">
@@ -89,6 +91,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                 } else echo JText::_('NO_ATTACHMENT');
 
                         foreach ($this->userAttachments as $cat => $attachment) {
+                            $valueCategory = ($attachment->category == null) ?  0 : $attachment->category;
                             if ($new_cat_id != $attachment->category) {
                                 $i = 1; ?>
                                     </tbody>
@@ -100,17 +103,17 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                 </div>
                             </div>
                         </div>
-
+          
                         <div class="em-collapse">
                             <div class="panel-heading fileCollapse">
                                 <div class="em-title-collapse">
                                     <p><strong><?= JText::_($this->nameCategory[$attachment->category]); ?></strong></p>
-                                    <a id="em-button" class="em-button<?= $attachment->category; ?>" role="button">
-                                        <p id="em-arrow-down<?= $attachment->category; ?>" class='em-arrow-up'></p>
+                                    <a id="em-button" class="em-button<?= $valueCategory; ?>" role="button">
+                                        <p id="em-arrow-down<?= $valueCategory; ?>" class='em-arrow-up'></p>
                                     </a>
                                 </div>
                             </div>
-                            <div id="collapse<?= $attachment->category; ?>" class="borderContentCollapse">
+                            <div id="collapse<?= $valueCategory; ?>" class="borderContentCollapse">
                                 <div class="panel-body">
                                     <?php if (count($this->userAttachments) > 0) {
                                         if ($can_export) {
@@ -119,9 +122,9 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                                         echo '<table class="table table-hover attachments_table">
                                                 <thead>
-                                                    <tr id="em-tr-collapse'.$attachment->category.'" class="em-tr-collapse">
+                                                    <tr id="em-tr-collapse'.$valueCategory.'" class="em-tr-collapse">
                                                         <th>' . $checkbox . ' #</th>
-                                                        <div class="tooltipSelectAttachments selector'.$attachment->category.'"><p>' . JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'). '</p></div>
+                                                        <div class="tooltipSelectAttachments selector'.$valueCategory.'"><p>' . JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'). '</p></div>
                                                         <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DATE') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
@@ -133,7 +136,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                             <tbody>';
                                     }
                             }
-                            $new_cat_id = $attachment->category;
+                            $new_cat_id = $valueCategory;
 
                         if (count($this->userAttachments) > 0) {
 
