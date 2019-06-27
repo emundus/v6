@@ -290,7 +290,8 @@ class EmundusModelApplication extends JModelList {
             $this->_db->execute();
             return $this->_db->insertid();
         } catch(Exception $e) {
-            throw $e;
+	        JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+	        return null;
         }
     }
 
