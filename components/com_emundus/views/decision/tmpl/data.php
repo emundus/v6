@@ -14,7 +14,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
 <input type="hidden" id="view" name="view" value="decision">
-<div class="panel panel-defaul em-data">
+<div class="panel panel-default em-data">
 	<?php if(is_array($this->datas)):?>
 		<div>
 			<?php echo $this->pagination->getResultsCounter(); ?>
