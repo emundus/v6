@@ -854,6 +854,9 @@ class EmundusModelApplication extends JModelList {
         $h_access = new EmundusHelperAccess;
         $tableuser = $h_menu->buildMenuQuery($pid);
 
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+
         $forms = '';
 
         try {
@@ -909,7 +912,7 @@ class EmundusModelApplication extends JModelList {
 	                $groupes = $this->_db->loadObjectList();
 
 	                /*-- Liste des groupes -- */
-	                foreach ($groupes as $keyg => $itemg) {
+	                foreach ($groupes as $itemg) {
 	                    // liste des items par groupe
 	                    $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
 	                                FROM #__fabrik_elements fe
@@ -929,7 +932,13 @@ class EmundusModelApplication extends JModelList {
 	                            $forms .='<table>';
 	                            $modulo = 0;
 	                            foreach($elements as &$element) {
-	                                if (!empty($element->label) && $element->label != ' ') {
+
+	                            	// Do not display elements with no value inside them.
+	                            	if ($show_empty_fields == 0 && trim($element->content) == '') {
+		                            	continue;
+		                            }
+
+	                                if (!empty(trim($element->label))) {
 	                                    if ($element->plugin=='date' && $element->content>0) {
 	                                        $date_params = json_decode($element->params);
 	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
@@ -957,7 +966,7 @@ class EmundusModelApplication extends JModelList {
 	                                    elseif ($element->plugin == 'checkbox') {
 	                                        $elt = implode(", ", json_decode (@$element->content));
                                         } elseif ($element->plugin == 'internalid') {
-	                                    	$elt = '';
+	                                        $elt = '';
 	                                    } else {
 		                                    $elt = $element->content;
 	                                    }
@@ -1017,6 +1026,11 @@ class EmundusModelApplication extends JModelList {
 	                                    $forms .= '<tr>';
 	                                    $j = 0;
 	                                    foreach ($r_element as $key => $r_elt) {
+
+		                                    // Do not display elements with no value inside them.
+		                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
+			                                    continue;
+		                                    }
 
 	                                        if (!empty($elements[$j])) {
 		                                        $params = json_decode($elements[$j]->params);
@@ -1118,13 +1132,19 @@ class EmundusModelApplication extends JModelList {
 	                            $forms .='<table>';
 	                            $modulo = 0;
 	                            foreach ($elements as &$element) {
-	                                if (!empty($element->label) && $element->label!=' ') {
+
+	                                if (!empty(trim($element->label))) {
 	                                    $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
 	                                    $this->_db->setQuery( $query );
 	                                    $res = $this->_db->loadRow();
 
 	                                    $element->content = @$res[1];
 	                                    $element->content_id = @$res[0];
+
+		                                // Do not display elements with no value inside them.
+		                                if ($show_empty_fields == 0 && trim($element->content) == '') {
+			                                continue;
+		                                }
 
 	                                    if ($element->plugin=='date' && $element->content>0) {
 	                                        $date_params = json_decode($element->params);
@@ -1232,10 +1252,16 @@ class EmundusModelApplication extends JModelList {
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
-		$em_breaker = JComponentHelper::getParams('com_emundus')->get('export_application_pdf_breaker', '0');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
-        $h_list     = new EmundusHelperList;
+
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+    	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
+
+    	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        $h_list = new EmundusHelperList;
+
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
+
         $forms = "<style>
                     table{
                         border-spacing: 1px;
@@ -1299,7 +1325,8 @@ class EmundusModelApplication extends JModelList {
 
                 /*-- Liste des groupes -- */
                 foreach ($groupes as $itemg) {
-                    // liste des items par groupe
+
+                	// liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                                 FROM #__fabrik_elements fe
                                 WHERE fe.published=1 AND
@@ -1307,10 +1334,8 @@ class EmundusModelApplication extends JModelList {
                                     fe.group_id = "'.$itemg->group_id.'"
                                 ORDER BY fe.ordering';
                     try {
-
                         $this->_db->setQuery($query);
                         $elements = $this->_db->loadObjectList();
-
                     } catch (Exception $e) {
                         JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                         throw $e;
@@ -1332,15 +1357,7 @@ class EmundusModelApplication extends JModelList {
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
                             foreach ($elements as $element) {
-
                                 if (!empty($element->label) && $element->label != ' ' && !empty($element->content)) {
-
-                                    if ($element->plugin == 'date' && $element->content > 0) {
-                                        $date_params = json_decode($element->params);
-                                        $elt = date($date_params->date_form_format, strtotime($element->content));
-                                    } else {
-	                                    $elt = JText::_($element->content);
-                                    }
                                     $forms .= '<tr><td style="padding-right:35px; border-right: 1px solid black;"><b>'.JText::_($element->label).'</b></td> <td> </td></tr>';
                                 }
                             }
@@ -1354,7 +1371,6 @@ class EmundusModelApplication extends JModelList {
                             <tr> ';
 
                             //-- Entrée du tableau -- */
-                            //$nb_lignes = 0;
                             $t_elt = array();
                             foreach ($elements as &$element) {
                                 $t_elt[] = $element->name;
@@ -1400,6 +1416,12 @@ class EmundusModelApplication extends JModelList {
                                     foreach ($r_element as $key => $r_elt) {
 
                                         if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
+
+	                                        // Do not display elements with no value inside them.
+	                                        if ($show_empty_fields == 0 && trim($r_elt) == '') {
+		                                        continue;
+	                                        }
+
                                             $params = json_decode($elements[$j]->params);
 
                                             if ($elements[$j]->plugin == 'date') {
@@ -1433,7 +1455,6 @@ class EmundusModelApplication extends JModelList {
                                                 $cascadingdropdown_label = $params->cascadingdropdown_label;
                                                 $r2 = explode('___', $cascadingdropdown_label);
                                                 $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
-
 
                                                 // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
                                                 if ($params->cdd_display_type == 'checkbox') {
@@ -1527,6 +1548,11 @@ class EmundusModelApplication extends JModelList {
                                     $forms .= '<br>---- '.$i.' ----<br>';
                                     $forms .= '<table>';
                                     foreach ($r_element as $key => $r_elt) {
+
+	                                    // Do not display elements with no value inside them.
+	                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
+		                                    continue;
+	                                    }
 
                                         if (!empty($r_elt) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
 
@@ -1625,6 +1651,11 @@ class EmundusModelApplication extends JModelList {
                                     $element->content = '';
                                     $element->content_id = -1;
                                 }
+
+	                            // Do not display elements with no value inside them.
+	                            if ($show_empty_fields == 0 && trim($element->content) == '') {
+		                            continue;
+	                            }
 
                                 $params = json_decode($element->params);
                                 //var_dump($element->content);
