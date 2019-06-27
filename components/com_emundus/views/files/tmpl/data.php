@@ -124,7 +124,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                         <?= @$this->colsSup[$k][$line['fnum']->val] ?>
 									<?php else :?>
 										<?php if ($value->type == 'text' ) :?>
-											<?= strip_tags($value->val); ?>
+											<?= strip_tags(JText::_($value->val)); ?>
 										<?php elseif ($value->type == "date")  :?>
 										<strong>
 											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
@@ -137,9 +137,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												?>
 											<?php endif; ?>
 										</strong>
-										<?php else: ?>
-											<?= $value->val; ?>
-										<?php endif; ?>
+										<?php else:
+                                            // Do not display the typical PLEASE_SELECT text used for empty dropdowns.
+                                            if ($value->val !== 'PLEASE_SELECT') {
+                                                echo JText::_($value->val);
+                                            }
+										endif; ?>
 									<?php endif; ?>
 									</div>
 								</td>
