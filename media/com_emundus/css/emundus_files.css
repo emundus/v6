@@ -1044,5 +1044,9 @@ label[for="em-file_to_upload"]:hover {
     display: inline;
     padding: 5px 0 0 5px;
 }
-
-
+#emailForm #mail_from{
+    min-width: 10% !important;
+}
+#emailForm #mail_subject{
+    min-width: 60% !important;
+}
