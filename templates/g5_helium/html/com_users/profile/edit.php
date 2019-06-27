@@ -170,3 +170,10 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 </div>
+<?php
+	$user = JFactory::getSession()->get('emundusUser');
+?>
+<script type="text/javascript">
+	document.getElementById("jform_emundus_profile_lastname").value = "<?php echo $user->lastname; ?>";
+	document.getElementById("jform_emundus_profile_firstname").value = "<?php echo $user->firstname; ?>";
+</script>

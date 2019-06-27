@@ -7,31 +7,20 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-    //require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-    //require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-    //require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
     include_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
     include_once(JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
     include_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
     include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
-    $m_profile      = new EmundusModelProfile;
-    //$m_users      = new EmundusModelUsers;
-    //$menu             = new EmundusHelperMenu;
-    $application    = new EmundusModelApplication;
-    //$evaluation   = new EmundusModelEvaluation;
-    $m_files            = new EmundusModelFiles;
+    $m_profile = new EmundusModelProfile;
+    $application = new EmundusModelApplication;
+    $m_files = new EmundusModelFiles;
 
-    $db             = JFactory::getDBO();
-    $app            = JFactory::getApplication();
-    $config         = JFactory::getConfig();
-    //$eMConfig         = JComponentHelper::getParams('com_emundus');
-    //$current_user     = JFactory::getUser();
+    $db = JFactory::getDBO();
+    $app = JFactory::getApplication();
+    $config = JFactory::getConfig();
     $user = $m_profile->getEmundusUser($user_id);
     $fnum = empty($fnum)?$user->fnum:$fnum;
-
-    //$export_pdf = $eMConfig->get('export_pdf');
-    //$user_profile = $m_users->getCurrentUserProfile($user_id);
     
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
@@ -39,31 +28,8 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     // Get form HTML
     $htmldata = '';
 
-
     // Create PDF object
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-   /* class myPdf extends TCPDF
-	{
-		var $lastname = "";
-		var $firstname = "";
-		var $program = "";
-
-		// Page footer
-		public function Footer() {
-			// Position at 16 mm from bottom
-			
-			$this->SetY(-10);
-			// Set font
-			
-			// Page number
-			$this->Cell(0, 0, $this->lastname.' '.$this->firstname.' / '.$this->program, 'T', 0, 'L');
-			$this->Cell(0, 0, ''.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 'T', 0, 'R');
-			
-		}
-
-	}
-	$pdf = new myPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);*/
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
@@ -87,11 +53,11 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
    
 
     //get logo
-    $template   = $app->getTemplate(true);
-    $params     = $template->params;
+    $template = $app->getTemplate(true);
+    $params = $template->params;
 
-    $logo       = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo       = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
 
     //get title
     $title = $config->get('sitename');
@@ -108,13 +74,8 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
-    //$dimensions = $pdf->getPageDimensions();
-
-    /*$pdf->lastname = $item->lastname;
-	$pdf->firstname = $item->firstname;
-	$pdf->program = $item->label;*/
     
-/*** Applicant   ***/   
+/*** Applicant ***/   
 $htmldata .= 
 '<style>
 .card  { background-color: #cecece; border: none; display:block; line-height:80%;}
@@ -151,93 +112,99 @@ $htmldata .=
 .label-darkred { background-color: #96281B }
 </style>';
 
-if ( ! function_exists( 'exif_imagetype' ) ) {
-    function exif_imagetype ( $filename ) {
-        if ( ( list($width, $height, $type, $attr) = getimagesize( $filename ) ) !== false ) {
+if (!function_exists('exif_imagetype')) {
+    function exif_imagetype($filename) {
+        if (( list($width, $height, $type, $attr) = getimagesize( $filename )) !== false) {
             return $type;
         }
     return false;
     }
 }
 
-if(!empty($options) && $options[0] != "" && $options[0] != "0"){
+if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     $htmldata .= '<div class="card">
 					<table width="100%"><tr>';
-if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar))
-    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
-elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar))
-    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
-    $htmldata .= '
-    <td>
+	if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar)) {
+	    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
+	} elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar)) {
+	    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
+	}
 
-    <div class="name"><strong>'.$item->firstname.' '.strtoupper($item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
+	$htmldata .= '
+	    <td>
+	    <div class="name"><strong>'.$item->firstname.' '.strtoupper($item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
 
-if(isset($item->maiden_name))
-    $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
-$date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
+	if (isset($item->maiden_name)) {
+        $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+    }
+	$date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
 
-    if(in_array("aid", $options)){
+    if (in_array("aid", $options)) {
         $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>';
     }
-    if(in_array("afnum", $options)){
+    if (in_array("afnum", $options)) {
         $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
     }
-    if(in_array("aemail", $options)){
+    if (in_array("aemail", $options)) {
         $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>';
     }
-    if(in_array("aapp-sent", $options)){
+    if (in_array("aapp-sent", $options)) {
         $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
     }
-    if(in_array("adoc-print", $options)){
+    if (in_array("adoc-print", $options)) {
         $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
     }
-    if(in_array("tags", $options)){
+    if (in_array("tags", $options)) {
         $tags = $m_files->getTagsByFnum(explode(',', $fnum));
         $htmldata .='<br/><table><tr><td style="display: inline;"> ';
-        foreach($tags as $tag){
+        foreach ($tags as $tag) {
             $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
         }
         $htmldata .='</td></tr></table>';
     }
     $htmldata .= '</td></tr></table></div>';
     
-}elseif($options[0] == "0"){
+} elseif ($options[0] == "0") {
     $htmldata .= '';
-}else{
+} else {
     $htmldata .= '<div class="card">
                 <table width="100%"><tr>';
-    if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar))
+    if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar)) {
         $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
-    elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar))
+    } elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar)) {
         $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
+    }
     $htmldata .= '
     <td width="80%">
 
     <div class="name"><strong>'.$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
 
-    if(isset($item->maiden_name))
+    if (isset($item->maiden_name)) {
         $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+    }
 
     $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
     $htmldata .= '
-    <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
-    <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-    <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
-    <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-    <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
-    </td>
-    </tr>
-    </table>
-    </div>';
+	    <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
+	    <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+	    <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
+	    <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+	    <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
+	    </td>
+	    </tr>
+	    </table>
+	    </div>';
 }
 /**  END APPLICANT   ****/
 
-
-
     // get evaluation
-    $data = @EmundusHelperFiles::getEvaluation('html', $fnum);
-    foreach ($data as $fnums => $evals) {
+    $data = @EmundusHelperFiles::getEvaluation($fnum);
+	if (empty($data)) {
+		$htmldata .= '<p>'.JText::_('COM_EMUNDUS_NO_EVALUATIONS_FOUND').'</p>';
+	}
+
+    foreach ($data as $evals) {
         foreach ($evals as $user => $html) {
             $htmldata .= $html;
         }
@@ -251,15 +218,16 @@ $date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strto
         $pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
     }
 
-    if (is_null($name)) 
+    if (is_null($name)) {
         $path = EMUNDUS_PATH_ABS.$item->user_id.DS.'evaluations.pdf';
-    else
+    } else {
         $path = $name;
+    }
     
     @chdir('tmp');
-    if ($output)
+    if ($output) {
         $pdf->Output($path, 'FI');
-    else
+    } else {
         $pdf->Output($path, 'F');
+    }
 }
-?>

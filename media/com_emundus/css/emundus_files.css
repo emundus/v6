@@ -793,15 +793,17 @@ label[for="em-file_to_upload"]:hover {
     border-bottom: 2px solid #B2B2B2;
 }
 .em-container-loader{
+    height: 100vh;
+    background-color: rgba(0,0,0,0.2);
+    position: relative;
     display: flex;
     flex-direction: row;
+    align-content: center;
     justify-content: center;
-    align-items: center;
-    background: white;
-    height: 100vh;
-    position: relative;
-    top: 20%;
-    opacity: 0.5;
+}
+.em-container-loader img{
+    height: auto;
+    width: 30vh;
 }
 .em-button {
     cursor: pointer;
@@ -1000,10 +1002,13 @@ label[for="em-file_to_upload"]:hover {
     margin-right: 5vh;
 }
 .trombi_margin{
-    width: 43% !important;
+    width: 58% !important;
 }
 .trombi_margin_desc{
     padding: 0 !important;
+}
+.trombi_margin_btm{
+    margin-bottom: 10px !important;
 }
 .trombi-col-button{
     display: flex;
@@ -1014,9 +1019,12 @@ label[for="em-file_to_upload"]:hover {
     width: 33% !important;
     margin-top: 2vh;
 }
+#div-download{
+    width: 33%;
+}
 .trombi_download{
     margin-top: 2vh;
-    padding: 1.5vh 8.5vh 1.5vh 8.5vh !important;
+    width: 100%;
 }
 .title_wysiwyg{
     margin-top: 5vh !important;
@@ -1027,4 +1035,25 @@ label[for="em-file_to_upload"]:hover {
 .panel-default{
     padding-left: 0;
 }
+.em-container-grid{
+    display:flex;
+    flex-direction: row;
+}
+.em-container-grid select{
+    margin-right: 5vh;
+}
 
+.em-col-trombi>.form-check{
+    display: flex;
+    flex-direction: row;
+}
+.em-col-trombi>.form-check>label{
+    display: inline;
+    padding: 5px 0 0 5px;
+}
+#emailForm #mail_from{
+    min-width: 10% !important;
+}
+#emailForm #mail_subject{
+    min-width: 60% !important;
+}

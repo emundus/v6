@@ -96,7 +96,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                     <div class="em-cell" >
                                         <?php if($k == 'check'): ?>
                                             <label for = "<?php echo $line['fnum']->val ?>_check">
-                                                <input type="checkbox" data-evalid="<?php echo $line['evaluation_id']->val ?>" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+                                                <input type="checkbox" data-evalid="<?php echo $line['evaluation_id']->val; ?>" name="<?php echo $line['fnum']->val; ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
                                                 <?php
                                                 $tab = explode('-', $key);
                                                 echo ($tab[1] + 1 + $this->pagination->limitstart);
@@ -119,7 +119,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                             <?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
                                         <?php else:?>
                                             <?php if ($value->type == 'text' ) :?>
-                                                <?php echo strip_tags($value->val); ?>
+                                                <?php echo strip_tags(JText::_($value->val)); ?>
                                             <?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) :?>
                                                 <?php echo substr($value->val,0,200)." ..."; ?>
                                             <?php elseif ($value->type == "date")  :?>
@@ -132,9 +132,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                                         ?>
                                                     <?php endif; ?>
                                                 </strong>
-                                            <?php else: ?>
-                                                <?php echo $value->val; ?>
-                                            <?php endif; ?>
+                                            <?php else:
+                                                // Do not display the typical PLEASE_SELECT text used for empty dropdowns.
+                                                if ($value->val !== 'PLEASE_SELECT') {
+                                                    echo JText::_($value->val);
+                                                }
+                                            endif; ?>
                                         <?php endif; ?>
                                     </div>
 
@@ -175,7 +178,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                             <?php endfor;?>
                         <?php else:?>
                             <?php for($i = ($this->pagination->{'pagesCurrent'} - 2); $i <= ($this->pagination->{'pagesCurrent'} + 2); $i++ ):?>
-                                <li <?php if($this->pagination->{'pagesCurrent'} == $i){echo 'class="active"';}?>><a id="<?php echo $i?>" href="#em-data"><?php echo $i?></a></li>
+			                    <?php if($i <= $this->pagination->{'pagesTotal'}) :?>
+                                    <li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
+			                    <?php endif; ?>
                             <?php endfor;?>
                         <?php endif;?>
                         <li class="disabled"><span>...</span></li>

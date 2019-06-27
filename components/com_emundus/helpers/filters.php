@@ -214,20 +214,23 @@ class EmundusHelperFilters {
 			return $db->loadObjectList();
 	}
 
-	function getEvaluation_doc($result) {
+	function getEvaluation_doc($status) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT *
 				FROM #__emundus_setup_attachments esa
 				WHERE id IN (
-					SELECT distinct(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE status='.$result.'
+					SELECT distinct(esl.attachment_id) 
+					FROM #__emundus_setup_letters esl 
+					LEFT JOIN #__emundus_setup_letters_repeat_status eslr ON eslr.parent_id=esl.id
+					WHERE esl.status='.$status.'
 					)
 				ORDER BY esa.value';
 			$db->setQuery( $query );
 			return $db->loadObjectList();
 	}
 
-	function setEvaluationList ($result) {
-		$option_list =  @EmundusHelperFilters::getEvaluation_doc($result);
+	function setEvaluationList ($status) {
+		$option_list =  @EmundusHelperFilters::getEvaluation_doc($status);
 		$current_filter = '';
 		if (!empty($option_list)){
 			$current_filter = '<select name="attachment_id" id="attachment_id">';

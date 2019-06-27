@@ -88,6 +88,23 @@ class EmundusControllerEmail extends JControllerLegacy {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		@EmundusHelperEmails::getTemplate();
 	}
+
+	function sendmail_expert() {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+	        die(JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) ));
+        }
+        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $sid    = JRequest::getVar('sid', null, 'GET', 'INT',0);
+        $fnum   = JRequest::getVar('fnum', null, 'GET');
+        //$campaign_id = JRequest::getVar('campaign_id', null, 'POST', 'INT',0);
+        $m_emails = $this->getModel('emails');
+
+        $email = $m_emails->sendmail('expert', $fnum);
+
+        echo json_encode(['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']]);
+
+        exit;
+    }
 	
 } //END CLASS
 ?>

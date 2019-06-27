@@ -76,10 +76,10 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 			$bad_columns[] = $column_number;
 			continue;
 		}
-		
+
 		$table = $column[0];
 		$element = $column[1];
-		
+
 		// Test the existence of the table and the fnum column.
 		if ($table != 'jos_emundus_users') {
 
@@ -125,7 +125,7 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 $parsed_data = [];
 
 while (($data = fgetcsv($handle, 0, ';')) !== false) {
-	
+
 	foreach ($data as $column_number => $column) {
 
 		if ($column_number === $campaign_column) {
@@ -160,12 +160,12 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 		if (in_array($column_number, $bad_columns)) {
 			continue;
 		}
-		
+
 		// Build the complex data structure.
 		$parsed_data[$row][$database_elements[$column_number]->table][$database_elements[$column_number]->column] = preg_replace('/[^\PC\s]/u', '', $column);
-		
+
 	}
-	
+
 	$row++;
 }
 fclose($handle);
@@ -179,8 +179,8 @@ if ($row === 0) {
 
 // If have no parsed data, something went wrong.
 if (empty($parsed_data)) {
-	JLog::add('ERROR: Something went wrong.', JLog::ERROR, 'com_emundus');
-	$app->enqueueMessage('ERROR: Something went wrong.', 'error');
+	JLog::add('ERROR: Something went wrong, please check that your CSV is separated by semi-colons (;).', JLog::ERROR, 'com_emundus');
+	$app->enqueueMessage('ERROR: Something went wrong, please check that your CSV is separated by semi-colons (;).', 'error');
 	return false;
 }
 
@@ -217,6 +217,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	// Clear any potential user ID from previous iteration.
 	unset($user);
+	$new_user = false;
 
 	// We can pass the campaign ID in the XLS if we need.
 	if (!empty($campaign_row[$row_id]) && is_numeric($campaign_row[$row_id])) {
@@ -375,8 +376,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$m_users = new EmundusModelUsers();
 		$acl_aro_groups = $m_users->getDefaultGroup($profile);
 		$user->groups = $acl_aro_groups;
-		$usertype = $m_users->found_usertype($acl_aro_groups[0]);
-		$user->usertype = $usertype;
+		$user->usertype = $m_users->found_usertype($acl_aro_groups[0]);
 		$uid = $m_users->adduser($user, $other_param);
 
 		if (is_array($uid)) {
@@ -409,6 +409,56 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			}
 		}
 
+		$new_user = true;
+
+	} else {
+
+		// Check if the user has not been activated.
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($userId);
+		$table->block = 0;
+		$table->store();
+
+	}
+
+	// If the user has no fnum, get the one made by the user creation code.
+	if (empty($fnum)) {
+
+		$query->clear()
+			->select($db->quoteName('fnum'))
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('applicant_id').' = '.$user->id.' AND '.$db->quoteName('campaign_id').' = '.$campaign);
+		$db->setQuery($query);
+
+		try {
+			$fnum = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not get fnum for user : '.$user->id, JLog::ERROR, 'com_emundus');
+		}
+	}
+
+	// If no fnum is found, generate it.
+	if (empty($fnum)) {
+
+		$fnum = date('YmdHis').str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
+		$query->clear()
+			->insert($db->quoteName('#__emundus_campaign_candidature'))
+			->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum', 'status']))
+			->values($user->id.', '.JFactory::getUser()->id.', '.$campaign.', '.$db->quote($fnum).', '.$status);
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+			$totals['fnum']++;
+			$totals['write']++;
+			JLog::add(' --- INSERTED CC :'.$fnum.' FOR USER : '.$user->id, JLog::INFO, 'com_emundus');
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not build fnum for user at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			continue;
+		}
+	}
+
+	if ($new_user) {
 		// Send email indicating account creation.
 		$m_emails = new EmundusModelEmails();
 
@@ -416,15 +466,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		if ($ldap_user) {
 			$totals['ldap']++;
 			$email = $m_emails->getEmail('new_ldap_account');
-			$tags = $m_emails->setTags($user->id, null, null, null);
+			$tags = $m_emails->setTags($user->id, null, $fnum, null);
 		} else if ($cas_user) {
 			$totals['cas']++;
 			$email = $m_emails->getEmail('new_cas_account');
-			$tags = $m_emails->setTags($user->id, null, null, null);
+			$tags = $m_emails->setTags($user->id, null, $fnum, null);
 		} else {
 			$totals['user']++;
 			$email = $m_emails->getEmail('new_account');
-			$tags = $m_emails->setTags($user->id, null, null, $password);
+			$tags = $m_emails->setTags($user->id, null, $fnum, $password);
 		}
 
 		$mailer = JFactory::getMailer();
@@ -432,7 +482,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
 		$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
 		$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-		$body = $m_emails->setTagsFabrik($body);
+		$body = $m_emails->setTagsFabrik($body, [$fnum]);
 
 		if (!empty($email->Template)) {
 			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
@@ -477,55 +527,11 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		} catch (Exception $e) {
 			JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus');
 		}
+	}
 
+	if (!empty($user->id)) {
 		$user = $user->id;
-	} else {
-
-		// Check if the user has not been activated.
-		$table = JTable::getInstance('user', 'JTable');
-		$table->load($userId);
-		$table->block = 0;
-		$table->store();
-
 	}
-
-	// If the user has no fnum, get the one made by the user creation code.
-	if (empty($fnum)) {
-
-		$query->clear()
-			->select($db->quoteName('fnum'))
-			->from($db->quoteName('#__emundus_campaign_candidature'))
-			->where($db->quoteName('applicant_id').' = '.$user.' AND '.$db->quoteName('campaign_id').' = '.$campaign);
-		$db->setQuery($query);
-
-		try {
-			$fnum = $db->loadResult();
-		} catch (Exception $e) {
-			JLog::add('ERROR: Could not get fnum for user : '.$user, JLog::ERROR, 'com_emundus');
-		}
-	}
-
-	// If no fnum is found, generate it.
-	if (empty($fnum)) {
-
-		$fnum = date('YmdHis').str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user, 7, '0', STR_PAD_LEFT);
-		$query->clear()
-			->insert($db->quoteName('#__emundus_campaign_candidature'))
-			->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum', 'status']))
-			->values($user.', '.JFactory::getUser()->id.', '.$campaign.', '.$db->quote($fnum).', '.$status);
-		$db->setQuery($query);
-
-		try {
-			$db->execute();
-			$totals['fnum']++;
-			$totals['write']++;
-			JLog::add(' --- INSERTED CC :'.$fnum.' FOR USER : '.$user, JLog::INFO, 'com_emundus');
-		} catch (Exception $e) {
-			JLog::add('ERROR: Could not build fnum for user at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
-			continue;
-		}
-	}
-
 
 	foreach ($insert_row as $table_name => $element) {
 
@@ -556,7 +562,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			}
 
 		}
-		
+
 		if ($table_name == 'jos_emundus_users') {
 			$query->clear()
 				->update($db->quoteName($table_name))

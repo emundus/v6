@@ -181,8 +181,10 @@ defined('_JEXEC') or die('Restricted access');
 							<?php endfor; ?>
 						<?php else :?>
 							<?php for ($i = ($this->pagination->{'pagesCurrent'} - 2); $i <= ($this->pagination->{'pagesCurrent'} + 2); $i++) :?>
-								<li <?php echo ($this->pagination->{'pagesCurrent'} == $i)?'class="active"':''; ?>><a id="<?php echo $i; ?>" href="#em-data"><?php echo $i; ?></a></li>
-							<?php endfor; ?>
+								<?php if($i <= $this->pagination->{'pagesTotal'}) :?>
+                                    <li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
+								<?php endif; ?>
+                            <?php endfor; ?>
 						<?php endif; ?>
 						<li class="disabled"><span>...</span></li>
 						<?php for ($i = ($this->pagination->{'pagesTotal'} - 4); $i <= $this->pagination->{'pagesTotal'}; $i++) :?>

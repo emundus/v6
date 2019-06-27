@@ -1746,9 +1746,14 @@ if (JFactory::getUser()->id == 655)
 					left join jos_emundus_setup_letters_repeat_training as lrt on lrt.parent_id=l.id
 					WHERE `lrs`.`status` IN (".$eligibility.") AND `lrt`.`training` in (".$this->_db->Quote($training).")
 					GROUP BY l.id";
+		try {
 		$this->_db->setQuery($query);
-
 		return $this->_db->loadAssocList();
+		
+		} catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
 
 	}
 

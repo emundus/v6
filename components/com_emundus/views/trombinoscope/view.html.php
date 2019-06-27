@@ -36,10 +36,11 @@ class EmundusViewTrombinoscope extends JViewLegacy
         $templ = [];
 
         foreach ($htmlLetters as $letter){
-            $templ[$letter['title']] = $letter;
+            $templ[$letter['attachment_id']] = $letter;
+
         }
-        //var_dump($templ['Trombinoscope']).die();
-        //var_dump($htmlLetters[0]['id']).die();
+
+
         $fnums_json_decode = $trombi->fnums_json_decode($fnums);
 
         //$file = $this->getModel('Files');
@@ -62,7 +63,7 @@ class EmundusViewTrombinoscope extends JViewLegacy
         $editor = JFactory::getEditor();
         // DISPLAY THE EDITOR (name, html, width, height, columns, rows, bottom buttons, id, asset, author, params)
         //Modifié : $trombi->trombitpl à la place de $trombi_tpl
-        $wysiwyg = $editor->display('trombi_tmpl', $templ[$htmlLetters[0]['title']]['body'], '100%', '250', '20', '20', true, 'trombi_tmpl', null, null, $params);
+        $wysiwyg = $editor->display('trombi_tmpl', $templ[$htmlLetters[0]['attachment_id']]['body'], '100%', '250', '20', '20', true, 'trombi_tmpl', null, null, $params);
         
 
        // $this->assign('string_fnums', implode(',', $fnums));
@@ -70,7 +71,7 @@ class EmundusViewTrombinoscope extends JViewLegacy
         // Option trombinoscope cochée par défaut
         $this->assign('trombi_checked', 'checked');
         $this->assign('badge_checked', '');
-        $this->assign('selected_format', 'trombi');
+        $this->assign('selected_format', $templ[$htmlLetters[0]['attachment_id']]['attachment_id']);
         // Autres options
         //$this->assign('trombi_tmpl', $trombi_tpl); //Modifié $trombi->trombitpl à la place de $trombi_tpl
         //$this->assign('badge_tmpl', $badge_tpl); //Modifié $trombi->badge_tpl à la place de $badge_tpl

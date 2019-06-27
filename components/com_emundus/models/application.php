@@ -1462,11 +1462,13 @@ class EmundusModelApplication extends JModelList {
                                             }
                                             elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                if (strlen($index) > 0) {
-                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
-                                                } else {
-                                                    $elt = "";
-                                                }
+	                                            if (strlen($index) > 0) {
+		                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                            } elseif (!empty($params->dropdown_populate)) {
+		                                            $elt = $r_elt;
+	                                            } else {
+		                                            $elt = "";
+	                                            }
                                             } else {
                                             	$elt = JText::_($r_elt);
                                             }
@@ -2386,18 +2388,14 @@ td {
      * @param bool $admission
      * @return bool|mixed
      */
-    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false)
-    {
-        if($admission) {
+    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+        if ($admission) {
             $startDate = $fnumInfos['admission_start_date'];
             $endDate = $fnumInfos['admission_end_date'];
-        }
-        else {
+        } else {
             $startDate = $fnumInfos['start_date'];
             $endDate = $fnumInfos['end_date'];
         }
-
-
 
         $dbo = $this->getDbo();
 
@@ -2407,7 +2405,7 @@ td {
                 FROM #__hikashop_order ho
                 LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
                 WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "created" AND (ho.order_payment_method like "banktransfer" OR ho.order_payment_method like "check")
+                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
                 AND ho.order_created >= '.strtotime($startDate).'
                 AND ho.order_created <= '.strtotime($endDate).'
                 ORDER BY ho.order_created desc';

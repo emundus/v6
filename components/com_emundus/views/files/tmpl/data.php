@@ -124,7 +124,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                         <?= @$this->colsSup[$k][$line['fnum']->val] ?>
 									<?php else :?>
 										<?php if ($value->type == 'text' ) :?>
-											<?= strip_tags($value->val); ?>
+											<?= strip_tags(JText::_($value->val)); ?>
 										<?php elseif ($value->type == "date")  :?>
 										<strong>
 											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
@@ -137,9 +137,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												?>
 											<?php endif; ?>
 										</strong>
-										<?php else: ?>
-											<?= $value->val; ?>
-										<?php endif; ?>
+										<?php else:
+                                            // Do not display the typical PLEASE_SELECT text used for empty dropdowns.
+                                            if ($value->val !== 'PLEASE_SELECT') {
+                                                echo JText::_($value->val);
+                                            }
+										endif; ?>
 									<?php endif; ?>
 									</div>
 								</td>
@@ -171,25 +174,39 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 						<?php for ($i = 1; $i <= 5; $i++ ):?>
 							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 						<?php endfor;?>
+
 						<li class="disabled"><span>...</span></li>
+
 						<?php if ($this->pagination->{'pagesCurrent'} <= 5):?>
+
 							<?php for ($i = 6; $i <= 10; $i++ ):?>
 								<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 							<?php endfor;?>
+
 						<?php else:?>
+
 							<?php for ($i = ($this->pagination->{'pagesCurrent'} - 2); $i <= ($this->pagination->{'pagesCurrent'} + 2); $i++ ):?>
-								<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
+                                <?php if($i <= $this->pagination->{'pagesTotal'}) :?>
+								    <li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
+                                <?php endif; ?>
 							<?php endfor;?>
+
 						<?php endif;?>
+
 						<li class="disabled"><span>...</span></li>
+
 						<?php for ($i = ($this->pagination->{'pagesTotal'} - 4); $i <= $this->pagination->{'pagesTotal'}; $i++ ):?>
 							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 						<?php endfor;?>
+
 					<?php else:?>
+
 						<?php for ($i = 1; $i <= $this->pagination->{'pagesStop'}; $i++ ):?>
 							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
 						<?php endfor;?>
+
 					<?php endif;?>
+
 					<li><a href="#em-data" id="<?= $this->pagination->{'pagesTotal'} ?>">>></a></li>
 				</ul>
 			</div>

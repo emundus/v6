@@ -7,6 +7,7 @@ JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');
 
 $listUrl1 = $params->get('mod_em_list_id1');
+$user_url = $params->get('mod_em_list_id2', 'index.php?option=com_emundus&view=users&Itemid=592');
 
 $model  = new EmundusModelStats();
 $helper = new modEmundusGraphsHelper;

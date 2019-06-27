@@ -49,19 +49,6 @@ endif;
 // Intro outside of form to allow for other lists/forms to be injected.
 echo $this->table->intro;
 
-// GETS all svg icons
-$date_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_dates.svg");
-$diplomant_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_diplomant.svg");
-$duree_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_duree.svg");
-$intervenant_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_intervenant.svg");
-$lieu_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_lieu.svg");
-$objectif_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_objectifs.svg");
-$pointscles_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_pointscles.svg");
-$prerequis_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_prerequis.svg");
-$prix_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_prix.svg");
-$public_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_public.svg");
-$telechargement_svg = file_get_contents(JPATH_BASE.DS."images".DS."custom".DS."ccirs".DS."icons".DS."picto_telechargement.svg");
-
 $page_title = "Rechercher une formation";
 
 $category = JFactory::getApplication()->input->get->get('category');
@@ -109,6 +96,23 @@ if (!empty($cible)) {
     }
 
     $page_title .= " pour ".$cible;
+}
+
+
+function getThematic($id) {
+	$db = JFactory::getDbo();
+	// Get the list of categories.
+	$query = $db->getQuery(true);
+	$query
+		->select('*')
+		->from($db->quoteName('#__emundus_setup_thematiques'))
+		->where($db->qn('id') . ' = ' . $id);
+	$db->setQuery($query);
+	try {
+		return $db->loadObject();
+	} catch (Exception $e) {
+		JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	}
 }
 
 $doc->setTitle($page_title);
@@ -190,8 +194,35 @@ $doc->setTitle($page_title);
 
                                 <?php
                                 $gCounter = 0;
-
                                 foreach ($data as $d) {
+	                                $cat_div = "";
+
+                                    $themes = explode(', ', $d['jos_emundus_setup_programmes___programmes_raw']);
+
+
+                                    if (sizeof($themes) > 1) {
+                                        foreach ($themes as $theme) {
+	                                        $t = getThematic($theme);
+	                                        $cat_div .= "<div class=\"em-theme em-theme-$t->color\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $t->title))))."\">$t->label</a></div>";
+                                        }
+                                    }
+                                    else {
+	                                    // Parse theme info because Fabrik groups them if there are multiple.
+	                                    $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
+	                                    if (is_array($theme_color))
+		                                    $theme_color = $theme_color[0];
+
+	                                    $theme_title = jsonDecode($d['jos_emundus_setup_thematiques___title_raw']);
+
+	                                    if (is_array($theme_title))
+		                                    $theme_title = $theme_title[0];
+
+	                                    $theme_label = jsonDecode($d['jos_emundus_setup_thematiques___label_raw']);
+	                                    if (is_array($theme_label))
+		                                    $theme_label = $theme_label[0];
+
+	                                    $cat_div = "<div class=\"em-theme em-theme-$theme_color\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $d['jos_emundus_setup_thematiques___title_raw']))))."\">$theme_label</a></div>";
+                                    }
 
                                     $days = jsonDecode($d['jos_emundus_setup_teaching_unity___days_raw']);
                                     if (is_array($days))
@@ -199,20 +230,6 @@ $doc->setTitle($page_title);
 	                                $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
 	                                if (is_array($title))
 		                                $title = $title[0];
-
-                                    // Parse theme info because Fabrik groups them if there are multiple.
-                                    $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
-                                    if (is_array($theme_color))
-                                        $theme_color = $theme_color[0];
-
-                                    $theme_title = jsonDecode($d['jos_emundus_setup_thematiques___title_raw']);
-	                                if (is_array($theme_title))
-		                                $theme_title = $theme_title[0];
-
-	                                $theme_label = jsonDecode($d['jos_emundus_setup_thematiques___label_raw']);
-	                                if (is_array($theme_label))
-		                                $theme_label = $theme_label[0];
-
 
 	                                if (($gCounter % 2) == 1)
 	                                    $class = "light-stripe";
@@ -229,9 +246,10 @@ $doc->setTitle($page_title);
                                                 </h3>
                                             </div>
 
-                                            <div class="em-themes em-theme-title em-theme-<?php echo $theme_color; ?>">
-                                                <a href="/formations/<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $d['jos_emundus_setup_thematiques___title_raw']))));?>"><?php echo $theme_label; ?></a>
+                                            <div class="em-themes em-theme-title">
+	                                            <?php echo $cat_div;?>
                                             </div>
+
                                         </div>
 
                                         <div class="em-bottom-details">
