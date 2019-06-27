@@ -64,6 +64,8 @@ if (!empty($this->items)) :
             </ul>
         </div>
     </div>
+    <div class="em-close-minimise"><div class="btn-group pull-right"><button id="em-close-file" class="btn btn-danger btn-xxl"><strong>X</strong></button></div></div>
+
 <?php
 endif;
 ?>
@@ -109,7 +111,7 @@ endif;
     </div>
 </div>
 
-<?php if($this->fnum != 0 || $multiple != 0){ ?>
+<!--<?php if($this->fnum != 0 || $multiple != 0){ ?>
 <div id="em-close-multi-file" class="em-close-minimise">
     <div class="btn-group pull-right">
         <button id="em-close-file" class="btn btn-danger btn-xxl">
@@ -117,12 +119,13 @@ endif;
         </button>
     </div>
 </div>
-<?php } ?>
+<?php } ?>-->
 
 <script>
-    $('#countCheckedCheckbox').html('');
+    //$('#countCheckedCheckbox').html('');
 
     $('#em-close-file').click(function(){
+        $('#countCheckedCheckbox').html('');
         $('.em-check').prop('checked',false);
         $('.em-check-all-all').prop('checked',false);
         reloadActions('files', undefined, false);
