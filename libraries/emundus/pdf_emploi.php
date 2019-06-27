@@ -22,7 +22,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$application = new EmundusModelApplication;
 
 	// Element Fabrik ID list to display in PDF
-	$elts = array(2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127);
+	$elts = array(2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116);
 	
 	$options = array('show_list_label' => 0, 'show_form_label' => 0, 'show_group_label' => 0, 'rowid' => $rowid, 'profile_id' => '13');
 

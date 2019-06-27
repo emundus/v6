@@ -42,7 +42,7 @@ try {
     $db->setQuery($query);
     $recipients = $db->loadObjectList();
 } catch (Exception $e) {
-    // catch any database errors.
+    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
 }
 $recipients[] = $deposant;
 

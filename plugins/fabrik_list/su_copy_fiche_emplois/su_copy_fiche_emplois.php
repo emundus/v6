@@ -140,7 +140,7 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 				$id = $db->loadResult();
 
 				$query = 'UPDATE #__emundus_emploi_etudiant e 
-					SET e.date_time=NOW(), e.published=0, e.valide_comite='.$db->Quote('-1').', e.valide='.$db->Quote('-1').',
+					SET e.date_time=NOW(), e.published=1, e.valide_comite='.$db->Quote('-1').', e.valide='.$db->Quote('-1').',
 					    e.campaign_id='.$campaign_id.', e.date_debut=NULL, e.date_fin=NULL,
 					    e.date_limite=NULL, e.user_modify=NULL, e.date_modify=NULL
 					WHERE e.id='.$id;
