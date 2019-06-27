@@ -9,7 +9,7 @@ p {
 .navbar-brand{
     padding: 0;
     height: 37px;
-    margin-top: 5px;
+    /*margin-top: 5px;*/
 }
 .navbar-collapse.collapse{
     overflow: hidden;
@@ -337,6 +337,7 @@ thead th:hover {
     top: 50%;
     left: 0;
     background-color: rgba(142, 142, 142, 0.83);
+    z-index: 999;
 }
 
 #em-hide-filters:hover {
@@ -927,6 +928,7 @@ label[for="em-file_to_upload"]:hover {
     z-index: 1;
     justify-content: center;
     align-items: center;
+    margin-top: 0;
 }
 .borderSelect{
     background-color: #dadada;
@@ -1027,6 +1029,12 @@ label[for="em-file_to_upload"]:hover {
 .title_wysiwyg{
     margin-top: 5vh !important;
 }
+#check > .em-cell{
+    display: block !important;
+}
+.panel-default{
+    padding-left: 0;
+}
 .em-container-grid{
     display:flex;
     flex-direction: row;
@@ -1036,7 +1044,6 @@ label[for="em-file_to_upload"]:hover {
 }
 
 .em-col-trombi>.form-check{
-
     display: flex;
     flex-direction: row;
 }
@@ -1044,5 +1051,9 @@ label[for="em-file_to_upload"]:hover {
     display: inline;
     padding: 5px 0 0 5px;
 }
-
-
+#emailForm #mail_from{
+    min-width: 10% !important;
+}
+#emailForm #mail_subject{
+    min-width: 60% !important;
+}

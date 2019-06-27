@@ -255,50 +255,45 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 </script>
 
 <script>
-$(document).ready(function(){
-    $('#selectContainer')
-        .on("mouseenter",function(){
 
-            $('#tooltipSelect').css({
-                'height':'30px',
-                'width':'70px',
-                'display':'flex',
-                'opacity':'1',
-                'transiition':'display,500ms',
-                'background':'#33332E',
-                'border-radius':'10px'
-            });
-            $('#tooltipSelect p').css({
-                'color':'white',
-                'font-size':'0.6rem',
-            });
+    $('#selectContainer').on("mouseenter", function() {
 
-        })
-        .on("mouseleave",function(){
-            $('#tooltipSelect').css({
-                'display':'none',
-                'transiition':'display,500ms'
-            })
+        $('#tooltipSelect').css({
+            'height':'30px',
+            'width':'70px',
+            'display':'flex',
+            'opacity':'1',
+            'transiition':'display,500ms',
+            'background':'#33332E',
+            'border-radius':'10px'
         });
-});
+        $('#tooltipSelect p').css({
+            'color':'white',
+            'font-size':'0.6rem',
+        });
+
+    }).on("mouseleave", function() {
+        $('#tooltipSelect').css({
+            'display':'none',
+            'transiition':'display,500ms'
+        })
+    });
 </script>
 <script>
-$(document).ready(function(){
     $('#selectAll').css('display','none');
-    $('#selectDropdown').click(function(e){
-        $('#selectContainer').removeClass('borderSelect');
-        $('#selectAll').slideToggle(function(){
+    $('#selectDropdown').click(function() {
 
-            if($(this).is(':visible')){
+        $('#selectContainer').removeClass('borderSelect');
+        $('#selectAll').slideToggle(function() {
+
+            if ($(this).is(':visible')) {
 
                 $('#selectContainer').addClass('borderSelect');
-
-                $(document).click(function (e){
+                $(document).click(function (e) {
 
                     var container = $("#selectDropdown");
 
                     if (!container.is(e.target) && container.has(e.target).length === 0){
-
                         $('#selectAll').slideUp();
                         $('#selectContainer').removeClass('borderSelect');
                     }
@@ -307,27 +302,18 @@ $(document).ready(function(){
         });
     });
 
-    $('#selectAll>span').click(function(){
+    $('#selectAll>span').click(function() {
         $('#selectAll').slideUp();
     });
 
-});
-
-
-
-</script>
-<script>
-
-    $('#span-check-all-all').click(function(){
-
+    $('#span-check-all-all').click(function() {
         $('.selectAll.em-check-all-all#em-check-all-all').prop('checked',true);// all
         //$('.em-check#em-check-all').prop('checked',true);//.selectPage Page
         //$('.em-check-all#em-check-all').prop('checked',true);//.selectAll Page
         $('.em-check').prop('checked',true);
-
         reloadActions('files', undefined, true);
-
     });
+
     $('#span-check-none').click(function(){
         $('#em-check-all-all').prop('checked',false);
         $('.em-check#em-check-all').prop('checked',false);
@@ -336,22 +322,18 @@ $(document).ready(function(){
         $('#countCheckedCheckbox').html('');
         reloadActions('files', undefined, false);
     });
-    $(document).on('change', '.em-check, .em-check-all-all', function() {
 
+    $(document).on('change', '.em-check, .em-check-all-all', function() {
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        console.log(allCheck);
         let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
 
-        let files = countCheckedCheckbox == 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
-        if(countCheckedCheckbox != 0){
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
+        if (countCheckedCheckbox !== 0) {
             $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
-        }
-        else{
+        } else {
             $('#countCheckedCheckbox').html('');
         }
-        console.log(countCheckedCheckbox);
     });
-
 </script>

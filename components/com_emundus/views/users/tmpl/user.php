@@ -11,10 +11,14 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 ?>
 <input type="hidden" id="view" name="view" value="users">
 <?php if (!empty($this->users)) :?>
-	<div>
+	<div class="container-result">
+        <div>
 		<?php echo $this->pagination->getResultsCounter();
 		?>
+        </div>
+        <div id="countCheckedCheckbox" class="countCheckedCheckbox"></div>
 	</div>
+
 	<div class="em-data-container">
 		<table class="table table-striped table-hover" id="em-data">
 			<thead>
@@ -22,6 +26,33 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 				<?php foreach ($this->users[0] as $key => $v) :?>
                     <?php if ($key === 'id') :?>
                         <th id="checkuser">
+                        <div class="selectContainer" id="selectContainer">
+                            <div class="selectPage">
+                                <input type="checkbox" value="-1" id="em-check-all" class="em-hide em-check">
+                                <label for="em-check-all" class="check-box"></label>
+                            </div>
+                            <div class="selectDropdown" id="selectDropdown">
+                                <i class="fas fa-sort-down"></i>
+                            </div>
+
+                        </div>
+                        <div id="tooltipSelect">
+                            <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
+                        </div>
+                        <div class="selectAll" id="selectAll">
+                            <label for="em-check-all">
+                                <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
+                                <span id="span-check-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+                            </label>
+                            <label class="em-check-all-all" for="em-check-all-all">
+                                <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
+                                <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL'); ?></span>
+                            </label>
+                            <label class="em-check-none" for="em-check-none">
+                                <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
+                            </label>
+                        </div>
+                        <!--<th id="checkuser">
                             <p class="em-cell">
                                 <label for="em-check-all">
                                     <input type="checkbox" value="-1" id="em-check-all" class="em-check"/>
@@ -39,12 +70,12 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                         <?php endif; ?>
                                     <?php endif; ?>
                                     <span>#</span>
-                                </label>
+                                </label>-->
                                 <!--<label class="em-hide em-check-all-all" for="em-check-all-all">
                                     <input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all"/>
                                     <span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
-                                </label>-->
-                            </p>
+                                </label>
+                            </p>-->
                         </th>
                     <?php else :?>
                         <th id="<?php echo $key?>">
@@ -185,5 +216,94 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 <script>
      $(document).ready(function(){
         $('.em-data-container').doubleScroll();
+    });
+</script>
+
+<script>
+
+    $('#selectContainer').on("mouseenter", function() {
+
+        $('#tooltipSelect').css({
+            'height':'30px',
+            'width':'70px',
+            'display':'flex',
+            'opacity':'1',
+            'transiition':'display,500ms',
+            'background':'#33332E',
+            'border-radius':'10px'
+        });
+        $('#tooltipSelect p').css({
+            'color':'white',
+            'font-size':'0.6rem',
+        });
+
+    }).on("mouseleave", function() {
+        $('#tooltipSelect').css({
+            'display':'none',
+            'transiition':'display,500ms'
+        })
+    });
+</script>
+<script>
+    $('#selectAll').css('display','none');
+    $('#selectDropdown').click(function() {
+
+        $('#selectContainer').removeClass('borderSelect');
+        $('#selectAll').slideToggle(function() {
+
+            if ($(this).is(':visible')) {
+
+                $('#selectContainer').addClass('borderSelect');
+                $(document).click(function (e) {
+
+                    var container = $("#selectDropdown");
+
+                    if (!container.is(e.target) && container.has(e.target).length === 0){
+                        $('#selectAll').slideUp();
+                        $('#selectContainer').removeClass('borderSelect');
+                    }
+                });
+            }
+        });
+    });
+
+    $('#selectAll>span').click(function() {
+        $('#selectAll').slideUp();
+    });
+
+    $('#span-check-all-all').click(function() {
+        $('.selectAll.em-check-all-all#em-check-all-all').prop('checked',true);// all
+        //$('.em-check#em-check-all').prop('checked',true);//.selectPage Page
+        //$('.em-check-all#em-check-all').prop('checked',true);//.selectAll Page
+        $('.em-check').prop('checked',true);
+        reloadActions('files', undefined, true);
+    });
+
+    $('#span-check-none').click(function(){
+        $('#em-check-all-all').prop('checked',false);
+        $('.em-check#em-check-all').prop('checked',false);
+        $('.em-check-all#em-check-all').prop('checked',false);
+        $('.em-check').prop('checked',false);
+        $('#countCheckedCheckbox').html('');
+        reloadActions('files', undefined, false);
+    });
+
+    $(document).on('change', '.em-check, .em-check-all-all', function() {
+
+        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
+        let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
+        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
+
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
+        if (countCheckedCheckbox !== 0) {
+            $( '<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>' ).prependTo( "#countCheckedCheckbox" );
+            //$('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+
+            console.log('nb dossier est de'+ nbChecked);
+        } else {
+            $('#countCheckedCheckbox').html('');
+            console.log('pas de dossier sélectionner');
+        }
+
     });
 </script>

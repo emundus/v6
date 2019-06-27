@@ -1413,8 +1413,8 @@ $(document).ready(function () {
 			}
 		}
 	});
-
-	$(document).on('click', '#em-hide-filters', function () {
+	//Duplicate function in em.files
+	/*$(document).on('click', '#em-hide-filters', function () {
 		if ($('.col-md-3').is(':visible')) {
 			$('.col-md-3').hide();
 			$(this).children('span').addClass('glyphicon-chevron-right');
@@ -1430,5 +1430,5 @@ $(document).ready(function () {
 			$('.col-md-12').removeClass('col-md-12');
 		}
 
-	})
+	})*/
 })
