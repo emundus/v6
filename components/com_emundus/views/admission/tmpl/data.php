@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 
 <input type="hidden" id="view" name="view" value="admission">
-<div class="panel panel-default">
+<div class="panel panel-default em-data">
 	<?php if (is_array($this->datas)) :?>
 		<div>
 			<?php echo $this->pagination->getResultsCounter(); ?>
@@ -65,7 +65,7 @@ defined('_JEXEC') or die('Restricted access');
                             <?php $cfnum = $line['fnum']->val; ?>
                             <?php foreach ($line as $k => $value) :?>
                                 <td <?php echo ($k == 'check' && $value->class != null)?'class="'.$value->class.'"':''; ?>>
-                                    <div class="em-cell" >
+                                    <div class="em-cell">
                                         <?php if ($k == 'check') :?>
                                             <label for = "<?php echo $line['fnum']->val; ?>_check">
                                                 <input type="checkbox" name="<?php echo $line['fnum']->val; ?>_check" id="<?php echo $line['fnum']->val; ?>_check" class='em-check' style="width:20px !important;"/>
@@ -96,7 +96,7 @@ defined('_JEXEC') or die('Restricted access');
                                             <?php if ($value->type == 'text' ) :?>
                                                 <?php echo strip_tags($value->val); ?>
                                             <?php elseif ($value->type == 'textarea') :?>
-                                                <textarea class="input-medium" id="<?php echo $cfnum.'-'.$value->id; ?>"><?php echo $value->val; ?></textarea>
+                                                <textarea class="input-medium em-cell-textarea" id="<?php echo $cfnum.'-'.$value->id; ?>"><?php echo $value->val; ?></textarea>
                                                 <span class="glyphicon glyphicon-share-alt em-textarea" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
                                             <?php elseif ($value->type == 'date') :?>
                                                 <h5 class="em-date">
@@ -154,8 +154,8 @@ defined('_JEXEC') or die('Restricted access');
                 </tbody>
             </table>
 		</div>
-		<div class="well">
-			<label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>
+		<div class="well em-container-pagination">
+			<label for="pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
 			<select name="pager-select" class="chzn-select" id="pager-select">
 				<option value="0" <?php echo ($this->pagination->limit == 0)?"selected=true":'';?>><?php echo JText::_('ALL')?></option>
 				<option value="5" <?php echo ($this->pagination->limit == 5)?"selected=true":'';?>>5</option>
@@ -167,7 +167,7 @@ defined('_JEXEC') or die('Restricted access');
 				<option value="50" <?php echo ($this->pagination->limit == 50)?"selected=true":'';?>>50</option>
 				<option value="100" <?php echo ($this->pagination->limit == 100)?"selected=true":'';?>>100</option>
 			</select>
-			<div>
+			<div class="em-container-pagination-selectPage">
 				<ul class="pagination pagination-sm">
 					<li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'};?>"><<</a></li>
 					<?php if ($this->pagination->{'pagesTotal'} > 15) :?>

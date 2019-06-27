@@ -14,7 +14,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
 <input type="hidden" id="view" name="view" value="decision">
-<div class="panel panel-default">
+<div class="panel panel-defaul em-data">
 	<?php if(is_array($this->datas)):?>
 		<div>
 			<?php echo $this->pagination->getResultsCounter(); ?>
@@ -105,8 +105,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		</table>
 
 		</div>
-		<div class="well">
-			<label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>
+		<div class="well em-container-pagination">
+			<label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
 			<select name="pager-select" class="chzn-select" id="pager-select">
 				<option value="0" <?php if($this->pagination->limit == 0){echo "selected=true";}?>><?php echo JText::_('ALL')?></option>
 				<option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
@@ -118,7 +118,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 				<option value="50" <?php if($this->pagination->limit == 50){echo "selected=true";}?>>50</option>
 				<option value="100" <?php if($this->pagination->limit == 100){echo "selected=true";}?>>100</option>
 			</select>
-			<div>
+			<div class="em-container-pagination-selectPage">
 				<ul class="pagination pagination-sm">
 					<li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'}?>"><<</a></li>
 					<?php if($this->pagination->{'pagesTotal'} > 15):?>

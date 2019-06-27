@@ -16,7 +16,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 		?>
 	</div>
 	<div class="em-data-container">
-		<table class="table table-striped table-hover" id="em-data">
+		<table class="table table-striped table-hover em-data-container-table" id="em-data">
 			<thead>
 			<tr>
 				<?php foreach ($this->users[0] as $key => $v) :?>
@@ -131,8 +131,8 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 			</tbody>
 		</table>
 	</div>
-	<div class="well">
-        <label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>
+	<div class="well em-container-pagination">
+        <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
         <select name="pager-select" class="chzn-select" id="pager-select">
             <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('ALL')?></option>
             <option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
@@ -144,7 +144,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
             <option value="50" <?php if($this->pagination->limit == 50){echo "selected=true";}?>>50</option>
             <option value="100" <?php if($this->pagination->limit == 100){echo "selected=true";}?>>100</option>
         </select>
-        <div>
+        <div class="em-container-pagination-selectPage">
             <ul class="pagination pagination-sm">
                 <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'}?>"><<</a></li>
                 <?php if ($this->pagination->{'pagesTotal'} > 15) :?>
