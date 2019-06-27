@@ -1462,11 +1462,13 @@ class EmundusModelApplication extends JModelList {
                                             }
                                             elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                if (strlen($index) > 0) {
-                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
-                                                } else {
-                                                    $elt = "";
-                                                }
+	                                            if (strlen($index) > 0) {
+		                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                            } elseif (!empty($params->dropdown_populate)) {
+		                                            $elt = $r_elt;
+	                                            } else {
+		                                            $elt = "";
+	                                            }
                                             } else {
                                             	$elt = JText::_($r_elt);
                                             }

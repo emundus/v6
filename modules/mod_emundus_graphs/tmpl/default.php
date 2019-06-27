@@ -884,7 +884,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             buttonC.append(iconC);
             var contacts = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID2"); ?>");
-            contacts.setAttribute('href', '/administration/utilisateurs' );
+            contacts.setAttribute('href', '<?php echo $user_url; ?>' );
             contacts.append(text);
             buttonC.append(contacts);
             document.getElementById("userSummary").append(buttonC);

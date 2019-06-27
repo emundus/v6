@@ -13,7 +13,6 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
     $m_profile = new EmundusModelProfile;
-    $application = new EmundusModelApplication;
     $m_files = new EmundusModelFiles;
 
     $db = JFactory::getDBO();
@@ -199,10 +198,10 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 /**  END APPLICANT   ****/
 
     // get evaluation
-    $data = @EmundusHelperFiles::getEvaluation($fnum);
-	if (empty($data)) {
-		$htmldata .= '<p>'.JText::_('COM_EMUNDUS_NO_EVALUATIONS_FOUND').'</p>';
-	}
+    $data = getEvaluation($fnum);
+    if (empty($data)) {
+    	$htmldata .= '<p>'.JText::_('COM_EMUNDUS_NO_EVALUATIONS_FOUND').'</p>';
+    }
 
     foreach ($data as $evals) {
         foreach ($evals as $user => $html) {
@@ -213,7 +212,6 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     if (!empty($htmldata)) {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();
-        $start_page = $pdf->getPage();
         $pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
         $pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
     }
@@ -230,4 +228,84 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     } else {
         $pdf->Output($path, 'F');
     }
+}
+
+// getEvaluation
+function getEvaluation($fnums) {
+	require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+	require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+
+	$m_evaluation = new EmundusModelEvaluation();
+	$m_files = new EmundusModelFiles;
+	$h_files = new EmundusHelperFiles;
+
+	if (!is_array($fnums)) {
+		$fnumInfo = $m_files->getFnumInfos($fnums);
+		$fnums = array($fnums);
+	} else {
+		$fnumInfo = $m_files->getFnumInfos($fnums[0]);
+	}
+
+	$element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
+	$elements = $h_files->getElementsName(implode(',',$element_id));
+	$evaluations = $m_files->getFnumArray($fnums, $elements);
+
+	// For rapporteur externe: only show critierias 123456 and overall, which corresponds to the IDs below.
+	$externe_elements = [7336,7335,6047,7337,7338,6163,7339,7340,6049,7341,7342,6050,7343,7344,6051,7345,7346,6052,7347,7348,6082];
+
+	$data = array();
+	foreach ($evaluations as $eval) {
+
+		if ($eval['jos_emundus_evaluations___user_raw'] > 0) {
+
+			$user = JFactory::getSession()->get('emundusUser');
+
+			// Get the user profile to find out if he's a rapporteur interne or externe.
+			if ($user->profile == '1012' && $eval['jos_emundus_evaluations___user_raw'] != $user->id) {
+				// If the user exporting is a rapporteur externe, only show his evals.
+				continue;
+			}
+
+			$str = '<br><hr>';
+			$str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
+			$str .= '<h1>'.JText::_('EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name.'</h1>';
+			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+
+			foreach ($elements as $elt_id => $element) {
+				$k = $element->tab_name.'___'.$element->element_name;
+
+				if ($element->element_name != 'id' &&
+					$element->element_name != 'time_date' &&
+					$element->element_name != 'campaign_id' &&
+					$element->element_name != 'student_id'&&
+					$element->element_name != 'user' &&
+					$element->element_name != 'fnum' &&
+					$element->element_name != 'email' &&
+					$element->element_name != 'label' &&
+					$element->element_name != 'code' &&
+					$element->element_name != 'spacer' &&
+					array_key_exists($k, $eval))
+				{
+
+					// If a rapporteur externe, only show the externe part of the form.
+					if ($user->profile == '1012' && !in_array($elt_id, $externe_elements)) {
+						continue;
+					}
+
+					$str .= '<tr>';
+					if (strpos($element->element_name, 'comment') !== false)
+						$str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
+					else
+						$str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . JText::_($eval[$k]) . '</td>';
+					$str .= '</tr>';
+				}
+			}
+
+			$str .= '</table>';
+			$str .= '<p></p><hr>';
+
+			$data[$eval['fnum']][$eval['jos_emundus_evaluations___user_raw']] = $str;
+		}
+	}
+	return $data;
 }

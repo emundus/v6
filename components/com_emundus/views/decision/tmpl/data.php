@@ -55,7 +55,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			<tbody>
 
 			<?php foreach ($this->datas as $key => $line):?>
-				<?php if($key != 0): ?>
+				<?php if ($key != 0) :?>
 					<tr>
 						<?php foreach ($line as $k => $value):?>
 						  <?php if($k != 'evaluation_id'): ?>
@@ -70,9 +70,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												echo ($tab[1] + 1 + $this->pagination->limitstart);
 												?>
 										</label>
-									<?php elseif($k == 'status'):?>
+									<?php elseif ($k == 'status') :?>
                                         <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
-									<?php elseif($k == 'fnum'):?>
+									<?php elseif ($k == 'fnum') :?>
 										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
 											<div class="em_list_photo"><?php echo $value->photo; ?></div>
 											<div class="em_list_text">
@@ -81,19 +81,18 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<div class="em_list_email"><?php echo $value->user->id; ?></div>
 											</div>
 										</a>
-									<?php elseif($k == "access"):?>
+									<?php elseif ($k == "access") :?>
 										<?php echo $this->accessObj[$line['fnum']->val]?>
-									<?php elseif($k == "id_tag"):?>
+									<?php elseif ($k == "id_tag") :?>
 										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
-									<?php else:?>
-										<?php
-											if($value->type == 'text' ) {
+									<?php else :
+											if ($value->type == 'text' ) {
 												echo strip_tags($value->val);
-											}else {
-												echo $value->val;
+											} elseif ($value->val !== 'PLEASE_SELECT') {
+												// Do not display the typical PLEASE_SELECT text used for empty dropdowns.
+                                                echo JText::_($value->val);
 											}
-										?>
-									<?php endif; ?>
+                                        endif; ?>
 								</div>
 							</td>
   						  <?php endif; ?>
@@ -133,8 +132,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							<?php endfor;?>
 						<?php else:?>
 							<?php for($i = ($this->pagination->{'pagesCurrent'} - 2); $i <= ($this->pagination->{'pagesCurrent'} + 2); $i++ ):?>
-								<li <?php if($this->pagination->{'pagesCurrent'} == $i){echo 'class="active"';}?>><a id="<?php echo $i?>" href="#em-data"><?php echo $i?></a></li>
-							<?php endfor;?>
+								<?php if($i <= $this->pagination->{'pagesTotal'}) :?>
+                                    <li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
+								<?php endif; ?>
+                            <?php endfor;?>
 						<?php endif;?>
 						<li class="disabled"><span>...</span></li>
 						<?php for($i = ($this->pagination->{'pagesTotal'} - 4); $i <= $this->pagination->{'pagesTotal'}; $i++ ):?>

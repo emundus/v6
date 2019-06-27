@@ -2077,7 +2077,7 @@ class EmundusHelperFiles
     }
 
     // getEvaluation
-    function getEvaluation($format='html', $fnums){
+    function getEvaluation($format='html', $fnums) {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
@@ -2095,9 +2095,8 @@ class EmundusHelperFiles
         $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
         $elements = $h_files->getElementsName(implode(',',$element_id));
         $evaluations = $m_files->getFnumArray($fnums, $elements);
-
+        
         $data = array();
-
         foreach ($evaluations as $eval) {
 
             if ($eval['jos_emundus_evaluations___user_raw'] > 0) {
@@ -2124,9 +2123,9 @@ class EmundusHelperFiles
                     {
                         $str .= '<tr>';
                         if (strpos($element->element_name, 'comment') !== false)
-                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
+                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
                         else
-                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
+                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . JText::_($eval[$k]) . '</td>';
                         $str .= '</tr>';
                     }
                 }
@@ -2201,9 +2200,9 @@ class EmundusHelperFiles
                     {
                         $str .= '<tr>';
                         if (strpos($element->element_plugin, 'textarea') !== false)
-                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
+                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
                         else
-                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
+                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . JText::_($eval[$k]) . '</td>';
                         $str .= '</tr>';
                     }
                 }
@@ -2286,9 +2285,9 @@ class EmundusHelperFiles
                 {
                     $str .= '<tr>';
                     if (strpos($element->element_plugin, 'textarea') !== false) {
-	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.$adm[$k].'</td>';
+	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($adm[$k]).'</td>';
                     } else {
-	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.$adm[$k].'</td>';
+	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
                     }
                     $str .= '</tr>';
                 }
@@ -2341,9 +2340,9 @@ class EmundusHelperFiles
                 {
                     $str .= '<tr>';
                     if (strpos($element->element_plugin, 'textarea') !== false) {
-	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.$adm[$k].'</td>';
+	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($adm[$k]).'</td>';
                     } else {
-	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.$adm[$k].'</td>';
+	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
                     }
                     $str .= '</tr>';
                 }
