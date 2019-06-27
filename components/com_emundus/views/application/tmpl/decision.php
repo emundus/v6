@@ -18,8 +18,8 @@ JFactory::getSession()->set('application_layout', 'decision');
 
 ?>
 <div class="row">
-    <div class="panel panel-default widget">
-        <div class="panel-heading">
+    <div class="panel panel-default widget em-container-decision">
+        <div class="panel-heading em-container-decision-heading">
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-check"></span>
                 <?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
@@ -33,8 +33,8 @@ JFactory::getSession()->set('application_layout', 'decision');
                 <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB'); ?></a>
             <?php endif; ?>
         </div>
-        <div class="panel-body">
-            <div class="content">
+        <div class="panel-body em-container-decision-body">
+            <div class="content em-container-decision-body-content">
               <div class="embed-responsive">
                 <div class="form" id="form">
                     <?php if(!empty($this->url_form)):?>

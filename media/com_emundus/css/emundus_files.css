@@ -18,6 +18,12 @@ p {
     height: 37px;
     width: 100%;
 }
+.em-container-assocFiles > .em-container-assocFiles-heading span.label{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block !important;
+    margin-bottom: 10px;
+}
 .em-close-minimise {
    align-self: flex-end;
 }

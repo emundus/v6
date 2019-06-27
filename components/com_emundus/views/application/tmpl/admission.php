@@ -16,8 +16,8 @@ JFactory::getSession()->set('application_layout', 'admission');
 
 ?>
     <div class="row">
-        <div class="panel panel-default widget">
-            <div class="panel-heading">
+        <div class="panel panel-default widget em-container-admission">
+            <div class="panel-heading em-container-admission-heading">
                 <h3 class="panel-title">
                     <span class="glyphicon glyphicon-check"></span>
                     <?php echo JText::_('COM_EMUNDUS_ADMISSION'); ?>
@@ -31,7 +31,7 @@ JFactory::getSession()->set('application_layout', 'admission');
                     <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB'); ?></a>
                 <?php endif;?>
             </div>
-            <div class="panel-body">
+            <div class="panel-body em-container-admission-body">
                 <div class="content">
                     <div class="embed-responsive">
                         <div class="form" id="form">
