@@ -21,17 +21,17 @@ if (empty($id)) {
 
 ?>
 
-<div class="showContent" id="em-contacts">
+<div class="showContent em-messages" id="em-contacts">
 
 
     <?php if (empty($this->message_contacts)) :?>
         <div class="no-messages"><?php echo JText::_('NO_MESSAGES'); ?></div>
     <?php else :?>
-    <ul id="em-message-list">
+    <ul id="em-message-list" class="em-messages-list">
         <?php foreach ($this->message_contacts as $message_contact) :?>
 
             <?php if ($message_contact->user_id_to == $this->user_id) :?>
-                <li  class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
+                <li class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
                         <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_from) ?>"></div>
                     <div class="em-contact" >
                         <?php if ($message_contact->state == 1) :?>

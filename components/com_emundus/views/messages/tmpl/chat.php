@@ -36,10 +36,10 @@ if ($this->getMessages[0]->user_id_to == $this->user_id) {
     })
 </script>
 
-<div id="chat" class="">
+<div id="chat" class="em-container-chat">
     <button class="navbar-toggler toggler-example" id="burger" type="button" onclick="burgerClick()"   aria-controls="navbarSupportedContent1"
             aria-expanded="false" aria-label="Toggle navigation"><span class="dark-blue-text"><i class="angle left icon"></i></span></button>
-    <div id="em-messagerie">
+    <div id="em-messagerie" class="em-container-chat">
 
         <?php if (empty($this->getMessages)) :?>
             <div class="no-messages"><?php echo JText::_('NO_MESSAGES_WITH'); ?></div>
