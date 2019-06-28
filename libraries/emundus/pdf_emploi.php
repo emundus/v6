@@ -60,7 +60,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	//get title
 	//$config = JFactory::getConfig(); 
 	//$title = $config->getValue('config.sitename');
-	$title = 'Emplois étudiants Sorbonne Universités';
+	$title = 'Emplois étudiants Sorbonne Université';
 	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 	unset($logo);
 	unset($title);
