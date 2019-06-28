@@ -313,16 +313,15 @@ function getEvaluation($fnums) {
 						continue;
 					}
 
-					// TODO: Handle elements that are conclusions. Specifically the "Synthèse rapporteur".
 					if (strpos($element->element_name, 'comment') !== false) {
-						$str .= '<tr><td colspan="2"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
+						$str .= '<tr><td colspan="2"><b>' . $element->element_label . '</b> <br><br><br>' . JText::_($eval[$k]) . '</td>';
 					} elseif ($element->element_plugin == 'dropdown') {
 						$str .= '<tr><td width="70%" style="border: 2px solid black; background-color: #ffff7e;"><b>' . $element->element_label . '</b> </td><td width="30%" style="border: 2px solid black; background-color: #ffff7e;">' . JText::_($eval[$k]) . '</td>';
 					} elseif ($element->element_name == 'interne_synthesis') {
 
 						// The interne_synthesis element had a bug linked to some inline style done on the element. So we replace it manually in the code.
 						$element->element_label = '<p><h3 style="margin: 10px 0 20px 0 !important; text-align: center;"><br />Synthèse Rapporteur</h3><br /><br /> Donnez et justifiez succinctement votre avis sur le dossier du candidat. Volet Enseignement et rapport externe du volet Recherche.</p>';
-						$str .= '<tr><td colspan="2" style="border: 2px solid black;"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
+						$str .= '<tr><td colspan="2" style="border: 2px solid black;"><b>' . $element->element_label . '</b> <br><br><br>' . JText::_($eval[$k]) . '</td>';
 
 					} else {
 						$str .= '<tr><td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . JText::_($eval[$k]) . '</td>';
