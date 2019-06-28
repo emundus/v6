@@ -11,7 +11,7 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
 ?>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
-		<div class="emundusraw">
+		<div class="emundusraw em-container-email">
 			<?php echo $this->email; ?>
 		</div>
 		<input type="hidden" name="task" value=""/>
