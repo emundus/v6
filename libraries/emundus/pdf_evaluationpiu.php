@@ -204,8 +204,14 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     }
 
     foreach ($data as $evals) {
-        foreach ($evals as $user => $html) {
+
+    	$lasteval = array_pop(array_keys($evals));
+
+	    foreach ($evals as $user => $html) {
             $htmldata .= $html;
+            if ($user !== $lasteval) {
+				$htmldata .= '<p style="page-break-after: always;"></p>';
+			}
         }
     }
 
@@ -234,10 +240,12 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 function getEvaluation($fnums) {
 	require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 	require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+	require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 
 	$m_evaluation = new EmundusModelEvaluation();
 	$m_files = new EmundusModelFiles;
 	$h_files = new EmundusHelperFiles;
+	$m_users = new EmundusModelUsers();
 
 	if (!is_array($fnums)) {
 		$fnumInfo = $m_files->getFnumInfos($fnums);
@@ -259,19 +267,28 @@ function getEvaluation($fnums) {
 		if ($eval['jos_emundus_evaluations___user_raw'] > 0) {
 
 			$user = JFactory::getSession()->get('emundusUser');
+			$evaluator = $eval['jos_emundus_evaluations___user_raw'];
+			$evaluator_profile = $m_users->getCurrentUserProfile($evaluator);
 
 			// Get the user profile to find out if he's a rapporteur interne or externe.
-			if ($user->profile == '1012' && $eval['jos_emundus_evaluations___user_raw'] != $user->id) {
+			if ($user->profile == '1012' && $evaluator != $user->id) {
 				// If the user exporting is a rapporteur externe, only show his evals.
 				continue;
 			}
 
-			$str = '<br><hr>';
-			$str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
-			$str .= '<h1>'.JText::_('EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name.'</h1>';
+			$str = '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
+			$str .= '<h1 style="text-align: center;">'.JText::_('EVALUATOR').': '.JFactory::getUser($evaluator)->name.'</h1>';
+
+			if ($evaluator_profile == '1012') {
+				$str .= '<h2 style="text-align: center;">Evaluation Recherche</h2>';
+			} else {
+				$str .= '<h2 style="text-align: center;">Evaluation Enseignement</h2>';
+			}
+
 			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
 			foreach ($elements as $elt_id => $element) {
+				
 				$k = $element->tab_name.'___'.$element->element_name;
 
 				if ($element->element_name != 'id' &&
@@ -287,16 +304,29 @@ function getEvaluation($fnums) {
 					array_key_exists($k, $eval))
 				{
 
-					// If a rapporteur externe, only show the externe part of the form.
-					if ($user->profile == '1012' && !in_array($elt_id, $externe_elements)) {
+					if (empty($element->element_label) && empty($eval[$k])) {
 						continue;
 					}
 
-					$str .= '<tr>';
-					if (strpos($element->element_name, 'comment') !== false)
-						$str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
-					else
-						$str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . JText::_($eval[$k]) . '</td>';
+					// If a rapporteur externe, only show the externe part of the form and vice versa.
+					if (($evaluator_profile == '1012' && !in_array($elt_id, $externe_elements)) || ($evaluator_profile != '1012' && in_array($elt_id, $externe_elements))) {
+						continue;
+					}
+
+					// TODO: Handle elements that are conclusions. Specifically the "Synthèse rapporteur".
+					if (strpos($element->element_name, 'comment') !== false) {
+						$str .= '<tr><td colspan="2"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
+					} elseif ($element->element_plugin == 'dropdown') {
+						$str .= '<tr><td width="70%" style="border: 2px solid black; background-color: #ffff7e;"><b>' . $element->element_label . '</b> </td><td width="30%" style="border: 2px solid black; background-color: #ffff7e;">' . JText::_($eval[$k]) . '</td>';
+					} elseif ($element->element_name == 'interne_synthesis') {
+
+						// The interne_synthesis element had a bug linked to some inline style done on the element. So we replace it manually in the code.
+						$element->element_label = '<p><h3 style="margin: 10px 0 20px 0 !important; text-align: center;"><br />Synthèse Rapporteur</h3><br /><br /> Donnez et justifiez succinctement votre avis sur le dossier du candidat. Volet Enseignement et rapport externe du volet Recherche.</p>';
+						$str .= '<tr><td colspan="2" style="border: 2px solid black;"><b>' . $element->element_label . '</b> <br>' . JText::_($eval[$k]) . '</td>';
+
+					} else {
+						$str .= '<tr><td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . JText::_($eval[$k]) . '</td>';
+					}
 					$str .= '</tr>';
 				}
 			}
@@ -304,7 +334,7 @@ function getEvaluation($fnums) {
 			$str .= '</table>';
 			$str .= '<p></p><hr>';
 
-			$data[$eval['fnum']][$eval['jos_emundus_evaluations___user_raw']] = $str;
+			$data[$eval['fnum']][$evaluator] = $str;
 		}
 	}
 	return $data;
