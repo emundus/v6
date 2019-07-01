@@ -19,9 +19,7 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
     {
         $formModel = $this->getModel();
 
-        //var_dump($formModel->formData).die();
         $data = $formModel->formData;
-        //var_dump($data).die();
         $sqlData =  $this->selectAdmission($data['jos_emundus_admission___fnum']);
         $admissionData = [];
         foreach ($sqlData as $key => $exceptValue) {
@@ -45,17 +43,13 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
         $arrayfabrikelements = [];
         foreach (array_keys($data) as $fabrikName) {
 
-
             $eltName = explode('___', $fabrikName );
-
 
             if (is_array($eltName) && !empty($eltName[1])){
                 if (strpos($eltName[1], '_raw') !== false)
                 $elements[$eltName[1]] = $data[$fabrikName];
 
             }
-            //var_dump($elements);
-
         }
 
         foreach ($elements as $key =>  $fabrikElements){
@@ -76,7 +70,6 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
             }
             $arrayfabrikelements[$key] = $fabrikElements;
         }
-        //var_dump($arrayfabrikelements).die();
         $result = array_diff($arrayfabrikelements,$admissionData);
 
         if(!empty($result)){
@@ -84,9 +77,7 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
             $uid = $formModel->formData['jos_emundus_admission___user'][0];
             $i=0;
 
-
             $formid = $formModel->formData['formid'];
-
             foreach ($result as $key => $value){
 
                 $elt = explode('_raw',$key);
@@ -95,16 +86,8 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
             }
 
             $elementId = json_encode($eltId);
-
             $insertUpdatedData = $this->insertUpdatedInfo($fnum,$uid,$elementId);
-
         }
-
-
-
-
-
-
     }
     public function selectAdmission($fnum){
         $db = JFactory::getDbo();
@@ -114,7 +97,7 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
         $conditions = $db->quoteName('ea.fnum') . '=' . $db->quote($fnum);
 
         $query
-            ->select($db->quoteName(array('ea.*')))
+            ->select('*')
             ->from($db->quoteName('#__emundus_admission', 'ea'))
             ->where($conditions);
         //die($query->__toString());
@@ -139,7 +122,6 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
             ->insert($db->quoteName('#__emundus_updated'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
-        //die($query->__toString());
         // Set the query using our newly populated query object and execute it.
         $db->setQuery($query);
         $db->execute();
@@ -157,7 +139,6 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
             ->join('LEFT', $db->quoteName('#__fabrik_formgroup', 'ffg'). ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id') )
             ->join('LEFT', $db->quoteName('#__fabrik_forms', 'ff'). ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
             ->where($conditions);
-        //die($query->__toString());
         $db->setQuery($query);
 
         return $db->loadResult();
