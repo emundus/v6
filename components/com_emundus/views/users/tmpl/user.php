@@ -52,30 +52,17 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                 <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
                             </label>
                         </div>
-                        <!--<th id="checkuser">
-                            <p class="em-cell">
-                                <label for="em-check-all">
-                                    <input type="checkbox" value="-1" id="em-check-all" class="em-check"/>
-                                </label>
-                            </p>
-                        </th>
                         <th id="<?php echo $key?>">
                             <p class="em-cell">
-                                <label for="em-check-all">
-                                    <?php if ($this->lists['order'] == $key) :?>
-                                        <?php if ($this->lists['order_dir'] == 'desc') :?>
-                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                        <?php else :?>
-                                            <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                        <?php endif; ?>
+                                <?php if ($this->lists['order'] == $key) :?>
+                                    <?php if ($this->lists['order_dir'] == 'desc') :?>
+                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                    <?php else :?>
+                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
                                     <?php endif; ?>
-                                    <span>#</span>
-                                </label>-->
-                                <!--<label class="em-hide em-check-all-all" for="em-check-all-all">
-                                    <input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all"/>
-                                    <span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
-                                </label>
-                            </p>-->
+                                <?php endif; ?>
+                                <span>#</span>
+                            </p>
                         </th>
                     <?php else :?>
                         <th id="<?php echo $key?>">
@@ -246,6 +233,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 </script>
 <script>
     $('#selectAll').css('display','none');
+    $('#selectDropdown').off('click');
     $('#selectDropdown').click(function() {
 
         $('#selectContainer').removeClass('borderSelect');
@@ -267,10 +255,12 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
         });
     });
 
+    $('#selectAll>span').off('click');
     $('#selectAll>span').click(function() {
         $('#selectAll').slideUp();
     });
 
+    $('#span-check-all-all').off('click');
     $('#span-check-all-all').click(function() {
         $('.selectAll.em-check-all-all#em-check-all-all').prop('checked',true);// all
         //$('.em-check#em-check-all').prop('checked',true);//.selectPage Page
@@ -279,6 +269,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
         reloadActions('files', undefined, true);
     });
 
+    $('#span-check-none').off('click');
     $('#span-check-none').click(function(){
         $('#em-check-all-all').prop('checked',false);
         $('.em-check#em-check-all').prop('checked',false);
@@ -288,6 +279,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
         reloadActions('files', undefined, false);
     });
 
+    $('.em-check, .em-check-all-all').off('change');
     $(document).on('change', '.em-check, .em-check-all-all', function() {
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
@@ -296,13 +288,9 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 
         let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
         if (countCheckedCheckbox !== 0) {
-            $( '<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>' ).prependTo( "#countCheckedCheckbox" );
-            //$('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
-
-            console.log('nb dossier est de'+ nbChecked);
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {
             $('#countCheckedCheckbox').html('');
-            console.log('pas de dossier sélectionner');
         }
 
     });
