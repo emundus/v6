@@ -8,16 +8,16 @@
 
 <?php if(!empty($this->access['groups'])):?>
 	<div class="row">
-        <div class="panel panel-default widget">
-            <div class="panel-heading">
+        <div class="panel panel-default widget em-container-share">
+            <div class="panel-heading em-container-share-heading">
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-eye-open"></span>
                 	<?php echo JText::_('CHECK_ACL'); ?> 
                 </h3>
             </div>
-            <div class="panel-body">
-                <div class="active content">
-                    <div class="col-md-2 table-left">
+            <div class="panel-body em-container-share-body">
+                <div class="active content em-container-share-table">
+                    <div class="col-md-2 table-left em-container-share-table-left">
                         <table class="table table-bordered" id="groups-table">
                             <thead>
                             <tr>
@@ -49,7 +49,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="access-table col-md-10 table-right">
+                    <div class="access-table col-md-10 table-right em-container-share-table-right">
                         <table class="table table-bordered" id="groups-access-table" >
                             <thead>
                             <tr>
@@ -141,7 +141,7 @@
 <?php endif;?>
 <?php if(!empty($this->access['users'])):?>
 	<div class="row">
-		<div class="col-md-2 table-left">
+		<div class="col-md-2 table-left em-container-share-table-left">
 			<table class="table table-bordered" id="users-table">
 				<thead>
 				<tr>
@@ -167,7 +167,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="access-table col-md-10 table-right">
+		<div class="access-table col-md-10 table-right em-container-share-table-right">
 			<table class="table table-bordered" id="users-access-table" >
 				<thead>
 				<tr>

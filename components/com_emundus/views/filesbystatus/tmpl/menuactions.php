@@ -14,8 +14,8 @@ if (!empty($this->items)) :
 ?>
 
 <span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS'); ?></span>
-<div class="navbar-collapse collapse navbar-inverse-collapse">
-<ul class="nav navbar-nav" style="display:<?php echo $this->display; ?>">
+<div class="navbar-collapse collapse navbar-inverse-collapse em-collapse-menuaction">
+<ul class="nav navbar-nav em-collapse-menuaction-nav" style="display:<?php echo $this->display; ?>">
 <?php
 //var_dump($this->items);
     $multiple = JRequest::getVar('multi', '0', 'get','INT', JREQUEST_NOTRIM);

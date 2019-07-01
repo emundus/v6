@@ -11,8 +11,8 @@ JFactory::getSession()->set('application_layout', 'form');
 <!--<div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> </div>
 -->
 <div class="row">
-    <div class="panel panel-default widget">
-        <div class="panel-heading">
+    <div class="panel panel-default widget em-container-form">
+        <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
                 <span class="glyphicon glyphicon-list"></span>
                 <?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?>
@@ -23,7 +23,7 @@ JFactory::getSession()->set('application_layout', 'form');
                 <?php endif;?>
             </h3>
         </div>
-        <div class="panel-body Marginpanel-body">
+        <div class="panel-body Marginpanel-body em-container-form-body">
             <div class="active content">
                 <?php echo $this->forms; ?>
             </div>

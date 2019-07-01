@@ -867,7 +867,7 @@ class EmundusModelApplication extends JModelList {
 
 	            foreach ($tableuser as $key => $itemt) {
 
-	                $forms .= '<br><hr><div class="TitlePersonalInfo"><h3>';
+	                $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo"><h3>';
 	                $title = explode('-', JText::_($itemt->label));
 
 	                if (empty($title[1])) {
@@ -924,12 +924,12 @@ class EmundusModelApplication extends JModelList {
 	                    $this->_db->setQuery( $query );
 	                    $elements = $this->_db->loadObjectList();
 	                    if (count($elements) > 0) {
-	                        $forms .= '<fieldset><legend class="legend">';
+	                        $forms .= '<fieldset class="em-personalDetail"><legend class="legend">';
 	                        $forms .= JText::_($itemg->label);
 	                        $forms .= '</legend>';
 
 	                        if ($itemg->group_id == 14) {
-	                            $forms .='<table>';
+	                            $forms .='<table class="em-personalDetail-table">';
 	                            $modulo = 0;
 	                            foreach($elements as &$element) {
 
@@ -983,7 +983,7 @@ class EmundusModelApplication extends JModelList {
 
 	                            // TABLEAU DE PLUSIEURS LIGNES
 	                        } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
-	                            $forms .= '<table class="table table-bordered table-striped">
+	                            $forms .= '<table class="table table-bordered table-striped em-personalDetail-table-multiplleLine">
 	                              <thead>
 	                              <tr> ';
 
@@ -1129,7 +1129,7 @@ class EmundusModelApplication extends JModelList {
 
 	                            // AFFICHAGE EN LIGNE
 	                        } else {
-	                            $forms .='<table>';
+	                            $forms .='<table class="em-personalDetail-table-inline">';
 	                            $modulo = 0;
 	                            foreach ($elements as &$element) {
 

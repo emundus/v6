@@ -22,8 +22,8 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
 </div>-->
 <div class="row">
-    <div class="panel panel-default widget">
-        <div class="panel-heading">
+    <div class="panel panel-default widget em-container-form">
+        <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
@@ -190,34 +190,34 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                     </div>
                 </div>
 
-            <div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+            <div class="modal fade em-modal-actions" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header em-modal-actions-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body em-modal-actions-body">
 
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer em-modal-actions-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
                             <button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+            <div class="modal fade em-modal-form" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header em-modal-form-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body em-modal-form-body">
                             <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer em-modal-form-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
                         </div>
                     </div>

@@ -14,12 +14,12 @@ defined('_JEXEC') or die;
 if (!empty($this->items)) :
     ?>
 
-    <div class="container-nav">
+    <div class="container-nav em-container-menuaction">
 
         <span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS'); ?></span>
         <div class="navbar-collapse collapse navbar-inverse-collapse">
 
-            <ul class="nav navbar-nav" style="display:<?php echo $this->display; ?>">
+            <ul class="nav navbar-nav em-container-menuaction-nav" style="display:<?php echo $this->display; ?>">
                 <?php
 
                 $multiple = JRequest::getVar('multi', '0', 'get','INT', JREQUEST_NOTRIM); //nb of ckecked ckeckbox
