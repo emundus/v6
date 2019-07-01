@@ -150,7 +150,6 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         $('#trombi_footer').val(footer);
 
         var heightHeader = $('#trombi_header').height();
-        console.log(heightHeader);
 
         tinyMCE.execCommand("mceSetContent", false, default_tmpl);
         tinyMCE.execCommand("mceRepaint");
