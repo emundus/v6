@@ -33,12 +33,14 @@ $display_applicant_menu = $params->get('display_applicant_menu', 1);
 
 $user = JFactory::getSession()->get('emundusUser');
 
-if (!empty($user->fnum) && $display_applicant_menu==0)
+if ((!empty($user->applicant) || !empty($user->fnum)) && $display_applicant_menu==0) {
 	return;
+}
 
 $list = array();
-if (isset($user->menutype))
+if (isset($user->menutype)) {
 	$list = modEmundusMenuHelper::getList($params);
+}
 $app = JFactory::getApplication();
 $menu = $app->getMenu();
 $active	= $menu->getActive();
@@ -47,7 +49,6 @@ $path = isset($active) ? $active->tree : array();
 $showAll = $params->get('showAllChildren');
 $class_sfx = htmlspecialchars($params->get('class_sfx'));
 
-if (count($list))
+if (count($list)) {
 	require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('layout', $layout));
-
-?>
+}

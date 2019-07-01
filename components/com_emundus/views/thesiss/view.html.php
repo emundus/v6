@@ -27,7 +27,8 @@ class EmundusViewThesiss extends JViewLegacy {
      */
     public function display($tpl = null) {
         JHtml::stylesheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-        JHtml::script('media/com_emundus/lib/jquery-1.10.2.min.js');
+        //JHtml::script('media/com_emundus/lib/jquery-1.10.2.min.js');
+        JHtml::script('media/jui/js/jquery.min.js');
         JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 
         $app = JFactory::getApplication();

@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
         <li role="separator" class="divider"></li>
         <?php
             $userToken = JSession::getFormToken();
-            echo '<li><a href="/index.php?option=com_users&task=user.logout&' . $userToken . '=1">'.JText::_('LOGOUT').'</a></li>';
+            echo '<li><a href="index.php?option=com_users&task=user.logout&' . $userToken . '=1">'.JText::_('LOGOUT').'</a></li>';
         ?>
     </ul>
 </div>

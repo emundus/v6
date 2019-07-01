@@ -16,14 +16,14 @@ JFactory::getSession()->set('application_layout', 'admission');
 
 ?>
     <div class="row">
-        <div class="panel panel-default widget">
-            <div class="panel-heading">
+        <div class="panel panel-default widget em-container-admission">
+            <div class="panel-heading em-container-admission-heading">
                 <h3 class="panel-title">
                     <span class="glyphicon glyphicon-check"></span>
                     <?php echo JText::_('COM_EMUNDUS_ADMISSION'); ?>
                     <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                         <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=admission&task=pdf_admission&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-file"></span></button>
+                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                         </a>
                     <?php endif;?>
                 </h3>
@@ -31,7 +31,7 @@ JFactory::getSession()->set('application_layout', 'admission');
                     <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB'); ?></a>
                 <?php endif;?>
             </div>
-            <div class="panel-body">
+            <div class="panel-body em-container-admission-body">
                 <div class="content">
                     <div class="embed-responsive">
                         <div class="form" id="form">
@@ -72,3 +72,8 @@ JFactory::getSession()->set('application_layout', 'admission');
             }, 'slow');
         };
     </script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>

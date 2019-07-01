@@ -18,14 +18,14 @@ JFactory::getSession()->set('application_layout', 'decision');
 
 ?>
 <div class="row">
-    <div class="panel panel-default widget">
-        <div class="panel-heading">
+    <div class="panel panel-default widget em-container-decision">
+        <div class="panel-heading em-container-decision-heading">
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-check"></span>
                 <?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                 <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                    <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-file"></span></button>
+                    <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                 </a>
                 <?php endif; ?>
             </h3>
@@ -33,8 +33,8 @@ JFactory::getSession()->set('application_layout', 'decision');
                 <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB'); ?></a>
             <?php endif; ?>
         </div>
-        <div class="panel-body">
-            <div class="content">
+        <div class="panel-body em-container-decision-body">
+            <div class="content em-container-decision-body-content">
               <div class="embed-responsive">
                 <div class="form" id="form">
                     <?php if(!empty($this->url_form)):?>
@@ -45,6 +45,7 @@ JFactory::getSession()->set('application_layout', 'decision');
                     <?php endif; ?>
                 </div>
               </div>
+              <div class="evaluations" id="evaluations">-----------</div>
             </div>
         </div>
     </div>
@@ -57,7 +58,7 @@ JFactory::getSession()->set('application_layout', 'decision');
     }).show();
 
     function resizeIframe(obj) {
-        obj.style.height = obj.contentWindow.document.body.scrollHeight +400 + 'px';
+        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     }
 
     window.ScrollToTop = function(){
@@ -66,4 +67,26 @@ JFactory::getSession()->set('application_layout', 'decision');
       }, 'slow');
     };
 
+    var url_evaluation = '<?php echo $this->url_evaluation; ?>';
+
+    if (url_evaluation != '') {
+        $.ajax({
+            type: "GET",
+            url: url_evaluation,
+            dataType: 'html',
+            success: function(data) {
+                $("#evaluations").empty();
+                $("#evaluations").append(data);
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+</script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>

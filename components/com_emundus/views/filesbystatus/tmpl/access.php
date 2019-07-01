@@ -42,11 +42,11 @@
 		<?php endforeach;?>
 	</div>
 
-	<div class="panel panel-info">
-		<div class="panel-heading">
+	<div class="panel panel-info em-access-filesbystatus">
+		<div class="panel-heading em-access-filesbystatus-heading">
 			<?php echo JText::_('CHECK_ACL')?>
 		</div>
-		<div class="form-group" style="color:black !important">
+		<div class="form-group em-access-filesbystatus-form" style="color:black !important">
 			<label class="col-lg-2 control-label"><?php echo JText::_('GROUPS')?></label>
 			<select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_GROUP')?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
 				<?php foreach($this->groups as $group):?>
@@ -60,8 +60,8 @@
 				<?php endforeach;?>
 				</select>
 		</div>
-		<div class="panel-body">
-			<table id="em-modal-action-table" class="table table-hover" style="color:black !important;">
+		<div class="panel-body em-access-filesbystatus-body">
+			<table id="em-modal-action-table" class="table table-hover em-access-filesbystatus-body-table" style="color:black !important;">
 					<thead>
 					<tr>
 						<th></th>

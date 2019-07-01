@@ -1,9 +1,9 @@
 <?php
 /**
- * @version		$Id: email.php 14401 2010-01-26 14:10:00Z guillossou
+ * @version		$Id: email.php 
  * @package		Joomla
  * @subpackage	Emundus
- * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
+ * @copyright	Copyright (C) 2019 eMundus. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative
@@ -46,7 +46,7 @@ class EmundusHelperEmails
 		$email.= '<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
 
 		if(in_array('default',$params)){
-			$email .= '<fieldset>
+			$email .= '<fieldset class="em_email_block-fieldset">
 				<legend>
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'::'.JText::_('EMAIL_ASSESSORS_DEFAULT_TIP').'">
 						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'
@@ -252,7 +252,7 @@ class EmundusHelperEmails
 						}
 					}
 				};
-				xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
+				xhr.open("GET", "/index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.send("&id="+id);
 			}</script>';
@@ -321,7 +321,7 @@ class EmundusHelperEmails
 						}
 					}
 				};
-				xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
+				xhr.open("GET", "/index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.send("&id="+id);
 			}</script>';

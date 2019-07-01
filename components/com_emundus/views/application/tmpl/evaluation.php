@@ -19,14 +19,14 @@ JFactory::getSession()->set('application_layout', 'evaluation');
 ?>
 
 <div class="row">
-    <div class="panel panel-default widget">
-        <div class="panel-heading">
+    <div class="panel panel-default widget em-container-evaluation">
+        <div class="panel-heading em-container-evaluation-heading">
             <h3 class="panel-title" style="display:inline-block">
             <span class="glyphicon glyphicon-check"></span>
                 <?php echo JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
                 <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)) :?>
                         <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-file"></span></button>
+                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                         </a>
                 <?php endif;?>
             </h3>
@@ -40,10 +40,10 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 }
             ?>
         </div>
-        <div class="panel-body">
+        <div class="panel-body em-container-evaluation-body">
             <div class="content">
                 <?php if (isset($this->evaluation_select) && count($this->evaluation_select) > 0) :?>
-                    <label for="copy_evaltuations"><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></label>
+                    <label for="copy_evaltuations" class="em-container-evaluation-body-label"><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">
                         <option value="0" selected><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></option>
                         <?php
@@ -234,4 +234,9 @@ JFactory::getSession()->set('application_layout', 'evaluation');
             }
         }
     });
+</script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>

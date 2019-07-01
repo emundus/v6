@@ -99,7 +99,7 @@ $replacements = array ($student->id, $student->name, $student->email, '<br />');
 $mode = 1;
 if ($can_be_view == 1) {
 	$attachment[] = EMUNDUS_PATH_ABS.$upload->user_id.DS.$nom;
-	$file_url = '<br/>'.$baseurl.'/'.EMUNDUS_PATH_REL.$upload->user_id.'/'.$nom;
+	$file_url = '<br/>'.$baseurl.EMUNDUS_PATH_REL.$upload->user_id.'/'.$nom;
 }
 $from_id = $user->id;
 

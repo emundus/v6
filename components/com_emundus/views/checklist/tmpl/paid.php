@@ -7,12 +7,12 @@ echo JText::_('PAYMENT_RECEIVED');
 
 if (!empty($this->applications)) : ?>
 <hr>
-<div class="<?php echo $moduleclass_sfx ?>">
+<div class="<?php echo $moduleclass_sfx ?> em-container-paid">
   <?php foreach($this->applications as $application) : ?>
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-xs-6 col-md-4">
       <p class="">
-        <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
+        <a href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>"  >
           <?php
             echo ($application->fnum == $this->_user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label;
           ?>
@@ -24,7 +24,7 @@ if (!empty($this->applications)) : ?>
         <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
       </p>
 
-      <a id='print' class="btn btn-info" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?> "> <i class="icon-print"></i> <?php echo JText::_('PRINT_APPLICATION_FILE'); ?></a>
+      <a id='print' class="btn btn-info em-container-paid-print" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?> "> <i class="icon-print"></i> <?php echo JText::_('PRINT_APPLICATION_FILE'); ?></a>
 
     </div>
 

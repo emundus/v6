@@ -4,11 +4,19 @@ defined('_JEXEC') or die('Restricted access');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+
+$m_files = new EmundusModelFiles();
 
 JHTML::_('behavior.modal');
 JHTML::_('behavior.tooltip');
 
+$jinput = JFactory::getApplication()->input;
+
 $document = JFactory::getDocument();
+//$document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinoscope.css" );
+$document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css" );
+unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css']);
 // AJAX upload
 $document->addScript('media/com_emundus/js/webtoolkit.aim.js');
 
@@ -26,31 +34,43 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	$evaluations = new EmundusModelEvaluation;
 	$emails = new EmundusModelEmails;
 
-	$campaign = @EmundusHelperfilters::getCampaignByID($this->fnums->campaign_id);
+	if (empty($this->fnums->cid) || !isset($this->fnums->cid)) {
+		$fnumInfos = $m_files->getFnumInfos($this->fnums);
+		$this->fnums->cid = $fnumInfos['id'];
+		$this->fnums->fnum = $this->fnums;
+		$this->fnums->status = -1;
+	} 
+
+	$campaign = @EmundusHelperfilters::getCampaignByID($this->fnums->cid);
 
 	$user = JFactory::getUser($student_id);
-
 	$email = $emails->getEmail($this->default_email_tmpl);
-
 
 	$experts_email = array();
 	foreach ($this->experts_list as $key => $value) {
 		$experts_email[] = $value['email'];
 	}
 	?>
+	
+	<div id="em-email-messages"></div>
 
-	<div id="attachment_list">
-	  <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" enctype="multipart/form-data" />
+	<div class="em-modal-sending-emails" id="em-modal-sending-emails">
+	    <div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
+	    <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
+	</div>
+
+	<div id="em-email">
+	  <form id="adminForm" name="adminForm">
 	    <?php echo $this->email; ?>
 	  </form>
 	</div>
 
-	<?php
+	<?php  
+	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->cid, 0); 
 
-	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->campaign_id, 0);
 	if ( count($attachments) == 0 ) {
-		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->campaign_id, 0, "F", $this->fnums->fnum);
+		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
+		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->cid, 0, "F", $this->fnums->fnum);
 	} else {
 		if (!empty($attachments)) {
 			$files = array();
@@ -66,9 +86,6 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 		}
 	}
 
-	echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>';
-	echo '<label><input type="checkbox" name="delete_attachment_box" id="delete_attachment_box" value="1"> '.JText::_('DELETE_ATTACHMENT_ONCE_MESSAGE_SENT').'</label>';
-	echo "<hr>";
 	// Upload ajax
 	?>
 	<script type="text/javascript">
@@ -98,8 +115,8 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 				//document.getElementById("r").innerHTML = response;
 			}
 		</script>
- <?php
- 	$attachment_types = @EmundusHelperfilters::setEvaluationList(0);
+ <?php 
+ 	$attachment_types = @EmundusHelperfilters::setEvaluationList(0); 
  	if (!empty($attachment_types)) {
  ?>
 	<form action="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
@@ -126,6 +143,10 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	$files_path = "";
 
 	if(!empty($files) && isset($files)) {
+		echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>';
+		echo '<label><input type="checkbox" name="delete_attachment_box" id="delete_attachment_box" value="1"> '.JText::_('DELETE_ATTACHMENT_ONCE_MESSAGE_SENT').'</label>';
+		echo "<hr>";
+
 		foreach ($files as $file) {
 			$files_path .= str_replace('\\', '\\\\', $file['path']).',';
 			//echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
@@ -145,6 +166,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 		echo '</ul>';
 	} else {
 		echo '<div id="em_attachment">';
+		echo '<input type="hidden" name="delete_attachment_box" id="delete_attachment_box" value="0">';
 		echo '<a href="index.php?option=com_fabrik&view=list&listid=108">'.JText::_('NO_FILE_FROM_TEMPLATE').'<a>';
 		echo '</div>';
 	}
@@ -153,26 +175,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	?>
 
 	<script>
-	function OnSubmitForm() {
-		var btn = document.getElementsByName(document.pressed);
-		btn[0].disabled = true;
-		btn[0].value = "<?php echo JText::_('SENDING_EMAIL'); ?>";
-
-		var delete_attachment = 0;
-		if (document.getElementById('delete_attachment_box').checked) {
-			document.getElementById("delete_attachment").value = 1;
-			delete_attachment = 1;
-		}
-
-		//alert(btn+' '+btn.disabled+' : '+btn.value);
-		switch(document.pressed) {
-			case 'expert':
-				document.adminForm.action ="index.php?option=com_emundus&task=sendmail_expert&fnum=<?php echo $this->fnums->fnum ?>&sid=<?php echo $student_id ?>&Itemid=<?php echo $itemid ?>&delete_attachment="+delete_attachment;
-			break;
-			default: return false;
-		}
-		return true;
-	}
+	
 	var mail_body = document.getElementById("mail_body");
 	var mail_subject = document.getElementById("mail_subject");
 	var mail_attachments = document.getElementById("mail_attachments");
@@ -186,9 +189,103 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	mail_from.value = "<?php echo $email->emailfrom; ?>";
 	mail_from_name.value = "<?php echo $email->name; ?>";
 
+	function OnSubmitForm() {
+		if(mail_to.value == ""){
+			$("#mail_to").css("border", "2px solid red"); 
+			$("html, body").animate({ scrollTop: 0 }, "slow");
+		} else {
+
+			var btn = document.getElementsByName(document.pressed);
+			btn[0].disabled = true;
+			btn[0].value = "<?php echo JText::_('SENDING_EMAIL'); ?>";
+
+			var delete_attachment = 0;
+			if (document.getElementById('delete_attachment_box').checked) {
+				document.getElementById("delete_attachment").value = 1;
+				delete_attachment = 1;
+			}
+
+			$('#em-email-messages').empty();
+            $('#em-modal-sending-emails').css('display', 'block');
+
+            var data = {
+                mail_attachments: $('#mail_attachments').val(),
+                mail_to			: $('#mail_to').val(),
+                mail_from_name 	: $('#mail_from_name').val(),
+                mail_from 		: $('#mail_from').val(),
+                mail_subject 	: $('#mail_subject').val(),
+                mail_body		: $('#mail_body').val(),
+                delete_attachment : $('#delete_attachment').val(),
+                fnum			: "<?php echo $this->fnums->fnum ?>",
+                sid 			: "<?php echo $student_id ?>"
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=email&task=sendmail_expert&fnum=<?php echo $this->fnums->fnum ?>&sid=<?php echo $student_id ?>&Itemid=<?php echo $itemid ?>&delete_attachment="+delete_attachment,
+                data: data,
+                success: function(result) {
+
+                    $('#em-modal-sending-emails').css('display', 'none');
+                    $('#em-email').empty();
+
+                    result = JSON.parse(result);
+
+                    if (result.status) {
+
+                        if (result.sent.length > 0) {
+                            // Block containing the email adresses of the sent emails.
+                            var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                            result.sent.forEach(function (element) {
+                                sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
+                                console.log(element);
+                            })
+
+                            Swal.fire({
+                                type: 'success',
+                                title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                                html:  sent_to + '</ul>'
+                            });
+
+
+                        } else {
+                            Swal.fire({
+                                type: 'error',
+                                title: Joomla.JText._('NO_EMAILS_SENT')
+                            })
+                            /*$("#em-email-messages").append('<span class="alert alert-danger" id="em-mails-sent">'+Joomla.JText._('NO_EMAILS_SENT')+'</span>');*/
+                        }
+
+                        if (result.failed.length > 0) {
+                            // Block containing the email adresses of the failed emails.
+                            $("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
+                                                        '<ul class="list-group" id="em-mails-failed"></ul>');
+
+                            result.failed.forEach(function (element) {
+                                $('#em-mails-sent').append('<li class="list-group-item alert-danger">'+element+'</li>');
+                            });
+
+                            $('#em-email-messages').append('</div>');
+                        }
+
+                    } else {
+                        $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                    }
+                    $('#em-email').append(result.message);
+                },
+                error : function () {
+                    $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                }
+            });
+		}
+	    event.preventDefault();
+	};
+
+	var form = document.getElementById("adminForm");
+	form.addEventListener("submit", OnSubmitForm, true);
+
 	</script>
+
 <?php
-
 }
-
 ?>

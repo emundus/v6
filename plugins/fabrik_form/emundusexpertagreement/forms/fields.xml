@@ -3,6 +3,7 @@
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-form-emundusexpertagreement" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_FIELDS">
 			<field name="group" type="field" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_GROUP_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_GROUP_LABEL" />
+			<field name="profile_id" type="field" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PROFILE_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PROFILE_LABEL" />
 		</fieldset>
 	</fields>
 </form>

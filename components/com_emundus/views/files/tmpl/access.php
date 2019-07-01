@@ -42,43 +42,43 @@
 		<?php endforeach;?>
 	</div>
 
-	<div class="panel panel-info">
-		<div class="panel-heading">
+	<div class="panel panel-info em-access">
+		<div class="panel-heading em-access em-access-header">
 			<?php echo JText::_('CHECK_ACL')?>
 		</div>
-		<div class="form-group" style="color:black !important">
-			<label class="col-lg-2 control-label"><?php echo JText::_('GROUPS')?></label>
-			<select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_GROUP')?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
+		<div class="form-group em-access em-access-form">
+			<label class="col-lg-2 control-label  em-access"><?php echo JText::_('GROUPS')?></label>
+			<select class="col-lg-7 modal-chzn-select  em-access" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_GROUP')?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
 				<?php foreach($this->groups as $group):?>
 					<option value = "<?php echo $group['id']?>"><?php echo $group['label']?></option>
 				<?php endforeach;?>
 				</select>
 
-			<label class="col-lg-2 control-label"><?php echo JText::_('EVALUATORS')?></label><select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_ASSESSOR')?>" name="em-access-evals" id="em-access-evals" value="">
+			<label class="col-lg-2 control-label em-access"><?php echo JText::_('EVALUATORS')?></label><select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_ASSESSOR')?>" name="em-access-evals" id="em-access-evals" value="">
 				<?php foreach($this->evals as $eval):?>
-					<option value = "<?php echo $eval['user_id']?>"><?php echo $eval['name']?></option>
+					<option value = "<?php echo $eval['user_id']?>"><?php echo $eval['name']?> (<?php echo $eval['email']?>) :: <?php echo $eval['label']?></option>
 				<?php endforeach;?>
 				</select>
 		</div>
-		<div class="panel-body">
-			<table id="em-modal-action-table" class="table table-hover" style="color:black !important;">
+		<div class="panel-body em-access em-access-body">
+			<table id="em-modal-action-table em-access" class="table table-hover em-access-body-table">
 					<thead>
 					<tr>
 						<th></th>
 						<th>
-							<input type="checkbox" class="em-modal-check em-check-all" name="c-check-all" id="c-check-all" checked style="width: 20px !important"/>
+							<input type="checkbox" class="em-modal-check em-check-all" name="c-check-all" id="c-check-all"/>
 							<label for="c-check-all"><?php echo JText::_('CREATE')?></label>
 						</th>
 						<th>
-							<input type="checkbox" class="em-modal-check em-check-all" name="r-check-all" id="r-check-all" checked style="width: 20px !important"/>
+							<input type="checkbox" class="em-modal-check em-check-all" name="r-check-all" id="r-check-all"/>
 							<label for="r-check-all"><?php echo JText::_('RETRIEVE')?></label>
 						</th>
 						<th>
-							<input type="checkbox" class="em-modal-check em-check-all" name="u-check-all" id="u-check-all" checked style="width: 20px !important"/>
+							<input type="checkbox" class="em-modal-check em-check-all" name="u-check-all" id="u-check-all"/>
 							<label for="u-check-all"><?php echo JText::_('UPDATE')?></label>
 						</th>
 						<th>
-							<input type="checkbox" class="em-modal-check em-check-all" name="d-check-all" id="d-check-all" checked style="width: 20px !important"/>
+							<input type="checkbox" class="em-modal-check em-check-all" name="d-check-all" id="d-check-all"/>
 							<label for="d-check-all"><?php echo JText::_('DELETE')?></label>
 						</th>
 					</tr>

@@ -313,43 +313,6 @@ defined('_JEXEC') or die();
 	}
 
 	jQuery(document).ready(function() {
-		Disable();		
-	
-		// Data of the 'Geolocation' map
-		var cont = 1;
-		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-			var target = $(e.target).attr("href") // activated tab
-			
-			var data_json = <?php echo $this->logs_by_country; ?>;
-						
-			if ( target == "#geoblock" ) {			
-				if (cont == 1) {
-					//var map = new Datamap({element: document.getElementById('container')});
-					map = new Datamap({
-						scope: 'world',
-						element: document.getElementById('container'),
-						projection: 'mercator',
-						fills: {
-							HIGH: '#FF0000',
-							LOW: '#F3F781',
-							MEDIUM: '#FF8000',
-							UNKNOWN: 'rgb(0,0,0)',
-							defaultFill: 'green'
-						},
-						data:	data_json
-						,geographyConfig: {
-							popupTemplate: function(geo, data) {
-								return ['<div class="hoverinfo" style="text-align: center;"><strong>',
-										geo.properties.name,
-										'<br/>' + data.numberOfThings,
-										'</strong></div>'].join('');
-							},
-							highlightFillColor: 'blue',
-						}
-					});
-					cont++;
-				}
-			}
-		});
+		Disable();				
 	});
 </script>

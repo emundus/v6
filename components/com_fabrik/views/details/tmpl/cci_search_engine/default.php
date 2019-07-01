@@ -1,4 +1,4 @@
-<?php
+    <?php
 /**
  * Form details template used for the HESAM search engine pages.
  *
@@ -35,11 +35,22 @@ require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'format
 $m_formations = new EmundusModelFormations();
 $m_files = new EmundusModelFiles();
 $sessions = $m_files->programSessions($this->data['jos_emundus_setup_programmes___id_raw']);
+// Check if the dates are set in the teaching unity table
+$emptyDates = 0;
+foreach ($sessions as $session) {
+	if (empty($session['date_start']) || $session['date_start'] === '0000-00-00 00:00:00' || $session['date_start'] <= date('Y-m-d H:i:s')) {
+	    $emptyDates++;
+    }
+}
+
+
 if ($m_formations->checkHRUser($user->id, $user->id)) {
     $applied = [];
 } else {
 	$applied = $m_files->getAppliedSessions($this->data['jos_emundus_setup_programmes___code_raw']);
 }
+
+
 
 if (!$user->guest) {
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
@@ -93,6 +104,38 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     $document = JFactory::getDocument();
     $document->setTitle($page_title);
     $document->setDescription(substr(html_entity_decode(strip_tags(html_entity_decode($this->data['jos_emundus_setup_programmes___objectives_raw']))), 0, 200));
+
+
+    function getThematic($id) {
+	    $db = JFactory::getDbo();
+	    // Get the list of categories.
+	    $query = $db->getQuery(true);
+	    $query
+		    ->select('*')
+		    ->from($db->quoteName('#__emundus_setup_thematiques'))
+		    ->where($db->qn('id') . ' = ' . $id);
+	    $db->setQuery($query);
+	    try {
+		    return $db->loadObject();
+	    } catch (Exception $e) {
+		    JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	    }
+    }
+
+    $cat_div = "";
+
+    $themes = explode(', ', $this->data['jos_emundus_setup_programmes___programmes_raw']);
+
+
+    if (sizeof($themes) > 1) {
+	    foreach ($themes as $theme) {
+		    $t = getThematic($theme);
+		    $cat_div .= "<div class=\"em-themes em-theme-title em-theme-$t->color\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $t->title))))."\">$t->label</a></div>";
+	    }
+    }
+    else {
+        $cat_div = "<div class=\"em-themes em-theme-title em-theme-".$this->data['jos_emundus_setup_thematiques___color_raw']."\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $this->data['jos_emundus_setup_thematiques___title_raw']))))."\">".$this->data['jos_emundus_setup_thematiques___label_raw']."</a></div>";
+    }
 ?>
 
 <style>
@@ -108,9 +151,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 </style>
 
 <!-- Title -->
-    <div class="em-themes em-theme-title em-theme-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
-        <a href="/formations/<?php echo str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $this->data['jos_emundus_setup_thematiques___title_raw']))));?>"><?php echo $this->data['jos_emundus_setup_thematiques___label_raw']; ?></a>
-    </div>
+
+
+    <?php echo $cat_div; ?>
 
     <div class="g-block size-95">
         <h1><?php echo $title; ?>
@@ -118,7 +161,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 <?php if ($is_favorite) :?>
                     <i class="fas fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE'); ?>" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php else :?>
-                    <i class="far fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE'); ?>" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
+                    <i class="far fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php endif; ?>
             <?php endif; ?>
         </h1>
@@ -258,93 +301,118 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                 </div>
 
                 <div class="em-option" id="em-option-inter">
-                    <div class="em-option-details">
-                        <b><?php echo JText::_('NEXT_SESSIONS'); ?></b>
-                    </div>
-
-                    <?php foreach ($sessions as $session) :?>
-
-                        <div class="formation">
-                            <b><?php
-                                $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))));
-                                $town =  ucwords(strtolower($town), '\',. ');
-                                $beforeComma = strpos($town, "D'");
-                                if (!empty($beforeComma)) {
-                                    $replace = strpbrk($town, "D'");
-                                    $town = substr_replace($town,lcfirst($replace), $beforeComma);
-                                }
-                                setlocale(LC_ALL, 'fr_FR.utf8');
-                                $start_day = date('d',strtotime($session['date_start']));
-                                $end_day = date('d',strtotime($session['date_end']));
-                                $start_month = date('m',strtotime($session['date_start']));
-                                $end_month = date('m',strtotime($session['date_end']));
-                                $start_year = date('y',strtotime($session['date_start']));
-                                $end_year = date('y',strtotime($session['date_end']));
-
-                                if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
-                                    echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                                } elseif ($start_month == $end_month && $start_year == $end_year) {
-                                    echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                                } elseif ($start_month != $end_month && $start_year == $end_year) {
-                                    echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                                } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
-                                    echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                                }
-                            ?>
-                            </b>
-                            <p><?php echo $town ;?></p>
-
-                                <p>
-                                    <?php
-                                        $TTC = floatval($session['price'])+(floatval($session['price'])*floatval($session['tax_rate']));
-                                        if (!empty($session['tax_rate'])) {
-	                                        echo $TTC . " € TTC";
-                                        } else {
-	                                        echo intval($session['price']) . " € net";
-                                        }
-                                    ?>
-                                </p>
-
-                            <?php
-                                if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0) {
-                                    echo "<p class='places'>".JText::_('LAST_SPOTS_LEFT')."</p>";
-                                }
-                            ?>
-
-                                <?php if ($session['occupants'] < $session['max_occupants']) :?>
-
-                                    <?php if (in_array($session['session_code'], $applied)) :?>
-                                        <div class="em-option-buttons">
-                                            <button class="em-option-complet" disabled><?php echo JText::_('ALREADY_SIGNED_UP'); ?></button>
-                                        </div>
-                                    <?php else: ?>
-
-                                        <?php
-                                        if ($user->guest) {
-                                            $formUrl = base64_encode('/inscription?session='.$session['session_code']);
-                                        } else {
-	                                        $formUrl = base64_encode('/inscrire-des-collaborateurs?session='.$session['session_code']);
-                                        }
-                                        ?>
-
-                                        <div class="em-option-buttons">
-                                            <a href="/demande-de-contact" class="em-option-contact"><?php echo JText::_('BE_CONTACTED'); ?></a>
-                                            <?php $register_url = "inscription?session=".$session['session_code']."&redirect=".$formUrl; ?>
-                                            <a href="<?php echo $register_url; ?>" class="em-option-login"><?php echo JText::_('SIGNUP'); ?></a>
-                                        </div>
-
-                                    <?php endif; ?>
-
-                                <?php else: ?>
-                                    <div class="em-option-buttons">
-                                        <button class="em-option-complet" disabled><?php echo JText::_('FULL'); ?></button>
-                                    </div>
-                                <?php endif; ?>
+                    <?php if ($emptyDates != sizeof($sessions)): ?>
+                        <div class="em-option-details">
+                            <b><?php echo JText::_('NEXT_SESSIONS'); ?></b>
                         </div>
 
-                    <?php endforeach; ?>
+                        <?php foreach ($sessions as $session) :?>
+                            <?php if ($session['date_start'] >= date('Y-m-d H:i:s')): ?>
+                                <div class="formation">
+                                <b>
+                                    <?php
 
-                    <ul id="pagin"></ul>
+                                    setlocale(LC_ALL, 'fr_FR.utf8');
+
+                                    $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))));
+                                    $town =  ucwords(strtolower($town), '\',. ');
+                                    $beforeComma = strpos($town, "D'");
+
+                                    if (!empty($beforeComma)) {
+                                        $replace = strpbrk($town, "D'");
+                                        $town = substr_replace($town,lcfirst($replace), $beforeComma);
+                                    }
+
+                                    if (!empty($session['date_start'])) {
+                                        $start_day = date('d',strtotime($session['date_start']));
+                                        $start_month = date('m',strtotime($session['date_start']));
+                                        $start_year = date('y',strtotime($session['date_start']));
+                                    }
+
+                                    if (!empty($session['date_end'])) {
+                                        $end_day = date('d',strtotime($session['date_end']));
+                                        $end_month = date('m',strtotime($session['date_end']));
+                                        $end_year = date('y',strtotime($session['date_end']));
+                                    }
+
+                                    if ($start_day == $end_day && $start_month == $end_month && $start_year == $end_year) {
+                                        echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                    } elseif ($start_month == $end_month && $start_year == $end_year) {
+                                        echo strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                    } elseif ($start_month != $end_month && $start_year == $end_year) {
+                                        echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                    } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
+                                        echo strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                                    }
+
+                                ?>
+                                </b>
+                                <p><?php echo $town ;?></p>
+
+                                    <p>
+                                        <?php
+                                            $TTC = floatval($session['price'])+(floatval($session['price'])*floatval($session['tax_rate']));
+                                            if (!empty($session['tax_rate'])) {
+                                                echo $TTC . " € TTC";
+                                            } else {
+                                                echo intval($session['price']) . " € net";
+                                            }
+                                        ?>
+                                    </p>
+
+                                <?php
+                                    if (($session['max_occupants'] - $session['occupants']) <= 3 && ($session['max_occupants'] - $session['occupants']) > 0) {
+                                        echo "<p class='places'>".JText::_('LAST_SPOTS_LEFT')."</p>";
+                                    }
+                                ?>
+
+                                    <?php if ($session['occupants'] < $session['max_occupants']) :?>
+
+                                        <?php if (in_array($session['session_code'], $applied)) :?>
+                                            <div class="em-option-buttons">
+                                                <button class="em-option-complet" disabled><?php echo JText::_('ALREADY_SIGNED_UP'); ?></button>
+                                            </div>
+                                        <?php else: ?>
+
+                                            <?php
+                                            if ($user->guest) {
+                                                $formUrl = base64_encode('/inscription?session='.$session['session_code']);
+                                            } else {
+                                                $formUrl = base64_encode('/inscrire-des-collaborateurs?session='.$session['session_code']);
+                                            }
+                                            ?>
+
+                                            <div class="em-option-buttons">
+
+                                                <a href="/demande-de-contact" class="em-option-contact"><?php echo JText::_('BE_CONTACTED'); ?></a>
+                                                <?php if (empty($unscheduled)) :?>
+                                                    <a href="<?php echo "inscription?session=".$session['session_code']."&redirect=".$formUrl; ?>" class="em-option-login"><?php echo JText::_('SIGNUP'); ?></a>
+                                                <?php endif; ?>
+
+                                            </div>
+
+                                        <?php endif; ?>
+
+                                    <?php else: ?>
+                                        <div class="em-option-buttons">
+                                            <button class="em-option-complet" disabled><?php echo JText::_('FULL'); ?></button>
+                                        </div>
+                                    <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+
+                        <ul id="pagin"></ul>
+
+                    <?php else: ?>
+                        <div class="top-paragraph">
+                            <b><?php echo JText::_('NO_FORMATIONS_PROGRAMMED'); ?></b>
+                        </div>
+
+                        <div class="em-option-buttons">
+                            <a href="/demande-de-contact" class="em-option-contact"><?php echo JText::_('BE_CONTACTED'); ?></a>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="em-option hide" id="em-option-intra">

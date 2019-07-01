@@ -28,6 +28,19 @@ class EmundusViewTrombinoscope extends JViewLegacy
         $fnums = $app->input->getString('fnums', null);
 
         $trombi = new EmundusModelTrombinoscope();
+        //$trombi_tpl = $trombi->getTrombiTpl();
+        //$badge_tpl = $trombi->getBadgeTpl();
+
+
+        $htmlLetters = $trombi->selectHTMLLetters();
+        $templ = [];
+
+        foreach ($htmlLetters as $letter){
+            $templ[$letter['attachment_id']] = $letter;
+
+        }
+
+
         $fnums_json_decode = $trombi->fnums_json_decode($fnums);
 
         //$file = $this->getModel('Files');
@@ -49,7 +62,8 @@ class EmundusViewTrombinoscope extends JViewLegacy
 
         $editor = JFactory::getEditor();
         // DISPLAY THE EDITOR (name, html, width, height, columns, rows, bottom buttons, id, asset, author, params)
-        $wysiwyg = $editor->display('trombi_tmpl', $trombi->trombi_tpl, '100%', '250', '20', '20', true, 'trombi_tmpl', null, null, $params);
+        //Modifié : $trombi->trombitpl à la place de $trombi_tpl
+        $wysiwyg = $editor->display('trombi_tmpl', $templ[$htmlLetters[0]['attachment_id']]['body'], '100%', '250', '20', '20', true, 'trombi_tmpl', null, null, $params);
         
 
        // $this->assign('string_fnums', implode(',', $fnums));
@@ -57,13 +71,15 @@ class EmundusViewTrombinoscope extends JViewLegacy
         // Option trombinoscope cochée par défaut
         $this->assign('trombi_checked', 'checked');
         $this->assign('badge_checked', '');
-        $this->assign('selected_format', 'trombi');
+        $this->assign('selected_format', $templ[$htmlLetters[0]['attachment_id']]['attachment_id']);
         // Autres options
-        $this->assign('trombi_tmpl', $trombi->trombi_tpl);
-        $this->assign('badge_tmpl', $trombi->badge_tpl);
+        //$this->assign('trombi_tmpl', $trombi_tpl); //Modifié $trombi->trombitpl à la place de $trombi_tpl
+        //$this->assign('badge_tmpl', $badge_tpl); //Modifié $trombi->badge_tpl à la place de $badge_tpl
         $this->assign('default_margin', $trombi->default_margin);
         $this->assign('wysiwyg', $wysiwyg);
         $this->assign('form_elements_id_list', $form_elements_id_list);
+        $this->assign('htmlLetters', $htmlLetters);
+        $this->assign('templ', $templ);
 
         parent::display($tpl);
     }

@@ -1487,12 +1487,12 @@ if (JFactory::getUser()->id == 63)
 
             $evalGroups['groups'] = $db->loadAssocList();
 
-            $query = 'SELECT DISTINCT (eu.user_id), CONCAT( eu.firstname, " ", eu.lastname ) as name
+            $query = 'SELECT DISTINCT(eu.user_id) as user_id, CONCAT( eu.lastname, " ", eu.firstname ) as name, esp.label, u.email
                         FROM #__emundus_users AS eu
+                        LEFT JOIN #__users AS u ON u.id=eu.user_id
                         LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
                         LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
-                        WHERE eu.profile !=1
-                        AND esp.published !=1';
+                        WHERE u.block=0 AND eu.profile !=1 AND esp.published !=1';
             $db->setQuery($query);
 
             $evalGroups['users'] = $db->loadAssocList();
@@ -1820,26 +1820,41 @@ if (JFactory::getUser()->id == 63)
 	    	$profile = null;
 	    }
 
+
     	try {
+		    if (is_array($fnums)) {
+			    foreach ($fnums as $fnum) {
+				    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
+				    $db->setQuery($query);
+				    $res = $db->execute();
 
-            foreach ($fnums as $fnum) {
+				    if (!empty($profile)) {
 
-            	$query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
-                $db->setQuery($query);
-                $res = $db->execute();
+					    $query = $db->getQuery(true);
+					    $query->update($db->quoteName('#__emundus_users'))
+						    ->set($db->quoteName('profile').' = '.$profile)
+						    ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+					    $db->setQuery($query);
+					    $db->execute();
 
-                if (!empty($profile)) {
+				    }
+			    }
+		    }
+		    else {
+			    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnums) ;
+			    $db->setQuery($query);
+-			    $res = $db->execute();
 
-                	$query = $db->getQuery(true);
-                	$query->update($db->quoteName('#__emundus_users'))
-		                ->set($db->quoteName('profile').' = '.$profile)
-		                ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
-                	$db->setQuery($query);
-                	$db->execute();
+			    if (!empty($profile)) {
+				    $query = $db->getQuery(true);
+				    $query->update($db->quoteName('#__emundus_users'))
+					    ->set($db->quoteName('profile').' = '.$profile)
+					    ->where($db->quoteName('user_id').' = '.substr($fnums, -7));
+				    $db->setQuery($query);
+				    $db->execute();
+			    }
+		    }
 
-                }
-
-            }
             return $res;
 
     	} catch (Exception $e) {
@@ -2876,6 +2891,8 @@ die();*/
         return $matches[1];
     }
 
+
+
     /**
      * Return a date format from php to MySQL.
      *
@@ -3096,15 +3113,35 @@ die();*/
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
                 ->where($db->quoteName('p.id') . ' = ' . $program .
                     ' AND ' . $db->quoteName('t.published') . ' = ' . 1 .
-                    ' AND ' . $db->quoteName('t.date_start') . ' >= ' . date("Y-m-d"))
+                    ' AND ' . $db->quoteName('t.date_end') . ' >= NOW()')
                 ->order('date_start ASC');
-
             $db->setQuery($query);
             return $db->loadAssocList();
         } catch(Exception $e) {
             echo $e->getMessage();
         }
     }
+
+    /*
+	public function unscheduledSessions($session) {
+		try {
+			$db = JFactory::getDbo();
+
+			$query = $db->getQuery(true);
+			$query
+				->select('t.id')
+				->from($db->quoteName('#__emundus_setup_teaching_unity', 't'))
+				->where($db->quoteName('t.session_code') . ' LIKE "' . $session .'"
+					 AND ' . $db->quoteName('t.published') . ' = ' . 1 .
+					' AND ((' . $db->quoteName('t.date_start') . ' IS NULL 
+					 AND ' . $db->quoteName('t.date_end') . ' IS NULL) OR '. $db->quoteName('t.date_start') .' <= NOW())');
+			$db->setQuery($query);
+			return $db->loadResult();
+		} catch(Exception $e) {
+			echo $e->getMessage();
+		}
+	}
+    */
 
     public function getAppliedSessions($program) {
         try {
@@ -3165,4 +3202,110 @@ die();*/
 	    return $birthdate;
     }
 
+    public function getDocumentCategory() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($this->_db->quoteName('esa.*'))
+            ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
+            ->order($this->_db->quoteName('esa.category').'ASC');
+
+        $this->_db->setQuery($query);
+
+        return $this->_db->loadObjectList();
+    }
+
+    public function getParamsCategory($idCategory) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47');
+
+        $db->setQuery($query);
+        $elements = $db->loadObjectList();
+
+        foreach ($elements as $element){
+            $params = json_decode($element->params);
+        }
+
+        return $params->sub_options->sub_labels[$idCategory];
+    }
+
+	/** Gets the category names for the different attachment types.
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+    public function getAttachmentCategories() {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('fe.params'))
+            ->from($db->quoteName('#__fabrik_elements' , 'fe'))
+            ->where($db->quoteName('fe.group_id') . ' = 47 AND '.$db->quoteName('fe.name').' LIKE '.$db->quote('category'));
+        $db->setQuery($query);
+        $element = $db->loadColumn();
+        
+        $params = json_decode($element[0]);
+
+        $return = [];
+        foreach ($params->sub_options->sub_values as $key => $value) {
+        	$return[$value] = $params->sub_options->sub_labels[$key];
+        }
+        return $return;
+    }
+    public function selectCity($insee){
+        $db = JFactory::getDBO();
+
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('insee_code') . ' LIKE ' . $db->quote($insee);
+
+        $query
+            ->select($db->quoteName('name'))
+            ->from($db->quoteName('#__emundus_french_cities'))
+            ->where($conditions);
+
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    public function selectNameCity($name){
+        $db = JFactory::getDBO();
+
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('name') . ' LIKE ' . $db->quote($name);
+
+        $query
+            ->select($db->quoteName('insee_code'))
+            ->from($db->quoteName('#__emundus_french_cities'))
+            ->where($conditions);
+
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    public function selectMultiplePayment($fnum){
+        $db = JFactory::getDBO();
+
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum);
+
+        $query
+            ->select('multiple_payment, method_payment, sampling_mode')
+            ->from($db->quoteName('#__emundus_declaration'))
+            ->where($conditions);
+
+
+        $db->setQuery($query);
+
+        return $db->loadObject();
+    }
 }

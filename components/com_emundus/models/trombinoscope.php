@@ -13,7 +13,8 @@ jimport('joomla.application.component.model');
 
 class EmundusModelTrombinoscope extends JModelLegacy
 {
-    public $trombi_tpl = '
+
+   /* public $trombi_tpl = '
 <table cellpadding="2" style="width: 100%;">
   <tbody>
     <tr style="border-collapse: collapse;">
@@ -24,6 +25,8 @@ class EmundusModelTrombinoscope extends JModelLegacy
     </tr>
   </tbody>
 </table>';
+
+
     public $badge_tpl = '<table width="100%">
   <tbody>
     <tr>
@@ -32,7 +35,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
     </tr>
   </tbody>
 </table>
-';
+';*/
     public $default_margin = '5';
 
     public $pdf_margin_top = 0;
@@ -166,12 +169,19 @@ class EmundusModelTrombinoscope extends JModelLegacy
     }
 */
     // DOMPDF
-    public function generate_pdf($html_value, $format = 'trombi') {
+    public function generate_pdf($html_value, $format) {
         set_time_limit(0);
         require_once(JPATH_LIBRARIES.DS.'dompdf'.DS.'dompdf_config.inc.php');
+        $attachmentsId = $this->selectHTMLLetters();
+        $templ = [];
 
-        $fileName = "trombinoscope-".time().".pdf";
+
+
+        $lbl = $this->selectLabelSetupAttachments($format);
+
+        $fileName = $lbl['lbl']."_".time().".pdf";
         $tmpName = JPATH_BASE.DS.'tmp'.DS.$fileName;
+
 
         $pdf = new DOMPDF();
         $pdf->set_paper("A4", "portrait");
@@ -195,17 +205,47 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $pdf->setHttpContext($contxt);
 */
 
+
         $pdf->load_html($html_value);
         $pdf->render();
         $canvas = $pdf->get_canvas();
         $font = Font_Metrics::get_font("helvetica", "bold");
         $canvas->page_text(260, 800, "Page: {PAGE_NUM} of {PAGE_COUNT}", $font, 8, array(0,0,0));
-        $title = ($format == 'trombi') ? JText::_('COM_EMUNDUS_TROMBI') : JText::_('COM_EMUNDUS_BADGES');
-        $canvas->page_text(260, 20, $title, $font, 8, array(0,0,0));
+        //$title = ($format == 'trombi') ? JText::_('COM_EMUNDUS_TROMBI') : JText::_('COM_EMUNDUS_BADGES');
+
+        //$canvas->page_text(260, 20, $title, $font, 8, array(0,0,0));
 
         $output = $pdf->output();
         file_put_contents($tmpName, $output);
 
         return JURI::base().'tmp'.DS.$fileName;
     }
+
+    public function selectHTMLLetters(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select(array($db->quoteName('title'),$db->quoteName('attachment_id'),$db->quoteName('body'),$db->quoteName('header'),$db->quoteName('footer')))
+            ->from($db->quoteName('#__emundus_setup_letters'))
+            ->where($db->quoteName('template_type') . ' = 2');
+
+        $db->setQuery($query);
+        return $db->loadAssocList();
+    }
+
+    public function selectLabelSetupAttachments($attachment_id){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select($db->quoteName('lbl'))
+            ->from($db->quoteName('#__emundus_setup_attachments','esa'))
+            ->join('INNER', $db->quoteName('#__emundus_setup_letters', 'esl') . ' ON (' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('esl.attachment_id') . ')')
+            ->where($db->quoteName('esl.attachment_id') . ' = '. $attachment_id );
+
+        //die($query);
+        $db->setQuery($query);
+        return $db->loadAssoc();
+    }
+
+
 }

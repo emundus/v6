@@ -88,6 +88,7 @@ JText::script('FILTER_DELETED');
 JText::script('SQL_ERROR');
 JText::script('COM_EMUNDUS_FORM_TITLE');
 JText::script('COM_EMUNDUS_FORM_GROUP');
+JText::script('COM_EMUNDUS_TO_UPPER_CASE');
 JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION');
 JText::script('COM_EMUNDUS_CHOOSE_OTHER_OPTION');
 JText::script('GENERATE_ZIP');
@@ -143,6 +144,12 @@ JText::script('PLEASE_SELECT_TAG');
 JText::script('VALID');
 JText::script('INVALID');
 JText::script('UNCHECKED');
+JText::script('SELECT_AT_LEAST_ONE_FILE');
+JText::script('INFORMATION');
+JText::script('COM_EMUNDUS_YOU_HAVE_SELECT');
+JText::script('COM_EMUNDUS_SELECT_ALL');
+JText::script('COM_EMUNDUS_FILE');
+JText::script('COM_EMUNDUS_FILES');
 
 
 // view user
@@ -162,6 +169,7 @@ JText::script('FILES_GENERATED');
 JText::script('STATE');
 JText::script('SWITCH_PROFILE');
 JText::script('PROFILE_CHOSEN');
+Jtext::script('ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -273,12 +281,16 @@ JText::script('ID_CANDIDAT');
 JText::script('FNUM');
 JText::script('APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
+JText::script('ARE_YOU_SURE_TO_DELETE_USERS');
 
 
 //Export ZIP
 JText::script('COM_EMUNDUS_ZIP_GENERATION');
 JText::script('COM_EMUNDUS_CREATE_ZIP');
 
+//WHO'S WHO
+JText::script('COM_EMUNDUS_TROMBI_GENERATE');
+JText::script('COM_EMUNDUS_TROMBI_DOWNLOAD');
 
 // Email to applicant
 JText::script('SEND_CUSTOM_EMAIL');
@@ -286,6 +298,7 @@ JText::script('NO_EMAILS_SENT');
 JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
 JText::script('SEND_FAILED');
+JText::script('SEND_TO');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
@@ -304,7 +317,9 @@ JText::script('COM_EMUNDUS_DATA_TO_ADD');
 JText::script('COM_EMUNDUS_ERROR_MISSING_FORM_DATA');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
+//JHtml::script('media/jui/js/jquery.min.js');
+//JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
+JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
 JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );

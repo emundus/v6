@@ -33,6 +33,7 @@
 						label="MOD_EM_LIST_ID2"
 						description="MOD_EM_LIST_ID2_DESC" 
 						size="60"
+						default="index.php?option=com_emundus&amp;view=users&amp;Itemid=592"
 					/>
 
 					<field 

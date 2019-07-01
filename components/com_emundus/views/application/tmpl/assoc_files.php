@@ -2,8 +2,8 @@
 JFactory::getSession()->set('application_layout', 'assoc_files');
 ?>
 <?php foreach ($this->synthesis->camps as $camp):?>
-	<div class = "panel <?php if($this->synthesis->fnumInfos['fnum'] == $camp->fnum){echo 'panel-primary';}else{echo 'panel-default';} ?>">
-		<div class = "panel-heading">
+	<div class = "panel <?php if($this->synthesis->fnumInfos['fnum'] == $camp->fnum){echo 'panel-primary';}else{echo 'panel-default';} ?> em-container-assocFiles">
+		<div class = "panel-heading em-container-assocFiles-heading">
 			<div class = "panel-title">
 				<a data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse">
                     <span class="label label-<?php echo $camp->class?>"> <?php echo $camp->step_value?></span>
@@ -28,7 +28,7 @@ JFactory::getSession()->set('application_layout', 'assoc_files');
 			</div>
 		</div>
 		<div id="<?php echo $camp->fnum?>-collapse" class="panel-collapse collapse <?php if($this->synthesis->fnumInfos['fnum'] == $camp->fnum){echo 'in';} ?>">
-			<div class="panel-body">
+			<div class="panel-body em-container-assocFiles-body">
 				<div>
 					<ul>
 						<li><span><?php echo JText::_('ACADEMIC_YEAR')?> : <?php echo $camp->year?></span></li>
@@ -37,7 +37,7 @@ JFactory::getSession()->set('application_layout', 'assoc_files');
 						
 						<?php if($camp->submitted==1):?>
 							<li><span><?php echo JText::_('SUBMITTED')?> : <?php echo JText::_('JYES');?></span></li>
-							<li><span><?php echo JText::_('DATE_SUBMITTED')?> : <?php echo JHtml::_('date', $camp->date_submitted, JText::_('DATE_FORMAT_LC2'));?></span></li>
+							<li><span><?php echo JText::_('DATE_SUBMITTED')?> : <?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
 						<?php else:?>
 							<li><span><?php echo JText::_('SUBMITTED')?> : <?php echo JText::_('JNO');?></span></li>
 						<?php endif;?>

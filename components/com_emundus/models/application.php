@@ -29,6 +29,7 @@ class EmundusModelApplication extends JModelList {
         parent::__construct();
         global $option;
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -122,25 +123,50 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadObjectList();
     }
 
-    function getUserAttachmentsByFnum($fnum) {
+    function getUserAttachmentsByFnum($fnum, $search = '') {
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $expert_document_id = $eMConfig->get('expert_document_id', '36');
 
         if (EmundusHelperAccess::isExpert($this->_user->id)) {
-            $eMConfig = JComponentHelper::getParams('com_emundus');
-            $expert_document_id = $eMConfig->get('expert_document_id', '36');
-
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
-            FROM #__emundus_uploads AS eu
-            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND (eu.attachment_id != '.$expert_document_id.')
-            ORDER BY esa.ordering, eu.timedate ASC';
+        	if (isset($search) && !empty($search)) {
+	            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+				            FROM #__emundus_uploads AS eu
+				            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+				            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+				            WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+				            AND (eu.attachment_id != '. $expert_document_id .') 
+				            AND (esa.value like "%'. $search .'%"
+				            OR esa.description like "%'. $search .'%"
+				            OR eu.timedate like "%'. $search .'%")
+				            ORDER BY esa.category ASC, eu.timedate DESC';
+            } else {
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+			                FROM #__emundus_uploads AS eu
+			                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+			                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+			                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
+			                AND (eu.attachment_id != ' . $expert_document_id . ') 
+			                ORDER BY esa.category ASC, eu.timedate DESC';
+            }
         } else {
-            $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
-            FROM #__emundus_uploads AS eu
-            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.fnum like '.$this->_db->Quote($fnum).'
-            ORDER BY esa.ordering, eu.timedate ASC';
+            if (isset($search) && !empty($search)) {
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                FROM #__emundus_uploads AS eu
+                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+                WHERE eu.fnum like '. $this->_db->Quote($fnum) .'
+                AND (esa.value like "%'. $search .'%"
+                OR esa.description like "%'. $search .'%"
+                OR eu.timedate like "%'. $search .'%")
+                ORDER BY esa.category ASC, eu.timedate DESC';
+            } else {
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                FROM #__emundus_uploads AS eu
+                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . '
+                ORDER BY esa.category ASC, eu.timedate DESC';
+            }
         }
 
         $this->_db->setQuery($query);
@@ -264,7 +290,8 @@ class EmundusModelApplication extends JModelList {
             $this->_db->execute();
             return $this->_db->insertid();
         } catch(Exception $e) {
-            throw $e;
+	        JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+	        return null;
         }
     }
 
@@ -481,14 +508,15 @@ class EmundusModelApplication extends JModelList {
             return $e->getMessage();
         }
 
-        $form .= '<br><hr><h3>';
+        $form .= '<br><hr><div class="TitleAdmission"><h3>';
         $title = explode('-', JText::_($table[0]->label));
+
         if (empty($title[1])) {
 	        $form .= JText::_($table[0]->label);
         } else {
 	        $form .= JText::_($title[1]);
         }
-
+        $form .= '</h3>';
         if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[0]->db_table_name != "#__emundus_training") {
 
             $query = 'SELECT count(id) FROM `'.$table[0]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
@@ -503,13 +531,13 @@ class EmundusModelApplication extends JModelList {
 
 
             if ($cpt > 0) {
-                $form .= ' <button type="button" id="'.$table[0]->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
             } else {
-                $form .= ' <button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
             }
         }
 
-        $form .= '</h3>';
+        $form .= '</div>';
 
         // liste des groupes pour le formulaire d'une table
         $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
@@ -826,6 +854,9 @@ class EmundusModelApplication extends JModelList {
         $h_access = new EmundusHelperAccess;
         $tableuser = $h_menu->buildMenuQuery($pid);
 
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+
         $forms = '';
 
         try {
@@ -836,7 +867,7 @@ class EmundusModelApplication extends JModelList {
 
 	            foreach ($tableuser as $key => $itemt) {
 
-	                $forms .= '<br><hr><h3>';
+	                $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo"><h3>';
 	                $title = explode('-', JText::_($itemt->label));
 
 	                if (empty($title[1])) {
@@ -844,11 +875,11 @@ class EmundusModelApplication extends JModelList {
 	                } else {
 		                $forms .= JText::_($title[1]);
 	                }
-
+                    $forms .= '</h3>';
 	                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
 	                    $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-	                    $this->_db->setQuery( $query );
+	                    $this->_db->setQuery($query);
 	                    $cpt = $this->_db->loadResult();
 
 	                    if ($cpt > 0) {
@@ -869,8 +900,8 @@ class EmundusModelApplication extends JModelList {
 
 	                    }
 	                }
+                    $forms .= '</div>';
 
-	                $forms .= '</h3>';
 	                // liste des groupes pour le formulaire d'une table
 	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -881,7 +912,7 @@ class EmundusModelApplication extends JModelList {
 	                $groupes = $this->_db->loadObjectList();
 
 	                /*-- Liste des groupes -- */
-	                foreach ($groupes as $keyg => $itemg) {
+	                foreach ($groupes as $itemg) {
 	                    // liste des items par groupe
 	                    $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
 	                                FROM #__fabrik_elements fe
@@ -893,15 +924,21 @@ class EmundusModelApplication extends JModelList {
 	                    $this->_db->setQuery( $query );
 	                    $elements = $this->_db->loadObjectList();
 	                    if (count($elements) > 0) {
-	                        $forms .= '<fieldset><legend class="legend">';
+	                        $forms .= '<fieldset class="em-personalDetail"><legend class="legend">';
 	                        $forms .= JText::_($itemg->label);
 	                        $forms .= '</legend>';
 
 	                        if ($itemg->group_id == 14) {
-	                            $forms .='<table>';
+	                            $forms .='<table class="em-personalDetail-table">';
 	                            $modulo = 0;
 	                            foreach($elements as &$element) {
-	                                if (!empty($element->label) && $element->label != ' ') {
+
+	                            	// Do not display elements with no value inside them.
+	                            	if ($show_empty_fields == 0 && trim($element->content) == '') {
+		                            	continue;
+		                            }
+
+	                                if (!empty(trim($element->label))) {
 	                                    if ($element->plugin=='date' && $element->content>0) {
 	                                        $date_params = json_decode($element->params);
 	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
@@ -928,6 +965,8 @@ class EmundusModelApplication extends JModelList {
 	                                    }
 	                                    elseif ($element->plugin == 'checkbox') {
 	                                        $elt = implode(", ", json_decode (@$element->content));
+                                        } elseif ($element->plugin == 'internalid') {
+	                                        $elt = '';
 	                                    } else {
 		                                    $elt = $element->content;
 	                                    }
@@ -944,7 +983,7 @@ class EmundusModelApplication extends JModelList {
 
 	                            // TABLEAU DE PLUSIEURS LIGNES
 	                        } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
-	                            $forms .= '<table class="table table-bordered table-striped">
+	                            $forms .= '<table class="table table-bordered table-striped em-personalDetail-table-multiplleLine">
 	                              <thead>
 	                              <tr> ';
 
@@ -987,6 +1026,11 @@ class EmundusModelApplication extends JModelList {
 	                                    $forms .= '<tr>';
 	                                    $j = 0;
 	                                    foreach ($r_element as $key => $r_elt) {
+
+		                                    // Do not display elements with no value inside them.
+		                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
+			                                    continue;
+		                                    }
 
 	                                        if (!empty($elements[$j])) {
 		                                        $params = json_decode($elements[$j]->params);
@@ -1062,10 +1106,14 @@ class EmundusModelApplication extends JModelList {
 	                                                $index = array_search($r_elt, $params->sub_options->sub_values);
 	                                                if (strlen($index) > 0) {
 	                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                                } elseif (!empty($params->dropdown_populate)) {
+		                                                $elt = $r_elt;
 	                                                } else {
 	                                                    $elt = "";
 	                                                }
-	                                            } else {
+	                                            } elseif ($elements[$j]->plugin == 'internalid') {
+		                                            $elt = '';
+		                                        } else {
 	                                                $elt = $r_elt;
 	                                            }
 
@@ -1081,16 +1129,22 @@ class EmundusModelApplication extends JModelList {
 
 	                            // AFFICHAGE EN LIGNE
 	                        } else {
-	                            $forms .='<table>';
+	                            $forms .='<table class="em-personalDetail-table-inline">';
 	                            $modulo = 0;
 	                            foreach ($elements as &$element) {
-	                                if (!empty($element->label) && $element->label!=' ') {
+
+	                                if (!empty(trim($element->label))) {
 	                                    $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
 	                                    $this->_db->setQuery( $query );
 	                                    $res = $this->_db->loadRow();
 
 	                                    $element->content = @$res[1];
 	                                    $element->content_id = @$res[0];
+
+		                                // Do not display elements with no value inside them.
+		                                if ($show_empty_fields == 0 && trim($element->content) == '') {
+			                                continue;
+		                                }
 
 	                                    if ($element->plugin=='date' && $element->content>0) {
 	                                        $date_params = json_decode($element->params);
@@ -1156,9 +1210,13 @@ class EmundusModelApplication extends JModelList {
 	                                        $index = array_search($element->content, $params->sub_options->sub_values);
 	                                        if (strlen($index) > 0) {
 	                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                        } elseif (!empty($params->dropdown_populate)) {
+		                                        $elt = $element->content;
 	                                        } else {
 	                                            $elt = "";
 	                                        }
+	                                    } elseif ($element->plugin == 'internalid') {
+		                                    $elt = '';
 	                                    } else {
 		                                    $elt = $element->content;
 	                                    }
@@ -1195,9 +1253,15 @@ class EmundusModelApplication extends JModelList {
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
-        $h_list     = new EmundusHelperList;
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+    	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
+
+    	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        $h_list = new EmundusHelperList;
+
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
+
         $forms = "<style>
                     table{
                         border-spacing: 1px;
@@ -1214,11 +1278,16 @@ class EmundusModelApplication extends JModelList {
                         background-color: #FFFFFF;
                         padding:5px;
                     }
+                    @media print {
+                    	.breaker{ 
+							page-break-before: always;
+						}
+                    }
                     </style>";
 
         if (isset($tableuser)) {
             foreach ($tableuser as $key => $itemt) {
-
+            	$breaker= ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -1242,8 +1311,8 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 if (count($groupes) > 0) {
-                    $forms .= '<br><br>';
-                    $forms .= '<hr><h3>';
+                    $forms .= '<br>';
+                    $forms .= '<hr><h3 '.$breaker.'>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
 	                    $forms .= JText::_($itemt->label);
@@ -1255,8 +1324,9 @@ class EmundusModelApplication extends JModelList {
                 $forms .= '</h3>';
 
                 /*-- Liste des groupes -- */
-                foreach ($groupes as $keyg => $itemg) {
-                    // liste des items par groupe
+                foreach ($groupes as $itemg) {
+
+                	// liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                                 FROM #__fabrik_elements fe
                                 WHERE fe.published=1 AND
@@ -1264,15 +1334,12 @@ class EmundusModelApplication extends JModelList {
                                     fe.group_id = "'.$itemg->group_id.'"
                                 ORDER BY fe.ordering';
                     try {
-
                         $this->_db->setQuery($query);
                         $elements = $this->_db->loadObjectList();
-
                     } catch (Exception $e) {
                         JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                         throw $e;
                     }
-
 
                     if (count($elements) > 0) {
 
@@ -1290,15 +1357,7 @@ class EmundusModelApplication extends JModelList {
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
                             foreach ($elements as $element) {
-
                                 if (!empty($element->label) && $element->label != ' ' && !empty($element->content)) {
-
-                                    if ($element->plugin == 'date' && $element->content > 0) {
-                                        $date_params = json_decode($element->params);
-                                        $elt = date($date_params->date_form_format, strtotime($element->content));
-                                    } else {
-	                                    $elt = JText::_($element->content);
-                                    }
                                     $forms .= '<tr><td style="padding-right:35px; border-right: 1px solid black;"><b>'.JText::_($element->label).'</b></td> <td> </td></tr>';
                                 }
                             }
@@ -1312,7 +1371,6 @@ class EmundusModelApplication extends JModelList {
                             <tr> ';
 
                             //-- Entrée du tableau -- */
-                            //$nb_lignes = 0;
                             $t_elt = array();
                             foreach ($elements as &$element) {
                                 $t_elt[] = $element->name;
@@ -1358,11 +1416,19 @@ class EmundusModelApplication extends JModelList {
                                     foreach ($r_element as $key => $r_elt) {
 
                                         if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
+
+	                                        // Do not display elements with no value inside them.
+	                                        if ($show_empty_fields == 0 && trim($r_elt) == '') {
+		                                        continue;
+	                                        }
+
                                             $params = json_decode($elements[$j]->params);
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $params = json_decode($elements[$j]->params);
-                                                $elt = date($params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1380,7 +1446,7 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
-                                                $this->_db->setQuery( $query );
+                                                $this->_db->setQuery($query);
                                                 $elt = $this->_db->loadResult();
                                             }
                                             elseif ($elements[$j]->plugin == 'cascadingdropdown') {
@@ -1389,7 +1455,6 @@ class EmundusModelApplication extends JModelList {
                                                 $cascadingdropdown_label = $params->cascadingdropdown_label;
                                                 $r2 = explode('___', $cascadingdropdown_label);
                                                 $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
-
 
                                                 // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
                                                 if ($params->cdd_display_type == 'checkbox') {
@@ -1424,11 +1489,15 @@ class EmundusModelApplication extends JModelList {
                                             }
                                             elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                if (strlen($index) > 0) {
-                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
-                                                } else {
-                                                    $elt = "";
-                                                }
+	                                            if (strlen($index) > 0) {
+		                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
+	                                            } elseif (!empty($params->dropdown_populate)) {
+		                                            $elt = $r_elt;
+	                                            } else {
+		                                            $elt = "";
+	                                            }
+                                            } elseif ($elements[$j]->plugin == 'internalid') {
+	                                            $elt = '';
                                             } else {
                                             	$elt = JText::_($r_elt);
                                             }
@@ -1446,7 +1515,6 @@ class EmundusModelApplication extends JModelList {
 
                             // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                         } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
-
 
                             //-- Entrée du tableau -- */
                             $t_elt = array();
@@ -1471,7 +1539,6 @@ class EmundusModelApplication extends JModelList {
                             $repeated_elements = $this->_db->loadObjectList();
                             unset($t_elt);
 
-
                             // -- Ligne du tableau --
                             if (count($repeated_elements) > 0) {
                                 $i = 1;
@@ -1482,11 +1549,18 @@ class EmundusModelApplication extends JModelList {
                                     $forms .= '<table>';
                                     foreach ($r_element as $key => $r_elt) {
 
+	                                    // Do not display elements with no value inside them.
+	                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
+		                                    continue;
+	                                    }
+
                                         if (!empty($r_elt) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $date_params = json_decode($elements[$j]->params);
-                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                            $elt = $dt->format($date_params->date_form_format);
                                             }
                                             elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
                                                 $format = 'Y-n-j';
@@ -1535,6 +1609,8 @@ class EmundusModelApplication extends JModelList {
                                                 } else {
                                                     $elt = "";
                                                 }
+                                            } elseif ($elements[$j]->plugin == 'internalid') {
+	                                            $elt = '';
                                             } else {
                                                 $elt = JText::_($r_elt);
                                             }
@@ -1552,7 +1628,6 @@ class EmundusModelApplication extends JModelList {
                                     $forms .= '</table>';
                                     $i++;
                                 }
-
                             }
 
                             // AFFICHAGE EN LIGNE
@@ -1561,12 +1636,10 @@ class EmundusModelApplication extends JModelList {
                             foreach ($elements as $element) {
 
                                 $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-
                                 try {
                                     $this->_db->setQuery($query);
                                     $res = $this->_db->loadRow();
-                                }
-                                catch (Exception $e) {
+                                } catch (Exception $e) {
                                     JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                     throw $e;
                                 }
@@ -1574,11 +1647,15 @@ class EmundusModelApplication extends JModelList {
                                 if (count($res) > 1) {
                                     $element->content = $res[1];
                                     $element->content_id = $res[0];
-                                }
-                                else {
+                                } else {
                                     $element->content = '';
                                     $element->content_id = -1;
                                 }
+
+	                            // Do not display elements with no value inside them.
+	                            if ($show_empty_fields == 0 && trim($element->content) == '') {
+		                            continue;
+	                            }
 
                                 $params = json_decode($element->params);
                                 //var_dump($element->content);
@@ -1587,16 +1664,19 @@ class EmundusModelApplication extends JModelList {
                                     if (!empty($element->label) && $element->label!=' ') {
 
                                         if ($element->plugin=='date' && $element->content>0) {
-                                            $elt = date($params->date_form_format, strtotime($element->content));
+	                                        $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+	                                        $elt = $dt->format($params->date_form_format);
                                         }
 
                                         elseif ($element->plugin=='birthday' && $element->content>0) {
                                             $format = 'Y-n-j';
                                             $d = DateTime::createFromFormat($format, $element->content);
-                                            if($d && $d->format($format) == $element->content)
+                                            if ($d && $d->format($format) == $element->content) {
                                                 $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                            else
+                                            } else {
                                                 $elt = $element->content;
+                                            }
                                         }
 
                                         elseif ($element->plugin == 'databasejoin') {
@@ -1611,7 +1691,6 @@ class EmundusModelApplication extends JModelList {
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadRow();
-
                                                 } catch (Exception $e) {
                                                     JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
@@ -1622,8 +1701,7 @@ class EmundusModelApplication extends JModelList {
                                                 } else {
                                                     $elt = '';
                                                 }
-                                            }
-                                            else {
+                                            } else {
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
@@ -1632,9 +1710,7 @@ class EmundusModelApplication extends JModelList {
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
-                                        }
-
-                                        elseif ($element->plugin == 'cascadingdropdown') {
+                                        } elseif ($element->plugin == 'cascadingdropdown') {
                                             $cascadingdropdown_id = $params->cascadingdropdown_id;
                                             $r1 = explode('___', $cascadingdropdown_id);
                                             $cascadingdropdown_label = $params->cascadingdropdown_label;
@@ -1647,42 +1723,40 @@ class EmundusModelApplication extends JModelList {
                                             $query = preg_replace('#{my->id}#', $aid, $query);
                                             $this->_db->setQuery( $query );
                                             $elt = JText::_($this->_db->loadResult());
-                                        }
 
-                                        elseif ($element->plugin == 'textarea')
+                                        } elseif ($element->plugin == 'textarea') {
                                             $elt = JText::_($element->content);
 
-                                        elseif (@$elements[$j]->plugin == 'checkbox')
+                                        } elseif (@$elements[$j]->plugin == 'checkbox') {
                                             $elt = JText::_(implode(", ", json_decode (@$element->content)));
 
-                                        elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
+                                        } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
                                                 $elt = JText::_($params->sub_options->sub_labels[$index]);
                                             } else {
                                                 $elt = "";
                                             }
+                                        } elseif ($elements[$j]->plugin == 'internalid') {
+		                                    $elt = '';
+                                        } else {
+                                            $elt = JText::_($element->content);
                                         }
 
-                                        else
-                                            $elt = JText::_($element->content);
-
-                                        if ($element->plugin == 'textarea')
+                                        if ($element->plugin == 'textarea') {
                                             $forms .= '<tr><td colspan="2" style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span> <br>'.JText::_($elt).'</td></tr>';
-                                        else
+                                        } else {
                                             $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
-
+										}
                                     }
-                                }elseif(empty($element->content)){
+                                } elseif (empty($element->content)) {
                                     if (!empty($element->label) && $element->label!=' ') {
-                                        //$forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: ';
                                         $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> </td></tr>';
                                     }
                                 }
                             }
                             $forms .= '</table>';
                         }
-                        //$forms .= '</fieldset>';
                     }
                 }
             }
@@ -1819,7 +1893,7 @@ td {
                                         elseif($elements[$j]->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$r_elt));
                                         }
-                                        elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
+                                        elseif($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                             $params = json_decode($elements[$j]->params);
                                             $index = array_search($r_elt, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
@@ -1887,7 +1961,7 @@ td {
                                     elseif($element->plugin == 'checkbox') {
                                         $elt = implode(", ", json_decode (@$element->content));
                                     }
-                                    elseif($element->plugin=='dropdown' || $iteme->element=='radiobutton') {
+                                    elseif($element->plugin=='dropdown' || $element->plugin=='radiobutton') {
                                         $params = json_decode($element->params);
                                         $index = array_search($element->content, $params->sub_options->sub_values);
                                         if (strlen($index) > 0) {
@@ -2344,18 +2418,14 @@ td {
      * @param bool $admission
      * @return bool|mixed
      */
-    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false)
-    {
-        if($admission) {
+    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+        if ($admission) {
             $startDate = $fnumInfos['admission_start_date'];
             $endDate = $fnumInfos['admission_end_date'];
-        }
-        else {
+        } else {
             $startDate = $fnumInfos['start_date'];
             $endDate = $fnumInfos['end_date'];
         }
-
-
 
         $dbo = $this->getDbo();
 
@@ -2365,7 +2435,7 @@ td {
                 FROM #__hikashop_order ho
                 LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
                 WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "created" AND (ho.order_payment_method like "banktransfer" OR ho.order_payment_method like "check")
+                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
                 AND ho.order_created >= '.strtotime($startDate).'
                 AND ho.order_created <= '.strtotime($endDate).'
                 ORDER BY ho.order_created desc';
@@ -2754,49 +2824,119 @@ td {
         return true;
     }
 
-    /**
-     * Gets the first page of the application form. Used for opening a file.
-     * @param String the URL to redirect to if it fails.
-     * @return String The URL to the form.
-     * @since 3.8.8
-     */
-    function getFirstPage($redirect = 'index.php') {
+	/**
+	 * Gets the first page of the application form. Used for opening a file.
+	 *
+	 * @param string $redirect
+	 * @param null   $fnums
+	 *
+	 * @return String The URL to the form.
+	 * @since 3.8.8
+	 */
+    function getFirstPage($redirect = 'index.php', $fnums = null) {
 
         $user = JFactory::getSession()->get('emundusUser');
         $db = JFactory::getDBo();
+	    $query = $db->getQuery(true);
 
-        if (empty($user->menutype))
-            return $redirect;
+        if (!empty($fnums)) {
 
-        $query = $db->getQuery(true);
-        $query->select(['id','link'])
-            ->from($db->quoteName('#__menu'))
-            ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"');
+	        $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
+		        ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+		        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
+		        ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
+		        ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'=1 AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+		        ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
+		        ->order($db->quoteName('m.lft').' DESC');
+	        $db->setQuery($query);
 
-        try {
-            $db->setQuery($query);
-            $res = $db->loadObject();
-            return $res->link.'&Itemid='.$res->id;
-        } catch (Exception $e) {
-            JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
-            return $redirect;
+	        try {
+		        return $db->loadAssocList('fnum');
+	        } catch (Exception $e) {
+		        JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        return $redirect;
+	        }
+		        
+        } else {
+
+	        if (empty($user->menutype)) {
+		        return $redirect;
+	        }
+	        
+	        $query->select(['id','link'])
+		        ->from($db->quoteName('#__menu'))
+		        ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"');
+
+	        try {
+		        $db->setQuery($query);
+		        $res = $db->loadObject();
+		        return $res->link.'&Itemid='.$res->id;
+	        } catch (Exception $e) {
+		        JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		        return $redirect;
+	        }
+
         }
-
     }
 
-    public function attachment_validation($attachment_id, $state)
-    {
+    public function attachment_validation($attachment_id, $state) {
         $dbo = $this->getDbo();
-        try
-        {
+        try {
             $query = 'UPDATE #__emundus_uploads  SET `is_validated` = '.(int) $state.' WHERE `id` = '.(int) $attachment_id;
-            #die($query);
             $dbo->setQuery($query);
             return $dbo->execute();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             throw $e;
         }
+    }
+
+
+
+	/** Gets the URL of the final form in the application in order to submit.
+	 * @param $fnums
+	 *
+	 * @return Mixed
+	 */
+    function getConfirmUrl($fnums)
+    {
+
+        if (empty($fnums)) {
+            return false;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
+            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esc.profile_id'))
+            ->leftJoin($db->quoteName('#__menu', 'm') . ' ON ' . $db->quoteName('m.menutype') . ' = ' . $db->quoteName('esp.menutype') . ' AND ' . $db->quoteName('m.published') . '>=0 AND ' . $db->quoteName('m.level') . '=1 AND ' . $db->quoteName('m.link') . ' <> "" AND ' . $db->quoteName('m.link') . ' <> "#"')
+            ->where($db->quoteName('cc.fnum') . ' IN(' . implode(',', $fnums) . ')')
+            ->order($db->quoteName('m.lft') . ' ASC');
+
+        $db->setQuery($query);
+        try {
+            return $db->loadAssocList('fnum');
+        } catch (Exception $e) {
+            JLog::add('Error getting confirm URLs in model/application at query -> ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+
+    public function searchFilesByKeywords($fnum){
+        $db = $this->getDbo();
+        $jinput = JFactory::getApplication()->input;
+        $search = $jinput->get('search');
+
+        $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+            FROM #__emundus_uploads AS eu
+            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+            WHERE eu.fnum like '.$this->_db->Quote($fnum).'
+            AND $where LIKE '.$search;
+
+        $db->setQuery($query);
+        return $db->execute();
     }
 }

@@ -31,23 +31,35 @@ class EmundusHelperFilters {
 	* @param 	array 	values to extract and insert
 	*/
 	public function insertValuesInQueryResult($results, $options) {
-		foreach ($results as $key=>$result) {
+		foreach ($results as $key => $result) {
 			if (array_key_exists('params', $result)) {
 				if (is_array($result)) {
+
+					$results[$key]['table_label'] = JText::_($results[$key]['table_label']);
+					$results[$key]['group_label'] = JText::_($results[$key]['group_label']);
+					$results[$key]['element_label'] = JText::_($results[$key]['element_label']);
+
 					$params = json_decode($result['params']);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
 							$results[$key][$option] = implode('|', $params->sub_options->$option);
-						else
+						} else {
 							$results[$key][$option] = '';
+						}
 					}
 				} else {
+
+					$results[$key]->table_label = JText::_($results[$key]->table_label);
+					$results[$key]->group_label = JText::_($results[$key]->group_label);
+					$results[$key]->element_label = JText::_($results[$key]->element_label);
+
 					$params = json_decode($result->params);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
 							$results[$key]->$option = implode('|', $params->sub_options->$option);
-						else
+						} else {
 							$results[$key]->$option = '';
+						}
 					}
 				}
 			}
@@ -202,20 +214,23 @@ class EmundusHelperFilters {
 			return $db->loadObjectList();
 	}
 
-	function getEvaluation_doc($result) {
+	function getEvaluation_doc($status) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT *
 				FROM #__emundus_setup_attachments esa
 				WHERE id IN (
-					SELECT distinct(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE status='.$result.'
+					SELECT distinct(esl.attachment_id) 
+					FROM #__emundus_setup_letters esl 
+					LEFT JOIN #__emundus_setup_letters_repeat_status eslr ON eslr.parent_id=esl.id
+					WHERE esl.status='.$status.'
 					)
 				ORDER BY esa.value';
 			$db->setQuery( $query );
 			return $db->loadObjectList();
 	}
 
-	function setEvaluationList ($result) {
-		$option_list =  @EmundusHelperFilters::getEvaluation_doc($result);
+	function setEvaluationList ($status) {
+		$option_list =  @EmundusHelperFilters::getEvaluation_doc($status);
 		$current_filter = '';
 		if (!empty($option_list)){
 			$current_filter = '<select name="attachment_id" id="attachment_id">';
