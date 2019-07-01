@@ -23,8 +23,8 @@ JFactory::getSession()->set('application_layout', 'comment');
 
 <div class="comments">
     <div class="row">
-        <div class="panel panel-default widget">
-            <div class="panel-heading">
+        <div class="panel panel-default widget em-container-comment">
+            <div class="panel-heading em-container-comment-heading">
 
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-comment"></span>
@@ -33,7 +33,7 @@ JFactory::getSession()->set('application_layout', 'comment');
                 </h3>
 
             </div>
-            <div class="panel-body">
+            <div class="panel-body em-container-comment-body">
                 <ul class="list-group">
                 <?php
 				if (count($this->userComments) > 0) {
@@ -42,17 +42,17 @@ JFactory::getSession()->set('application_layout', 'comment');
                     <li class="list-group-item" id="<?php echo $comment->id; ?>">
                         <div class="row">
                             <div class="col-xs-10 col-md-11">
-                                <div>
+                                <div class="em-list-status">
                                     <a href="#" class="comment-name"><?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?></a>
                                     <input style="display: none;" name="cname" type="text" value="<?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="mic-info comment-date">
+                                    <div class="mic-info comment-date em-list-status-date">
                                         <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
                                     </div>
                                 </div>
-                                <div class="comment-text"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>
+                                <div class="comment-text em-list-status-comment"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>
                                 <textarea style="display: none;" class="ctext"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></textarea>
 								<?php if ($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) :?>
-                                <div class="action">
+                                <div class="action em-list-status-action">
                                     <div class="edit-comment-container">
                                         <button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >
                                             <span class="glyphicon glyphicon-edit"></span>
@@ -91,7 +91,7 @@ JFactory::getSession()->set('application_layout', 'comment');
 			</div>
 
 	        <?php if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)): ?>
-	            <div class="form" id="form"></div>
+	            <div class="form em-decision-form" id="form"></div>
 	        <?php endif; ?>
 
         </div>
@@ -144,7 +144,7 @@ $(document).on('click', '.comments .delete-comment', function(e) {
 	}
 });
 
-var textArea = '<hr><div id="form">' +
+var textArea = '<hr><div id="form" class="em-decision-form-content">' +
                     '<input placeholder="<?php echo JText::_('TITLE');?>" class="form" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>' +
                     '<textarea placeholder="<?php echo JText::_('ENTER_COMMENT');?>" class="form" style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>' +
                 '<button type="button" class="btn btn-success"> <?php echo JText::_('ADD_COMMENT');?> </button></div>';

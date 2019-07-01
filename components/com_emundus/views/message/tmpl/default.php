@@ -41,17 +41,17 @@ $email_list = array();
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-    <div id="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
+    <div id="em-sending-email-caption" class="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
     <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
 </div>
 
-<form id="emailForm"  name="emailForm" style="padding:0px 15px;">
+<form id="emailForm" class="em-form-message" name="emailForm" style="padding:0px 15px;">
     <div class="em_email_block" id="em_email_block">
 
         <div class="form-inline row">
 
             <!-- Dropdown to select the email categories used. -->
-            <div class="form-group col-md-6 col-sm-6">
+            <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
                 <label for="select_category" ><?php echo JText::_('SELECT_CATEGORY'); ?></label>
                 <select name="select_category" class="form-control" onChange="setCategory(this);">
                     <?php if (!$message_categories) :?>
@@ -68,7 +68,7 @@ $email_list = array();
             </div>
 
             <!-- Dropdown to select the email template used. -->
-            <div class="form-group col-md-6 col-sm-6">
+            <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
                 <label for="select_template" ><?php echo JText::_('SELECT_TEMPLATE'); ?></label>
                 <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
                     <?php if (!$message_templates) :?>
@@ -87,13 +87,13 @@ $email_list = array();
         <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?php echo implode(',',$this->fnums); ?>" />
 
         <!-- Add current user to Bcc -->
-        <div class="checkbox">
+        <div class="checkbox em-form-checkbox-copyEmail">
             <label>
                 <input type="checkbox" id="sendUserACopy"> <?php echo JText::_('SEND_COPY_TO_CURRENT_USER'); ?>
             </label>
         </div>
 
-        <div class="form-group">
+        <div class="form-group em-form-recipients">
             <!-- List of users / their emails, gotten from the fnums selected. -->
             <div class="well well-sm" id="em-recipitents">
                 <span class='label label-grey'><?php echo JText::_('TO'); ?>:</span>
@@ -111,14 +111,14 @@ $email_list = array();
 				<?php endforeach; ?>
 			</div>
 		</div>
-		<div class="form-group">
+		<div class="form-group em-form-sender">
 			<div class="inputbox input-xlarge form-control form-inline">
 				<span class='label label-grey' for="mail_from" ><?php echo JText::_('FROM'); ?>:</span>
 				<div class="form-group" style="display:inline-block !important;" id="mail_from_name" contenteditable="true"><?php echo $current_user->name; ?> </div>
 				<div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><strong> <?php echo $current_user->email; ?></strong></div>
 			</div>
 		</div>
-		<div class="form-group">
+		<div class="form-group em-form-subject">
 			<div class="inputbox input-xlarge form-control form-inline">
 				<span class='label label-grey' for="mail_from" ><?php echo JText::_('SUBJECT'); ?>:</span>
 				<div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?php echo JFactory::getConfig()->get('sitename'); ?></div>
@@ -133,7 +133,7 @@ $email_list = array();
 			<hr>
 		</div>
 
-		<div class="form-inline row">
+		<div class="form-inline row em-form-attachments">
 			<div class="form-group col-sm-12 col-md-5">
 				<label for="em-select_attachment_type" ><?php echo JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
 				<select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
@@ -150,7 +150,7 @@ $email_list = array();
 
 			<div class="form-group col-sm-12 col-md-7">
 				<!-- Upload a file from computer -->
-        <div class="hidden upload-file" id="upload_file">
+        <div class="hidden upload-file em-form-attachments-uploadFile" id="upload_file">
 
             <div class="file-browse">
                 <span id="em-filename"><?php echo JText::_('FILE_NAME'); ?></span>
@@ -167,7 +167,7 @@ $email_list = array();
 
         <!-- Get a file from setup_attachments -->
         <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-        <div class="hidden" id="candidate_file">
+        <div class="hidden em-form-attachments-candidateFile" id="candidate_file">
           <label for="em-select_candidate_file" ><?php echo JText::_('UPLOAD'); ?></label>
           <select id="em-select_candidate_file" name="candidate_file" class="form-control download">
           <?php if (!$setup_attachments) :?>
@@ -187,7 +187,7 @@ $email_list = array();
 
         <!-- Get a file from setup_letters -->
         <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-            <div class="hidden" id="setup_letters">
+            <div class="hidden em-form-attachments-setupLetters" id="setup_letters">
                 <label for="em-select_setup_letters" ><?php echo JText::_('UPLOAD'); ?></label>
                 <select id="em-select_setup_letters" name="setup_letters" class="form-control">
                 <?php if (!$setup_letters) :?>
@@ -210,7 +210,7 @@ $email_list = array();
         </div>
         <br>
         <hr>
-        <div class="form-group attachment">
+        <div class="form-group attachment em-form-attachments-location">
             <ul class="list-group" id="em-attachment-list">
                 <!-- Files to be attached will be added here. -->
             </ul>

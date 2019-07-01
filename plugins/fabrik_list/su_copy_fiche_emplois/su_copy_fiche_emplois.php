@@ -114,7 +114,7 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 		$model = $this->getModel();
 		$ids = JRequest::getVar('ids', array(), 'method', 'array');
 		$formModel = $model->getFormModel();
-		$user = JFactory::getUser();
+		$user=JFactory::getSession()->get('emundusUser');
 		$db = FabrikWorker::getDbo();
 		$config = JFactory::getConfig();
         
@@ -142,7 +142,7 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 				$query = 'UPDATE #__emundus_emploi_etudiant e 
 					SET e.date_time=NOW(), e.published=1, e.valide_comite='.$db->Quote('-1').', e.valide='.$db->Quote('-1').',
 					    e.campaign_id='.$campaign_id.', e.date_debut=NULL, e.date_fin=NULL,
-					    e.date_limite=NULL, e.user_modify=NULL, e.date_modify=NULL
+					    e.date_limite=NULL, e.user_modify=NULL, e.date_modify=NULL, e.etablissement='.$user->university_id.'
 					WHERE e.id='.$id;
 
 				$db->setQuery($query);

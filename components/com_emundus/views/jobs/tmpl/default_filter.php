@@ -16,7 +16,7 @@ if (isset($data['view']->filterForm))
 
 //filter for etablissement
 $selected_etablissement = $input->get('filter_domaine',$this->state->get('filter.etablissement'));
-$query = 'SELECT id, title FROM #__categories WHERE published=1 and extension like "com_contact" and ( note like "su") order by note desc,lft asc';
+$query = 'SELECT id, title FROM #__categories WHERE published=1 and extension like "com_contact" and ( note like "%emplois-su%") order by title asc';
 $db->setQuery($query);
 $elements = $db->loadObjectList();
 
@@ -24,9 +24,17 @@ $elements = $db->loadObjectList();
 $options_etablissement = array();
 $options_etablissement[] = JHTML::_('select.option', "", JText::_('PLEASE_SELECT'));
 $i=0;
+
 foreach($elements as $key=>$value) :
-    if($value->id != 118)
-    $options_etablissement[] = JHTML::_('select.option', $value->id, $value->title);
+    if($value->id != 118) {
+
+        if ($value->id == $this->state->get('filter.etablissement')) {
+            $options_etablissement[] = JHTML::_('select.option', $value->id, $value->title, true);
+        }
+        else {
+            $options_etablissement[] = JHTML::_('select.option', $value->id, $value->title);
+        }
+    }
 endforeach;
 
 
@@ -39,7 +47,14 @@ $options = array();
 $options[] = JHTML::_('select.option', "", JText::_('PLEASE_SELECT'));
 $i=0;
 foreach($labels as $key=>$value) :
-    $options[] = JHTML::_('select.option', $values[$i], $value);
+
+    if ($values[$i] == $this->state->get('filter.domaine')) {
+        $options[] = JHTML::_('select.option', $values[$i], $value, true);
+    }
+    else {
+        $options[] = JHTML::_('select.option', $values[$i], $value);
+    }
+    $i++;
 endforeach;
 ?>
 

@@ -19,8 +19,8 @@ JFactory::getSession()->set('application_layout', 'evaluation');
 ?>
 
 <div class="row">
-    <div class="panel panel-default widget">
-        <div class="panel-heading">
+    <div class="panel panel-default widget em-container-evaluation">
+        <div class="panel-heading em-container-evaluation-heading">
             <h3 class="panel-title" style="display:inline-block">
             <span class="glyphicon glyphicon-check"></span>
                 <?php echo JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
@@ -40,10 +40,10 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 }
             ?>
         </div>
-        <div class="panel-body">
+        <div class="panel-body em-container-evaluation-body">
             <div class="content">
                 <?php if (isset($this->evaluation_select) && count($this->evaluation_select) > 0) :?>
-                    <label for="copy_evaltuations"><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></label>
+                    <label for="copy_evaltuations" class="em-container-evaluation-body-label"><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">
                         <option value="0" selected><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></option>
                         <?php
