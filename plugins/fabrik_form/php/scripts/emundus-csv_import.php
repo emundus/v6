@@ -558,7 +558,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			} else {
 
 				$columns[] = $element_name;
-				$values[]  = $element_value;
+				$values[]  = trim($element_value);
 			}
 
 		}
