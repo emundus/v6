@@ -6,7 +6,8 @@ JHTML::_('behavior.tooltip');
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 JHTML::stylesheet( 'templates/system/css/general.css' );
 JHTML::stylesheet( 'templates/system/css/system.css' );
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emunuds/css/emundus_checklist.css" );
 $current_user = JFactory::getSession()->get('emundusUser');
 
 $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);		

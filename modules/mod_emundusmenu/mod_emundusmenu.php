@@ -8,7 +8,8 @@
 
 // no direct access
 defined('_JEXEC') or die;
-
+$document 	= JFactory::getDocument();
+$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 // needed when default top menu is missing

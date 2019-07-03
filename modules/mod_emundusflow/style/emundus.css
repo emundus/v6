@@ -9,7 +9,7 @@
     padding-right: 0;
     padding-top: 0px;
     text-align: center;
-	/*width:400px; // pour une version flottante en entête
+	/*width:400px; // pour une version flottante en entï¿½te
 	text-align:center;
 	margin:auto;
 	margin: -5px 0 20px 310px;
@@ -38,7 +38,7 @@
 */
 
 /* new style */
-#emundusflow_new {
+/*#emundusflow_new {
 	text-align: center;
 	margin-top: 5px;
 }
@@ -50,7 +50,7 @@
 	height: 20px !important;
 	margin:0 !important;
 	padding-right:5px;
-	/*background-color: #158bc8;*/
+	/*background-color: #158bc8;
 	
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -102,4 +102,69 @@
 	z-index:1;
 	display:block !important;
 	padding-left:30px;
+}*/
+/******************COORDONEES PERSO*************/
+#g-utility #drawer .moduletable {
+	padding: 0 !important;
+}
+
+.step .description .label {
+	white-space: normal !important;
+}
+
+.ui.steps .step {
+	display: flex;
+	flex-direction: column;
+	justify-content: initial;
+}
+
+.ui.steps .step > .icon {
+	margin: auto;
+}
+
+.ui.bottom.attached.steps {
+	display: flex;
+	justify-content: space-around;
+}
+
+.ui.steps .step {
+	white-space: normal;
+	text-align: center;
+}
+.ui.steps:not(.vertical) .step > .icon {
+	width: 40px;
+	height: 40px;
+}
+
+.step.completed i.icon.file.text.outline::before,
+.step.completed i.icon.attach::before,
+.step.completed i.icon.add.to.cart::before,
+.step.completed i.icon.time::before {
+	color: #3e8ac5 !important;
+	background: none !important;
+}
+.ui.steps .step .description {
+	font-size: 12px;
+}
+
+.step i.arrow {
+	margin-top: -8px;
+}
+
+.ui.steps:not(.vertical) .step > .icon {
+	margin: 0;
+}
+
+.ui.steps .step > .icon ~ .content {
+	padding-top: 10px;
+}
+
+.ui.bottom.attached.steps .step:first-child {
+	justify-content: center;
+}
+
+.registration form > div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

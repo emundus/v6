@@ -2,6 +2,9 @@
 defined('_JEXEC') or die('Restricted access'); 
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
+
 $user = JFactory::getSession()->get('emundusUser');
 $_db = JFactory::getDBO();
 

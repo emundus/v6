@@ -7,6 +7,9 @@ JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');
 
+$document 	= JFactory::getDocument();
+$document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css" );
+
 $mod_em_campaign_url=$params->get('mod_em_campaign_url');
 /*$mod_em_campaign_period=$params->get('mod_em_campaign_period');
 $mod_em_campaign_period=$params->get('mod_em_campaign_period');*/
