@@ -4871,6 +4871,8 @@ $(document).ready(function() {
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
                 var code = $('#em-doc-trainings').val();
                 var idTmpl = $('#em-doc-tmpl').val();
+                var cansee = $('#em-doc-cansee').val();
+
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -4879,7 +4881,7 @@ $(document).ready(function() {
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
                     dataType:'json',
-                    data:{fnums: fnums, code:code, id_tmpl: idTmpl},
+                    data:{fnums: fnums, code:code, id_tmpl: idTmpl, cansee: cansee},
                     success: function(result) {
                         $('.modal-body').empty();
                         if (result.status) {

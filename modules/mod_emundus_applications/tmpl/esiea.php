@@ -16,130 +16,127 @@ echo $description;
     <hr>
 <?php endif; ?>
 <?php if (!empty($applications)) : ?>
-<div class="<?= $moduleclass_sfx ?>">
+    <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
+
         <?php $state=$states[$application->fnum]['published'];?>
 
         <?php if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
-        <div class="row" id="row<?= $application->fnum; ?>">
-            <div class="col-md-12 main-page-application-title">
-                <a href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>">
-                    <?= (in_array($application->status, $admission_status))?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
-                </a>
-            </div>
+            <div class="row" id="row<?= $application->fnum; ?>">
+                <div class="col-md-12 main-page-application-title">
+                    <a href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>">
+                        <?= (in_array($application->status, $admission_status))?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
+                    </a>
+                </div>
 
-            <div class="col-xs-12 col-md-6 main-page-file-info">
-                <p>
-                    <?= JText::_('FILE_NUMBER'); ?> : <i><?= $application->fnum; ?></i>
-                </p>
-                <a class="btn btn-warning" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>" role="button">
-                    <i class="folder open outline icon"></i> <?= (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
-                </a>
+                <div class="col-xs-12 col-md-6 main-page-file-info">
+                    <p><?= JText::_('FILE_NUMBER'); ?> : <i><?= $application->fnum; ?></i></p>
+                    <a class="btn btn-warning" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>" role="button">
+                        <i class="folder open outline icon"></i> <?= (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
+                    </a>
 
-                <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
-                    <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url)); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
-                <?php endif; ?>
+                    <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
+                        <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url)); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+                    <?php endif; ?>
 
-                <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
-                          <?php if ($application->status <= $file_status) : ?>
-                <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
-					  <?php endif; ?>
-            </div>
+                    <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                    <?php if ($application->status <= $file_status) : ?>
+                        <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
+                    <?php endif; ?>
+                </div>
 
-        <div class="col-xs-12 <?= ($show_state_files == 1) ? "col-md-3" : "col-md-6" ?> main-page-file-progress">
-            <section class="container" style="width:150px; float: left;">
-                <?php if ($show_progress == 1) : ?>
-                    <div id="file<?= $application->fnum; ?>"></div>
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $("#file<?= $application->fnum; ?>").circliful({
-                                animation: 1,
-                                animationStep: 5,
-                                foregroundBorderWidth: 15,
-                                backgroundBorderWidth: 15,
-                                percent: <?= (int) (($forms[$application->fnum] + $attachments[$application->fnum])) / 2; ?>,
-                                textStyle: 'font-size: 12px;',
-                                textColor: '#000',
-                                foregroundColor: '<?= $show_progress_color; ?>'
+                <div class="col-xs-12 <?= ($show_state_files == 1) ? "col-md-3" : "col-md-6" ?> main-page-file-progress">
+                    <section class="container" style="width:150px; float: left;">
+                    <?php if ($show_progress == 1) : ?>
+                        <div id="file<?= $application->fnum; ?>"></div>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $("#file<?= $application->fnum; ?>").circliful({
+                                    animation: 1,
+                                    animationStep: 5,
+                                    foregroundBorderWidth: 15,
+                                    backgroundBorderWidth: 15,
+                                    percent: <?= (int) (($forms[$application->fnum] + $attachments[$application->fnum])) / 2; ?>,
+                                    textStyle: 'font-size: 12px;',
+                                    textColor: '#000',
+                                    foregroundColor: '<?= $show_progress_color; ?>'
+                                });
                             });
-                        });
-                    </script>
-                <?php endif; ?>
+                        </script>
+                    <?php endif; ?>
 
-                <?php if ($show_progress_forms == 1) : ?>
-                    <div id="forms<?= $application->fnum; ?>"></div>
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $("#forms<?= $application->fnum; ?>").circliful({
-                                animation: 1,
-                                animationStep: 5,
-                                foregroundBorderWidth: 15,
-                                backgroundBorderWidth: 15,
-                                percent: <?= (int) ($forms[$application->fnum]); ?>,
-                                text: '<?= JText::_("FORMS"); ?>',
-                                textStyle: 'font-size: 12px;',
-                                textColor: '#000',
-                                foregroundColor: '<?= $show_progress_color_forms; ?>'
+                    <?php if ($show_progress_forms == 1) : ?>
+                        <div id="forms<?= $application->fnum; ?>"></div>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $("#forms<?= $application->fnum; ?>").circliful({
+                                    animation: 1,
+                                    animationStep: 5,
+                                    foregroundBorderWidth: 15,
+                                    backgroundBorderWidth: 15,
+                                    percent: <?= (int) ($forms[$application->fnum]); ?>,
+                                    text: '<?= JText::_("FORMS"); ?>',
+                                    textStyle: 'font-size: 12px;',
+                                    textColor: '#000',
+                                    foregroundColor: '<?= $show_progress_color_forms; ?>'
+                                });
                             });
-                        });
-                    </script>
-                <?php endif; ?>
+                        </script>
+                    <?php endif; ?>
 
-                <?php if ($show_progress_documents == 1) : ?>
-                    <div id="documents<?= $application->fnum; ?>"></div>
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $("#documents<?= $application->fnum; ?>").circliful({
-                                animation: 1,
-                                animationStep: 5,
-                                foregroundBorderWidth: 15,
-                                backgroundBorderWidth: 15,
-                                percent: <?= (int) ($attachments[$application->fnum]); ?>,
-                                text: '<?= JText::_("DOCUMENTS"); ?>',
-                                textStyle: 'font-size: 12px;',
-                                textColor: '#000',
-                                foregroundColor: '<?= $show_progress_color_documents; ?>'
+                    <?php if ($show_progress_documents == 1) : ?>
+                        <div id="documents<?= $application->fnum; ?>"></div>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $("#documents<?= $application->fnum; ?>").circliful({
+                                    animation: 1,
+                                    animationStep: 5,
+                                    foregroundBorderWidth: 15,
+                                    backgroundBorderWidth: 15,
+                                    percent: <?= (int) ($attachments[$application->fnum]); ?>,
+                                    text: '<?= JText::_("DOCUMENTS"); ?>',
+                                    textStyle: 'font-size: 12px;',
+                                    textColor: '#000',
+                                    foregroundColor: '<?= $show_progress_color_documents; ?>'
+                                });
                             });
-                        });
-                    </script>
-                <?php endif; ?>
-            </section>
-            <div class="main-page-file-progress-label">
-                <strong><?= JText::_('STATUS'); ?> :</strong>
-                <span class="label label-<?= $application->class; ?>">
-                    <?= $application->value; ?>
-                </span>
+                        </script>
+                    <?php endif; ?>
+                </section>
+                <div class="main-page-file-progress-label">
+                    <strong><?= JText::_('STATUS'); ?> :</strong>
+                    <span class="label label-<?= $application->class; ?>">
+                        <?= $application->value; ?>
+                    </span>
+                </div>
             </div>
-        </div>
-        <?php if ($show_state_files == 1) :?>
-        <div class="col-xs-12 col-md-3 main-page-file-progress">
-            <div class="main-page-file-progress-label">
-                <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?></strong>
-                    <?php if ($state == 1) :?>
-                        <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
-                    <?php elseif ($state == 0) :?>
-                        <span class="label alert-secondary" role="alert"> <?= JText::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
-                    <?php else :?>
-                        <span class="label alert-danger" role="alert"><?= JText::_('MOD_EMUNDUS_DELETE'); ?></span>
-                    <?php endif;
-                endif; ?>
-            </div>
-        </div>
-
-        <div class="col-md-12">
-            <?php if (!empty($forms) && $forms[$application->fnum] == 0 && $state == '1') :?>
-                <div class="ui segments">
-                    <div class="ui yellow segment">
-                        <p><i class="info circle icon"></i> <?= JText::_('MOD_EMUNDUS_FLOW_EMPTY_FILE_ACTION'); ?></p>
+            <?php if ($show_state_files == 1) :?>
+                <div class="col-xs-12 col-md-3 main-page-file-progress">
+                    <div class="main-page-file-progress-label">
+                        <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?></strong>
+                        <?php if ($state == 1) :?>
+                            <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
+                        <?php elseif ($state == 0) :?>
+                            <span class="label alert-secondary" role="alert"> <?= JText::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
+                        <?php else :?>
+                            <span class="label alert-danger" role="alert"><?= JText::_('MOD_EMUNDUS_DELETE'); ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endif; ?>
+
+            <div class="col-md-12">
+                <?php if (!empty($forms) && $forms[$application->fnum] == 0 && $state == '1') :?>
+                    <div class="ui segments">
+                        <div class="ui yellow segment">
+                            <p><i class="info circle icon"></i> <?= JText::_('MOD_EMUNDUS_FLOW_EMPTY_FILE_ACTION'); ?></p>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
-    </div>
-    <hr>
-
-    <?php endif; ?>
-
+        <hr>
+        <?php endif; ?>
     <?php endforeach; ?>
 </div>
 <?php else :

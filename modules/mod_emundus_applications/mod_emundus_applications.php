@@ -81,7 +81,7 @@ if (empty($user)) {
 	$user->id = JFactory::getUser()->id;
 }
 
-$user->fnums 	= $applications;
+$user->fnums = $applications;
 
 if (empty($user->profile)) {
 	$h_list = new EmundusHelperList();
@@ -97,44 +97,42 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	
-	if (isset($user->fnum) && !empty($user->fnum)) {
-		$fnums = array_keys($applications);
-		$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $fnums);
-		$forms = $m_application->getFormsProgress($user->id, $user->profile, $fnums);
-		$confirm_form_url = $m_application->getConfirmUrl($fnums);
-		$first_page = $m_application->getFirstPage('index.php', $fnums);
+	$fnums = array_keys($applications);
+	$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $fnums);
+	$forms = $m_application->getFormsProgress($user->id, $user->profile, $fnums);
+	$confirm_form_url = $m_application->getConfirmUrl($fnums);
+	$first_page = $m_application->getFirstPage('index.php', $fnums);
 
-		// If the user can
-		$profile = $m_profile->getCurrentProfile($user->id);
-		if ($profile['profile'] == 8) {
-			$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
-			$admission_fnum = $admissionInfo->fnum;
-		}
+	// If the user can
+	$profile = $m_profile->getCurrentProfile($user->id);
+	if ($profile['profile'] == 8) {
+		$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
+		$admission_fnum = $admissionInfo->fnum;
+	}
 
-		// Check to see if the applicant meets the criteria to renew a file.
-		switch ($applicant_can_renew) {
+	// Check to see if the applicant meets the criteria to renew a file.
+	switch ($applicant_can_renew) {
 
-			// If the applicant can only have one file per campaign.
-			case 2:
-				// True if does not have a file open in one or more of the available campaigns.
-				$applicant_can_renew = modemundusApplicationsHelper::getOtherCampaigns($user->id);
-				break;
+		// If the applicant can only have one file per campaign.
+		case 2:
+			// True if does not have a file open in one or more of the available campaigns.
+			$applicant_can_renew = modemundusApplicationsHelper::getOtherCampaigns($user->id);
+			break;
 
-			// If the applicant can only have one file per year.
-			case 3:
-				// True if periods are found for next year.
-				$applicant_can_renew = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
-				break;
+		// If the applicant can only have one file per year.
+		case 3:
+			// True if periods are found for next year.
+			$applicant_can_renew = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
+			break;
 
-		}
+	}
 
-		if ($display_poll == 1 && $display_poll_id > 0) {
-			$filled_poll_id = modemundusApplicationsHelper::getPoll();
-			$poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';
-		} else {
-			$poll_url = '';
-			$filled_poll_id = 0;
-		}
+	if ($display_poll == 1 && $display_poll_id > 0 && isset($user->fnum) && !empty($user->fnum)) {
+		$filled_poll_id = modemundusApplicationsHelper::getPoll();
+		$poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';
+	} else {
+		$poll_url = '';
+		$filled_poll_id = 0;
 	}
 
 	$offset = $app->get('offset', 'UTC');
