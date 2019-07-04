@@ -124,6 +124,15 @@
 						label="MOD_EMUNDUS_ADMISSION_STATUS"
 						description="MOD_EMUNDUS_ADMISSION_STATUS_DESC" />
 				<field
+						name="add_admission_prefix"
+						type="radio"
+						default="1"
+						label="MOD_EMUNDUS_ADD_ADMISSION_PREFIX"
+						description="MOD_EMUNDUS_ADD_ADMISSION_PREFIX_DESC">
+				<option value="0">JNo</option>
+				<option value="1">JYes</option>
+				</field>
+				<field
 					name="show_remove_files"
 					type="radio"
 					default="1"
