@@ -1,0 +1,173 @@
+/* MENU */
+
+#header-b {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#header-b #em_user_menu a {
+    color: #000;
+    text-decoration: none;
+}
+
+#header-b #em_user_menu li:hover a,
+#header-b #em_user_menu li:active a,
+#header-b #em_user_menu li:focus a {
+    color: #e5283b;
+}
+
+.active a.item {
+    color: #e5283b !important;
+}
+
+.g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
+    width: auto;
+    padding: 0;
+    height: auto;
+    color: #000;
+    opacity: inherit;
+}
+
+.g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after, .g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
+    color: #e5283b;
+}
+
+ul.g-dropdown.g-dropdown-right.g-fade {
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 0 !important;
+}
+
+ul.g-dropdown.g-dropdown-right.g-fade a {
+    color: #000 !important;
+}
+
+ul.g-dropdown.g-dropdown-right.g-fade a:hover,
+ul.g-dropdown.g-dropdown-right.g-fade a:active,
+ul.g-dropdown.g-dropdown-right.g-fade a:focus,
+ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
+    color: #e5283b !important;
+}
+
+.g-main-nav .g-standard .g-dropdown {
+    width: 250px;
+    float: left;
+}
+
+.g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator {
+    margin-top: -2px;
+}
+
+.g-main-nav .g-sublevel > li > .g-menu-item-container > .g-menu-item-content {
+    font-weight: 400;
+}
+
+.g-main-nav .g-standard > .g-dropdown, .g-main-nav .g-fullwidth > .g-dropdown {
+    margin-top: 4px;
+}
+
+.g-main-nav .g-standard .g-sublevel .current a span {
+    color: #e5283b;
+}
+
+.g-main-nav .g-sublevel > li {
+    padding: 0;
+}
+/* HEADER */
+#header-a {
+    display: flex;
+    align-items: center;
+}
+
+#g-navigation {
+    border-bottom: 1px solid #eeeeee;
+}
+
+#g-navigation .g-container {
+    padding: 20px !important;
+}
+
+#header-a .logo {
+    max-height: 64px;
+}
+
+.header-right a {
+    color: #4E5B6D;
+}
+
+.list-group {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    margin: 0 10px 0 0;
+}
+
+.navbar .btn, .navbar .btn-group {
+    margin-top: 0;
+    line-height: normal !important;
+}
+
+.add-new-program-page .goback-btn, .add-new-program-page .btn.btn-primary.button.save {
+    line-height: normal !important;
+}
+
+.header-c .open > .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: auto;
+    right: -100%;
+    margin-top: 10px;
+}
+/*LANGAGE*/
+.top-a {
+    display: flex;
+    justify-content: center;
+}
+
+.top-a .g-content, .header-c {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+div.mod-languages ul {
+    display: flex;
+    flex-direction: column;
+}
+
+div.mod-languages ul.lang-inline li {
+    display: inline-flex;
+}
+
+div.mod-languages li {
+    margin-right: 0;
+    margin-bottom: 4px;
+}
+
+div.mod-languages li:last-child {
+    margin-bottom: 0;
+}
+
+div.mod-languages a {
+    text-decoration: none;
+    display: inline-flex;
+}
+/* Experts-synchro-page */
+.experts-synchro-page .ng-scope .btn{
+    margin:10px 5px!important;
+}
+/*Calage bouton de connexion + mdp oublié*/
+#header-c .header-right .btn{
+    margin:5px;
+}
+#header-c .header-right .forget-mdp{
+    margin:0 5px;
+}
+#header-c .header-right .forget-mdp:hover {
+    text-decoration:underline;
+}
