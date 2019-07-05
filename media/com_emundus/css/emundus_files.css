@@ -232,6 +232,11 @@ table > thead > tr > th {
 .em-filt-select label{
     color:#000!important;
 }
+.em-filter label{
+    color:white !important;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
 .glyphicon-ban-circle{
     color:#d94633;
 }
@@ -528,6 +533,9 @@ div#em-modal-actions h4#em-modal-actions-title {
 .modal .goback-btn{
     margin-right:20px!important;
 }
+input[type="radio"], input[type="checkbox"] {
+    margin: 0 10px 0 0 !important;
+}
 
 div#em-modal-actions .panel-default > .panel-heading {
     border: none !important;
@@ -653,7 +661,7 @@ div#em-modal-actions .panel-heading h5 {
 
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading, .g-back-office-emundus-tableau .panel-body {
-    border-bottom: 1px solid #ddd;
+    /*border-bottom: 1px solid #ddd;*/
 }
 
 .g-back-office-emundus-tableau .panel-body {
@@ -1198,10 +1206,6 @@ ul {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffe12b31', endColorstr='#ffb5191f', GradientType=0) !important;
     filter: none !important;
     border-bottom: 1px solid #9a161a !important;
-}
-
-.btn-default:hover {
-    color: #555555 !important;
 }
 
 .btn-info:hover,
@@ -1770,9 +1774,7 @@ label[for="em-file_to_upload"]:hover {
 .marginRightbutton{
     margin-right: 14vh;
 }
-.Marginpanel-body{
-    margin-right: 10vh;
-}
+
 /* Title admission */
 
 .TitleAdmission{
@@ -1970,6 +1972,7 @@ label[for="em-file_to_upload"]:hover {
 .trombi_button{
     width: 33% !important;
     margin-top: 2vh;
+    justify-content: center;
 }
 #div-download{
     width: 33%;
@@ -2003,9 +2006,45 @@ label[for="em-file_to_upload"]:hover {
     display: inline;
     padding: 5px 0 0 5px;
 }
+
 #emailForm #mail_from{
     min-width: 10% !important;
 }
 #emailForm #mail_subject{
     min-width: 60% !important;
+}
+.em_email_block .em-form-attachments-candidateFile .input-group-btn > a{
+    background: #bababa;
+}
+.em_email_block .em-form-attachments-candidateFile .input-group-btn > a:hover{
+    background: #ababab;
+}
+.toggle-editor .btn .icon-eye{
+    margin-right:5px!important;
+}
+
+.xclsform{
+    margin: 35px auto auto !important;
+}
+.xclsform button#savefilter{
+    margin:0 20px!important;
+}
+
+.xclsform .panel-info > .panel-heading label {
+    color: #fff !important;
+}
+
+.em-export-item{
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.em-export-item > button{
+    margin-right: 10px;
+}
+
+/* files form */
+
+.em-container-form-body{
+    padding: 20px;
 }

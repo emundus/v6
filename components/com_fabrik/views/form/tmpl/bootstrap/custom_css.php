@@ -56,6 +56,7 @@ echo <<<EOT
 
 /* BEGIN - Your CSS styling starts here */
 /* Add a padding on list program-year-page for example */
+
 .program-year-page #g-main-mainbody, .campaign-page #g-main-mainbody, .users-profile-setup-page #g-main-mainbody, .emails-setup-page #g-main-mainbody,
 .emails-declancheur-setup-page #g-main-mainbody, .courriers-setup-page #g-main-mainbody, .documents-type-candidacy-page #g-main-mainbody,
 .tags-setup-page #g-main-mainbody, .groups-setup-page #g-main-mainbody, .files-status-page #g-main-mainbody,
@@ -264,7 +265,7 @@ form legend a, form legend a:hover, form legend a:focus {
     border-bottom: 4px solid #ddd;
     display: inline-flex;
 }
-/* PERSONAL_DETAILS*/
+/* PERSONAL_DETAILS */
 .list-striped, .row-striped {
     border: 0;
 }
@@ -392,13 +393,13 @@ form#member-profile .form-horizontal .control-label {
     padding: 0 0 0 40px;
 }
 
-/**** VALIDATION STARS ****/
-/*** hiding icon atm because i'm not sure what they want yet... ***/
+/* ---- VALIDATION STARS ----- */
+/* --- hiding icon atm because i'm not sure what they want yet... --- */
 .applicant-form .icon-star.small {
     display: none;
 }
 
-label[opts*="Validation"]::after, body.view-login label#password-lbl::after, body.view-login label#username-lbl::after, body.view-reset label#jform_email-lbl::after, body.view-reset label#jform_username-lbl::after {
+.fabrikLabel[opts*="Validation"]::after, body.view-login label#password-lbl::after, body.view-login label#username-lbl::after, body.view-reset label#jform_email-lbl::after, body.view-reset label#jform_username-lbl::after {
     content: "∗";
     color: red;
     padding-left: 5px;
@@ -406,7 +407,11 @@ label[opts*="Validation"]::after, body.view-login label#password-lbl::after, bod
     position: relative;
 }
 
-/** BUDGET FORM **/
+.fabrikLabel[opts*="Validation"] > .icon-star{
+    display: none;
+}
+
+/* -- BUDGET FORM --- */
 .fb_el_jos_emundus_funding___total_ressource > label::after, .fb_el_jos_emundus_funding___total_depense > label::after {
     content: "";
 }
@@ -783,6 +788,18 @@ input:not([type]).mce-textbox {
    height:auto!important;
 }
 
+/* --- add attachment --- */
+.form-horizontal .control-group .control-label {
+    display: flex;
+    text-align: left;
+    color: #000;
+}
+.form-horizontal .control-group .btn-group label.btn-default{
+    background: #bababa;
+}
+.form-horizontal .control-group .btn-group label.btn-default:hover{
+    background: #ababab;
+}
 /* END - Your CSS styling ends here */
 
 EOT;

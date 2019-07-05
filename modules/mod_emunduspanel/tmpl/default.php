@@ -5,7 +5,7 @@ if (!empty($tab)) :?>
     <div class="emundus_home_page" id="em-panel">
         <?php if (isset($user->profile) && $user->profile > 0) {
 
-            if (!empty($module_title)) {
+            if (!empty($module_title)&& !$lean_mode) {
                 $title = "<h2 class='title'>".@$module_title."</h2>";
             } else {
                 $title = "";

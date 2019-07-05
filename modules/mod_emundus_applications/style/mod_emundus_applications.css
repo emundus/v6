@@ -1,6 +1,7 @@
 /* Accueil Dossiers */
 .main-page-application-title {
     font-size: 20px;
+    width:55%;
 }
 
 .main-page-file-info #print {

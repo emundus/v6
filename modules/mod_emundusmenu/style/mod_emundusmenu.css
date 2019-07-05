@@ -21,17 +21,24 @@
 .active a.item {
     color: #e5283b !important;
 }
-
+.g-main-nav .g-sublevel > li.g-parent .g-menu-parent-indicator {
+    margin-top: -4px;
+}
 .g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
     width: auto;
     padding: 0;
-    height: auto;
+    height: 100%;
     color: #000;
     opacity: inherit;
 }
-
+#g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
+    padding: 10px 15px;
+}
 .g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after, .g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
     color: #e5283b;
+}
+.g-main-nav .g-toplevel > li.g-parent:hover > .g-menu-parent-indicator::after, .g-main-nav .g-sublevel > li.g-parent:hover .g-menu-parent-indicator::after {
+    color:#e5283b;
 }
 
 ul.g-dropdown.g-dropdown-right.g-fade {
@@ -55,7 +62,17 @@ ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
     width: 250px;
     float: left;
 }
+#g-navigation .g-main-nav .g-dropdown .g-dropdown {
+    margin-left: 6px !important;
+}
+.g-main-nav .g-sublevel > li {
+    margin: 0 5px !important;
+    padding: 0;
+}
 
+.g-main-nav .g-sublevel > li.g-parent .g-menu-item-content {
+    margin-right: 0 !important;
+}
 .g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator {
     margin-top: -2px;
 }
@@ -72,9 +89,6 @@ ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
     color: #e5283b;
 }
 
-.g-main-nav .g-sublevel > li {
-    padding: 0;
-}
 /* HEADER */
 #header-a {
     display: flex;
@@ -102,10 +116,6 @@ ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
     margin-bottom: 0;
 }
 
-input[type="radio"], input[type="checkbox"] {
-    margin: 0 10px 0 0;
-}
-
 .navbar .btn, .navbar .btn-group {
     margin-top: 0;
     line-height: normal !important;
@@ -131,7 +141,6 @@ input[type="radio"], input[type="checkbox"] {
 
 .top-a .g-content, .header-c {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
 }
 
@@ -170,4 +179,26 @@ div.mod-languages a {
 }
 #header-c .header-right .forget-mdp:hover {
     text-decoration:underline;
+}
+.view-login .form-horizontal .controls {
+     margin: 0 !important;
+     width: 25%;
+     display: inline-flex;
+     align-items: center;
+ }
+.view-login .form-horizontal .controls:hover {
+    box-shadow: #3e8ac5;
+}
+
+.view-login  .form-horizontal .control-label {
+    width: 15%;
+}
+
+.view-login .form-horizontal .control-group {
+    display: flex;
+    justify-content: center;
+}
+
+footer div{
+    line-height:1.5em;
 }
