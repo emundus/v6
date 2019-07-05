@@ -230,6 +230,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
             if (fnum.fnum != null && fnum.fnum !== "close") {
                 addDimmer();
+                $('#'+fnum.fnum+'_check').prop('checked', true);
 
                 $.ajax({
                     type:'get',

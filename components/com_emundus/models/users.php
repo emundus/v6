@@ -1128,8 +1128,8 @@ class EmundusModelUsers extends JModelList {
 
     public function addGroup($gname, $gdesc, $actions, $progs) {
         try {
-            $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values ('$gname', '$gdesc', 1)";
-            $db = $this->getDbo();
+	        $db = $this->getDbo();
+            $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values (".$db->quote($gname).", ".$db->quote($gdesc).", 1)";
 
             try {
                 $db->setQuery($query);

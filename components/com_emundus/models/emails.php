@@ -380,7 +380,7 @@ class EmundusModelEmails extends JModelList
         $replacements = array(
             $user->id, $user->name, $user->email, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
             JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(),
-            $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format("F j, Y"), $logo
+            $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 
         if(count($post) > 0) {
