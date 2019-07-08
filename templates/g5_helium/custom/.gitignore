@@ -1,4 +1,4 @@
 *
 
 !.gitignore
-!modal_fix.css
+!modal_fix.css|scss/*
