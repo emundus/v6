@@ -22,7 +22,7 @@ $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('/media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
+$document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
 if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0')
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);

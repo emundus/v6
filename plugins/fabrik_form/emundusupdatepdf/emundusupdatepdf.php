@@ -32,12 +32,11 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
            if($key == 'user'){
                continue;
            }
-           if($key == 'fnum'){
+           if ($key == 'fnum') {
                continue;
            }
             $admissionData[$key] = $exceptValue;
         }
-
 
         $elements=[];
         $arrayfabrikelements = [];
@@ -74,8 +73,8 @@ class PlgFabrik_FormEmundusupdatepdf extends plgFabrik_Form {
 
         if(!empty($result)){
             $fnum = $formModel->formData['jos_emundus_admission___fnum'];
-            $uid = $formModel->formData['jos_emundus_admission___user'][0];
-            $i=0;
+            $uid = (int)substr($fnum,-7);
+            $i = 0;
 
             $formid = $formModel->formData['formid'];
             foreach ($result as $key => $value){
