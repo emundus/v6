@@ -4364,11 +4364,11 @@ $(document).ready(function() {
                 var i = 0;
                 var objclass = [];
 
-                var code = $("#em-export-prg").val();
+                var code = $("#em-export-prg").val().replace(/\s/g, '');
                 var year = "";
 
                 if ($("#em-export-camp").val() != "0"){
-                    var campaign = $("#em-export-camp :selected").text();
+                    var campaign = $("#em-export-camp :selected").text().replace(/\s/g, '');
                     year = campaign.indexOf("(") + 1;
                     year = campaign.slice(year, -1)
                 }
