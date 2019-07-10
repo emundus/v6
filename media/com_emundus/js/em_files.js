@@ -4364,11 +4364,11 @@ $(document).ready(function() {
                 var i = 0;
                 var objclass = [];
 
-                var code = $("#em-export-prg").val();
+                var code = $("#em-export-prg").val().replace(/\s/g, '');
                 var year = "";
 
                 if ($("#em-export-camp").val() != "0"){
-                    var campaign = $("#em-export-camp :selected").text();
+                    var campaign = $("#em-export-camp :selected").text().replace(/\s/g, '');
                     year = campaign.indexOf("(") + 1;
                     year = campaign.slice(year, -1)
                 }
@@ -4871,6 +4871,8 @@ $(document).ready(function() {
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
                 var code = $('#em-doc-trainings').val();
                 var idTmpl = $('#em-doc-tmpl').val();
+                var cansee = $('#em-doc-cansee').val();
+
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -4879,7 +4881,7 @@ $(document).ready(function() {
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
                     dataType:'json',
-                    data:{fnums: fnums, code:code, id_tmpl: idTmpl},
+                    data:{fnums: fnums, code:code, id_tmpl: idTmpl, cansee: cansee},
                     success: function(result) {
                         $('.modal-body').empty();
                         if (result.status) {

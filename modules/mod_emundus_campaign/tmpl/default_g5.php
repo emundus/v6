@@ -146,7 +146,7 @@ $site_offset = $config->get('offset');
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
 						<h4>
-                            <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
+                            <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
                                 <?php echo $result->label; ?>
                             </a>
                         </h4>

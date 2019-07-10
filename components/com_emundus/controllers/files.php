@@ -2862,6 +2862,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->post->getString('fnums', "");
         $code = $jinput->post->getString('code', "");
         $idTmpl = $jinput->post->getString('id_tmpl', "");
+        $canSee = $jinput->post->getInt('cansee', 0);
 
         $fnumsArray = explode(",", $fnums);
 
@@ -2987,7 +2988,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         //$name = $attachInfos['lbl'] . '_' . date('Y-m-d_H-i-s') . '.pdf';
                         $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
                         $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
-                        $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+                        $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
 
                         $pdf->Output($path, 'F');
                         $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
