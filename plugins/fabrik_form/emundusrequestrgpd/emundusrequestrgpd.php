@@ -34,7 +34,7 @@ class PlgFabrik_FormEmundusrequestrgpd extends plgFabrik_Form {
             $app = JFactory::getApplication();
 
             $linkMode = $app->get('force_ssl', 0) == 2 ? 1 : -1;
-
+            $redirectLink = $this->params->get('emunduslist_url');
             switch ($formModel->formData['request_type'][0])
             {
                 case 'export':
@@ -43,8 +43,8 @@ class PlgFabrik_FormEmundusrequestrgpd extends plgFabrik_Form {
                         'URL'      => JUri::root(),
                         'TYPEREQUEST' => 'Request Created',
                         'REQUEST'  => 'export',
-                        'TOKENURL' => JRoute::link('site', 'index.php?option=com_fabrik&view=form&formid=312&confirm_token=' . $token, false, $linkMode),
-                        'FORMURL'  => JRoute::link('site', 'index.php?option=com_fabrik&view=form&formid=312', false, $linkMode),
+                        'TOKENURL' => JRoute::link('site', $redirectLink.'&confirm_token=' . $token, false, $linkMode),
+                        'FORMURL'  => JRoute::link('site', $redirectLink, false, $linkMode),
                         'TOKEN'    => $token
                     ];
                     //$emailSubject = JText::_('COM_PRIVACY_EMAIL_REQUEST_SUBJECT_EXPORT_REQUEST');
@@ -58,8 +58,8 @@ class PlgFabrik_FormEmundusrequestrgpd extends plgFabrik_Form {
                         'URL'      => JUri::root(),
                         'TYPEREQUEST' => 'Deletion Request',
                         'REQUEST'  => 'remove',
-                        'TOKENURL' => JRoute::link('site', 'index.php?option=com_fabrik&view=form&formid=312&confirm_token=' . $token, false, $linkMode),
-                        'FORMURL'  => JRoute::link('site', 'index.php?option=com_fabrik&view=form&formid=312', false, $linkMode),
+                        'TOKENURL' => JRoute::link('site', $redirectLink.'&confirm_token=' . $token, false, $linkMode),
+                        'FORMURL'  => JRoute::link('site', $redirectLink, false, $linkMode),
                         'TOKEN'    => $token
                     ];
                     //$emailSubject = JText::_('COM_PRIVACY_EMAIL_REQUEST_SUBJECT_REMOVE_REQUEST');
