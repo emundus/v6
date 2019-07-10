@@ -1,3 +1,4 @@
+
 /*TABLEAUX*/
 
 th > .em-cell{
@@ -334,11 +335,12 @@ div#em-assoc-files .panel > .panel-heading h6 {
 }
 /* Panel droit dossier */
 .em-close-minimise {
+    align-self: flex-end;
     display: block;
     position: absolute;
     right: 20px;
     margin: 0;
-    top: 10px;
+    top: 7px;
 }
 button#em-close-file {
     background: #4E5B6D !important;
@@ -365,6 +367,7 @@ div#em-appli-block .panel.panel-default.widget {
 
 div#em-appli-block {
     padding-left: 0;
+    padding-right: 0;
 }
 
 div#em-appli-block .panel-heading {
@@ -566,6 +569,7 @@ div#em-modal-actions .modal .chosen-container.chosen-with-drop .chosen-drop {
 
 div#em-modal-actions label.col-lg-2.control-label {
     float: initial;
+    display: block;
 }
 
 div#em-modal-actions .panel-heading h5 {
@@ -969,7 +973,8 @@ p {
     overflow: hidden;
 }
 .container-nav{
-    height: 37px;
+    margin-top: 5px;
+    height: 25px;
     width: 100%;
 }
 .em-container-assocFiles > .em-container-assocFiles-heading span.label{
@@ -978,9 +983,7 @@ p {
     display: inline-block !important;
     margin-bottom: 10px;
 }
-.em-close-minimise {
-    align-self: flex-end;
-}
+
 /*.navbar .navbar-inverse{
     display: flex;
     flex-direction: row;
@@ -1944,46 +1947,7 @@ label[for="em-file_to_upload"]:hover {
     justify-content: space-between;
 }
 
-.em-container-trombi{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-}
-.em-col-trombi{
-    flex: 1 1 33%;
-    margin-right: 5vh;
-}
-.trombi_margin{
-    width: 58% !important;
-}
-.trombi_margin_desc{
-    padding: 0 !important;
-}
-.trombi_margin_btm{
-    margin-bottom: 10px !important;
-}
-.trombi-col-button{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-.trombi_button{
-    width: 33% !important;
-    margin-top: 2vh;
-    justify-content: center;
-}
-#div-download{
-    width: 33%;
-}
-.trombi_download{
-    margin-top: 2vh;
-    width: 100%;
-}
-.title_wysiwyg{
-    margin-top: 5vh !important;
-}
+
 #check > .em-cell{
     display: block !important;
 }
@@ -2013,10 +1977,13 @@ label[for="em-file_to_upload"]:hover {
 #emailForm #mail_subject{
     min-width: 60% !important;
 }
-.em_email_block .em-form-attachments-candidateFile .input-group-btn > a{
+.em_email_block .em-form-attachments-candidateFile .input-group-btn > a,
+.em-form-attachments-setupLetters .input-group-btn > a{
     background: #bababa;
 }
-.em_email_block .em-form-attachments-candidateFile .input-group-btn > a:hover{
+.em_email_block .em-form-attachments-candidateFile .input-group-btn > a:hover,
+.em-form-attachments-setupLetters .input-group-btn > a:hover
+{
     background: #ababab;
 }
 .toggle-editor .btn .icon-eye{

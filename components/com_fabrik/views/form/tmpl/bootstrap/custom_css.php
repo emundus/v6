@@ -63,13 +63,23 @@ echo <<<EOT
 .layout-showgrouprights #g-main-mainbody{
     padding: 0 20px;
 }
-/* -------------- */
+
 .add-program-year-page #g-container-main, .add-campaign-page #g-main-mainbody, .add-new-program-page #g-main-mainbody, .import-csv-page #g-main-mainbody{
     padding: 0;
     width:75rem;
-  margin:auto;
+    margin:auto;
    }
 /* FORMULAIRE */
+.modal {
+    position: relative !important;
+    background-color: #fff !important;
+    margin: 0 !important;
+    width: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
 .calendarbutton {
     height: 41px;
 }
@@ -343,7 +353,7 @@ form legend a, form legend a:hover, form legend a:focus {
 #fabrikSubmit_307, #fabrikSubmit_321 {
     margin-left: 20px !important;
 }
-/*******************Rapport d'erreur*****************/
+/* ------ Rapport d'erreur -------- */
 #form_293 {
     padding: 20px !important;
 }
@@ -355,7 +365,7 @@ form legend a, form legend a:hover, form legend a:focus {
 #form_293 legend {
     margin: 0;
 }
-/*******************Modifier votre profil*****************/
+/* -------- Modifier votre profil ------- */
 form#member-profile {
     padding: 20px !important;
 }
@@ -408,7 +418,7 @@ form#member-profile .form-horizontal .control-label {
 }
 
 .fabrikLabel[opts*="Validation"] > .icon-star{
-    display: none;
+    display: none !important;
 }
 
 /* -- BUDGET FORM --- */
@@ -455,7 +465,7 @@ form#member-profile .form-horizontal .control-label {
     width: 210px;
 }
 
-/*** ALLOW * TO BE AT THE END OF TEXT ****/
+/* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
 .applicant-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
     display: inline !important;
 }
@@ -568,7 +578,7 @@ form#member-profile .form-horizontal .control-label {
     justify-content: center;
     margin-bottom: 30px;
 }
-/*******************Créez votre espace*****************/
+/* --------- Créez votre espace -------------- */
 .fabrikActions.form-actions .row-fluid .span4 {
     width: auto !important;
     margin-bottom: 0 !important;
@@ -586,16 +596,14 @@ form#member-profile .controls button,
 .form-actions {
     margin-top: 0;
 }
+.form-actions .row-fluid{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
 
 #form_308 .row-fluid.nav {
     display: none !important;
-}
-
-.form-actions .row-fluid {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    flex-direction: row-reverse;
 }
 
 .fabrikActions.form-actions .row-fluid .span4:first-child {
@@ -705,7 +713,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     font-size: 1rem;
 }
 
-/*Déclarer un nouveau programme*/
+/* Déclarer un nouveau programme */
 .add-new-program-page .btn-success{
     margin-right: 5px;
 }
@@ -722,7 +730,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     display: inline-flex;
 }
 
-/*Ajouter une année pour un programme*/
+/* Ajouter une année pour un programme */
 .add-program-year-page textarea.fabrikinput {
     width: 100%;
 }
@@ -800,6 +808,7 @@ input:not([type]).mce-textbox {
 .form-horizontal .control-group .btn-group label.btn-default:hover{
     background: #ababab;
 }
+
 /* END - Your CSS styling ends here */
 
 EOT;

@@ -1,4 +1,17 @@
 /* USER MENU */
+#g-navigation .header-c .open > .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: auto;
+    margin-top: 10px;
+}
+#g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
+    right: -100%;
+}
+#g-navigation.g-flushed .header-c .open > .dropdown-menu {
+    right: 0;
+}
 #userDropdownIcon {
     background-color: #e5283b !important;
     border: 2px solid #e5283b !important;

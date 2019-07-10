@@ -136,13 +136,7 @@
 	height: 40px;
 }
 
-.step.completed i.icon.file.text.outline::before,
-.step.completed i.icon.attach::before,
-.step.completed i.icon.add.to.cart::before,
-.step.completed i.icon.time::before {
-	color: #3e8ac5 !important;
-	background: none !important;
-}
+
 .ui.steps .step .description {
 	font-size: 12px;
 }

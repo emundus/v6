@@ -327,6 +327,7 @@ JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
+JHtml::styleSheet('media/com_emundus/css/reset.css');
 JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
 JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
 JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');

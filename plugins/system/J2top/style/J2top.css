@@ -17,17 +17,3 @@
     font-size: inherit !important;
 }
 
-#gototop div::after {
-    content: "^";
-    width: 100%;
-    height: auto;
-    transform: scale(2, 1.5);
-    display: block;
-    font-size: 2em;
-    font-weight: 700;
-    color: #e5283b;
-}
-
-#gototop:hover div::after {
-    color: #3e8ac5;
-}

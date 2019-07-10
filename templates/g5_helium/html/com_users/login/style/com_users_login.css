@@ -82,6 +82,7 @@ ul.nav.nav-tabs.nav-stacked a::before {
 
 .view-login  .form-horizontal .control-label {
     width: 10%;
+    text-align: left;
 }
 
 .view-login .form-horizontal .control-group {

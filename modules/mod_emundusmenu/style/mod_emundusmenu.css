@@ -117,7 +117,7 @@ ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
 }
 
 .navbar .btn, .navbar .btn-group {
-    margin-top: 0;
+    margin-top: 0 !important;
     line-height: normal !important;
 }
 
@@ -139,10 +139,10 @@ ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
     justify-content: center;
 }
 
-.top-a .g-content, .header-c {
+/*.top-a .g-content, .header-c {
     display: flex;
     align-items: center;
-}
+}*/
 
 div.mod-languages ul {
     display: flex;
