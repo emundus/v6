@@ -470,6 +470,10 @@ table#groups-table a:hover {
 /* MODALS */
 
 /* Layout */
+div#data #exp-opt>label{
+    display: block;
+}
+
 div#em-modal-actions,
 div#em-modal-form {
     background-color: rgba(0, 0, 0, 0) !important;
@@ -1226,9 +1230,9 @@ ul {
 .btn-danger:active,
 .btn-danger.active,
 .open .dropdown-toggle.btn-danger {
-    color: #ffffff !important;
-    background-color: #a3171c !important;
-    border-color: #911419 !important;
+    color: #ffffff;
+    background-color: #a3171c;
+    border-color: #911419;
 }
 
 thead th:hover {
