@@ -1,11 +1,5 @@
 
 /*TABLEAUX*/
-
-th > .em-cell{
-    display: flex !important;
-    align-items: center;
-}
-
 td:first-child > .em-cell {
     display: flex;
     align-items: center;
@@ -120,7 +114,9 @@ table .btn-group > .btn {
     border-top-color: #8a1739;
     border-bottom-color: #8a1739;
 }
-
+.em-container-menuaction-nav .caret{
+    border-top: 4px solid #FFF;
+}
 .caret {
     margin:6px 0 0 5px!important;
 }
@@ -181,7 +177,7 @@ ul.pagination.pagination-sm a:hover {
 }
 
 table > thead > tr > th {
-    vertical-align: middle;
+    vertical-align: middle !important;
     border-bottom: 2px solid #dddddd;
 }
 /* EM PANEL */
@@ -1017,9 +1013,11 @@ p {
 }
 
 th>.em-cell {
-    display: block;
+    display: flex !important;
     overflow: hidden;
-    height: 53px;
+    height: auto;
+    align-items: center;
+    font-weight: bold;
 }
 
 th:nth-child(2)>.em-cell,
