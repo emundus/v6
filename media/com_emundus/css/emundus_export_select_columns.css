@@ -1,0 +1,8 @@
+/* view export select columns */
+.view-export_select_columns .panel-info > .panel-heading label{
+    color:#fff!important;
+    margin:0!important;
+}
+.panel-primary.excel > .panel-heading {
+    background-color: #e5283b!important;
+}

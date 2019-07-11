@@ -8,7 +8,8 @@
 
 // No direct access.
 defined('_JEXEC') or die;
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" );
 // Note. It is important to remove spaces between elements.
 ?>
 

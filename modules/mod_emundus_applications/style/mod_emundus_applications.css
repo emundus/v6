@@ -1,0 +1,74 @@
+/* Accueil Dossiers */
+.main-page-application-title {
+    font-size: 20px;
+    width:55%;
+}
+
+.main-page-file-info #print {
+    display: none !important;
+}
+/*******************Mes dossiers de candidature*****************/
+.main-page-file-info p {
+    padding-bottom: 10px;
+}
+
+.select {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0;
+    width: 100%;
+}
+/* HOMEPAGE */
+.blog-featuredhomepage a:hover {
+    text-decoration: underline;
+}
+
+.navsearch-content .form-control,
+.navsearch-content button {
+    margin-bottom: 0 !important;
+}
+
+.navsearch-content button {
+    border-radius: 0 0 0 0 !important;
+}
+
+.navsearch-content .form-control {
+    border-radius: 0 0 0 0 !important;
+    padding: 8px 12px;
+    height: 33px !important;
+}
+
+.navsearch-content input[type="text"]:focus,
+.navsearch-content input[type="text"]:hover {
+    border-color: #d5d5d5;
+    box-shadow: none;
+}
+
+.main-page-file-progress {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: -65px;
+}
+
+.forget-mdp {
+    margin-top: 5px;
+    display: block;
+}
+
+.forget-mdp:hover {
+    text-decoration: underline;
+}
+
+.campaigntext.blue h4 a {
+    color: #292929;
+}
+
+.homepage .candidacy-files-list .icon-plus-sign {
+    width: auto !important;
+}
+
+.candidacy-files-list .col-xs-6:nth-child(2) a {
+    margin: 5px 0 !important;
+}

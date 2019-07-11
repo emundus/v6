@@ -37,63 +37,273 @@ header('Content-type: text/css');
 $c = $_REQUEST['c'];
 echo <<<EOT
 /* BEGIN - Your CSS styling starts here */
+
+/* Add a padding on list program-year-page for example */
+.program-year-page #g-main-mainbody, .campaign-page #g-main-mainbody, .users-profile-setup-page #g-main-mainbody, .emails-setup-page #g-main-mainbody,
+.emails-declancheur-setup-page #g-main-mainbody, .courriers-setup-page #g-main-mainbody, .documents-type-candidacy-page #g-main-mainbody,
+.tags-setup-page #g-main-mainbody, .groups-setup-page #g-main-mainbody, .files-status-page #g-main-mainbody,
+.layout-showgrouprights #g-main-mainbody{
+    padding: 0 20px;
+}
+/* Add margin to list footer */
+.campaign-page #g-footer, .files-status-page #g-footer, .emails-setup-page #g-footer, .documents-type-candidacy-page #g-footer,
+.tags-setup-page #g-footer{
+  margin-top:20px!important;
+}
+
 .fabrikForm {
 	margin-top: 25px !important;
+}
+/* Tags */
+.ui.horizontal.label, .ui.horizontal.labels .label, .em-cell .label-default {
+    margin: 4px !important;
+    display: inline-flex !important;
+}
+
+.label-lightpurple {
+    background-color: #DCC6E0 !important;
+    text-shadow: none;
+}
+
+.label-purple {
+    background-color: #947CB0 !important;
+    text-shadow: none;
+}
+
+.label-darkpurple {
+    background-color: #663399 !important;
+    text-shadow: none;
 }
 
 .label-lightblue {
     background-color: #6bb9F0 !important;
+    text-shadow: none;
 }
+
 .label-blue {
     background-color: #19B5FE !important;
+    text-shadow: none;
 }
+
 .label-darkblue {
     background-color: #013243 !important;
-}.label-lightgreen {
-    background-color: #00E640 !important;
+    text-shadow: none;
 }
+
+.label-lightgreen {
+    background-color: #7befb2 !important; 
+    text-shadow: none;
+}
+
 .label-green {
     background-color: #3FC380 !important;
+    text-shadow: none;
 }
+
 .label-darkgreen {
     background-color: #1E824C !important;
+    text-shadow: none;
 }
+
 .label-lightyellow {
     background-color: #FFFD7E !important;
+    text-shadow: none;
 }
+
 .label-yellow {
     background-color: #FFFD54 !important;
+    text-shadow: none;
 }
+
 .label-darkyellow {
     background-color: #F7CA18 !important;
+    text-shadow: none;
 }
+
 .label-lightorange {
     background-color: #FABE58 !important;
+    text-shadow: none;
 }
+
 .label-orange {
     background-color: #E87E04 !important;
+    text-shadow: none;
 }
+
 .label-darkorange {
     background-color: #D35400 !important;
+    text-shadow: none;
 }
+
 .label-lightred {
     background-color: #EC644B !important;
+    text-shadow: none;
 }
+
 .label-red {
     background-color: #CF000F !important;
+    text-shadow: none;
 }
+
 .label-darkred {
-    background-color: #96281B !important;
+    background-color: #e5283b !important;
+    text-shadow: none;
 }
-.label-lightpurple {
-    background-color: #DCC6E0 !important;
+
+/*Programms*/
+.programmes-page #g-container-main{
+    padding: 0 20px;
 }
-.label-purple {
-    background-color: #947CB0 !important;
+
+.programmes-page .fabrik_view{
+    margin: 0 5px!important;
 }
-.label-darkpurple {
-    background-color: #663399 !important;
+
+.programmes-page .fabrik__rowlink{
+    padding: 3px 5px;
 }
+.g-back-office-emundus-tableau table{
+    background-color:#ddd;
+}
+.g-back-office-emundus-tableau h6 {
+    padding: 10px 0 0 0;   
+}
+.g-back-office-emundus-tableau #g-main-mainbody .platform-content .container-fluid{
+    padding:0;
+}
+.g-back-office-emundus-tableau .container {
+    width: 100%;
+}
+.g-back-office-emundus-tableau .g-container, .view-list .g-container{
+    width: 100%;
+}
+.g-back-office-emundus-tableau .header-c .open > .dropdown-menu {
+    right: 0!important;
+}
+/* ---------------- Tableau programme ------------------- */
+.fabrik-boards tr.fabrik_groupheading.info td {
+    background: #4E5B6D !important;
+    color: #ffffff;
+    border-top: 2px solid;
+    border-bottom: 2px solid;
+}
+
+.fabrik-boards tr.fabrik_groupheading.info i {
+    color: #ffffff;
+}
+
+.fabrik-boards .fabrikDataContainer {
+    font-size: 14px;
+}
+
+.fabrik-boards .fabrikDataContainer tbody.fabrik_groupdata .btn-group a {
+    text-shadow: none;
+    color: inherit;
+}
+
+.fabrik-boards .fabrikDataContainer tbody.fabrik_groupdata .btn-group a:hover,
+.fabrik-boards .fabrikDataContainer tbody.fabrik_groupdata .btn-group a:active,
+.fabrik-boards .fabrikDataContainer tbody.fabrik_groupdata .btn-group a:focus,
+.fabrik-boards a.btn.fabrik_edit.fabrik__rowlink.btn-default:hover,
+.fabrik-boards a.btn.fabrik_view.fabrik__rowlink.btn-default:hover,
+.fabrik-boards a.btn.btn-default.delete:hover,
+.fabrik-boards a.btn.copy-0.listplugin.btn-default:hover {
+    color: #e5283b;
+}
+
+.fabrik-boards tr.fabrik___heading a {
+    color: #2a363b;
+}
+
+.fabrik-boards tr.fabrik___heading a:hover {
+    color: #4E5B6D;
+}
+
+.fabrik-boards .nav .dropdown-toggle .caret {
+    margin-top: 6px;
+    border-top-color: #e5283b;
+    border-bottom-color: #e5283b;
+}
+
+.fabrik-boards table.filtertable.table.table-striped tr.fabrik___heading {
+    background: #4E5B6D;
+    color: #ffffff;
+}
+
+.fabrik-boards table.filtertable.table.table-striped tr.fabrik___heading a {
+    color: #ffffff;
+}
+
+.fabrik-boards .fabrikForm.form-search .table.table-striped.table-hover tr.fabrik_groupheading.info a {
+    color: #ffffff;
+    font-weight: 600;
+}
+/*Liste des programmes par années*/
+.program-year-page .row-fluid .span6 {
+    width: 100%;
+    *width: 100%;
+}
+
+.program-year-page a i{
+    margin-right:0;
+}
+
+.program-year-page table .btn{
+    margin: 0 5px;
+}
+.fabrikDataContainer .listplugin {
+    -webkit-appearance: initial;
+}
+
+.fabrikDataContainer .listplugin .icon-copy {
+    font-weight: bold;
+}
+/* email */
+#com-content-formContent label, .emails-declancheur-setup-page .control-label, .set-up-mail-declencheur .control-label{
+  padding:10px 0;
+}
+
+.emails-setup-page .fabrikElementContainer .controls{
+  display:flex;
+  flex-direction:column;
+}
+
+.emails-setup-page .fabrikElementContainer .controls > span{
+  padding-top:10px;
+  width:100%;
+}
+.table-striped tbody > tr > td{
+    vertical-align: middle;
+}
+
+/*EMAIL HISTORY*/
+#advanced-filter .button{
+    line-height:normal;
+}
+
+#advanced-filter .addbutton{
+    border-radius:5px 5px 0 0!important;
+}
+
+#advanced-filter .btn-danger{
+    padding: 5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#advanced-filter .icon-minus {
+    margin-right: 0;
+}
+
+.email-history-indicators-page > h1:first-child{
+    display:none;
+}
+
+.email-history-indicators-page #g-main-mainbody{
+    padding:0 20px;
+}
+
 
 /* END - Your CSS styling ends here */
 EOT;

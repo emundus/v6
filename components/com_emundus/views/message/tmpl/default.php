@@ -30,6 +30,7 @@ $setup_letters 		= $m_messages->getLetters();
 
 $email_list = array();
 
+
 ?>
 
 <!-- WYSIWYG Editor -->
@@ -554,7 +555,7 @@ $email_list = array();
         var formData = new FormData();
 
         // add assoc key values, this will be posts values
-        formData.append("file", this.file, this.getName().replace(/\s/g, '-'));
+        formData.append("file", this.file, this.getName().replace(/\s/g,'-'));
         formData.append("upload_file", true);
 
         $.ajax({

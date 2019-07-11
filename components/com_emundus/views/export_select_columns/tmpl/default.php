@@ -2,7 +2,8 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css" );
 $eMConfig       = JComponentHelper::getParams('com_emundus');
 $current_user   = JFactory::getUser();
 $view           = JRequest::getVar('v', null, 'GET', 'none',0);

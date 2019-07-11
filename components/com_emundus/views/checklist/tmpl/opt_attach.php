@@ -3,6 +3,9 @@ defined('_JEXEC') or die('Restricted access');
 $user = JFactory::getSession()->get('emundusUser');
 $_db = JFactory::getDBO();
 
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
+
 $query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->menutype.'"';
 $_db->setQuery( $query );
 $itemid = $_db->loadAssoc();

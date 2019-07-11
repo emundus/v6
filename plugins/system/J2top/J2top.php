@@ -25,6 +25,8 @@ class PlgSystemJ2top extends JPlugin {
     private $backgroundImageHoverCss = '';
 
     public function onBeforeRender() {
+        $doc = JFactory::getDocument();
+        $doc->addStyleSheet(JURI::root() . "plugins/system/J2top/style/J2top.css");
         $this->document = JFactory::getDocument();
         $this->backend = $this->params->get('backend', '1');
 

@@ -16,6 +16,8 @@
 		<filename module="mod_emunduspanel">tmpl/default.php</filename>	
 		<filename module="mod_emunduspanel">elements/multilist.php</filename>
 		<folder>language</folder>
+
+
 	</files>
 
 	<config>
