@@ -47,14 +47,6 @@ div#em-panel legend {
     font-size: 22px;
 }
 
-.candidacy-files-list h2,
-#em-panel h2 {
-    color: #e5283b;
-    font-weight: 600;
-    padding-left: 0;
-    margin-bottom: 10px !important;
-}
-
 .candidacy-files-list h2::before {
     content: "\f07b";
     font-family: FontAwesome;
@@ -65,32 +57,8 @@ div#em-panel legend a {
     display: none;
 }
 
-
-
 /* 3 Cercles Accueil Coordinateur */
 div#em-panel .ui.grid {
     text-align: center;
-}
-
-.element_home_emundus a {
-    color: #3e8ac5;
-}
-
-.element_home_emundus a:hover,
-.element_home_emundus a:active,
-.element_home_emundus a:focus,
-.element_home_emundus a:focus-within {
-    color: #3e8ac5;
-}
-
-i.inverted.bordered.blue.icon,
-i.inverted.circular.blue.icon {
-    background: #3e8ac5 !important;
-    margin: 0 0 10px 0;
-}
-
-i.inverted.bordered.blue.icon:hover, i.inverted.bordered.blue.icon:focus, i.inverted.bordered.blue.icon:active,
-i.inverted.circular.blue.icon:hover, i.inverted.circular.blue.icon:focus, i.inverted.circular.blue.icon:active {
-    background: #161e4d !important;
 }
 

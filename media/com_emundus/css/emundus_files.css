@@ -181,9 +181,6 @@ table > thead > tr > th {
     border-bottom: 2px solid #dddddd;
 }
 /* EM PANEL */
-#em-appli-menu .panel-body .list-group-item:hover, #em-appli-menu .panel-body .list-group-item:active, #em-appli-menu .panel-body .list-group-item:focus {
-    color:#e5283b!important;
-}
 
 #em-assoc-files ul li{
     list-style:none;
@@ -202,24 +199,8 @@ table > thead > tr > th {
     margin: 10px 0;
 }
 
-.g-back-office-emundus-tableau #em-hide-filters {
-    border: 0px solid #e5283b;
-    height: 100px;
-    width: 15px;
-    position: fixed;
-    top: 25%;
-    left: 0;
-    background-color: #e5283b;
-    cursor: pointer;
-}
-
 #advanced-filters .form-control {
     margin: 5px 0 !important;
-}
-
-.g-back-office-emundus-tableau #em-hide-filters:hover, .g-back-office-emundus-tableau #em-hide-filters:focus, .g-back-office-emundus-tableau #em-hide-filters:active {
-    border: #bf0e04;
-    background-color: #bf0e04;
 }
 
 #select_filter_chosen{
@@ -234,25 +215,11 @@ table > thead > tr > th {
     margin-bottom: 5px;
     font-weight: bold;
 }
-.glyphicon-ban-circle{
-    color:#d94633;
-}
+
 fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-heading h3{
     color:#fff!important;
 }
 /* Menu Actions */
-.navbar.navbar-inverse {
-    height: auto;
-    border: #e5283b;
-    border-radius: 0;
-    background: #4E5B6D;
-    padding: 10px;
-    box-shadow: none;
-    margin: 0;
-    display: flex;
-    width: 100%;
-    align-items: center;
-}
 
 .navbar .nav>li {
     height: auto;
@@ -366,13 +333,6 @@ div#em-appli-block {
     padding-right: 0;
 }
 
-div#em-appli-block .panel-heading {
-    background: #e5283b;
-    border: 0;
-    padding-top: 5px;
-    border-radius: 0;
-}
-
 div#em-appli-block .panel.panel-default.widget .panel-heading h3.panel-title + a {
     color: #fff;
     padding-left: 10px;
@@ -382,11 +342,6 @@ div#em-appli-block .list-group-item {
     background-color: #ffffff;
     border-radius: 4px;
     color: #333333;
-}
-
-div#em-appli-block button.btn.btn-default {
-    background-color: #3e8ac5;
-    border: none !important;
 }
 
 div#em-appli-block button.btn.btn-default:hover, div#em-appli-block button.btn.btn-default:focus, div#em-appli-block button.btn.btn-default:active {
@@ -431,12 +386,6 @@ div#em-appli-block td {
 
 div#em-appli-block tr:nth-child(odd) {
     background-color: aliceblue;
-}
-
-div#em-appli-block span.label.label-info {
-    background: #ffffff !important;
-    text-shadow: none !important;
-    color: #e5283b !important;
 }
 
 table#groups-table a {
@@ -586,42 +535,8 @@ div#em-modal-actions .panel-heading h5 {
     padding-top: 0rem;
 }
 
-.g-back-office-emundus-tableau input#search,
-.g-back-office-emundus-tableau input#clear-search,
-.g-back-office-emundus-tableau input#save-filter,
-.g-back-office-emundus-tableau button#add-filter {
-    background: #e5283b !important;
-    background-color: #e5283b !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    text-shadow: none;
-    color: #FFFFFF;
-    padding: 8px 12px !important;
-    border-radius:5px!important;
-}
-
 .g-back-office-emundus-tableau input#clear-search {
     margin-right:6px!important;
-}
-
-.g-back-office-emundus-tableau input#search:hover,
-.g-back-office-emundus-tableau input#search:active,
-.g-back-office-emundus-tableau input#search:focus,
-.g-back-office-emundus-tableau input#clear-search:hover,
-.g-back-office-emundus-tableau input#clear-search:active,
-.g-back-office-emundus-tableau input#clear-search:focus,
-.g-back-office-emundus-tableau input#save-filter:hover,
-.g-back-office-emundus-tableau input#save-filter:active,
-.g-back-office-emundus-tableau input#save-filter:focus,
-.g-back-office-emundus-tableau button#add-filter:hover,
-.g-back-office-emundus-tableau button#add-filter:active,
-.g-back-office-emundus-tableau button#add-filter:focus {
-    background: #bf0e04 !important;
-    background-color: #bf0e04 !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    text-shadow: none;
-    color: #ffffff !important;
 }
 
 .g-back-office-emundus-tableau .col-md-3.side-panel {
@@ -718,21 +633,6 @@ div#em-modal-actions .panel-heading h5 {
     margin: 5px 0 5px 5px !important;
 }
 
-.g-back-office-emundus-tableau button#showhide {
-    font-size: 14px !important;
-    border-radius: 0 0 5px 5px !important;
-    font-weight: bold !important;
-    display: inline-flex !important;
-    align-items: center;
-    margin-top: -28px !important;
-    justify-content: center;
-    background-color: #e5283b;
-}
-
-.g-back-office-emundus-tableau button#showhide:hover {
-    background-color: #bf0e04;
-}
-
 .table-hover tbody tr > td, .table-hover tbody tr > th {
     background: #eceff3 !important;
 }
@@ -772,11 +672,6 @@ div#em-modal-actions .panel-heading h5 {
 #em-files-filters input[type="text"]:focus,
 #em-user-filters input[type="text"]:focus {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 255, 255, 0.6);
-}
-
-.chosen-container .chosen-results li.highlighted {
-    background-color: #e5283b;
-    background-image: none!important;
 }
 
 .g-back-office-emundus-tableau .carret {
