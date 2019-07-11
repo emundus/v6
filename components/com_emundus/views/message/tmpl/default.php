@@ -554,7 +554,7 @@ $email_list = array();
         var formData = new FormData();
 
         // add assoc key values, this will be posts values
-        formData.append("file", this.file, this.getName());
+        formData.append("file", this.file, this.getName().replace(/\s/g, '-'));
         formData.append("upload_file", true);
 
         $.ajax({
