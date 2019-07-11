@@ -155,14 +155,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
 
         // Move the uploaded file to the server directory.
-        if(!empty($user) && empty($fnum)){
-            $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
-        }
-        else{
-            $target = 'images'.DS.'emundus'.DS.'files'.DS.$file['name'];
-        }
 
-
+	    if (!empty($user) && empty($fnum)) {
+		    $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
+	    } else {
+		    $target = 'images'.DS.'emundus'.DS.'files'.DS.$file['name'];
+	    }
 
         if (file_exists($target)) {
 	        unlink($target);
