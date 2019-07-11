@@ -488,7 +488,7 @@ class EmundusHelperFiles
         $db = JFactory::getDBO();
         $query = 'SELECT *
                 FROM #__emundus_setup_attachments WHERE id IN (SELECT attachment_id FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$pid.')
-                ORDER BY value ASC';
+                ORDER BY ordering ASC';
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
