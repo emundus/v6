@@ -42,14 +42,6 @@
     padding-left: 45px;
 }
 
-#navfilter .navrowtabs #tabslist a {
-    color: #3e8ac5;
-}
-
-#navfilter .navorder a {
-    color: #3e8ac5;
-}
-
 .campaingapplycontent {
     font-size: 15px;
     padding: 0;
@@ -80,12 +72,6 @@
 
 .campaigns-list .campaignbymonth .campaign-month-label .position-me {
     top: 26px;
-}
-
-.rotate-me.blue {
-    background: #3e8ac5;
-    border-color: #3e8ac5;
-    width: 1000vw;
 }
 
 .rotate-me.blue p {

@@ -12,15 +12,6 @@
     text-decoration: none;
 }
 
-#header-b #em_user_menu li:hover a,
-#header-b #em_user_menu li:active a,
-#header-b #em_user_menu li:focus a {
-    color: #e5283b;
-}
-
-.active a.item {
-    color: #e5283b !important;
-}
 .g-main-nav .g-sublevel > li.g-parent .g-menu-parent-indicator {
     margin-top: -4px;
 }
@@ -34,12 +25,6 @@
 #g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
     padding: 10px 15px;
 }
-.g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after, .g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
-    color: #e5283b;
-}
-.g-main-nav .g-toplevel > li.g-parent:hover > .g-menu-parent-indicator::after, .g-main-nav .g-sublevel > li.g-parent:hover .g-menu-parent-indicator::after {
-    color:#e5283b;
-}
 
 ul.g-dropdown.g-dropdown-right.g-fade {
     background: #fff !important;
@@ -49,13 +34,6 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 
 ul.g-dropdown.g-dropdown-right.g-fade a {
     color: #000 !important;
-}
-
-ul.g-dropdown.g-dropdown-right.g-fade a:hover,
-ul.g-dropdown.g-dropdown-right.g-fade a:active,
-ul.g-dropdown.g-dropdown-right.g-fade a:focus,
-ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
-    color: #e5283b !important;
 }
 
 .g-main-nav .g-standard .g-dropdown {
@@ -83,10 +61,6 @@ ul.g-dropdown.g-dropdown-right.g-fade a:focus-within {
 
 .g-main-nav .g-standard > .g-dropdown, .g-main-nav .g-fullwidth > .g-dropdown {
     margin-top: 4px;
-}
-
-.g-main-nav .g-standard .g-sublevel .current a span {
-    color: #e5283b;
 }
 
 /* HEADER */
@@ -201,4 +175,42 @@ div.mod-languages a {
 
 footer div{
     line-height:1.5em;
+}
+.g-offcanvas-toggle{
+    width: 50px!important;
+    height: 50px!important;
+}
+.burger {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: 10px;
+    height: 50px;
+}
+
+.burger span:before {
+    top: 10px;
+}
+.burger span:after {
+    top: 20px;
+}
+.burger span:before, .burger span:after {
+    transition: all .5s linear;
+}
+
+.burger.active span {
+    width: 0;
+    left: 8px;
+}
+.burger.active span:before, .burger.active span:after {
+    top: 12px;
+}
+.burger.active span:before {
+    transform: rotate(45deg);
+}
+.burger.active span:after {
+    transform: rotate(-45deg);
 }
