@@ -1685,7 +1685,8 @@ $(document).ready(function() {
                                         nbprg = $('#em-export-prg option').size();
                                        
                                         if (nbprg == 2) {
-                                            $('#em-export-prg option:eq(1)').attr('selected', true);
+                                            //$('#em-export-prg option:eq(1)').attr('selected', true);
+                                            document.getElementById('em-export-prg').selectedIndex = 1;
                                             $('#em-export-prg').trigger("chosen:updated");
                                             var code = $('#em-export-prg').val();
 
@@ -3287,7 +3288,8 @@ $(document).ready(function() {
                             nbprg = $('#em-export-prg option').size();
 
                             if (nbprg == 2) {
-                                $('#em-export-prg option:eq(1)').attr('selected', true);
+                                //$('#em-export-prg option:eq(1)').attr('selected', true);
+                                document.getElementById('em-export-prg').selectedIndex = 1;
                                 $('#em-export-prg').trigger("chosen:updated");
 
                                 var code = $('#em-export-prg').val();
