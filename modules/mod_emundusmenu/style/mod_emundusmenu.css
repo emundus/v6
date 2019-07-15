@@ -147,6 +147,7 @@ div.mod-languages a {
 /*Calage bouton de connexion + mdp oublié*/
 #header-c .header-right .btn{
     margin:5px;
+    color: white;
 }
 #header-c .header-right .forget-mdp{
     margin:0 5px;

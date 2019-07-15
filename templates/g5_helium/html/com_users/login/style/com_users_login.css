@@ -1,4 +1,16 @@
 /*******************LOGIN****************/
+button.btn-primary{
+    background: #e03c32;
+    background-color: #e03c32 !important;
+    border: 1px solid #e03c32 !important;
+    border-radius: 0!important;
+    padding: 8px 12px!important;
+}
+button.btn-primary:hover{
+    background-color: transparent !important;
+    color: #e03c32 !important;
+    outline: none;
+}
 .form-horizontal .controls:first-child {
     padding-left: 0 !important;
     margin: auto;

@@ -27,3 +27,10 @@
     width:75rem;
     margin:auto;
 }
+#userSummary .btn i, #summaryGender .btn i, #summaryNationality .btn i,  #summaryFiles .btn i{
+    display: inline;
+    margin: 5px !important;
+}
+.btn{
+    background-image: none !important;
+}

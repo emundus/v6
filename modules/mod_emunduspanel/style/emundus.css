@@ -12,6 +12,24 @@ text-align:center;
 a.text {
     opacity: 1;
 }
+.element_home_emundus a {
+    color: #e03c32;
+}
+.element_home_emundus a:hover,
+.element_home_emundus a:active,
+.element_home_emundus a:focus,
+.element_home_emundus a:focus-within {
+    color: #e03c32;
+}
+i.inverted.bordered.blue.icon,
+i.inverted.circular.blue.icon {
+    background: #e03c32 !important;
+    margin: 0 0 10px 0;
+}
+i.inverted.bordered.blue.icon:hover, i.inverted.bordered.blue.icon:focus, i.inverted.bordered.blue.icon:active,
+i.inverted.circular.blue.icon:hover, i.inverted.circular.blue.icon:focus, i.inverted.circular.blue.icon:active {
+    background: #b83229 !important;
+}
 /*Accueil connecté*/
 .select select {
     border: 1px solid #999;

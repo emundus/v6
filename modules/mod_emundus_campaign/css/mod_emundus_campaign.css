@@ -1,4 +1,12 @@
 /* Module Campagnes */
+#navfilter .navsearch .navsearch-content .input-group-btn button {
+    margin-left: -5px !important;
+    height: 34px !important;
+    background-color: #e03c32;
+    background: #e03c32;
+    color: white;
+    margin-bottom: 0;
+}
 .navsearch input {
     margin-bottom: 0 !important;
     height: 34px !important;
