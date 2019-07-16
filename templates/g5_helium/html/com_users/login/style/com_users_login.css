@@ -105,3 +105,6 @@ ul.nav.nav-tabs.nav-stacked a::before {
 footer div{
     line-height:1.5em;
 }
+.control-group .control-label label .star{
+    display: none;
+}

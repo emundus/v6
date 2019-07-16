@@ -348,6 +348,16 @@ echo <<<EOT
 .table .fabrik_groupdata center {
     background: #eceff3 !important;
 }
+.email-container table{
+    border: none;
+}
+
+.email-container table td{
+    border-top: none;
+}
+.email-container table tbody tr:hover > td{
+    background:#eceff3!important;
+}
 footer#g-footer {
 	padding: 20px !important;
 }
