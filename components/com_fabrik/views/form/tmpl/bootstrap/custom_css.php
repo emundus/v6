@@ -888,7 +888,30 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
   color: #e03c32 !important;
   outline: none;
 }
-
+.span4 > .btn-group > button.save-btn{
+    background: #e03c32;
+    background-color: #e03c32 !important;
+    border: 1px solid #e03c32 !important;
+    border-radius: 0!important;
+    padding: 10px 12px!important;
+}
+.span4 > .btn-group > button.save-btn:hover{
+    background-color: transparent !important;
+    color: #e03c32 !important;
+    outline: none;
+}
+.span4.offset1 > .btn-group > button.button{
+    background: #29d4ff;
+    background-color: #29d4ff !important;
+    border: 1px solid #29d4ff !important;
+    border-radius: 0!important;
+    padding: 8px 12px!important;
+}
+.span4.offset1 > .btn-group > button.button:hover{
+    background-color: transparent !important;
+    color: #29d4ff !important;
+    outline: none;
+}
 /* END - Your CSS styling ends here */
 
 EOT;
