@@ -79,4 +79,12 @@ div#em-panel legend a {
 div#em-panel .ui.grid {
     text-align: center;
 }
+.emundus_home_page .select_arrow {
+    transform: translate(-50%, -50%) rotate(45deg);
+    top: 42%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    right: 20px;
+}
 
