@@ -827,6 +827,8 @@ button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-c
   background: #29d4ff !important;
   border: 1px solid #29d4ff !important;
   color:white;
+  text-shadow: none;
+  text-transform: none;
 }
 
 button.goback-btn:hover, button.goback-btn:active, button.goback-btn:focus,
@@ -855,6 +857,8 @@ button.save-btn, .btn-success, button.save, button.save_continue, button.send, a
   background: #e03c32 !important;
   border: 1px solid #e03c32 !important;
   color:white;
+  text-shadow: none;
+  text-transform: none;
 }
 
 button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
