@@ -2090,3 +2090,10 @@ label[for="em-file_to_upload"]:hover {
 .em-container-form-body{
     padding: 20px;
 }
+footer#g-footer {
+    padding: 20px !important;
+}
+footer#g-footer {
+    background: transparent;
+    border-top: 1px solid #bbb;
+}

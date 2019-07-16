@@ -912,6 +912,13 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     color: #29d4ff !important;
     outline: none;
 }
+footer#g-footer {
+	padding: 20px !important;
+}
+footer#g-footer {
+	background: transparent;
+	border-top: 1px solid #bbb;
+}
 /* END - Your CSS styling ends here */
 
 EOT;

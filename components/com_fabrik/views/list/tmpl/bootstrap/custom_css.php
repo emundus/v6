@@ -345,5 +345,15 @@ echo <<<EOT
 .btn, a.btn-attach, .xclsform .panel-body button, button.close {
     color: #fff !important;
 }
+.table .fabrik_groupdata center {
+    background: #eceff3 !important;
+}
+footer#g-footer {
+	padding: 20px !important;
+}
+footer#g-footer {
+	background: transparent;
+	border-top: 1px solid #bbb;
+}
 /* END - Your CSS styling ends here */
 EOT;
