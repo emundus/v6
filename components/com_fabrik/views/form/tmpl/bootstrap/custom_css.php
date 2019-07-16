@@ -764,9 +764,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     transform: translate(-50%, -50%);
     left: 50% !important;
 }
-.fbDateTime .itemContentPadder .btn-success{
-  background-color:#000!important;
-}
+
 .fbDateTime .modal-header {
     height: 40px !important;
     min-height: 40px;
@@ -802,13 +800,125 @@ input:not([type]).mce-textbox {
     text-align: left;
     color: #000;
 }
+.btn {
+border-radius: 0 !important;
+}
 .form-horizontal .control-group .btn-group label.btn-default{
     background: #bababa;
+    color: white;
+    border-radius: 0 !important;
+    padding: 6px 8px;
+    text-shadow: none!important ;
+    line-height: normal!important ;
+    background-image: none!important ;
+    display: inline-flex!important ;
+    align-items: center!important;
+    text-transform: initial!important ;
+    font-weight: 400;
+    letter-spacing: normal!important;
 }
 .form-horizontal .control-group .btn-group label.btn-default:hover{
     background: #ababab;
 }
+button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn,
+.xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save),
+.documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
+  background-color: #29d4ff !important;
+  background: #29d4ff !important;
+  border: 1px solid #29d4ff !important;
+  color:white;
+  text-shadow: none;
+  text-transform: none;
+}
 
+button.goback-btn:hover, button.goback-btn:active, button.goback-btn:focus,
+.btn-danger:hover, .btn-danger:active, .btn-danger:focus,
+.pull-right .btn:not(.dropdown-toggle):hover, .pull-right .btn:not(.dropdown-toggle):focus, .pull-right .btn:not(.dropdown-toggle):active,
+.below-content a:hover, .below-content a:active, .below-content a:focus,
+#member-profile .controls a:hover, #member-profile .controls a:active, #member-profile .controls a:focus,
+.toggle-editor .btn:hover, .toggle-editor .btn:active, .toggle-editor .btn:focus,
+.xclsform .panel-body button#delfilter:hover, .xclsform .panel-body button#delfilter:active, .xclsform .panel-body button#delfilter:focus,
+button#back:hover, button#back:active, button#back:focus,
+.btn.advanced-search-clearall:hover, .btn.advanced-search-clearall:active, .btn.advanced-search-clearall:focus,
+.emails-setup-page .form-actions button:not(.save):hover, .emails-setup-page .form-actions button:not(.save):active, .emails-setup-page .form-actions button:not(.save):focus,
+.documents-type-candidacy-page .fabrikDetails .btn:hover, .documents-type-candidacy-page .fabrikDetails .btn:active, .documents-type-candidacy-page .fabrikDetails .btn:focus,
+.fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus,
+#em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus,
+.btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
+  background-color: transparent !important;
+  color: #29d4ff !important;
+  outline: none;
+}
+button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
+.indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
+.em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
+.btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
+  background-color: #e03c32 !important;
+  background: #e03c32 !important;
+  border: 1px solid #e03c32 !important;
+  color:white;
+  text-shadow: none;
+  text-transform: none;
+}
+
+button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
+.btn-success:hover, .btn-success:focus, .btn-success:active,
+button.save:hover, button.save:active, button.save:focus,
+button.save_continue:hover, button.save_continue:active, button.save_continue:focus,
+button.send:hover, button.send:active, button.send:focus,
+a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus,
+#trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus,
+#trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus,
+.indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus,
+.fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus,
+button.importation:hover, button.importation:active, button.importation:focus,
+a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus,
+a.btn-info:hover, a.btn-info:active, a.btn-info:focus,
+.header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active,
+button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus,
+.em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus,
+.xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus,
+.modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus,
+a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
+.btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus,
+.toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus,
+.candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus,
+.choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
+  background-color: transparent !important;
+  color: #e03c32 !important;
+  outline: none;
+}
+.span4 > .btn-group > button.save-btn{
+    background: #e03c32;
+    background-color: #e03c32 !important;
+    border: 1px solid #e03c32 !important;
+    border-radius: 0!important;
+    padding: 10px 12px!important;
+}
+.span4 > .btn-group > button.save-btn:hover{
+    background-color: transparent !important;
+    color: #e03c32 !important;
+    outline: none;
+}
+.span4.offset1 > .btn-group > button.button{
+    background: #29d4ff;
+    background-color: #29d4ff !important;
+    border: 1px solid #29d4ff !important;
+    border-radius: 0!important;
+    padding: 8px 12px!important;
+}
+.span4.offset1 > .btn-group > button.button:hover{
+    background-color: transparent !important;
+    color: #29d4ff !important;
+    outline: none;
+}
+footer#g-footer {
+	padding: 20px !important;
+}
+footer#g-footer {
+	background: transparent;
+	border-top: 1px solid #bbb;
+}
 /* END - Your CSS styling ends here */
 
 EOT;

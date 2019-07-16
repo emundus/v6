@@ -1,18 +1,131 @@
+/*boutons*/
+.em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
+    border-radius: 0 !important;
+    padding: 6px 8px;
+    color: #fff!important ;
+    text-shadow: none!important ;
+    line-height: normal!important ;
+    background-image: none!important ;
+    display: inline-flex!important ;
+    align-items: center!important;
+    text-transform: initial!important ;
+    font-weight: 400;
+    letter-spacing: normal!important;
+}
+button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
+    background-color: #29d4ff !important;
+    background: #29d4ff;
+    border: 1px solid #29d4ff !important;
+    text-shadow: none;
+    text-transform: none;
 
+}
+button.goback-btn:hover, button.goback-btn:active, .em-personalInfo > a:hover, button.goback-btn:focus, .btn-danger:hover, .btn-danger:active, .btn-danger:focus, .pull-right .btn:not(.dropdown-toggle):hover, .pull-right .btn:not(.dropdown-toggle):focus, .pull-right .btn:not(.dropdown-toggle):active, .below-content a:hover, .below-content a:active, .below-content a:focus, #member-profile .controls a:hover, #member-profile .controls a:active, #member-profile .controls a:focus, .toggle-editor .btn:hover, .toggle-editor .btn:active, .toggle-editor .btn:focus, .xclsform .panel-body button#delfilter:hover, .xclsform .panel-body button#delfilter:active, .xclsform .panel-body button#delfilter:focus, button#back:hover, button#back:active, button#back:focus, .btn.advanced-search-clearall:hover, .btn.advanced-search-clearall:active, .btn.advanced-search-clearall:focus, .emails-setup-page .form-actions button:not(.save):hover, .emails-setup-page .form-actions button:not(.save):active, .emails-setup-page .form-actions button:not(.save):focus, .documents-type-candidacy-page .fabrikDetails .btn:hover, .documents-type-candidacy-page .fabrikDetails .btn:active, .documents-type-candidacy-page .fabrikDetails .btn:focus, .fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus, #em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus, .btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
+    background-color: transparent !important;
+    color: #29d4ff !important;
+    outline: none;
+}
+button.save-btn, .btn-success, .trombi_download, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate, .indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary, .em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip, .btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
+
+    background-color: #ff4545 !important;
+    background: #ff4545;
+    border: 1px solid #ff4545 !important;
+    text-shadow: none;
+    text-transform: none;
+}
+button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.save-btn:focus, .btn-success:hover, .btn-success:focus, .btn-success:active, button.save:hover, button.save:active, button.save:focus, button.save_continue:hover, button.save_continue:active, button.save_continue:focus, button.send:hover, button.send:active, button.send:focus, a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus, #trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus, #trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus, .indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus, .fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus, button.importation:hover, button.importation:active, button.importation:focus, a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus, a.btn-info:hover, a.btn-info:active, a.btn-info:focus, .header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active, button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus, .em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus, .xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus, .modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus, a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus, .btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus, .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus, .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus, .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
+
+    background-color: transparent !important;
+    color: #ff4545 !important;
+    outline: none;
+}
+.modal-header button.close{
+    padding: 8px 12px;
+}
+.modal-header .btn-danger, .modal-header .btn-success{
+    border-radius: 0 !important;
+}
+.em-user-personal-filter .btn-xs{
+    padding: 8px 12px!important;
+}
+button.close {
+    margin: 0;
+    font-size: 2em;
+}
+.g-back-office-emundus-tableau input#search,
+.g-back-office-emundus-tableau input#clear-search,
+.g-back-office-emundus-tableau input#save-filter,
+.g-back-office-emundus-tableau button#add-filter {
+    background: #29d4ff;
+    background-image: none;
+    box-shadow: none;
+    text-shadow: none;
+    color: #FFFFFF;
+    padding: 6px 8px;
+    border-radius:5px;
+}
+
+.g-back-office-emundus-tableau input#search:hover,
+.g-back-office-emundus-tableau input#search:active,
+.g-back-office-emundus-tableau input#search:focus,
+.g-back-office-emundus-tableau input#clear-search:hover,
+.g-back-office-emundus-tableau input#clear-search:active,
+.g-back-office-emundus-tableau input#clear-search:focus,
+.g-back-office-emundus-tableau input#save-filter:hover,
+.g-back-office-emundus-tableau input#save-filter:active,
+.g-back-office-emundus-tableau input#save-filter:focus,
+.g-back-office-emundus-tableau button#add-filter:hover,
+.g-back-office-emundus-tableau button#add-filter:active,
+.g-back-office-emundus-tableau button#add-filter:focus {
+    background: #00c4f5;
+    background-image: none ;
+    box-shadow: none ;
+    text-shadow: none;
+    color: #ffffff ;
+}
+.g-back-office-emundus-tableau #em-hide-filters {
+    border: 0px solid #29d4ff;
+    height: 100px;
+    width: 15px;
+    position: fixed;
+    top: 25%;
+    left: 0;
+    background-color: #29d4ff;
+    cursor: pointer;
+}
 /*TABLEAUX*/
 td:first-child > .em-cell {
     display: flex;
     align-items: center;
+}
+td > .em-cell >.item > .label{
+    display: inline-block !important;
+    margin: 1px;
 }
 
 td:last-child > .em-cell {
     padding-right:20px;
 }
 
+#jos_emundus_campaign_candidature___date_time > .em-cell, #jos_emundus_campaign_candidature___date_submitted > .em-cell {
+    width:270px;
+}
+th[id='jos_emundus_personal_detail.profession'] > .em-cell {
+    width:120px;
+}
+#jos_emundus_personal_detail___activity > .em-cell{
+    width:140px;
+}
+#jos_emundus_campaign_candidature___campaign_id > .em-cell{
+    width:190px;
+}
+
 table .btn-group > .btn {
     margin:0 5px!important;;
 }
-
+.table-striped tbody > tr > td {
+    vertical-align: middle;
+}
 .toggle-editor .bnt .icon-eye{
     padding-right:5px;
 }
@@ -231,7 +344,29 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
     display: flex;
     align-items: center;
 }
+.navbar.navbar-inverse {
+    height: auto;
+    border: #29d4ff;
+    border-radius: 0;
+    background: #4E5B6D;
+    padding: 10px;
+    box-shadow: none;
+    margin: 0;
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
 
+button#em-close-file {
+    background: #4E5B6D !important;
+    color: #ffffff;
+    box-shadow: none;
+    border: 1px solid #4E5B6D !important;
+    text-shadow: none;
+    background-image: none;
+    margin-top: -3px;
+    height: 36px;
+}
 .navbar.navbar-inverse > span {
     font-size: 1rem;
     padding: 0 10px;
@@ -274,7 +409,50 @@ div#em-assoc-files .panel > .panel-heading h6 {
     padding: 10px 0;
     margin: 0;
 }
-
+div#em-appli-block .panel-heading {
+    background: #29d4ff;
+    border: 0;
+    padding-top: 5px;
+    border-radius: 0;
+}
+div#em-appli-block button.btn.btn-default {
+    background-color: #e03c32;
+    border: none !important;
+}
+div#em-appli-block button.btn.btn-default:hover{
+    background-color: #b83229;
+}
+.em-personalInfo>a{
+    background-color: #29d4ff !important;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    height: -moz-fit-content;
+    border: none;
+    min-height: 0;
+    border: 1px solid #29d4ff !important;
+}
+.em-personalInfo > a:hover {
+    background-color: transparent !important;
+    color: #29d4ff !important;
+    outline: none;
+}
+.em-searchbar .btn-default{
+    padding: 10px 15px;
+}
+.em-tags-date{
+    margin-bottom: 10px;
+}
+.toggle-addoption, .delete, .listplugin, .fabrik__rowlink, button#showhide, .btn-sm {
+    border-radius: 0 !important;
+    padding: 5px 10px !important;
+    color: initial;
+    text-shadow: initial !important;
+    line-height: initial !important;
+    background-image: initial !important;
+    display: inline-flex;
+    border: none !important;
+}
 .label {
     text-shadow: none;
 }
@@ -1013,12 +1191,12 @@ label {
     vertical-align: middle !important;
     cursor: pointer !important;
     background-image: none !important;
-    border: 1px solid transparent !important;
+    border: 1px solid transparent ;
     white-space: nowrap !important;
-    padding: 10px 15px !important;
+    padding: 10px 15px ;
     font-size: 15px !important;
     line-height: 1.42857 !important;
-    border-radius: 4px 4px 4px 4px !important;
+    border-radius: 4px 4px 4px 4px ;
     -moz-user-select: none !important;
 }
 
@@ -1054,7 +1232,7 @@ ul {
     border-top-color: #555555 !important;
 }
 
-.btn-default {
+/*.btn-default {
     background-image: -webkit-linear-gradient(#ffffff, #ffffff 60%, #f5f5f5) !important;
     background-image: linear-gradient(#ffffff, #ffffff 60%, #f5f5f5) !important;
     background-repeat: no-repeat !important;
@@ -1127,7 +1305,7 @@ ul {
     background-color: #a3171c;
     border-color: #911419;
 }
-
+*/
 thead th:hover {
     background-color: rgba(48, 93, 126, 0.13);
     cursor: pointer;
@@ -1911,4 +2089,11 @@ label[for="em-file_to_upload"]:hover {
 
 .em-container-form-body{
     padding: 20px;
+}
+footer#g-footer {
+    padding: 20px !important;
+}
+footer#g-footer {
+    background: transparent;
+    border-top: 1px solid #bbb;
 }

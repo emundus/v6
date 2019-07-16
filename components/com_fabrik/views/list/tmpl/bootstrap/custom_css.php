@@ -299,11 +299,71 @@ echo <<<EOT
 .email-history-indicators-page > h1:first-child{
     display:none;
 }
+.email-history-indicators-page .pull-left  a,
+ .email-history-indicators-page .fabrikorder,
+ .email-history-indicators-page .fabrikorder-desc {
+    color: #e03c32;
+}
+
+.email-history-indicators-page .pull-left  a:hover,.email-history-indicators-page .fabrikorder:hover,
+ .email-history-indicators-page .fabrikorder-desc:hover {
+    color: #b83229;
+}
 
 .email-history-indicators-page #g-main-mainbody{
     padding:0 20px;
 }
+.fabrik_filter_submit i{
+    display: inline!important;
+    margin: 5px !important;
+}
+.fabrikFilterContainer .fabrik_actions .fabrik_filter_submit{
+    background: #29d4ff;
+    background-color: #29d4ff !important;
+    border: 1px solid #29d4ff !important;
+    border-radius: 0 !important;
+    padding: 8px 12px !important;
+    color:white;
+}
+.fabrikFilterContainer .fabrik_actions .fabrik_filter_submit:hover{
+    background-color: transparent !important;
+    color: #29d4ff !important;
+    outline: none;
+}
+.btn-info, .btn-group .fabrik__rowlink, a.delete, a.copy-0 {
+    background-color: #aaa;
+}
+.toggle-addoption, .delete, .listplugin, .fabrik__rowlink, button#showhide, .btn-sm {
+    border-radius: 0 !important;
+    padding: 5px 10px !important;
+    color: initial;
+    text-shadow: initial !important;
+    line-height: initial !important;
+    background-image: initial !important;
+    border: none !important;
+}
+.btn, a.btn-attach, .xclsform .panel-body button, button.close {
+    color: #fff !important;
+}
+.table .fabrik_groupdata center {
+    background: #eceff3 !important;
+}
+.email-container table{
+    border: none;
+}
 
-
+.email-container table td{
+    border-top: none;
+}
+.email-container table tbody tr:hover > td{
+    background:#eceff3!important;
+}
+footer#g-footer {
+	padding: 20px !important;
+}
+footer#g-footer {
+	background: transparent;
+	border-top: 1px solid #bbb;
+}
 /* END - Your CSS styling ends here */
 EOT;

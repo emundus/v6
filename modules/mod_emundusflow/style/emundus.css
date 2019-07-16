@@ -162,3 +162,15 @@
 	justify-content: center;
 	align-items: center;
 }
+.applicant-form .ui.attached.segment {
+	background: #e03c32;
+	border: #e03c32;
+	color: #ffffff;
+}
+.step.completed i.icon.file.text.outline::before,
+.step.completed i.icon.attach::before,
+.step.completed i.icon.add.to.cart::before,
+.step.completed i.icon.time::before {
+	color: #29d4ff !important;
+	background: none !important;
+}
