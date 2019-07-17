@@ -117,7 +117,7 @@ class  plgUserEmundus_claroline extends JPlugin {
 
 		// Check if a user exists in the emundus_user table (if he does not, use the POST data).
 		$query = $db->getQuery(true);
-		$query->select($db->quoteName(['firstname','lastname','company_id']))
+		$query->select($db->quoteName(['firstname','lastname']))
 			->from($db->quoteName('#__emundus_users'))
 			->where($db->quoteName('user_id').' = '.$user['id']);
 		$db->setQuery($query);
@@ -132,7 +132,6 @@ class  plgUserEmundus_claroline extends JPlugin {
 			$jinput = JFactory::getApplication()->input;
 			$emUser->lastname = $jinput->post->get('jos_emundus_users___lastname');
 			$emUser->firstname = $jinput->post->get('jos_emundus_users___firstname');
-			$emUser->company_id = $jinput->post->get('jos_emundus_users___company_id');
 		}
 
 		// In case no user with that ID is found.
@@ -168,8 +167,8 @@ class  plgUserEmundus_claroline extends JPlugin {
 
 			$query->clear()
 				->insert($dbClaro->quoteName('emundus_users'))
-				->columns($dbClaro->quoteName(['date_time', 'user_id', 'lastname', 'firstname', 'email', 'password', 'company_id']))
-				->values($dbClaro->quote($now).','.$user['id'].','.$dbClaro->quote($emUser->lastname).','.$dbClaro->quote($emUser->firstname).','.$dbClaro->quote($user['email']).','.$dbClaro->quote($password).(!empty($emUser->company_id))?','.$emUser->company_id:'');
+				->columns($dbClaro->quoteName(['date_time', 'user_id', 'lastname', 'firstname', 'email', 'password']))
+				->values($dbClaro->quote($now).','.$user['id'].','.$dbClaro->quote($emUser->lastname).','.$dbClaro->quote($emUser->firstname).','.$dbClaro->quote($user['email']).','.$dbClaro->quote($password));
 
 		} else {
 
@@ -198,9 +197,6 @@ class  plgUserEmundus_claroline extends JPlugin {
 			}
 			if (!empty($password) && $claroUser['password'] !== $password) {
 				$update[] = $dbClaro->quoteName('password').' = '.$dbClaro->quote($password);
-			}
-			if (!empty($emUser->company_id) && $claroUser['company_id'] != $emUser->company_id) {
-				$update[] = $dbClaro->quoteName('company_id').' = '.$emUser->company_id;
 			}
 
 			if (!empty($update)) {
