@@ -311,7 +311,7 @@ if (!empty($rights_values)) {
 
 	$application->enqueueMessage(JText::_('CAMPAIGN_MULTI_SUCCESS'), 'message');
 }
-
+$application->redirect('inscription');
 
 // Now that the main CC logic is done, we need to generate the .log file which will be written to the FTP directory to be used by Migal in order ot import the data into GesCOF.
 // This is a bit tricky, we need to get the information about the inscription as well as the users, all in one single dimentional array, .log files do not have multiple lines.
