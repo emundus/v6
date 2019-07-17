@@ -16,7 +16,7 @@ defined('_JEXEC') or die();
 $db = JFactory::getDBO();
 $query = $db->getQuery(true);
 $current_user = JFactory::getUser();
-$application = Jfactory::getApplication();
+$application = JFactory::getApplication();
 
 $campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
 $company_id = $data['jos_emundus_campaign_candidature___company_id_raw'][0];
@@ -28,6 +28,7 @@ if (!empty($company_id) && $company_id != -1) {
 }
 
 JLog::addLogger(array('text_file' => 'com_emundus.emundus-campaign-multi.php'), JLog::ALL, array('com_emundus'));
+JLog::addLogger(array('text_file' => 'com_emundus.syncClaroline.php'), JLog::ALL, array('com_emundus_claro'));
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
@@ -43,11 +44,59 @@ try {
 	JError::raiseError(500, $query);
 }
 
+$offset = JFactory::getApplication()->get('offset', 'UTC');
+$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+$now = $dateTime->format('Y-m-d H:i:s');
+
+$query->clear()->select($db->quoteName('session_code'))
+	->from($db->quoteName('#__emundus_setup_campaigns'))
+	->where($db->quoteName('id').' = '.$campaign_id);
+$db->setQuery($query);
+try {
+	$session_code = $db->loadResult();
+} catch(Exception $e) {
+	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JError::raiseError(500, $query);
+}
+
 // Prepare insertion of data (it is not done via the Fabrik form, we do it manually to handle repeat groups multiplying the data set).
 $values = [];
 $rights_values = [];
 $profile_values = [];
 $users_registered = [];
+
+$query->clear()
+	->select('*, id AS value, description AS text')
+	->from($db->quoteName('#__fabrik_connections'))
+	->where('published = 1 and description like '.$db->quote('claroline'));
+$db->setQuery($query);
+$connections = $db->loadObjectList();
+
+foreach ($connections as &$cnn) {
+	if (isset($cnn->decrypted) && $cnn->decrypted) {
+		return;
+	}
+
+	$crypt = EmundusHelperAccess::getCrypt();
+	$params = json_decode($cnn->params);
+
+	if (is_object($params) && $params->encryptedPw) {
+		$cnn->password = $crypt->decrypt($cnn->password);
+		$cnn->decrypted = true;
+	}
+}
+
+// Construct the DB connexion to Claroline distant DB
+$option = array();
+$option['driver']   = 'mysql';
+$option['host']     = $connections[0]->host;
+$option['user']     = $connections[0]->user;
+$option['password'] = $connections[0]->password;
+$option['database'] = $connections[0]->database;
+$option['prefix']   = '';
+
+$dbClaro = JDatabaseDriver::getInstance($option);
 
 foreach ($users as $user) {
 
@@ -57,26 +106,26 @@ foreach ($users as $user) {
 	if (in_array($user_id, $users_registered)) {
 		continue;
 	}
-	
+
 	$users_registered[] = $user_id;
 	switch ($applicant_can_renew) {
 
-	    // Cannot create new campaigns at all.
-	    case 0:
-	    	$query->clear()->select($db->quoteName('id'))
-			    ->from($db->quoteName('#__emundus_campaign_candidature'))
-			    ->where($db->quoteName('applicant_id').' = '.$user_id);
-		    try {
-			    if (!empty($db->loadResult())) {
-				    JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
-				    $application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
-				    continue 2;
-			    }
-		    } catch(Exception $e) {
-			    JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
-			    JError::raiseError(500, $query);
-		    }
-	        break;
+		// Cannot create new campaigns at all.
+		case 0:
+			$query->clear()->select($db->quoteName('id'))
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('applicant_id').' = '.$user_id);
+			try {
+				if (!empty($db->loadResult())) {
+					JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
+					$application->enqueueMessage('User already has a file open and cannot have multiple.', 'error');
+					continue 2;
+				}
+			} catch(Exception $e) {
+				JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JError::raiseError(500, $query);
+			}
+			break;
 
 		// If the applicant can only have one file per campaign.
 		case 2:
@@ -96,7 +145,7 @@ foreach ($users as $user) {
 			}
 			break;
 
-	    // If the applicant can only have one file per school year.
+		// If the applicant can only have one file per school year.
 		case 3:
 			$years_query = 'SELECT id
 						FROM #__emundus_setup_campaigns
@@ -148,15 +197,54 @@ foreach ($users as $user) {
 	// Generate new fnum
 	$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
 
+	$update = [];
+
 	// Build values to insert into the table.
 	if (!empty($company_id) && $company_id != -1) {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum).', '.$company_id;
+		$update[] = $dbClaro->quoteName('company_id').' = '.$dbClaro->quote($company_id);
 	} else {
 		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum);
+		$update[] = $dbClaro->quoteName('company_id').' = '.$dbClaro->quote('');
+	}
+
+	// Check if a user with that ID exists in the Claroline DB already.
+	$queryClaro = $dbClaro->getQuery(true);
+	$queryClaro->select($dbClaro->quoteName('id'))
+		->from($dbClaro->quoteName('emundus_users'))
+		->where($dbClaro->quoteName('user_id').' = '.$user_id);
+
+	$dbClaro->setQuery($queryClaro);
+	try {
+		$inClaro = !empty($dbClaro->loadResult());
+	} catch (Exception $e) {
+		JLog::add('Error getting user from Claroline DB. \n query -> '.$query->__toString().' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
+		$inClaro = false;
+	}
+
+
+	if ($inClaro) {
+
+		$update[] = $dbClaro->quoteName('date_time').' = '.$dbClaro->quote($now);
+		$update[] = $dbClaro->quoteName('status').' = 0';
+		$update[] = $dbClaro->quoteName('group').' = '.$dbClaro->quote($session_code);
+
+		$queryClaro->clear()
+			->update($dbClaro->quoteName('emundus_users'))
+			->set($update)
+			->where($dbClaro->quoteName('user_id').' = '.$user_id);
+
+		$dbClaro->setQuery($queryClaro);
+
+		try {
+			$dbClaro->execute();
+		} catch (Exception $e) {
+			JLog::add('Error updating user to Claroline DB. \n query -> '.$query->__toString().' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
+		}
 	}
 
 	// give the user all rights on that file
-    $rights_values[] = $current_user->id.', 1, '.$db->quote($fnum).', 1, 1, 1, 1';
+	$rights_values[] = $current_user->id.', 1, '.$db->quote($fnum).', 1, 1, 1, 1';
 
 	// build profiles to assign.
 	$profile_values[] = $user_id.', '.$profile;
@@ -210,24 +298,24 @@ if (!empty($rights_values)) {
 
 	// Insert rows into the em_user_assoc table.
 	$query->clear()
-	    ->insert($db->quoteName('#__emundus_users_assoc'))
-	    ->columns($columns)
-	    ->values($rights_values);
+		->insert($db->quoteName('#__emundus_users_assoc'))
+		->columns($columns)
+		->values($rights_values);
 	$db->setQuery($query);
 	try {
-	    $db->execute();
+		$db->execute();
 	} catch(Exception $e) {
-	    JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
-	    JError::raiseError(500, 'Could not create rights.');
+		JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JError::raiseError(500, 'Could not create rights.');
 	}
 
-    $application->enqueueMessage(JText::_('CAMPAIGN_MULTI_SUCCESS'), 'message');
+	$application->enqueueMessage(JText::_('CAMPAIGN_MULTI_SUCCESS'), 'message');
 }
 
 
 // Now that the main CC logic is done, we need to generate the .log file which will be written to the FTP directory to be used by Migal in order ot import the data into GesCOF.
 // This is a bit tricky, we need to get the information about the inscription as well as the users, all in one single dimentional array, .log files do not have multiple lines.
-$query->clear()
+/*$query->clear()
 	->select([$db->quoteName('cc.id','IdResa'), $db->quoteName('tu.session_code', 'NumSession'), $db->quoteName('eu.lastname', 'Societe_Lib'), $db->quoteName('eu.telephone', 'TelSociete'), $db->quoteName('eu.email', 'EmailContact'), $db->quoteName('eu.telephone', 'TelContact'), $db->quoteName('eu.firstname'), $db->quoteName('eu.civility'), $db->quoteName('tu.days', 'Nbjours'), $db->quoteName('location_title', 'Lieuforma'), $db->quoteName('cc.date_time', 'dateresa'), $db->quoteName('eu.adresse', 'SocieteAdresse1'), $db->quoteName('eu.code_postale', 'SocieteCP'), $db->quoteName('eu.city', 'SocieteVille')])
 	->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 	->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->quoteName('cc.campaign_id').' = '.$db->quoteName('c.id'))
@@ -321,10 +409,8 @@ for ($i = 0; $i <= 10; $i++) {
 	$participants['NumcParticipant_'.($i+1)] = '';
 }
 
-/*
- * This is the formatting of the export file so that it has the same format as the .log file.
- * Some precisions: the type of internship is INTRA, for now?
- */
+ // This is the formatting of the export file so that it has the same format as the .log file.
+ // Some precisions: the type of internship is INTRA, for now?
 $export = [
 	'IdResa' => $inscription['IdResa'],
 	'NumSession' => $inscription['NumSession'],
@@ -382,4 +468,4 @@ ob_start();
 $df = fopen($log_file_name, 'w');
 fputcsv($df, $export , ';');
 fclose($df);
-ob_get_clean();
+ob_get_clean();*/
