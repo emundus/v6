@@ -123,6 +123,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    exit;
 	    }
 
+	    $file['name'] = str_replace(array( '(', ')' ), '', $file['name']);
+
 	    // Check if file name is alphanumeric
 	    if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
 	    	echo json_encode(['status' => false]);
