@@ -175,7 +175,6 @@ h6 {
 h1 {
     font-size: 2em;
     position: relative;
-    margin: 20px 0 50px 0 !important;
 }
 
 .swal2-title {
@@ -199,7 +198,6 @@ h1::after, .swal2-title:after {
 
 h2 {
     font-size: 1.5rem;
-    margin-top: 0;
 }
 
 body {
