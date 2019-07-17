@@ -454,7 +454,14 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
   background-color: $base-secondary-color;
   background: $base-secondary-color;
   margin-bottom: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
+#navfilter .navsearch .navsearch-content .input-group label input{
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 #navfilter .navsearch .navsearch-content .input-group-btn button:hover {
   background-color: darken($base-secondary-color,10%);
 }
