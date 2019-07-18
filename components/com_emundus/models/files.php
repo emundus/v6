@@ -1510,44 +1510,33 @@ if (JFactory::getUser()->id == 63)
      * @param $fnums
      * @return bool|mixed
      */
-    public function shareGroups($groups, $actions, $fnums)
-    {
-        try
-        {
+    public function shareGroups($groups, $actions, $fnums) {
+        try {
             $db = $this->getDbo();
+            $insert = [];
 
-            foreach ($fnums as $fnum)
-            {
-                foreach ($actions as $action)
-                {
-                    foreach($groups as $group)
-                    {
-                        $ac = (array) $action;
+	        foreach ($fnums as $fnum) {
+		        foreach($groups as $group) {
+			        foreach ($actions as $action) {
+				        $ac = (array) $action;
+				        $insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+			        }
+		        }
+	        }
 
-                        $query = 'SELECT count(id) FROM #__emundus_group_assoc
-                                    WHERE group_id='.$group.' AND action_id='.$ac['id'].' AND fnum like '.$db->Quote($fnum);
-                        $db->setQuery( $query );
-                        $cpt = $db->loadResult();
+	        $query = $db->getQuery(true);
+	        $query->delete($db->quoteName('#__emundus_group_assoc'))
+		        ->where($db->quoteName('group_id').' IN ('.implode($groups).') AND '.$db->quoteName('fnum').' IN ('.implode($fnums).')');
+	        $db->setQuery($query);
+	        $db->execute();
 
-                        if ($cpt == 0)
-                            $query = 'INSERT INTO #__emundus_group_assoc (group_id, action_id, c, r, u, d, fnum) values ('.$group.', '.implode(',', $ac).', '.$db->Quote($fnum).')';
-                        else
-                            $query = 'UPDATE #__emundus_group_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].'
-                                        WHERE group_id='.$group.' AND fnum like '.$db->Quote($fnum).' AND action_id='.$ac['id'];
-
-                        $db->setQuery($query);
-                        $db->execute();
-
-                    }
-                }
-            }
-            $query .= rtrim($value, ',');
-
-            $db->setQuery($query);
-            return $db->execute();
-        }
-        catch (Exception $e)
-        {
+	        $query->clear()
+		        ->insert($db->quoteName('#__emundus_group_assoc'))
+		        ->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+		        ->values($insert);
+	        $db->setQuery($query);
+	        $db->execute();
+        } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
 
@@ -1562,44 +1551,38 @@ if (JFactory::getUser()->id == 63)
      * @param $fnums
      * @return bool|string
      */
-    public function shareUsers($users, $actions, $fnums)
-    {
+    public function shareUsers($users, $actions, $fnums) {
         $error = null;
-        $query = null;
-        try
-        {
-            $db = $this->getDbo();
+        try {
 
-            foreach ($fnums as $fnum)
-            {
-                foreach($users as $user)
-                {
-                    foreach ($actions as $action)
-                    {
+        	$db = $this->getDbo();
+        	$insert = [];
+
+            foreach ($fnums as $fnum) {
+                foreach($users as $user) {
+                    foreach ($actions as $action) {
                         $ac = (array) $action;
-
-                        $query = 'SELECT count(id) FROM #__emundus_users_assoc
-                                    WHERE user_id='.$user.' AND action_id='.$ac['id'].' AND fnum like '.$db->Quote($fnum);
-                        $db->setQuery( $query );
-                        $cpt = $db->loadResult();
-
-                        if($cpt == 0)
-                            $query = 'INSERT INTO #__emundus_users_assoc (user_id, action_id, c, r, u, d, fnum) values ('.$user.', '.implode(',', $ac).', '.$db->Quote($fnum).')';
-                        else
-                            $query = 'UPDATE #__emundus_users_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].'
-                                        WHERE user_id='.$user.' AND fnum like '.$db->Quote($fnum).' AND action_id='.$ac['id'];
-
-                        $db->setQuery($query);
-                        $db->execute();
+	                    $insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
                     }
                 }
             }
-        }
-        catch (Exception $e)
-        {
+
+	        $query = $db->getQuery(true);
+	        $query->delete($db->quoteName('#__emundus_users_assoc'))
+                ->where($db->quoteName('user_id').' IN ('.implode($users).') AND '.$db->quoteName('fnum').' IN ('.implode($fnums).')');
+	        $db->setQuery($query);
+	        $db->execute();
+
+	        $query->clear()
+		        ->insert($db->quoteName('#__emundus_users_assoc'))
+		        ->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+                ->values($insert);
+	        $db->setQuery($query);
+	        $db->execute();
+
+        } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
-
             return false;
         }
 
