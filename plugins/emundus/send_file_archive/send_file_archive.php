@@ -29,21 +29,58 @@ class plgEmundusSend_file_archive extends JPlugin {
 	 */
 	function onBeforeDeleteFile($fnum) {
 
-		$user = JFactory::getUser();
-
-		if ($user->id != (int) substr($fnum, -7)) {
+		$email = $this->params->get('delete_email', 'delete_file');
+		if (empty($email)) {
 			return false;
 		}
+
+		if (JFactory::getUser()->id != (int) substr($fnum, -7)) {
+			return false;
+		}
+
+		return $this->sendEmailArchive($fnum, $email);
+	}
+
+
+	/**
+	 * When a file changes to a certain status, we need to generate a zip archive and send it to the user.
+	 *
+	 * @param $fnum
+	 *
+	 * @param $state
+	 *
+	 * @return bool
+	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
+	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
+	 * @throws \PhpOffice\PhpWord\Exception\Exception
+	 */
+	function onAfterStatusChange($fnum, $state) {
+
+		$email = $this->params->get('status_email');
+		if (empty($email)) {
+			return false;
+		}
+
+		$event_status = $this->params->get('event_status');
+		if (in_array($state, explode(',', $event_status))) {
+			return $this->sendEmailArchive($fnum, $email);
+		}
+		return false;
+	}
+
+	/**
+	 * @param $fnum
+	 * @param $email
+	 *
+	 * @return bool
+	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
+	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
+	 * @throws \PhpOffice\PhpWord\Exception\Exception
+	 */
+	private function sendEmailArchive($fnum, $email) {
 
 		if (!extension_loaded('zip')) {
 			JLog::add('Error: ZIP extension not loaded.', JLog::ERROR, 'com_emundus');
-			return false;
-		}
-
-		$email = $this->params->get('email');
-
-		if (empty($email)) {
-			JLog::add('Error: missing email lbl in plugin/emundus/send_file_archive.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -57,7 +94,6 @@ class plgEmundusSend_file_archive extends JPlugin {
 
 		$c_messages->sendEmail($fnum, $email, null, $file);
 		return true;
-
 	}
 
 }
