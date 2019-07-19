@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="2.5" method="upgrade" group="system">
+	<name>Emundus - Send ZIP of deleted file to user.</name>
+	<creationDate>19 July 2019</creationDate>
+	<version>6.9.10</version>
+	<author>eMundus</author>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>https://www.emundus.fr</authorUrl>
+	<copyright>(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin sends a ZIP of the file the user is deleting.</description>
+	<files>
+		<filename plugin="send_file_archive">send_file_archive.php</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="email" type="field" default="delete_file" label="Email to send" description="The ID or lbl of the email to be sent contaning the archive." />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

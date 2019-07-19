@@ -532,7 +532,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    $post = [
 			    'FNUM'           => $fnum['fnum'],
 			    'USER_NAME'      => $fnum['name'],
-			    'COURSE_LABEL'   => $programme['label'],
+			    'COURSE_LABEL'   => $programme->label,
 			    'CAMPAIGN_LABEL' => $fnum['label'],
 			    'SITE_URL'       => JURI::base(),
 			    'USER_EMAIL'     => $fnum['email']
@@ -566,7 +566,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        $toAttach = $attachments;
 	    } else {
 		    $toAttach[] = $attachments;
-
 	    }
 
 	    $message = $m_emails->setTagsFabrik($template->message, [$fnum['fnum']]);
