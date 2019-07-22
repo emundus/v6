@@ -2,7 +2,7 @@
 /**
  * @version     1.0.0
  * @package     com_emundus
- * @copyright   Copyright (C) 2015. Tous droits réservés.
+ * @copyright   Copyright (C) 2019. Tous droits réservés.
  * @license     GNU General Public License version 2 ou version ultérieure ; Voir LICENSE.txt
  * @author      emundus <dev@emundus.fr> - http://www.emundus.fr
  */
@@ -14,7 +14,9 @@ $user = JFactory::getUser();
 
 $doc->addStyleSheet('components/com_emundus/assets/css/item.css');
 $doc->addStyleSheet('components/com_emundus/assets/css/list.css');
-JHtml::stylesheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+//JHtml::stylesheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+
+$offset = JFactory::getConfig()->get('offset');
 
 $canEdit = $user->authorise('core.edit', 'com_emundus.' . $this->item->id);
 if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->id)) {
@@ -74,19 +76,19 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DATE_DEBUT'); ?></th>
-                <td><?php echo JHtml::_('date', $this->item->date_debut, JText::_('DATE_FORMAT_LC')); ?></td>
+                <td><?php echo JFactory::getDate(new JDate($this->item->date_debut, $offset))->format('d/m/Y'); ?></td>
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DATE_FIN'); ?></th>
-                <td><?php echo JHtml::_('date', $this->item->date_fin, JText::_('DATE_FORMAT_LC')); ?></td>
+                <td><?php echo JFactory::getDate(new JDate($this->item->date_fin, $offset))->format('d/m/Y'); ?></td>
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DATE_LIMITE'); ?></th>
-                <td><?php echo JHtml::_('date', $this->item->date_limite, JText::_('DATE_FORMAT_LC')); ?></td>
+                <td><?php echo JFactory::getDate(new JDate($this->item->date_limite, $offset))->format('d/m/Y'); ?></td>
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_RESPONSABLE_EMAIL'); ?></th>
-                <td><?php echo $this->item->responsable_email; ?></td>
+                <td><?php echo $this->item->adresse_correspondance; ?></td>
             </tr>
 
 
