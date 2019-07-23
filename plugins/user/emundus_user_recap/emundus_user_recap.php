@@ -25,6 +25,8 @@ class plgUserEmundus_user_recap extends JPlugin {
 	public function __construct(&$subject, $config = array()) {
 		parent::__construct($subject, $config);
 
+		$this->loadLanguage();
+
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.EmundusUserRecap.php'), JLog::ALL, array('com_emundus'));
 	}
