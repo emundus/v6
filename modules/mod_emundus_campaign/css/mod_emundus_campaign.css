@@ -13,7 +13,7 @@
     border-radius:0;
 }
 .navsearch label {
-    margin: 0;
+    margin: 0 !important;
 }
 #navfilter .navsearch .navsearch-content .input-group-btn button {
     margin-left: -5px !important;

@@ -31,7 +31,7 @@ a.btn{
 }
 a.btn:hover{
   background-color: transparent !important;
-  color: #29d4ff !important;
+  color: $base-primary-color !important;
   outline: none;
 }
 *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
@@ -74,6 +74,18 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
 .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
   background-color: transparent !important;
   color: $base-secondary-color !important;
+  outline: none;
+}
+.span4.offset1 > .btn-group > button.button {
+  background: $base-primary-color;
+  background-color: $base-primary-color !important;
+  border: 1px solid $base-primary-color !important;
+  border-radius: 0 !important;
+
+}
+.span4.offset1 > .btn-group > button.button:hover {
+  background-color: transparent !important;
+  color: $base-primary-color !important;
   outline: none;
 }
 .trombi_download{
@@ -936,11 +948,6 @@ body.error-page p {
   margin: 0 !important;
 }
 /* FOOTER */
-
-footer#g-footer {
-  background: transparent;
-  border-top: 1px solid #bbb;
-}
 
 #g-footer .platform-content {
   margin: 0;
