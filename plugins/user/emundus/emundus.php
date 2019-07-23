@@ -21,18 +21,19 @@ jimport('joomla.plugin.plugin');
  */
 class plgUserEmundus extends JPlugin
 {
-    /**
-     * Remove all sessions for the user name
-     *
-     * Method is called after user data is deleted from the database
-     *
-     * @param   array       $user   Holds the user data
-     * @param   boolean     $succes True if user was succesfully stored in the database
-     * @param   string      $msg    Message
-     *
-     * @return  boolean
-     * @since   1.6
-     */
+	/**
+	 * Remove all sessions for the user name
+	 *
+	 * Method is called after user data is deleted from the database
+	 *
+	 * @param   array    $user    Holds the user data
+	 * @param   boolean  $succes  True if user was succesfully stored in the database
+	 * @param   string   $msg     Message
+	 *
+	 * @return  boolean
+	 * @throws Exception
+	 * @since   1.6
+	 */
     public function onUserAfterDelete($user, $succes, $msg) {
         if (!$succes) {
 	        return false;

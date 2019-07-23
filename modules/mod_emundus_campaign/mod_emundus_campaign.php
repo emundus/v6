@@ -85,6 +85,12 @@ switch ($ordertime) {
 
 $helper = new modEmundusCampaignHelper;
 
+if ($params->get('mod_em_campaign_layout') == "institut_fr") {
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
+    $m_progs = new EmundusModelProgramme;
+    $programs = $m_progs->getProgrammes(1);
+}
+
 $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
 $futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);

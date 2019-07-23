@@ -1510,44 +1510,33 @@ if (JFactory::getUser()->id == 63)
      * @param $fnums
      * @return bool|mixed
      */
-    public function shareGroups($groups, $actions, $fnums)
-    {
-        try
-        {
+    public function shareGroups($groups, $actions, $fnums) {
+        try {
             $db = $this->getDbo();
+            $insert = [];
 
-            foreach ($fnums as $fnum)
-            {
-                foreach ($actions as $action)
-                {
-                    foreach($groups as $group)
-                    {
-                        $ac = (array) $action;
+	        foreach ($fnums as $fnum) {
+		        foreach($groups as $group) {
+			        foreach ($actions as $action) {
+				        $ac = (array) $action;
+				        $insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+			        }
+		        }
+	        }
 
-                        $query = 'SELECT count(id) FROM #__emundus_group_assoc
-                                    WHERE group_id='.$group.' AND action_id='.$ac['id'].' AND fnum like '.$db->Quote($fnum);
-                        $db->setQuery( $query );
-                        $cpt = $db->loadResult();
+	        $query = $db->getQuery(true);
+	        $query->delete($db->quoteName('#__emundus_group_assoc'))
+		        ->where($db->quoteName('group_id').' IN ('.implode($groups).') AND '.$db->quoteName('fnum').' IN ('.implode($fnums).')');
+	        $db->setQuery($query);
+	        $db->execute();
 
-                        if ($cpt == 0)
-                            $query = 'INSERT INTO #__emundus_group_assoc (group_id, action_id, c, r, u, d, fnum) values ('.$group.', '.implode(',', $ac).', '.$db->Quote($fnum).')';
-                        else
-                            $query = 'UPDATE #__emundus_group_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].'
-                                        WHERE group_id='.$group.' AND fnum like '.$db->Quote($fnum).' AND action_id='.$ac['id'];
-
-                        $db->setQuery($query);
-                        $db->execute();
-
-                    }
-                }
-            }
-            $query .= rtrim($value, ',');
-
-            $db->setQuery($query);
-            return $db->execute();
-        }
-        catch (Exception $e)
-        {
+	        $query->clear()
+		        ->insert($db->quoteName('#__emundus_group_assoc'))
+		        ->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+		        ->values($insert);
+	        $db->setQuery($query);
+	        $db->execute();
+        } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
 
@@ -1562,44 +1551,38 @@ if (JFactory::getUser()->id == 63)
      * @param $fnums
      * @return bool|string
      */
-    public function shareUsers($users, $actions, $fnums)
-    {
+    public function shareUsers($users, $actions, $fnums) {
         $error = null;
-        $query = null;
-        try
-        {
-            $db = $this->getDbo();
+        try {
 
-            foreach ($fnums as $fnum)
-            {
-                foreach($users as $user)
-                {
-                    foreach ($actions as $action)
-                    {
+        	$db = $this->getDbo();
+        	$insert = [];
+
+            foreach ($fnums as $fnum) {
+                foreach($users as $user) {
+                    foreach ($actions as $action) {
                         $ac = (array) $action;
-
-                        $query = 'SELECT count(id) FROM #__emundus_users_assoc
-                                    WHERE user_id='.$user.' AND action_id='.$ac['id'].' AND fnum like '.$db->Quote($fnum);
-                        $db->setQuery( $query );
-                        $cpt = $db->loadResult();
-
-                        if($cpt == 0)
-                            $query = 'INSERT INTO #__emundus_users_assoc (user_id, action_id, c, r, u, d, fnum) values ('.$user.', '.implode(',', $ac).', '.$db->Quote($fnum).')';
-                        else
-                            $query = 'UPDATE #__emundus_users_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].'
-                                        WHERE user_id='.$user.' AND fnum like '.$db->Quote($fnum).' AND action_id='.$ac['id'];
-
-                        $db->setQuery($query);
-                        $db->execute();
+	                    $insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
                     }
                 }
             }
-        }
-        catch (Exception $e)
-        {
+
+	        $query = $db->getQuery(true);
+	        $query->delete($db->quoteName('#__emundus_users_assoc'))
+                ->where($db->quoteName('user_id').' IN ('.implode($users).') AND '.$db->quoteName('fnum').' IN ('.implode($fnums).')');
+	        $db->setQuery($query);
+	        $db->execute();
+
+	        $query->clear()
+		        ->insert($db->quoteName('#__emundus_users_assoc'))
+		        ->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+                ->values($insert);
+	        $db->setQuery($query);
+	        $db->execute();
+
+        } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
-
             return false;
         }
 
@@ -1769,13 +1752,11 @@ if (JFactory::getUser()->id == 63)
         $query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where ';
         $user = JFactory::getUser()->id;
         
-        if (is_null($tag))
-        {
+        if (is_null($tag)) {
             $query .= ' t.user_id = ' . $user;
             try {
                 $db->setQuery($query);
                 return $db->loadAssocList('fnum');
-
             } catch (Exception $e) {
                 throw $e;
             }
@@ -1796,7 +1777,6 @@ if (JFactory::getUser()->id == 63)
                 throw $e;
             }
         }
-
     }
 
     /**
@@ -1807,6 +1787,9 @@ if (JFactory::getUser()->id == 63)
     public function updateState($fnums, $state) {
 
 	    $db = $this->getDbo();
+
+	    JPluginHelper::importPlugin('emundus');
+	    $dispatcher = JEventDispatcher::getInstance();
 
 	    $query = $db->getQuery(true);
 	    $query->select($db->quoteName('profile'))
@@ -1824,9 +1807,12 @@ if (JFactory::getUser()->id == 63)
     	try {
 		    if (is_array($fnums)) {
 			    foreach ($fnums as $fnum) {
+
+				    $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
 				    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
 				    $db->setQuery($query);
 				    $res = $db->execute();
+				    $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
 
 				    if (!empty($profile)) {
 
@@ -1841,9 +1827,11 @@ if (JFactory::getUser()->id == 63)
 			    }
 		    }
 		    else {
+			    $dispatcher->trigger('onBeforeStatusChange', [$fnums, $state]);
 			    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnums) ;
 			    $db->setQuery($query);
--			    $res = $db->execute();
+			    $res = $db->execute();
+			    $dispatcher->trigger('onAfterStatusChange', [$fnums, $state]);
 
 			    if (!empty($profile)) {
 				    $query = $db->getQuery(true);
@@ -1865,35 +1853,45 @@ if (JFactory::getUser()->id == 63)
 
     	}
     }
+
+
     /**
      * @param $fnums
      * @param $publish
      * @return bool|mixed
      */
     public function updatePublish($fnums, $publish) {
-        try {
-            $db = $this->getDbo();
-            foreach ($fnums as $fnum) {
-                // Log the update.
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
-                $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
-                $db->setQuery($query);
-                $res = $db->execute();
-            }
-            return $res;
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
 
+	    JPluginHelper::importPlugin('emundus');
+	    $dispatcher = JEventDispatcher::getInstance();
+
+        $db = $this->getDbo();
+        foreach ($fnums as $fnum) {
+
+            // Log the update.
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
+
+            $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
+            $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
+            $db->setQuery($query);
+            try {
+                $res = $db->execute();
+            } catch (Exception $e) {
+	            echo $e->getMessage();
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+	            return false;
+            }
+            $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
+        }
+        return $res;
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function getPhotos($fnums = array())
-    {
+	/**
+	 * @param   array  $fnums
+	 *
+	 * @return mixed|null
+	 */
+    public function getPhotos($fnums = array()) {
         try {
             $db = $this->getDbo();
             $query = 'select emu.id, emu.user_id, c.fnum, emu.filename
@@ -1917,21 +1915,17 @@ if (JFactory::getUser()->id == 63)
     /**
      * @return mixed|null
      */
-    public function getEvaluatorsFromGroup()
-    {
-        try
-        {
+    public function getEvaluatorsFromGroup() {
+        try {
             $db = $this->getDbo();
             $query = 'select distinct ga.fnum, u.name, g.title, g.id  from #__emundus_group_assoc  as ga
-left join #__user_usergroup_map as uum on uum.group_id = ga.group_id
-left join #__users as u on u.id = uum.user_id
-left join #__usergroups as g on g.id = ga.group_id
-where 1 order by ga.fnum asc, g.title';
+						left join #__user_usergroup_map as uum on uum.group_id = ga.group_id
+						left join #__users as u on u.id = uum.user_id
+						left join #__usergroups as g on g.id = ga.group_id
+						where 1 order by ga.fnum asc, g.title';
             $db->setQuery($query);
             return $db->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return null;
@@ -2309,13 +2303,14 @@ where 1 order by ga.fnum asc, g.title';
         $query .= $leftJoin. ' '. $leftJoinMulti;
 
         $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
-
-        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id)) {
+		
+        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty(JFactory::getSession()->get('emundusUser')->fnums) && !empty(array_diff($fnums, array_keys(JFactory::getSession()->get('emundusUser')->fnums))))) {
             $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
         }
 
-        if ($pas !=0 )
-            $query .= ' LIMIT ' . $pas . ' OFFSET ' . $start;
+        if ($pas !=0 ) {
+	        $query .= ' LIMIT '.$pas.' OFFSET '.$start;
+        }
 
 /*echo str_replace("#_", "jos", $query);
 die();*/
@@ -2736,11 +2731,9 @@ die();*/
      * @param $fnums
      * @return Exception|mixed|Exception
      */
-    public function getProgByFnums($fnums)
-    {
+    public function getProgByFnums($fnums) {
         $dbo = $this->getDbo();
-        try
-        {
+        try {
             $query = 'select  jesp.code, jesp.label  from #__emundus_campaign_candidature as jecc
                         left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                         left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
@@ -2748,9 +2741,7 @@ die();*/
                         where jecc.fnum in ("'.implode('","', $fnums).'") and jeslrt.parent_id IS NOT NULL  group by jesp.code order by jesp.code';
             $dbo->setQuery($query);
             return $dbo->loadAssocList('code', 'label');
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             return $e;
         }
     }
@@ -2759,19 +2750,15 @@ die();*/
      * @param $code
      * @return Exception|mixed|Exception
      */
-    public function getDocsByProg($code)
-    {
+    public function getDocsByProg($code) {
         $dbo = $this->getDbo();
-        try
-        {
+        try {
             $query = 'select jesl.title, jesl.template_type, jesl.id as file_id from jos_emundus_setup_letters as jesl
                         left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
                         where jeslrt.training = '.$dbo->quote($code);
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             return $e;
         }
     }
@@ -2780,8 +2767,7 @@ die();*/
      * @param $id
      * @return mixed
      */
-    public function getAttachmentInfos($id)
-    {
+    public function getAttachmentInfos($id) {
         $dbo = $this->getDbo();
         $query = "select * from jos_emundus_setup_attachments where id = {$id}";
         $dbo->setQuery($query);
@@ -2797,8 +2783,7 @@ die();*/
      * @param $desc
      * @return int
      */
-    public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0)
-    {
+    public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0) {
         $dbo = $this->getDbo();
         $query = "insert into jos_emundus_uploads (user_id, fnum, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) values ({$uid}, {$dbo->quote($fnum)}, {$attachment_id}, {$dbo->quote($name)}, {$dbo->quote($desc)}, 0, {$canSee}, {$cid})";
         $dbo->setQuery($query);
@@ -2811,8 +2796,7 @@ die();*/
      * @param $fnums
      * @return mixed
      */
-    public function checkFnumsDoc($code, $fnums)
-    {
+    public function checkFnumsDoc($code, $fnums) {
         $dbo = $this->getDbo();
         $query = "select distinct (jecc.fnum) from jos_emundus_campaign_candidature as jecc
                     left join jos_emundus_setup_letters_repeat_status as jeslrs on jeslrs.status = jecc.status
@@ -2828,31 +2812,23 @@ die();*/
      * @return mixed
      * @throws Exception
      */
-    public function getAttachmentsById($ids)
-    {
+    public function getAttachmentsById($ids) {
         $dbo = $this->getDbo();
         $query = 'select * from jos_emundus_uploads where id in ("'.implode('","', $ids).'")';
-        try
-        {
+        try {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
-    public function getSetupAttachmentsById($ids)
-    {
+    public function getSetupAttachmentsById($ids) {
         $dbo = $this->getDbo();
         $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';
-        try
-        {
+        try {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -2864,8 +2840,9 @@ die();*/
      */
     public function getValueFabrikByIds($idFabrik) {
 
-    	if (empty($idFabrik))
-    		return [];
+    	if (empty($idFabrik)) {
+		    return [];
+	    }
 
         $dbo = $this->getDbo();
         $select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
@@ -2876,14 +2853,10 @@ die();*/
                     left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
                     LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
                     where jfe.id in (".implode(',', $idFabrik).")";
-        try
-        {
+        try {
             $dbo->setQuery($select);
-//echo str_replace("#", "jos", $query);
             return $dbo->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -2894,11 +2867,8 @@ die();*/
      * @param string $str
      * @return string[]
      */
-    public function getVariables($str)
-    {
+    public function getVariables($str) {
         preg_match_all('/\$\{(.*?)}/i', $str, $matches);
-        //preg_match_all( '#\{(\w+)}#', $str, $matches);
-
         return $matches[1];
     }
 
@@ -2922,20 +2892,20 @@ die();*/
         $date_format = str_replace('I', '%I', $date_format);
         $date_format = str_replace('i', '%i', $date_format);
         $date_format = str_replace('S', '%S', $date_format);
-        $date_format = str_replace('s', '%s', $date_format);
-
-        return $date_format;
+        return str_replace('s', '%s', $date_format);
     }
 
-    /**
-     * @param $elt
-     * @param null $fnums
-     * @param $params
-     * @param $groupRepeat
-     * @return mixed
-     */
-    public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat)
-    {
+
+	/**
+	 * @param         $elt
+	 * @param   null  $fnums
+	 * @param         $params
+	 * @param         $groupRepeat
+	 *
+	 * @return mixed
+	 * @throws Exception
+	 */
+    public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat) {
 
         if (!is_array($fnums))
             $fnums = [$fnums];
@@ -2951,95 +2921,64 @@ die();*/
         $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
         $dbo = $this->getDbo();
 
-        if($plugin === 'date')
-        {
+        if ($plugin === 'date') {
             $date_form_format = $this->dateFormatToMysql($params->date_form_format);
             $query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name.', '.$dbo->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
-        }
-        elseif($isDatabaseJoin)
-        {
-            if($groupRepeat)
-            {
+        } elseif ($isDatabaseJoin) {
+            if ($groupRepeat) {
                 $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
-            }
-            else
-            {
-                if($isMulti)
-                {
+            } else {
+                if ($isMulti) {
                     $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
-                }
-                else
-                {
+                } else {
                     $query = 'select t_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
                 }
             }
-        }
-        else
-        {
+        } else {
             $query = 'SELECT  GROUP_CONCAT(t_repeat.' . $name.'  SEPARATOR ", ") as val, t_origin.fnum ';
         }
 
-        if($isDatabaseJoin)
-        {
-            if($groupRepeat)
-            {
+        if ($isDatabaseJoin) {
+            if ($groupRepeat) {
                 $tableName2 = $tableJoin;
-                if($isMulti)
-                {
+                if ($isMulti) {
                     $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.'_repeat_'.$name .' as t_repeat on t_repeat.' . $name . " = t_origin.".$params->join_key_column . ' left join ' . $tableName2 . ' as t_elt on t_elt.id = t_repeat.parent_id left join '.$tableName.' as t_table on t_table.id = t_elt.parent_id ';
-                }
-                else
-                {
+                } else {
                     $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName2.' as t_elt on t_elt.' . $name . " = t_origin.".$params->join_key_column." left join $tableName as t_table on t_table.id = t_elt.parent_id ";
                 }
-            }
-            else
-            {
-                if($isMulti)
-                {
+            } else {
+                if ($isMulti) {
                     $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.'_repeat_'.$name .' as t_repeat on t_repeat.' . $name . " = t_origin.".$params->join_key_column . ' left join ' . $tableName . ' as t_elt on t_elt.id = t_repeat.parent_id ';
-                }
-                else
-                {
+                } else {
                     $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.' as t_elt on t_elt.' . $name . " = t_origin.".$params->join_key_column;
                 }
             }
 
-        }
-        else
-        {
+        } else {
             $query .= ' FROM ' . $tableJoin . ' as t_repeat  left join '.$tableName.' as t_origin on t_origin.id = t_repeat.parent_id';
         }
 
-        if($isMulti || $isDatabaseJoin)
-        {
-            if($groupRepeat)
-            {
+        if ($isMulti || $isDatabaseJoin) {
+            if ($groupRepeat) {
                 $query .= ' where t_table.fnum in ("'.implode('","', $fnums).'") group by t_table.fnum';
-            }
-            else
-            {
+            } else {
                 $query .= ' where t_elt.fnum in ("'.implode('","', $fnums).'") group by t_elt.fnum';
             }
-        }
-        else
-        {
+        } else {
             $query .= ' where t_origin.fnum in ("'.implode('","', $fnums).'") group by t_origin.fnum';
         }
 
-        try
-        {
+        try{
             $dbo->setQuery($query);
 
-            if(!$isFnumsNull)
+            if (!$isFnumsNull) {
                 $res = $dbo->loadAssocList('fnum');
-            else
+            } else {
                 $res = $dbo->loadAssocList();
+            }
 
             return $res;
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             var_dump($query);
             throw $e;
         }
@@ -3052,29 +2991,23 @@ die();*/
      * @return mixed
      * @throws Exception
      */
-    public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null)
-    {
+    public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null) {
 
         if (!is_array($fnums))
             $fnums = [$fnums];
 
         $dbo = $this->getDbo();
-        if($dateFormat !== null)
-        {
+        if ($dateFormat !== null) {
             $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
-        }
-        else
-        {
+        } else {
             $query = "select fnum, {$name} as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
-        try
-        {
+
+        try {
             $dbo->setQuery($query);
             return $dbo->loadAssocList('fnum');
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -3091,14 +3024,22 @@ die();*/
      * @return bool|mixed
      */
     public function deleteFile($fnum) {
+
+	    JPluginHelper::importPlugin('emundus');
+	    $dispatcher = JEventDispatcher::getInstance();
+
+        $db = JFactory::getDbo();
+        $query = 'DELETE FROM #__emundus_campaign_candidature
+                    WHERE fnum like '.$db->Quote($fnum);
+
         try {
-            $db = JFactory::getDbo();
 
-            $query = 'DELETE FROM #__emundus_campaign_candidature
-                        WHERE fnum like '.$db->Quote($fnum);
+            $dispatcher->trigger('onBeforeDeleteFile', $fnum);
+	        $db->setQuery($query);
+	        $res = $db->query();
+	        $dispatcher->trigger('onAfterDeleteFile', $fnum);
 
-            $db->setQuery($query);
-            return $db->query();
+            return $res;
         } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
