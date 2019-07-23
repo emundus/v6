@@ -29,7 +29,7 @@ class plgEmundusSend_file_archive extends JPlugin {
 	 */
 	function onBeforeDeleteFile($fnum) {
 
-		$email = $this->params->get('delete_email', 'delete_file');
+		$email = $this->params->get('delete_email');
 		if (empty($email)) {
 			return false;
 		}
@@ -84,12 +84,12 @@ class plgEmundusSend_file_archive extends JPlugin {
 			return false;
 		}
 
-		require_once(JPATH_COMPONENT.DS.'controllers'.DS.'files.php');
-		require_once(JPATH_COMPONENT.DS.'controllers'.DS.'messages.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'files.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 		$c_files = new EmundusControllerFiles();
 		$c_messages = new EmundusControllerMessages();
 
-		$zip_name = $c_files->export_zip([$fnum]);
+		$zip_name = $c_files->export_zip([$fnum], 1, 1, 1, 1, 1, null, null, null, true);
 		$file = JPATH_BASE.DS.'tmp'.DS.$zip_name;
 
 		$c_messages->sendEmail($fnum, $email, null, $file);

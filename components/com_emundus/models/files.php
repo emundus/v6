@@ -2303,13 +2303,14 @@ if (JFactory::getUser()->id == 63)
         $query .= $leftJoin. ' '. $leftJoinMulti;
 
         $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
-
-        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id)) {
+		
+        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty(JFactory::getSession()->get('emundusUser')->fnums) && !empty(array_diff($fnums, array_keys(JFactory::getSession()->get('emundusUser')->fnums))))) {
             $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
         }
 
-        if ($pas !=0 )
-            $query .= ' LIMIT ' . $pas . ' OFFSET ' . $start;
+        if ($pas !=0 ) {
+	        $query .= ' LIMIT '.$pas.' OFFSET '.$start;
+        }
 
 /*echo str_replace("#_", "jos", $query);
 die();*/
@@ -3030,11 +3031,12 @@ die();*/
         $db = JFactory::getDbo();
         $query = 'DELETE FROM #__emundus_campaign_candidature
                     WHERE fnum like '.$db->Quote($fnum);
-	    $db->setQuery($query);
+
         try {
 
             $dispatcher->trigger('onBeforeDeleteFile', $fnum);
-            $res = $db->query();
+	        $db->setQuery($query);
+	        $res = $db->query();
 	        $dispatcher->trigger('onAfterDeleteFile', $fnum);
 
             return $res;
