@@ -60,7 +60,7 @@ $site_offset = $config->get('offset');
                                 </a>
                             </h4>
                             <div class = "em-disciplines">
-                                <?php echo '<div class = "em-discipline badge">'.implode('</div><div class = "em-discipline badge">', $helper->getCampaignDiscipline($result->id)).'</div>';?>
+                                <?php echo '<div class = "em-discipline label">'.implode('</div><div class = "em-discipline label">', $helper->getCampaignDiscipline($result->id)).'</div>';?>
                             </div>
                             <p>
                                 <?php echo $result->short_description;?>
@@ -94,8 +94,7 @@ $site_offset = $config->get('offset');
                                     <br/>
                                 <?php endif; ?>
                             </div>
-                        </div>
-                        <div class="below-content">
+                            <div class="below-content">
                             <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$result->code.'&cid='.$result->id); ?>
 
                             <?php if ($result->apply_online == 1) :?>
@@ -121,6 +120,8 @@ $site_offset = $config->get('offset');
                                 <?php endif; ?>
                             <?php endif; ?>
                         </div>
+                        </div>
+                        
                     </div>
                 <?php endforeach ;?>
             <?php endif;?>
