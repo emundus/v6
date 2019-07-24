@@ -1,4 +1,5 @@
 /*boutons*/
+
 .em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
     border-radius: 0 !important;
     padding: 6px 8px;
@@ -11,6 +12,9 @@
     text-transform: initial!important ;
     font-weight: 400;
     letter-spacing: normal!important;
+}
+.em-containerFilter-heading div.buttons{
+    display:flex;
 }
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
     background-color: #29d4ff !important;
@@ -714,7 +718,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau input#clear-search {
-    margin-right:6px!important;
+    margin-right:8px!important;
 }
 
 .g-back-office-emundus-tableau .col-md-3.side-panel {

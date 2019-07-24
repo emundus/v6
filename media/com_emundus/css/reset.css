@@ -299,3 +299,10 @@ legend {
 .row-striped .row-fluid {
     width: 100%;
 }
+[class^="icon-"], [class*=" icon-"] {
+    margin-right:0;
+}
+​
+#g-page-surround {
+    min-height: auto;
+}

@@ -216,12 +216,6 @@ button#back:hover, button#back:active, button#back:focus,
     padding: 0;
 }
 
-#g-sidebar .platform-content li {
-    transition: all 0.4s ease-in-out;
-    padding: 6px 4px !important;
-}
-
-
 #g-sidebar .platform-content li:hover, #g-sidebar .platform-content li.active {
     background: #f2f2f2 !important;
 }
@@ -404,7 +398,12 @@ button#back:hover, button#back:active, button#back:focus,
     margin-right: 10px;
 
 }
-.fabrikLabel[opts*="Validation"]::after, body.view-login label#password-lbl::after, body.view-login label#username-lbl::after, body.view-reset label#jform_email-lbl::after, body.view-reset label#jform_username-lbl::after {
+.fabrikLabel[opts*="Validation"]::after,
+body.view-login label#password-lbl::after,
+body.view-login label#username-lbl::after,
+body.view-reset label#jform_email-lbl::after,
+body.view-reset label#jform_username-lbl::after,
+.control-label .required::after {
     content: "∗";
     color: red;
     padding-left: 5px;
