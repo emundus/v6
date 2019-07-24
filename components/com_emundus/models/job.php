@@ -254,12 +254,13 @@ class EmundusModelJob extends JModelItem {
         $query = "SELECT * FROM #__emundus_emploi_etudiant WHERE id=$job_id";
         $db->setQuery($query);
         $job = $db->loadObject();
+
         if($job->campaign_id>0 && $job->state==1 && $job->published==1 && $job->valide_comite==1) {
             // 1. Check if a fnum exist without job
             $query = "SELECT ecc.fnum 
                         FROM #__emundus_campaign_candidature as ecc
                         LEFT JOIN #__emundus_emploi_etudiant_candidat as eeec on eeec.fnum = ecc.fnum
-                        WHERE ecc.applicant_id=".$user_id." AND eeec.id is null
+                        WHERE ecc.applicant_id=".$user_id." AND eeec.id is null AND ecc.campaign_id IN (select id from #__emundus_setup_campaigns where training like 'utc-dfp-dri')
                         order by ecc.date_time DESC";
             $db->setQuery($query);
             $fnum = $db->loadResult();
@@ -275,7 +276,7 @@ class EmundusModelJob extends JModelItem {
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
-                
+               
                 } catch(Exception $e) {
                     return false;
                 }
@@ -302,7 +303,7 @@ class EmundusModelJob extends JModelItem {
                     $query = "INSERT INTO #__emundus_emploi_etudiant_candidat ($column) VALUES($values)";
                 } else {
                     $query = "INSERT INTO #__emundus_emploi_etudiant_candidat (`date_time` ,`user` ,`fnum` ,`etablissement` ,`fiche_emploi`)
-                          VALUES('NOW(), $user->id, '$fnum', $job->etablissement, $job_id)";
+                          VALUES(NOW(), $user->id, '$fnum', $job->etablissement, $job_id)";
                 }
 
                 $db->setQuery($query);
