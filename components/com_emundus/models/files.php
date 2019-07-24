@@ -2614,17 +2614,7 @@ die();*/
      * @param $fnums
      * @return array|bool
      */
-    public function getAccessorByFnums($fnums)
-    {
-        /*$query = "SELECT jecc.fnum, concat('<span class=\'label label-default\' >', group_concat(jesg.label SEPARATOR '</span><span class=\'label label-default\' >'), '</span>') as gname FROM #__emundus_campaign_candidature as jecc
-                  LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-                  LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
-                  LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
-                  LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
-                  LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
-                  WHERE jea.action_id = 1 and jea.r = 1 and jecc.fnum in ('".implode("','", $fnums)."')
-                  GROUP BY jecc.fnum";*/
-
+    public function getAccessorByFnums($fnums) {
         $query = "SELECT jecc.fnum, jesg.label, jesg.class FROM #__emundus_campaign_candidature as jecc
                   LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                   LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
@@ -2633,22 +2623,16 @@ die();*/
                   LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
                   WHERE jea.action_id = 1 and jea.r = 1 and jecc.fnum in ('".implode("','", $fnums)."')
                   GROUP BY jecc.fnum";
-        try
-        {
+        try {
             $db = $this->getDbo();
             $db->setQuery($query);
             $res = $db->loadAssocList();
             $access = array();
-            foreach($res as $r)
-            {
+            foreach ($res as $r) {
                 $assocTagcampaign = '<span class="label '.$r['class'].'">'.$r['label'].'</span>';
-                //$access[$r['fnum']] = $r['gname'];
                 $access[$r['fnum']] = $assocTagcampaign;
             }
-            /*$query = "SELECT jega.fnum, concat('<span class=\'label label-default\' >', group_concat(jesg.label SEPARATOR '</span><span class=\'label label-default\' >'), '</span>') as gname FROM #__emundus_group_assoc as jega
-                      LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
-                      where jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')
-                      GROUP BY jega.fnum";*/
+
             $query = "SELECT jega.fnum, jesg.label, jesg.class FROM #__emundus_group_assoc as jega
                       LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
                       where jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')
@@ -2657,43 +2641,34 @@ die();*/
             $db->setQuery($query);
             $res = $db->loadAssocList('fnum');
 
-            foreach($res as $r)
-            {
+            foreach ($res as $r) {
                 $assocTaggroup = '<span class="label '.$r['class'].'">'.$r['label'].'</span>';
-                if(isset($access[$r['fnum']]))
-                {
-                    //$access[$r['fnum']] = ''.$r['gname'];
+                if (isset($access[$r['fnum']])) {
                     $access[$r['fnum']] .= ''.$assocTaggroup;
-                }
-                else
-                {
-                    //$access[$r['fnum']] = $r['gname'];
+                } else {
                     $access[$r['fnum']] .= $assocTaggroup;
                 }
             }
 
-            $query = "SELECT jeua.fnum, concat('<span class=\'label label-default\' ><span class=\'glyphicon glyphicon-user\'></span> ', group_concat(ju.name SEPARATOR '</span><span class=\'label label-default\'><span class=\'glyphicon glyphicon-user\'></span> '), '</span>') as uname FROM #__emundus_users_assoc as jeua
-  LEFT JOIN #__users as ju on ju.id = jeua.user_id
-  where jeua.action_id = 1 and jeua.r = 1  and jeua.fnum in ('".implode("','", $fnums)."')
-  GROUP BY jeua.fnum";
+            $query = $db->getQuery(true);
+            $query->select([$db->quoteName('jeua.fnum'), $db->quoteName('ju.name', 'uname'), $db->quoteName('jesp.class')])
+	                ->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
+	                ->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
+	                ->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
+	                ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
+	                ->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
             $db = $this->getDbo();
             $db->setQuery($query);
             $res = $db->loadAssocList('fnum');
-            foreach($res as $r)
-            {
-                if(isset($access[$r['fnum']]))
-                {
-                    $access[$r['fnum']] .= ''.$r['uname'];
-                }
-                else
-                {
-                    $access[$r['fnum']] = $r['uname'];
+            foreach ($res as $r) {
+                if (isset($access[$r['fnum']])) {
+                    $access[$r['fnum']] .= '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
+                } else {
+	                $access[$r['fnum']] = '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
                 }
             }
             return $access;
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.email');
             return false;
         }
