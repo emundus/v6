@@ -18,7 +18,7 @@ if (!version_compare(PHP_VERSION, '5.6.0', '>='))
 
 JLoader::import('joomla.application.plugin');
 
-class plgSystemAdmintoolsactionlog extends JPlugin
+class plgAconlogAdmintools extends JPlugin
 {
 	/** @var Container */
 	private $container;
@@ -33,19 +33,6 @@ class plgSystemAdmintoolsactionlog extends JPlugin
 	 */
 	public function __construct(& $subject, $config)
 	{
-		/**
-		 * I know that this piece of code cannot possibly be executed since I have already returned BEFORE declaring
-		 * the class when eAccelerator is detected. However, eAccelerator is a GINORMOUS, STINKY PILE OF BULL CRAP. The
-		 * stupid thing will return above BUT it will also declare the class EVEN THOUGH according to how PHP works
-		 * this part of the code should be unreachable o_O Therefore I have to define this constant and exit the
-		 * constructor when we have already determined that this class MUST NOT be defined. Because screw you
-		 * eAccelerator, that's why.
-		 */
-		if (defined('AKEEBA_EACCELERATOR_IS_SO_BORKED_IT_DOES_NOT_EVEN_RETURN'))
-		{
-			return;
-		}
-
 		// Make sure Akeeba Backup is installed
 		if (!file_exists(JPATH_ADMINISTRATOR . '/components/com_admintools'))
 		{

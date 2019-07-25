@@ -26,9 +26,6 @@ $document->addScript(JURI::root().'media/system/js/core.js');
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
@@ -111,6 +108,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/controlcen
 			<?php } ?>
 		</div>
 </div>
+
+<?php 
+// Cargamos el contenido común...
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/end.php';
+?>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="view" value="controlcenter" />

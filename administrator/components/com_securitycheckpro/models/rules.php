@@ -101,12 +101,6 @@ function load()
 		$db->setQuery($query_rules);
 		$element_exists = $db->loadObjectList();
 		
-		// Al grupo 'Super Users' nunca se le deberían aplicar las reglas.
-		if ($title == 'Super Users')
-		{
-			$rules_applied = 0;
-		}
-		
 		// Si no existe, lo añadimos
 		if (empty($element_exists))
 		{

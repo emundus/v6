@@ -44,7 +44,7 @@ function display($tpl = null)
 		$last_update = $model->get_last_update();	
 	} else 
 	{
-		$last_update = 'Mar 11 2019';
+		$last_update = 'May 13 2019';
 	}
 
 	// Filtro por tipo de extensión

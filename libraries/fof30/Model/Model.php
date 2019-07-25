@@ -371,7 +371,7 @@ class Model
 	/**
 	 * Clones the model object and returns the clone
 	 *
-	 * @return  $this for chaining
+	 * @return  static
 	 */
 	public function getClone()
 	{
@@ -480,7 +480,7 @@ class Model
 	 *
 	 * @param boolean $ignoreRequest
 	 *
-	 * @return  $this  for chaining
+	 * @return  static
 	 */
 	public function setIgnoreRequest($ignoreRequest)
 	{
@@ -505,7 +505,7 @@ class Model
 	 * original object. The new object is set up to not save its stats, ignore the request when getting state variables
 	 * and comes with an empty state.
 	 *
-	 * @return  $this
+	 * @return  static
 	 */
 	public function tmpInstance()
 	{

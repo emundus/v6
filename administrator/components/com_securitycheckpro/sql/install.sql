@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `#__securitycheckpro`;
+
 DROP TABLE IF EXISTS `#__securitycheckpro`;
 CREATE TABLE `#__securitycheckpro` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -483,7 +483,15 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_easyshop','component','1.2.3','==','3.0.0','>=','EasyShop Component','Local file inclusion vulnerability','Feb 04 2019','Version 1.2.3','update','1.2.4'),
 ('Joomla!','core','3.9.2','<=','3.0.0','>=','Joomla! multiple vulnerabilities','6 low vulnerabilities','Feb 12 2019','Joomla 2.5.0 through 3.9.2','update','3.9.3'),
 ('com_edocman','component','1.11.7','==','3.0.0','>=','Edocman Component','Sql Injection vulnerability','Feb 23 2019','Version 1.11.7','update','1.11.8'),
-('com_kunena','component','5.1.10','<','3.0.0','>=','Kunena Component','XSS vulnerabilities','Mar 05 2019','Version 5.1.0 through 5.1.10','update','5.1.10');
+('com_kunena','component','5.1.10','<','3.0.0','>=','Kunena Component','XSS vulnerabilities','Mar 05 2019','Version 5.1.0 through 5.1.10','update','5.1.10'),
+('Joomla!','core','3.9.3','<=','3.0.0','>=','Joomla! multiple vulnerabilities','3 low vulnerabilities and one high vulnerability','Mar 13 2019','Joomla 3.0.0 through 3.9.3','update','3.9.4'),
+('com_jevents','component','3.4.50','<','3.0.0','>=','JEvents Component','Multiple vulnerabilities','Mar 17 2019','Version 3.4.49 and maybe lower','update','3.4.50'),
+('com_acymailing','component','5.10.6','==','3.0.0','>=','Acymailing Component','Multiple vulnerabilities','Mar 26 2019','Version 5.10.6','update','5.10.7'),
+('Joomla!','core','3.9.4','<=','3.0.0','>=','Joomla! multiple vulnerabilities','one moderate, one low and one high vulnerabilities','Apr 09 2019','Joomla 3.0.0 through 3.9.4','update','3.9.5'),
+('com_bookpro','component','2.3','==','3.0.0','>=','JB Bus Component','SQL Injection vulnerability','Apr 12 2019','Version 2.3','update','2.4'),
+('com_kunena','component','5.1.12','<','3.0.0','>=','Kunena Component','XSS vulnerability','Apr 23 2019','Version 5.1.3 through 5.1.12','update','5.1.12.1'),
+('com_phocagallery','component','4.3.17','<','3.0.0','>=','Phoca Gallery Component','XSS vulnerability','Apr 26 2019','Version 4.3.15 prior','update','4.3.17'),
+('Joomla!','core','3.9.5','<=','3.0.0','>=','Joomla! core','Xss vulnerability','May 072019','Joomla 1.7.0 through 3.9.5','update','3.9.6');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -605,7 +613,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.38');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.43');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

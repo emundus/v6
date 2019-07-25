@@ -56,7 +56,7 @@ abstract class CompilingEngine extends AbstractEngine implements EngineInterface
 			}
 
 			/**
-			 * No precompiled templates and tokenized missing, i.e. I can't compile anything. Instead of throwing a
+			 * No precompiled templates and tokenizer missing, i.e. I can't compile anything. Instead of throwing a
 			 * fatal error I will throw a catchable runtime error explaining the error condition and how to solve it.
 			 * If your extension does not trap the exception it will bubble up to Joomla's error handler which will
 			 * display this message.
@@ -73,8 +73,15 @@ abstract class CompilingEngine extends AbstractEngine implements EngineInterface
 			);
 		}
 
-		// Compile it and cache it.
-		$content = $this->compile($path, $forceParams);
+		/**
+		 * Compile and cache the file. We also add the file path in a comment at the top of the file so phpStorm can
+		 * debug it.
+		 *
+		 * @see https://blog.jetbrains.com/phpstorm/2019/02/phpstorm-2019-1-eap-191-5849-26/
+		 * @see https://laravel-news.com/laravel-5-8-blade-template-file-path
+		 */
+		$content = "<?php /* $path */ ?>\n";
+		$content .= $this->compile($path, $forceParams);
 		$cachePath = $this->putToCache($path, $content);
 
 		// If we could cache it, return the cached file's path

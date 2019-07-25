@@ -365,7 +365,7 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 	} else 
 	{
 		// Extensiones excluidas (no serán analizadas)
-		$excludedExtensions = array('\.aif','\.iff','\.conf','\.m3u','\.m4a','\.mid','\.mp3','\.mpa','\.wav','\.wma','\.3g2','\.3gp','\.asf','\.asx','\.avi','\.flv','\.m4v','\.mov','\.mp4','\.mpg','\.rm','\.srt','\.swf','\.vob','\.wmv','\.bmp','\.dds','\.gif','\.jpg','\.png','\.psd','\.pspimage','\.tga','\.thm','\.tif','\.tiff','\.yuv','\.eps','\.svg','\.txt','\.tar','\.zip','\.jpa');		
+		$excludedExtensions = array('\.aif','\.iff','\.conf','\.m3u','\.m4a','\.mid','\.mp3','\.mpa','\.wav','\.wma','\.3g2','\.3gp','\.asf','\.asx','\.avi','\.flv','\.m4v','\.mov','\.mp4','\.mpg','\.rm','\.srt','\.swf','\.vob','\.wmv','\.bmp','\.dds','\.gif','\.jpg','\.png','\.psd','\.pspimage','\.tga','\.thm','\.tif','\.tiff','\.yuv','\.eps','\.svg','\.txt','\.tar','\.zip','\.jpa','\.pdf');		
 		$excludedExtensions = array_merge($excludedExtensions, array_map('strtoupper',$excludedExtensions));
 		
 		/* Añadimos las excepciones de integridad para excluirlas del escaneo inicial */
@@ -1694,6 +1694,7 @@ function loadStack($opcion,$field,$showall=false)
 			{
 				$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) use ($filter_permissions_status,$filter_kind) { return (($element['safe'] == $filter_permissions_status) && ($element['kind'] == $filter_kind));}));				
 			}
+			
 			$this->total = count($filtered_array);			
 			/* Cortamos el array para mostrar sólo los valores mostrados por la paginación */
 			$this->Stack = array_splice($filtered_array, $upper_limit, $lower_limit);
@@ -2088,6 +2089,15 @@ function generateKey()
 	return $pass.'.php';	
 }
 
+/* Función que chequea si estamos en IIS */
+function on_iis() {
+    $sSoftware = strtolower( $_SERVER["SERVER_SOFTWARE"] );
+    if ( strpos($sSoftware, "microsoft-iis") !== false )
+        return true;
+    else
+        return false;
+}
+
 /**
 * Scan given file for all malware patterns
 *
@@ -2229,7 +2239,9 @@ $jamssFileNames = array(
 						$length = strlen($content);
 						$number_of_spaces = substr_count($content,' ');
 						$number_of_new_lines = substr_count($content, PHP_EOL);
-						if (((($number_of_spaces/$length) < 0.001) && (($number_of_spaces/$length) > 0)) || ((($number_of_new_lines/$length) < 0.001) && (($number_of_new_lines/$length) > 0)) || ($number_of_new_lines == 0) || ($number_of_spaces == 0))
+						// Check if we are on IIS. For some reason PHP_EOL doesn't return the number of new lines...
+						$iis = $this->on_iis();
+						if (((($number_of_spaces/$length) < 0.001) && (($number_of_spaces/$length) > 0)) || ((($number_of_new_lines/$length) < 0.001) && (($number_of_new_lines/$length) > 0)) || (($number_of_new_lines == 0) && (!$iis)) || ($number_of_spaces == 0))
 						{
 							// Update the variable to stop looking for more malware patterns
 							$malware_found = true;
@@ -2714,6 +2726,16 @@ function mark_all_unsafe_files_as_safe()
 		
 		// Guardamos los cambios
 		$this->saveStack("integrity",false);
+	}
+	
+	// Borramos la información de las instalaciones previas 	
+	try
+	{
+		$sql = "DELETE FROM `#__securitycheckpro_storage` WHERE storage_key = 'installs'";
+		$db->setQuery($sql);
+		$db->execute();
+	}catch (Exception $e)
+	{
 	}
 }
 
@@ -3725,6 +3747,30 @@ public function close_Log()
 	}
 
 	$this->fp = null;	
+}
+
+/* Extrae la información sobre las extensiones instaladas/actualizadas */
+function get_installs()
+{
+	$installs = null;
+	
+	$db = $this->getDbo();
+	try
+	{
+		
+		$query = $db->getQuery(true)
+			->select(array($db->quoteName('storage_value')))
+			->from($db->quoteName('#__securitycheckpro_storage'))
+			->where($db->quoteName('storage_key').' = '.$db->quote('installs'));
+		$db->setQuery($query);
+		$installs = $db->loadResult();
+		$installs = json_decode($installs, true);		
+	} catch (Exception $e)
+	{
+		return false;				
+	}
+	
+	return $installs;
 }
 
 }
