@@ -44,9 +44,12 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 
         $jinput = JFactory::getApplication()->input;
         $prg = $jinput->getVar('code', null);
+
         $form = $jinput->getVar('form', null);
         
         $camp = $jinput->getVar('camp', null);
+
+        $all = $jinput->get('all', null);
 
         $program = $m_program->getProgramme($prg);
         $code = array();
@@ -60,6 +63,7 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 	        die(JText::_('ACCESS_DENIED'));
         }
 
+
         $m_admission = new EmundusModelAdmission;
         $m_decision = new EmundusModelDecision;
         $m_eval = new EmundusModelEvaluation;
@@ -68,14 +72,13 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 	    // To fix this : Get all campaigns, get profile, get menu, check form IDs, for each unique ID: make an array containing the code below (or some variety of it).
 	    // When displaying the results: make tabs or panels separating the different forms for the programme.
 
-
         if ($form == "decision") {
-	        $elements = $m_decision->getDecisionElementsName(0, 0, $code);
+	        $elements = $m_decision->getDecisionElementsName(0, 0, $code, $all);
 	        //$elements = $m_admission->getAdmissionElementsName(0, 0, $code);
         } elseif ($form == "admission") {
-	        $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
+	        $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
         } elseif ($form == "evaluation") {
-	        $elements = $m_eval->getEvaluationElementsName(0, 0, $code);
+	        $elements = $m_eval->getEvaluationElementsName(0, 0, $code, $all);
         } else {
 	        $elements = EmundusHelperFiles::getElements($code, $camps);
         }
