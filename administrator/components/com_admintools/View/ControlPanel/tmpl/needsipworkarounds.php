@@ -14,27 +14,38 @@ if (!defined('ADMINTOOLS_PRO') || !ADMINTOOLS_PRO)
 	return;
 }
 
-/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $controlPanelModel */
-$controlPanelModel    = $this->container->factory->model('ControlPanel')->tmpInstance();
-$needsIpWorkarounds   = $controlPanelModel->needsIpWorkarounds();
+// Let's check if we have to display the notice about IP Workarounds
+$display = false;
+// Prevent notices if we don't have any incoming return url
+$returnurl = isset($returnurl) ? $returnurl : '';
 
-if (!$needsIpWorkarounds)
+/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $controlPanelModel */
+$controlPanelModel = $this->container->factory->model('ControlPanel')->tmpInstance();
+$privateNetworks   = $controlPanelModel->needsIpWorkaroundsForPrivNetwork();
+$proxyHeader       = $controlPanelModel->needsIpWorkaroundsHeaders();
+
+$display = ($privateNetworks || $proxyHeader);
+
+// No notices detected, let's stop here
+if (!$display)
 {
     return;
 }
 
-// Prevent notices if we don't have any incoming return url
-if (!isset($returnurl))
-{
-    $returnurl = '';
-}
 ?>
 
 <div class="akeeba-block--failure">
-	<p>
-		<?php
-		echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_IPS')?>
-	</p>
+    <?php if ($privateNetworks): ?>
+        <p>
+            <?php echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_IPS')?>
+        </p>
+    <?php endif; ?>
+
+    <?php if($proxyHeader): ?>
+        <p>
+		    <?php echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PROXY_HEADER')?>
+        </p>
+    <?php endif; ?>
 	<a href="index.php?option=com_admintools&view=ControlPanel&task=IpWorkarounds&enable=1&returnurl=<?php echo $returnurl?>" class="akeeba-btn--green">
 		<?php echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_ENABLE')?>
 	</a>

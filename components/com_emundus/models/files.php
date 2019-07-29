@@ -2635,11 +2635,10 @@ die();*/
 
             $query = "SELECT jega.fnum, jesg.label, jesg.class FROM #__emundus_group_assoc as jega
                       LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
-                      where jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')
-                      GROUP BY jega.fnum";
+                      where jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')";
             $db = $this->getDbo();
             $db->setQuery($query);
-            $res = $db->loadAssocList('fnum');
+            $res = $db->loadAssocList();
 
             foreach ($res as $r) {
                 $assocTaggroup = '<span class="label '.$r['class'].'">'.$r['label'].'</span>';
@@ -2659,7 +2658,7 @@ die();*/
 	                ->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
             $db = $this->getDbo();
             $db->setQuery($query);
-            $res = $db->loadAssocList('fnum');
+            $res = $db->loadAssocList();
             foreach ($res as $r) {
                 if (isset($access[$r['fnum']])) {
                     $access[$r['fnum']] .= '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';

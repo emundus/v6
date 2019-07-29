@@ -234,7 +234,7 @@ class EmundusModelDecision extends JModelList
      * @param 	  array code get elements from Decision form defined for programme list
      * @return    string list of Fabrik element ID used in decision form
      **/
-    public function getDecisionElementsName($show_in_list_summary=1, $hidden=0, $code = array())
+    public function getDecisionElementsName($show_in_list_summary=1, $hidden=0, $code = array(), $all = null)
     {
         $session = JFactory::getSession();
         $h_list = new EmundusHelperList;
@@ -245,7 +245,7 @@ class EmundusModelDecision extends JModelList
 
         $elements = array();
 
-        if ($session->has('filt_params'))
+        if ($session->has('filt_params') || !empty($all))
         {
 
             $filt_params = $session->get('filt_params');

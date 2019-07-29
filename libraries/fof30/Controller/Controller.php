@@ -10,7 +10,6 @@ namespace FOF30\Controller;
 use FOF30\Container\Container;
 use FOF30\Controller\Exception\CannotGetName;
 use FOF30\Controller\Exception\TaskNotFound;
-use FOF30\Model\DataModel;
 use FOF30\Model\Model;
 use FOF30\View\View;
 
@@ -191,6 +190,17 @@ class Controller
 	 * @var array
 	 */
 	protected $cacheableTasks = array();
+
+	/**
+	 * How user group membership affects caching. The values are:
+	 * - 0 : Not taken into account, everyone sees the same page, always
+	 * - 1 : Only user groups are taken into account (default behaviour of FOF 3.0 to 3.4.2)
+	 * - 2 : The user ID itself is taken into account
+	 *
+	 * @var   bool
+	 * @since 3.4.3
+	 */
+	protected $userCaching = 1;
 
 	/**
 	 * An associative array for required ACL privileges per task. For example:
@@ -472,12 +482,10 @@ class Controller
 
 		$conf = $this->container->platform->getConfig();
 
-		if ($this->container->platform->isFrontend() && $cachable && ($viewType != 'feed') && ($conf->get('caching') >= 1))
+		if ($cachable && ($viewType != 'feed') && ($conf->get('caching') >= 1))
 		{
 			// Get a JCache object
 			$option = $this->input->get('option', 'com_foobar', 'cmd');
-			/** @var \JCacheControllerView $cache */
-			$cache = \JFactory::getCache($option, 'view');
 
 			// Set up a cache ID based on component, view, task and user group assignment
 			$user = $this->container->platform->getUser();
@@ -489,6 +497,22 @@ class Controller
 			else
 			{
 				$groups = $user->groups;
+			}
+
+			$userId = $user->guest ? 0 : $user->id;
+
+			switch ($this->userCaching)
+			{
+				case 0:
+					// Developer chose to apply the same caching to everyone
+					$groups = [];
+					$userId = 0;
+					break;
+
+				case 1:
+					// Developer chose to apply caching per user group membership only
+					$userId = 0;
+					break;
 			}
 
 			$importantParameters = array();
@@ -505,7 +529,7 @@ class Controller
 					'id'			=> 'INT',
 				);
 			}
-
+			
 			if (is_array($urlparams))
 			{
 				/** @var \JApplicationCms $app */
@@ -535,10 +559,20 @@ class Controller
 			}
 
 			// Create the cache ID after setting the registered URL params, as they are used to generate the ID
-			$cacheId = md5(serialize(array(\JCache::makeId(), $view->getName(), $this->doTask, $groups, $importantParameters)));
+			$cacheId = md5(serialize(array(\JCache::makeId(), $view->getName(), $this->doTask, $groups, $userId, $importantParameters)));
 
 			// Get the cached view or cache the current view
-			$cache->get($view, 'display', $cacheId);
+			try
+			{
+				/** @var \JCacheControllerView $cache */
+				$cache = \JFactory::getCache($option, 'view');
+				$cache->get($view, 'display', $cacheId);
+			}
+			catch (\JCacheException $e)
+			{
+				// Display without caching
+				$view->display($tpl);
+			}
 		}
 		else
 		{

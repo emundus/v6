@@ -182,6 +182,16 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadAssoc();
 	}
 
+    function getCampaignsByProgram($code)
+    {
+        $query = 'SELECT esc.*
+					FROM #__emundus_setup_campaigns AS esc
+					LEFT JOIN #__emundus_setup_programmes AS esp on esp.code = esc.training
+					WHERE esp.code like '.$this->_db->Quote($code);
+        $this->_db->setQuery( $query );
+        return $this->_db->loadObjectList();
+    }
+
 	function getCampaignsByCourseCampaign($course, $camp)
 	{
 

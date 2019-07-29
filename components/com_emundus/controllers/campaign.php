@@ -85,5 +85,31 @@ class EmundusControllerCampaign extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    /**
+     * Gets all campaigns linked to a program code
+     */
+    public function getcampaignsbyprogram(){
+        $user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $course = $jinput->get('course');
+
+        $model = $this->getModel('campaign');
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+        {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        else
+        {
+            $campaigns = $model->getCampaignsByProgram($course);
+        }
+        echo json_encode((object) [
+            'status' => true,
+            'campaigns' => $campaigns
+        ]);
+        exit;
+    }
 }
 ?>

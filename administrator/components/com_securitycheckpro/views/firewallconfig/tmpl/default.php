@@ -139,10 +139,6 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
-
 $site_url = JURI::root();
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
@@ -445,7 +441,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 																		<p>
 																		<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_IP_CURRENT'); ?>
 																		<code><?php echo $current_ip; ?></code>	
-																		<button type="button" id="add_ip_whitelist_button" class="btn btn-sm btn-success" href="#">
+																		<button type="button" id="add_ip_whitelist_button2" class="btn btn-sm btn-success" href="#">
 																			<?php echo JText::_('COM_SECURITYCHECKPRO_ADD_TO_WHITELIST'); ?>
 																		</button>
 																		</p>
@@ -470,12 +466,18 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_EXPORT_IPS'); ?>
 																		</button>
 																	</div>
+																	<?php
+																		if ( count($this->blacklist_elements)>0 ) {																			
+																	?>
 																	<div class="btn-group pull-right">
 																		<button class="btn btn-danger" id="delete_ip_blacklist_button" href="#">
 																			<i class="icon-trash icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_DELETE'); ?>
 																		</button>
 																	</div>
+																	<?php
+																		}																	
+																	?>
 																</div>
 																
 																<table class="table table-striped table-bordered bootstrap-datatable datatable">
@@ -517,6 +519,10 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 																<div class="alert alert-info">
 																	<p><?php echo JText::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_DESCRIPTION'); ?></p>
 																</div>
+																
+																<?php
+																	if ( count($this->dynamic_blacklist_elements)>0 ) {																			
+																?>
 
 																<div id="dynamic_blacklist_buttons">
 																	<div class="btn-group pull-right" class="margin-bottom-5">
@@ -526,6 +532,10 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 																		</button>
 																	</div>						
 																</div>
+																
+																<?php
+																	}																	
+																?>
 																<table id="dynamic_blacklist_table" class="table table-striped table-bordered bootstrap-datatable datatable">
 																		<thead>
 																			<tr>
@@ -637,12 +647,18 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_EXPORT_IPS'); ?>
 																		</button>
 																	</div>
+																	<?php
+																		if ( count($this->whitelist_elements)>0 ) {																		
+																	?>
 																	<div class="btn-group pull-right">
 																		<button class="btn btn-danger" id="deleteip_whitelist_button" href="#">
 																			<i class="icon-trash icon-white"> </i>
 																				<?php echo JText::_('COM_SECURITYCHECKPRO_DELETE'); ?>
 																		</button>
-																	</div>						
+																	</div>	
+																	<?php
+																		}																	
+																	?>
 																</div>
 																
 																<table class="table table-striped table-bordered bootstrap-datatable datatable">
@@ -902,7 +918,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 											<div class="card-body">
 												<h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_WORDS_LABEL'); ?></h4>
 												<div class="controls">
-													<textarea cols="35" rows="3" name="second_level_words" class="width_560_height_340"><?php echo $this->second_level_words ?></textarea>
+													<textarea cols="35" rows="3" id="second_level_words" name="second_level_words" class="width_560_height_340"><?php echo $this->second_level_words ?></textarea>
 												</div>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_SECOND_LEVEL_WORDS_DESCRIPTION') ?></small></footer></blockquote>
 																							
@@ -1273,16 +1289,16 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 							<div class="card-block">	
 								<div class="card-header text-center">
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ) . " - " . JText::_( 'COM_SECURITYCHECKPRO_NUMBER_OF_ATTACKS' ); ?>
-									<div style="margin-top: 20px;">
-										<span class="label" style="background-color: green; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_NOATTACKS' ); ?></span>
-										<span class="label" style="background-color: #F3F781; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_LOW' ); ?></span>
-										<span class="label" style="background-color: #FF8000; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MEDIUM' ); ?></span>
-										<span class="label" style="background-color: #FF0000; color: black; padding: 4px 8px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_HIGH' ); ?></span>
+									<div class="margin-top-20">
+										<span class="label no-attacks"><?php echo JText::_( 'COM_SECURITYCHECKPRO_NOATTACKS' ); ?></span>
+										<span class="label attacks-low"><?php echo JText::_( 'COM_SECURITYCHECKPRO_LOW' ); ?></span>
+										<span class="label attacks-medium"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MEDIUM' ); ?></span>
+										<span class="label attacks-high"><?php echo JText::_( 'COM_SECURITYCHECKPRO_HIGH' ); ?></span>
 									</div>
 								</div>														
 							</div>	
 													
-							<div id="container" style="position: relative; width: 800px; height: 600px;"></div>
+							<div id="container" class="map-container"></div>
 					
 							<div class="card mb-3">															
 								<div class="alert alert-info" class="centrado">
@@ -1623,7 +1639,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 											<div class="card-body">
 												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_EXTENSIONS_BLACKLIST_LABEL'); ?></h4>
 												<div class="controls">
-													<textarea cols="35" rows="3" name="extensions_blacklist" style="width: 260px; height: 140px;"><?php echo $this->extensions_blacklist ?></textarea>								
+													<textarea cols="35" rows="3" name="extensions_blacklist" class="extensions-blacklist"><?php echo $this->extensions_blacklist ?></textarea>								
 												</div>
 												<blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_EXTENSIONS_BLACKLIST_DESCRIPTION') ?></small></footer></blockquote>
 																								
@@ -1858,7 +1874,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 		<!-- End container fluid -->		
 		</div>
 <!-- End Wrapper -->			
-</div>	
+</div>		
+
+<?php 
+// Cargamos el contenido común...
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/end.php';
+?>
 
 <script>
 	var cont = 1;
@@ -1884,7 +1905,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
 					data:	data_json
 					,geographyConfig: {
 						popupTemplate: function(geo, data) {
-							return ['<div class="hoverinfo" style="text-align: center;"><strong>',
+							return ['<div class="hoverinfo centrado"><strong>',
 									geo.properties.name,
 									'<br/>' + data.numberOfThings,
 									'</strong></div>'].join('');
