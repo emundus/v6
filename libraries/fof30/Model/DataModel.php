@@ -661,7 +661,7 @@ class DataModel extends Model implements \JTableInterface
 	 * original object. The new object is set up to not save its stats, ignore the request when getting state variables
 	 * and comes with an empty state. The temporary object instance has its data reset as well.
 	 *
-	 * @return  $this
+	 * @return  static
 	 */
 	public function tmpInstance()
 	{
@@ -685,7 +685,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param   string  $type       Database type for the field. If unsure use 'integer', 'float' or 'text'.
 	 * @param   bool    $replace    Should we replace an existing known field definition?
 	 *
-	 * @return  $this  Self, for chaining
+	 * @return  static
 	 */
 	public function addKnownField($fieldName, $default = null, $type = 'integer', $replace = false)
 	{
@@ -1110,7 +1110,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param   array       $ignore          A list of fields to ignore when binding $data
 	 * @para    boolean     $resetRelations  Should I automatically reset relations if relation-important fields are changed?
 	 *
-	 * @return   DataModel  Self, for chaining
+	 * @return   static  Self, for chaining
 	 */
 	public function save($data = null, $orderingFilter = '', $ignore = null, $resetRelations = true)
 	{
@@ -1295,7 +1295,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param   array      $ignore         A list of fields to ignore when binding $data
 	 * @param   array      $relations      Which relations to save with the model's record. Leave null for all relations
 	 *
-	 * @return $this Self, for chaining
+	 * @return static Self, for chaining
 	 */
 	public function push($data = null, $orderingFilter = '', $ignore = null, array $relations = null)
 	{
@@ -1668,7 +1668,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param   integer   $chunkSize How many records to process at once
 	 * @param   callable  $callback  A callable to process each record
 	 *
-	 * @return  $this  Self, for chaining
+	 * @return  static  Self, for chaining
 	 */
 	public function chunk($chunkSize, $callback)
 	{
@@ -1848,7 +1848,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param    DataCollection  $dataCollection  The data collection on which the eager loaded relations will be applied
 	 * @param    array|null      $relations       The relations to eager load. Leave empty to use the already defined relations
 	 *
-	 * @return $this for chaining
+	 * @return static for chaining
 	 */
 	public function eagerLoad(DataCollection &$dataCollection, array $relations = null)
 	{
@@ -1888,7 +1888,7 @@ class DataModel extends Model implements \JTableInterface
 	/**
 	 * Archive the record, i.e. set enabled to 2
 	 *
-	 * @return   $this  For chaining
+	 * @return   static  For chaining
 	 */
 	public function archive()
 	{
@@ -1921,7 +1921,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   mixed $id Primary key (id field) value
 	 *
-	 * @return  $this  for chaining
+	 * @return  static  for chaining
 	 */
 	public function trash($id = null)
 	{
@@ -1959,7 +1959,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param int $state The publish state. Default: 1 (published).
 	 *
-	 * @return   $this  For chaining
+	 * @return   static  For chaining
 	 */
 	public function publish($state = 1)
 	{
@@ -1988,7 +1988,7 @@ class DataModel extends Model implements \JTableInterface
 	/**
 	 * Unpublish the record, i.e. set enabled to 0
 	 *
-	 * @return   $this  For chaining
+	 * @return   static  For chaining
 	 */
 	public function unpublish()
 	{
@@ -2021,7 +2021,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   mixed $id Primary key (id field) value
 	 *
-	 * @return  $this  for chaining
+	 * @return  static  for chaining
 	 */
 	public function restore($id = null)
 	{
@@ -2060,7 +2060,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   array|DataModel  An associative array or object to bind to the DataModel instance. Allows you to override values on the copied object.
 	 *
-	 * @return   DataModel
+	 * @return   static
 	 */
 	public function copy($data = null)
 	{
@@ -2111,7 +2111,7 @@ class DataModel extends Model implements \JTableInterface
 	 * privileges; core.edit.state privileges component-wide or per asset; or be the creator of the item and have
 	 * core.edit.own privileges component-wide or per asset.
 	 *
-	 * @return  $this
+	 * @return  static
 	 *
 	 * @throws  LockedRecord  If you don't have the privilege to check in this item
 	 */
@@ -2244,7 +2244,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   mixed $id Primary key (id field) value
 	 *
-	 * @return  $this  for chaining
+	 * @return  static  for chaining
 	 */
 	public function delete($id = null)
 	{
@@ -2264,7 +2264,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   mixed $id Primary key (id field) value
 	 *
-	 * @return  $this  for chaining
+	 * @return  static  for chaining
 	 */
 	public function forceDelete($id = null)
 	{
@@ -2640,7 +2640,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   string $behaviour The behaviour's name
 	 *
-	 * @return  $this  Self, for chaining
+	 * @return  static  Self, for chaining
 	 */
 	public function addBehaviour($behaviour)
 	{
@@ -2679,7 +2679,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   string $behaviour The behaviour's name
 	 *
-	 * @return  $this  Self, for chaining
+	 * @return  static  Self, for chaining
 	 */
 	public function removeBehaviour($behaviour)
 	{
@@ -2725,7 +2725,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param   string $fieldName The field name to order by
 	 * @param   string $direction The direction to order by (ASC for ascending or DESC for descending)
 	 *
-	 * @return  $this  For chaining
+	 * @return  static  For chaining
 	 */
 	public function orderBy($fieldName, $direction = 'ASC')
 	{
@@ -2748,7 +2748,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   integer $limitStart Records to skip from the start
 	 *
-	 * @return  $this  For chaining
+	 * @return  static  For chaining
 	 */
 	public function skip($limitStart = null)
 	{
@@ -2769,7 +2769,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   integer $limit Maximum number of records to return
 	 *
-	 * @return  $this  For chaining
+	 * @return  static  For chaining
 	 */
 	public function take($limit = null)
 	{
@@ -2820,7 +2820,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   integer $userId Optional user ID of the user touching the record
 	 *
-	 * @return  $this  Self, for chaining
+	 * @return  static  Self, for chaining
 	 */
 	public function touch($userId = null)
 	{
@@ -2866,7 +2866,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   integer $userId
 	 *
-	 * @return  $this  Self, for chaining
+	 * @return  static  Self, for chaining
 	 */
 	public function lock($userId = null)
 	{
@@ -2912,7 +2912,7 @@ class DataModel extends Model implements \JTableInterface
 	/**
 	 * Unlock a record by resetting its locked_on and/or locked_by columns
 	 *
-	 * @return  $this  Self, for chaining
+	 * @return  static  Self, for chaining
 	 */
 	public function unlock()
 	{
@@ -3011,7 +3011,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param   string $method    The filtering method, e.g. <>, =, != and so on
 	 * @param   mixed  $values    The value you're filtering on. Some filters (e.g. interval or between) require an array of values
 	 *
-	 * @return  $this  For chaining
+	 * @return  static  For chaining
 	 */
 	public function where($fieldName, $method = '=', $values = null)
 	{
@@ -3238,7 +3238,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   string $rawWhereClause The raw WHERE clause to add
 	 *
-	 * @return  $this  For chaining
+	 * @return  static  For chaining
 	 */
 	public function whereRaw($rawWhereClause)
 	{
@@ -3265,7 +3265,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param array $relations The relations to eager load. See above for more information.
 	 *
-	 * @return $this For chaining
+	 * @return static For chaining
 	 */
 	public function with(array $relations)
 	{
@@ -3310,7 +3310,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param mixed  $value    The value(s) to compare against.
 	 * @param bool   $replace  When true (default) any existing relation filters for the same relation will be replaced
 	 *
-	 * @return $this
+	 * @return static
 	 */
 	public function has($relation, $operator = '>=', $value = 1, $replace = true)
 	{
@@ -3553,7 +3553,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param callable $callBack The callback to use for filtering
 	 * @param bool     $replace  When true (default) any existing relation filters for the same relation will be replaced
 	 *
-	 * @return $this
+	 * @return static
 	 */
 	public function whereHas($relation, $callBack, $replace = true)
 	{
@@ -3843,7 +3843,7 @@ class DataModel extends Model implements \JTableInterface
 	 *
 	 * @param   integer  $userID  The user ID to use. Skip it to use the currently logged in user.
 	 *
-	 * @return  DataModel  Reference to self
+	 * @return  static  Reference to self
 	 */
 	public function applyAccessFiltering($userID = null)
 	{
@@ -4254,7 +4254,7 @@ class DataModel extends Model implements \JTableInterface
 	 * @param   string  $name     The name of the param you want to set
 	 * @param   mixed   $value    The value to set
 	 *
-	 * @return  $this   Self, for chaining
+	 * @return  static   Self, for chaining
 	 */
 	public function setBehaviorParam($name, $value)
 	{

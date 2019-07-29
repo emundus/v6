@@ -11,14 +11,28 @@ button#trombi_cancel {
 }
 
 #div-preview {
-    background-color: #fff;
+
     display: none;
 }
 #div-download {
-    background-color: #fff;
+
     display: none;
 }
 img {
     height:100px !important;
+}
+.trombi_download{
+    margin-top: 2vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background-color: #ff4545 !important;
+    border: 1px solid #ff4545 !important;
+}
+.trombi_download:hover{
+    background-color: transparent !important;
+    color: #ff4545;
+    outline: none;
 }
 

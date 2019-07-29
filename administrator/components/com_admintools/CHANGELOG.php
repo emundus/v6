@@ -1,4 +1,27 @@
 <?php die() ?>
+Admin Tools 5.3.3
+================================================================================
++ Added option to log usernames or not during failed logins (required by GDPR)
++ Htaccess Maker: Added webp and WEBP file extensions to the default list of allowed extensions. Please remember to add them to your list (both for frontend and backend)
++ NginX Maker: Added webp and WEBP file extensions to the default list of allowed extensions. Please remember to add them to your list (both for frontend and backend)
++ WebConfig Maker: Added webp and WEBP file extensions to the default list of allowed extensions. Please remember to add them to your list (both for frontend and backend)
++ Troubleshooting email sent automatically whenever your Admin Tools administrative action might lock you out of your site (gh-149)
++ Added check if user request has an header usually used for proxied connection and suggest him to turn on IP workarounds (gh-200)
+# [HIGH] IP filtering with CIDR or netmask notation may not work for certain IP address blocks
+
+Admin Tools 5.3.2
+================================================================================
+~ PHP File Change Scanner comment editing now uses the Joomla WYSIWYG editor.
+# [LOW] A Joomla installer bug caused an error message to be displayed when updating from 5.3.0 or earlier.
+
+Admin Tools 5.3.1
+================================================================================
++ Display detected IP, country and continent inside the Geoblocking IP feature
+~ Formerly unsupported Pro to Core downgrade with simultaneous version change no longer causes a site crash
+# [MEDIUM] Failed backend login email always reports user as "Guest"
+# [MEDIUM] Rescue mode was always disabled
+# [LOW] Action log plugin would result in untranslated strings displayed in the Latest Actions backend module
+
 Admin Tools 5.3.0
 ================================================================================
 + Protection of all component and plugin folders against direct web access

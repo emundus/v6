@@ -18,10 +18,6 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
-
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
@@ -33,6 +29,9 @@ JHTML::stylesheet($chosen);
 <?php 
 // Cargamos el contenido común
 include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+
+// ... y el contenido específico
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/rules.php';
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=rules&view=rules&'. JSession::getFormToken() .'=1');?>" method="post" name="adminForm" id="adminForm">

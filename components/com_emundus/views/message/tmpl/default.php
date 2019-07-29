@@ -42,7 +42,7 @@ $email_list = array();
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
     <div id="em-sending-email-caption" class="em-sending-email-caption"><?php echo JText::_('SENDING_EMAILS') ;?></div>
-    <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
+    <img class="em-sending-email-img" id="em-sending-email-img" src="images/emundus/sending-email.gif">
 </div>
 
 <form id="emailForm" class="em-form-message" name="emailForm" style="padding:0px 15px;">
@@ -270,9 +270,6 @@ $email_list = array();
 
                     }
                 });
-
-                // Remove all attachments from list.
-                $('#em-attachment-list').empty();
 
                 // Get the attached uploaded file if there is one.
                 if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
@@ -554,7 +551,7 @@ $email_list = array();
         var formData = new FormData();
 
         // add assoc key values, this will be posts values
-        formData.append("file", this.file, this.getName());
+        formData.append("file", this.file, this.getName().replace(/\s/g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
         formData.append("upload_file", true);
 
         $.ajax({

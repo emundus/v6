@@ -7,9 +7,6 @@
 */
 defined('_JEXEC') or die('Restricted access'); 
 
-$font_awesome = "media/com_securitycheckpro/stylesheets/font-awesome.min.css";
-JHTML::stylesheet($font_awesome);
-
 $document = JFactory::getDocument();
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
@@ -19,12 +16,14 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
-
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
+
+$font_awesome = "media/com_securitycheckpro/stylesheets/font-awesome.min.css";
+JHTML::stylesheet($font_awesome);
+
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
 ?>
 
 <?php 
@@ -59,23 +58,25 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/trackactio
 							<div id="j-main-container">
 								<div id="editcell">
 								<div class="accordion-group">
-								<div class="editcell"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
+								<div class="card-header text-center">
+									<?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?>
+								</div>
 								<table class="table table-striped">								
 								<thead>
 									<tr>
 										<td><span class="badge badge-warning"> </span>
 										</td>
-										<td>
+										<td class="left">
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_ADMINISTRATOR_GROUP' ); ?>
 										</td>
 										<td><span class="badge badge-danger"> </span>
 										</td>
-										<td>
+										<td class="left">
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_SUPER_USERS_GROUP' ); ?>
 										</td>
 										<td><span class="badge badge-default"> </span>
 										</td>
-										<td>
+										<td class="left">
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_OTHER_GROUPS' ); ?>
 										</td>
 									</tr>
@@ -190,6 +191,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/trackactio
 			</div>						
 		</div>
 </div>	
+
+<?php 
+// Cargamos el contenido común...
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/end.php';
+?>
 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />

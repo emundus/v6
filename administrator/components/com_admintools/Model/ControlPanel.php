@@ -377,7 +377,7 @@ class ControlPanel extends Model
 	 *
 	 * @return bool
 	 */
-	public function needsIpWorkarounds()
+	public function needsIpWorkaroundsForPrivNetwork()
 	{
 		$WAFparams = Storage::getInstance();
 		$params    = $this->container->params;
@@ -386,6 +386,43 @@ class ControlPanel extends Model
 		if (!$WAFparams->getValue('ipworkarounds', -1) && ($params->get('detected_exceptions_from_private_network') === 1))
 		{
 			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if we have detected a prozy header AND the IP Workaround feature is turned off
+	 *
+	 * @return bool
+	 */
+	public function needsIpWorkaroundsHeaders()
+	{
+		$WAFparams = Storage::getInstance();
+		$params    = $this->container->params;
+
+		// IP Workarounds are already loaded, no notice
+		if ($WAFparams->getValue('ipworkarounds', -1))
+		{
+			return false;
+		}
+
+		// User suppressed the notice
+		if ($params->get('detected_proxy_header') === -1)
+		{
+			return false;
+		}
+
+		// Ok let's check if we truly have any proxy header
+		$headers = Ip::getProxyHeaders();
+
+		foreach ($headers as $header)
+		{
+			// Proxy header found, warn the user
+			if (isset($_SERVER[$header]))
+			{
+				return true;
+			}
 		}
 
 		return false;
@@ -405,9 +442,10 @@ class ControlPanel extends Model
 		}
 		else
 		{
-			// If we user wants to ignore the warning, let's set the flag to -1 (ignore)
+			// If we user wants to ignore the warning, let's set every flag about IP workarounds to -1 (so they will be ignored)
 			$params = $this->container->params;
 			$params->set('detected_exceptions_from_private_network', -1);
+			$params->set('detected_proxy_header', -1);
 			$params->save();
 		}
 	}

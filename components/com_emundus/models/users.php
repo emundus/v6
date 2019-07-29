@@ -738,8 +738,16 @@ class EmundusModelUsers extends JModelList {
         return $this->data;
     }
 
+	/** Adds a user to Joomla as well as the eMundus tables.
+	 * @param $user
+	 * @param $other_params
+	 *
+	 * @return array|bool
+	 */
     public function adduser($user, $other_params) {
-        $db = JFactory::getDBO();
+
+    	$db = JFactory::getDBO();
+
         // add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
         try {
 
@@ -766,6 +774,9 @@ class EmundusModelUsers extends JModelList {
 
         $db = JFactory::getDBO();
 
+	    JPluginHelper::importPlugin('emundus');
+	    $dispatcher = JEventDispatcher::getInstance();
+
         $firstname = $params['firstname'];
         $lastname = $params['lastname'];
         $profile = $params['profile'];
@@ -775,6 +786,7 @@ class EmundusModelUsers extends JModelList {
         $news = $params['news'];
         $univ_id = $params['univ_id'];
 
+        $dispatcher->trigger('onBeforeSaveEmundusUser', [$user_id, $params]);
         if (empty($univ_id)) {
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".date('Y-m-d H:i:s')."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
             $db->setQuery($query);
@@ -784,36 +796,45 @@ class EmundusModelUsers extends JModelList {
             $db->setQuery($query);
             $db->Query();
         }
+	    $dispatcher->trigger('onAfterSaveEmundusUser', [$user_id, $params]);
 
         if (!empty($groups)) {
             foreach ($groups as $group) {
+	            $dispatcher->trigger('onBeforeAddUserToGroup', [$user_id, $group]);
                 $query = "INSERT INTO `#__emundus_groups` VALUES ('',".$user_id.",".$group.")";
                 $db->setQuery($query);
                 $db->Query();
+	            $dispatcher->trigger('onAfterAddUserToGroup', [$user_id, $group]);
             }
         }
 
         if (!empty($campaigns)) {
             $connected = JFactory::getUser()->id;
             foreach ($campaigns as $campaign) {
+	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user_id, $connected, $campaign]);
                 $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`)
                                     VALUES ('.$user_id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'), LPAD(`applicant_id`, 7, \'0\')))';
                 $db->setQuery($query);
                 $db->Query();
+	            $dispatcher->trigger('onAfterCampaignCandidature', [$user_id, $connected, $campaign]);
             }
         }
 
+	    $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
         $query="INSERT INTO `#__emundus_users_profiles`
                         VALUES ('','".date('Y-m-d H:i:s')."',".$user_id.",".$profile.",'','')";
         $db->setQuery($query);
         $db->Query() or die($db->getErrorMsg());
+	    $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
 
         if (!empty($oprofiles)) {
             foreach ($oprofiles as $profile) {
+	            $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
                 $query = "INSERT INTO `#__emundus_users_profiles`
                                 VALUES ('','".date('Y-m-d H:i:s')."',".$user_id.",".$profile.",'','')";
                 $db->setQuery($query);
                 $db->Query();
+	            $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
 
                 $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.(int)$profile;
                 $db->setQuery($query);
@@ -1128,8 +1149,8 @@ class EmundusModelUsers extends JModelList {
 
     public function addGroup($gname, $gdesc, $actions, $progs) {
         try {
-            $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values ('$gname', '$gdesc', 1)";
-            $db = $this->getDbo();
+	        $db = $this->getDbo();
+            $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values (".$db->quote($gname).", ".$db->quote($gdesc).", 1)";
 
             try {
                 $db->setQuery($query);

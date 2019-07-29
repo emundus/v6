@@ -74,8 +74,9 @@ function display($tpl = null)
 	// Ponemos los datos en el template
 	$this->items = $items;
 	$this->show_all = $show_all;
-	$this->database_error = $database_error;
-
+	$this->database_error = $database_error;	
+	$this->installs = $model->get_installs();
+	
 	if (!empty($items)) 
 	{
 		$pagination = $model->getPagination();

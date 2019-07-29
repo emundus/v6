@@ -271,13 +271,12 @@ class EmundusModelEvaluation extends JModelList {
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-    public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array()) {
+    public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0, $code = array(), $all = null) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 
         $elements = array();
-
-        if ($session->has('filt_params')) {
+        if ($session->has('filt_params') ||!empty($all)) {
 
             $filt_params = $session->get('filt_params');
             
@@ -288,8 +287,7 @@ class EmundusModelEvaluation extends JModelList {
             } else {
 	            return array();
             }
-
-            foreach ($programmes as $value) { 
+            foreach ($programmes as $value) {
                 $groups = $this->getGroupsEvalByProgramme($value);
                 
                 if (empty($groups)) {

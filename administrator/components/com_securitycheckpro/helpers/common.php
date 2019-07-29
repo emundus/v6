@@ -4,18 +4,18 @@ defined('_JEXEC') or die();
 if ( version_compare(JVERSION, '3.20', 'lt') )
 {
 // Bootstrap core CSS-->
-echo '<link href="' . JURI::root() .'/media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">';
+echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">';
 } else
 
 { 
-echo '<link href="' . JURI::root() .'/media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">';
+echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">';
 
  }
 // Custom styles for this template-->
-echo '<link href="' . JURI::root() .'/media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">';
+echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">';
 // Custom fonts for this template-->
-echo '<link href="' . JURI::root() .'/media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">';
-echo '<link href="' . JURI::root() .'/media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">';
+echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">';
+echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">';
 
 echo '<script src="' . JURI::root() . 'media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>';
 echo '<script src="' . JURI::root() . 'media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>';

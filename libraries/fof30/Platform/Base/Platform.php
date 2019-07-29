@@ -24,6 +24,9 @@ abstract class Platform implements PlatformInterface
 	/** @var  Container  The component container */
 	protected $container = null;
 
+	/** @var  bool  Are plugins allowed to run in CLI mode? */
+	protected $allowPluginsInCli = false;
+
 	/**
 	 * Public constructor.
 	 *
@@ -348,6 +351,15 @@ abstract class Platform implements PlatformInterface
 		// The default implementation does nothing. Override this in your platform classes.
 	}
 
+	/**
+	 * Adds a message
+	 *
+	 * @param   string|array  $title      A title, or an array of additional fields to add to the log entry
+	 * @param   string        $logText    The translation key to the log text
+	 * @param   string        $extension  The name of the extension logging this entry
+	 *
+	 * @return  void
+	 */
 	public function logUserAction($title, $logText, $extension)
 	{
 		// The default implementation does nothing. Override this in your platform classes.
@@ -377,5 +389,25 @@ abstract class Platform implements PlatformInterface
 	public function showErrorPage(Exception $exception)
 	{
 		throw $exception;
+	}
+
+	/**
+	 * Are plugins allowed to run in CLI mode?
+	 *
+	 * @return  bool
+	 */
+	public function isAllowPluginsInCli()
+	{
+		return $this->allowPluginsInCli;
+	}
+
+	/**
+	 * Set whether plugins are allowed to run in CLI mode
+	 *
+	 * @param   bool  $allowPluginsInCli
+	 */
+	public function setAllowPluginsInCli($allowPluginsInCli)
+	{
+		$this->allowPluginsInCli = $allowPluginsInCli;
 	}
 }

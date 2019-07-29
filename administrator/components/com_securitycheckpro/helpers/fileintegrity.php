@@ -4,6 +4,7 @@ defined('_JEXEC') or die();
 ?>
 
 <script type="text/javascript" language="javascript">
+
 	function get_percent() {
 		url = 'index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=get_percent_integrity';
 		jQuery.ajax({
@@ -50,6 +51,32 @@ defined('_JEXEC') or die();
 	}
 	
 	jQuery(document).ready(function() {	
+	
+		jQuery( "#filter_fileintegrity_search_clear" ).click(function() {
+			document.getElementById('filter_fileintegrity_search').value=''; 
+			jQuery("#adminForm").submit();
+		});
+		
+		jQuery( "#add_exception_button" ).click(function() {
+			Joomla.submitbutton('addfile_exception');
+		});
+		
+		jQuery( "#delete_exception_button" ).click(function() {
+			Joomla.submitbutton('deletefile_exception');
+		});
+		
+		jQuery( "#button_start_scan" ).click(function() {
+			hideElement('button_start_scan'); 
+			hideElement('container_resultado'); 
+			hideElement('container_repair'); 
+			hideElement('completed_message2');
+			runButton();
+		});
+		
+		jQuery( "#view_modal_log_button" ).click(function() {
+			view_modal_log();
+		});
+		
 		hideElement('backup-progress');
 		estado_integrity_timediff();
 				

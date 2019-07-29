@@ -194,6 +194,13 @@ if (!is_null($items['second_level_words']))
 $this->second_level = $second_level;
 $this->second_level_redirect = $second_level_redirect;
 $this->second_level_limit_words = $second_level_limit_words;
+
+// Si el string "second_level_words" contiene comas significa que no está codificado en base64. Desde la versión 3.1.6 se codifica así para evitar problemas con una regla de mod_security.
+if (substr_count($second_level_words,",") > 2)
+{	
+	$second_level_words = base64_encode($second_level_words);
+}
+
 $this->second_level_words = $second_level_words;
 
 // Pestaña Email notifications

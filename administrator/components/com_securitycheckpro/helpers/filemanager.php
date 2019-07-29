@@ -4,6 +4,7 @@ defined('_JEXEC') or die();
 ?>
 
 <script type="text/javascript" language="javascript">
+	
 	function get_percent() {
 		url = 'index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=get_percent';
 		jQuery.ajax({
@@ -57,7 +58,37 @@ defined('_JEXEC') or die();
 		document.getElementById('log-text').style.display = "block";
 	}
 	
-	jQuery(document).ready(function() {		
+	jQuery(document).ready(function() {	
+	
+		jQuery( "#button_start_scan" ).click(function() {
+			hideElement('button_start_scan');
+			hideElement('container_resultado'); 
+			hideElement('container_repair'); 
+			hideElement('completed_message2'); 
+			boton_filenamager();
+		});
+		
+		jQuery( "#view_modal_log_button" ).click(function() {
+			view_modal_log();
+		});
+		
+		jQuery( "#filter_filemanager_search_clear_button" ).click(function() {
+			document.getElementById('filter_filemanager_search').value=''; 
+			jQuery("#adminForm").submit();
+		});
+		
+		jQuery( "#add_exception_button" ).click(function() {
+			Joomla.submitbutton('addfile_exception');
+		});
+		
+		jQuery( "#repair_button" ).click(function() {
+			Joomla.submitbutton('repair');
+		});
+		
+		jQuery( "#delete_exception_button" ).click(function() {
+			Joomla.submitbutton('deletefile_exception');
+		});
+		
 		hideElement('container_repair');
 		var repair_launched = '<?php echo $this->repair_launched; ?>';
 		if ( repair_launched ) {

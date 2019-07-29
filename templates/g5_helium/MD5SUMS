@@ -13,11 +13,11 @@ install/templates/style.html.twig	3b34efcf3e52e8e57c6fe06d3be94676
 install/templates/install.html.twig	0bad666fc1ec40e27a3118209f4706d4
 install/templates/update.html.twig	ffc84e083ab1f5f2ade026f5d6ab1ec2
 install/outlines.yaml	a91edc319bd97efe0dee638c4eb1226e
-gantry/theme.yaml	5204bbd5bac0f34f9060766c0d516551
+gantry/theme.yaml	5b2aa60f3c6bfd07912f4f7f8425b680
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
 offline.php	7fd679a21d75cf105ca8afe1a2d3b720
 MD5SUMS	d41d8cd98f00b204e9800998ecf8427e
-templateDetails.xml	49727d6dd2d29393f93fc013c0e095a8
+templateDetails.xml	47e378bd4c2656f797a77679b3a0f87d
 particles/contentcubes.yaml	286ea382c0919026540047d4e0eea53b
 particles/horizontalmenu.yaml	1916d0a5cf34d6e2ac31e736dec6db7c
 particles/totop.html.twig	b129b99b62916d5ab4b5df2985721182

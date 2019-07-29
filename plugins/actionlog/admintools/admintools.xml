@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @package   admintools
+  ~ @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @license   GNU General Public License version 3, or later
+  -->
+
+<extension version="3.8.0" type="plugin" group="actionlog" method="upgrade">
+	<name>PLG_ACTIONLOG_ADMINTOOLS</name>
+	<author>Nicholas K. Dionysopoulos</author>
+	<authorEmail>nicholas@dionysopoulos.me</authorEmail>
+	<authorUrl>http://www.akeebabackup.com</authorUrl>
+	<copyright>Copyright (c)2006-2018 Nicholas K. Dionysopoulos</copyright>
+	<license>GNU General Public License version 3, or later</license>
+	<creationDate>2018-11-30</creationDate>
+	<version>1.0</version>
+	<description>PLG_ACTIONLOG_ADMINTOOLS_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="admintools">admintools.php</filename>
+		<filename>.htaccess</filename>
+		<filename>web.config</filename>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/en-GB.plg_actionlog_admintools.ini</language>
+		<language tag="en-GB">en-GB/en-GB.plg_actionlog_admintools.sys.ini</language>
+	</languages>
+
+	<scriptfile>script.php</scriptfile>
+</extension>
