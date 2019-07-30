@@ -888,19 +888,19 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
   color: #e03c32 !important;
   outline: none;
 }
-.span4 > .btn-group > button.save-btn{
+.span4 > .btn-group > button.save-btn, .span4 > .btn-group > button.save {
     background: #e03c32;
     background-color: #e03c32 !important;
     border: 1px solid #e03c32 !important;
     border-radius: 0!important;
     padding: 10px 12px!important;
 }
-.span4 > .btn-group > button.save-btn:hover{
+.span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
     background-color: transparent !important;
     color: #e03c32 !important;
     outline: none;
 }
-.span4.offset1 > .btn-group > button.button{
+.span4.offset1 > .btn-group > button.button {
     background: #29d4ff;
     background-color: #29d4ff !important;
     border: 1px solid #29d4ff !important;

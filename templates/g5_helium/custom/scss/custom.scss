@@ -1311,6 +1311,14 @@ label {
   background-color: transparent !important;
   border-color: darken($base-primary-color,10%) !important;
 }
+
+.fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
+  background: $base-secondary-color !important;
+  background-color: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+}
+
+
 div:not(.header-right)>.btn-danger:hover,
 div:not(.header-right)>.btn-danger:focus,
 div:not(.header-right)>.btn-danger:active,
