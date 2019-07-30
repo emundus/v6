@@ -2061,18 +2061,17 @@ label[for="em-file_to_upload"]:hover {
     background: #bababa;
 }
 .em_email_block .em-form-attachments-candidateFile .input-group-btn > a:hover,
-.em-form-attachments-setupLetters .input-group-btn > a:hover
-{
+.em-form-attachments-setupLetters .input-group-btn > a:hover {
     background: #ababab;
 }
-.toggle-editor .btn .icon-eye{
+.toggle-editor .btn .icon-eye {
     margin-right:5px!important;
 }
 
-.xclsform{
+.xclsform {
     margin: 35px auto auto !important;
 }
-.xclsform button#savefilter{
+.xclsform button#savefilter {
     margin:0 20px!important;
 }
 
@@ -2080,10 +2079,9 @@ label[for="em-file_to_upload"]:hover {
     color: #fff !important;
 }
 
-.em-export-item{
+.em-export-item {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
 }
 .em-export-item > button{
     margin-right: 10px;

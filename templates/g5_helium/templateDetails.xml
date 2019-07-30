@@ -48,6 +48,7 @@
         <position>content-top-a</position>
         <position>content-top-b</position>
         <position>content-top-c</position>
+        <position>debug</position>
         <position>drawer</position>
         <position>drawer-a</position>
         <position>drawer-b</position>

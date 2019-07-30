@@ -331,6 +331,23 @@ a.copy-0:hover, a.copy-0:focus, a.copy-0:active {
 #g-navigation{
   border-bottom: 1px solid #eeeeee;
 }
+#g-navigation .g-container {
+  padding: 20px !important;
+}
+#header-a {
+  display: flex;
+  align-items: center;
+}
+#header-a .logo {
+  max-height: 64px;
+}
+#header-b {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 .header-right a {
   color: #4E5B6D;
 }

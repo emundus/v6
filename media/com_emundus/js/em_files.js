@@ -2721,7 +2721,7 @@ $(document).ready(function() {
                             $('#em-export-form').chosen({width: "95%"});
                             $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
                             $('th').css({'padding-right':"40px"});
-                            $('#main').css({width: "95%",'margin': "auto" ,'margin-bottom': "180px", 'position':"relative"});
+                            $('#main').css({width: "95%",'margin': "auto" ,'margin-bottom': "200px", 'position':"relative"});
                             $('#list-element-export').css({'float': "left",'height':"150px", 'width':"70%",'position':"absolute"});
                             $('#oelts').css({'float': "left", 'width':"30.7%", 'margin-left':"70%", 'position':"absolute"});
 
