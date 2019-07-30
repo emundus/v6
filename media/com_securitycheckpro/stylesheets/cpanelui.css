@@ -919,7 +919,7 @@ text-align: center;
 }
 
 .margin-bottom-20 {
-    margin-bottom: 20px;
+    margin-bottom: 20px !important;
 }
 
 .background-8EBBFF {
@@ -966,11 +966,11 @@ text-align: center;
 }
 
 .background-FF9EB4 {
-    background-color: #FF9EB4;
+    background-color: #FF9EB4 !important;
 }
 
 .padding-10-10-10-10 {
-    padding: 10px 10px 10px 10px;
+    padding: 10px 10px 10px 10px !important;
 }
 
 .overflow-x-auto {
@@ -1003,19 +1003,19 @@ text-align: center;
 }
 
 .background-FFBF60 {
-    background-color: #FFBF60;
+    background-color: #FFBF60 !important;
 }
 
 .background-D0F5A9 {
-    background-color: #D0F5A9;
+    background-color: #D0F5A9 !important;
 }
 
 .background-FFADF5 {
-    background-color: #FFADF5;
+    background-color: #FFADF5 !important;
 }
 
 .background-C68C51 {
-    background-color: #C68C51;
+    background-color: #C68C51 !important;
 }
 
 .margin-left-60 {
@@ -1050,4 +1050,101 @@ text-align: center;
 
 .height-300 {
     height: 300px;
+}
+
+.margin-top-20 {
+	margin-top: 20px;
+}
+
+.no-attacks {
+	background-color: green !important;
+	color: black !important; 
+	padding: 4px 8px !important;
+}
+
+.attacks-low {
+	background-color: #F3F781 !important;
+	color: black !important;
+	padding: 4px 8px !important;
+}
+
+.attacks-medium {
+	background-color: #FF8000 !important;
+	color: black !important;
+	padding: 4px 8px !important;
+}
+
+.attacks-high {
+	background-color: #FF0000 !important;
+	color: black !important;
+	padding: 4px 8px !important;
+}
+
+.map-container {
+	position: relative;
+	width: 800px;
+	height: 600px;
+}
+
+.extensions-blacklist {
+	width: 260px; 
+	height: 140px;
+}
+
+.display-none {
+	display: none !important;
+}
+
+.height-150 {
+	height:150px;
+}
+
+.margin-left-5 {
+    margin-left: 5px;
+}
+
+.margin-top-30 {
+    margin-top: 30px;
+}
+
+.analyzed-files {
+	background-color: #CEA0EA !important;	
+}
+
+.ruta-style {
+	max-width: 150px;
+	word-wrap: break-word;	
+}
+
+.width-5 {
+	width: 5%;	
+}
+
+.table td, th
+{
+text-align: center !important;
+}
+
+.integrity-files {
+	background-color: #66ADDD !important;	
+}
+
+.extensions-updated {
+	background-color: #BE81F7 !important;	
+}
+
+.height-auto {
+	height: auto;
+}
+
+.logs-style {
+	width: 100%; 
+	overflow-y: auto; 
+	_overflow: auto;
+	margin: 0 0 1em; 
+	font-size: 12px;
+}
+
+.width-35 {
+	width: 35%;
 }

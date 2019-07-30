@@ -374,19 +374,19 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     $(".is-validated").click(function () {
         var id = $(this).attr("id");
         var state = -2;
-        if ($("#"+id+" span").hasClass("glyphicon-unchecked")) {
-            $("#"+id+" span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
+        if ($(this).find("span").hasClass("glyphicon-unchecked")) {
+            $(this).find("span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
             $("#"+id).attr('title',Joomla.JText._('VALID'));
             state = 1
 
         } else {
-            if ($("#"+id+" span").hasClass("glyphicon-ok")) {
-                $("#"+id+" span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange");
+            if ($(this).find("span").hasClass("glyphicon-ok")) {
+                $(this).find("span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange");
                 $("#"+id).attr('title',Joomla.JText._('INVALID'));
                 state = 0
             } else {
-                if($("#"+id+" span").hasClass("glyphicon-warning-sign")){
-                    $("#"+id+" span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");
+                if($(this).find("span").hasClass("glyphicon-warning-sign")){
+                    $(this).find("span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");
                     $("#"+id).attr('title',Joomla.JText._('UNCHECKED'));
                     state = -2
                 }

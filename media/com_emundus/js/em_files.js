@@ -1685,7 +1685,8 @@ $(document).ready(function() {
                                         nbprg = $('#em-export-prg option').size();
                                        
                                         if (nbprg == 2) {
-                                            $('#em-export-prg option:eq(1)').attr('selected', true);
+                                            //$('#em-export-prg option:eq(1)').attr('selected', true);
+                                            document.getElementById('em-export-prg').selectedIndex = 1;
                                             $('#em-export-prg').trigger("chosen:updated");
                                             var code = $('#em-export-prg').val();
 
@@ -2428,7 +2429,8 @@ $(document).ready(function() {
                                 '<div id="exp" class="panel panel-default">'+
                                 '<b style="margin-left:15px; color:#32373D; text-transform:uppercase;">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</b>'+
                                 '<div id="exp1"><form style="margin-left:15px; margin-bottom:6px">'+
-                                    '<input type="radio" name="em-export-methode" id="em-export-methode" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+
+                                    '<input type="radio" name="em-export-methode" id="em-export-methode" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT')+
+                                    '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="2">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+
                                     '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="1">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+ '<br>'+
                                 '</form></div></div>'+
                                 '<div id="forms" class="panel panel-default">'+
@@ -3287,7 +3289,8 @@ $(document).ready(function() {
                             nbprg = $('#em-export-prg option').size();
 
                             if (nbprg == 2) {
-                                $('#em-export-prg option:eq(1)').attr('selected', true);
+                                //$('#em-export-prg option:eq(1)').attr('selected', true);
+                                document.getElementById('em-export-prg').selectedIndex = 1;
                                 $('#em-export-prg').trigger("chosen:updated");
 
                                 var code = $('#em-export-prg').val();

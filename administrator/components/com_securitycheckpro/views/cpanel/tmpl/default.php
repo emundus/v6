@@ -36,8 +36,6 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/js.cookie.j
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
-// Core plugin JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/jquery-easing/jquery.easing.min.js');
 
 $opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
 JHTML::stylesheet($opa_icons);
@@ -828,6 +826,8 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/cpanel.php
 	
 <!-- End Main panel -->	
 </div> 
+
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery-easing/jquery.easing.min.js"></script>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

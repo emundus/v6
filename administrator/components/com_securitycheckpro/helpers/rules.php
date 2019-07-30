@@ -8,7 +8,7 @@ defined('_JEXEC') or die();
 		
 		jQuery( "#filter_acl_search_button" ).click(function() {
 			document.getElementById('filter_acl_search').value='';
-			this.form.submit();
+			jQuery("#adminForm").submit();
 		});
 		
 	});	

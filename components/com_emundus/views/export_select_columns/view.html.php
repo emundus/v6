@@ -46,13 +46,19 @@ class EmundusViewExport_select_columns extends JViewLegacy
         $prg    = $jinput->getVar('code', null);
         $view   = $jinput->getVar('viewcall', null);
         $form   = $jinput->getVar('form', null);
-        
+        $all = $jinput->get('all', null);
         $camp   = $jinput->getVar('camp', null);
 
-        $program    = $m_program->getProgramme($prg);
-        $code       = array();
+        if (!empty($prg)) {
+            $program    = $m_program->getProgramme($prg);
+            $code     = $prg;
+        } else {
+            $programs = $m_program->getProgrammes();
+            $this->programs = $programs;
+        }
+
         $camps       = array();
-        $code[]     = $prg;
+        
         $camps[]     = $camp;
         //var_dump($camps);
         $current_user = JFactory::getUser();
@@ -76,11 +82,11 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
 
         if ($form == "decision")
-            $elements = $m_admission->getAdmissionElementsName(0, 0, $code);
+            $elements = $m_admission->getAdmissionElementsName(0, 0, $code, $all);
         elseif ($form == "admission")
-            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code);
+            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
         elseif ($form == "evaluation")
-            $elements = $m_eval->getEvaluationElementsName(0, 0, $code);
+            $elements = $m_eval->getEvaluationElementsName(0, 0, $code, $all);
         else
 		    $elements = EmundusHelperFiles::getElements($code, $camps);
         

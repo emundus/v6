@@ -42,6 +42,17 @@ class Ip
 	protected static $useFirstIpInChain = true;
 
 	/**
+	 * List of headers we should check to know if the user is behind a proxy. PLEASE NOTE: ORDER MATTERS!
+	 *
+	 * @var array
+	 */
+	protected static $proxyHeaders = [
+		'HTTP_CF_CONNECTING_IP',        // CloudFlare
+		'HTTP_X_FORWARDED_FOR',         // Standard for transparent proxy (e.g. NginX)
+		'HTTP_X_SUCURI_CLIENTIP',       // Sucuri firewall uses its own header
+	];
+
+	/**
 	 * Set the $useFirstIpInChain flag. See above.
 	 *
 	 * @param   bool  $value
@@ -49,6 +60,16 @@ class Ip
 	public static function setUseFirstIpInChain($value = true)
 	{
 		self::$useFirstIpInChain = $value;
+	}
+
+	/**
+	 * Getter for the list of proxy headers we can check
+	 *
+	 * @return array
+	 */
+	public static function getProxyHeaders()
+	{
+		return static::$proxyHeaders;
 	}
 
 	/**
@@ -496,28 +517,17 @@ class Ip
 		// Normally the $_SERVER superglobal is set
 		if (isset($_SERVER))
 		{
-			// Do we have an x-forwarded-for HTTP header (e.g. NginX)?
-			if (self::$allowIpOverrides && array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER))
+			// Do we have IP overrides enabled?
+			if (static::$allowIpOverrides)
 			{
-				return $_SERVER['HTTP_X_FORWARDED_FOR'];
-			}
-
-			// Are we under CloudFlare?
-			if (self::$allowIpOverrides && array_key_exists('HTTP_CF_CONNECTING_IP', $_SERVER))
-			{
-				return $_SERVER['HTTP_CF_CONNECTING_IP'];
-			}
-
-			// Are we using Sucuri firewall? They use a custom HTTP header
-			if (self::$allowIpOverrides && array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER))
-			{
-				return $_SERVER['HTTP_X_SUCURI_CLIENTIP'];
-			}
-
-			// Do we have a client-ip header (e.g. non-transparent proxy)?
-			if (self::$allowIpOverrides && array_key_exists('HTTP_CLIENT_IP', $_SERVER))
-			{
-				return $_SERVER['HTTP_CLIENT_IP'];
+				// If so, check for every proxy header
+				foreach (static::$proxyHeaders as $header)
+				{
+					if (array_key_exists($header, $_SERVER))
+					{
+						return $_SERVER[$header];
+					}
+				}
 			}
 
 			// CLI applications
@@ -538,28 +548,17 @@ class Ip
 			return '';
 		}
 
-		// Do we have an x-forwarded-for HTTP header?
-		if (self::$allowIpOverrides && getenv('HTTP_X_FORWARDED_FOR'))
+		// Do we have IP overrides enabled?
+		if (static::$allowIpOverrides)
 		{
-			return getenv('HTTP_X_FORWARDED_FOR');
-		}
-
-		// Are we under CloudFlare?
-		if (self::$allowIpOverrides && getenv('HTTP_CF_CONNECTING_IP'))
-		{
-			return getenv('HTTP_CF_CONNECTING_IP');
-		}
-
-		// Are we using Sucuri firewall? They use a custom HTTP header
-		if (self::$allowIpOverrides && getenv('HTTP_X_SUCURI_CLIENTIP'))
-		{
-			return getenv('HTTP_X_SUCURI_CLIENTIP');
-		}
-
-		// Do we have a client-ip header?
-		if (self::$allowIpOverrides && getenv('HTTP_CLIENT_IP'))
-		{
-			return getenv('HTTP_CLIENT_IP');
+			// If so, check for every proxy header
+			foreach (static::$proxyHeaders as $header)
+			{
+				if (getenv($header))
+				{
+					return getenv($header);
+				}
+			}
 		}
 
 		// Normal, non-proxied server or server behind a transparent proxy
@@ -583,18 +582,18 @@ class Ip
 	{
 		if (strlen($inet) == 4)
 		{
-			$unpacked = unpack('A4', $inet);
+			$unpacked = unpack('C4', $inet);
 		}
 		else
 		{
-			$unpacked = unpack('A16', $inet);
+			$unpacked = unpack('C16', $inet);
 		}
-		$unpacked = str_split($unpacked[1]);
+
 		$binaryip = '';
 
-		foreach ($unpacked as $char)
+		foreach ($unpacked as $byte)
 		{
-			$binaryip .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+			$binaryip .= str_pad(decbin($byte), 8, '0', STR_PAD_LEFT);
 		}
 
 		return $binaryip;
@@ -610,15 +609,15 @@ class Ip
 	 */
 	protected static function checkIPv6CIDR($ip, $cidrnet)
 	{
-		$ip = inet_pton($ip);
-		$binaryip=self::inet_to_bits($ip);
+		$ip       = inet_pton($ip);
+		$binaryip = self::inet_to_bits($ip);
 
-		list($net,$maskbits)=explode('/',$cidrnet);
-		$net=inet_pton($net);
-		$binarynet=self::inet_to_bits($net);
+		list($net, $maskbits) = explode('/', $cidrnet);
+		$net       = inet_pton($net);
+		$binarynet = self::inet_to_bits($net);
 
-		$ip_net_bits=substr($binaryip,0,$maskbits);
-		$net_bits   =substr($binarynet,0,$maskbits);
+		$ip_net_bits = substr($binaryip, 0, $maskbits);
+		$net_bits    = substr($binarynet, 0, $maskbits);
 
 		return $ip_net_bits === $net_bits;
 	}

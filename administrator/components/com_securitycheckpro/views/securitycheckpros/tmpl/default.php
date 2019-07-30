@@ -30,12 +30,11 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
-
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
+
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
 
 ?>
 
@@ -128,23 +127,25 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
 			<!-- Extensions table -->
 			<div class="card mb-3">
 				<div id="editcell">
-					<div class="editcell"><?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?></div>
+					<div class="card-header text-center">
+						<?php echo JText::_( 'COM_SECURITYCHECKPRO_COLOR_CODE' ); ?>
+					</div>
 					<table class="table table-striped">						
 						<thead>
 							<tr>
 								<td><span class="badge badge-success"> </span>
 								</td>
-								<td>
+								<td class="left">
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_GREEN_COLOR' ); ?>
 								</td>
 								<td><span class="badge badge-warning"> </span>
 								</td>
-								<td>
+								<td class="left">
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_YELLOW_COLOR' ); ?>
 								</td>
 								<td><span class="badge badge-danger"> </span>
 								</td>
-								<td>
+								<td class="left">
 									<?php echo JText::_( 'COM_SECURITYCHECKPRO_RED_COLOR' ); ?>
 								</td>
 							</tr>
@@ -161,7 +162,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
 						<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITIES');?></option>
 						<?php echo JHtml::_('select.options', $vulnerable_array, 'value', 'text', $this->state->get('filter.vulnerable'));?>
 					</select>
-					<span class="badge badge-info" class="padding-10-10-10-10 float-right"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATE' ) . $this->last_update; ?></span>
+					<span class="badge badge-info padding-10-10-10-10 float-right"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATE' ) . $this->last_update; ?></span>
 				</div>
 	
 				<div class="card-body">
@@ -269,6 +270,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
 			</div>		
 				
 </div>
+
+<?php 
+// Cargamos el contenido común...
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/end.php';
+?>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

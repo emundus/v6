@@ -6,3 +6,73 @@
 .panel-primary.excel > .panel-heading {
     background-color: #e5283b!important;
 }
+.component-content legend {
+    border: 0px;
+    padding: 0px;
+    margin-left: -6px;
+    border-radius: 0px;
+    background: inherit;
+    border-bottom: 0px;
+    margin-bottom: 0;
+    line-height: 0;
+}
+.panel-info legend {
+    color: #000000;
+    font-size: 16px;
+}
+.panel-info.excel {
+    min-height: inherit!important;
+}
+.panel-primary {
+    border-color: #00316b;
+}
+.panel-primary.excel>.panel-heading {
+    background-color: #00316b;
+}
+.panel-heading label {
+    color: #FFFFFF!important;
+    font-weight: bold!important;
+    text-shadow: none ;
+    font-size: 18px;
+}
+.label-element {
+    color: #000000!important;
+    font-weight: normal!important;
+}
+.panel-info>.panel-heading label {
+    color: #000000!important;
+    font-weight: bold!important;
+    text-shadow: none ;
+    font-size: 14px;
+}
+
+.em-element-id, .em-element-title-id {
+    min-width: 120px;
+}
+
+#program-categories-group {
+    display: flex;
+    justify-content: space-around;
+}
+
+.em-element-id {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.em-element, .em-element-title {
+    display: flex;
+    flex-direction: row;
+}
+
+.em-element-main-title {
+    margin-bottom: 10px;
+}
+
+.em-element-main-title-id > b, .em-element-main-title-label > b{
+    border-bottom: 1px solid;
+}
+
+.other-em-element {
+    margin: 10px 0;
+}

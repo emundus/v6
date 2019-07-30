@@ -272,9 +272,6 @@ $email_list = array();
                     }
                 });
 
-                // Remove all attachments from list.
-                $('#em-attachment-list').empty();
-
                 // Get the attached uploaded file if there is one.
                 if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
                     $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
@@ -555,7 +552,7 @@ $email_list = array();
         var formData = new FormData();
 
         // add assoc key values, this will be posts values
-        formData.append("file", this.file, this.getName().replace(/\s/g,'-'));
+        formData.append("file", this.file, this.getName().replace(/\s/g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
         formData.append("upload_file", true);
 
         $.ajax({

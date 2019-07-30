@@ -365,7 +365,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 		if (!$user->guest) {
 			$username = $user->username;
 		}
-		
+				
 		$pageoption = $option;
 				
 		// Chequeamos si hemos de excluir los componentes vulnerables de las excepciones
@@ -389,7 +389,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 		$lfi_exceptions = $this->pro_plugin->getValue('lfi_exceptions','','pro_plugin');
 		$check_header_referer = $this->pro_plugin->getValue('check_header_referer',1,'pro_plugin');
 		$strip_all_tags = $this->pro_plugin->getValue('strip_all_tags',1,'pro_plugin');
-		$tags_to_filter = $this->pro_plugin->getValue('tags_to_filter','applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml','pro_plugin');
+		$tags_to_filter = $this->pro_plugin->getValue('tags_to_filter','applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,img,svg,input','pro_plugin');
 		
 		/* Base64 check */
 		if ($check)
@@ -421,23 +421,32 @@ class plgSystemSecuritycheckpro extends JPlugin
 		//Strip html and php tags from string
 		if ((!(strstr($strip_tags_exceptions,$pageoption)) || $extension_vulnerable) && !(strstr($strip_tags_exceptions,'*')))
 		{
+			// If we are in backend, we must not filter all tags to avoid false positives even when creating/modifying articles.
+			if ($is_admin)
+			{				
+				$strip_all_tags = 2;
+				$tags_to_filter = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,xml,svg';
+			}
+		
 			if ($strip_all_tags == 1)
 			{
 			// Filtering all tags	
-				$string_sanitized = strip_tags($string);
+				$string_sanitized = strip_tags($string);				
 			}else
-			{					
-			// Decoding of html entities (if any) to match patterns (less and more than signs)
+			{						
+				// Decoding of html entities (if any) to match patterns (less and more than signs)
 				$string = html_entity_decode($string);
 				$tags_to_filter_final = array();
-				$tags_array = explode(",",$tags_to_filter);					
+				$tags_array = explode(",",$tags_to_filter);							
 				foreach ($tags_array as $tag)
 				{
-					$tags_to_filter_final[] = "<" . $tag . ">";
-					$tags_to_filter_final[] = "</" . $tag . ">";						
-				}							
+					$tags_to_filter_final[] = "<" . $tag;
+					$tags_to_filter_final[] = $tag . "/>";						
+				}			
+				
 				$string_sanitized = str_replace($tags_to_filter_final,"",$string);					
 			}
+			
 			if (strcmp($string_sanitized,$string) <> 0)
 			{ //Se han eliminado caracteres; escribimos en el log
 				if ($base64)
@@ -455,12 +464,39 @@ class plgSystemSecuritycheckpro extends JPlugin
 				}
 				$string = $string_sanitized;	
 				$modified = true;
+				/* Hemos de cortar la conexión, independientemente de lo que tengamos configurado en el parámetro "redirect_after_attack". Esto es necesario porque algunos ataques XSS llegan a producirse, aunque sean detectados, al haber una redirección */
+				$this->redirection(403,"",true);
+			} else 
+			{
+				$xss_forbidden_words_array = array("onload","onfocus","autofocus","javascript:","onmouseover","onerror","FSCommand","onAbort","onActivate","onAfterPrint","onAfterUpdate","onBeforeActivate","onBeforeCopy","onBeforeCut","onBeforeDeactivate","onBeforeEditFocus","onBeforePaste","onBeforePrint","onBeforeUnload","onBeforeUpdate","onBegin","onBlur","onBounce","onCellChange","onChange","onClick","onContextMenu","onControlSelect","onCopy","onCut","onDataAvailable","onDataSetChanged","onDataSetComplete","onDblClick","onDeactivate","onDrag","onDragEnd","onDragLeave","onDragEnter","onDragOver","onDragDrop","onDragStart","onDrop","onEnd","onErrorUpdate","onFilterChange","onFinish","onFocusIn","onFocusOut","onHashChange","onHelp","onInput","onKeyDown","onKeyPress","onKeyUp","onLayoutComplete","onLoseCapture","onMediaComplete","onMediaError","onMessage","onMouseDown","onMouseEnter","onMouseLeave","onMouseMove","onMouseOut","onMouseOut","onMouseUp","onMouseWheel","onMove","onMoveEnd","onMoveStart","onOffline","onOnline","onOutOfSync","onPaste","onPause","onPopState","onProgress","onPropertyChange","onReadyStateChange","onRedo","onRepeat","onReset","onResize","onResizeEnd","onResizeStart","onResume","onReverse","onRowsEnter","onRowExit","onRowDelete","onRowInserted","onScroll","onSeek","onSelect","onSelectionChange","onSelectStart","onStart","onStop","onStop","onSyncRestored","onSubmit","onTimeError","onTimeError","onUndo","onUnload","onURLFlip","seekSegmentTime");
+								
+				foreach($xss_forbidden_words_array as $word) {
+					if ((is_string($string)) && (!empty($word)))
+					{
+						if (substr_count(strtolower($string),strtolower($word)))
+						{
+							$string_sanitized = preg_replace($word,"",$string);
+							$this->grabar_log($logs_attacks,$ip,'TAGS_STRIPPED','[' .$methods_options .':' .$a .']','XSS',$request_uri,$string,$username,$pageoption);
+							$modified = true;													
+							/* Hemos de cortar la conexión, independientemente de lo que tengamos configurado en el parámetro "redirect_after_attack". Esto es necesario porque algunos ataques XSS llegan a producirse, aunque sean detectados, al haber una redirección */
+							$this->redirection(403,"",true);
+						}
+					}					
+				}				
 			}
 		}
 						
 		/* SQL Injection Prevention */
 		if (!$modified)
 		{
+			if ($is_admin)
+			{				
+				$duplicate_backslashes_exceptions = "*";
+				$line_comments_exceptions = "*";
+				$using_integers_exceptions = "*";
+				$if_statement_exceptions = "*";
+			}
+			
 			if (!(strstr($duplicate_backslashes_exceptions,$pageoption)) && !(strstr($duplicate_backslashes_exceptions,'*')))
 			{
 			// Prevents duplicate backslashes
@@ -484,7 +520,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 						}
 				}
 			}
-							
+			
 			if (!(strstr($line_comments_exceptions,$pageoption)) && !(strstr($line_comments_exceptions,'*')) && ($pageoption != 'com_users'))
 			{
 			// Line Comments
@@ -506,12 +542,12 @@ class plgSystemSecuritycheckpro extends JPlugin
 				}
 			}
 							
-			$sqlpatterns = array("/delete(?=(\s|\+|%20|%u0020|%uff00)).+from/i","/update(?=(\s|\+|%20|%u0020|%uff00)).+set/i",
-				"/drop(?=(\s|\+|%20|%u0020|%uff00)).+(database|schema|user|table|index)/i",
-				"/insert(?=(\s|\+|%20|%u0020|%uff00)).+(values|set|select)/i", "/union(?=(\s|\+|%20|%u0020|%uff00)).+select/i",
-				"/select(?=(\s|\+|%20|%u0020|%uff00)).+(from|ascii|char|concat)/i","/benchmark\(.*\)/i",
+			$sqlpatterns = array("/delete(?=(\s|\+|%20|%u0020|%uff00)).+(from)(?=(\s|\+|%20|%u0020|%uff00))/i","/update(?=(\s|\+|%20|%u0020|%uff00)).+(set)(?=(\s|\+|%20|%u0020|%uff00))/i",
+				"/drop(?=(\s|\+|%20|%u0020|%uff00)).+(database|user|table|index)(?=(\s|\+|%20|%u0020|%uff00))/i",
+				"/insert(?=(\s|\+|%20|%u0020|%uff00)).+(values|set|select)(?=(\s|\+|%20|%u0020|%uff00))/i", "/union(?=(\s|\+|%20|%u0020|%uff00)).+(select)(?=(\s|\+|%20|%u0020|%uff00))/i",
+				"/select(?=(\s|\+|%20|%u0020|%uff00)).+(from|ascii|char|concat)(?=(\s|\+|%20|%u0020|%uff00))/i","/benchmark\(.*\)/i",
 				"/md5\(.*\)/i","/sha1\(.*\)/i","/ascii\(.*\)/i","/concat\(.*\)/i","/char\(.*\)/i",
-				"/substring\(.*\)/i","/(\s|\+|%20|%u0020|%uff00)(or|and)(?=(\s|\+|%20|%u0020|%uff00))([^\[\/\]_!@·$%&=?¡¿{};,.+*:-]+)(=|<|>|<=|>=)/i");					
+				"/substring\(.*\)/i","/(\s|\+|%20|%u0020|%uff00)(or|and)(\s|\+|%20|%u0020|%uff00)(\w+)(=|<|>|<=|>=)(\w+)/i");						
 											
 			if ((!(strstr($sql_pattern_exceptions,$pageoption)) || $extension_vulnerable) && !(strstr($sql_pattern_exceptions,'*')))
 			{						
@@ -534,7 +570,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 							
 			//IF Statements
 			$ifStatements = array("/if\(.*,.*,.*\)/i");
-								
+											
 			if ((!(strstr($if_statement_exceptions,$pageoption)) || $extension_vulnerable) && !(strstr($if_statement_exceptions,'*')))
 			{	
 				$string_sanitized = preg_replace($ifStatements, "", $string);
@@ -556,7 +592,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 							
 			//Using Integers
 			$usingIntegers = array("/0x(?=[0-9])/i");
-								
+			
 				if (!(strstr($using_integers_exceptions,$pageoption)) && !(strstr($using_integers_exceptions,'*')))
 				{	
 					$string_sanitized = preg_replace($usingIntegers, "", $string);
@@ -636,28 +672,25 @@ class plgSystemSecuritycheckpro extends JPlugin
 		$app = JFactory::getApplication();
 		$is_admin = $app->isAdmin();
 				
-		if (!($is_admin))
-		{  // No estamos en la parte administrativa
-		
-			$pageoption = $option;
+		$pageoption = $option;
 			
-			if (is_array($string))
-			{				
-				foreach ($string as $string)
-				{						
-					if ((!(is_array($string))) && (mb_strlen($string)>0) && ($pageoption != ''))
-					{					
-						$this->apply_filters($ip,$string,$methods_options,$a,$request_uri,$modified,$check,$logs_attacks,$option);						
-					}
-				}
-			} else
-			{
+		if (is_array($string))
+		{				
+			foreach ($string as $string)
+			{						
 				if ((!(is_array($string))) && (mb_strlen($string)>0) && ($pageoption != ''))
-				{
-					$this->apply_filters($ip,$string,$methods_options,$a,$request_uri,$modified,$check,$logs_attacks,$option);
-				}				
+				{					
+					$this->apply_filters($ip,$string,$methods_options,$a,$request_uri,$modified,$check,$logs_attacks,$option);						
+				}
 			}
+		} else
+		{
+			if ((!(is_array($string))) && (mb_strlen($string)>0) && ($pageoption != ''))
+			{
+				$this->apply_filters($ip,$string,$methods_options,$a,$request_uri,$modified,$check,$logs_attacks,$option);
+			}				
 		}
+		
 		return $string;
 	}
 	
@@ -793,6 +826,12 @@ class plgSystemSecuritycheckpro extends JPlugin
 		
 		/* Lista de palabras sospechosas */
 		$second_level_words = $this->pro_plugin->getValue('second_level_words','','pro_plugin');
+		
+		// Desde la versión 3.1.6 la lista de palabras sospechosas se codifica en base64 para evitar problemas con una regla de mod_security.
+		if (substr_count($second_level_words,",") < 2)
+		{	
+			$second_level_words = base64_decode($second_level_words);
+		}
 					
 		if ($apply_rules_to_user)
 		{ 
@@ -1212,11 +1251,23 @@ class plgSystemSecuritycheckpro extends JPlugin
 		$redirect_url = $this->pro_plugin->getValue('redirect_url','','pro_plugin');
 		$custom_code = $this->pro_plugin->getValue('custom_code','The webmaster has forbidden your access to this site','pro_plugin');
 		
+		$app = JFactory::getApplication();
+		$is_admin = $app->isAdmin();
+				
 		if ($redirect_after_attack)
-		{
-			// Tenemos que redigir 
-			if (!$blacklist)
+		{			
+			// Tenemos que redigir
+			if (!$blacklist )
 			{
+				// Si estamos en la parte administrativa nunca hemos de hacer la redirección para evitar vulnerabilidades
+				if ($is_admin)
+				{
+					// Mostramos el código establecido por el administrador, una cabecera de Forbidden y salimos					
+					echo $custom_code;
+					header('HTTP/1.1 403 Forbidden');
+					exit;
+				}
+				
 				if ($redirect_options == 1)
 				{
 					// Redirigimos a la página de error de Joomla
@@ -1262,7 +1313,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 		// Consultamos si hemos de aplicar las reglas al usuario en función de su pertenencia a grupos.
 		$user = JFactory::getUser();
 		$apply_rules_to_user = $this->check_rules($user);
-			
+				
 		if ($apply_rules_to_user)
 		{			
 			foreach(explode(',', $methods) as $methods_options)
@@ -1302,7 +1353,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 								$error_400 = $lang->_('COM_SECURITYCHECKPRO_400_ERROR');
 								$this->redirection(400,$error_400);											
 							} // Modo alerta: no hacemos nada ya que la función 'cleanQuery' sanitiza el string
-						} else if ($secondlevel)
+						} else if ($secondlevel)						
 							{  // Second level protection
 							// Nº máximo de palabras sospechosas
 							$second_level_limit_words = intval($this->pro_plugin->getValue('second_level_limit_words',3,'pro_plugin'));
@@ -1772,7 +1823,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 		} else {
 			// Consultamos la variable de sesión "apply_rules", que nos indicará si hay que aplicar las reglas al usuario.
 			$mainframe = JFactory::getApplication();
-			$apply_rules = $mainframe->getUserState("apply_rules",'not_set');
+			$apply_rules = $mainframe->getUserState("apply_rules",'not_set');		
 			
 			switch ($apply_rules)
 			{
@@ -1815,7 +1866,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 			$query = "SELECT rules_applied FROM `#__securitycheckpro_rules` WHERE (group_id = {$grupo})";
 			$db->setQuery($query);
 			$apply_rule_to_group = $db->loadResult();
-						
+									
 			// Si hay que aplicar la regla, actualizamos la variable '$apply' y abandonamos el bucle
 			if (!$apply_rule_to_group)
 			{
@@ -2674,5 +2725,84 @@ class plgSystemSecuritycheckpro extends JPlugin
 		
 		
 	}
+	/*  Chequeamos las extensions instaladas/actualizadas para usar esa info en la gestión de integtridad de los archivos 	
+	 *
+	 * @name   string  Nombre de la extensión extraido del manifest (i.e [string] name "Akeeba Backup package")
+	 *
+	 * @type  string  Tipo de extensión (component, package...)
+	 *
+	 * $files	array  array de los ficheros incluidos en el paquete (i.e [string] 1 = "plg_quickicon_akeebabackup.zip" [string] 2 = "plg_system_akeebaupdatecheck.zip")
+	 *
+	 *
+	 * $description	string  Descripción incluida por el desarrollador (i.e J!Dump Plugin -- This plugin requires the J!Dump component to function. )
+	 *
+	 */
+	function onExtensionAfterInstall($installer, $eid)
+	{
+		$installs = null;
+		$empty = true;
+		
+		$db = JFactory::getDBO();
+		
+		try {
+						
+			// Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
+			$query = $db->getQuery(true)
+				->select(array('storage_value'))
+				->from($db->quoteName('#__securitycheckpro_storage'))
+				->where($db->quoteName('storage_key').' = '.$db->quote("installs"));
+			$db->setQuery($query);
+			$installs = $db->loadResult();
 			
+			$name = $installer->manifest->name->__toString();
+			$type = $installer->manifest->attributes()->type->__toString();
+			/*$packagename = $installer->manifest->packagename->__toString(); 
+			$files = $installer->manifest->files->file;
+			$description = $installer->manifest->description->__toString();*/
+			
+			if (!empty($installs))
+			{
+				$empty = false;
+				$installs_array = json_decode($installs,true);
+				
+				// Obtenemos sólo el array de nombre para comprobar si ya hemos añadido la extensión			
+				$array_names = array_column($installs_array, 'name');
+				
+				if (!in_array($name,$array_names))
+				{
+					$extension_data = array(
+						'name' => $name,
+						'type' => $type
+					);
+					
+					$installs_array[] = $extension_data;
+				}				
+			} else 
+			{
+				$extension_data = array(
+					'name' => $name,
+					'type' => $type
+				);
+						
+				$installs_array[] = $extension_data;
+			}
+			
+			// Codificamos el array en formato json
+			$installs_array = json_encode($installs_array);
+									
+			// Instanciamos un objeto para almacenar los datos que serán sobreescritos/añadidos
+			$object = new StdClass();					
+			$object->storage_key = "installs";
+			$object->storage_value = $installs_array;
+			
+			if ($empty) {
+				$res = $db->insertObject('#__securitycheckpro_storage', $object);
+			} else {
+				$res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
+			}
+		} catch (Exception $e) {				
+			return false;
+		}
+	}
+		
 }

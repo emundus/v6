@@ -25,4 +25,16 @@ class EmundusModelExport_select_columns extends JModelList {
 		parent::__construct();
 		$this->_db = JFactory::getDBO();
 	}
+
+	function getAllTags() {
+        $query = $this->_db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($this->_db->quoteName("#__emundus_setup_tags"));
+
+        $this->_db->setQuery($query);
+
+        return $this->_db->loadObjectList();
+    }
 }

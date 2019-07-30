@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension version="3.4" type="template" client="site" method="upgrade">
     <name>g5_helium</name>
-    <version>5.4.28</version>
-    <creationDate>March 11, 2019</creationDate>
+    <version>5.4.29</version>
+    <creationDate>June 21, 2019</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <copyright>(C) 2007 - 2017 RocketTheme, LLC. All rights reserved.</copyright>
+    <copyright>(C) 2007 - 2019 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2</license>
     <description>TPL_G5_HELIUM_DESC</description>
 
@@ -56,13 +56,13 @@
         <position>footer-a</position>
         <position>footer-b</position>
         <position>footer-c</position>
+        <position>footer-d</position>
         <position>header-a</position>
         <position>header-b</position>
         <position>header-c</position>
         <position>sidebar-a</position>
         <position>sidebar-b</position>
         <position>sidebar-c</position>
-        <position>top-a</position>
         <position>top-b</position>
         <position>top-c</position>
     </positions>

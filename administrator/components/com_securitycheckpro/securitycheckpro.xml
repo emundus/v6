@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.6" method="upgrade">
 <name>Securitycheck Pro</name>
-<creationDate>11-03-2019</creationDate>
+<creationDate>15-05-2019</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>http://www.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>3.1.5</version>
+<version>3.1.7</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description> 
 
 <!-- Public front end files  -->
@@ -94,6 +94,8 @@
 	<language tag="pt-PT">language/pt-PT/pt-PT.com_securitycheckpro.sys.ini</language>
 	<language tag="hu-HU">language/hu-HU/hu-HU.com_securitycheckpro.ini</language>
 	<language tag="hu-HU">language/hu-HU/hu-HU.com_securitycheckpro.sys.ini</language>
+	<language tag="ro-RO">language/ro-RO/ro-RO.com_securitycheckpro.ini</language>
+	<language tag="ro-RO">language/ro-RO/ro-RO.com_securitycheckpro.sys.ini</language>
 </languages>
 
 </administration>

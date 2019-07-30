@@ -43,5 +43,32 @@ ini_set('display_startup_errors', TRUE);*/
 		$xls->export_xls($cid, $elements); 
 		exit();
 		}
+
+    /**
+     * Gets all eMundus Tags from tags_table
+     */
+    public function getalltags(){
+        $user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+
+        $model = $this->getModel('export_select_columns');
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+        {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        else
+        {
+            $tags = $model->getAllTags();
+        }
+        echo json_encode((object) [
+            'status' => true,
+            'tags' => $tags
+        ]);
+        exit;
+    }
+
+
 } //END CLASS
 ?>

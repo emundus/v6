@@ -86,7 +86,7 @@ public function save()
 	$data['lfi_exceptions'] = $model->clearstring($data['lfi_exceptions'], 2);
 	$data['second_level_exceptions'] = $model->clearstring($data['second_level_exceptions'], 2);
 	$data['custom_code'] = $custom_code;
-	
+		
 	// Look for super users groups
 	$db = JFactory::getDBO();
 	$query = "SELECT id from `#__usergroups` where `title`='Super Users'" ;			
@@ -164,8 +164,7 @@ public function save()
 			$model->saveConfig($data, 'pro_plugin');
 		} 		
 	}
-	
-		
+			
 	$this->setRedirect('index.php?option=com_securitycheckpro&view=firewallconfig&'. JSession::getFormToken() .'=1');	
 }
 

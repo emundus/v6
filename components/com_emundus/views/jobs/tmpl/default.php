@@ -30,7 +30,7 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
 ?>
 
 <?php if ($user->guest): ?>
-    <div class="alert alert-warning">
+    <div class="alert alert-error">
         <b><?php echo JText::_('WARNING'); ?> ! </b> <?php echo JText::_('COM_EMUNDUS_JOBS_PLEASE_CONNECT_OR_LOGIN_TO_APPLY'); ?>
     </div>
 

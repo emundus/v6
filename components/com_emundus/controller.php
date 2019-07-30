@@ -241,34 +241,32 @@ class EmundusController extends JControllerLegacy {
         $jinput = $app->input;
         $m_profile = new EmundusModelProfile;
 
-        $student_id    = $jinput->get->get('sid', null);
-        $fnum          = $jinput->get->get('fnum', null);
-        $redirect      = $jinput->get->getBase64('redirect', null);
+        $student_id = $jinput->get->get('sid', null);
+        $fnum = $jinput->get->get('fnum', null);
+        $redirect = $jinput->get->getBase64('redirect', null);
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
-        if (empty($redirect))
-            $redirect = 'index.php';
-        else
-            $redirect = base64_decode($redirect);
+        if (empty($redirect)) {
+	        $redirect = 'index.php';
+        } else {
+	        $redirect = base64_decode($redirect);
+        }
 
-        if (empty($fnum))
-            $app->redirect($redirect);
+        if (empty($fnum)) {
+	        $app->redirect($redirect);
+        }
 
         $current_user  = JFactory::getSession()->get('emundusUser');
         $m_files = $this->getModel('files');
-
+        
         if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $result = $m_files->deleteFile($fnum);
-
-        } elseif(EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) ||
-            EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
-
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
             $app->redirect($redirect);
-
             return false;
         }
 

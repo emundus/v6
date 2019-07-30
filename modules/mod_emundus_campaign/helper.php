@@ -28,11 +28,12 @@
         /* **** CURRENT **** */
         public function getCurrent($condition, $teachingUnityDates = null)
         {
+            
             $db = JFactory::getDbo();
             $query  = $db->getQuery(true);
             if ($teachingUnityDates) {
                 $query
-                    ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
+                    ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id')
                     ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                     ->join('LEFT', $db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                     ->join('LEFT', $db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training'))
@@ -40,7 +41,7 @@
             }
             else {
                 $query  = $db->getQuery(true);
-                $query->select('ca.*, pr.apply_online, pr.code, pr.link');
+                $query->select('ca.*, pr.apply_online, pr.code, pr.link, pr.programmes as prog_type, pr.id as p_id');
                 $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
                 $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
             }
@@ -159,6 +160,37 @@
 
         public function getTotal() {
             return $this->total;
+        }   
+
+        function getCampaignDiscipline($id) {
+            $db = JFactory::getDbo();
+            $query  = $db->getQuery(true);
+            
+            $query
+                ->select('d.*')
+                ->from($db->qn('data_disciplines', 'd'))
+                ->leftJoin($db->qn('#__emundus_setup_campaigns_repeat_discipline', 'rd') . ' ON ' . $db->qn('d.id') . " = " . $db->qn("rd.discipline"))
+                ->where($db->qn('d.published') . ' = 1 AND ' . $db->qn('rd.parent_id') . ' = ' . $id);
+
+            $db->setQuery($query);
+            $res = $db->loadAssocList('id','label');
+            
+            return $res;
+        }
+
+        function getReseaux($cid) {
+            $db = JFactory::getDbo();
+            $query  = $db->getQuery(true);
+            
+            $query
+                ->select('reseaux_cult, hors_reseaux')
+                ->from($db->qn('#__emundus_setup_campaigns'))
+                ->where($db->qn('id') . ' = ' . $cid);
+
+            $db->setQuery($query);
+            
+            $res = $db->loadObject();
+            return $res;
         }
     }
 ?>
