@@ -245,6 +245,10 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   border: none !important;
 }
 
+#member-profile .controls {
+  text-align: center;
+}
+
 .edit.item-page .btn-toolbar .btn, .pager.pagenav a, p.readmore .btn, .contact .form-actions .btn, #contact-form .controls .btn-primary.validate, .profile .btn, .login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn, .search #searchForm .btn, .finder #searchForm .btn, .search #search-form .btn, .finder #search-form .btn {
   font-family: inherit;
   font-weight: 400;
@@ -370,6 +374,9 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
     background-color:transparent !important;
     color: $base-primary-color !important;
   }
+}
+
+#userDropdownMenu {
   li>a:hover, .active>a {
     background: $base-primary-color !important;
     color: #ffffff;
@@ -639,11 +646,9 @@ ul.nav.nav-tabs.nav-stacked {
 /*Accueil connecté*/
 .select {
   select {
-    border: 1px solid #999;
+    border: 1px solid $base-primary-color;
+    background-color: #eee;
     color:#666;
-  }
-  &:hover, &:focus {
-    background: #ddd;
   }
 }
 
