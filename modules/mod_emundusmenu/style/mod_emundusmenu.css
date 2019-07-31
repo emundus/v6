@@ -1,5 +1,4 @@
 /* MENU */
-
 #header-b #em_user_menu a {
     color: #000;
     text-decoration: none;
@@ -17,6 +16,10 @@
 }
 #g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
     padding: 10px 15px;
+}
+
+#g-navigation .g-main-nav .g-toplevel > li {
+    margin: 0 0.3rem !important;
 }
 
 ul.g-dropdown.g-dropdown-right.g-fade {
