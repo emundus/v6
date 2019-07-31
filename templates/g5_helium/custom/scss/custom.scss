@@ -370,6 +370,9 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
     background-color:transparent !important;
     color: $base-primary-color !important;
   }
+}
+
+#userDropdownMenu {
   li>a:hover, .active>a {
     background: $base-primary-color !important;
     color: #ffffff;
@@ -639,11 +642,9 @@ ul.nav.nav-tabs.nav-stacked {
 /*Accueil connecté*/
 .select {
   select {
-    border: 1px solid #999;
+    border: 1px solid $base-primary-color;
+    background-color: #eee;
     color:#666;
-  }
-  &:hover, &:focus {
-    background: #ddd;
   }
 }
 
