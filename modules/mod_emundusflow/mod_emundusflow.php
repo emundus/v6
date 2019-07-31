@@ -30,6 +30,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	// overide css
 	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+	$document->addStyleSheet("modules/mod_emundusflow/style/emundus.css" );
 	$header_class = $params->get('header_class', '');
 	if (!empty($header_class))
 		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );

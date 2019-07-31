@@ -6,7 +6,8 @@ JHTML::_('behavior.tooltip');
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 JHTML::stylesheet( 'templates/system/css/general.css' );
 JHTML::stylesheet( 'templates/system/css/system.css' );
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emunuds/css/emundus_checklist.css" );
 $current_user = JFactory::getSession()->get('emundusUser');
 
 $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);		
@@ -117,7 +118,7 @@ function toggleVisu(baliseId)
   }
 <?php foreach($this->attachments as $attachment) { ?>
   document.getElementById('<?php echo $attachment->id; ?>').style.visibility='<?php echo ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
-  document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
+  //document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
 <?php } ?>
 
 function OnSubmitForm() {

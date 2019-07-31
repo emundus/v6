@@ -15,6 +15,7 @@
 		<filename module="mod_emundus_checklist">tmpl/default.php</filename>
 		<filename module="mod_emundus_checklist">tmpl/index.html</filename>
 		<folder>language</folder>
+
 	</files>
 	<languages folder="language">
 		<language tag="fr-FR">fr-FR.mod_emundus_checklist.ini</language>

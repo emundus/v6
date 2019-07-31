@@ -3,6 +3,9 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.modal');
 
+
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
 $mainframe = JFactory::getApplication();
 
 $user = JFactory::getSession()->get('emundusUser');

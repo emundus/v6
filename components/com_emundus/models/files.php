@@ -3195,8 +3195,10 @@ die();*/
         $params = json_decode($element[0]);
 
         $return = [];
-        foreach ($params->sub_options->sub_values as $key => $value) {
-        	$return[$value] = $params->sub_options->sub_labels[$key];
+        if (!empty($params->sub_options->sub_values)) {
+            foreach ($params->sub_options->sub_values as $key => $value) {
+                $return[$value] = $params->sub_options->sub_labels[$key];
+            }
         }
         return $return;
     }
