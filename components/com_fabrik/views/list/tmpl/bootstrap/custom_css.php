@@ -171,11 +171,8 @@ echo <<<EOT
 .g-back-office-emundus-tableau #g-main-mainbody .platform-content .container-fluid{
     padding:0;
 }
-.g-back-office-emundus-tableau .container {
-    width: 100%;
-}
 .g-back-office-emundus-tableau .g-container, .view-list .g-container{
-    width: 100%;
+    width: 98%;
 }
 .g-back-office-emundus-tableau .header-c .open > .dropdown-menu {
     right: 0!important;
