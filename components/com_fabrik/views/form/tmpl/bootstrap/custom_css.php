@@ -846,16 +846,16 @@ button#back:hover, button#back:active, button#back:focus,
 #em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus,
 .btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
   background-color: transparent !important;
-  color: #29d4ff !important;
+  color: #29d4ff;
   outline: none;
 }
 button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
 .indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
 .em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
 .btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
-  background-color: #e03c32 !important;
-  background: #e03c32 !important;
-  border: 1px solid #e03c32 !important;
+  background-color: #e03c32;
+  background: #e03c32;
+  border: 1px solid #e03c32;
   color:white;
   text-shadow: none;
   text-transform: none;
@@ -890,14 +890,14 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
 }
 .span4 > .btn-group > button.save-btn, .span4 > .btn-group > button.save {
     background: #e03c32;
-    background-color: #e03c32 !important;
-    border: 1px solid #e03c32 !important;
+    background-color: #e03c32;
+    border: 1px solid #e03c32;
     border-radius: 0!important;
     padding: 10px 12px!important;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
     background-color: transparent !important;
-    color: #e03c32 !important;
+    color: #e03c32;
     outline: none;
 }
 .span4.offset1 > .btn-group > button.button {
