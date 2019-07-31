@@ -116,13 +116,10 @@ legend {
 }
 
 .em_form {
-	border-bottom-color: #EECDD8;
-	border-bottom-style: solid;
-	border-bottom-width: 1px;
-	padding-bottom: 2px;
+	border-bottom: none !important;
 }
 
-.need_missing {
+/*.need_missing {
 	background: url(../images/icones/incomplete.png) 0 0 no-repeat;
 	background-size: 16px;
 	list-style: none;
@@ -158,7 +155,7 @@ p.need_missing {
 
 p.need_ok {
 	margin-left: 25px;
-}
+}*/
 
 .print {
 	background: url(../images/icones/printer.png) 0 0 no-repeat;
@@ -166,7 +163,7 @@ p.need_ok {
 	text-align: left;
 }
 
-p.need_missing_fac {
+/*p.need_missing_fac {
 	margin-left: 25px;
 }
 
@@ -176,7 +173,7 @@ p.need_missing_fac {
 	list-style: none;
 	padding: 1px 0px 4px 20px;
 	text-align: left;
-}
+}*/
 
 #legend .need_missing_fac,
 #legend .need_missing,
@@ -219,10 +216,10 @@ p.description {
 	padding-top: 10px;
 }
 
-#attachment_list legend {
+/*#attachment_list legend {
 	font-size: 14px;
 	height: 100%;
-}
+}*/
 
 #attachment_list fieldset {
 	padding: 5px;
@@ -588,8 +585,8 @@ h1 a {
 	background-image: none;
 }
 
-/** 
- * Table styles 
+/**
+ * Table styles
  * application_form
  **/
 
@@ -1154,7 +1151,7 @@ fieldset {
 	transition: background-color 2s, transform 2s;
 }
 
-#attachment_list_mand fieldset:hover {
+/*#attachment_list_mand fieldset:hover {
 	background-color: #E1BC47;
 }
 
@@ -1174,7 +1171,7 @@ fieldset {
 #attachment_list_opt fieldset.hover {
 	background-color: #E1BC47;
 }
-
+*/
 /* Diplaying user photos and email in list views */
 
 .em_list_photo {
@@ -1259,4 +1256,11 @@ fieldset {
 }
 .select select:disabled ~ .select_arrow {
     border-top-color: #CCCCCC;
+}
+footer#g-footer {
+	padding: 20px !important;
+}
+footer#g-footer {
+	background: transparent;
+	border-top: 1px solid #bbb;
 }

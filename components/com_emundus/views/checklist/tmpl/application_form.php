@@ -1,6 +1,10 @@
 <?php 
 //JHTML::_('behavior.modal'); 
 JHTML::stylesheet('media/com_emundus/css/emundus.css' );
+
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
+
 defined('_JEXEC') or die('Restricted access');
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');

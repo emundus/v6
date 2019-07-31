@@ -6,6 +6,9 @@ require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'stats.p
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');
 
+$document 	= JFactory::getDocument();
+$document->addStyleSheet("modules/mod_emundus_graphs/style/mod_emundus_graph.css" );
+
 $listUrl1 = $params->get('mod_em_list_id1');
 $user_url = $params->get('mod_em_list_id2', 'index.php?option=com_emundus&view=users&Itemid=592');
 

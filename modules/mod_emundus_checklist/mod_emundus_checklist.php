@@ -13,7 +13,8 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("modules/mod_emundus_checklist/style/emundus_checklist.css" );
 $user = JFactory::getSession()->get('emundusUser');
 
 if (isset($user->fnum) && !empty($user->fnum)) {
