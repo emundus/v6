@@ -20,12 +20,14 @@ $jooomla_menu_name = $params->get('menu_name', 0);
 
 $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
+$show_logout = $params->get('show_logout', '1');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
-if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0')
+if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
+}
 
 // used for getting the page we are currently on.
 $app = JFactory::getApplication();

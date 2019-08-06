@@ -17,10 +17,9 @@
                     <li class="<?php echo ($item->id)?'menu-item':''; echo ($item->id == $active_id)?' menu-item-active':''; ?>"><a href="<?php echo $item->flink ?>"><?php echo $item->title; ?></a></li>
                 <?php endforeach; ?>
             <?php endif; ?>
-            <?php
-            $userToken = JSession::getFormToken();
-            echo '<li class="user-logout"><a href="index.php?option=com_users&task=user.logout&' . $userToken . '=1">'.JText::_('LOGOUT').'</a></li>';
-            ?>
+	        <?php if ($show_logout == '1') :?>
+                <?= '<li class="user-logout"><a href="index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
+            <?php endif; ?>
         </ul>
     </div>
 </div>
