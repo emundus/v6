@@ -70,9 +70,6 @@ button#back:hover, button#back:active, button#back:focus,
     width:55%;
 }
 
-.main-page-file-info #print {
-    display: none !important;
-}
 /*******************Mes dossiers de candidature*****************/
 
 .main-page-file-info p {
