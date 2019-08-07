@@ -23,13 +23,13 @@ button.btn-primary{
   }
 }
 
-a.btn{
+a.btn, , span.btn {
   background: $base-primary-color;
   background-color: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
   border-radius: 0!important;
   padding: 8px 12px!important;
-  :hover{
+  :hover {
     background-color: transparent !important;
     color: $base-primary-color !important;
     outline: none;
