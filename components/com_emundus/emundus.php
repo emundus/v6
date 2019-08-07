@@ -150,6 +150,8 @@ JText::script('COM_EMUNDUS_YOU_HAVE_SELECT');
 JText::script('COM_EMUNDUS_SELECT_ALL');
 JText::script('COM_EMUNDUS_FILE');
 JText::script('COM_EMUNDUS_FILES');
+JText::script('COM_EMUNDUS_SELECT_USER');
+JText::script('COM_EMUNDUS_SELECT_USERS');
 
 
 // view user

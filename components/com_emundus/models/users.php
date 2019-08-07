@@ -331,14 +331,22 @@ class EmundusModelUsers extends JModelList {
         return $query;
     }
 
-    public function getUsers() {
+    public function getUsers($limit_start = null, $limit = null) {
         $session = JFactory::getSession();
+
+        if ($limit_start === null) {
+            $limit_start = $session->get('limitstart');
+        }
+        if ($limit === null) {
+            $limit = $session->get('limit');
+        }
+
         // Lets load the data if it doesn't already exist
         try {
 
             $query = $this->_buildQuery();
             $query .= $this->_buildContentOrderBy();
-            return $this->_getList( $query ,$session->get('limitstart'), $session->get('limit'));
+            return $this->_getList($query, $limit_start, $limit);
 
         } catch(Exception $e) {
             throw new $e;
@@ -1165,19 +1173,24 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function changeBlock($users, $state) {
+
         try {
             $db = $this->getDbo();
             foreach ($users as $uid) {
                 $uid = intval($uid);
                 $query = "UPDATE #__users SET block = ".$state." WHERE id =". $uid;
+
                 $db->setQuery($query);
                 $db->query();
                 if ($state == 0)
                     $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.' WHERE user_id = '.$uid);
+
                 else
                     $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = NOW() WHERE user_id = '.$uid);
+
                 $res = $db->query();
             }
+
             return $res;
 
         } catch(Exception $e) {

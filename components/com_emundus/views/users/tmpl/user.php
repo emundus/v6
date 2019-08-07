@@ -293,16 +293,13 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
         let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
-
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
+        //console.log(countCheckedCheckbox);
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_SELECT_USERS');
         if (countCheckedCheckbox !== 0) {
-            $( '<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>' ).prependTo( "#countCheckedCheckbox" );
-            //$('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
-
-            console.log('nb dossier est de'+ nbChecked);
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {
             $('#countCheckedCheckbox').html('');
-            console.log('pas de dossier sélectionner');
+
         }
 
     });
