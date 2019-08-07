@@ -22,8 +22,8 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
 </div>-->
 <div class="row">
-    <div class="panel panel-default widget">
-        <div class="panel-heading">
+    <div class="panel panel-default widget em-container-form">
+        <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
@@ -183,41 +183,41 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                         }
                         echo '</tbody></table>';
                         if (count($this->userAttachments) > 0 && EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
-                            echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
+                            echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
                                     <span class="glyphicon glyphicon-trash"></span></button></div> ';
                         } ?>
                         </div>
                     </div>
                 </div>
 
-            <div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+            <div class="modal fade em-modal-actions" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header em-modal-actions-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body em-modal-actions-body">
 
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer em-modal-actions-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
                             <button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+            <div class="modal fade em-modal-form" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header em-modal-form-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body em-modal-form-body">
                             <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer em-modal-form-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
                         </div>
                     </div>
@@ -374,19 +374,19 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     $(".is-validated").click(function () {
         var id = $(this).attr("id");
         var state = -2;
-        if ($("#"+id+" span").hasClass("glyphicon-unchecked")) {
-            $("#"+id+" span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
+        if ($(this).find("span").hasClass("glyphicon-unchecked")) {
+            $(this).find("span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
             $("#"+id).attr('title',Joomla.JText._('VALID'));
             state = 1
 
         } else {
-            if ($("#"+id+" span").hasClass("glyphicon-ok")) {
-                $("#"+id+" span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange");
+            if ($(this).find("span").hasClass("glyphicon-ok")) {
+                $(this).find("span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange");
                 $("#"+id).attr('title',Joomla.JText._('INVALID'));
                 state = 0
             } else {
-                if($("#"+id+" span").hasClass("glyphicon-warning-sign")){
-                    $("#"+id+" span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");
+                if($(this).find("span").hasClass("glyphicon-warning-sign")){
+                    $(this).find("span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");
                     $("#"+id).attr('title',Joomla.JText._('UNCHECKED'));
                     state = -2
                 }

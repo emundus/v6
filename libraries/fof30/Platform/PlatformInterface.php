@@ -371,11 +371,11 @@ interface PlatformInterface
 	/**
 	 * Adds a message
 	 *
-	 * @param	string	$title
-	 * @param	string	$logText
-	 * @param	string	$extension
+	 * @param   string|array  $title      A title, or an array of additional fields to add to the log entry
+	 * @param   string        $logText    The translation key to the log text
+	 * @param   string        $extension  The name of the extension logging this entry
 	 *
-	 * @return void
+	 * @return  void
 	 */
 	public function logUserAction($title, $logText, $extension);
 
@@ -496,4 +496,18 @@ interface PlatformInterface
 	 * @return  mixed
 	 */
 	public function getToken($formToken = false, $forceNew = false);
+
+	/**
+	 * Are plugins allowed to run in CLI mode?
+	 *
+	 * @return  bool
+	 */
+	public function isAllowPluginsInCli();
+
+	/**
+	 * Set whether plugins are allowed to run in CLI mode
+	 *
+	 * @param   bool  $allowPluginsInCli
+	 */
+	public function setAllowPluginsInCli($allowPluginsInCli);
 }

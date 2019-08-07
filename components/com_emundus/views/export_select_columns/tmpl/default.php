@@ -2,7 +2,8 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css" );
 $eMConfig       = JComponentHelper::getParams('com_emundus');
 $current_user   = JFactory::getUser();
 $view           = JRequest::getVar('v', null, 'GET', 'none',0);
@@ -22,50 +23,6 @@ if (!empty($s_elements)) {
 }
 
 ?>
-<style>
-    .component-content legend {
-         border: 0px;
-         padding: 0px;
-         margin-left: -6px;
-         border-radius: 0px;
-         background: inherit;
-         border-bottom: 0px;
-         margin-bottom: 0;
-         line-height: 0;
-    }
-    .panel-info legend {
-        color: #000000;
-        font-size: 14px;
-    }
-    .panel-info.excel {
-        min-height: inherit!important;
-    }
-    .panel-primary {
-        border-color: #00316b;
-    }
-    .panel-primary.excel>.panel-heading {
-        background-color: #00316b;
-    }
-    .panel-heading label {
-        color: #FFFFFF!important;
-        font-weight: bold!important;
-        text-shadow: none ;
-        font-size: 18px;
-    }
-    .label-element {
-        color: #000000!important;
-        font-weight: normal!important;
-    }
-    .panel-info>.panel-heading label {
-        color: #000000!important;
-        font-weight: bold!important;
-        text-shadow: none ;
-        font-size: 14px;
-    }
-    label {
-        display: inline!important;
-    }
-</style>
 
     <?php
     if (is_array($this->elements) && count($this->elements) > 0) {
@@ -292,5 +249,21 @@ if (!empty($s_elements)) {
 
         }
     };
+
+
+    function copyid() {
+        /* Get the text field */
+        console.log(this);
+        var copyText = document.getElementById("myInput");
+
+        /* Select the text field */
+        copyText.select();
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+
+        /* Alert the copied text */
+        alert("Copied the text: " + copyText.value);
+    }
 
 </script>

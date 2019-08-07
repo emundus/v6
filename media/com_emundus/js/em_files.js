@@ -1685,7 +1685,8 @@ $(document).ready(function() {
                                         nbprg = $('#em-export-prg option').size();
                                        
                                         if (nbprg == 2) {
-                                            $('#em-export-prg option:eq(1)').attr('selected', true);
+                                            //$('#em-export-prg option:eq(1)').attr('selected', true);
+                                            document.getElementById('em-export-prg').selectedIndex = 1;
                                             $('#em-export-prg').trigger("chosen:updated");
                                             var code = $('#em-export-prg').val();
 
@@ -2428,7 +2429,8 @@ $(document).ready(function() {
                                 '<div id="exp" class="panel panel-default">'+
                                 '<b style="margin-left:15px; color:#32373D; text-transform:uppercase;">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</b>'+
                                 '<div id="exp1"><form style="margin-left:15px; margin-bottom:6px">'+
-                                    '<input type="radio" name="em-export-methode" id="em-export-methode" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+
+                                    '<input type="radio" name="em-export-methode" id="em-export-methode" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT')+
+                                    '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="2">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+
                                     '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="1">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+ '<br>'+
                                 '</form></div></div>'+
                                 '<div id="forms" class="panel panel-default">'+
@@ -2721,7 +2723,7 @@ $(document).ready(function() {
                             $('#em-export-form').chosen({width: "95%"});
                             $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
                             $('th').css({'padding-right':"40px"});
-                            $('#main').css({width: "95%",'margin': "auto" ,'margin-bottom': "180px", 'position':"relative"});
+                            $('#main').css({width: "95%",'margin': "auto" ,'margin-bottom': "200px", 'position':"relative"});
                             $('#list-element-export').css({'float': "left",'height':"150px", 'width':"70%",'position':"absolute"});
                             $('#oelts').css({'float': "left", 'width':"30.7%", 'margin-left':"70%", 'position':"absolute"});
 
@@ -3287,7 +3289,8 @@ $(document).ready(function() {
                             nbprg = $('#em-export-prg option').size();
 
                             if (nbprg == 2) {
-                                $('#em-export-prg option:eq(1)').attr('selected', true);
+                                //$('#em-export-prg option:eq(1)').attr('selected', true);
+                                document.getElementById('em-export-prg').selectedIndex = 1;
                                 $('#em-export-prg').trigger("chosen:updated");
 
                                 var code = $('#em-export-prg').val();
@@ -4364,11 +4367,11 @@ $(document).ready(function() {
                 var i = 0;
                 var objclass = [];
 
-                var code = $("#em-export-prg").val();
+                var code = $("#em-export-prg").val().replace(/\s/g, '');
                 var year = "";
 
                 if ($("#em-export-camp").val() != "0"){
-                    var campaign = $("#em-export-camp :selected").text();
+                    var campaign = $("#em-export-camp :selected").text().replace(/\s/g, '');
                     year = campaign.indexOf("(") + 1;
                     year = campaign.slice(year, -1)
                 }
@@ -4871,6 +4874,8 @@ $(document).ready(function() {
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
                 var code = $('#em-doc-trainings').val();
                 var idTmpl = $('#em-doc-tmpl').val();
+                var cansee = $('#em-doc-cansee').val();
+
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -4879,7 +4884,7 @@ $(document).ready(function() {
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
                     dataType:'json',
-                    data:{fnums: fnums, code:code, id_tmpl: idTmpl},
+                    data:{fnums: fnums, code:code, id_tmpl: idTmpl, cansee: cansee},
                     success: function(result) {
                         $('.modal-body').empty();
                         if (result.status) {

@@ -1,0 +1,108 @@
+/* Module Campagnes */
+#navfilter .navsearch .navsearch-content .input-group-btn button {
+    margin-left: -5px !important;
+    height: 34px !important;
+    background-color: #e03c32;
+    background: #e03c32;
+    color: white;
+    margin-bottom: 0;
+}
+.navsearch input {
+    margin-bottom: 0 !important;
+    height: 34px !important;
+    border-radius:0;
+}
+.navsearch label {
+    margin: 0 !important;
+}
+#navfilter .navsearch .navsearch-content .input-group-btn button {
+    margin-left: -5px !important;
+    height: 34px !important;
+    background-color: #e03c32;
+    background: #e03c32;
+    margin-bottom: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+#navfilter .navsearch .navsearch-content .input-group label input{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.campaignbymonth {
+    margin-top: 0 !important;
+}
+
+.campaign-title {
+    color: #292929;
+    font-weight: 600;
+    margin-bottom: 20px !important;
+    padding-left: 0;
+}
+
+.campaign-title::after {
+    content: "\f0a1";
+    font-family: FontAwesome;
+    margin-left: 10px;
+}
+
+.campaigntext.blue h4 a:hover {
+    text-decoration: underline;
+}
+
+.campaigntext.blue h4 {
+    margin-bottom: 10px !important;
+}
+
+.campaigntext.blue h4 a {
+    font-size: 1em;
+    display: block;
+    width: 100% !important;
+}
+
+.campaigntext.blue p {
+    padding-left: 45px;
+}
+
+.campaingapplycontent {
+    font-size: 15px;
+    padding: 0;
+}
+
+#navfilter .navsearch .navsearch-content .input-group-btn button::before {
+    content: "\f002";
+    font-family: FontAwesome;
+    margin-right: 6px;
+}
+
+.navsearch {
+    margin-left: 0;
+    margin-top: 0;
+}
+
+.campaign {
+    margin-top: 5rem !important;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #42c69d;
+    font-size: 2rem;
+}
+
+.position-me {
+    position: relative;
+}
+
+.campaigns-list .campaignbymonth .campaign-month-label .position-me {
+    top: 26px;
+}
+
+.rotate-me.blue p {
+    padding-left: 10px;
+    font-size: large;
+    line-height: 25px;
+}
+
+.rotate-me.orange {
+    background-color: #bf0e04;
+    border-color: #bf0e04;
+    color: #fff;
+}

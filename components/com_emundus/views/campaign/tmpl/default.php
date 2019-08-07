@@ -15,8 +15,8 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 $user = JFactory::getUser();
 
 ?>
-<div id="em_campaigns">
-<form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" />
+<div id="em_campaigns" class="em_campaigns">
+<form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" class="em_campaigns_form" />
 	 <input type="hidden" name="option" value="com_emundus"/>
 	 <input type="hidden" name="view" value="<?php echo $v; ?>"/>
 	 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
@@ -25,7 +25,7 @@ $user = JFactory::getUser();
 	 <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
 <?php 
 if(isset($this->active_campaigns)&&!empty($this->active_campaigns)){ ?>
- <table id="userlist" width="100%">
+ <table id="userlist" width="100%" class="em_campaigns_form_table">
   <thead>
   <tr>
 	<td align="center" colspan="18"><?php echo $this->pagination->getResultsCounter(); ?></td>

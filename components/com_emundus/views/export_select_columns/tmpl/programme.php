@@ -3,7 +3,8 @@ defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
 //JHTML::stylesheet('media/com_emundus/css/emundus.css' );
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css" );
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
 $view = JRequest::getVar('v', null, 'GET', 'none',0);
@@ -23,58 +24,6 @@ if (!empty($s_elements)) {
 	}
 }
 ?>
-<style>
-    .component-content legend {
-         border: 0px;
-         padding: 0px;
-         margin-left: -6px;
-         border-radius: 0px;
-         background: inherit;
-         border-bottom: 0px;
-         margin-bottom: 0;
-         line-height: 0;
-    }
-    .panel-info legend {
-        color: #000000;
-        font-size: 16px;
-    }
-    .panel-info.excel {
-        min-height: inherit!important;
-    }
-    .panel-primary {
-        border-color: #00316b;
-    }
-    .panel-primary.excel>.panel-heading {
-        background-color: #00316b;
-    }
-    .panel-heading label {
-        color: #FFFFFF!important;
-        font-weight: bold!important;
-        text-shadow: none ;
-        font-size: 18px;
-    }
-    .label-element {
-        color: #000000!important;
-        font-weight: normal!important;
-    }
-    .panel-info>.panel-heading label {
-        color: #000000!important;
-        font-weight: bold!important;
-        text-shadow: none ;
-        font-size: 14px;
-    }
-
-    .em-element-id, .em-element-title-id {
-        width: 120px;
-        display: inline-block;
-    }
-
-    .em-element-label, .em-element-title-label {
-        width: auto;
-        display: inline-block;
-    }
-
-</style>
 
 	<?php if (count($this->elements) > 0) : ?>
         <div class="em-program-title">
@@ -108,12 +57,12 @@ if (!empty($s_elements)) {
                         </div>
 
                         <div class="panel-body">
-                            <div class="em-element-title">
-                                <div class="em-element-title-id">
-                                    <p>ID</p>
+                            <div class="em-element-title em-element-main-title">
+                                <div class="em-element-title-id em-element-main-title-id">
+                                    <b><?=JText::_('ID')?></b>
                                 </div>
-                                <div class="em-element-title-label">
-                                    <p>Label utilisé</p>
+                                <div class="em-element-title-label em-element-main-title-label">
+                                    <b><?=JText::_('LABEL')?></b>
                                 </div>
                             </div>
             <?php elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') : ?>
@@ -141,16 +90,15 @@ if (!empty($s_elements)) {
                                 </legend>
                             </div>
                             <div class="panel-body">
-                                <div class="panel-body">
                                     <div class="em-element-title">
-                                        <div class="em-element-title-id">
+                                        <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left" title="<?=JText::_('SELECT_TO_COPY');?>">
                                             <p></p>
                                         </div>
                                         <div class="em-element-title-label">
                                             <p></p>
                                         </div>
                                     </div>
-                                </div>
+
 			<?php else : ?>
 				<?php if ($t->group_id != $grp_tmp && $grp_tmp != '') : ?>
 						    </div>
@@ -163,9 +111,8 @@ if (!empty($s_elements)) {
                                 </legend>
                             </div>
                             <div class="panel-body">
-                                <div class="panel-body">
                                     <div class="em-element-title">
-                                        <div class="em-element-title-id">
+                                        <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left" title="<?=JText::_('SELECT_TO_COPY');?>">
                                             <p></p>
                                         </div>
                                         <div class="em-element-title-label">
@@ -175,7 +122,7 @@ if (!empty($s_elements)) {
 				<?php endif; ?>
 			<?php endif; ?>
                             <div class="em-element">
-                                <div class="em-element-id">
+                                <div class="em-element-id" onclick="copyid('<?php echo '${'.$t->id.'}'; ?>');" data-toggle="tooltip" data-placement="left" title="<?=JText::_('SELECT_TO_COPY');?>">
                                     <?php echo '${'.$t->id.'}'; ?>
                                 </div>
                                 <div class="em-element-label">
@@ -197,4 +144,3 @@ if (!empty($s_elements)) {
      <?php else: ?>
         <?php echo JText::_('NO_FORM_DEFINED'); ?>
     <?php endif; ?>
-

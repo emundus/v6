@@ -14,7 +14,7 @@ if ($s == '')
 
 ?>
 
-<form action = "<?php if($this->edit == 1){echo "index.php?option=com_emundus&controller=users&task=edituser";}else{echo "index.php?option=com_emundus&controller=users&task=adduser";}?>" id="em-add-user" role="form" method="post">
+<form action = "<?php if($this->edit == 1){echo "index.php?option=com_emundus&controller=users&task=edituser";}else{echo "index.php?option=com_emundus&controller=users&task=adduser";}?>" id="em-add-user" class="em-addUser" role="form" method="post">
 	<h3>
 		<?php
 			if($this->edit == 1)
@@ -28,34 +28,34 @@ if ($s == '')
 		?>
 	</h3>
 
-	<fieldset>
+	<fieldset class="em-addUser-detail">
 		<?php if (JPluginHelper::getPlugin('authentication','ldap') && $this->edit == 0) :?>
-			<div class="form-group">
+			<div class="form-group em-addUser-detail-ldap">
 				<input type="checkbox" id="ldap" name="ldap" style="margin-bottom:5px;" />
 				<label class="control-label" for="ldap">LDAP</label>
 			</div>
 		<?php endif; ?>
-		<div id="user-information">
-			<div class="form-group">
+		<div id="user-information" class="em-addUser-detail-info">
+			<div class="form-group em-addUser-detail-info-firstname">
 				<label class="control-label" for="firstname"><?php echo JText::_('FIRSTNAME_FORM'); ?></label>
 				<input type="text" class="form-control" id="fname" name="firstname" <?php if($this->edit == 1){echo 'value="'.$this->user['firstname'].'"';}?>/>
 			</div>
-			<div class="form-group">
+			<div class="form-group em-addUser-detail-info-lastname">
 				<label class="control-label" for="lastname"><?php echo JText::_('LASTNAME_FORM'); ?></label>
 				<input type="text" class="form-control" id="lname" name = "lastname" <?php if($this->edit == 1){echo 'value="'.$this->user['lastname'].'"';}?>/>
 			</div>
-			<div class="form-group">
+			<div class="form-group em-addUser-detail-info-id">
 				<label class="control-label" for="login"><?php echo JText::_('LOGIN_FORM'); ?></label>
 				<input type="text" class="form-control"  id="login" name = "login" <?php if($this->edit == 1){echo 'value="'.$this->user['login'].'"';}?> />
 			</div>
-			<div class="form-group">
+			<div class="form-group em-addUser-detail-info-mail">
 				<label class="control-label" for="email"><?php echo JText::_('EMAIL_FORM'); ?></label>
 				<input type="text" class="form-control" id="mail" name = "email" <?php if($this->edit == 1){echo 'value="'.$this->user['email'].'"';}?>/>
 			</div>
 		</div>
 	</fieldset>
-	<fieldset>
-		<div class="form-group">
+	<fieldset class="em-addUser-profil">
+		<div class="form-group em-addUser-profil-selectProfil">
 			<label class="control-label" for="profiles"><?php echo JText::_('PROFILE_FORM'); ?></label>
 			<br/>
 			<select id="profiles" name="profiles" class="em-chosen">
@@ -65,7 +65,7 @@ if ($s == '')
 				<?php endforeach;?>
 			</select>
 			<br/><br/>
-			<div>
+			<div class="em-addUser-profil-selectProfil-multiple">
 				<label class="control-label" for="otherprofile"><?php echo JText::_('ALL_PROFILES'); ?></label><br/>
 				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
 					<option value="0" disabled="disabled"><?php echo JText::_('PLEASE_SELECT')?></option>
@@ -75,7 +75,7 @@ if ($s == '')
 				</select>
 			</div>
 		</div>
-		<div class="form-group em-hidden-nonapli-fields" <?php if(($this->edit != 1) || ($this->user['university_id'] == 0)){echo 'style="display:none;"';}?>>
+		<div class="form-group em-hidden-nonapli-fields em-addUser-university" <?php if(($this->edit != 1) || ($this->user['university_id'] == 0)){echo 'style="display:none;"';}?>>
 			<label for="university_id"><?php echo JText::_('UNIVERSITY_FROM'); ?></label>
 			<br/>
 			<select name="university_id" class="em-chosen" id="univ">
@@ -85,7 +85,7 @@ if ($s == '')
 				<?php endforeach;?>
 			</select>
 		</div>
-		<div class="form-group em-hidden-nonapli-fields" <?php if(($this->edit != 1) || (empty($this->uGroups))){echo 'style="display:none;"';}?>>
+		<div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?php if(($this->edit != 1) || (empty($this->uGroups))){echo 'style="display:none;"';}?>>
 			<label for="groups"><?php echo JText::_('GROUPS'); ?></label>
 			<br/>
 			<select class = "em-chosen" name = "groups" id = "groups" multiple="multiple">
@@ -96,7 +96,7 @@ if ($s == '')
 			</select>
 		</div>
 
-		<div class="form-group em-hidden-appli-fields" <?php if(($this->edit != 1) || (empty($this->uCamps))){echo 'style="display:none;"';}?>>
+		<div class="form-group em-hidden-appli-fields em-addUser-campaign" <?php if(($this->edit != 1) || (empty($this->uCamps))){echo 'style="display:none;"';}?>>
 			<label for="campaigns"><?php echo JText::_('CAMPAIGN'); ?></label>
 			<br/>
 			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen">
@@ -114,7 +114,7 @@ if ($s == '')
 		
 		
 		<!-- LDAP registration will go inside the div -->
-		<div id="ldap-form" style="display : none;">
+		<div id="ldap-form" class="em-addUser-searchLdap" style="display : none;">
 			<div id="ldap-errors"></div>
 			<label for="s"><strong><?php echo JText::_( 'COM_EMUNDUS_SEARCH_IN_LDAP');?> </strong></label><br/>
 			<input type="text" class="input-xxlarge" name="s" id="s" value="<?php echo $s; ?>" /><div id="sldap" type="button" class="button" style="margin-bottom:10px;"> <?php echo JText::_('SEARCH');?></div>

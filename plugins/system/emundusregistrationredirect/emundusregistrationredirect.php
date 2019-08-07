@@ -26,13 +26,15 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 		$app = JFactory::getApplication();
 		$jinput = $app->input;
 
-		if ($app->isAdmin())
+		if ($app->isAdmin()) {
 			return true;
+		}
 
 		if (($jinput->get('option', '') == 'com_user' && $jinput->get('view', '') == 'register') || ($jinput->get('option', '') == 'com_users' && $jinput->get('view', '') == 'registration')) {
 
-			if (!defined('DS'))
+			if (!defined('DS')) {
 				define('DS', DIRECTORY_SEPARATOR);
+			}
 
 			// Load params
 			$Itemid = $this->params->get('item_id');
@@ -44,8 +46,12 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 			}
 
 			// If the URL to registration is not found, don't redirect.
-			if (empty($url))
+			if (empty($url)) {
 				return false;
+			}
+
+			// By using a translation tag we can get a separate SEF URL for english or french.
+			$url = JText::_($url);
 
 			// Add the itemID we want to the URL.
 			$url_itemid = '';

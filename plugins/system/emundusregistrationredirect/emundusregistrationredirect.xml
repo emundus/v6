@@ -19,7 +19,7 @@
 	<config>
 		<fields name="params" addfieldpath="/components/com_emundus/fields">
 			<fieldset name="basic">
-				<field name="url_to_registration" type="text" size="5" default="" label="URL" description="The URL for the registration page."/>
+				<field name="url_to_registration" type="text" size="5" default="" label="URL" description="The URL for the registration page, you can put a JText tag here for SEF URls that are translated."/>
 				<field name="item_id" type="text" size="5" default="" label="Item ID for registation page" description="Add an item ID here if you would like to assign specific modules to the registration page."/>
 			</fieldset>
 		</fields>

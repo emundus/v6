@@ -22,10 +22,6 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
-
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 

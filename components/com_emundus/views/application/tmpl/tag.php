@@ -7,8 +7,8 @@ JFactory::getSession()->set('application_layout', 'tag');
 
 <div class="tags">
     <div class="row">
-        <div class="panel panel-default widget">
-            <div class="panel-heading">
+        <div class="panel panel-default widget em-container-tags">
+            <div class="panel-heading em-container-tags-heading">
                 <h3 class="panel-title" style="display:inline-block">
                     <span class="glyphicon glyphicon-tags"></span> 
                     <?php echo JText::_('TAGS'); ?> 
@@ -24,7 +24,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                 </button>
                
             </div>
-            <div class="panel-body">
+            <div class="panel-body em-container-tags-body">
                 <ul class="list-group">
                     <?php
                     if(count($this->tags) > 0) {
@@ -35,11 +35,11 @@ JFactory::getSession()->set('application_layout', 'tag');
                                     <div class="col-xs-10 col-md-11">
                                         <div>
 
-                                            <div class="mic-info">
+                                            <div class="mic-info em-tags-date">
                                                 <a href="#"><?php echo $tag['name']; ?></a> - <?php echo JHtml::_('date', $tag['date_time'], JText::_('DATE_FORMAT_LC2')); ?>
                                             </div>
                                         </div>
-                                        <div class="comment-text">
+                                        <div class="comment-text em-tags-action">
                                             <h2><span class="label <?php echo $tag['class']; ?>" style="float:unset"><?php echo $tag['label']; ?></span>
                                                 <?php if($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)):?>
                                                         <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">

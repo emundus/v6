@@ -6,8 +6,8 @@ JFactory::getSession()->set('application_layout', 'mail');
 
 <div class='mail'>
     <div class="row">
-        <div class="panel panel-default widget">
-            <div class="panel-heading">
+        <div class="panel panel-default widget em-container-mail">
+            <div class="panel-heading em-container-mail-heading">
 
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-comment"></span>
@@ -16,7 +16,7 @@ JFactory::getSession()->set('application_layout', 'mail');
                 </h3>
 
             </div>
-            <div class="panel-body">
+            <div class="panel-body em-container-mail-body">
 
                 <?php if (!$this->messages) :?>
                     <h3> <?php echo JText::_('ERROR_GETTING_MESSAGES'); ?> </h3>
@@ -24,9 +24,9 @@ JFactory::getSession()->set('application_layout', 'mail');
                     <h3> <?php echo JText::_('NO_MESSAGES_FOUND'); ?> </h3>
                 <?php else :?>
                     <?php foreach ($this->messages as $message) :?>
-                        <div class='panel panel-default'>
-                            <div class="panel-heading"><h3><?php echo $message->subject; ?> <small> <?php echo JText::_('MESSAGE_FROM').': '.JFactory::getUser($message->user_id_from)->name.' '.date('Y-m-d H:i:s', strtotime($message->date_time)); ?> </small></h3></div>
-                            <div class="panel-body">
+                        <div class='panel panel-default em-container-mail-content'>
+                            <div class="panel-heading em-container-mail-content-heading"><h3><?php echo $message->subject; ?> <small> <?php echo JText::_('MESSAGE_FROM').': '.JFactory::getUser($message->user_id_from)->name.' '.date('d/m/Y H:i:s', strtotime($message->date_time)); ?> </small></h3></div>
+                            <div class="panel-body em-container-mail-content-body">
                                 <?php echo $message->message; ?>
                             </div>
                         </div>

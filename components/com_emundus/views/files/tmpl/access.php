@@ -43,10 +43,10 @@
 	</div>
 
 	<div class="panel panel-info em-access">
-		<div class="panel-heading  em-access">
+		<div class="panel-heading em-access em-access-header">
 			<?php echo JText::_('CHECK_ACL')?>
 		</div>
-		<div class="form-group  em-access">
+		<div class="form-group em-access em-access-form">
 			<label class="col-lg-2 control-label  em-access"><?php echo JText::_('GROUPS')?></label>
 			<select class="col-lg-7 modal-chzn-select  em-access" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_GROUP')?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
 				<?php foreach($this->groups as $group):?>
@@ -60,8 +60,8 @@
 				<?php endforeach;?>
 				</select>
 		</div>
-		<div class="panel-body em-access">
-			<table id="em-modal-action-table em-access" class="table table-hover">
+		<div class="panel-body em-access em-access-body">
+			<table id="em-modal-action-table em-access" class="table table-hover em-access-body-table">
 					<thead>
 					<tr>
 						<th></th>

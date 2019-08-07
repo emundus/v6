@@ -794,66 +794,67 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 			$groupIds = JArrayHelper::fromObject($groupIds[0]);
 		}
 
+		$emundus_profile = $formModel->formData['jos_emundus_users___profile'];
+		if (!empty($emundus_profile) && is_array($emundus_profile)) {
+			$emundus_profile = $emundus_profile[0];
+		}
+
 		JArrayHelper::toInteger($groupIds);
 		$data = array();
 		$authLevels = $me->getAuthorisedGroups();
-		
-		if (!$isNew)
-		{
 
-			if ($params->get('juseremundus_field_usertype') != '')
-			{
-				foreach ($groupIds as $groupId)
-				{
-					if (in_array($groupId, $authLevels) || $me->authorise('core.admin','com_users'))
-					{
-						$data[] = $groupId;
-					}
-					else
-					{
-						throw new RuntimeException("could not alter user group to $groupId as you are not assigned to that group");
-					}
-				}
-			}
-			else
-			{
-				// If editing an existing user and no gid field being used,  use default group id
-				$data[] = $defaultGroup;
-			}
+		$db = JFactory::getDBo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('p.acl_aro_groups'))
+			->from($db->quoteName('#__emundus_setup_profiles','p'))
+			->where($db->quoteName('p.id').' = '.$emundus_profile);
+		$db->setQuery($query);
+
+		try {
+			$acl_group = $db->loadResult();
+		} catch (Exception $e) {
+			$acl_group = null;
 		}
-		else
-		{
-			if ($params->get('juseremundus_field_usertype') != '')
-			{
-				//If array but empty (e.g. from an empty user_groups element)
-				if (empty($groupIds))
-				{
-					$groupIds = (array) $defaultGroup;
-				}
-				
-				if (count($groupIds) === 1 && $groupIds[0] == 0)
-				{
-					$data = (array) $defaultGroup;
-				}
-				else
-				{
-					//$data = $groupIds; defaultGroup is always valid
-					foreach ($groupIds as $groupId)
-					{
-						if (in_array($groupId, $authLevels) || $me->authorise('core.admin','com_users') || $groupId == $defaultGroup)
-						{
+
+		if (!empty($acl_group)) {
+			$data[] = $acl_group;
+		} else {
+			if (!$isNew) {
+				if ($params->get('juseremundus_field_usertype') != '') {
+					foreach ($groupIds as $groupId) {
+						if (in_array($groupId, $authLevels) || $me->authorise('core.admin','com_users')) {
 							$data[] = $groupId;
-						}
-						else
-						{
+						} else {
 							throw new RuntimeException("could not alter user group to $groupId as you are not assigned to that group");
 						}
-					}				
+					}
+				} else {
+					// If editing an existing user and no gid field being used,  use default group id
+					$data[] = $defaultGroup;
 				}
-			}
-			else
-			{
-				$data = (array) $defaultGroup;
+			} else {
+				if ($params->get('juseremundus_field_usertype') != '') {
+					//If array but empty (e.g. from an empty user_groups element)
+					if (empty($groupIds)) {
+						$groupIds = (array) $defaultGroup;
+					}
+
+					if (count($groupIds) === 1 && $groupIds[0] == 0) {
+						$data = (array) $defaultGroup;
+					} else {
+						//$data = $groupIds; defaultGroup is always valid
+						foreach ($groupIds as $groupId) {
+							if (in_array($groupId, $authLevels) || $me->authorise('core.admin','com_users') || $groupId == $defaultGroup) {
+								$data[] = $groupId;
+							} else {
+								throw new RuntimeException("could not alter user group to $groupId as you are not assigned to that group");
+							}
+						}
+					}
+				} else {
+					$data = (array) $defaultGroup;
+				}
 			}
 		}
 

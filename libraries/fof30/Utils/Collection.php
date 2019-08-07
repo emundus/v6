@@ -71,7 +71,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	/**
 	 * Collapse the collection items into a single array.
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function collapse()
 	{
@@ -90,7 +90,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  Collection|array $items
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function diff($items)
 	{
@@ -102,7 +102,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  Closure $callback
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function each(Closure $callback)
 	{
@@ -116,7 +116,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  string $key
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function fetch($key)
 	{
@@ -128,7 +128,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  Closure $callback
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function filter(Closure $callback)
 	{
@@ -200,7 +200,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  callable|string $groupBy
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function groupBy($groupBy)
 	{
@@ -251,7 +251,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  Collection|array $items
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function intersect($items)
 	{
@@ -296,7 +296,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  Closure $callback
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function map(Closure $callback)
 	{
@@ -308,7 +308,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  Collection|array $items
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function merge($items)
 	{
@@ -392,7 +392,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	/**
 	 * Reverse items order.
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function reverse()
 	{
@@ -416,7 +416,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @param  int  $length
 	 * @param  bool $preserveKeys
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function slice($offset, $length = null, $preserveKeys = false)
 	{
@@ -428,7 +428,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  Closure $callback
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function sort(Closure $callback)
 	{
@@ -444,7 +444,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @param  int             $options
 	 * @param  bool            $descending
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function sortBy($callback, $options = SORT_REGULAR, $descending = false)
 	{
@@ -486,7 +486,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @param  \Closure|string $callback
 	 * @param  int             $options
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function sortByDesc($callback, $options = SORT_REGULAR)
 	{
@@ -500,7 +500,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @param  int   $length
 	 * @param  mixed $replacement
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function splice($offset, $length = 0, $replacement = array())
 	{
@@ -533,7 +533,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  int $limit
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function take($limit = null)
 	{
@@ -562,7 +562,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @param  callable $callback
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function transform($callback)
 	{
@@ -574,7 +574,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	/**
 	 * Return only unique items from the collection array.
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function unique()
 	{
@@ -584,7 +584,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	/**
 	 * Reset the keys on the underlying array.
 	 *
-	 * @return Collection
+	 * @return static
 	 */
 	public function values()
 	{

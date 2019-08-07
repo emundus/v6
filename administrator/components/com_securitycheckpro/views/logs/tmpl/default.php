@@ -63,6 +63,10 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
+// Add style declaration
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
+
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
@@ -85,7 +89,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/logs.php';
 		?>
 
 			<?php if (!($this->logs_attacks)){ ?>
-			<div class="alert alert-danger text-center" style="margin-bottom: 10px;">
+			<div class="alert alert-danger text-center margen_inferior">
 				<h2><?php echo JText::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED'); ?></h2>
 				<div id="top"><?php echo JText::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED_TEXT'); ?></div>
 			</div>
@@ -103,22 +107,22 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/logs.php';
 			<div class="card mb-3">
 				<div class="card-body">
 				
-					<div id="filter-bar" class="btn-toolbar" style="height: auto">
-						<div class="filter-search btn-group pull-left" style="margin-bottom: 10px; margin-left: 10px;">
+					<div id="filter-bar" class="btn-toolbar height-auto">
+						<div class="filter-search btn-group pull-left margin-bottom-10 margin-left-10">
 							<input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
 						</div>
-						<div class="btn-group pull-left" style="margin-bottom: 10px;">
+						<div class="btn-group pull-left margin-bottom-10">
 							<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 							<button class="btn tip" id="search_filter_button" type="button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 						</div>
-						<div class="filter-search btn-group pull-left hidden-phone" style="margin-left: 10px;">
+						<div class="filter-search btn-group pull-left hidden-phone margin-bottom-10">
 							<?php echo JHTML::_('calendar', $this->getModel()->getState('datefrom',''), 'datefrom', 'datefrom', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
 						</div>
-						<div class="filter-search btn-group pull-left hidden-phone" style="margin-left: 10px; margin-bottom: 10px;">
+						<div class="filter-search btn-group pull-left hidden-phone margin-bottom-10 margin-left-10">
 							<?php echo JHTML::_('calendar', $this->getModel()->getState('dateto',''), 'dateto', 'dateto', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
 						</div>						
 						<div class="btn-group">
-							<select name="filter_leido" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
+							<select name="filter_leido" class="custom-select margin-left-5" onchange="this.form.submit()">
 								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_MARKED_DESCRIPTION');?></option>
 								<?php 
 									// Set the filter to "Not read" by default
@@ -132,18 +136,18 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/logs.php';
 									echo JHtml::_('select.options', $leido_array, 'value', 'text', $leido);
 								?>
 							</select>
-							<select name="filter_type" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
+							<select name="filter_type" class="custom-select margin-left-5" onchange="this.form.submit()">
 								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
 								<?php echo JHtml::_('select.options', $type_array, 'value', 'text', $this->state->get('filter.type'));?>
 							</select>
-							<select name="filter_description" class="custom-select" style="margin-left: 5px;" onchange="this.form.submit()">
+							<select name="filter_description" class="custom-select margin-left-5" onchange="this.form.submit()">
 								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_DESCRIPTION');?></option>
 								<?php echo JHtml::_('select.options', $description_array, 'value', 'text', $this->state->get('filter.description'));?>
 							</select>
 						</div>
 					</div>
 					</div>				
-						<div style="width: 100%; overflow-y: auto; _overflow: auto;	margin: 0 0 1em; font-size: 12px;">
+						<div class="logs-style">
 							<table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
 								<thead>
 									<tr>
@@ -162,7 +166,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/logs.php';
 										<th class="logs text-center">
 											<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_DESCRIPTION', 'description', $listDirn, $listOrder); ?>			
 										</th>
-										<th class="logs text-center" style="width: 35%;">
+										<th class="logs text-center width-35">
 											<?php echo JText::_( 'COM_SECURITYCHECKPRO_LOG_URI' ); ?>
 										</th>
 										<th class="logs text-center">
@@ -291,12 +295,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/logs.php';
 						<?php
 							if ( !empty($this->items) ) {		
 						?>
-						<div style="margin-left: 10px;">
+						<div class="margin-left-10">
 							<?php echo $this->pagination->getListFooter(); echo $this->pagination->getLimitBox(); ?>							
 						</div>							
 						<?php }	?>						
 						
-						<div class="card" style="margin-top: 10px; margin-left: 10px; width: 40rem;">
+						<div class="card margin-left-10 margin-top-10 width-40rem">
 							<div class="card-body card-header">
 								<?php echo JText::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?><br/>
 								<span class="badge badge-success"><?php echo JText::_('COM_SECURITYCHECKPRO_ICONS_ATTRIBUTION'); ?></span>

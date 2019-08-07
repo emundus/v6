@@ -3,6 +3,9 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.modal');
 
+
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
 $mainframe = JFactory::getApplication();
 
 $user = JFactory::getSession()->get('emundusUser');
@@ -14,6 +17,7 @@ $itemid = $jinput->get('Itemid', null);
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $copy_application_form = $eMConfig->get('copy_application_form', 0);
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
+$can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', 0);
 $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 $id_applicants = $eMConfig->get('id_applicants', '0');
 $applicants = explode(',',$id_applicants);
@@ -31,7 +35,7 @@ $is_dead_line_passed = strtotime(date($now)) > strtotime(@$user->end_date);
 $is_app_sent         = !in_array($user->status, $status_for_send);
 
 $block_upload = true;
-if ((!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
+if ($can_edit_after_deadline || (!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
     $block_upload = false;
 }
 
@@ -76,7 +80,7 @@ if (!empty($this->custom_title)) :?>
 
 <?php
     if (!$this->sent) :?>
-    <p>
+    <p class="em-instructions">
         <div id="instructions">
             <h3><?php echo $this->instructions->title; ?></h3>
             <?php echo $this->instructions->text; ?>
@@ -87,10 +91,10 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) :?>
 
-    <div id="attachment_list">
+    <div id="attachment_list" class="em-attachmentList">
         <p><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
-        <div id="legend">
+        <div id="legend" class="em-attachmentList-legend">
             <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>,
             <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>,
             <div class="need_missing_fac"><?php echo JText::_('MISSING_DOC_FAC'); ?></div>
@@ -106,13 +110,13 @@ if (!empty($this->custom_title)) :?>
             } else {
                 $class = 'need_ok';
             }
-            $div = '<fieldset id="a'.$attachment->id.'">
+            $div = '<fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
                     <a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' <i class="resize vertical icon"></i></a>
                 </legend>
-                <p class="description">'.$attachment->description .'</p>
-                <div class="table-responsive">
-                <table id="'.$attachment->id .'" class="table">';
+                <p class="description em-fieldset-attachment-description">'.$attachment->description .'</p>
+                <div class="table-responsive em-fieldset-attachment-table-responsive">
+                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
 
             if ($attachment->nb > 0) {
                 foreach ($attachment->liste as $item) {
@@ -149,7 +153,7 @@ if (!empty($this->custom_title)) :?>
                     $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
                     <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
                     <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
-                    <div class="input-group">';
+                    <div class="input-group em-fieldset-attachment-table-upload">';
                     if ($this->show_shortdesc_input) {
                         $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span >'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div></div>';
                     }
@@ -297,7 +301,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand"><h1>'.JText::_('MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments"><h1>'.JText::_('MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -309,7 +313,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt"><h1>'.JText::_('OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt"><h1>'.JText::_('OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>

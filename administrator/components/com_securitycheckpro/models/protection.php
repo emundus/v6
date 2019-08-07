@@ -515,7 +515,7 @@ public function protect()
 		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro File Injection Protection";
 			$rules .= PHP_EOL . "RewriteCond %{REQUEST_METHOD} GET";
-			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=http:// [OR]";
+			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=%{REQUEST_SCHEME}:// [OR]";
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=(\.\.//?)+ [OR]";
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=/([a-z0-9_.]//?)+ [NC]";
 			$rules .= PHP_EOL . "RewriteRule .* - [F]";

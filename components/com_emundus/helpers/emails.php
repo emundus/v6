@@ -46,7 +46,7 @@ class EmundusHelperEmails
 		$email.= '<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
 
 		if(in_array('default',$params)){
-			$email .= '<fieldset>
+			$email .= '<fieldset class="em_email_block-fieldset">
 				<legend>
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'::'.JText::_('EMAIL_ASSESSORS_DEFAULT_TIP').'">
 						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'

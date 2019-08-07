@@ -325,7 +325,7 @@ abstract class AtsystemUtilRescueurl
 				}
 				elseif (method_exists($app, 'isClient'))
 				{
-					static::$isAdmin = $app->isClient('admin');
+					static::$isAdmin = $app->isClient('administrator');
 				}
 				elseif (method_exists($app, 'isAdmin'))
 				{

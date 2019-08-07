@@ -7,6 +7,9 @@ JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');
 
+$document 	= JFactory::getDocument();
+$document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css" );
+
 $mod_em_campaign_url=$params->get('mod_em_campaign_url');
 /*$mod_em_campaign_period=$params->get('mod_em_campaign_period');
 $mod_em_campaign_period=$params->get('mod_em_campaign_period');*/
@@ -84,6 +87,12 @@ switch ($ordertime) {
 }
 
 $helper = new modEmundusCampaignHelper;
+
+if ($params->get('mod_em_campaign_layout') == "institut_fr") {
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
+    $m_progs = new EmundusModelProgramme;
+    $programs = $m_progs->getProgrammes(1);
+}
 
 $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);

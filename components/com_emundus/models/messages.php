@@ -170,7 +170,7 @@ class EmundusModelMessages extends JModelList {
 
             $query->leftJoin($db->quoteName('#__emundus_setup_letters_repeat_training','lrt').' ON '.$db->quoteName('lrt.parent_id').' = '.$db->quoteName('l.id'))
                     ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p').' ON '.$db->QuoteName('lrt.training').' = '.$db->QuoteName('p.code'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->QuoteName('c.profile_id').' = '.$db->QuoteName('p.id'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->QuoteName('c.training').' = '.$db->QuoteName('p.code'))
                     ->where($db->quoteName('c.id').' LIKE '.$filt_params['campaign'][0]);
 
         } else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {

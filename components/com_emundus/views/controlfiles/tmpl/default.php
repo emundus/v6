@@ -6,14 +6,14 @@ $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS;
 
 
 ?>
-<form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST"/>
+<form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" class="em-controlfiles-form"/>
 <input type="hidden" name="option" value="com_emundus"/>
 <input type="hidden" name="view" value="controlfiles"/>
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
 
-<fieldset>
+<fieldset class="em-controlfiles-form-contentServ">
 <legend>
 <img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>"/>
 <?php echo JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>
@@ -21,7 +21,7 @@ $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS;
 <?php
 if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 ?>
-<table id="userlist" width="100%">
+<table id="userlist" class="em-controlfiles-form-contentServ-userlist" width="100%">
 	<thead>
 	<tr>
 		<th>
@@ -70,7 +70,7 @@ if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 </fieldset>
 
 
-<fieldset>
+<fieldset class="em-controlfiles-form-contentBdd">
 <legend>
 <img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_DB'); ?>"/>
 <?php echo JText::_('FILES_NOT_FOUND_IN_DB'); ?>
@@ -78,7 +78,7 @@ if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 <?php
 if (count($this->listFiles)>0 && isset($this->listFiles) && is_array($this->listFiles)) {
 ?>
-<table id="userlist" width="100%">
+<table id="userlist" class="em-controlfiles-form-contentBdd-userlist" width="100%">
 	<thead>
 	<tr>
 		<th>

@@ -29,12 +29,11 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
-
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
+
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
 
 ?>
 
@@ -74,7 +73,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 						$joomla_version_header = "<i class=\"fa fa-fw icon-joomla\"> 4</i>";
 					}
 					?>
-					<span class="badge" class="background-FFADF5 padding-10-10-10-10 float-right"><?php echo JText::_( 'COM_SECURITYCHECKPRO_VULNERABILITY_LIST' ); echo $joomla_version_header; ?></span>
+					<span class="badge background-FFADF5 padding-10-10-10-10 float-right"><?php echo JText::_( 'COM_SECURITYCHECKPRO_VULNERABILITY_LIST' ); echo $joomla_version_header; ?></span>
 				</div>
 				<div class="card-body">						
 						<div class="table-responsive">
@@ -170,7 +169,12 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 					</div>		  					
 				</div>
 		</div>
-</div>		  
+</div>		
+
+<?php 
+// Cargamos el contenido común...
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/end.php';
+?>  
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

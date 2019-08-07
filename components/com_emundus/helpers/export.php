@@ -177,10 +177,11 @@ class EmundusHelperExport
 		return $exports;
 	}
 
-    public static function getEvalPDF($fnum, $options = null)
-    {
-        $user = JFactory::getUser();
-        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+    public static function getEvalPDF($fnum, $options = null) {
+
+        $user = JFactory::getSession()->get('emundusUser');
+
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -211,8 +212,8 @@ class EmundusHelperExport
     }
 
     public static function getDecisionPDF($fnum, $options = null) {
-        $user = JFactory::getUser();
-        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+        $user = JFactory::getSession()->get('emundusUser');
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -242,8 +243,8 @@ class EmundusHelperExport
     }
 
 	public static function getAdmissionPDF($fnum, $options = null) {
-        $user = JFactory::getUser();
-        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+        $user = JFactory::getSession()->get('emundusUser');
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');

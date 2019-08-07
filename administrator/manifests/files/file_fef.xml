@@ -7,8 +7,8 @@
     <authorUrl>https://www.akeebabackup.com</authorUrl>
     <copyright>(C) 2017-2018 Akeeba Ltd.</copyright>
     <license>GNU GPL v3 or later</license>
-    <version>1.0.7</version>
-    <creationDate>2019-01-07</creationDate>
+    <version>1.0.8</version>
+    <creationDate>2019-07-18</creationDate>
     <description>Akeeba Frontend Framework - The CSS framework for Akeeba Ltd extensions.</description>
 
     <!-- Fileset definition -->

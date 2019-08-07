@@ -199,7 +199,8 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 /**  END APPLICANT   ****/
 
     // get evaluation
-    $data = @EmundusHelperFiles::getEvaluation($fnum);
+    $evaluation = new EmundusHelperFiles();
+    $data = $evaluation->getEvaluation('html',$fnum);
 	if (empty($data)) {
 		$htmldata .= '<p>'.JText::_('COM_EMUNDUS_NO_EVALUATIONS_FOUND').'</p>';
 	}

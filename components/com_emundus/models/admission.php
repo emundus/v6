@@ -279,15 +279,14 @@ class EmundusModelAdmission extends JModelList
 	 * @return    array list of Fabrik element ID used in admission form
 	 **@throws Exception
 	 */
-    public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null) {
+    public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null, $all = null) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 		$jinput = JFactory::getApplication()->input;
 		$view = $jinput->getString('view', null);
 
         $elements = array();
-
-        if ($session->has('filt_params')) {
+        if ($session->has('filt_params') || !empty($all)) {
 
             $filt_params = $session->get('filt_params');
             

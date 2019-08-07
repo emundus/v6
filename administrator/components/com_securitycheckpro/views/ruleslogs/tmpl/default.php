@@ -16,10 +16,6 @@ $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
-// Chosen scripts
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/init.js');
-
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
 
@@ -61,7 +57,7 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 							<div class="filter-search btn-group pull-left">
 								<input type="text" name="filter_rules_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_rules_search" value="<?php echo $this->escape($this->state->get('filter.rules_search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
 							</div>
-							<div class="btn-group pull-left" style="margin-left: 10px;">
+							<div class="btn-group pull-left margin-left-10">
 								<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 								<button class="btn tip" id="filter_rules_search_button" type="button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 							</div>							
@@ -133,6 +129,11 @@ include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 			</div>			
 		</div>
 </div>
+
+<?php 
+// Cargamos el contenido común...
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/end.php';
+?>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

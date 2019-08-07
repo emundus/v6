@@ -6,7 +6,8 @@ JHTML::_('behavior.tooltip');
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 JHTML::stylesheet( 'templates/system/css/general.css' );
 JHTML::stylesheet( 'templates/system/css/system.css' );
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("media/com_emunuds/css/emundus_checklist.css" );
 $current_user = JFactory::getSession()->get('emundusUser');
 
 $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);		
@@ -18,14 +19,14 @@ else
 	$chemin = EMUNDUS_PATH_REL;
 ?>
 
-<table width="100%" id="legend">
+<table width="100%" id="legend" class="em-table-checklist">
   <tr>
     <td class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></td>
     <td class="need_ok"><?php echo JText::_('SENT_DOC'); ?></td>
     <!-- <td class="need_missing_fac"><?php echo JText::_('MISSING_DOC_FAC'); ?></td> -->
   </tr>
 </table>
-<div id="attachment_list">
+<div id="attachment_list" class="em-table-checklist-attachment">
   <h2><?php echo JText::_('ATTACHMENTS'); ?></h2>
   <h4><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('octets'); ?></h4>
   <br />
@@ -39,10 +40,10 @@ foreach($this->attachments as $attachment) {
 		$class= 'need_ok';
 	}
 ?>
-    <fieldset>
+    <fieldset class="em-container-attachment">
       <legend class="<?php echo $class; ?>"><?php echo $attachment->value; ?> <a href="javascript:toggleVisu('<?php echo $attachment->id; ?>')">[+/-]</a></legend>
       <p class="description"><?php echo $attachment->description; ?></p>
-      <table width="100%" border="0" id="<?php echo $attachment->id; ?>">
+      <table width="100%" border="0" id="<?php echo $attachment->id; ?>" class="em-container-attachment-table">
         <thead>
           <tr>
             <th><?php echo JText::_('SHORT_DESC'); ?></th>
@@ -117,7 +118,7 @@ function toggleVisu(baliseId)
   }
 <?php foreach($this->attachments as $attachment) { ?>
   document.getElementById('<?php echo $attachment->id; ?>').style.visibility='<?php echo ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
-  document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
+  //document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
 <?php } ?>
 
 function OnSubmitForm() {

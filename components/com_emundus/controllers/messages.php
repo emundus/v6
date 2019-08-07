@@ -123,6 +123,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    exit;
 	    }
 
+	    $file['name'] = str_replace(array( '(', ')' ), '', $file['name']);
+
 	    // Check if file name is alphanumeric
 	    if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
 	    	echo json_encode(['status' => false]);
@@ -155,8 +157,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
 
         // Move the uploaded file to the server directory.
-        $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
 
+	    if (!empty($user) && empty($fnum)) {
+		    $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
+	    } else {
+		    $target = 'images'.DS.'emundus'.DS.'files'.DS.$file['name'];
+	    }
 
         if (file_exists($target)) {
 	        unlink($target);
@@ -269,6 +275,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $template_id = $jinput->post->getInt('template', null);
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
+
 
 
         // Get additional info for the fnums such as the user email.
@@ -527,7 +534,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    $post = [
 			    'FNUM'           => $fnum['fnum'],
 			    'USER_NAME'      => $fnum['name'],
-			    'COURSE_LABEL'   => $programme['label'],
+			    'COURSE_LABEL'   => $programme->label,
 			    'CAMPAIGN_LABEL' => $fnum['label'],
 			    'SITE_URL'       => JURI::base(),
 			    'USER_EMAIL'     => $fnum['email']
@@ -561,7 +568,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        $toAttach = $attachments;
 	    } else {
 		    $toAttach[] = $attachments;
-
 	    }
 
 	    $message = $m_emails->setTagsFabrik($template->message, [$fnum['fnum']]);

@@ -8,7 +8,8 @@
 
 // No direct access.
 defined('_JEXEC') or die;
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" );
 // Note. It is important to remove spaces between elements.
 ?>
 
@@ -68,14 +69,13 @@ defined('_JEXEC') or die;
         <?php if (!empty($list)) :?>
             <li role="separator" class="divider"></li>
             <?php foreach ($list as $i => $item) :?>
-                <li class="<?php echo ($item->id == $active_id)?'active':''; ?>"><a href="<?php echo $item->flink ?>" <?php echo ($item->browserNav == 1)?'target="_blank"':''; ?>><?php echo $item->title; ?></a></li>
+                <li class="<?= ($item->id == $active_id)?'active':''; ?>"><a href="<?= $item->flink ?>" <?= ($item->browserNav == 1)?'target="_blank"':''; ?>><?= $item->title; ?></a></li>
             <?php endforeach; ?>
         <?php endif; ?>
-        <li role="separator" class="divider"></li>
-        <?php
-            $userToken = JSession::getFormToken();
-            echo '<li><a href="index.php?option=com_users&task=user.logout&' . $userToken . '=1">'.JText::_('LOGOUT').'</a></li>';
-        ?>
+        <?php if ($show_logout == '1') :?>
+            <li role="separator" class="divider"></li>
+            <?= '<li><a href="index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
+        <?php endif; ?>
     </ul>
 </div>
 
