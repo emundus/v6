@@ -96,17 +96,18 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(id)
-					FROM #__emundus_setup_campaigns
-					WHERE published = 1
-					AND end_date >= NOW()
-					AND start_date <= NOW()
-					AND id NOT IN (
+		$query = 'SELECT count(c.id)
+					FROM #__emundus_setup_campaigns AS c
+					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
+					WHERE c.published = 1
+					AND p.apply_online = 1
+					AND c.end_date >= NOW()
+					AND c.start_date <= NOW()
+					AND c.id NOT IN (
 						select campaign_id
 						from #__emundus_campaign_candidature
 						where applicant_id='. $uid .'
 					)';
-
 		try {
 
 			$db->setQuery($query);
@@ -123,12 +124,14 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(id)
-					FROM #__emundus_setup_campaigns
-					WHERE published = 1
-					AND end_date >= NOW()
-					AND start_date <= NOW()
-					AND year NOT IN (
+		$query = 'SELECT count(c.id)
+					FROM #__emundus_setup_campaigns AS c
+					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
+					WHERE c.published = 1
+				  	AND p.apply_online = 1
+					AND c.end_date >= NOW()
+					AND c.start_date <= NOW()
+					AND c.year NOT IN (
 						select sc.year
 						from #__emundus_campaign_candidature as cc
 						LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
@@ -139,6 +142,29 @@ class modemundusApplicationsHelper {
 
 			$db->setQuery($query);
 
+			return $db->loadResult() > 0;
+
+		} catch (Exception $e) {
+			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+	static function getAvailableCampaigns() {
+
+		$db = JFactory::getDbo();
+
+		$query = 'SELECT count(c.id)
+					FROM #__emundus_setup_campaigns AS c
+					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
+					WHERE c.published = 1
+					AND p.apply_online = 1
+					AND c.end_date >= NOW()
+					AND c.start_date <= NOW()';
+		
+		try {
+
+			$db->setQuery($query);
 			return $db->loadResult() > 0;
 
 		} catch (Exception $e) {
