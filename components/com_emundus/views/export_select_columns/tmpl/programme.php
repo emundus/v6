@@ -5,7 +5,6 @@ JHTML::_('behavior.modal');
 //JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css" );
-
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
 $view = JRequest::getVar('v', null, 'GET', 'none',0);

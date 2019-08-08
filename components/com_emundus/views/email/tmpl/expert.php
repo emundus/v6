@@ -17,6 +17,7 @@ $document = JFactory::getDocument();
 //$document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinoscope.css" );
 $document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css" );
 unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css']);
+JHTML::stylesheet('media/com_emundus/css/emundus_email.css');
 // AJAX upload
 $document->addScript('media/com_emundus/js/webtoolkit.aim.js');
 

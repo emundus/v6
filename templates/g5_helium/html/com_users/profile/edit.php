@@ -18,7 +18,8 @@ JHtml::_('bootstrap.tooltip');
 // Load user_profile plugin language
 $lang = JFactory::getLanguage();
 $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
-
+$document = JFactory::getDocument();
+$document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_users_profile.css");
 ?>
 <div class="profile-edit<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>

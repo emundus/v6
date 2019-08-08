@@ -1,0 +1,196 @@
+/* MENU */
+#header-b #em_user_menu a {
+    color: #000;
+    text-decoration: none;
+}
+
+.g-main-nav .g-sublevel > li.g-parent .g-menu-parent-indicator {
+    margin-top: -4px;
+}
+.g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
+    width: auto;
+    padding: 0;
+    height: 100%;
+    color: #000;
+    opacity: inherit;
+}
+#g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
+    padding: 10px 15px;
+}
+
+#g-navigation .g-main-nav .g-toplevel > li {
+    margin: 0 0.3rem !important;
+}
+
+ul.g-dropdown.g-dropdown-right.g-fade {
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 0 !important;
+}
+
+ul.g-dropdown.g-dropdown-right.g-fade a {
+    color: #000 !important;
+}
+
+.g-main-nav .g-standard .g-dropdown {
+    width: 250px;
+    float: left;
+}
+#g-navigation .g-main-nav .g-dropdown .g-dropdown {
+    margin-left: 6px !important;
+}
+.g-main-nav .g-sublevel > li {
+    margin: 0 5px !important;
+    padding: 0;
+}
+
+.g-main-nav .g-sublevel > li.g-parent .g-menu-item-content {
+    margin-right: 0 !important;
+}
+.g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator {
+    margin-top: -2px;
+}
+
+.g-main-nav .g-sublevel > li > .g-menu-item-container > .g-menu-item-content {
+    font-weight: 400;
+}
+
+.g-main-nav .g-standard > .g-dropdown, .g-main-nav .g-fullwidth > .g-dropdown {
+    margin-top: 4px;
+}
+
+/* HEADER */
+.header-right a {
+    color: #4E5B6D;
+}
+
+.list-group {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.navbar .btn, .navbar .btn-group {
+    margin-top: 0 !important;
+    line-height: normal !important;
+}
+
+.add-new-program-page .goback-btn, .add-new-program-page .btn.btn-primary.button.save {
+    line-height: normal !important;
+}
+
+.header-c .open > .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: auto;
+    right: -100%;
+    margin-top: 10px;
+}
+/*LANGAGE*/
+.top-a {
+    display: flex;
+    justify-content: center;
+}
+
+/*.top-a .g-content, .header-c {
+    display: flex;
+    align-items: center;
+}*/
+
+div.mod-languages ul {
+    display: flex;
+    flex-direction: column;
+}
+
+div.mod-languages ul.lang-inline li {
+    display: inline-flex;
+}
+
+div.mod-languages li {
+    margin-right: 0;
+    margin-bottom: 4px;
+}
+
+div.mod-languages li:last-child {
+    margin-bottom: 0;
+}
+
+div.mod-languages a {
+    text-decoration: none;
+    display: inline-flex;
+}
+/* Experts-synchro-page */
+.experts-synchro-page .ng-scope .btn{
+    margin:10px 5px!important;
+}
+/*Calage bouton de connexion + mdp oublié*/
+#header-c .header-right .btn{
+    margin:5px;
+    color: white;
+}
+#header-c .header-right .forget-mdp{
+    margin:0 5px;
+}
+#header-c .header-right .forget-mdp:hover {
+    text-decoration:underline;
+}
+.view-login .form-horizontal .controls {
+     margin: 0 !important;
+     width: 25%;
+     display: inline-flex;
+     align-items: center;
+ }
+.view-login .form-horizontal .controls:hover {
+    box-shadow: #3e8ac5;
+}
+
+.view-login  .form-horizontal .control-label {
+    width: 15%;
+}
+
+.view-login .form-horizontal .control-group {
+    display: flex;
+    justify-content: center;
+}
+
+footer div{
+    line-height:1.5em;
+}
+.g-offcanvas-toggle{
+    width: 50px!important;
+    height: 50px!important;
+}
+.burger {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 50px;
+    z-index:1000;
+}
+
+.burger span:before {
+    top: 10px;
+}
+.burger span:after {
+    top: 20px;
+}
+.burger span:before, .burger span:after {
+    transition: all .5s linear;
+}
+
+.burger.active span {
+    width: 0;
+    left: 8px;
+}
+.burger.active span:before, .burger.active span:after {
+    top: 12px;
+}
+.burger.active span:before {
+    transform: rotate(45deg);
+}
+.burger.active span:after {
+    transform: rotate(-45deg);
+}

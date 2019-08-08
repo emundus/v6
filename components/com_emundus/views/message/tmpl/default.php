@@ -30,6 +30,7 @@ $setup_letters 		= $m_messages->getLetters();
 
 $email_list = array();
 
+
 ?>
 
 <!-- WYSIWYG Editor -->
