@@ -387,10 +387,7 @@ button#back:hover, button#back:active, button#back:focus,
 .applicant-form .fabrikActions.form-actions .span4:not(.offset1) {
     justify-content:flex-end;
 }
-#group609 .row-fluid .plg-birthday{
-    display: flex;
-    flex-direction: column;
-}
+
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px;
     margin-right: 10px;
