@@ -823,9 +823,8 @@ border-radius: 0 !important;
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn,
 .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save),
 .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
-  background-color: #29d4ff !important;
-  background: #29d4ff !important;
-  border: 1px solid #29d4ff !important;
+  background: #29d4ff;
+  border: 1px solid #29d4ff;
   color:white;
   text-shadow: none;
   text-transform: none;
@@ -845,7 +844,7 @@ button#back:hover, button#back:active, button#back:focus,
 .fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus,
 #em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus,
 .btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
-  background-color: transparent !important;
+  background-color: transparent;
   color: #29d4ff;
   outline: none;
 }
@@ -884,8 +883,8 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
 .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus,
 .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus,
 .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
-  background-color: transparent !important;
-  color: #e03c32 !important;
+  background-color: transparent;
+  color: #e03c32;
   outline: none;
 }
 .span4 > .btn-group > button.save-btn, .span4 > .btn-group > button.save {
@@ -896,24 +895,24 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     padding: 10px 12px!important;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
-    background-color: transparent !important;
+    background-color: transparent;
     color: #e03c32;
     outline: none;
 }
 .span4.offset1 > .btn-group > button.button {
     background: #29d4ff;
-    background-color: #29d4ff !important;
-    border: 1px solid #29d4ff !important;
+    background-color: #29d4ff;
+    border: 1px solid #29d4ff;
     border-radius: 0!important;
     padding: 8px 12px!important;
 }
 .span4.offset1 > .btn-group > button.button:hover{
-    background-color: transparent !important;
-    color: #29d4ff !important;
+    background-color: transparent;
+    color: #29d4ff;
     outline: none;
 }
 footer#g-footer {
-	padding: 20px !important;
+	padding: 20px;
 }
 footer#g-footer {
 	background: transparent;
