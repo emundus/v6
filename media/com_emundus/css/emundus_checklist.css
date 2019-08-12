@@ -215,7 +215,7 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 #g-sidebar .platform-content li:hover, #g-sidebar .platform-content li.active {
-    background: #f2f2f2 !important;
+    background: #f2f2f2;
 }
 
 #g-sidebar ul {
@@ -360,7 +360,7 @@ button#back:hover, button#back:active, button#back:focus,
 }
 .form-horizontal .control-label{
     text-align: left !important;
-    width: auto !important;
+    width: auto;
     margin-right: 10px;
 }
 .form-horizontal .controls .checkbox{
