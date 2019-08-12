@@ -171,6 +171,6 @@
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-	color: #29d4ff !important;
+	color: #29d4ff;
 	background: none !important;
 }
