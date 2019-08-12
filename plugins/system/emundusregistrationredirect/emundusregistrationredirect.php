@@ -13,6 +13,7 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 	function __construct(&$subject, $config) {
 
 		parent::__construct($subject, $config);
+		$this->loadLanguage();
 
 		if (!isset($this->params)) {
 			$plugin = JPluginHelper::getPlugin('system', 'emundusregistrationredirect');

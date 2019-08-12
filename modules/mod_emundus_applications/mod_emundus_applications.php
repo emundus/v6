@@ -116,6 +116,12 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	// Check to see if the applicant meets the criteria to renew a file.
 	switch ($applicant_can_renew) {
 
+		// Applicants can apply as many times as they like
+		case 1:
+			// We need to check if there are any available campaigns.
+			$applicant_can_renew = modemundusApplicationsHelper::getAvailableCampaigns();
+			break;
+
 		// If the applicant can only have one file per campaign.
 		case 2:
 			// True if does not have a file open in one or more of the available campaigns.
