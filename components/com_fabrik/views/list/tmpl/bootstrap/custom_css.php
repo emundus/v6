@@ -316,15 +316,15 @@ echo <<<EOT
 }
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit{
     background: #29d4ff;
-    background-color: #29d4ff !important;
-    border: 1px solid #29d4ff !important;
+    background-color: #29d4ff;
+    border: 1px solid #29d4ff;
     border-radius: 0 !important;
     padding: 8px 12px !important;
     color:white;
 }
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit:hover{
     background-color: transparent !important;
-    color: #29d4ff !important;
+    color: #29d4ff;
     outline: none;
 }
 .btn-info, .btn-group .fabrik__rowlink, a.delete, a.copy-0 {
@@ -343,7 +343,7 @@ echo <<<EOT
     color: #fff !important;
 }
 .table .fabrik_groupdata center {
-    background: #eceff3 !important;
+    background: #eceff3;
 }
 .email-container table{
     border: none;
@@ -353,7 +353,7 @@ echo <<<EOT
     border-top: none;
 }
 .email-container table tbody tr:hover > td{
-    background:#eceff3!important;
+    background: #eceff3;
 }
 footer#g-footer {
 	padding: 20px !important;
