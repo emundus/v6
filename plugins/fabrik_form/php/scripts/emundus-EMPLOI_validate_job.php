@@ -88,7 +88,6 @@ if (isset($recipient) && !empty($recipient)) {
     $mailer->isHTML(true);
     $mailer->Encoding = 'base64';
     $mailer->setBody($body);
-    $mailer->addBcc("catherine.mercier@sorbonne-universites.fr");
 
     $send = $mailer->Send();
     if ( $send !== true ) {
