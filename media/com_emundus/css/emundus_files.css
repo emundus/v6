@@ -3,18 +3,18 @@
 .em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
     border-radius: 0 !important;
     padding: 6px 8px;
-    color: #fff!important ;
-    text-shadow: none!important ;
-    line-height: normal!important ;
-    background-image: none!important ;
-    display: inline-flex!important ;
-    align-items: center!important;
-    text-transform: initial!important ;
+    color: #fff;
+    text-shadow: none !important;
+    line-height: normal !important;
+    background-image: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    text-transform: initial !important;
     font-weight: 400;
-    letter-spacing: normal!important;
+    letter-spacing: normal !important;
 }
 .em-containerFilter-heading div.buttons{
-    display:flex;
+    display: flex;
 }
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
     background: #29d4ff;
