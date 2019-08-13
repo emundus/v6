@@ -236,7 +236,7 @@ table > thead > tr > th {
     color: #000 !important;
 }
 .em-filter label{
-    color: white !important;
+    color: white;
     margin-bottom: 5px;
     font-weight: bold;
 }
