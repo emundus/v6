@@ -806,8 +806,7 @@ input:not([type]).mce-textbox {
 	border-radius: 0 !important;
 }
 
-.form-horizontal .control-group .btn-group label.btn-default{
-    background: #bababa;
+.form-horizontal .control-group .btn-group label.btn-default {
     color: white;
     border-radius: 0 !important;
     padding: 6px 8px;
