@@ -3,44 +3,40 @@
 .em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
     border-radius: 0 !important;
     padding: 6px 8px;
-    color: #fff!important ;
-    text-shadow: none!important ;
-    line-height: normal!important ;
-    background-image: none!important ;
-    display: inline-flex!important ;
-    align-items: center!important;
-    text-transform: initial!important ;
+    color: #fff;
+    text-shadow: none !important;
+    line-height: normal !important;
+    background-image: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    text-transform: initial !important;
     font-weight: 400;
-    letter-spacing: normal!important;
+    letter-spacing: normal !important;
 }
 .em-containerFilter-heading div.buttons{
-    display:flex;
+    display: flex;
 }
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
-    background-color: #29d4ff !important;
     background: #29d4ff;
-    border: 1px solid #29d4ff !important;
+    border: 1px solid #29d4ff;
     text-shadow: none;
     text-transform: none;
 
 }
 button.goback-btn:hover, button.goback-btn:active, .em-personalInfo > a:hover, button.goback-btn:focus, .btn-danger:hover, .btn-danger:active, .btn-danger:focus, .pull-right .btn:not(.dropdown-toggle):hover, .pull-right .btn:not(.dropdown-toggle):focus, .pull-right .btn:not(.dropdown-toggle):active, .below-content a:hover, .below-content a:active, .below-content a:focus, #member-profile .controls a:hover, #member-profile .controls a:active, #member-profile .controls a:focus, .toggle-editor .btn:hover, .toggle-editor .btn:active, .toggle-editor .btn:focus, .xclsform .panel-body button#delfilter:hover, .xclsform .panel-body button#delfilter:active, .xclsform .panel-body button#delfilter:focus, button#back:hover, button#back:active, button#back:focus, .btn.advanced-search-clearall:hover, .btn.advanced-search-clearall:active, .btn.advanced-search-clearall:focus, .emails-setup-page .form-actions button:not(.save):hover, .emails-setup-page .form-actions button:not(.save):active, .emails-setup-page .form-actions button:not(.save):focus, .documents-type-candidacy-page .fabrikDetails .btn:hover, .documents-type-candidacy-page .fabrikDetails .btn:active, .documents-type-candidacy-page .fabrikDetails .btn:focus, .fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus, #em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus, .btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
-    background-color: transparent !important;
-    color: #29d4ff !important;
+    background-color: transparent;
+    color: #29d4ff;
     outline: none;
 }
 button.save-btn, .btn-success, .trombi_download, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate, .indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary, .em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip, .btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
-
-    background-color: #ff4545 !important;
     background: #ff4545;
-    border: 1px solid #ff4545 !important;
+    border: 1px solid #ff4545;
     text-shadow: none;
     text-transform: none;
 }
 button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.save-btn:focus, .btn-success:hover, .btn-success:focus, .btn-success:active, button.save:hover, button.save:active, button.save:focus, button.save_continue:hover, button.save_continue:active, button.save_continue:focus, button.send:hover, button.send:active, button.send:focus, a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus, #trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus, #trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus, .indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus, .fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus, button.importation:hover, button.importation:active, button.importation:focus, a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus, a.btn-info:hover, a.btn-info:active, a.btn-info:focus, .header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active, button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus, .em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus, .xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus, .modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus, a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus, .btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus, .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus, .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus, .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
-
-    background-color: transparent !important;
-    color: #ff4545 !important;
+    background-color: transparent;
+    color: #ff4545;
     outline: none;
 }
 .modal-header button.close{
@@ -50,7 +46,7 @@ button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.sa
     border-radius: 0 !important;
 }
 .em-user-personal-filter .btn-xs{
-    padding: 8px 12px!important;
+    padding: 8px 12px !important;
 }
 button.close {
     margin: 0;
@@ -125,7 +121,7 @@ th[id='jos_emundus_personal_detail.profession'] > .em-cell {
 }
 
 table .btn-group > .btn {
-    margin:0 5px!important;;
+    margin: 0 5px !important;
 }
 .table-striped tbody > tr > td {
     vertical-align: middle;
@@ -147,7 +143,7 @@ table .btn-group > .btn {
     border-top: 4px solid #FFF;
 }
 .caret {
-    margin:6px 0 0 5px!important;
+    margin: 6px 0 0 5px !important;
 }
 /* TABLEAUX - LISTES */
 
@@ -157,7 +153,7 @@ table .btn-group > .btn {
 .table>thead>tr>td,
 .table>tbody>tr>td,
 .table>tfoot>tr>td {
-    border: 0px solid;
+    border: 0 solid;
 }
 
 .em-cell a:focus {
@@ -198,7 +194,7 @@ ul.pagination.pagination-sm a:hover {
 }
 
 #check input[type="checkbox"] {
-    margin: 0!important;
+    margin: 0 !important;
 }
 
 #check label.em-check-all-all{
@@ -216,12 +212,12 @@ table > thead > tr > th {
 }
 
 #em-assoc-files #em-see-files{
-    margin-right:10px!important;
+    margin-right: 10px !important;
 }
 /* FILTRES */
 
 .em_filters_filedset > label{
-    color:#fff!important;
+    color: #fff !important;
 }
 
 #em-adv-father-1 {
@@ -233,20 +229,20 @@ table > thead > tr > th {
 }
 
 #select_filter_chosen{
-    width:75%!important;
+    width: 75% !important;
 }
 
 .em-filt-select label{
-    color:#000!important;
+    color: #000 !important;
 }
 .em-filter label{
-    color:white !important;
+    color: white !important;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
 fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-heading h3{
-    color:#fff!important;
+    color: #fff !important;
 }
 /* Menu Actions */
 
@@ -274,12 +270,11 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
 }
 
 button#em-close-file {
-    background: #4E5B6D !important;
     color: #ffffff;
     box-shadow: none;
-    border: 1px solid #4E5B6D !important;
+    border: 1px solid #4E5B6D;
     text-shadow: none;
-    background-image: none;
+    background: #4E5B6D none;
     margin-top: -3px;
     height: 36px;
 }
@@ -339,18 +334,17 @@ div#em-appli-block button.btn.btn-default:hover{
     background-color: #b83229;
 }
 .em-personalInfo>a{
-    background-color: #29d4ff !important;
+    background-color: #29d4ff;
     display: -webkit-inline-box;
     display: -ms-inline-flexbox;
     display: inline-flex;
     height: -moz-fit-content;
-    border: none;
     min-height: 0;
-    border: 1px solid #29d4ff !important;
+    border: 1px solid #29d4ff;
 }
 .em-personalInfo > a:hover {
-    background-color: transparent !important;
-    color: #29d4ff !important;
+    background-color: transparent;
+    color: #29d4ff;
     outline: none;
 }
 .em-searchbar .btn-default{
@@ -400,12 +394,11 @@ div#em-appli-block button.btn.btn-default:hover{
     top: 7px;
 }
 button#em-close-file {
-    background: #4E5B6D !important;
     color: #ffffff;
     box-shadow: none;
-    border: 1px solid #4E5B6D !important;
+    border: 1px solid #4E5B6D;
     text-shadow: none;
-    background-image: none;
+    background: #4E5B6D none;
     margin-top: -3px;
     height: 36px;
 }
@@ -413,13 +406,13 @@ button#em-close-file {
 button#em-close-file:focus,
 button#em-close-file:hover,
 button#em-close-file:active {
-    background: #404B5A !important;
-    border-color: #404B5A !important;
+    background: #404B5A;
+    border-color: #404B5A;
 }
 
 div#em-appli-block .panel.panel-default.widget {
     border: none;
-    box-shadow: none !important;
+    box-shadow: none;
 }
 
 div#em-appli-block {
@@ -483,16 +476,16 @@ div#em-appli-block tr:nth-child(odd) {
 }
 
 table#groups-table a {
-    background: #4E5B6D !important;
+    background: #4E5B6D;
     box-shadow: none;
-    border: 1px solid #4E5B6D !important;
+    border: 1px solid #4E5B6D;
     color: #ffffff;
 }
 
 table#groups-table a:hover {
-    background: #404B5A !important;
+    background: #404B5A;
     box-shadow: none;
-    border: 1px solid #404B5A !important;
+    border: 1px solid #404B5A;
     color: #ffffff;
 }
 
@@ -515,7 +508,7 @@ div#data #exp-opt>label{
 
 div#em-modal-actions,
 div#em-modal-form {
-    background-color: rgba(0, 0, 0, 0) !important;
+    background-color: rgba(0, 0, 0, 0);
     overflow: auto;
     position: fixed;
     top: 0;
@@ -524,7 +517,7 @@ div#em-modal-form {
     z-index: 1050;
     -webkit-overflow-scrolling: touch;
     outline: 0;
-    margin-left: 0px;
+    margin-left: 0;
     width: 100%;
 }
 
@@ -577,7 +570,7 @@ div#em-modal-actions h4#em-modal-actions-title {
 }
 
 .modal .goback-btn{
-    margin-right:20px!important;
+    margin-right: 20px !important;
 }
 input[type="radio"], input[type="checkbox"] {
     margin: 0 10px 0 0 !important;
@@ -586,7 +579,7 @@ input[type="radio"], input[type="checkbox"] {
 div#em-modal-actions .panel-default > .panel-heading {
     border: none !important;
     box-shadow: none;
-    color: #2a363b !important;
+    color: #2a363b;
     background: transparent;
 }
 
@@ -626,11 +619,11 @@ div#em-modal-actions .panel-heading h5 {
 /* FILES */
 
 .g-back-office-emundus-tableau section#g-container-main {
-    padding-top: 0rem;
+    padding-top: 0;
 }
 
 .g-back-office-emundus-tableau input#clear-search {
-    margin-right:8px!important;
+    margin-right: 8px !important;
 }
 
 .g-back-office-emundus-tableau .col-md-3.side-panel {
@@ -660,7 +653,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .em_filters_adv_filter #em_adv_filters #advanced-filters {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .g-back-office-emundus-tableau button#add-filter {
@@ -682,7 +675,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
-    background-color: #fff!important;
+    background-color: #fff !important;
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
@@ -694,12 +687,12 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
-    color: #ffffff !important;
+    color: #ffffff;
     margin: 5px 0 5px 5px !important;
 }
 
 .g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
-    padding: 0rem 1rem;
+    padding: 0 1rem;
 }
 
 .g-back-office-emundus-tableau .g-back-office-emundus-tableau .panel-info {
@@ -709,7 +702,7 @@ div#em-modal-actions .panel-heading h5 {
 .g-back-office-emundus-tableau div#em_filters .chosen-container.chosen-with-drop .chosen-drop {
     background: #ffffff;
     border: 1px solid #ffffff;
-    border-radius: 0rem 0rem 5px 5px;
+    border-radius: 0 0 5px 5px;
     box-shadow: none;
 }
 
@@ -732,11 +725,11 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .table-hover tbody tr:nth-child(2n) > td, .table-hover tbody tr:nth-child(2n) > th {
-    background: #dddddd !important;
+    background: #dddddd;
 }
 
 .table-hover tbody tr:hover > td, .table-hover tbody tr:hover > th {
-    background: #e3e7ed !important;
+    background: #e3e7ed;
 }
 
 .g-back-office-emundus-tableau .panel-info {
@@ -746,7 +739,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .em-dropdown {
-    color: #ffffff !important;
+    color: #ffffff;
     text-shadow: none !important;
     font-weight: 600;
     margin-top: 6px;
@@ -799,7 +792,7 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .g-back-office-emundus-tableau div#em-appli-menu .panel-body {
-    padding-bottom: 0px !important;
+    padding-bottom: 0 !important;
 }
 
 .list-group-item {
@@ -813,13 +806,13 @@ div#em-synthesis .panel-heading h3 {
 .list-group-item:nth-last-child(even) {
     background-color: #404B5A;
     color: #ffffff;
-    border: 0px;
+    border: 0;
 }
 
 .list-group-item:nth-last-child(odd) {
     background: #4E5B6D;
     color: #ffffff;
-    border: 0px;
+    border: 0;
 }
 
 .col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body {
@@ -827,7 +820,7 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body .span12 h1 {
-    margin: 0px;
+    margin: 0;
 }
 
 .col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body .active.content br:first-child+hr {
@@ -870,8 +863,8 @@ div#em-assoc-files .panel.panel-default ul {
 }
 
 div#em-assoc-files .panel-collapse.collapse {
-    border: 2px solid #404B5A !important;
-    border-top: 0px !important;
+    border: 2px solid #404B5A;
+    border-top: 0 !important;
 }
 
 div#em-assoc-files .panel-body .panel-body {
@@ -945,7 +938,6 @@ div#em-appli-block .panel-body {
     margin-left:10px;
 }
 
-
 p {
     margin-bottom: 0 !important;
     margin-left: 0;
@@ -1014,7 +1006,7 @@ td:nth-child(2)>.em-cell {
     display: block;
     overflow: hidden;
     max-width: 220px !important;
-    margin: 0px;
+    margin: 0;
 }
 
 th:first-child>.em-cell,
@@ -1024,7 +1016,7 @@ td:first-child>.em-cell {
     max-width: 200px !important;
     /*min-width: 100px !important;*/
     height: 45px;
-    margin: 0px;
+    margin: 0;
 }
 
 .form-control {
@@ -1035,17 +1027,17 @@ td:first-child>.em-cell {
     font-size: 15px !important;
     line-height: 1.42857 !important;
     color: rgb(44, 62, 80);
-    background-color: rgb(255, 255, 255) !important;
+    background-color: rgb(255, 255, 255);
     background-image: none;
-    border: 1px solid rgb(220, 228, 236) !important;
+    border: 1px solid rgb(220, 228, 236);
     border-radius: 4px 4px 4px 4px !important;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset !important;
-    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s !important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
 }
 
 .form-control:focus {
-    border-color: rgb(44, 62, 80) !important;
-    outline: 0px none !important;
+    border-color: rgb(44, 62, 80);
+    outline: 0 none !important;
     box-shadow: none !important;
 }
 
@@ -1061,47 +1053,47 @@ textarea>.input-group-btn>.btn {
 .has-error .checkbox,
 .has-error .radio-inline,
 .has-error .checkbox-inline {
-    color: #b94a48 !important;
+    color: #b94a48;
 }
 
 .has-error .form-control {
-    border-color: #b94a48 !important;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
+    border-color: #b94a48;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
 .has-error .form-control:focus {
-    border-color: #953b39 !important;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 !important;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 !important;
+    border-color: #953b39;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
 }
 
 .has-error .input-group-addon {
-    color: #b94a48 !important;
-    border-color: #b94a48 !important;
-    background-color: #f2dede !important;
+    color: #b94a48;
+    border-color: #b94a48;
+    background-color: #f2dede;
 }
 
 .has-error .form-control-feedback {
-    color: #b94a48 !important;
+    color: #b94a48;
 }
 
 label {
-    color: #9EA4AB !important;
+    color: #9EA4AB;
     margin-bottom: 5px !important;
     font-weight: bold !important;
     display: inline;
 }
 
 .opt label {
-    color: #000 !important;
+    color: #000;
     font-size: 11px;
     line-height: 14px;
 }
 
 .btn {
     display: inline-block !important;
-    margin-bottom: 0px !important;
+    margin-bottom: 0 !important;
     font-weight: normal !important;
     text-align: center !important;
     vertical-align: middle !important;
@@ -1117,8 +1109,8 @@ label {
 }
 
 .btn-elements-success {
-    background-color: #5bb75b !important;
-    color: #FFFFFF !important;
+    background-color: #5bb75b;
+    color: #FFFFFF;
 }
 
 ul {
@@ -1145,83 +1137,9 @@ ul {
 }
 
 .btn-default .caret {
-    border-top-color: #555555 !important;
+    border-top-color: #555555;
 }
 
-/*.btn-default {
-    background-image: -webkit-linear-gradient(#ffffff, #ffffff 60%, #f5f5f5) !important;
-    background-image: linear-gradient(#ffffff, #ffffff 60%, #f5f5f5) !important;
-    background-repeat: no-repeat !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff5f5f5', GradientType=0) !important;
-    filter: none !important;
-    border-bottom: 1px solid #e6e6e6 !important;
-}
-
-.btn-primary {
-    background-image: -webkit-linear-gradient(#54b4eb, #2fa4e7 60%, #1d9ce5) !important;
-    background-image: linear-gradient(#54b4eb, #2fa4e7 60%, #1d9ce5) !important;
-    background-repeat: no-repeat !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff54b4eb', endColorstr='#ff1d9ce5', GradientType=0) !important;
-    filter: none !important;
-    border-bottom: 1px solid #178acc !important;
-}
-
-.btn-success {
-    background-image: -webkit-linear-gradient(#88c149, #73a839 60%, #699934) !important;
-    background-image: linear-gradient(#88c149, #73a839 60%, #699934) !important;
-    background-repeat: no-repeat !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff88c149', endColorstr='#ff699934', GradientType=0) !important;
-    filter: none !important;
-    border-bottom: 1px solid #59822c !important;
-}
-
-.btn-info {
-    background-image: -webkit-linear-gradient(#04519b, #033c73 60%, #02325f) !important;
-    background-image: linear-gradient(#04519b, #033c73 60%, #02325f) !important;
-    background-repeat: no-repeat !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff04519b', endColorstr='#ff02325f', GradientType=0) !important;
-    filter: none !important;
-    border-bottom: 1px solid #022241 !important;
-}
-
-.btn-warning {
-    background-image: -webkit-linear-gradient(#ff6707, #dd5600 60%, #c94e00) !important;
-    background-image: linear-gradient(#ff6707, #dd5600 60%, #c94e00) !important;
-    background-repeat: no-repeat !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff6707', endColorstr='#ffc94e00', GradientType=0) !important;
-    filter: none !important;
-    border-bottom: 1px solid #aa4200 !important;
-}
-
-.btn-danger {
-    background-image: -webkit-linear-gradient(#e12b31, #c71c22 60%, #b5191f) !important;
-    background-image: linear-gradient(#e12b31, #c71c22 60%, #b5191f) !important;
-    background-repeat: no-repeat !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffe12b31', endColorstr='#ffb5191f', GradientType=0) !important;
-    filter: none !important;
-    border-bottom: 1px solid #9a161a !important;
-}
-
-.btn-info:hover,
-.btn-info:focus,
-.btn-info:active,
-.btn-info.active,
-.open .dropdown-toggle.btn-info {
-    color: #ffffff !important;
-    background-color: #02274b !important;
-    border-color: #011d37 !important;
-}
-
-.btn-danger:hover,
-.btn-danger:focus,
-.btn-danger:active,
-.btn-danger.active,
-.open .dropdown-toggle.btn-danger {
-    color: #ffffff;
-    background-color: #a3171c;
-    border-color: #911419;
-}
-*/
 thead th:hover {
     background-color: rgba(48, 93, 126, 0.13);
     cursor: pointer;
@@ -1249,11 +1167,6 @@ thead th:hover {
 /*
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
 */
-
-/*.modal {
-    background-color: rgba(0, 0, 0, 0.78) !important;
-    color: #9EA4AB !important;
-}*/
 
 .label {
     display: inline !important;

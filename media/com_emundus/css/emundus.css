@@ -119,61 +119,11 @@ legend {
 	border-bottom: none !important;
 }
 
-/*.need_missing {
-	background: url(../images/icones/incomplete.png) 0 0 no-repeat;
-	background-size: 16px;
-	list-style: none;
-	padding: 1px 0px 4px 20px;
-	text-align: left;
-}
-
-.need_missing.active {
-	background: url(../images/icones/ongoing-active.png) 0 0 no-repeat;
-	background-size: 16px;
-}
-
-.need_missing a.blink {
-	text-decoration: blink;
-}
-
-p.need_missing {
-	margin-left: 25px;
-}
-
-.need_ok {
-	background: url(../images/icones/tick.png) 0 0 no-repeat;
-	list-style: none;
-	padding: 1px 0px 4px 20px;
-	text-align: left;
-	background-size: 16px;
-}
-
-.need_ok.active {
-	background: url(../images/icones/tick-active.png) 0 0 no-repeat;
-	background-size: 16px;
-}
-
-p.need_ok {
-	margin-left: 25px;
-}*/
-
 .print {
 	background: url(../images/icones/printer.png) 0 0 no-repeat;
-	padding: 1px 0px 4px 20px;
+	padding: 1px 0 4px 20px;
 	text-align: left;
 }
-
-/*p.need_missing_fac {
-	margin-left: 25px;
-}
-
-.need_missing_fac {
-	background: url(../images/icones/incomplete-optional.png) 0 0 no-repeat;
-	background-size: 16px;
-	list-style: none;
-	padding: 1px 0px 4px 20px;
-	text-align: left;
-}*/
 
 #legend .need_missing_fac,
 #legend .need_missing,
@@ -328,7 +278,6 @@ h1 a {
 	color: #FFF;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #000);
 	border-radius: 5px;
-	border-radius: 5px;
 	font-weight: bold;
 	text-align: center;
 }
@@ -337,14 +286,12 @@ h1 a {
 	background-color: #CBCBE4;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #CBCBE4);
 	border-radius: 5px;
-	border-radius: 5px;
 	text-align: center;
 }
 
 .emundusprofile3 {
 	background-color: #CBCBE4;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #CBCBE4);
-	border-radius: 5px;
 	border-radius: 5px;
 	text-align: center;
 }
@@ -353,14 +300,12 @@ h1 a {
 	background-color: #CBCBE4;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #CBCBE4);
 	border-radius: 5px;
-	border-radius: 5px;
 	text-align: center;
 }
 
 .emundusprofile5 {
 	background-color: #CBCBE4;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #CBCBE4);
-	border-radius: 5px;
 	border-radius: 5px;
 	text-align: center;
 }
@@ -369,14 +314,12 @@ h1 a {
 	background-color: #CBCBE4;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #CBCBE4);
 	border-radius: 5px;
-	border-radius: 5px;
 	text-align: center;
 }
 
 .emundusprofile7 {
 	background-color: #6F0;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #6F0);
-	border-radius: 8px;
 	border-radius: 8px;
 	text-align: center;
 }
@@ -385,14 +328,12 @@ h1 a {
 	background-color: #0C0;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #0C0);
 	border-radius: 8px;
-	border-radius: 8px;
 	text-align: center;
 }
 
 .emundusprofile9 {
 	background-color: #ab2f61;
 	color: #FFF;
-	border-radius: 8px;
 	border-radius: 8px;
 	text-align: center;
 }
@@ -401,14 +342,12 @@ h1 a {
 	background-color: #FFC;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #FFC);
 	border-radius: 8px;
-	border-radius: 8px;
 	text-align: center;
 }
 
 .emundusprofile11 {
 	background-color: #ccc;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #ccc);
-	border-radius: 8px;
 	border-radius: 8px;
 	text-align: center;
 }
@@ -417,14 +356,12 @@ h1 a {
 	background-color: #ab8151;
 	color: #FFF;
 	border-radius: 8px;
-	border-radius: 8px;
 	text-align: center;
 }
 
 .emundusprofile13 {
 	background-color: #3270b7;
 	color: #FFF;
-	border-radius: 8px;
 	border-radius: 8px;
 	text-align: center;
 }
@@ -433,14 +370,12 @@ h1 a {
 	background-color: #799001;
 	color: #FFF;
 	border-radius: 8px;
-	border-radius: 8px;
 	text-align: center;
 }
 
 .emundusprofile999 {
 	background-color: #c2c2c2;
 	background-image: -moz-linear-gradient(center top, #FFFFFF, #c2c2c2);
-	border-radius: 8px;
 	border-radius: 8px;
 	text-align: center;
 }

@@ -356,7 +356,7 @@ button#back:hover, button#back:active, button#back:focus,
     padding-right: 3px;
 }
 .form-horizontal .controls{
-    margin-left:0 !important;
+    margin-left: 0;
 }
 .form-horizontal .control-label{
     text-align: left !important;
