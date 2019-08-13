@@ -175,10 +175,6 @@ label {
     margin-bottom: 0;
 }
 
-.dbjoin-description .notice {
-    display: none;
-}
-
 #system-message {
     margin: 0;
     padding: 0;
