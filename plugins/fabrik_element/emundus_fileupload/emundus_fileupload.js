@@ -47,7 +47,6 @@
 
             this.doDeleteEvent = null;
             this.watchDeleteButton();
-            this.hideButtonDelete();
             this.watchTab();
         },
 
@@ -129,6 +128,203 @@
                 }
             }
         },
+        upload: function(elementId, attachId, size, encrypt) {
+
+            var myFormData = new FormData();
+            var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
+            var div = document.querySelector('div#div_'+elementId);
+            var deleteButton = document.querySelector('div#div_'+elementId+' > a.em-deleteFile');
+            var file = [];
+            for (var i = 0; i < input.files.length; i++) {
+                file = input.files[i];
+
+                myFormData.append('file[]', file);
+            }
+
+            myFormData.append('attachId', attachId);
+            myFormData.append('element', elementId);
+            myFormData.append('size', size);
+            myFormData.append('encrypt', encrypt);
+
+            var xhr = new XMLHttpRequest();
+            // Add any event handlers here...
+            xhr.onreadystatechange=function(){
+
+                if (xhr.readyState==4 && xhr.status==200) {
+                    var result = JSON.parse(xhr.responseText);
+                    console.log(result);
+                    for (var j = 0; j <= result.length; j++) {
+
+                        if (result[j].ext == true && result[j].size == true && result[j].nbMax == true) {
+                                var inputHidden = document.createElement('input');
+                                inputHidden.setAttribute("type", "hidden");
+                                inputHidden.setAttribute("name", elementId + '_filename' + j);
+                                inputHidden.setAttribute("value", result[j].filename);
+                                div.appendChild(inputHidden);
+
+                            Swal.fire({
+                                type: 'success',
+                                title: Joomla.JText._('PLG_ELEMENT_FIELD_SUCCESS'),
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                        }
+
+                        if (result[j].ext == false) {
+                            Swal.fire({
+                                type: 'error',
+                                title: 'Error',
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_EXTENSION')
+                            });
+
+                            input.value = '';
+                            deleteButton.style.display = 'none';
+                        }
+                        if (result[j].encrypt == false){
+                            Swal.fire({
+                                type: 'error',
+                                title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_ENCRYPT')
+                            });
+                            input.value = '';
+                        }
+                        if (result[j].size == false) {
+                            Swal.fire({
+                                type: 'error',
+                                title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_SIZE'),
+                            });
+                            input.value = '';
+                            deleteButton.style.display = 'none';
+
+                        }
+                        if (result[j].nbMax == false) {
+                            Swal.fire({
+                                type: 'error',
+                                title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_LIMIT')
+                            });
+                            input.value = '';
+                            deleteButton.style.display = 'none';
+
+                        }
+                        //if(result[j].nbAttachment)
+
+                    }
+                }
+            };
+            xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_upload', true);
+            xhr.send(myFormData);
+
+
+        },
+        watchFileAttachment: function(elementId, attachId) {
+
+            var myFormData = new FormData();
+            var div = document.querySelector('div#div_'+elementId);
+            myFormData.append('attachId', attachId);
+
+            var xhr = new XMLHttpRequest();
+
+            var divAttachment = document.createElement('div');
+            divAttachment.setAttribute("id", elementId + '_attachment');
+            divAttachment.setAttribute("class", 'em-fileAttachment');
+            div.appendChild(divAttachment);
+
+
+
+            xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_attachment', true);
+            xhr.onreadystatechange=function() {
+
+                if (xhr.readyState == 4 && xhr.status == 200) {
+
+                    var result = JSON.parse(xhr.responseText);
+
+
+                    for (var i = 0; i < result.length; i++) {
+
+                        var divLink = document.createElement('div');
+                        divLink.setAttribute("id", elementId + '_attachment_link'+i);
+                        divLink.setAttribute("class", 'em-fileAttachment-link');
+                        divAttachment.appendChild(divLink);
+
+                        var link = document.createElement('a');
+                        var linkText = document.createTextNode(result[i].filename);
+                        link.setAttribute("href", result[i].target);
+
+                        divLink.appendChild(link);
+                        link.appendChild(linkText);
+
+                        var deleteButton = document.createElement('a');
+
+                        deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
+                        deleteButton.setAttribute('value' , result[i].filename);
+
+
+
+                        var icon = document.createElement('i');
+                        icon.setAttribute("class", 'far fa-times-circle');
+
+                        divLink.appendChild(deleteButton);
+
+
+                        var button = document.querySelector('#'+elementId + '_attachment_link'+i+ ' > a.em-deleteFile');
+                        button.addEventListener('click', (event) => FbFileUpload.delete(elementId,attachId));
+                    }
+                }
+            };
+            xhr.send(myFormData);
+        },
+
+        delete: function(elementId, attachId) {
+
+
+            var myFormData = new FormData();
+            var xhr = new XMLHttpRequest();
+            var div = document.querySelector('div#'+elementId+'_attachment');
+            var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
+
+            var file = event.target;
+            var fileName = file.getAttribute('value');
+
+
+            myFormData.append('filename',fileName);
+            myFormData.append('attachId', attachId);
+
+            var parentDiv = file.parentNode;
+
+            Swal.fire({
+                title: Joomla.JText._('PLG_ELEMENT_FIELD_SURE'),
+                text: Joomla.JText._('PLG_ELEMENT_FIELD_SURE_TEXT'),
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CONFIRM'),
+                cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL')
+            }).then((answser) => {
+                if (answser.value) {
+                    xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_delete', true);
+                    xhr.onreadystatechange=function() {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            var result = JSON.parse(xhr.responseText);
+                            console.log(result.status);
+                            if (result.status == true) {
+                                parentDiv.remove();
+                                Swal.fire(
+                                    Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
+                                    Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
+                                    'success'
+                                )
+                            }
+                        }
+                    };
+                }
+                xhr.send(myFormData);
+            });
+
+        },
 
         watchBrowseButton: function () {
             var el = jQuery(this.element);
@@ -138,10 +334,7 @@
                 el.on('change', this.doBrowseEvent);
             }
         },
-        hideButtonDelete: function () {
-            var buttonDelete = document.getElementsByClassName('em-deleteFile');
-            buttonDelete.css('display','none');
-        },
+
         /**
          * Called from watchDeleteButton
          *
@@ -161,7 +354,7 @@
                         'option': 'com_fabrik',
                         'format': 'raw',
                         'task': 'plugin.pluginAjax',
-                        'plugin': 'fileupload',
+                        'plugin': 'emundus_fileupload',
                         'method': 'ajax_clearFileReference',
                         'element_id': this.options.id,
                         'formid': this.form.id,
