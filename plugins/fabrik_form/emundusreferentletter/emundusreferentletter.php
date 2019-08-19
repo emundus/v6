@@ -61,7 +61,6 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 	 * Get the fields value regardless of whether its in joined data or no
 	 *
 	 * @param   string  $pname    Params property name to get the value for
-	 * @param   array   $data     Posted form data
 	 * @param   mixed   $default  Default value
 	 *
 	 * @return  mixed  value
@@ -82,6 +81,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 	 * Main script.
 	 *
 	 * @return  bool
+	 * @throws Exception
 	 */
 	public function onBeforeCalculations() {
 
@@ -90,6 +90,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		JLog::addLogger(['text_file' => 'com_emundus.filerequest.php'], JLog::ALL, ['com_emundus']);
 
 		include_once (JPATH_BASE.'/components/com_emundus/models/profile.php');
+		include_once (JPATH_BASE.'/components/com_emundus/models/emails.php');
 
 		$baseurl    = JURI::root();
 		$db         = JFactory::getDBO();
@@ -98,7 +99,6 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		$student_id = $jinput->get('jos_emundus_references___user')[0];
 		$fnum       = $jinput->get('jos_emundus_references___fnum');
-		$time_date  = $jinput->get('jos_emundus_references___time_date');
 
 		$recipients = array();
 		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_1', 4), 'email' => $jinput->getString('jos_emundus_references___Email_1', ''));
@@ -135,26 +135,25 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		//////////////////////////  SET FILES REQUEST  /////////////////////////////
 		//
 		// Génération de l'id du prochain fichier qui devra être ajouté par le referent
-		$profile = new EmundusModelProfile;
-		$fnum_detail = $profile->getFnumDetails($current_user->fnum);
+		$m_profile = new EmundusModelProfile;
+		$m_emails = new EmundusModelEmails;
 
-		$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
+		$fnum_detail = $m_profile->getFnumDetails($current_user->fnum);
 
 		// setup mail
 		$email_from_sys = $app->getCfg('mailfrom');
 
 		$from = $obj[0]->emailfrom;
 		$fromname = $obj[0]->name;
-		$from_id = 62;
-		$to_id = -1;
 
 		$sender = array(
 			$email_from_sys,
 			$fromname
 		);
 		$attachment = array();
-		if (!empty($obj_letter[0][0]))
+		if (!empty($obj_letter[0][0])) {
 			$attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
+		}
 
 		foreach ($recipients as $recipient) {
 			if (isset($recipient['email']) && !empty($recipient['email'])) {
@@ -173,20 +172,32 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 					$db->execute();
 
 					// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-					if ($sef_url === 'true')
+					if ($sef_url === 'true') {
 						$link_upload = $baseurl.$url.'?keyid='.$key.'&sid='.$student->id;
-					else
+					} else {
 						$link_upload = $baseurl.$url.'&keyid='.$key.'&sid='.$student->id;
+					}
 
-					$link_html = '<p>Click <a href="'.$link_upload.'">HERE</a> to upload reference letter<br><br>';
-					$link_html .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload.'</p>';
+					$post = [
+						'ID'             => $student->id,
+						'NAME'           => $student->name,
+						'EMAIL'          => $student->email,
+						'UPLOAD_URL'     => $link_upload,
+						'PROGRAMME_NAME' => $fnum_detail['label'],
+						'FNUM'           => $fnum_detail['fnum'],
+						'USER_NAME'      => $fnum_detail['name'],
+						'CAMPAIGN_LABEL' => $fnum_detail['label'],
+						'SITE_URL'       => JURI::base(),
+						'USER_EMAIL'     => $fnum_detail['email']
+					];
+					$tags = $m_emails->setTags($fnum['applicant_id'], $post);
+					$subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);
+					$body = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->message);
 
-					$replacements = array($student->id, $student->name, $student->email, $link_upload, $fnum_detail['label']);
-					$subject = preg_replace($patterns, $replacements, $obj[0]->subject);
-					$body = preg_replace($patterns, $replacements, $obj[0]->message);
+					$body = $m_emails->setTagsFabrik($body, [$fnum['fnum']]);
+					$subject = $m_emails->setTagsFabrik($subject, [$fnum['fnum']]);
 
 					$to = array($recipient['email']);
-
 
 					$mailer = JFactory::getMailer();
 					$mailer->setSender($sender);
@@ -225,6 +236,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		return true;
 	}
 
+
 	// 1. Génération aléatoire de l'ID
 	function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
 		$string = '';
@@ -235,26 +247,23 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		return $string;
 	}
 
+
 	/**
 	 * Raise an error - depends on whether you are in admin or not as to what to do
 	 *
-	 * @param   array   &$err   Form models error array
-	 * @param   string  $field  Name
-	 * @param   string  $msg    Message
+	 * @param   array   &$err    Form models error array
+	 * @param   string   $field  Name
+	 * @param   string   $msg    Message
 	 *
 	 * @return  void
+	 * @throws Exception
 	 */
-
-	protected function raiseError(&$err, $field, $msg)
-	{
+	protected function raiseError(&$err, $field, $msg) {
 		$app = JFactory::getApplication();
 
-		if ($app->isAdmin())
-		{
+		if ($app->isAdmin()) {
 			$app->enqueueMessage($msg, 'notice');
-		}
-		else
-		{
+		} else {
 			$err[$field][0][] = $msg;
 		}
 	}
