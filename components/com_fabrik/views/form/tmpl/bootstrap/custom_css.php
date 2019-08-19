@@ -80,7 +80,7 @@ echo <<<EOT
     border: none !important;
     box-shadow: none !important;
 }
-.calendarbutton {
+.calendarbutton, .timeButton {
     height: 41px;
 }
 

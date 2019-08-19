@@ -52,6 +52,10 @@ button.close {
     margin: 0;
     font-size: 2em;
 }
+.g-back-office-emundus-tableau .g-container .g-block.size-100 .platform-content.row-fluid .container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
 .g-back-office-emundus-tableau input#search,
 .g-back-office-emundus-tableau input#clear-search,
 .g-back-office-emundus-tableau input#save-filter,
