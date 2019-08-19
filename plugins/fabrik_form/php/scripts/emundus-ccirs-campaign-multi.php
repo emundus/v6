@@ -49,12 +49,12 @@ $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 $now = $dateTime->format('Y-m-d H:i:s');
 
-$query->clear()->select($db->quoteName('session_code'))
+$query->clear()->select([$db->quoteName('session_code'), $db->quoteName('training')])
 	->from($db->quoteName('#__emundus_setup_campaigns'))
 	->where($db->quoteName('id').' = '.$campaign_id);
 $db->setQuery($query);
 try {
-	$session_code = $db->loadResult();
+	$session = $db->loadObject();
 } catch(Exception $e) {
 	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	JError::raiseError(500, $query);
@@ -197,15 +197,15 @@ foreach ($users as $user) {
 	// Generate new fnum
 	$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
 
-	$update = [];
+	$updateClaro = [];
 
 	// Build values to insert into the table.
 	if (!empty($company_id) && $company_id != -1) {
-		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum).', '.$company_id;
-		$update[] = $dbClaro->quoteName('company_id').' = '.$dbClaro->quote($company_id);
+		$values[]      = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum).', '.$company_id;
+		$updateClaro[] = $dbClaro->quoteName('company_id').' = '.$dbClaro->quote($company_id);
 	} else {
-		$values[] = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum);
-		$update[] = $dbClaro->quoteName('company_id').' = '.$dbClaro->quote('');
+		$values[]      = $user_id.', '.$current_user->id.', '.$campaign_id.', '.$db->quote($fnum);
+		$updateClaro[] = $dbClaro->quoteName('company_id').' = '.$dbClaro->quote('');
 	}
 
 	// Check if a user with that ID exists in the Claroline DB already.
@@ -225,13 +225,14 @@ foreach ($users as $user) {
 
 	if ($inClaro) {
 
-		$update[] = $dbClaro->quoteName('date_time').' = '.$dbClaro->quote($now);
-		$update[] = $dbClaro->quoteName('status').' = 0';
-		$update[] = $dbClaro->quoteName('group').' = '.$dbClaro->quote($session_code);
+		$updateClaro[] = $dbClaro->quoteName('date_time').' = '.$dbClaro->quote($now);
+		$updateClaro[] = $dbClaro->quoteName('status').' = 0';
+		$updateClaro[] = $dbClaro->quoteName('group').' = '.$dbClaro->quote($session->session_code);
+		$updateClaro[] = $dbClaro->quoteName('form_code').' = '.$dbClaro->quote($session->training);
 
 		$queryClaro->clear()
 			->update($dbClaro->quoteName('emundus_users'))
-			->set($update)
+			->set($updateClaro)
 			->where($dbClaro->quoteName('user_id').' = '.$user_id);
 
 		$dbClaro->setQuery($queryClaro);
@@ -240,6 +241,27 @@ foreach ($users as $user) {
 			$dbClaro->execute();
 		} catch (Exception $e) {
 			JLog::add('Error updating user to Claroline DB. \n query -> '.$query->__toString().' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
+		}
+	} else {
+
+		// Prepare query used for multiline insert.
+		$columnsClaro = ['date_time', 'status', 'group', 'form_code'];
+		$valsClaro    = $dbClaro->quote($now).', 0, '.$dbClaro->quote($session->session_code).', '.$dbClaro->quote($session->training);
+		if (!empty($company_id) && $company_id != -1) {
+			$columnsClaro[] = 'company_id';
+			$valsClaro .= ', '.$dbClaro->quote($company_id);
+		}
+
+		$queryClaro->clear()
+			->insert($dbClaro->quoteName('emundus_users'))
+			->columns($dbClaro->quoteName($columnsClaro))
+			->values($valsClaro);
+		$dbClaro->setQuery($queryClaro);
+
+		try {
+			$dbClaro->execute();
+		} catch (Exception $e) {
+			JLog::add('Error inserting user to Claroline DB. \n query -> '.$query->__toString().' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
 		}
 	}
 
