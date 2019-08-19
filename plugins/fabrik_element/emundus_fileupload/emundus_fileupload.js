@@ -96,7 +96,9 @@
                     }.bind(this))(f);
                     // Read in the image file as a data URL.
                     reader.readAsDataURL(f);
+
                 } else if (f.type.match('video.*')) {
+
                     var c = jQuery(this.getContainer()),
                         video = c.find('video');
                     if (video.length > 0) {
@@ -128,6 +130,7 @@
                 }
             }
         },
+
         upload: function(elementId, attachId, size, encrypt) {
 
             var myFormData = new FormData();
@@ -137,7 +140,6 @@
             var file = [];
             for (var i = 0; i < input.files.length; i++) {
                 file = input.files[i];
-
                 myFormData.append('file[]', file);
             }
 
@@ -148,19 +150,19 @@
 
             var xhr = new XMLHttpRequest();
             // Add any event handlers here...
-            xhr.onreadystatechange=function(){
+            xhr.onreadystatechange = function() {
 
                 if (xhr.readyState==4 && xhr.status==200) {
+
                     var result = JSON.parse(xhr.responseText);
-                    console.log(result);
                     for (var j = 0; j <= result.length; j++) {
 
                         if (result[j].ext == true && result[j].size == true && result[j].nbMax == true) {
-                                var inputHidden = document.createElement('input');
-                                inputHidden.setAttribute("type", "hidden");
-                                inputHidden.setAttribute("name", elementId + '_filename' + j);
-                                inputHidden.setAttribute("value", result[j].filename);
-                                div.appendChild(inputHidden);
+                            var inputHidden = document.createElement('input');
+                            inputHidden.setAttribute("type", "hidden");
+                            inputHidden.setAttribute("name", elementId + '_filename' + j);
+                            inputHidden.setAttribute("value", result[j].filename);
+                            div.appendChild(inputHidden);
 
                             Swal.fire({
                                 type: 'success',
@@ -168,7 +170,6 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-
                         }
 
                         if (result[j].ext == false) {
@@ -181,6 +182,7 @@
                             input.value = '';
                             deleteButton.style.display = 'none';
                         }
+
                         if (result[j].encrypt == false){
                             Swal.fire({
                                 type: 'error',
@@ -189,6 +191,7 @@
                             });
                             input.value = '';
                         }
+
                         if (result[j].size == false) {
                             Swal.fire({
                                 type: 'error',
@@ -197,8 +200,8 @@
                             });
                             input.value = '';
                             deleteButton.style.display = 'none';
-
                         }
+
                         if (result[j].nbMax == false) {
                             Swal.fire({
                                 type: 'error',
@@ -207,18 +210,14 @@
                             });
                             input.value = '';
                             deleteButton.style.display = 'none';
-
                         }
-                        //if(result[j].nbAttachment)
-
                     }
                 }
             };
             xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_upload', true);
             xhr.send(myFormData);
-
-
         },
+
         watchFileAttachment: function(elementId, attachId) {
 
             var myFormData = new FormData();
@@ -232,16 +231,12 @@
             divAttachment.setAttribute("class", 'em-fileAttachment');
             div.appendChild(divAttachment);
 
-
-
             xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_attachment', true);
-            xhr.onreadystatechange=function() {
+            xhr.onreadystatechange = function() {
 
                 if (xhr.readyState == 4 && xhr.status == 200) {
 
                     var result = JSON.parse(xhr.responseText);
-
-
                     for (var i = 0; i < result.length; i++) {
 
                         var divLink = document.createElement('div');
@@ -257,17 +252,13 @@
                         link.appendChild(linkText);
 
                         var deleteButton = document.createElement('a');
-
                         deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
                         deleteButton.setAttribute('value' , result[i].filename);
-
-
 
                         var icon = document.createElement('i');
                         icon.setAttribute("class", 'far fa-times-circle');
 
                         divLink.appendChild(deleteButton);
-
 
                         var button = document.querySelector('#'+elementId + '_attachment_link'+i+ ' > a.em-deleteFile');
                         button.addEventListener('click', (event) => FbFileUpload.delete(elementId,attachId));
@@ -279,7 +270,6 @@
 
         delete: function(elementId, attachId) {
 
-
             var myFormData = new FormData();
             var xhr = new XMLHttpRequest();
             var div = document.querySelector('div#'+elementId+'_attachment');
@@ -287,7 +277,6 @@
 
             var file = event.target;
             var fileName = file.getAttribute('value');
-
 
             myFormData.append('filename',fileName);
             myFormData.append('attachId', attachId);
@@ -303,13 +292,14 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CONFIRM'),
                 cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL')
-            }).then((answser) => {
+            }).then(answser => {
+
                 if (answser.value) {
                     xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_delete', true);
-                    xhr.onreadystatechange=function() {
+                    xhr.onreadystatechange = function() {
                         if (xhr.readyState == 4 && xhr.status == 200) {
+
                             var result = JSON.parse(xhr.responseText);
-                            console.log(result.status);
                             if (result.status == true) {
                                 parentDiv.remove();
                                 Swal.fire(
@@ -321,9 +311,9 @@
                         }
                     };
                 }
+
                 xhr.send(myFormData);
             });
-
         },
 
         watchBrowseButton: function () {
@@ -898,7 +888,7 @@
                 'file': f,
                 'recordid': id,
                 'repeatCounter': this.options.repeatCounter
-            }
+            };
 
             data[this.options.ajaxToken] = 1;
 
