@@ -51,7 +51,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = JFactory::getApplication()->input;
         $db = JFactory::getDBO();
 
-        if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
             return false;
         }
 
@@ -94,15 +94,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 	 * @return bool
 	 */
     public function onAjax_upload() {
+
         jimport('joomla.filesystem.file');
 
         $jinput = $this->app->input;
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
-		    return false;
-	    }
-
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+            $status='false';
+            $result = array('status' => $status);
+            echo json_encode($result);
+            return false;
+        }
         $attachId = $jinput->post->get('attachId');
         $can_submit_encrypted = $jinput->post->get('encrypt');
 
@@ -167,12 +170,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 if ($lengthFile > $nbMaxFile) {
                     $nbMax = false;
                 }
-
+                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt);
             } else {
                 $ext = false;
+                $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
             }
 
-            $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt);
+
         }
 
         echo json_encode($result);
@@ -188,7 +192,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = $this->app->input;
 
         $current_user = JFactory::getSession()->get('emundusUser');
-	    if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 		    return false;
 	    }
 
@@ -196,17 +200,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $cid = $this->getCampaignId($current_user->fnum);
         $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
 
-        foreach ($uploadResult as $upload) {
-            if (!empty($upload->filename)) {
-                $fileName = $upload->filename;
+            foreach ($uploadResult as $upload) {
+                if (!empty($upload->filename)) {
+                    $fileName = $upload->filename;
+                }
+
+                $target = '/images'.DS.'emundus'.DS.'files'.DS.$current_user->id.DS.$fileName;
+                $result[] = array('filename' => $fileName, 'target' => $target);
             }
 
-            $target = '/images'.DS.'emundus'.DS.'files'.DS.$current_user->id.DS.$fileName;
-            $result[] = array('filename' => $fileName, 'target' => $target);
-        }
+            echo json_encode($result);
+            return true;
 
-        echo json_encode($result);
-		return true;
     }
 
 
@@ -221,7 +226,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $fileName = $jinput->post->get('filename');
         $attachId = $jinput->post->get('attachId');
 
-	    if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 		    return false;
 	    }
 
