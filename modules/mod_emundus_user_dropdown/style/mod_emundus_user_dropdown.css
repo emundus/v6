@@ -7,7 +7,7 @@
     margin-top: 10px;
 }
 #g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
-    right: -100%;
+    right: 0;
 }
 #g-navigation.g-flushed .header-c .open > .dropdown-menu {
     right: 0;
